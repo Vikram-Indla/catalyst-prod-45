@@ -236,7 +236,7 @@ export function HuddleFab() {
             <path
               ref={waveRef}
               d="M0,12 L40,12"
-              stroke={muted ? 'var(--ds-text-subtlest, #6B778C)' : green}
+              stroke={muted ? 'var(--ds-text-subtlest, #6B778C)' : 'var(--ds-icon-accent-magenta, #CD519D)'}
               strokeWidth={2}
               strokeLinecap="round"
               strokeLinejoin="round"

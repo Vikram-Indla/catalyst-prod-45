@@ -73,6 +73,9 @@ export function HuddleScreenView() {
           ctx.clearRect(0, 0, w, h);
           const now = Date.now();
           strokesRef.current = strokesRef.current.filter((s) => now - s.t < FADE_HOLD + FADE_OUT);
+          // map normalized (content-relative) coords back onto the letterboxed
+          // video content rect, so markers land on the SAME pixel for both peers.
+          const cr = contentRect(w, h);
           for (const s of strokesRef.current) {
             const age = now - s.t;
             const op = age < FADE_HOLD ? 1 : Math.max(0, 1 - (age - FADE_HOLD) / FADE_OUT);
@@ -81,7 +84,7 @@ export function HuddleScreenView() {
             ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             ctx.beginPath();
             s.points.forEach((p, idx) => {
-              const x = p.x * w, y = p.y * h;
+              const x = cr.x + p.x * cr.w, y = cr.y + p.y * cr.h;
               if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             });
             ctx.stroke();
@@ -95,10 +98,23 @@ export function HuddleScreenView() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  // The video uses object-fit:contain, so its content is letterboxed inside the
+  // canvas. Compute the actual content rect from the video's intrinsic size so
+  // marker coords are normalized to the CONTENT (identical for both peers),
+  // not the raw canvas (which differs by window size/aspect).
+  const contentRect = (W: number, H: number) => {
+    const v = videoRef.current;
+    const vw = v?.videoWidth || 0, vh = v?.videoHeight || 0;
+    if (!vw || !vh) return { x: 0, y: 0, w: W, h: H };
+    const s = Math.min(W / vw, H / vh);
+    const cw = vw * s, ch = vh * s;
+    return { x: (W - cw) / 2, y: (H - ch) / 2, w: cw, h: ch };
+  };
   const normPt = (e: React.PointerEvent) => {
     const cv = canvasRef.current!;
     const r = cv.getBoundingClientRect();
-    return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height };
+    const cr = contentRect(r.width, r.height);
+    return { x: (e.clientX - r.left - cr.x) / cr.w, y: (e.clientY - r.top - cr.y) / cr.h };
   };
   const onCanvasDown = useCallback((e: React.PointerEvent) => {
     if (!markerPen) return;
