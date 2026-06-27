@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, DragEvent } from 'react';
-import { createPortal } from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import ModalDialog, { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/standard-button';
 import { useCycleScope } from '@/hooks/test-management/useTestCycles';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useProjects } from '@/hooks/test-management/useProjects';
@@ -217,25 +218,17 @@ function SaveRunModal({
     return () => document.removeEventListener('keydown', handler, true);
   }, [onCancel]);
 
-  return createPortal(
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 9000,
-      background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        borderRadius: 8, padding: 24, width: 480,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
-      }}>
-        <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
-          Save execution
-        </h3>
-        <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+  return (
+    <ModalDialog onClose={onCancel}>
+      <ModalHeader>
+        <ModalTitle>Save execution</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--ds-text-subtle)' }}>
           Optionally add notes before saving this run result.
         </p>
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', display: 'block', marginBottom: 4 }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle)', display: 'block', marginBottom: 4 }}>
             Notes (optional)
           </label>
           <Textarea
@@ -245,34 +238,19 @@ function SaveRunModal({
             minimumRows={3}
           />
         </div>
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button
-            onClick={onCancel}
-            style={{
-              padding: '8px 16px', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)',
-              background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => onConfirm(notes)}
-            disabled={saving}
-            style={{
-              padding: '8px 16px', borderRadius: 4, border: 'none',
-              background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: 'var(--ds-text-inverse, #FFFFFF)', cursor: saving ? 'not-allowed' : 'pointer',
-              fontSize: 14, fontWeight: 500, opacity: saving ? 0.7 : 1,
-              display: 'flex', alignItems: 'center', gap: 8,
-            }}
-          >
-            {saving && <Spinner size="small" appearance="invert" />}
-            {saving ? 'Saving…' : 'Save run'}
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onCancel}>Cancel</Button>
+        <Button
+          appearance="primary"
+          onClick={() => onConfirm(notes)}
+          isDisabled={saving}
+          iconAfter={saving ? <Spinner size="small" appearance="invert" /> : undefined}
+        >
+          {saving ? 'Saving…' : 'Save run'}
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 
@@ -592,25 +570,13 @@ function StepRunner({
                     <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>
                       {step.expected_result}
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>ACTUAL RESULT</div>
-                    <textarea
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>ACTUAL RESULT</div>
+                    <Textarea
                       value={state?.actualResult ?? ''}
-                      onChange={e => updateActualResult(i, e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateActualResult(i, e.target.value)}
                       placeholder="Enter actual result..."
-                      style={{
-                        width: '100%',
-                        border: '1px solid var(--ds-border, #DFE1E6)',
-                        borderRadius: 4,
-                        padding: '8px 8px',
-                        fontSize: 13,
-                        fontFamily: 'var(--ds-font-family-body)',
-                        color: 'var(--ds-text, #172B4D)',
-                        background: 'var(--ds-surface, #FFFFFF)',
-                        resize: 'vertical',
-                        minHeight: 56,
-                        outline: 'none',
-                        boxSizing: 'border-box',
-                      }}
+                      resize="smart"
+                      minimumRows={2}
                     />
                   </div>
                 </div>

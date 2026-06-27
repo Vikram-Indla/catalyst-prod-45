@@ -21,6 +21,8 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
+import Textfield from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
@@ -455,35 +457,33 @@ export default function CatalystViewTestCase({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>KEY</div>
-              <input
+              <Textfield
                 value={linkForm.extKey}
                 onChange={e => setLinkForm(f => ({ ...f, extKey: e.target.value }))}
                 placeholder="e.g. REQ-001"
-                style={{ width: '100%', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '5px 8px', fontSize: 13, fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box', background: 'var(--ds-surface)', color: 'var(--ds-text)', outline: 'none' }}
               />
             </div>
             <div>
               <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>TITLE</div>
-              <input
+              <Textfield
                 value={linkForm.extTitle}
                 onChange={e => setLinkForm(f => ({ ...f, extTitle: e.target.value }))}
                 placeholder="Requirement description"
-                style={{ width: '100%', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '5px 8px', fontSize: 13, fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box', background: 'var(--ds-surface)', color: 'var(--ds-text)', outline: 'none' }}
               />
             </div>
           </div>
           <div style={{ marginBottom: 10 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>LINK TYPE</div>
-            <select
-              value={linkForm.linkType}
-              onChange={e => setLinkForm(f => ({ ...f, linkType: e.target.value }))}
-              style={{ border: '1px solid var(--ds-border)', borderRadius: 4, padding: '5px 8px', fontSize: 13, fontFamily: 'var(--ds-font-family-body)', background: 'var(--ds-surface)', color: 'var(--ds-text)' }}
-            >
-              <option value="verifies">Verifies</option>
-              <option value="covers">Covers</option>
-              <option value="implements">Implements</option>
-              <option value="relates_to">Relates to</option>
-            </select>
+            <Select
+              value={{ label: linkForm.linkType, value: linkForm.linkType }}
+              options={[
+                { label: 'verifies', value: 'verifies' },
+                { label: 'covers', value: 'covers' },
+                { label: 'implements', value: 'implements' },
+                { label: 'relates_to', value: 'relates_to' },
+              ]}
+              onChange={(opt) => opt && setLinkForm(f => ({ ...f, linkType: opt.value }))}
+            />
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button

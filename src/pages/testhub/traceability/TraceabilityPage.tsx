@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
+import DynamicTable from '@atlaskit/dynamic-table';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { supabase } from '@/integrations/supabase/client';
@@ -145,6 +146,67 @@ export default function TraceabilityPage() {
   const passed = useMemo(() => groups.filter(g => g.links.some(l => l.exec_status === 'passed')).length, [groups]);
   const failed = useMemo(() => groups.filter(g => g.links.some(l => l.exec_status === 'failed')).length, [groups]);
 
+  const head = {
+    cells: [
+      { key: 'requirement', content: 'Requirement', width: 25 },
+      { key: 'test-cases', content: 'Test cases' },
+      { key: 'coverage', content: 'Coverage', width: 18 },
+    ],
+  };
+
+  const rows = groups.map(g => {
+    const passCount = g.links.filter(l => l.exec_status === 'passed').length;
+    const failCount = g.links.filter(l => l.exec_status === 'failed').length;
+    const covAppearance: 'removed' | 'success' | 'default' =
+      failCount > 0 ? 'removed' : passCount === g.links.length ? 'success' : 'default';
+
+    return {
+      key: g.reqKey,
+      cells: [
+        {
+          key: 'requirement',
+          content: (
+            <div>
+              {g.displayKey && g.displayKey !== g.displayTitle && (
+                <div style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, marginBottom: 2 }}>
+                  {g.displayKey}
+                </div>
+              )}
+              <div style={{ fontSize: 13, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }} title={g.displayTitle}>
+                {g.displayTitle}
+              </div>
+            </div>
+          ),
+        },
+        {
+          key: 'test-cases',
+          content: (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {g.links.map(l => (
+                <span key={l.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'var(--ds-background-neutral)', borderRadius: 3 }}>
+                  <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: 'var(--ds-text-subtle)' }}>
+                    {l.case_key ?? '—'}
+                  </span>
+                  <Lozenge appearance={execAppearance(l.exec_status)}>
+                    {execLabel(l.exec_status)}
+                  </Lozenge>
+                </span>
+              ))}
+            </div>
+          ),
+        },
+        {
+          key: 'coverage',
+          content: (
+            <Lozenge appearance={covAppearance}>
+              {passCount}/{g.links.length} passing
+            </Lozenge>
+          ),
+        },
+      ],
+    };
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)', background: 'var(--ds-surface)', paddingTop: 16 }}>
       <ProjectPageHeader hubType="test" />
@@ -156,74 +218,30 @@ export default function TraceabilityPage() {
           </div>
         )}
 
-        {!isLoading && groups.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '64px 24px', color: 'var(--ds-text-subtlest)' }}>
-            <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>No requirements linked</div>
-            <div style={{ fontSize: 14 }}>
-              Open a test case → Requirements tab → Link requirement to start tracking coverage.
-            </div>
-          </div>
-        )}
-
-        {!isLoading && groups.length > 0 && (
+        {!isLoading && (
           <>
-            <div style={{ display: 'flex', gap: 32, padding: '12px 0 20px', borderBottom: '1px solid var(--ds-border)', marginBottom: 20 }}>
-              <Stat label="Requirements" value={groups.length} />
-              <Stat label="Test cases linked" value={totalCases} />
-              <Stat label="With passing run" value={passed} accent="success" />
-              <Stat label="With failing run" value={failed} accent="danger" />
-            </div>
+            {groups.length > 0 && (
+              <div style={{ display: 'flex', gap: 32, padding: '12px 0 20px', borderBottom: '1px solid var(--ds-border)', marginBottom: 20 }}>
+                <Stat label="Requirements" value={groups.length} />
+                <Stat label="Test cases linked" value={totalCases} />
+                <Stat label="With passing run" value={passed} accent="success" />
+                <Stat label="With failing run" value={failed} accent="danger" />
+              </div>
+            )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr 140px', columnGap: 16 }} role="table" aria-label="Traceability matrix">
-              <ColHeader>Requirement</ColHeader>
-              <ColHeader>Test cases</ColHeader>
-              <ColHeader>Coverage</ColHeader>
-
-              {groups.map(g => {
-                const passCount = g.links.filter(l => l.exec_status === 'passed').length;
-                const failCount = g.links.filter(l => l.exec_status === 'failed').length;
-                const covAppearance: 'removed' | 'success' | 'default' =
-                  failCount > 0 ? 'removed' : passCount === g.links.length ? 'success' : 'default';
-
-                return (
-                  <React.Fragment key={g.reqKey}>
-                    <Cell>
-                      <div>
-                        {g.displayKey && g.displayKey !== g.displayTitle && (
-                          <div style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, marginBottom: 2 }}>
-                            {g.displayKey}
-                          </div>
-                        )}
-                        <div style={{ fontSize: 13, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }} title={g.displayTitle}>
-                          {g.displayTitle}
-                        </div>
-                      </div>
-                    </Cell>
-
-                    <Cell>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                        {g.links.map(l => (
-                          <span key={l.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'var(--ds-background-neutral)', borderRadius: 3 }}>
-                            <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: 'var(--ds-text-subtle)' }}>
-                              {l.case_key ?? '—'}
-                            </span>
-                            <Lozenge appearance={execAppearance(l.exec_status)}>
-                              {execLabel(l.exec_status)}
-                            </Lozenge>
-                          </span>
-                        ))}
-                      </div>
-                    </Cell>
-
-                    <Cell>
-                      <Lozenge appearance={covAppearance}>
-                        {passCount}/{g.links.length} passing
-                      </Lozenge>
-                    </Cell>
-                  </React.Fragment>
-                );
-              })}
-            </div>
+            <DynamicTable
+              head={head}
+              rows={rows}
+              isLoading={false}
+              emptyView={
+                <div style={{ textAlign: 'center', padding: '64px 24px', color: 'var(--ds-text-subtlest)' }}>
+                  <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>No requirements linked</div>
+                  <div style={{ fontSize: 14 }}>
+                    Open a test case → Requirements tab → Link requirement to start tracking coverage.
+                  </div>
+                </div>
+              }
+            />
           </>
         )}
       </div>
@@ -239,22 +257,6 @@ function Stat({ label, value, accent }: { label: string; value: number; accent?:
     <div>
       <div style={{ fontSize: 24, fontWeight: 600, color, lineHeight: 1, marginBottom: 4 }}>{value}</div>
       <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>{label}</div>
-    </div>
-  );
-}
-
-function ColHeader({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest)', padding: '8px 0', borderBottom: '1px solid var(--ds-border)', userSelect: 'none' }}>
-      {children}
-    </div>
-  );
-}
-
-function Cell({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ fontSize: 13, color: 'var(--ds-text)', padding: '10px 0', borderBottom: '1px solid var(--ds-border-subtle)', display: 'flex', alignItems: 'center' }}>
-      {children ?? '—'}
     </div>
   );
 }

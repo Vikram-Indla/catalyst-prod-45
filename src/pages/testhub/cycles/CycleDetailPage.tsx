@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import Select from '@atlaskit/select';
+import { DatePicker } from '@atlaskit/datetime-picker';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useTestCycle,
@@ -40,29 +43,7 @@ export default function CycleDetailPage() {
   const [showAddCases, setShowAddCases] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
-  const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'scope' | 'planning'>('scope');
-  const bulkStatusBtnRef = useRef<HTMLButtonElement>(null);
-  const bulkMoveBtnRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!bulkStatusOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (!bulkStatusBtnRef.current?.contains(e.target as Node)) setBulkStatusOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [bulkStatusOpen]);
-
-  useEffect(() => {
-    if (!bulkMoveOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (!bulkMoveBtnRef.current?.contains(e.target as Node)) setBulkMoveOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [bulkMoveOpen]);
 
   const { data: teamMembers = [] } = useQuery({
     queryKey: ['team-members'],
@@ -127,7 +108,6 @@ export default function CycleDetailPage() {
   ];
 
   const handleBulkStatusChange = async (newStatus: RunStatus) => {
-    setBulkStatusOpen(false);
     const ids = Array.from(selectedIds);
     const { error } = await (supabase.from('tm_cycle_scope') as any).update({ status: newStatus }).in('id', ids);
     if (error) { catalystToast.error(error.message); return; }
@@ -137,7 +117,6 @@ export default function CycleDetailPage() {
   };
 
   const handleMoveRuns = async (targetCycle: { id: string; name: string }) => {
-    setBulkMoveOpen(false);
     const ids = Array.from(selectedIds);
     const selectedItems = scopeItems.filter(i => ids.includes(i.id));
 
@@ -379,103 +358,25 @@ export default function CycleDetailPage() {
           >
             Remove from scope
           </button>
-          <div style={{ position: 'relative' }}>
-            <button
-              ref={bulkStatusBtnRef}
-              onClick={() => setBulkStatusOpen(v => !v)}
-              style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}
-            >
-              Change status ▾
-            </button>
-            {bulkStatusOpen && bulkStatusBtnRef.current && createPortal(
-              <div
-                style={{
-                  position: 'fixed',
-                  top: bulkStatusBtnRef.current.getBoundingClientRect().bottom + 4,
-                  left: bulkStatusBtnRef.current.getBoundingClientRect().left,
-                  background: 'var(--ds-surface-overlay, #FFFFFF)',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 6,
-                  boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
-                  padding: '4px 0',
-                  minWidth: 160,
-                  zIndex: 9999,
-                }}
-                onMouseDown={e => e.stopPropagation()}
-              >
-                {(['PASSED', 'FAILED', 'BLOCKED', 'SKIPPED'] as RunStatus[]).map(s => (
-                  <button
-                    key={s}
-                    role="menuitem"
-                    onClick={() => handleBulkStatusChange(s)}
-                    style={{
-                      display: 'block', width: '100%', textAlign: 'left',
-                      padding: '8px 16px', background: 'none', border: 'none',
-                      cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                  >
-                    {s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}
-                  </button>
-                ))}
-              </div>,
-              document.body
-            )}
-          </div>
-          <div style={{ position: 'relative' }}>
-            <button
-              ref={bulkMoveBtnRef}
-              onClick={() => setBulkMoveOpen(v => !v)}
-              style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}
-            >
-              Move to cycle ▾
-            </button>
-            {bulkMoveOpen && bulkMoveBtnRef.current && createPortal(
-              <div
-                style={{
-                  position: 'fixed',
-                  top: bulkMoveBtnRef.current.getBoundingClientRect().bottom + 4,
-                  left: bulkMoveBtnRef.current.getBoundingClientRect().left,
-                  background: 'var(--ds-surface-overlay, #FFFFFF)',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 6,
-                  boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
-                  padding: '4px 0',
-                  minWidth: 200,
-                  maxHeight: 240,
-                  overflowY: 'auto',
-                  zIndex: 9999,
-                }}
-                onMouseDown={e => e.stopPropagation()}
-              >
-                {otherCycles.length === 0 ? (
-                  <div style={{ padding: '10px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                    No other cycles
-                  </div>
-                ) : (otherCycles as Array<{ id: string; name: string; status: string }>).map(c => (
-                  <button
-                    key={c.id}
-                    role="menuitem"
-                    onClick={() => handleMoveRuns(c)}
-                    style={{
-                      display: 'block', width: '100%', textAlign: 'left',
-                      padding: '8px 16px', background: 'none', border: 'none',
-                      cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                  >
-                    <span>{c.name}</span>
-                    <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                      {c.status}
-                    </span>
-                  </button>
-                ))}
-              </div>,
-              document.body
-            )}
-          </div>
+          <DropdownMenu trigger="Change status ▾" triggerType="button">
+            <DropdownItemGroup>
+              {(['PASSED', 'FAILED', 'BLOCKED', 'SKIPPED'] as RunStatus[]).map(s => (
+                <DropdownItem key={s} onClick={() => handleBulkStatusChange(s)}>
+                  {s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}
+                </DropdownItem>
+              ))}
+            </DropdownItemGroup>
+          </DropdownMenu>
+          <DropdownMenu trigger="Move to cycle ▾" triggerType="button" isDisabled={otherCycles.length === 0}>
+            <DropdownItemGroup>
+              {(otherCycles as Array<{ id: string; name: string; status: string }>).map(c => (
+                <DropdownItem key={c.id} onClick={() => handleMoveRuns(c)}>
+                  {c.name}
+                  <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--ds-text-subtlest)' }}>{c.status}</span>
+                </DropdownItem>
+              ))}
+            </DropdownItemGroup>
+          </DropdownMenu>
           <button
             onClick={() => setSelectedIds(new Set())}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)', marginLeft: 'auto' }}
@@ -652,30 +553,17 @@ function AssigneeCell({ scopeId, cycleId, assignee }: {
   cycleId: string;
   assignee: { id: string; full_name: string; avatar_url?: string } | null;
 }) {
-  const [open, setOpen] = useState(false);
   const [users, setUsers] = useState<{ id: string; full_name: string }[]>([]);
   const [saving, setSaving] = useState(false);
   const qc = useQueryClient();
-  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!open) return;
     supabase.from('profiles').select('id, full_name').order('full_name').limit(50)
       .then(({ data }) => setUsers(data ?? []));
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
+  }, []);
 
   const assign = useCallback(async (userId: string | null) => {
     setSaving(true);
-    setOpen(false);
     const { error } = await supabase
       .from('tm_cycle_scope')
       .update({ assigned_to: userId })
@@ -686,53 +574,19 @@ function AssigneeCell({ scopeId, cycleId, assignee }: {
   }, [scopeId, cycleId, qc]);
 
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <button
-        onClick={() => setOpen(o => !o)}
-        disabled={saving}
-        style={{
-          background: 'none', border: '1px solid transparent', borderRadius: 4,
-          cursor: 'pointer', padding: '2px 6px', fontSize: 13,
-          color: assignee ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {saving ? '…' : (assignee?.full_name ?? 'Unassigned')}
-      </button>
-      {open && (
-        <div style={{
-          position: 'absolute', top: '100%', left: 0, zIndex: 9500,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
-          borderRadius: 6, boxShadow: 'var(--ds-shadow-overlay, 0 4px 16px rgba(9,30,66,0.18))',
-          minWidth: 180, maxHeight: 240, overflowY: 'auto',
-        }}>
-          <div
-            onClick={() => assign(null)}
-            style={{ padding: '8px 12px', fontSize: 13, cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
-            onMouseLeave={e => (e.currentTarget.style.background = '')}
-          >
-            Unassigned
-          </div>
-          {users.map(u => (
-            <div
-              key={u.id}
-              onClick={() => assign(u.id)}
-              style={{
-                padding: '8px 12px', fontSize: 13, cursor: 'pointer',
-                color: 'var(--ds-text, #172B4D)',
-                background: assignee?.id === u.id ? 'var(--ds-background-selected, #E9F2FF)' : '',
-              }}
-              onMouseEnter={e => { if (assignee?.id !== u.id) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)'; }}
-              onMouseLeave={e => { if (assignee?.id !== u.id) e.currentTarget.style.background = ''; }}
-            >
-              {u.full_name}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    <Select
+      menuPosition="fixed"
+      placeholder="Unassigned"
+      value={assignee ? { label: assignee.full_name, value: assignee.id } : null}
+      options={[
+        { label: 'Unassigned', value: null as any },
+        ...users.map(u => ({ label: u.full_name, value: u.id }))
+      ]}
+      onChange={(opt) => assign(opt?.value ?? null)}
+      isDisabled={saving}
+      isClearable
+      styles={{ container: (b: any) => ({ ...b, minWidth: 140 }) }}
+    />
   );
 }
 
@@ -742,17 +596,12 @@ function DueDateCell({ scopeId, cycleId, dueDate }: {
   cycleId: string;
   dueDate: string | null;
 }) {
-  const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const qc = useQueryClient();
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (editing) inputRef.current?.focus();
-  }, [editing]);
+  const inputVal = dueDate ? dueDate.slice(0, 10) : '';
 
   const save = useCallback(async (value: string) => {
-    setEditing(false);
     setSaving(true);
     const iso = value ? new Date(value).toISOString() : null;
     const { error } = await supabase
@@ -764,47 +613,13 @@ function DueDateCell({ scopeId, cycleId, dueDate }: {
     qc.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] });
   }, [scopeId, cycleId, qc]);
 
-  const displayDate = dueDate
-    ? new Date(dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-    : null;
-
-  const inputVal = dueDate ? dueDate.slice(0, 10) : '';
-
-  if (editing) {
-    return (
-      <input
-        ref={inputRef}
-        type="date"
-        defaultValue={inputVal}
-        onBlur={e => save(e.target.value)}
-        onKeyDown={e => {
-          if (e.key === 'Enter') save((e.target as HTMLInputElement).value);
-          if (e.key === 'Escape') setEditing(false);
-        }}
-        style={{
-          border: '1px solid var(--ds-border-focused, #388BFF)',
-          borderRadius: 4, padding: '2px 6px', fontSize: 13,
-          background: 'var(--ds-surface, #FFFFFF)',
-          color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)',
-          outline: 'none',
-        }}
-      />
-    );
-  }
-
   return (
-    <button
-      onClick={() => setEditing(true)}
-      disabled={saving}
-      style={{
-        background: 'none', border: '1px solid transparent', borderRadius: 4,
-        cursor: 'pointer', padding: '2px 6px', fontSize: 13,
-        color: displayDate ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {saving ? '…' : (displayDate ?? 'Set date')}
-    </button>
+    <DatePicker
+      value={inputVal}
+      onChange={(val) => save(val)}
+      isDisabled={saving}
+      placeholder="Set date"
+    />
   );
 }
 
@@ -946,16 +761,16 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
             </div>
             <div style={{ marginBottom: 12 }}>
               <label style={labelStyle}>Severity</label>
-              <select
-                value={severity}
-                onChange={e => setSeverity(e.target.value as typeof severity)}
-                style={{ width: '100%', padding: '6px 8px', borderRadius: 4, border: '2px solid var(--ds-border, #DFE1E6)', fontSize: 13, fontFamily: 'var(--ds-font-family-body)' }}
-              >
-                <option value="critical">Critical</option>
-                <option value="major">Major</option>
-                <option value="minor">Minor</option>
-                <option value="trivial">Trivial</option>
-              </select>
+              <Select
+                value={{ label: severity.charAt(0).toUpperCase() + severity.slice(1), value: severity }}
+                options={[
+                  { label: 'Critical', value: 'critical' },
+                  { label: 'Major', value: 'major' },
+                  { label: 'Minor', value: 'minor' },
+                  { label: 'Trivial', value: 'trivial' },
+                ]}
+                onChange={(opt) => opt && setSeverity(opt.value as typeof severity)}
+              />
             </div>
             <button
               onClick={handleFile}
