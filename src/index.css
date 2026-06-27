@@ -6666,7 +6666,11 @@ html.dark .cp-feed-type-tile,
   /* 2026-06-18 (Vikram): popovers / global search / dialogs match the
      main-viewport reference (var(--ds-surface, #FFFFFF)), not the near-black --cp-ink-1 scheme. */
   background: var(--cp-bg-elevated, var(--ds-surface, #ffffff)) !important;
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  /* 2026-06-27: was `var(--cp-bg-neutral …)` — a faint *background* token wrongly
+     used as TEXT color (≈7% alpha) → invisible menu/dialog text in dark mode.
+     Use the readable text token so all dark popovers/dropdowns/dialogs inherit
+     legible text. */
+  color: var(--ds-text, #CECFD2) !important;
   border-color: var(
     --cp-border,
     var(--ds-background-neutral, #f1f2f4)
