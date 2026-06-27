@@ -163,12 +163,14 @@ export default function CycleDetailPage() {
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <button
                 onClick={() => {
-                  const headers = ['Key', 'Title', 'Status', 'Assignee'];
+                  const sprintName = (cycle as any)?.sprint?.name ?? '';
+                  const headers = ['Key', 'Title', 'Status', 'Assignee', 'Sprint'];
                   const rows = scopeItems.map(i => [
                     i.test_case?.key ?? '',
                     i.test_case?.title ?? '',
                     i.status,
                     i.assignee?.full_name ?? 'Unassigned',
+                    sprintName,
                   ]);
                   const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
                   const blob = new Blob([csv], { type: 'text/csv' });

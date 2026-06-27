@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useReleases } from '@/hooks/test-management/useReleases';
+import { useSprintsByProject } from '@/hooks/test-management/useSprintsByProject';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import {
   useTestCycles, useCreateCycle, useDeleteCycle, useAddCasesToScope,
@@ -49,6 +50,16 @@ const columns: Column<TMCycle>[] = [
     label: 'Status',
     width: 14,
     cell: ({ row }) => <CycleStatusPill status={row.status} />,
+  },
+  {
+    id: 'sprint',
+    label: 'Sprint',
+    width: 18,
+    cell: ({ row }) => (
+      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>
+        {(row as any).sprint?.name ?? '—'}
+      </span>
+    ),
   },
   {
     id: 'progress',
@@ -244,6 +255,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
   const [name, setName] = useState('');
   const [objective, setObjective] = useState('');
   const [releaseId, setReleaseId] = useState('');
+  const [sprintId, setSprintId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -256,6 +268,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
   const createCycle = useCreateCycle();
   const addCases = useAddCasesToScope();
   const { data: releases = [] } = useReleases();
+  const { data: sprints = [] } = useSprintsByProject(projectId);
   const { data: casesResult } = useTestCases(projectId, { per_page: 200 });
   const allCases = casesResult?.cases ?? [];
   const { data: profiles = [] } = useQuery({
@@ -277,6 +290,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
       project_id: projectId,
       name: name.trim(),
       description: objective || undefined,
+      sprint_id: sprintId || null,
       planned_start_date: startDate || undefined,
       planned_end_date: endDate || undefined,
     });
@@ -342,12 +356,21 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
+                  <label style={labelStyle}>Sprint</label>
+                  <select value={sprintId} onChange={e => setSprintId(e.target.value)} style={fieldStyle}>
+                    <option value="">— No sprint —</option>
+                    {sprints.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                </div>
+                <div>
                   <label style={labelStyle}>Release</label>
                   <select value={releaseId} onChange={e => setReleaseId(e.target.value)} style={fieldStyle}>
                     <option value="">— None —</option>
                     {releases.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                   </select>
                 </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={labelStyle}>Owner</label>
                   <select value={ownerId} onChange={e => setOwnerId(e.target.value)} style={fieldStyle}>

@@ -370,7 +370,7 @@ export default function DefectsPage() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '120px 1fr 110px 110px 160px 160px 120px',
+              gridTemplateColumns: '120px 1fr 110px 110px 160px 160px 140px 120px',
               columnGap: 16,
             }}
             role="table"
@@ -383,6 +383,7 @@ export default function DefectsPage() {
             <ColHeader>Status</ColHeader>
             <ColHeader>Linked test run</ColHeader>
             <ColHeader>Assigned to</ColHeader>
+            <ColHeader>Sprint</ColHeader>
             <ColHeader>Created</ColHeader>
 
             {/* Data rows */}
@@ -449,6 +450,11 @@ export default function DefectsPage() {
                     {defect.assignee?.full_name ??
                       defect.jira_assignee_name ??
                       '—'}
+                  </Cell>
+                  <Cell>
+                    <span style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>
+                      {(defect as any).sprint?.name ?? '—'}
+                    </span>
                   </Cell>
                   <Cell>{createdDate ?? '—'}</Cell>
                 </React.Fragment>

@@ -28,9 +28,11 @@ export interface TestPlan {
   version: number;
   created_at: string;
   updated_at: string;
+  sprint_id: string | null;
   // Joined
   creator?: { id: string; full_name: string; avatar_url: string | null };
   release?: { id: string; name: string };
+  sprint?: { id: string; name: string; status: string } | null;
 }
 
 export interface PlanScope {
@@ -88,5 +90,6 @@ export interface PlanProgress {
 export interface PlanFilters {
   status?: PlanStatus[];
   releaseId?: string;
+  sprintId?: string;
   search?: string;
 }

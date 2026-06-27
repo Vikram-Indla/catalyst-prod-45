@@ -48,6 +48,7 @@ interface CycleSet {
     status: string;
     planned_start_date: string | null;
     planned_end_date: string | null;
+    sprint?: { id: string; name: string; status: string } | null;
   } | null;
 }
 
@@ -682,6 +683,9 @@ export default function SetDetailPage() {
                               {cycle.status.charAt(0) + cycle.status.slice(1).toLowerCase().replace('_', ' ')}
                             </Lozenge>
                           ) : '—'}
+                        </td>
+                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)', fontSize: 12 }}>
+                          {cycle?.sprint?.name ?? '—'}
                         </td>
                         <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)' }}>
                           {cycle?.planned_start_date ? formatDate(cycle.planned_start_date) : '—'}

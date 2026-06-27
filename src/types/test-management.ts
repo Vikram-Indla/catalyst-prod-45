@@ -40,9 +40,11 @@ export interface TMTestPlan {
   created_by?: string;
   created_at: string;
   updated_at: string;
+  sprint_id?: string | null;
   // Joined relations
   owner?: { id: string; full_name?: string; avatar_url?: string };
   release?: { id: string; name: string; version?: string };
+  sprint?: { id: string; name: string; status: string } | null;
   created_by_user?: { id: string; full_name?: string; avatar_url?: string };
 }
 
@@ -62,6 +64,7 @@ export interface TestPlanFilters {
   status?: TestPlanStatus | TestPlanStatus[];
   owner_id?: string;
   release_id?: string;
+  sprint_id?: string | null;
   search?: string;
   date_from?: string;
   date_to?: string;
@@ -74,6 +77,7 @@ export interface CreateTestPlanInput {
   start_date?: string;
   end_date?: string;
   release_id?: string;
+  sprint_id?: string | null;
   objectives?: string;
   in_scope?: string;
   out_of_scope?: string;
@@ -169,11 +173,13 @@ export interface TMTestCase {
   created_at: string;
   updated_at: string;
   is_ai_generated?: boolean;
+  sprint_id?: string | null;
   // Canonical assignee fields (matching TMCycleScope/TMDefect pattern)
   assigned_to: string | null;
   assignee?: { id: string; full_name: string; avatar_url?: string };
   // Joined relations
   priority?: TMCasePriority;
+  sprint?: { id: string; name: string; status: string } | null;
   priority_ref?: { name: string; color: string; level?: number } | null;
   type?: TMCaseType;
   folder?: TMFolder;
@@ -206,6 +212,8 @@ export interface TMCycle {
   blocked_count?: number;
   not_run_count?: number;
   pass_rate?: number;
+  sprint_id?: string | null;
+  sprint?: { id: string; name: string; status: string } | null;
 }
 
 export interface TMRun {
@@ -278,6 +286,8 @@ export interface TMDefect {
   jira_status_category?: string | null;
   jira_assignee_name?: string | null;
   jira_reporter_name?: string | null;
+  sprint_id?: string | null;
+  sprint?: { id: string; name: string; status: string } | null;
   test_case?: TMTestCase;
   run?: TMRun;
   assignee?: { id: string; full_name: string; avatar_url?: string };

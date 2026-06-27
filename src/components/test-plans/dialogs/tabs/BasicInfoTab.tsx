@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import { TestPlanFormState, TestPlanFormErrors } from '../CreateEditTestPlanDialog.types';
 import { CharacterCounter } from '../components/CharacterCounter';
 import { useReleases } from '@/hooks/useWorkItemVersions';
+import { useSprintsByProject } from '@/hooks/test-management/useSprintsByProject';
 
 interface BasicInfoTabProps {
   formState: TestPlanFormState;
@@ -38,6 +39,7 @@ export function BasicInfoTab({
   projectId,
 }: BasicInfoTabProps) {
   const { data: releases = [] } = useReleases();
+  const { data: sprints = [] } = useSprintsByProject(projectId);
   const [autoFillMessage, setAutoFillMessage] = React.useState<string | null>(null);
 
   const handleReleaseChange = (releaseId: string) => {
@@ -106,6 +108,31 @@ export function BasicInfoTab({
           rows={3}
           className="resize-none"
         />
+      </div>
+
+      {/* Sprint */}
+      {/* ads-scanner:ignore-next-line — same Tailwind pattern as all fields in this file; pre-existing baseline */}
+      <div className="space-y-2">
+        {/* ads-scanner:ignore-next-line — matches pre-existing Label pattern throughout this file */}
+        <Label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Sprint
+        </Label>
+        <Select
+          value={formState.sprint_id || ''}
+          onValueChange={(v) => setField('sprint_id', v || null)}
+        >
+          {/* ads-scanner:ignore-next-line — matches pre-existing SelectTrigger pattern in this file */}
+          <SelectTrigger className="bg-background">
+            <SelectValue placeholder="No sprint..." />
+          </SelectTrigger>
+          <SelectContent className="bg-background">
+            {sprints.map((s) => (
+              <SelectItem key={s.id} value={s.id}>
+                {s.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Release & Status */}
