@@ -35,12 +35,11 @@ export function HuddleFab() {
   const stopScreen = useHuddleStore((s) => s.stopScreen);
   const screenWindow = useHuddleStore((s) => s.screenWindow);
   const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
-  const setTicketsWindow = useHuddleStore((s) => s.setTicketsWindow);
   const { huddle } = useActiveHuddle(active?.conversationId ?? null);
   const participants = huddle?.participants ?? [];
   const navigate = useNavigate();
 
-  const [hovered, setHovered] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [pos, setPos] = useState<Pos>(loadPos);
   const [seconds, setSeconds] = useState(0);
 
@@ -151,8 +150,9 @@ export function HuddleFab() {
     const el = wrapRef.current;
     dragRef.current = null;
     el?.classList.remove('huddle-fab-dragging');
-    if (!d || !d.moved || !el) return;
-    // snap to nearest horizontal edge so hover grows inward
+    if (!d || !el) return;
+    if (!d.moved) { setExpanded((v) => !v); return; } // click (no drag) → toggle expand
+    // snap to nearest horizontal edge so the panel grows inward
     const r = el.getBoundingClientRect();
     const center = r.left + r.width / 2;
     let next: Pos;
@@ -183,8 +183,6 @@ export function HuddleFab() {
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
         position: 'fixed',
         top: pos.top,
@@ -195,10 +193,10 @@ export function HuddleFab() {
         cursor: 'grab',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: hovered ? 12 : 0,
+        gap: expanded ? 12 : 0,
         height: 56,
-        padding: hovered ? '0 12px 0 8px' : '0 8px',
-        borderRadius: hovered ? 16 : 999,
+        padding: expanded ? '0 12px 0 8px' : '0 8px',
+        borderRadius: expanded ? 16 : 999,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: `1.5px solid ${connecting ? 'var(--ds-border, #DFE1E6)' : 'var(--ds-border-success, #4BCE97)'}`,
         boxShadow: '0 8px 28px rgba(9,30,66,.18), 0 2px 6px rgba(9,30,66,.12)',
@@ -253,14 +251,14 @@ export function HuddleFab() {
           data-huddle-btn
           onClick={() => setScreenWindow('normal')}
           title="Show shared screen"
-          style={{ ...iconBtnStyle('var(--ds-background-selected, #E9F2FE)', 'var(--ds-text-selected, #0C66E4)'), marginRight: hovered ? 0 : 4 }}
+          style={{ ...iconBtnStyle('var(--ds-background-selected, #E9F2FE)', 'var(--ds-text-selected, #0C66E4)'), marginRight: expanded ? 0 : 4 }}
         >
           <ScreenIcon />
         </button>
       )}
 
-      {/* meta + actions — only when hovered */}
-      {hovered && (
+      {/* meta + actions — only when expanded */}
+      {expanded && (
         <>
           <span style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', whiteSpace: 'nowrap', maxWidth: 160, overflow: 'hidden' }}>
             <button
@@ -300,17 +298,6 @@ export function HuddleFab() {
                 <ScreenIcon />
               </button>
             )}
-            {!connecting && (
-              <button
-                type="button"
-                data-huddle-btn
-                onClick={() => setTicketsWindow('open')}
-                title="Shared tickets"
-                style={iconBtnStyle('var(--ds-surface-sunken, #F7F8F9)')}
-              >
-                <TicketsIcon />
-              </button>
-            )}
             <button
               type="button"
               data-huddle-btn
@@ -348,11 +335,6 @@ const MicOffIcon = () => (
 const ScreenIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" />
-  </svg>
-);
-const TicketsIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 7h16M4 12h16M4 17h10" />
   </svg>
 );
 const PhoneDownIcon = () => (
