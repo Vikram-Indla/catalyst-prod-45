@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjects } from '@/hooks/test-management/useProjects';
@@ -240,7 +241,23 @@ export default function TestSetsPage() {
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data ?? []) as TmTestSet[];
+      const rows = data ?? [];
+
+      // tm_test_sets.test_count is a denormalized counter nothing keeps in sync.
+      // Derive the live membership count from tm_set_cases (batch, one query)
+      // so the list never shows a stale count (zero-assumption: real, not a lie).
+      const ids = rows.map((r) => r.id);
+      const counts: Record<string, number> = {};
+      if (ids.length > 0) {
+        const { data: memberRows } = await supabase
+          .from('tm_set_cases')
+          .select('test_set_id')
+          .in('test_set_id', ids);
+        (memberRows ?? []).forEach((m: any) => {
+          counts[m.test_set_id] = (counts[m.test_set_id] || 0) + 1;
+        });
+      }
+      return rows.map((r) => ({ ...r, test_count: counts[r.id] ?? 0 })) as TmTestSet[];
     },
   });
 

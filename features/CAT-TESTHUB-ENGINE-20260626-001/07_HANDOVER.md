@@ -9,9 +9,11 @@
 - **1c done (D4 — 2026-06-27):** native case icon (earlier) + **CaseDrawer→CatalystViewBase migration COMPLETE & PROVEN.** New `src/components/catalyst-detail-views/test-case/CatalystViewTestCase.tsx` (+index). Row-click opens case in canonical CatalystViewBase shell (breadcrumb, sidebar status pill, Details/Steps/Versions tabs); CREATE still via CaseDrawer (coexist). entityKind='test_case' wired in shared/types.ts + CatalystDetailRouter.tsx; RepositoryPage row-click → CatalystDetailRouter. Status + priority inline edits PERSIST to tm_test_cases (proven: DRAFT→APPROVED + Critical→Low live on cyij). CATY footer-collision gone (footer no longer rendered).
 - **D9 (2026-06-27):** dropped broken `auto_create_test_case_version` trigger (migration 20260627120000) — it referenced nonexistent OLD.objective/OLD.priority/NEW.updated_by → EVERY tm_test_cases UPDATE 400'd. Edit surface was silently dead before this; now unblocked. App-layer useUpdateTestCase already owns versioning.
 - **1c REMAINING (deferred, small):** Classic/BDD toggle, version-list is read-only display (works; create-version still via CaseDrawer), case_key format (TC-0001 vs TC-001). + deferred folder Move/drag.
-- **Active slice:** none (sign-off gate).
-- **Execution authorization:** Phase 1 in progress (commits 1a–1c on origin/main). D4 + D9 done this session.
-- **Branch:** main. **DB:** staging cyij (verified). Migration applied via MCP.
+- **Phase 2 (Sets) — DONE & PROVEN (2026-06-27):** Sets surface pre-existed but was dead. Fixed: TestSetsPage missing react-router-dom import (page crashed); D10 repoint tm_test_sets FK projects→tm_projects (Set create FK-failed); D11 add tm_set_cases RLS policies (membership 403); SetDetailPage wrong tm_set_cases columns (set_id/order_index → test_set_id/sort_order); list shows live member count (not stale test_count). Proven live: SET-001 "Smoke Suite v1" + 3 members (TC-0001/001/002) persist; detail "Cases (3)"; list count 3. tsc clean.
+  - **Phase 2 OPEN FLAG (raise before sign-off):** "version-pinned" membership NOT schema-supported (tm_set_cases has no version col). tm_cycle_sets table missing (Phase 3). 5 other tm_* FK outliers → projects (later).
+- **Active slice:** none (Phase 1 + Phase 2 sign-off gate).
+- **Execution authorization:** Phase 1 + Phase 2 done this session. Next: Phase 3 (Cycles) or 1c leftovers, on sign-off.
+- **Branch:** main. **DB:** staging cyij (verified). Migrations applied via MCP: 20260627120000 (D9), 130000 (D10), 140000 (D11).
 - **Context health:** GREEN.
 
 ## WHAT'S DONE IN P0

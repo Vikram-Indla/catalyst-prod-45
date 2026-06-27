@@ -29,7 +29,7 @@ interface TmTestSet {
 interface SetCase {
   id: string;
   test_case_id: string;
-  order_index: number;
+  sort_order: number;
   tm_test_cases: {
     id: string;
     case_key: string;
@@ -131,9 +131,9 @@ function AddCasesModal({
       const selectedCases = available.filter(c => selected.has(c.id));
       const nextIndex = existingCaseIds.length;
       const rows = selectedCases.map((c, i) => ({
-        set_id: setId,
+        test_set_id: setId,
         test_case_id: c.id,
-        order_index: nextIndex + i,
+        sort_order: nextIndex + i,
       }));
       const { error } = await (supabase.from('tm_set_cases') as any).insert(rows);
       if (error) throw error;
@@ -394,9 +394,9 @@ export default function SetDetailPage() {
     queryKey: ['set-cases', setId],
     queryFn: async () => {
       const { data, error } = await (supabase.from('tm_set_cases') as any)
-        .select('id, test_case_id, order_index, tm_test_cases(id, case_key, title, status, priority_id)')
-        .eq('set_id', setId!)
-        .order('order_index');
+        .select('id, test_case_id, sort_order, tm_test_cases(id, case_key, title, status, priority_id)')
+        .eq('test_set_id', setId!)
+        .order('sort_order');
       if (error) throw error;
       return (data ?? []) as SetCase[];
     },
