@@ -53,4 +53,29 @@ the 4 pre-existing rows). Safe because additive.
   user_product_roles→developer. New user visible to /admin/roles. ✓
 - test user + invite deleted; leftover=0.
 
-## Phase 2 — RPC cutover: NOT STARTED.
+## Phase 2 — check_permission cutover (DONE on dev/cyij, 2026-06-27)
+
+**Migration:** `supabase/migrations/20260627140000_check_permission_product_super_admin.sql`
+(applied to cyij; NOT pushed to staging/prod DB).
+
+**Change:** the full-access (admin) branch of `check_permission` now resolves from the product-role
+model — `EXISTS (user_product_roles → product_roles.code='super_admin')` — with legacy
+`has_role(_user_id,'admin')` kept as an OR fallback (dual-read). The legacy granular branch is
+preserved byte-for-byte.
+
+**Validation (raw, dev):**
+- admin → true; random developer → false.
+- DEFINITIVE product path: granted super_admin product role to a non-admin dev (no legacy admin row)
+  → check_permission flipped false→TRUE; revoked → true→false.
+- whole-population parity: can_users = 1 / 61 (the admin) — identical to pre-cutover. No lockout,
+  no over-grant. Function still STABLE SECURITY DEFINER.
+
+**Rollback:** CREATE OR REPLACE check_permission with the prior body (has_role admin only).
+
+## 🚫 Phase 3 BLOCKED — granular matrix not wired (needs product input)
+The 832-row `product_role_permissions` matrix is keyed by free-text `permission_group`
+("Product: Create Story", …). Runtime callers pass `(entity_type, action[, scope])` e.g.
+`('test_cases','configure')`, `(entityType,'edit')`. There is NO table/column linking the two
+vocabularies. Wiring per-group Allow/Deny to the gate requires an
+`(entity_type, action) → permission_group` mapping that does not exist and is a product decision.
+Until that mapping is authored, only the super_admin (full-access) row of the matrix is live.
