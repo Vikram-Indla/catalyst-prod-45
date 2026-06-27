@@ -193,7 +193,11 @@ export function HubSwitcher() {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <Tooltip content="Switch hub" position="bottom">
+      {/* Suppress the tooltip while the menu is open — otherwise the
+          position="bottom" tooltip renders over the dropdown's search row and
+          clips the "Search hubs" placeholder to "h hubs". Empty content =
+          no tooltip popup. */}
+      <Tooltip content={open ? '' : 'Switch hub'} position="bottom">
         {(tooltipProps) => (
           <DropdownMenuTrigger asChild>
             <button
