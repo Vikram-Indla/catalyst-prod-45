@@ -421,10 +421,15 @@ export default function SetDetailPage() {
     queryKey: ['available-cycles', projectId, setId],
     queryFn: async () => {
       const existingCycleIds = cycleSets.map(cs => cs.cycle_id);
+      // tm_cycle_status enum is lowercase (planned/in_progress/draft/active/
+      // paused/completed/archived). This query hits the DB column directly
+      // (not via useTestCycles' UPPERCASE mapping), so it MUST use the raw
+      // lowercase values — list only cycles still open for adding cases
+      // (exclude terminal completed/archived).
       let query = (supabase.from('tm_test_cycles') as any)
         .select('id, name, status')
         .eq('project_id', projectId!)
-        .in('status', ['PLANNED', 'IN_PROGRESS'])
+        .in('status', ['draft', 'planned', 'active', 'in_progress', 'paused'])
         .order('name');
 
       const { data, error } = await query;
