@@ -91,7 +91,7 @@ export function StatusLozenge({
         fontSize: '11px',
         fontWeight: 700,
         lineHeight: '20px',
-        color: statusFg(),
+        color: statusFg(resolvedAppearance),
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         overflow: 'hidden',

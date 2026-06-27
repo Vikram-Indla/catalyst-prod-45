@@ -9,8 +9,9 @@
 | D5 | Top dark-rule comment rewritten (not just deleted) | It claimed "uniform white / no tonal step" — now false under the Group B ramp; kept the still-true facts (highest-specificity, single source of truth, light untouched) | 2026-06-27 |
 | D6 | `packages/tokens/definitions.ts` NOT applied | No `packages/tokens/` dir; external `@catylast/tokens` | (carried from sweep) |
 | D7 | PR7–PR9 long-tail blocked; no self-invented mappings | 265 unmapped hexes need Claude Design mappings; inventing = forbidden | (carried) |
-| D8 | Feature-folder docs organized in-repo to match convention (siblings 001/003 tracked) | "Get folders in order"; not yet committed pending user direction | 2026-06-27 |
+| D8 | Feature-folder docs organized in-repo to match convention (siblings 001/003 tracked) | "Get folders in order" — now git-tracked & committed in main repo | 2026-06-27 |
+| D9 | ADS-13 Finding 1 committed & merged via PR #288 (`c80fe30fc`) | Commit gate satisfied (build 0, render-identity proof, DOM probe); user authorized execution | 2026-06-27 |
 
 ## Open (await user)
-- Whether to commit the ADS-13 `src/index.css` fix, and whether/how to commit the 004 feature-folder docs
-  (earlier question dismissed → holding).
+- (none for the active slice — ADS-13 Finding 1 merged.) Remaining feature work is deferred
+  (Findings 3 & 4) or blocked (PR7–PR9 mappings); all out of scope for this slice.
