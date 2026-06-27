@@ -21,6 +21,7 @@ import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
 import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
 import { HuddleFab } from "./HuddleFab";
 import { HuddleIncoming } from "./HuddleIncoming";
+import { HuddleScreenView } from "./HuddleScreenView";
 
 /**
  * lazyWithRetry — defends against Vite stale-chunk errors after deploys/HMR.
@@ -877,6 +878,7 @@ function CatalystShellContent() {
       </div>
       <HuddleFab />
       <HuddleIncoming />
+      <HuddleScreenView />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">

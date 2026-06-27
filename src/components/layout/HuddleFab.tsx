@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Avatar from '@atlaskit/avatar';
 import Spinner from '@atlaskit/spinner';
 import { useHuddleStore, getHuddleRemoteStream } from '@/store/huddleStore';
+import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
 
 /**
  * HuddleFab — draggable floating call widget (replaces the old header strip).
@@ -30,6 +31,12 @@ export function HuddleFab() {
   const active = useHuddleStore((s) => s.active);
   const leave = useHuddleStore((s) => s.leave);
   const toggleMute = useHuddleStore((s) => s.toggleMute);
+  const startScreen = useHuddleStore((s) => s.startScreen);
+  const stopScreen = useHuddleStore((s) => s.stopScreen);
+  const screenWindow = useHuddleStore((s) => s.screenWindow);
+  const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
+  const { huddle } = useActiveHuddle(active?.conversationId ?? null);
+  const participants = huddle?.participants ?? [];
   const navigate = useNavigate();
 
   const [hovered, setHovered] = useState(false);
@@ -42,6 +49,8 @@ export function HuddleFab() {
 
   const connecting = !!active && active.connectionState !== 'connected';
   const muted = !!active?.micMuted;
+  const sharing = !!active?.screenSharing;
+  const screenMinimized = !!active && (active.screenSharing || active.remoteSharing) && screenWindow === 'minimized';
 
   // call duration timer (resets each huddle)
   useEffect(() => {
@@ -192,14 +201,25 @@ export function HuddleFab() {
         userSelect: 'none',
       }}
     >
-      {/* avatar */}
-      <span style={{ position: 'relative', flex: '0 0 auto', display: 'inline-flex', borderRadius: '50%' }}>
-        <Avatar size="medium" />
-        {!connecting && (
-          <span aria-hidden style={{
-            position: 'absolute', insetInlineStart: -3, insetBlockStart: -3, insetInlineEnd: -3, insetBlockEnd: -3,
-            borderRadius: '50%', border: `2px solid ${green}`, pointerEvents: 'none',
-          }} />
+      {/* participant avatars (stacked) — falls back to one generic avatar */}
+      <span style={{ position: 'relative', flex: '0 0 auto', display: 'inline-flex', alignItems: 'center' }}>
+        {participants.length > 0 ? (
+          participants.map((p, i) => (
+            <span key={p.userId} title={p.name || undefined}
+              style={{ marginLeft: i === 0 ? 0 : -10, borderRadius: '50%', boxShadow: '0 0 0 2px var(--ds-surface-overlay, #FFFFFF)' }}>
+              <Avatar size="medium" name={p.name || undefined} src={p.avatarUrl || undefined} />
+            </span>
+          ))
+        ) : (
+          <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '50%' }}>
+            <Avatar size="medium" />
+            {!connecting && (
+              <span aria-hidden style={{
+                position: 'absolute', insetInlineStart: -3, insetBlockStart: -3, insetInlineEnd: -3, insetBlockEnd: -3,
+                borderRadius: '50%', border: `2px solid ${green}`, pointerEvents: 'none',
+              }} />
+            )}
+          </span>
         )}
       </span>
 
@@ -216,6 +236,19 @@ export function HuddleFab() {
             />
           ))}
         </span>
+      )}
+
+      {/* restore chip — shown (even collapsed) when the screen window is minimized */}
+      {screenMinimized && (
+        <button
+          type="button"
+          data-huddle-btn
+          onClick={() => setScreenWindow('normal')}
+          title="Show shared screen"
+          style={{ ...iconBtnStyle('var(--ds-background-selected, #E9F2FE)', 'var(--ds-text-selected, #0C66E4)'), marginRight: hovered ? 0 : 4 }}
+        >
+          <ScreenIcon />
+        </button>
       )}
 
       {/* meta + actions — only when hovered */}
@@ -247,6 +280,18 @@ export function HuddleFab() {
             >
               {muted ? <MicOffIcon /> : <MicIcon />}
             </button>
+            {!connecting && (
+              <button
+                type="button"
+                data-huddle-btn
+                onClick={() => { void (sharing ? stopScreen() : startScreen()); }}
+                aria-pressed={sharing}
+                title={sharing ? 'Stop sharing screen' : 'Share screen'}
+                style={iconBtnStyle(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', sharing ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)')}
+              >
+                <ScreenIcon />
+              </button>
+            )}
             <button
               type="button"
               data-huddle-btn
@@ -279,6 +324,11 @@ const MicIcon = () => (
 const MicOffIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 9v2a3 3 0 0 0 5 2M15 11V6a3 3 0 0 0-6 0M5 11a7 7 0 0 0 11 5M12 18v3M3 3l18 18" />
+  </svg>
+);
+const ScreenIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" />
   </svg>
 );
 const PhoneDownIcon = () => (

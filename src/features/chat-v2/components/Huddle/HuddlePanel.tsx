@@ -17,11 +17,13 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
   const active = useHuddleStore((s) => s.active);
   const leave = useHuddleStore((s) => s.leave);
   const toggleMute = useHuddleStore((s) => s.toggleMute);
+  const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
 
   if (!huddle) return null;
 
   const inThisHuddle = active?.conversationId === conversation.id;
   const connecting = inThisHuddle && active?.connectionState !== 'connected';
+  const remoteSharing = inThisHuddle && !!active?.remoteSharing;
 
   return (
     <div
@@ -43,11 +45,26 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {huddle.participants.map((p) => (
           <span key={p.userId} style={{ marginLeft: -4 }} title={p.name || undefined}>
-            <Avatar size="small" name={p.name || undefined} />
+            <Avatar size="small" name={p.name || undefined} src={p.avatarUrl || undefined} />
           </span>
         ))}
       </div>
       {connecting && <Spinner size="small" />}
+      {remoteSharing && (
+        <button
+          type="button"
+          onClick={() => setScreenWindow('normal')}
+          title="View shared screen"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            border: '1px solid var(--ds-border-success, #4BCE97)', cursor: 'pointer',
+            background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-text, #172B4D)',
+            borderRadius: 999, padding: '4px 12px', fontSize: 12, fontWeight: 600,
+          }}
+        >
+          <ScreenGlyph /> {active?.conversationName} is sharing their screen · View
+        </button>
+      )}
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
         {inThisHuddle ? (
           <>
@@ -63,17 +80,23 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
         ) : (
           <button
             type="button"
-            disabled={huddle.isFull}
+            disabled={huddle.isFull && !huddle.iAmParticipant}
             onClick={() => { void startOrJoin(conversation); }}
             style={btnStyle()}
           >
-            {huddle.isFull ? 'Huddle in progress (full)' : 'Join huddle'}
+            {huddle.iAmParticipant ? 'Rejoin huddle' : huddle.isFull ? 'Huddle in progress (full)' : 'Join huddle'}
           </button>
         )}
       </div>
     </div>
   );
 }
+
+const ScreenGlyph = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-success, #22A06B)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" />
+  </svg>
+);
 
 function btnStyle(color = 'var(--ds-text, #172B4D)'): React.CSSProperties {
   return {
