@@ -1,0 +1,48 @@
+#!/bin/sh
+# commit-msg guard — blocks low-effort "sweep" commit messages from ANY committer
+# (Claude Bash, GitHub Desktop, editor auto-commit, watchers, other sessions).
+#
+# Why: 2026-06-27 an external tool auto-committed work-in-progress as "cc" and
+# pushed it to origin/main, bundling an unrelated file (docs/erd/ADMIN_ACCESS_ERD.md).
+# The Claude-side guard (.claude/hooks/git-guard.sh) only fires on Claude's Bash
+# tool — it can't see external git. This git-native hook does.
+#
+# Blocks: empty/whitespace messages, the literal "cc", and any single-token
+# message shorter than 12 chars (e.g. "cc", "wip", "fix", "x", "tmp").
+# Escape hatch (intentional terse commit): CATALYST_ALLOW_TERSE=1 git commit ...
+#
+# Version-controlled hook (.husky/). Active when `git config core.hooksPath`
+# points here (set locally; husky's `prepare` script would set it on install).
+# A copy also lives in .git/hooks/commit-msg as a fallback for default hooksPath.
+
+[ "${CATALYST_ALLOW_TERSE:-0}" = "1" ] && exit 0
+
+msg_file="$1"
+# First non-comment, non-blank line = the subject.
+subject=$(grep -vE '^\s*#' "$msg_file" | grep -vE '^\s*$' | head -1)
+trimmed=$(printf '%s' "$subject" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+# 1) empty
+if [ -z "$trimmed" ]; then
+  echo "BLOCKED (commit-msg): empty commit message. Describe the change." >&2
+  exit 1
+fi
+
+# 2) literal junk tokens
+case "$trimmed" in
+  cc|CC|wip|WIP|tmp|TMP|temp|x|.|update|updates|fix|fixes|changes|cleanup)
+    echo "BLOCKED (commit-msg): low-effort message \"$trimmed\". Use a descriptive subject (what + why)." >&2
+    echo "  Override (rare, intentional): CATALYST_ALLOW_TERSE=1 git commit ..." >&2
+    exit 1 ;;
+esac
+
+# 3) single short word (no spaces, < 12 chars) — catches most sweep signatures
+if printf '%s' "$trimmed" | grep -qvE '[[:space:]]'; then
+  if [ "${#trimmed}" -lt 12 ]; then
+    echo "BLOCKED (commit-msg): one-word message \"$trimmed\" (<12 chars). Use a descriptive subject." >&2
+    echo "  Override (rare, intentional): CATALYST_ALLOW_TERSE=1 git commit ..." >&2
+    exit 1
+  fi
+fi
+
+exit 0
