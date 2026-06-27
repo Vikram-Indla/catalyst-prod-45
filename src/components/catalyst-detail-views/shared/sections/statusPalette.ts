@@ -24,18 +24,42 @@ export type StatusAppearance =
   | 'moved'
   | 'new';
 
-/** Always dark — Jira NIN DOM probe rgb(41,42,46). */
-export const STATUS_TEXT = 'var(--ds-text, #172B4D)';
-
-/** Canonical Jira-probed medium-pastel backgrounds per status category. */
+/**
+ * ADS semantic status tokens — per references/ads-token-map.md.
+ *
+ * Each status uses an ADS *subtle background* token paired with its matching
+ * *text* token. These are theme-aware: ADS resolves both correctly in light AND
+ * dark mode (ads-token-map.md §"DARK MODE SURFACE VALUES" — wrap with the
+ * light-mode token, ADS resolves dark automatically), so the bg/text pair keeps
+ * WCAG-passing contrast in both themes. This replaces the prior Jira-probed
+ * fixed hex (e.g. #8FB8F6 + dark text), which did NOT flip in dark mode and
+ * rendered light-on-light (~1.3:1, invisible). 2026-06-27.
+ *
+ * Background ↔ text pairs are intentionally matched — do not mix a bg from one
+ * status with text from another.
+ */
 export const STATUS_BG: Record<StatusAppearance, string> = {
-  success:    '#94C748', // done — Jira DOM-probed lime green (NEVER replace with var(--ds-background-success-bold) = #1F845A — too dark, documented WRONG in CLAUDE.md)
-  inprogress: '#8FB8F6', // in progress — Jira DOM-probed periwinkle blue (not var(--ds-background-information) = #E9F2FF — too washed out)
-  moved:      '#F3D664', // moved/warning — medium warm yellow
-  new:        '#B8ACF6', // new/discovery — medium lavender
-  removed:    '#FD9891', // cancelled/rejected — medium coral red
-  default:    'var(--ds-border, #DFE1E6)', // todo/backlog — light grey
+  success:    'var(--ds-background-success, #DFFCF0)',     // done
+  inprogress: 'var(--ds-background-information, #E9F2FF)',  // in progress
+  moved:      'var(--ds-background-warning, #FFF7D6)',      // moved
+  new:        'var(--ds-background-discovery, #F3F0FF)',    // new
+  removed:    'var(--ds-background-danger, #FFECEB)',       // cancelled/rejected
+  default:    'var(--ds-background-neutral, #F1F2F4)',      // todo/backlog
 };
+
+/** Matching ADS text token per status (paired with STATUS_BG above). */
+export const STATUS_FG: Record<StatusAppearance, string> = {
+  success:    'var(--ds-text-success, #216E4E)',
+  inprogress: 'var(--ds-text-information, #0055CC)',
+  moved:      'var(--ds-text-warning, #A54800)',
+  new:        'var(--ds-text-discovery, #5E4DB2)',
+  removed:    'var(--ds-text-danger, #AE2E24)',
+  default:    'var(--ds-text, #172B4D)',
+};
+
+/** Default status text token (neutral). Prefer statusFg(appearance) for pills so
+ *  the text matches its background. */
+export const STATUS_TEXT = STATUS_FG.default;
 
 /** Resolve a status-pill background from an appearance string (canonical). */
 export function statusBg(appearance: string): string {
@@ -59,9 +83,16 @@ export function categoryBg(category: string | null | undefined): string {
   return statusBg(categoryToAppearance(category));
 }
 
-/** Status text color (always dark). */
-export function statusFg(_appearance?: string): string {
-  return STATUS_TEXT;
+/** Resolve the matching ADS text token for a status appearance. Pass the same
+ *  appearance used for statusBg() so bg/text stay a paired, WCAG-correct combo
+ *  in both light and dark mode. Falls back to neutral text when unknown. */
+export function statusFg(appearance?: string): string {
+  return STATUS_FG[appearance as StatusAppearance] ?? STATUS_FG.default;
+}
+
+/** Resolve the matching ADS text token from a status_category. */
+export function categoryFg(category: string | null | undefined): string {
+  return statusFg(categoryToAppearance(category));
 }
 
 /**

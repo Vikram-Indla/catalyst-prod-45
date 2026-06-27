@@ -34,7 +34,7 @@ export function StatusPill({ value, label }: StatusPillProps) {
         fontSize: '11px',
         fontWeight: 653,
         lineHeight: '20px',
-        color: statusFg(),
+        color: statusFg(appearance),
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         overflow: 'hidden',

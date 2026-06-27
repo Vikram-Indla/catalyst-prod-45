@@ -50,7 +50,7 @@ export function JiraStatusLozenge({
     }}>
       <span style={{
         font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: statusFg(),
+        color: statusFg(APPEARANCE_MAP[category]),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         padding: '2px',

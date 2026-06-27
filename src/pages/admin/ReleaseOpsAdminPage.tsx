@@ -98,7 +98,7 @@ function CategoryLozenge({ label, category }: { label: string; category: ConfigC
   const appearance = category ? CATEGORY_TO_APPEARANCE[category] : 'default';
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: statusBg(appearance), borderRadius: 3, padding: '0 8px', height: 20 }}>
-      <span style={{ fontSize: 11, fontWeight: 700, lineHeight: '20px', color: statusFg(), whiteSpace: 'nowrap' }}>{label}</span>
+      <span style={{ fontSize: 11, fontWeight: 700, lineHeight: '20px', color: statusFg(appearance), whiteSpace: 'nowrap' }}>{label}</span>
     </span>
   );
 }
