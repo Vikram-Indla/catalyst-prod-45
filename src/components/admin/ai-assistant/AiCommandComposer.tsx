@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Lozenge, Textfield } from '@/components/ads';
+import React, { useState, useRef } from 'react';
+import { Button, Lozenge } from '@/components/ads';
 import { T } from './tokens';
 import { Icon, ICONS, catIcon } from './icons';
 import { RiskLozenge, BulkTag } from './RiskLozenge';
@@ -114,15 +114,94 @@ function InlineConfirm({ confirm, onCancel, onConfirm }: { confirm: ConfirmState
   );
 }
 
+/** Chip/token input — used when 1+ entities have been picked. */
+function ChipInput({ chips, onRemove, onRemoveLast, composer, onChange, onFocus, onBlur, onKeyDown, isBulk }: {
+  chips: Console['entityChips'];
+  onRemove: (i: number) => void;
+  onRemoveLast: () => void;
+  composer: string;
+  onChange: (v: string) => void;
+  onFocus: () => void;
+  onBlur: () => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  isBulk: boolean;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <div
+      style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, cursor: 'text' }}
+      onClick={() => inputRef.current?.focus()}
+    >
+      {chips.map((chip, i) => (
+        <span key={i} style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          height: 26, padding: '0 6px 0 9px',
+          background: 'var(--ds-background-selected)',
+          border: '1px solid var(--ds-border-focused)',
+          borderRadius: 13,
+          fontSize: 12, fontWeight: 500,
+          color: 'var(--ds-text-selected)',
+          flexShrink: 0,
+          maxWidth: 200,
+        }}>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {chip.label}
+          </span>
+          <button
+            onMouseDown={e => { e.preventDefault(); onRemove(i); }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 16, height: 16, borderRadius: '50%',
+              border: 'none', background: 'transparent',
+              color: 'var(--ds-text-subtle)', cursor: 'pointer',
+              fontSize: 14, lineHeight: 1, padding: 0, flexShrink: 0,
+            }}
+            aria-label={`Remove ${chip.label}`}
+          >×</button>
+        </span>
+      ))}
+      <input
+        ref={inputRef}
+        value={composer}
+        onChange={e => onChange(e.target.value)}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onKeyDown={e => {
+          if (e.key === 'Backspace' && composer === '' && chips.length > 0) {
+            e.preventDefault();
+            onRemoveLast();
+            return;
+          }
+          onKeyDown(e);
+        }}
+        placeholder={isBulk ? 'Add more people or type role…' : 'Type role or action…'}
+        aria-label="Admin request"
+        style={{
+          flex: 1, minWidth: 120, height: 28,
+          border: 'none', outline: 'none', background: 'transparent',
+          font: 'inherit', fontSize: 14, color: 'var(--ds-text)',
+        }}
+      />
+    </div>
+  );
+}
+
 export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiCommandConsole').useAiCommandConsole> }) {
-  const [hoverClear, setHoverClear] = useState(false);
+  const hasChips = c.entityChips.length > 0;
+  const hasContent = hasChips || c.composer.trim() !== '';
+
   const statusLoz =
     c.statusKind === 'ready' ? <Lozenge appearance="default">Ready</Lozenge>
     : c.statusKind === 'match' ? <Lozenge appearance="inprogress">Ready to run</Lozenge>
     : <Lozenge appearance="new">New request</Lozenge>;
 
+  const inputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); c.run(); }
+    if (e.key === 'Escape') (e.target as HTMLInputElement).blur();
+  };
+
   return (
-    <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
+    <div style={{ background: 'var(--ds-surface-raised)', border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
       <div style={{ padding: '14px 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 12, fontWeight: 600, color: T.subtle }}>Your request</span>
         <span style={{ fontSize: 11, color: T.subtlest }}>Type <Kbd>/</Kbd> to browse · <Kbd>Enter</Kbd> to run</span>
@@ -130,20 +209,50 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
       </div>
 
       <div style={{ padding: '12px 16px 16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, border: `2px solid ${c.focused ? T.link : T.border}`, background: T.bgInput, borderRadius: 6, padding: '0 12px', height: 48, transition: 'border-color .12s' }}>
-          <span style={{ color: T.link, flex: '0 0 auto' }}><Icon path={ICONS.plane} size={18} w={2} /></span>
-          <input
-            value={c.composer}
-            onChange={e => c.setComposer(e.target.value)}
-            onFocus={c.onFocus} onBlur={c.onBlur}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); c.run(); } if (e.key === 'Escape') (e.target as HTMLInputElement).blur(); }}
-            placeholder="e.g. Make Vikram Indla a Product Owner   ·   Reset password for Sikander Ahmad"
-            aria-label="Admin request"
-            style={{ flex: 1, alignSelf: 'stretch', border: 'none', outline: 'none', background: 'transparent', font: 'inherit', fontSize: 15, color: T.text, minWidth: 0 }}
-          />
-          {c.composer && (
-            <button onMouseEnter={() => setHoverClear(true)} onMouseLeave={() => setHoverClear(false)} onClick={() => c.setComposer('')}
-              style={{ border: 'none', background: 'transparent', color: hoverClear ? T.text : T.subtlest, cursor: 'pointer', fontSize: 12, padding: 4, font: 'inherit' }}>Clear</button>
+        {/* Input row — chips variant when entities picked, plain input otherwise */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          border: `2px solid ${c.focused ? T.link : T.border}`,
+          background: T.bgInput, borderRadius: 6,
+          padding: hasChips ? '6px 10px' : '0 12px',
+          minHeight: 48, transition: 'border-color .12s',
+        }}>
+          <span style={{ color: T.link, flex: '0 0 auto', alignSelf: 'center' }}>
+            <Icon path={ICONS.plane} size={18} w={2} />
+          </span>
+
+          {hasChips ? (
+            <ChipInput
+              chips={c.entityChips}
+              onRemove={c.removeChip}
+              onRemoveLast={c.removeLastChip}
+              composer={c.composer}
+              onChange={v => c.setComposer(v)}
+              onFocus={c.onFocus}
+              onBlur={c.onBlur}
+              onKeyDown={inputKeyDown}
+              isBulk={c.isBulkMode}
+            />
+          ) : (
+            <input
+              value={c.composer}
+              onChange={e => c.setComposer(e.target.value)}
+              onFocus={c.onFocus}
+              onBlur={c.onBlur}
+              onKeyDown={inputKeyDown}
+              placeholder="e.g. Make Vikram Indla a Product Owner   ·   Reset password for Sikander Ahmad"
+              aria-label="Admin request"
+              style={{ flex: 1, alignSelf: 'stretch', border: 'none', outline: 'none', background: 'transparent', font: 'inherit', fontSize: 15, color: T.text, minWidth: 0 }}
+            />
+          )}
+
+          {hasContent && (
+            <button
+              onClick={c.clearAll}
+              style={{ border: 'none', background: 'transparent', color: T.subtlest, cursor: 'pointer', fontSize: 12, padding: '4px 6px', font: 'inherit', flexShrink: 0, alignSelf: 'center' }}
+              onMouseEnter={e => (e.currentTarget.style.color = T.text)}
+              onMouseLeave={e => (e.currentTarget.style.color = T.subtlest)}
+            >Clear</button>
           )}
           <Button appearance="primary" onClick={c.run} iconAfter={<Icon path={ICONS.send} size={14} w={2} />}>Run</Button>
         </div>
@@ -159,10 +268,10 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
         )}
         {c.confirm && <InlineConfirm confirm={c.confirm} onCancel={c.cancelConfirm} onConfirm={c.confirmRun} />}
 
-        {c.composer.trim() === '' && !c.focused && !c.running && (
+        {!hasContent && !c.focused && !c.running && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
             <span style={{ fontSize: 11, color: T.subtlest, alignSelf: 'center', marginRight: 2 }}>Try:</span>
-            {c.chips.map((chip, i) => (
+            {c.quickChips.map((chip, i) => (
               <button key={i} onClick={chip.onPick}
                 style={{ display: 'inline-flex', alignItems: 'center', height: 28, padding: '0 12px', border: `1px solid ${T.border}`, background: T.surface, color: T.subtle, borderRadius: 14, font: 'inherit', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
                 onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)} onMouseLeave={e => (e.currentTarget.style.background = T.surface)}>

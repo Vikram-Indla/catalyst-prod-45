@@ -10,6 +10,7 @@ export interface EntitySuggestion {
 
 // Debounced entity search across profiles, roles, and departments.
 // Triggers when the last word in `text` is ≥ 2 chars.
+// No approval_status filter — admin tool must see all non-deleted users including owners/admins.
 export function useEntitySearch(text: string): EntitySuggestion[] {
   const [suggestions, setSuggestions] = useState<EntitySuggestion[]>([]);
 
@@ -24,10 +25,9 @@ export function useEntitySearch(text: string): EntitySuggestion[] {
       const [{ data: people }, { data: roles }, { data: depts }] = await Promise.all([
         supabase
           .from('profiles')
-          .select('full_name, email, user_product_roles(product_roles(name))')
+          .select('full_name, email')
           .or(`full_name.ilike.%${q}%,email.ilike.%${q}%`)
-          .neq('approval_status', 'DISABLED')
-          .limit(4),
+          .limit(5),
         supabase
           .from('product_roles')
           .select('name, code')
@@ -42,23 +42,16 @@ export function useEntitySearch(text: string): EntitySuggestion[] {
       ]);
       if (cancelled) return;
       setSuggestions([
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ...(people ?? []).map((p: any) => {
-          const roleNames = (p.user_product_roles ?? [])
-            .map((r: any) => r.product_roles?.name)
-            .filter(Boolean)
-            .join(', ');
-          return {
-            type: 'person' as const,
-            label: p.full_name ?? p.email,
-            subtitle: roleNames || p.email || '',
-            insert: p.full_name ?? p.email,
-          };
-        }),
+        ...(people ?? []).map((p: { full_name: string | null; email: string | null }) => ({
+          type: 'person' as const,
+          label: p.full_name ?? p.email ?? '',
+          subtitle: p.email ?? '',
+          insert: p.full_name ?? p.email ?? '',
+        })),
         ...(roles ?? []).map((r: { name: string; code: string }) => ({
           type: 'role' as const,
           label: r.name,
-          subtitle: r.code,
+          subtitle: r.code ?? '',
           insert: r.name,
         })),
         ...(depts ?? []).map((d: { name: string }) => ({
