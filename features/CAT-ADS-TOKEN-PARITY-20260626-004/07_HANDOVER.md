@@ -1,9 +1,10 @@
 # 07 — HANDOVER
 
-**As of:** 2026-06-27
-**Branch:** `fix/dark-chrome-ads13` (off `main` `83bde822e`)
-**Working tree:** `src/index.css` modified (ADS-13 Finding 1), uncommitted. Feature-folder docs
-untracked. `feature-branch/` bundle untracked (reference). Nothing staged.
+**As of:** 2026-06-27 (reconciled in session 004)
+**Branch:** `fix/dark-chrome-ads13` (off `main` `83bde822e`) — **merged & complete**.
+**Working tree:** `src/index.css` ADS-13 Finding 1 is **merged into `main`** (PR #288, commit
+`c80fe30fc`). 004 feature-folder docs are now git-tracked. `feature-branch/` bundle remains
+untracked (reference only).
 
 ## Done & merged on `main`
 - WIDE lane — PR #284 `60d280fcc`.
@@ -15,20 +16,19 @@ untracked. `feature-branch/` bundle untracked (reference). Nothing staged.
 - **PR #288** → https://github.com/Vikram-Indla/catalyst-prod-45/pull/288 (base `main`).
 - Merge gate stated in PR: dark-sweep VR baselines (no diff) + in-browser contrast-probe (light+dark).
 
-## Active slice (this branch) — ADS-13 Finding 1
+## ADS-13 Finding 1 — COMPLETE & MERGED
 - **Change:** in `src/index.css` dark rule `html.dark, html[data-color-mode="dark"]`, deleted the
   dead Group A self-referential white-fallback block (28 decls + sub-comments) and rewrote the
   now-false top comment. Group B dark ramp kept intact.
 - **Diff:** `+8 / −45`, one file.
 - **Verified:** A⊆B render-identity (`comm` empty); `npm run build` exit 0; live DOM probe
   `overlayLiftedAboveBase: true`. Evidence in `06_VALIDATION_EVIDENCE.md`.
-- **Status:** ready; **NOT committed** — held at commit gate per user.
+- **Status:** commit `c80fe30fc` → **PR #288 MERGED into `main`** 2026-06-26T23:56:29Z.
+  The prior "ready; NOT committed — held at commit gate" status was **stale** and is corrected here.
 
-## Outstanding decision (held)
-- Commit the ADS-13 `src/index.css` fix? (proposed message drafted in chat)
-- Commit / track the 004 feature-folder docs? (earlier question dismissed → holding)
-- If committing the fix: push + open PR gated on dark-sweep VR baselines (`audit/dark-sweep-2026-04-30/`)
-  + in-browser `contrast-probe.js` (light + dark).
+## Outstanding decisions
+- ~~Commit the ADS-13 `src/index.css` fix?~~ → DONE (PR #288 merged).
+- 004 feature-folder docs are now git-tracked in the main repo (see 09 D8).
 
 ## Next slices (not started)
 - **ADS-13 Finding 3** — standardize 332 `var(--ds-surface-overlay, #…)` fallbacks → `#282E33`. Own branch.
