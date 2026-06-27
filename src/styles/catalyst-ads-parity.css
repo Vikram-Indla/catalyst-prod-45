@@ -160,6 +160,23 @@ html[data-color-mode="dark"],
    flags app-wide, so a stray un-tokenized hex can't break a screen in dark.
    These only bite when --ds-* somehow fails to resolve; harmless otherwise.
    ---------------------------------------------------------------------------- */
+/* ============================================================================
+   @atlaskit/lozenge v11 hardcoded-color override
+   ----------------------------------------------------------------------------
+   lozenge v11 (^11.14.0) ships atomic compiled CSS with hardcoded hex values
+   that bypass ADS tokens entirely:
+     ._bfhk3uhp { background-color: #b3df72 }  ← lime/yellow-green (success bg)
+     ._19it1am1 { border: 1px solid #94c748 }   ← lime border (success)
+   These classes are applied to every <Lozenge appearance="success"> across the
+   app, producing the banned lime/bright-green colour.
+
+   Fix: override with correct ADS success tokens.
+   PIN: class names stable for @atlaskit/lozenge ^11.14.x.
+        Re-verify after any lozenge version bump.
+   ============================================================================ */
+._bfhk3uhp { background-color: var(--ds-background-success, #DFFCF0) !important; }
+._19it1am1  { border-color:     var(--ds-border-success,     #22A06B) !important; }
+
 html.dark, html[data-color-mode="dark"], [data-theme="dark"] {
   /* Catalyst --cp / legacy surface aliases → ADS dark ramp */
   --cp-bg:            #1D2125;
