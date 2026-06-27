@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Lozenge } from '@/components/ads';
-import { COMMAND_CATALOG, CommandCategory, T, RISK_LOZENGE, RiskLevel } from './aiAdminAssistant.types';
+import { COMMAND_CATALOG, CommandCategory, T } from './aiAdminAssistant.types';
 
 const CATEGORY_ORDER: CommandCategory[] = ['users', 'roles', 'permissions', 'passwords', 'departments'];
 
@@ -28,18 +27,18 @@ export function AiCommandLibrary({ onSelect, isDisabled }: AiCommandLibraryProps
         height: '100%',
         overflow: 'hidden',
         borderRight: `1px solid ${T.border}`,
-        background: T.sunken,
+        background: T.surface,
       }}
     >
       <div
         style={{
-          padding: '10px 14px 8px',
+          padding: '12px 16px 10px',
           borderBottom: `1px solid ${T.border}`,
           flexShrink: 0,
         }}
       >
-        <span style={{ fontSize: 11, fontWeight: 700, color: T.subtlest, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Command Library
+        <span style={{ fontSize: 12, fontWeight: 600, color: T.subtle }}>
+          Commands
         </span>
       </div>
 
@@ -49,7 +48,6 @@ export function AiCommandLibrary({ onSelect, isDisabled }: AiCommandLibraryProps
           const isOpen = expanded.has(cat);
           return (
             <div key={cat}>
-              {/* Category header */}
               <button
                 onClick={() => toggle(cat)}
                 style={{
@@ -58,24 +56,24 @@ export function AiCommandLibrary({ onSelect, isDisabled }: AiCommandLibraryProps
                   background: 'none',
                   border: 'none',
                   borderBottom: `1px solid ${T.borderSubtle}`,
-                  padding: '7px 14px',
+                  padding: '6px 16px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: 6,
                   color: T.subtle,
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: 600,
+                  textTransform: 'uppercase' as const,
+                  letterSpacing: '0.04em',
                 }}
               >
                 <span>{section.label}</span>
-                <span style={{ fontSize: 10, color: T.subtlest, transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s', display: 'inline-block' }}>
+                <span style={{ fontSize: 10, transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s', display: 'inline-block', color: T.subtlest }}>
                   ▶
                 </span>
               </button>
 
-              {/* Command list */}
               {isOpen && section.commands.map(cmd => (
                 <button
                   key={cmd.id}
@@ -88,27 +86,15 @@ export function AiCommandLibrary({ onSelect, isDisabled }: AiCommandLibraryProps
                     background: 'none',
                     border: 'none',
                     borderBottom: `1px solid ${T.borderSubtle}`,
-                    padding: '6px 14px 6px 20px',
+                    padding: '7px 16px 7px 24px',
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
                     opacity: isDisabled ? 0.5 : 1,
-                    transition: 'background 0.1s',
                   }}
                   onMouseEnter={e => { if (!isDisabled) (e.currentTarget as HTMLElement).style.background = T.hover; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
                 >
-                  <span style={{ flex: 1, fontSize: 12, color: T.text, lineHeight: '16px' }}>
+                  <span style={{ fontSize: 13, color: T.text, lineHeight: '18px', display: 'block' }}>
                     {cmd.label}
-                  </span>
-                  <span style={{ flexShrink: 0, display: 'inline-block' }}>
-                    <Lozenge
-                      appearance={RISK_LOZENGE[cmd.risk as RiskLevel].appearance}
-                      isBold={RISK_LOZENGE[cmd.risk as RiskLevel].isBold}
-                    >
-                      {cmd.risk}
-                    </Lozenge>
                   </span>
                 </button>
               ))}
@@ -117,9 +103,9 @@ export function AiCommandLibrary({ onSelect, isDisabled }: AiCommandLibraryProps
         })}
       </div>
 
-      <div style={{ padding: '8px 14px', borderTop: `1px solid ${T.border}`, flexShrink: 0 }}>
+      <div style={{ padding: '8px 16px', borderTop: `1px solid ${T.border}`, flexShrink: 0 }}>
         <span style={{ fontSize: 11, color: T.subtlest }}>
-          Click any command to fill the composer
+          Click to fill the composer
         </span>
       </div>
     </div>

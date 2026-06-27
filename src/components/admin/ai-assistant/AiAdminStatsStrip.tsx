@@ -1,50 +1,23 @@
 import React from 'react';
-import { Spinner } from '@/components/ads';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
-import { useProductRoles } from '@/hooks/useProductRoles';
-import { useAllRolePermissions } from '@/hooks/useProductRoles';
+import { useProductRoles, useAllRolePermissions } from '@/hooks/useProductRoles';
 import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 import { T } from './aiAdminAssistant.types';
 
-interface StatCardProps {
+interface StatProps {
   label: string;
-  value: string | number;
-  sub?: string;
-  isLoading?: boolean;
-  color?: string;
+  value: number | string;
+  isLoading: boolean;
 }
 
-function StatCard({ label, value, sub, isLoading, color }: StatCardProps) {
+function Stat({ label, value, isLoading }: StatProps) {
   return (
-    <div
-      style={{
-        flex: '1 1 0',
-        minWidth: 120,
-        padding: '10px 14px',
-        background: T.surface,
-        border: `1px solid ${T.border}`,
-        borderRadius: 6,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-      }}
-    >
-      <span style={{ fontSize: 11, fontWeight: 600, color: T.subtlest, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-        {label}
+    <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 4 }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+        {isLoading ? '—' : value}
       </span>
-      {isLoading ? (
-        <div style={{ paddingTop: 4 }}>
-          <Spinner size="small" />
-        </div>
-      ) : (
-        <span style={{ fontSize: 22, fontWeight: 700, color: color ?? T.text, lineHeight: '28px' }}>
-          {value}
-        </span>
-      )}
-      {sub && !isLoading && (
-        <span style={{ fontSize: 11, color: T.subtlest }}>{sub}</span>
-      )}
-    </div>
+      <span style={{ fontSize: 12, color: T.subtle }}>{label}</span>
+    </span>
   );
 }
 
@@ -61,39 +34,22 @@ export function AiAdminStatsStrip() {
   return (
     <div
       style={{
-        padding: '10px 24px',
+        padding: '8px 24px',
         borderBottom: `1px solid ${T.border}`,
         display: 'flex',
-        gap: 10,
-        background: T.sunken,
+        alignItems: 'center',
+        gap: 20,
         flexShrink: 0,
+        background: T.surface,
       }}
     >
-      <StatCard
-        label="Users"
-        value={usersLoading ? '—' : profiles.length}
-        sub="approved"
-        isLoading={usersLoading}
-        color="var(--ds-text-brand, #0C66E4)"
-      />
-      <StatCard
-        label="Roles"
-        value={rolesLoading ? '—' : activeRoles}
-        sub={rolesLoading ? undefined : `of ${roles.length} total`}
-        isLoading={rolesLoading}
-      />
-      <StatCard
-        label="Permission Groups"
-        value={permsLoading ? '—' : permGroupCount}
-        sub={permsLoading ? undefined : `${permissions.length} rules total`}
-        isLoading={permsLoading}
-      />
-      <StatCard
-        label="Departments"
-        value={deptsLoading ? '—' : activeDepts}
-        sub="active"
-        isLoading={deptsLoading}
-      />
+      <Stat label="approved users" value={profiles.length} isLoading={usersLoading} />
+      <span style={{ color: T.borderSubtle, fontSize: 12 }}>·</span>
+      <Stat label="roles" value={activeRoles} isLoading={rolesLoading} />
+      <span style={{ color: T.borderSubtle, fontSize: 12 }}>·</span>
+      <Stat label="permission groups" value={permGroupCount} isLoading={permsLoading} />
+      <span style={{ color: T.borderSubtle, fontSize: 12 }}>·</span>
+      <Stat label="departments" value={activeDepts} isLoading={deptsLoading} />
     </div>
   );
 }

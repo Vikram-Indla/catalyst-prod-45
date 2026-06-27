@@ -1,12 +1,12 @@
 import React from 'react';
-import { Lozenge, Button } from '@/components/ads';
+import { Button } from '@/components/ads';
 import { T } from './aiAdminAssistant.types';
 
-function getEnvLabel(): { label: string; appearance: 'default' | 'new' | 'moved' | 'removed' } {
+function getEnvLabel(): string {
   const host = window.location.hostname;
-  if (host.includes('staging')) return { label: 'Staging', appearance: 'moved' };
-  if (host === 'localhost' || host === '127.0.0.1') return { label: 'Dev', appearance: 'default' };
-  return { label: 'Production', appearance: 'removed' };
+  if (host.includes('staging')) return 'Staging';
+  if (host === 'localhost' || host === '127.0.0.1') return 'Dev';
+  return '';
 }
 
 interface AiCommandHeaderProps {
@@ -16,40 +16,34 @@ interface AiCommandHeaderProps {
   isSuperAdmin?: boolean;
 }
 
-export function AiCommandHeader({ hasMessages, onReset, isAdmin = true, isSuperAdmin = false }: AiCommandHeaderProps) {
+export function AiCommandHeader({ hasMessages, onReset, isSuperAdmin = false }: AiCommandHeaderProps) {
   const env = getEnvLabel();
+  const role = isSuperAdmin ? 'Super Admin' : 'Admin';
+  const meta = [env, role].filter(Boolean).join(' · ');
 
   return (
     <div
       style={{
-        padding: '16px 24px 14px',
+        padding: '20px 24px 16px',
         borderBottom: `1px solid ${T.border}`,
         flexShrink: 0,
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         background: T.surface,
       }}
     >
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: T.text, lineHeight: '24px' }}>
-            AI Admin Assistant
-          </h1>
-          <span style={{ display: 'inline-block' }}>
-            <Lozenge appearance={env.appearance}>{env.label}</Lozenge>
-          </span>
-          <span style={{ display: 'inline-block' }}>
-            <Lozenge appearance="moved">Confirmation required</Lozenge>
-          </span>
-          <span style={{ display: 'inline-block' }}>
-            <Lozenge appearance={isSuperAdmin ? 'removed' : 'inprogress'} isBold>
-              {isSuperAdmin ? 'Super Admin' : 'Admin'}
-            </Lozenge>
-          </span>
-        </div>
-        <p style={{ margin: '3px 0 0', fontSize: 13, color: T.subtle }}>
+        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: T.text, lineHeight: '28px' }}>
+          AI Admin Assistant
+        </h1>
+        <p style={{ margin: '4px 0 0', fontSize: 14, color: T.subtle }}>
           Review and execute admin changes safely. No action runs without your confirmation.
+          {meta ? (
+            <span style={{ marginLeft: 8, fontSize: 12, color: T.subtlest }}>
+              {meta}
+            </span>
+          ) : null}
         </p>
       </div>
       {hasMessages && (
