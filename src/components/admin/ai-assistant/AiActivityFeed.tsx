@@ -15,7 +15,7 @@ function StepDot({ kind }: { kind: Kind }) {
 }
 
 /** Live checkpoint card: thinking (indeterminate) → steps (determinate). */
-function RunningCard({ r }: { r: RunState }) {
+function RunningCard({ r, onCancel }: { r: RunState; onCancel: () => void }) {
   const thinking = r.phase === 'thinking';
   const pct = thinking ? 0 : Math.round((r.cur / r.labels.length) * 100);
   return (
@@ -25,9 +25,10 @@ function RunningCard({ r }: { r: RunState }) {
           <span style={{ color: T.link, animation: 'cc-spin 1s linear infinite', display: 'inline-flex' }}><Icon path={ICONS.spinner} size={16} w={2.4} /></span>
           <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.title}</span>
           <RiskLozenge risk={r.risk} />
-          <span style={{ marginLeft: 'auto', fontSize: 12, color: T.subtlest, fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontSize: 12, color: T.subtlest, fontVariantNumeric: 'tabular-nums' }}>
             {thinking ? 'Working…' : `Step ${Math.min(r.cur + 1, r.labels.length)} of ${r.labels.length} · ${pct}%`}
           </span>
+          <span style={{ marginLeft: 'auto' }}><Button appearance="subtle" onClick={onCancel}>Cancel</Button></span>
         </div>
         <div style={{ fontSize: 12, color: T.subtle, marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.request}</div>
         {thinking ? (
@@ -101,13 +102,13 @@ type Console = ReturnType<typeof import('./useAiCommandConsole').useAiCommandCon
 export function AiActivityFeed({ c }: { c: Console }) {
   const empty = !c.running && c.history.length === 0;
   return (
-    <section style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, minHeight: 340 }}>
+    <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, minHeight: 340 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', borderBottom: `1px solid ${T.borderSubtle}` }}>
         <span style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Activity</span>
         <span style={{ fontSize: 12, color: T.subtlest }}>{empty ? 'Nothing run yet' : `${c.history.length} recent · this session`}</span>
       </div>
       <div style={{ padding: 16 }}>
-        {c.running && <RunningCard r={c.running} />}
+        {c.running && <RunningCard r={c.running} onCancel={c.cancelRun} />}
         {empty && (
           <div style={{ textAlign: 'center', padding: '36px 20px' }}>
             <div style={{ width: 46, height: 46, borderRadius: 12, background: T.btnDefault, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: T.iconSubtle }}><Icon path={ICONS.terminal} size={22} w={1.7} /></div>
@@ -119,6 +120,6 @@ export function AiActivityFeed({ c }: { c: Console }) {
           <HistoryCard key={h.id} h={h} onAgain={() => c.setComposer(h.request)} onBulk={() => c.setComposer(h.request)} />
         ))}
       </div>
-    </section>
+    </div>
   );
 }

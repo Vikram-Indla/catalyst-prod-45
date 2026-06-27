@@ -56,10 +56,10 @@ export default function AiAccessPage() {
             <AiCommandComposer c={c} />
             <AiActivityFeed c={c} />
           </div>
-          <aside className="cc-rail" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="cc-rail" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <AiCommandLibrary c={c} />
             <AiRecentActivity />
-          </aside>
+          </div>
         </div>
       </div>
     </AdminGuard>

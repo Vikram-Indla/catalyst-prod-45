@@ -10,7 +10,7 @@ type Console = ReturnType<typeof import('./useAiCommandConsole').useAiCommandCon
 export function AiCommandLibrary({ c }: { c: Console }) {
   const tabs: Console['railTab'][] = ['All', 'Single', 'Bulk'];
   return (
-    <section style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 48px)' }}>
+    <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 48px)' }}>
       <div style={{ padding: '14px 14px 10px', borderBottom: `1px solid ${T.borderSubtle}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Command library</span>
@@ -51,7 +51,7 @@ export function AiCommandLibrary({ c }: { c: Console }) {
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -66,7 +66,7 @@ const RECENT: ActivityItem[] = [
 
 export function AiRecentActivity() {
   return (
-    <section style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
+    <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', borderBottom: `1px solid ${T.borderSubtle}` }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Recent activity</span>
         <a style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: T.link, textDecoration: 'none', cursor: 'pointer' }}>View all</a>
@@ -85,6 +85,6 @@ export function AiRecentActivity() {
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

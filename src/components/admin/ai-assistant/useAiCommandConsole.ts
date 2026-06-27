@@ -119,6 +119,12 @@ export function useAiCommandConsole() {
 
   const confirmRun = useCallback(() => { const q = composer.trim(); execute(q, match(q), !match(q)); }, [composer, match, execute]);
   const cancelConfirm = useCallback(() => setConfirm(null), []);
+  const cancelRun = useCallback(() => {
+    window.clearInterval(tick.current);
+    window.clearTimeout(think.current);
+    setRunning(null);
+    setConfirm(null);
+  }, []);
 
   // ── derived view models ──────────────────────────────────────────────
   const toView = useCallback((c: Command): CommandView => ({ title: c.title, desc: c.desc, risk: c.risk, bulk: !!c.bulk, cat: c.cat, onPick: () => pick(c) }), [pick]);
@@ -151,8 +157,8 @@ export function useAiCommandConsole() {
   return {
     composer, setComposer, focused, onFocus, onBlur,
     search, setSearch, railTab, setRailTab,
-    running, confirm, history, run, confirmRun, cancelConfirm,
+    running, confirm, history, run, confirmRun, cancelConfirm, cancelRun,
     statusKind, paletteOpen, paletteEmpty, paletteGroups, railGroups, chips,
-    libCount: COMMANDS.length,
+    libCount: railGroups.reduce((s, g) => s + g.items.length, 0),
   };
 }

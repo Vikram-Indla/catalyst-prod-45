@@ -68,7 +68,7 @@ export function AiCommandComposer({ c }: { c: Console }) {
     : <Lozenge appearance="new">New request</Lozenge>;
 
   return (
-    <section style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
+    <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
       <div style={{ padding: '14px 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 12, fontWeight: 600, color: T.subtle }}>Your request</span>
         <span style={{ fontSize: 11, color: T.subtlest }}>Type <Kbd>/</Kbd> to browse · <Kbd>Enter</Kbd> to run</span>
@@ -85,7 +85,7 @@ export function AiCommandComposer({ c }: { c: Console }) {
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); c.run(); } if (e.key === 'Escape') (e.target as HTMLInputElement).blur(); }}
             placeholder="e.g. Make Vikram a Product Owner   ·   Reset password for maria@catalyst.io"
             aria-label="Admin request"
-            style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', font: 'inherit', fontSize: 15, color: T.text, minWidth: 0 }}
+            style={{ flex: 1, alignSelf: 'stretch', border: 'none', outline: 'none', background: 'transparent', font: 'inherit', fontSize: 15, color: T.text, minWidth: 0 }}
           />
           {c.composer && (
             <button onMouseEnter={() => setHoverClear(true)} onMouseLeave={() => setHoverClear(false)} onClick={() => c.setComposer('')}
@@ -112,7 +112,7 @@ export function AiCommandComposer({ c }: { c: Console }) {
 
         <div style={{ fontSize: 12, color: T.subtlest, marginTop: 8 }}>The assistant prepares a plan first. No change is made without your confirmation.</div>
       </div>
-    </section>
+    </div>
   );
 }
 
