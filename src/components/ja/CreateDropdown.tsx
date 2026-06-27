@@ -31,6 +31,11 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const { pathname } = useLocation();
   const params = useParams<{ key?: string }>();
   const isProductHubBacklog = /^\/product-hub\/[^/]+\/backlog/.test(pathname);
+  // CAT-TASKS-20260627-001 (Slice 1, amendment A3): inside the Tasks module the
+  // "+ Create" button opens the dedicated Create Task flow directly — never
+  // Story, and without requiring a manual work-type change. Scoped strictly to
+  // /tasks/* so Story / Business Request defaults are untouched everywhere else.
+  const isTasksModule = /^\/tasks(\/|$)/.test(pathname);
 
   // 2026-06-26: derive project context from the URL so the modal auto-selects
   // the current project. Without this, opening Create from
@@ -47,7 +52,7 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
       <Button
         appearance="primary"
         iconBefore={() => <AddIcon label="" />}
-        onClick={() => setStoryOpen(true)}
+        onClick={() => (isTasksModule ? setTaskOpen(true) : setStoryOpen(true))}
       >
         {iconOnly ? "" : "Create"}
       </Button>
