@@ -35,8 +35,6 @@ export function HuddleFab() {
   const stopScreen = useHuddleStore((s) => s.stopScreen);
   const screenWindow = useHuddleStore((s) => s.screenWindow);
   const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
-  const markerPen = useHuddleStore((s) => s.markerPen);
-  const setMarkerPen = useHuddleStore((s) => s.setMarkerPen);
   const { huddle } = useActiveHuddle(active?.conversationId ?? null);
   const participants = huddle?.participants ?? [];
   const navigate = useNavigate();
@@ -301,18 +299,6 @@ export function HuddleFab() {
                 <ScreenIcon />
               </button>
             )}
-            {screenActive && (
-              <button
-                type="button"
-                data-huddle-btn
-                onClick={() => setMarkerPen(!markerPen)}
-                aria-pressed={markerPen}
-                title={markerPen ? 'Disable drawing' : 'Draw on shared screen'}
-                style={iconBtnStyle(markerPen ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', markerPen ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)')}
-              >
-                <PenIcon />
-              </button>
-            )}
             <button
               type="button"
               data-huddle-btn
@@ -350,11 +336,6 @@ const MicOffIcon = () => (
 const ScreenIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" />
-  </svg>
-);
-const PenIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.586 7.586" /><circle cx="11" cy="11" r="2" />
   </svg>
 );
 const PhoneDownIcon = () => (
