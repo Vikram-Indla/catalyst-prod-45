@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Textfield } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
@@ -82,6 +82,90 @@ interface ActivityRow {
   action: string;
   time: string;
   kind: ActivityKind;
+}
+
+export function AiUserSearch() {
+  const [q, setQ] = useState('');
+  const [dq, setDq] = useState('');
+  const timer = React.useRef<number>();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    setQ(v);
+    clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setDq(v), 250);
+  };
+
+  React.useEffect(() => () => clearTimeout(timer.current), []);
+
+  const active = dq.trim().length >= 2;
+
+  const { data: results = [], isLoading } = useQuery({
+    queryKey: ['ai-user-search', dq],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, user_product_roles(product_roles(name))')
+        .eq('approval_status', 'APPROVED')
+        .or(`full_name.ilike.%${dq}%,email.ilike.%${dq}%`)
+        .order('full_name')
+        .limit(8);
+      return (data ?? []) as Array<{
+        id: string;
+        full_name: string | null;
+        email: string | null;
+        user_product_roles: Array<{ product_roles: { name: string } | null }>;
+      }>;
+    },
+    enabled: active,
+    staleTime: 60000,
+  });
+
+  return (
+    <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
+      <div style={{ padding: '12px 14px', borderBottom: `1px solid ${T.borderSubtle}` }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Search users</span>
+      </div>
+      <div style={{ padding: '10px 12px' }}>
+        <Textfield
+          value={q}
+          onChange={handleChange}
+          placeholder="Name or email…"
+          aria-label="Search users"
+          elemBeforeInput={<span style={{ paddingLeft: 8, display: 'inline-flex', color: T.iconSubtle }}><Icon path={ICONS.search} size={14} w={2} /></span>}
+        />
+      </div>
+      {active && (
+        <div style={{ borderTop: `1px solid ${T.borderSubtle}`, padding: '4px 6px 8px', maxHeight: 340, overflowY: 'auto' }}>
+          {isLoading && (
+            <div style={{ padding: '12px 8px', fontSize: 12, color: T.subtlest, textAlign: 'center' }}>Searching…</div>
+          )}
+          {!isLoading && results.length === 0 && (
+            <div style={{ padding: '12px 8px', fontSize: 12, color: T.subtlest, textAlign: 'center' }}>No users found for "{dq}".</div>
+          )}
+          {results.map(u => {
+            const roles = (u.user_product_roles ?? [])
+              .map(r => r.product_roles?.name)
+              .filter((n): n is string => !!n);
+            return (
+              <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 8px', borderRadius: 6 }}
+                onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <CatalystAvatar name={u.full_name ?? u.email ?? ''} size="small" />
+                <span style={{ minWidth: 0, flex: 1 }}>
+                  <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name ?? '—'}</span>
+                  <span style={{ display: 'block', fontSize: 11, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email ?? '—'}</span>
+                  {roles.length > 0 && (
+                    <span style={{ display: 'block', fontSize: 11, color: T.subtlest, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{roles.join(' · ')}</span>
+                  )}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function AiRecentActivity() {
@@ -177,7 +261,7 @@ export function AiRecentActivity() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', borderBottom: `1px solid ${T.borderSubtle}` }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Recent activity</span>
         {isLoading && <span style={{ fontSize: 11, color: T.subtlest }}>Loading…</span>}
-        <a href="/admin/access" style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: T.link, textDecoration: 'none', cursor: 'pointer' }}>View all</a>
+        <span style={{ marginLeft: 'auto', fontSize: 12, color: T.subtlest }}>Last 7d</span>
       </div>
       <div style={{ padding: '4px 6px 8px', maxHeight: 460, overflowY: 'auto' }}>
         {!isLoading && rows.length === 0 && (

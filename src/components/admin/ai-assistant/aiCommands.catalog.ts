@@ -6,8 +6,8 @@ import type { Command, CommandGroup, CommandView } from './aiAdminConsole.types'
 
 export const COMMANDS: Command[] = [
   // Users
-  { cat: 'Users', title: 'Invite a new user', desc: 'Send an invite to an email address', example: 'Invite priya@acme.com as Viewer', risk: 'Low', slug: 'invite user', keywords: 'invite add email viewer' },
-  { cat: 'Users', title: 'Create an account', desc: 'Add a person directly, no invite', example: 'Add Sam Lee, sam@acme.com', risk: 'Low', slug: 'add user', keywords: 'create account person add' },
+  { cat: 'Users', title: 'Invite a new user', desc: 'Send an invite to an email address', example: 'Invite j.khan@salam.sa as Product Owner', risk: 'Low', slug: 'invite user', keywords: 'invite add email product owner' },
+  { cat: 'Users', title: 'Create an account', desc: 'Add a person directly, no invite', example: 'Add Priya Sharma, priya@salam.sa', risk: 'Low', slug: 'add user', keywords: 'create account person add' },
   { cat: ‘Users’, title: ‘Rename a user’, desc: ‘Change a person’s display name’, example: ‘Rename Vikram Indla to Vikram’, risk: ‘Low’, slug: ‘rename user’, keywords: ‘rename change name’ },
   { cat: ‘Users’, title: ‘Update a user email’, desc: ‘Change the email on an account’, example: ‘Change email for Sikander Ahmad to new@example.com’, risk: ‘Medium’, slug: ‘update email’, keywords: ‘email change address update’ },
   { cat: ‘Users’, title: ‘Deactivate a user’, desc: ‘Suspend access without deleting’, example: ‘Deactivate Sikander Ahmad’, risk: ‘Medium’, slug: ‘deactivate user’, keywords: ‘disable suspend off deactivate’ },
@@ -34,9 +34,9 @@ export const COMMANDS: Command[] = [
   { cat: 'Module access', title: 'Grant module access', desc: 'Open a module for a person or role', example: 'Give Vikram access to Releases', risk: 'Medium', slug: 'grant module', keywords: 'grant module project product releases give access' },
   { cat: 'Module access', title: 'Revoke module access', desc: 'Close a module for a person or role', example: 'Remove Test Hub from Contractors', risk: 'Medium', slug: 'revoke module', keywords: 'revoke module remove access' },
   // Bulk operations
-  { cat: 'Bulk operations', title: 'Invite multiple users', desc: 'Invite a list of people at once', example: 'Invite a@acme.com, b@acme.com as Developer', risk: 'Low', bulk: true, slug: 'invite users', keywords: 'invite bulk multiple users people csv' },
-  { cat: 'Bulk operations', title: 'Deactivate multiple users', desc: 'Suspend several accounts', example: 'Deactivate a@acme.com, b@acme.com', risk: 'Medium', bulk: true, slug: 'deactivate users', keywords: 'deactivate bulk multiple' },
-  { cat: 'Bulk operations', title: 'Delete multiple users', desc: 'Remove several accounts', example: 'Delete a@acme.com, b@acme.com', risk: 'High', bulk: true, slug: 'delete users', keywords: 'delete bulk multiple remove' },
+  { cat: 'Bulk operations', title: 'Invite multiple users', desc: 'Invite a list of people at once', example: 'Invite Priya Sharma, Adnan Ali as React Developer', risk: 'Low', bulk: true, slug: 'invite users', keywords: 'invite bulk multiple users people csv' },
+  { cat: 'Bulk operations', title: 'Deactivate multiple users', desc: 'Suspend several accounts', example: 'Deactivate Sikander Ahmad, Abdullah Alshammari', risk: 'Medium', bulk: true, slug: 'deactivate users', keywords: 'deactivate bulk multiple' },
+  { cat: 'Bulk operations', title: 'Delete multiple users', desc: 'Remove several accounts', example: 'Delete Sikander Ahmad, Abdullah Alshammari', risk: 'High', bulk: true, slug: 'delete users', keywords: 'delete bulk multiple remove' },
   { cat: 'Bulk operations', title: 'Assign a role to many users', desc: 'Give many people the same role', example: 'Make Ana, Ben and Cara Developers', risk: 'Medium', bulk: true, slug: 'assign role', keywords: 'assign bulk role multiple many' },
   { cat: 'Bulk operations', title: 'Remove a permission from many', desc: 'Block an action across roles', example: 'Remove Create Sprint from Developer and QA', risk: 'High', bulk: true, slug: 'remove permission', keywords: 'remove bulk permission multiple many' },
   { cat: 'Bulk operations', title: 'Move many users to a department', desc: 'Reassign many people at once', example: 'Move Ana and Ben to Platform', risk: 'Low', bulk: true, slug: 'move to department', keywords: 'move bulk department multiple many' },
