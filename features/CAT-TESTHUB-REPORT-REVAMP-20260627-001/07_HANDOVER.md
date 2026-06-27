@@ -3,25 +3,31 @@
 ## Feature: CAT-TESTHUB-REPORT-REVAMP-20260627-001
 
 ### State (2026-06-27, session 001)
-- Feature activated. **Strong iterative folder structure built** (discovery/ + contract/ + blueprint/ + evidence/).
-- Plan Lock APPROVED for Phase-1 discovery only (read-only). DB target: dev **cyij** (catalyst-staging, linked).
-- Phase 1 discovery FIRST PASS done. Evidence in discovery/D1, D2, D3, D8, D9, D14, D16.
+- Strong iterative folder structure built (discovery/ + contract/ + blueprint/ + evidence/).
+- Plan Lock APPROVED (Phase-1 discovery + approved demo seed). DB = dev cyij (linked).
+- Discovery SUBSTANTIAL + reporting model PROVEN on real data.
 
-### Biggest findings
-1. **Schema fragmentation** — 6 families; `test_*` (~110 tables) DEAD; `ph_*` is the live delivery spine; `tm_*` is the test schema reports use but it's demo-only (11 cases).
-2. **Two work-item models** — ph_issues (2381, text sprint) vs ph_work_items (1366, FK sprint/release).
-3. **No Release→Sprint FK** — release rollups undefined.
-4. Real reports (`/testhub/reports`, `/:type`) wired to tm_* but near-empty data; lab is seeded.
+### Decisions locked (contract/DECISION_LOG.md)
+- D-001 test schema = **tm_*** · D-002 work item = **ph_issues** (sprint/release in `sprint_release` JSONB)
+- D-003 release→sprint = derive via work items (JSONB) · D-006 coverage = **stories** denominator
+- D-005 defects = **hybrid** (ph_issues QA Bug/Prod Incident + tm_defects) · D-007 seed Senaei BAU (DONE)
 
-### BLOCKED ON USER (contract/QUESTIONS_QUEUE.md)
-Q-001 canonical test schema · Q-002 canonical work-item source · Q-003 release→sprint ·
-Q-004 coverage denominator · Q-005 real test-data plan · Q-006 sprint==iteration.
-**Do not design blueprint or run remaining discovery agents until Q-001..Q-003 answered** (zero-assumption gate).
+### Demo seed (cyij, tag REVAMP-DEMO-20260627, rollback: blueprint/rollback_revamp_demo.sql)
++1 tm_project (Senaei BAU mirror), +14 cases, +14 req_links→real BAU stories, +2 cycles, +14 scope, +12 runs, +3 defects.
 
-### Next action
-1. Get Vikram's answers to Q-001..Q-006.
-2. Record in DECISION_LOG; update RELATIONSHIP_MAP states to CONFIRMED.
-3. Then: remaining discovery agents + D4 ERD + D5 functional ERD + blueprint B1-B8.
+### PROVEN on real data
+- Coverage Senaei BAU = 14/394 stories = 3.6% (F-01 defined).
+- Execution 8 passed/3 failed/1 blocked/2 not_run.
+- Governance mismatch: BAU-6018/6075/6003 (Done + failing test).
+
+### Still OPEN (non-blocking)
+- Q-004 settled (stories). Remaining: STATUS_MAPPING, DATE_SOURCES, QA-team (D13), D4 technical ERD, D6 data flow, D12 traceability deep.
+- ph_issues.sprint_name near-dead (2/2381) — use sprint_release JSONB everywhere (see D5).
+
+### Next action options (pick one)
+1. **Blueprint** — write B1 report taxonomy (11 groups) + B2 scope model on the proven model.
+2. **Wire lab** — point `/testhub/reports-lab` (or a new route) at real tm_* + ph_issues for Senaei BAU (Phase 6/8; needs approval, src changes).
+3. **Finish discovery** — D4 ERD, D6, D12, D13 + remaining discovery agents.
 
 ### RED FLAG
-None. No code, no schema, no writes. Read-only discovery only.
+None. Writes were data-only to existing cyij tables, tagged + rollback-ready. No prod, no DDL, no src changes.

@@ -6,6 +6,7 @@
  * matches Jira's inline summary edit pattern (2026-06-23, image #134).
  */
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { firstStrongDir } from '@/lib/detectArabic';
 
 interface WorkCellProps {
   issueType?: string | null;
@@ -102,7 +103,9 @@ export function WorkCellSummary({
         lineHeight: `${LINE_HEIGHT}px`,
         background: 'transparent',
         padding: 0,
-        textAlign: 'left',
+        // 'start' honors the inherited row dir (rtl for Arabic titles) instead
+        // of pinning every row left. See WorkCell dir below.
+        textAlign: 'start',
         font: 'inherit',
         color: 'inherit',
       }}
@@ -128,8 +131,13 @@ export function WorkCellSummary({
 }
 
 export function WorkCell({ issueType, issueKey, summary, onClick }: WorkCellProps) {
+  // RTL parity: mirror the cell per-row from the title so an Arabic summary
+  // gets icon+key on the right and text flowing right→left, matching the
+  // summary span's own dir resolution. Derived from the title, not the latin
+  // key. See firstStrongDir in @/lib/detectArabic.
   return (
     <span
+      dir={firstStrongDir(summary)}
       style={{
         display: 'flex',
         alignItems: 'center',

@@ -53,3 +53,10 @@ until Vikram approves the Plan Lock. Next: run 7 discovery agents → populate D
 - Honest status: structure + discovery scaffold built; zero discovery findings yet (not started).
 - No assumption encoded; all 100 rules + relationships marked UNVALIDATED/ASKED.
 - No code, no schema, no production touch. Stop gate respected.
+
+## UPDATE — discovery + seed (same session)
+- Ran read-only discovery on cyij; 220+ tables; 6 schema families; tm_* test / ph_* delivery.
+- Decisions D-001..D-007 captured. Demo seed executed (tagged, rollback-ready).
+- Proven: coverage 14/394=3.6%, governance mismatches BAU-6018/6075/6003.
+- Discovery files done: D1,D2,D3,D5,D7,D8,D9,D10,D11,D14,D15,D16. Remaining: D4,D6,D12,D13.
+- No src changes, no DDL, no prod.

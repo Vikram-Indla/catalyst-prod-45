@@ -20,7 +20,7 @@ Approval:       PENDING / APPROVED (decision id)
 ## Draft metrics requiring formula + approval
 | ID | Metric | Status |
 |----|--------|--------|
-| F-01 | Coverage % | PENDING (denominator = U-005) |
+| F-01 | Coverage % | **DEFINED+PROVEN** (D-006): stories with >=1 link / in-scope stories. Senaei BAU=14/394=3.6% |
 | F-02 | Execution completion % | PENDING |
 | F-03 | Pass rate | PENDING |
 | F-04 | Fail rate | PENDING |

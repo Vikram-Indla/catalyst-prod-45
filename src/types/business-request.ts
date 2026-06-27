@@ -132,9 +132,30 @@ export interface BusinessRequest {
   urgency: string | null;                // Priority
   project_manager_user_id: string | null; // Delivery Manager
   po_user_id: string | null;             // Product Owner
+
+  /**
+   * @deprecated (2026-06-28) Use business_request_milestone_links instead.
+   * Original value backed up in _deprecated_planned_quarter. Remove in Q4 2026.
+   */
   planned_quarter: string[] | null;      // Planned release (legacy quarter buckets)
+
+  /**
+   * @deprecated (2026-06-28) Use Release Hub (release_artifacts) for production evidence.
+   * Original value backed up in _deprecated_release_id. Remove in Q4 2026.
+   */
   release_id: string | null;             // FK → product_releases.id
+
   end_date: string | null;               // Target date
+
+  // Deprecated backup columns (for data preservation during transition)
+  _deprecated_planned_quarter?: string | null;
+  _deprecated_release_id?: string | null;
+
+  // Note: Enriched fields (NOT stored in DB, added by service layer)
+  // milestones?: BusinessRequestMilestoneLink[];
+  // primaryMilestone?: ProductMilestone;
+  // linkedFeatures?: Feature[];
+  // progressPercent?: number;
 }
 
 // ─── Create form schema (matches CreateBusinessRequestModal) ────────────────
@@ -157,3 +178,23 @@ export const createBusinessRequestSchema = z.object({
 });
 
 export type CreateBusinessRequestFormData = z.infer<typeof createBusinessRequestSchema>;
+
+// ─── New types for milestone-based BR creation ─────────────────────────────
+
+/**
+ * Input type for creating a BR with milestone linkage
+ * Used by the new Product Hub flow that links BRs directly to milestones
+ */
+export interface CreateBusinessRequestWithMilestoneInput {
+  title: string;
+  description?: string;
+  urgency?: string;
+  endDate?: string; // Target date for primary milestone
+  productId: string;
+  primaryMilestoneId?: string; // If creating BR with specific milestone
+  milestonePhase?: number; // Phase number (1, 2, 3...) within milestone
+  category?: string;
+  theme?: string;
+  stakeholders?: string[];
+  requestType?: string;
+}
