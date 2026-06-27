@@ -45,7 +45,7 @@ export function HuddleFab() {
   const [seconds, setSeconds] = useState(0);
 
   const wrapRef = useRef<HTMLDivElement>(null);
-  const barRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const waveRef = useRef<SVGPathElement | null>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
 
   const connecting = !!active && active.connectionState !== 'connected';
@@ -94,15 +94,19 @@ export function HuddleFab() {
         for (let i = 0; i < data.length; i++) sum += data[i];
         level = Math.min(1, sum / data.length / 70);
       }
-      const bars = barRefs.current;
-      for (let i = 0; i < bars.length; i++) {
-        const b = bars[i];
-        if (!b) continue;
-        const base = 4;
-        const h = !isConnected || isMuted
-          ? base
-          : base + level * 16 * (0.55 + 0.45 * Math.abs(Math.sin(Date.now() / 130 + i)));
-        b.style.height = `${Math.max(4, h).toFixed(1)}px`;
+      // flowing waveform — amplitude tracks the audio level, flat-ish when silent
+      const path = waveRef.current;
+      if (path) {
+        const W = 40, H = 24, mid = H / 2, N = 28;
+        const amp = !isConnected || isMuted ? 0.8 : 2 + level * 9;
+        const phase = Date.now() / 110;
+        let d = '';
+        for (let i = 0; i <= N; i++) {
+          const x = (i / N) * W;
+          const y = mid + amp * Math.sin(i * 0.7 + phase);
+          d += `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+        }
+        path.setAttribute('d', d);
       }
       raf = requestAnimationFrame(loop);
     };
@@ -224,18 +228,21 @@ export function HuddleFab() {
         )}
       </span>
 
-      {/* connecting spinner OR equalizer */}
+      {/* connecting spinner OR live waveform (CatyPulseIcon-style, green) */}
       {connecting ? (
         <span style={{ margin: '0 10px', display: 'inline-flex' }}><Spinner size="small" /></span>
       ) : (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, height: 24, margin: '0 8px 0 12px' }}>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <span
-              key={i}
-              ref={(el) => { barRefs.current[i] = el; }}
-              style={{ width: 3, height: 4, borderRadius: 2, background: muted ? 'var(--ds-text-subtlest, #6B778C)' : green }}
+        <span style={{ display: 'inline-flex', alignItems: 'center', height: 24, margin: '0 8px 0 12px' }}>
+          <svg width={40} height={24} viewBox="0 0 40 24" fill="none" aria-hidden style={{ overflow: 'visible' }}>
+            <path
+              ref={waveRef}
+              d="M0,12 L40,12"
+              stroke={muted ? 'var(--ds-text-subtlest, #6B778C)' : green}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-          ))}
+          </svg>
         </span>
       )}
 
