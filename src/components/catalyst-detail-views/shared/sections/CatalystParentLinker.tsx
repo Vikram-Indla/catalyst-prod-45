@@ -101,58 +101,62 @@ interface CandidateItem {
 }
 
 /* jira-compare Patch #6 (2026-04-28) — Parent lozenge tokens.
- * Renders parent as Atlaskit-style subtle lozenge with type-color background.
- * Jira renders parent links as a single clickable chip (key + summary).
+ * Renders parent as an Atlaskit-style SUBTLE lozenge: a tinted type-color
+ * background with matching accent text. Jira renders the parent chip subtle
+ * (not a solid/bold fill), and ADS `*-subtler` backgrounds are theme-aware so
+ * the chip adapts correctly in dark mode (a dark tint + light accent text)
+ * instead of a flat bold slab.
+ * 2026-06-27: corrected bold (`*-bolder` + inverse text) → subtle to match
+ * both Jira parity and this block's own stated intent.
  */
-const PILL_TEXT = "var(--ds-text-inverse, #FFFFFF)";
 const PARENT_TOKENS: Record<string, { bg: string; text: string }> = {
   Epic: {
-    bg: "var(--ds-background-accent-purple-bolder, #6554C0)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-purple-subtler, #DFD8FD)",
+    text: "var(--ds-text-accent-purple, #5E4DB2)",
   },
   Story: {
-    bg: "var(--ds-background-accent-green-bolder, #22A06B)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-green-subtler, #BAF3DB)",
+    text: "var(--ds-text-accent-green, #216E4E)",
   },
   Feature: {
-    bg: "var(--ds-background-accent-purple-bolder, #6554C0)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-purple-subtler, #DFD8FD)",
+    text: "var(--ds-text-accent-purple, #5E4DB2)",
   },
   Task: {
-    bg: "var(--ds-background-accent-blue-bolder, #1D7AFC)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-blue-subtler, #CCE0FF)",
+    text: "var(--ds-text-accent-blue, #0055CC)",
   },
   Subtask: {
-    bg: "var(--ds-background-accent-blue-bolder, #1D7AFC)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-blue-subtler, #CCE0FF)",
+    text: "var(--ds-text-accent-blue, #0055CC)",
   },
   Defect: {
-    bg: "var(--ds-background-accent-red-bolder, #CA3521)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-red-subtler, #FFD5D2)",
+    text: "var(--ds-text-accent-red, #AE2E24)",
   },
   Bug: {
-    bg: "var(--ds-background-accent-red-bolder, #CA3521)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-red-subtler, #FFD5D2)",
+    text: "var(--ds-text-accent-red, #AE2E24)",
   },
   "QA Bug": {
-    bg: "var(--ds-background-accent-red-bolder, #CA3521)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-red-subtler, #FFD5D2)",
+    text: "var(--ds-text-accent-red, #AE2E24)",
   },
   "Production Incident": {
-    bg: "var(--ds-background-accent-red-bolder, #CA3521)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-red-subtler, #FFD5D2)",
+    text: "var(--ds-text-accent-red, #AE2E24)",
   },
   "Change Request": {
-    bg: "var(--ds-background-accent-orange-bolder, #B65C02)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-orange-subtler, #FEDEC8)",
+    text: "var(--ds-text-accent-orange, #A54800)",
   },
   "Business Request": {
-    bg: "var(--ds-background-accent-gray-bolder, #44546F)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-gray-subtler, #DCDFE4)",
+    text: "var(--ds-text-accent-gray, #44546F)",
   },
   default: {
-    bg: "var(--ds-background-accent-gray-bolder, #44546F)",
-    text: PILL_TEXT,
+    bg: "var(--ds-background-accent-gray-subtler, #DCDFE4)",
+    text: "var(--ds-text-accent-gray, #44546F)",
   },
 };
 /** Exported for unit tests only — do not use outside tests. */
