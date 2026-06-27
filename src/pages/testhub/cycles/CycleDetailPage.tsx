@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -534,7 +534,8 @@ export default function CycleDetailPage() {
                 <th style={thStyle}>Key</th>
                 <th style={thStyle}>Title</th>
                 <th style={thStyle}>Status</th>
-                <th style={thStyle}>Assignee</th>
+                <th style={{ ...thStyle, minWidth: 130 }}>Assignee</th>
+                <th style={{ ...thStyle, minWidth: 120 }}>Due Date</th>
                 <th style={{ ...thStyle, width: 96 }}>Actions</th>
                 <th style={{ ...thStyle, width: 40 }}></th>
               </tr>
@@ -615,10 +616,11 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
         <td style={tdStyle}>
           <RunStatusPill status={item.status} />
         </td>
-        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)' }}>
-          {item.assignee?.full_name ?? (
-            <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>Unassigned</span>
-          )}
+        <td style={tdStyle}>
+          <AssigneeCell scopeId={item.id} cycleId={cycleId} assignee={item.assignee ?? null} />
+        </td>
+        <td style={tdStyle}>
+          <DueDateCell scopeId={item.id} cycleId={cycleId} dueDate={item.due_date} />
         </td>
         <td style={tdStyle}>
           <div style={{ display: 'flex', gap: 4 }}>
@@ -641,6 +643,168 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
       {panel === 'comments' && <CommentsPanel item={item} onClose={() => setPanel(null)} />}
       {panel === 'evidence' && <EvidencePanel item={item} onClose={() => setPanel(null)} />}
     </>
+  );
+}
+
+// ── AssigneeCell ────────────────────────────────────────────────────────────
+function AssigneeCell({ scopeId, cycleId, assignee }: {
+  scopeId: string;
+  cycleId: string;
+  assignee: { id: string; full_name: string; avatar_url?: string } | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [users, setUsers] = useState<{ id: string; full_name: string }[]>([]);
+  const [saving, setSaving] = useState(false);
+  const qc = useQueryClient();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    supabase.from('profiles').select('id, full_name').order('full_name').limit(50)
+      .then(({ data }) => setUsers(data ?? []));
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const assign = useCallback(async (userId: string | null) => {
+    setSaving(true);
+    setOpen(false);
+    const { error } = await supabase
+      .from('tm_cycle_scope')
+      .update({ assigned_to: userId })
+      .eq('id', scopeId);
+    setSaving(false);
+    if (error) { catalystToast.error('Failed to assign'); return; }
+    qc.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] });
+  }, [scopeId, cycleId, qc]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        disabled={saving}
+        style={{
+          background: 'none', border: '1px solid transparent', borderRadius: 4,
+          cursor: 'pointer', padding: '2px 6px', fontSize: 13,
+          color: assignee ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {saving ? '…' : (assignee?.full_name ?? 'Unassigned')}
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, zIndex: 9500,
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          border: '1px solid var(--ds-border, #DFE1E6)',
+          borderRadius: 6, boxShadow: 'var(--ds-shadow-overlay, 0 4px 16px rgba(9,30,66,0.18))',
+          minWidth: 180, maxHeight: 240, overflowY: 'auto',
+        }}>
+          <div
+            onClick={() => assign(null)}
+            style={{ padding: '8px 12px', fontSize: 13, cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
+            onMouseLeave={e => (e.currentTarget.style.background = '')}
+          >
+            Unassigned
+          </div>
+          {users.map(u => (
+            <div
+              key={u.id}
+              onClick={() => assign(u.id)}
+              style={{
+                padding: '8px 12px', fontSize: 13, cursor: 'pointer',
+                color: 'var(--ds-text, #172B4D)',
+                background: assignee?.id === u.id ? 'var(--ds-background-selected, #E9F2FF)' : '',
+              }}
+              onMouseEnter={e => { if (assignee?.id !== u.id) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)'; }}
+              onMouseLeave={e => { if (assignee?.id !== u.id) e.currentTarget.style.background = ''; }}
+            >
+              {u.full_name}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── DueDateCell ──────────────────────────────────────────────────────────────
+function DueDateCell({ scopeId, cycleId, dueDate }: {
+  scopeId: string;
+  cycleId: string;
+  dueDate: string | null;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const qc = useQueryClient();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing) inputRef.current?.focus();
+  }, [editing]);
+
+  const save = useCallback(async (value: string) => {
+    setEditing(false);
+    setSaving(true);
+    const iso = value ? new Date(value).toISOString() : null;
+    const { error } = await supabase
+      .from('tm_cycle_scope')
+      .update({ due_date: iso })
+      .eq('id', scopeId);
+    setSaving(false);
+    if (error) { catalystToast.error('Failed to set due date'); return; }
+    qc.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] });
+  }, [scopeId, cycleId, qc]);
+
+  const displayDate = dueDate
+    ? new Date(dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    : null;
+
+  const inputVal = dueDate ? dueDate.slice(0, 10) : '';
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        type="date"
+        defaultValue={inputVal}
+        onBlur={e => save(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') save((e.target as HTMLInputElement).value);
+          if (e.key === 'Escape') setEditing(false);
+        }}
+        style={{
+          border: '1px solid var(--ds-border-focused, #388BFF)',
+          borderRadius: 4, padding: '2px 6px', fontSize: 13,
+          background: 'var(--ds-surface, #FFFFFF)',
+          color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--ds-font-family-body)',
+          outline: 'none',
+        }}
+      />
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setEditing(true)}
+      disabled={saving}
+      style={{
+        background: 'none', border: '1px solid transparent', borderRadius: 4,
+        cursor: 'pointer', padding: '2px 6px', fontSize: 13,
+        color: displayDate ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {saving ? '…' : (displayDate ?? 'Set date')}
+    </button>
   );
 }
 

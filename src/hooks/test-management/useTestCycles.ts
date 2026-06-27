@@ -459,6 +459,7 @@ export function useCycleScope(cycleId: string | undefined, filters?: ScopeFilter
         cycle_id: row.cycle_id,
         case_id: row.test_case_id,
         assigned_to: row.assigned_to,
+        due_date: row.due_date ?? null,
         status: execStatusFromDb(row.current_status),
         last_run_id: null,
         last_run_at: null,

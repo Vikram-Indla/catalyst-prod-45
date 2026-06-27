@@ -231,6 +231,7 @@ export interface TMCycleScope {
   cycle_id: string;
   case_id: string;
   assigned_to: string | null;
+  due_date: string | null;
   status: RunStatus;
   last_run_id: string | null;
   last_run_at: string | null;
