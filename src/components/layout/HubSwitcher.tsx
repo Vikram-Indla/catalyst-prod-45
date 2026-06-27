@@ -107,7 +107,10 @@ function HubRowLabel({ hub }: { hub: HubEntry }) {
         flex: 1,
       }}
     >
-      <span data-hub-label={hub.key}>{hub.label}</span>
+      {/* Explicit readable color: Atlaskit LinkItem was rendering the label at
+          ~7% alpha (rgba(206,206,217,0.07)) in dark mode → invisible. Force the
+          theme-aware text token so labels are readable in light AND dark. */}
+      <span data-hub-label={hub.key} style={{ color: 'var(--ds-text, #172B4D)' }}>{hub.label}</span>
       <span
         data-hub-shortcut={hub.key}
         style={{
