@@ -3,15 +3,15 @@
 > A cold session must be able to resume from THIS FILE ALONE (+ the read-order in 00). Keep it current.
 
 ## CURRENT STATE
-- **Phase:** Phase 1 (Repository proper) — **Slice 1a COMPLETE & PROVEN LIVE**, awaiting sign-off.
+- **Phase:** Phase 1 (Repository proper) — **1a/1b/1c COMPLETE & PROVEN LIVE**, incl. D4. Awaiting sign-off.
 - **1a done:** archived column+filter, is_latest de-dup, edit folder-trap fix, delete-confirm dialog, create write-path proven (TC-0001). D8 archive decision applied.
 - **1b done:** folder rollup count badges (incl subfolders) + folder delete-confirm dialog (proven live, Cancel keeps 6 folders). Move/drag-reorder DEFERRED.
-- **1c partial:** native test-case SVG icon in key cell (proven live, DOM 11 icons). REMAINING 1c: Classic/BDD toggle, **CaseDrawer→CatalystViewBase (D4)** [biggest — needs CatalystViewBase slot-API probe; relocates footer that collides with CATY overlay], version-list display, case_key format (TC-0001 vs TC-001). + deferred folder Move/drag.
-- **Resume hint for next session:** CatalystViewBase migration is now FULLY SPEC'D in `03b_CATALYSTVIEWBASE_MIGRATION_SPEC.md` (turnkey: files to create/edit, adapter shape, dataSource, tabs, 6 mismatch flags). Template = TaskCatalystView. Strategy = coexist (create=CaseDrawer, view=CatalystViewTestCase via router entityKind='test_case'). Just execute 03b. Probe agent a604bfddbe55b9755 resumable.
-- **Open UX flag:** CATY floating assistant overlaps CaseDrawer "Create case" submit (clicks hit CATY). See 08.
-- **Active slice:** none (1a sign-off gate).
-- **Execution authorization:** GRANTED for Phase 0 ("proceed"). Phase 1 needs the P0 sign-off first.
-- **Branch:** main. **DB:** staging cyij (verified via fingerprint + `projects list` linked).
+- **1c done (D4 — 2026-06-27):** native case icon (earlier) + **CaseDrawer→CatalystViewBase migration COMPLETE & PROVEN.** New `src/components/catalyst-detail-views/test-case/CatalystViewTestCase.tsx` (+index). Row-click opens case in canonical CatalystViewBase shell (breadcrumb, sidebar status pill, Details/Steps/Versions tabs); CREATE still via CaseDrawer (coexist). entityKind='test_case' wired in shared/types.ts + CatalystDetailRouter.tsx; RepositoryPage row-click → CatalystDetailRouter. Status + priority inline edits PERSIST to tm_test_cases (proven: DRAFT→APPROVED + Critical→Low live on cyij). CATY footer-collision gone (footer no longer rendered).
+- **D9 (2026-06-27):** dropped broken `auto_create_test_case_version` trigger (migration 20260627120000) — it referenced nonexistent OLD.objective/OLD.priority/NEW.updated_by → EVERY tm_test_cases UPDATE 400'd. Edit surface was silently dead before this; now unblocked. App-layer useUpdateTestCase already owns versioning.
+- **1c REMAINING (deferred, small):** Classic/BDD toggle, version-list is read-only display (works; create-version still via CaseDrawer), case_key format (TC-0001 vs TC-001). + deferred folder Move/drag.
+- **Active slice:** none (sign-off gate).
+- **Execution authorization:** Phase 1 in progress (commits 1a–1c on origin/main). D4 + D9 done this session.
+- **Branch:** main. **DB:** staging cyij (verified). Migration applied via MCP.
 - **Context health:** GREEN.
 
 ## WHAT'S DONE IN P0
