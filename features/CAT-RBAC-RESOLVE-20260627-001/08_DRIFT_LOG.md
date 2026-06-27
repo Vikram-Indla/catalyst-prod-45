@@ -23,3 +23,12 @@ Only 3/61 map cleanly. **Models are semantically incompatible** (job title vs pr
 **Effect on plan:** Phase 0 backfill CANNOT be authored as a 1:1 map. Blocked pending policy
 ruling on the 3 unmapped buckets (`user`, `program_manager`, `Frontend Developer`) and whether a
 new baseline product role is created. No backfill SQL written. RED FLAG raised to Vikram.
+
+## DRIFT-2 (2026-06-27) — two audit claims were wrong (corrected in Phase 1)
+- **`user_invitations.department_id` is NOT a phantom column** — it exists (uuid). invite-send's
+  write succeeds. The real bug was that invite-ACCEPT never copied it to `profiles.department_id`.
+- **`handle_new_user` trigger seeds `profiles` only, not `user_roles`.** So both invite-accept and
+  user-update used `.update()` on a `user_roles` row that doesn't exist → 0 rows changed, invited/
+  edited roles silently lost. Phase 1 switched these to delete+insert.
+- **`app_role` enum has 19 values, not 4** (the bootstrap snapshot read earlier was stale).
+  `super_admin` is product_roles-only, never in user_roles. Mapping logic adjusted accordingly.

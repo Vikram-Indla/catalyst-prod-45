@@ -24,4 +24,33 @@ Effective-permission parity preserved. Additive only, reversible.
 **Reversal (if needed):** delete user_product_roles rows created by the mapping (everything except
 the 4 pre-existing rows). Safe because additive.
 
-## Phase 1 — Onboarding write-path: NOT STARTED.
+## Phase 1 — Onboarding write-path (DONE on dev/cyij, 2026-06-27)
+
+**Ground-truth corrections to the audit:**
+- `user_invitations.department_id` DOES exist (uuid). Earlier claim of a phantom column was wrong.
+  Real gap: invite-accept never propagated it to `profiles.department_id`.
+- `handle_new_user` trigger seeds `profiles` ONLY (not `user_roles`). So invite-accept's old
+  `user_roles.update()` (and user-update's) hit 0 rows → invited/edited roles were silently lost.
+- `app_role` enum has 19 values (admin, program_manager, team_lead, user, product_owner,
+  project_manager, developer, qa_tester, pmo, guest, …), not 4. `super_admin` is NOT in it —
+  product_roles only. So `admin` is the top tier reachable via user_roles.
+
+**Files changed:**
+- `supabase/functions/user-invite-accept/index.ts` — on accept, resolve invited role across all 3
+  models: delete+insert `user_roles`, upsert `user_product_roles` (exact code or 'developer'
+  baseline; admin→super_admin), set `profiles.role` + `profiles.department_id`.
+- `supabase/functions/user-update/index.ts` — /admin/access role edit now delete+inserts user_roles
+  (was a no-op update), mirrors profiles.role, and syncs the product role incl. stripping
+  super_admin on demotion.
+- `src/pages/admin/CapacityDepartments.tsx` — delete link-check now also blocks on pending
+  `user_invitations.department_id` (Gap 6).
+
+**Deployed:** user-invite-accept + user-update to cyij (`--use-api`).
+
+**Functional proof (real invite → accept on dev):**
+- created pending invite (role=developer, department=Product), invoked user-invite-accept → ok:true
+- asserted: profiles.role=developer + department_id set + APPROVED; user_roles=developer;
+  user_product_roles→developer. New user visible to /admin/roles. ✓
+- test user + invite deleted; leftover=0.
+
+## Phase 2 — RPC cutover: NOT STARTED.

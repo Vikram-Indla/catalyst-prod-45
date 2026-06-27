@@ -56,15 +56,46 @@ Deno.serve(async (req) => {
 
     const changes: Record<string, unknown> = {};
 
-    // Update role if provided
+    // Update role if provided. CAT-RBAC-RESOLVE-20260627-001 Phase 1 — write all three models so
+    // /admin/access and /admin/roles stay consistent and the Phase 2 cutover resolves correctly.
     if (role !== undefined) {
+      // Legacy app_role (unique (user_id, role)); .update() no-ops when the user has no row
+      // (most users), so reset via delete+insert.
+      await supabaseAdmin.from('user_roles').delete().eq('user_id', user_id);
       const { error: roleErr } = await supabaseAdmin
         .from('user_roles')
-        .update({ role })
-        .eq('user_id', user_id);
+        .insert({ user_id, role });
       if (roleErr) {
-        console.error('[user-update] user_roles update:', roleErr);
+        console.error('[user-update] user_roles insert:', roleErr);
         return ok(false, 'Failed to update user role');
+      }
+
+      // Mirror the legacy text column shown on /admin/access.
+      await supabaseAdmin.from('profiles').update({ role }).eq('id', user_id);
+
+      // Mirror the product-role model. admin -> super_admin (the only all-Allow role); other tiers
+      // map to an exact code or the 'developer' baseline. On demotion, strip any super_admin grant
+      // so effective permissions actually drop. (super_admin is not an app_role value, so 'admin'
+      // is the top tier reachable here.)
+      const isAdminTier = role === 'admin';
+      const targetCode = isAdminTier ? 'super_admin' : (role || 'developer');
+      let { data: tpr } = await supabaseAdmin
+        .from('product_roles').select('id').eq('code', targetCode).maybeSingle();
+      if (!tpr?.id && targetCode !== 'developer') {
+        ({ data: tpr } = await supabaseAdmin
+          .from('product_roles').select('id').eq('code', 'developer').maybeSingle());
+      }
+      if (!isAdminTier) {
+        const { data: saRole } = await supabaseAdmin
+          .from('product_roles').select('id').eq('code', 'super_admin').maybeSingle();
+        if (saRole?.id) {
+          await supabaseAdmin.from('user_product_roles')
+            .delete().eq('user_id', user_id).eq('role_id', saRole.id);
+        }
+      }
+      if (tpr?.id) {
+        await supabaseAdmin.from('user_product_roles')
+          .upsert({ user_id, role_id: tpr.id, business_lines: [] }, { onConflict: 'user_id,role_id' });
       }
       changes.role = role;
     }

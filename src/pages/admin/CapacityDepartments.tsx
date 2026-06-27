@@ -58,14 +58,22 @@ export default function CapacityDepartmentsPage() {
   const checkLinkedRecords = async (departmentId: string) => {
     setCheckingLinks(true);
     try {
-      // Check profiles linked to this department
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .eq('department_id', departmentId);
+      // Check profiles AND pending invitations linked to this department.
+      // (CAT-RBAC-RESOLVE-20260627-001 Phase 1 — user_invitations.department_id was previously
+      // unchecked, so a department could be deleted while invites still referenced it.)
+      const [profilesResult, invitesResult] = await Promise.all([
+        supabase.from('profiles').select('id, full_name').eq('department_id', departmentId),
+        supabase.from('user_invitations').select('id, email').eq('department_id', departmentId).eq('status', 'pending'),
+      ]);
 
-      if (error) throw error;
-      return profiles || [];
+      if (profilesResult.error) throw profilesResult.error;
+      if (invitesResult.error) throw invitesResult.error;
+
+      const inviteRows = (invitesResult.data || []).map((i) => ({
+        id: i.id,
+        full_name: `Pending invite: ${i.email}`,
+      }));
+      return [...(profilesResult.data || []), ...inviteRows];
     } catch (error) {
       console.error('Error checking linked records:', error);
       catalystToast.error('Failed to check linked records');
