@@ -5,7 +5,8 @@ export type TokenType =
   | 'value-list'
   | 'function'
   | 'keyword'
-  | 'direction';
+  | 'direction'
+  | 'group';      // grouping parenthesis '(' or ')' (boolean precedence)
 
 export interface Token {
   type: TokenType;
@@ -115,6 +116,12 @@ export function tokenize(jql: string): Token[] {
     if (i >= src.length) break;
 
     if (state === 'expect-field') {
+      // Grouping open paren — a condition (or nested group) begins here.
+      if (src[i] === '(') {
+        tokens.push({ type: 'group', value: '(' });
+        i++;
+        continue; // stay in expect-field
+      }
       // Check for ORDER BY (two-word keyword)
       if (src.slice(i).toUpperCase().startsWith('ORDER BY')) {
         tokens.push({ type: 'keyword', value: 'ORDER BY' });
@@ -220,6 +227,13 @@ export function tokenize(jql: string): Token[] {
     }
 
     if (state === 'expect-keyword') {
+      // Grouping close paren — ends a condition/group; another keyword or ')'
+      // may follow.
+      if (src[i] === ')') {
+        tokens.push({ type: 'group', value: ')' });
+        i++;
+        continue; // stay in expect-keyword
+      }
       if (src.slice(i).toUpperCase().startsWith('ORDER BY')) {
         tokens.push({ type: 'keyword', value: 'ORDER BY' });
         i += 8;

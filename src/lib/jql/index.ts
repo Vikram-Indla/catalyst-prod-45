@@ -4,8 +4,12 @@ export type { Token, TokenType } from './tokenizer';
 export { JQL_FIELD_MAP, JQL_FUNCTIONS, resolveDateShorthand } from './fieldMap';
 export type { FieldDef, FieldType } from './fieldMap';
 
-export { translate } from './translator';
+export { translate, buildLeafFilter } from './translator';
 export type { JqlFilter, FilterMethod } from './translator';
+
+export { parseJqlAst, astNeedsBooleanQuery } from './ast';
+export type { JqlAst } from './ast';
+export { applyJqlAst, renderAstFilter } from './astQuery';
 
 export { parseOrderBy } from './orderBy';
 export type { OrderBySpec } from './orderBy';

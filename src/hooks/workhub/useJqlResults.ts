@@ -9,7 +9,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { translate, applyJqlToQuery, parseOrderBy } from '@/lib/jql';
+import { translate, applyJqlToQuery, parseOrderBy, parseJqlAst, astNeedsBooleanQuery, applyJqlAst } from '@/lib/jql';
 
 export interface JqlResultRow {
   id: string;
@@ -69,7 +69,12 @@ export function useJqlResults(jql: string, enabled = true) {
         .is('jira_removed_at', null)
         .is('deleted_at', null);
 
-      query = applyJqlToQuery(query, filters, currentUserName);
+      // Boolean JQL (OR / parentheses) → render the AST to a PostgREST logic
+      // tree. Pure AND-of-comparisons → keep the existing flat path unchanged.
+      const ast = parseJqlAst(trimmed);
+      query = ast && astNeedsBooleanQuery(ast)
+        ? applyJqlAst(query, ast, currentUserName)
+        : applyJqlToQuery(query, filters, currentUserName);
 
       const orderBy = parseOrderBy(trimmed);
       query = orderBy
