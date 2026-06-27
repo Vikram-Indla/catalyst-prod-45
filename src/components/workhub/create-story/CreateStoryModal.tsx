@@ -141,6 +141,12 @@ export interface CreateStoryModalProps {
   workTypes?: readonly string[];
   /** Initial value for the Work type field. Defaults to 'Story'. */
   defaultWorkType?: string;
+  /**
+   * Slice 9C — when opening as a Task (defaultWorkType='Task'), pre-selects this
+   * workstream. Lets the retired bespoke CreateTaskModal's `defaultWorkstream`
+   * contract flow through unchanged.
+   */
+  defaultWorkstreamId?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -411,6 +417,7 @@ export function CreateStoryModal({
   onOpenTask,
   workTypes,
   defaultWorkType = 'Story',
+  defaultWorkstreamId,
 }: CreateStoryModalProps) {
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -436,7 +443,13 @@ export function CreateStoryModal({
   const navigate = useNavigate();
   const { data: workstreams = [] } = useTaskWorkstreams(false);
   const createTaskMutation = useCreateTaskMutation();
-  const [workstreamId, setWorkstreamId] = useState<string>('');
+  const [workstreamId, setWorkstreamId] = useState<string>(defaultWorkstreamId ?? '');
+  // Pre-select the workstream when opened with one (e.g. created from a board).
+  useEffect(() => {
+    if (open && defaultWorkstreamId && !workstreamId) {
+      setWorkstreamId(defaultWorkstreamId);
+    }
+  }, [open, defaultWorkstreamId, workstreamId]);
   const { data: taskStatuses = [] } = useQuery({
     queryKey: ['create-modal-task-statuses'],
     queryFn: async () => {
