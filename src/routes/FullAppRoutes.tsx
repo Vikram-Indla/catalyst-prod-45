@@ -225,6 +225,9 @@ const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m
 /* 2026-06-17: Tasks Hub filters — canonical FiltersListPage / FilterDetailPage
    / FilterPreviewPage mounted with hubType='tasks' / mode='tasks'. */
 const TasksFiltersListPage = lazy(() => import("../modules/tasks/pages/TasksFiltersListPage"));
+// CAT-TASKS-20260627-001 Slice 5: canonical Workstreams CRUD page (replaces the
+// deprecated /tasks/workstreams 404).
+const WorkstreamsManagerPage = lazy(() => import("../modules/tasks/components/workstreams/WorkstreamsManagerPage"));
 const TasksFilterPreviewPage = lazy(() => import("../modules/tasks/pages/TasksFilterPreviewPage"));
 const TasksFilterDetailPage = lazy(() => import("../modules/tasks/pages/TasksFilterDetailPage"));
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -645,9 +648,10 @@ export default function FullAppRoutes() {
         <Route path="/tasks/filters/create" element={<S><TasksFilterPreviewPage /></S>} />
         <Route path="/tasks/filters/:filterId" element={<S><TasksFilterDetailPage /></S>} />
         <Route path="/tasks/:view" element={<ModuleGuard moduleCode="planner"><S><PlannerPage /></S></ModuleGuard>} />
-        {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
+        {/* Deprecated 2026-06-17: My Tasks removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
-        <Route path="/tasks/workstreams" element={<S><NotFound /></S>} />
+        {/* CAT-TASKS-20260627-001 Slice 5: Workstreams restored as a canonical CRUD page. */}
+        <Route path="/tasks/workstreams" element={<ModuleGuard moduleCode="planner"><S><WorkstreamsManagerPage /></S></ModuleGuard>} />
 
         {/* Backward-compat redirects from old /taskhub routes */}
         <Route path="/taskhub" element={<Navigate to="/tasks/overview" replace />} />

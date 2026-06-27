@@ -164,19 +164,9 @@ export function useCreateBoardTask() {
   
   return useMutation({
     mutationFn: async (input: CreateTaskInput) => {
-      // Generate next task key
-      const { data: lastTask } = await supabase
-        .from('tasks')
-        .select('key')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      
-      const lastNumber = lastTask?.key 
-        ? parseInt(lastTask.key.replace('PLN-', ''), 10) 
-        : 0;
-      const newKey = `PLN-${lastNumber + 1}`;
-      
+      // Key is assigned by the DB trigger (uniform TSK-N) — single source of
+      // truth. Do NOT compute a key client-side (caused detail-view drift).
+
       // Get max position in target status
       const { data: maxPos } = await supabase
         .from('tasks')
@@ -192,8 +182,6 @@ export function useCreateBoardTask() {
       const { data, error } = await supabase
         .from('tasks')
         .insert([{
-          key: newKey,
-          task_key: newKey,
           title: input.title,
           description: input.description,
           status_id: input.status_id,

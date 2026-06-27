@@ -140,7 +140,7 @@ function useTimelineTasks() {
 
         return {
           id: t.id,
-          key: t.task_key || `PLN-${t.id.slice(0, 4).toUpperCase()}`,
+          key: t.task_key || `TSK-${t.id.slice(0, 4).toUpperCase()}`,
           title: t.title,
           status_slug: statusSlug,
           status_name: t.status?.name || 'Backlog',
