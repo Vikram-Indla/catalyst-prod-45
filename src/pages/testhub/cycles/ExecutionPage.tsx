@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, DragEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useCycleScope } from '@/hooks/test-management/useTestCycles';
@@ -11,6 +11,8 @@ import Textarea from '@atlaskit/textarea';
 import { ArrowLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { TMCycleScope, TMCaseStep, RunStatus } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
+
+const ATTACHMENT_BUCKET = 'testhub-attachments';
 
 type StepStatus = 'NOT_RUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'SKIPPED';
 
@@ -232,7 +234,7 @@ function SaveRunModal({
         <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
           Optionally add notes before saving this run result.
         </p>
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 16 }}>
           <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', display: 'block', marginBottom: 4 }}>
             Notes (optional)
           </label>
@@ -287,6 +289,7 @@ function StepRunner({
   const { data: caseDetail, isLoading } = useTestCase(scope.case_id);
   const steps: TMCaseStep[] = caseDetail?.steps ?? [];
   const [stepStates, setStepStates] = useState<StepState[]>([]);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const timer = useTimer();
@@ -301,6 +304,7 @@ function StepRunner({
   // Reset step states when scope changes
   useEffect(() => {
     setStepStates([]);
+    setPendingFiles([]);
     timer.reset();
   }, [scope.id]);
 
@@ -315,6 +319,7 @@ function StepRunner({
 
   const handleReset = () => {
     setStepStates(steps.map(s => ({ stepId: s.id, status: 'NOT_RUN', actualResult: '' })));
+    setPendingFiles([]);
     timer.reset();
   };
 
@@ -362,6 +367,32 @@ function StepRunner({
         await supabase.from('tm_step_results').insert(stepResults);
       }
 
+      // Upload attachments
+      if (run && pendingFiles.length > 0) {
+        const uploadResults = await Promise.allSettled(
+          pendingFiles.map(async (file) => {
+            const ext = file.name.split('.').pop() ?? 'bin';
+            const safeName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+            const storagePath = `test-runs/${run.id}/${safeName}`;
+            const { error: upErr } = await supabase.storage
+              .from(ATTACHMENT_BUCKET)
+              .upload(storagePath, file, { contentType: file.type, upsert: false });
+            if (upErr) throw upErr;
+            await supabase.from('tm_attachments').insert({
+              entity_type: 'test_run',
+              entity_id: run.id,
+              file_name: file.name,
+              file_path: storagePath,
+              file_size: file.size,
+              mime_type: file.type || null,
+              uploaded_by: user.id,
+            });
+          })
+        );
+        const failed = uploadResults.filter(r => r.status === 'rejected').length;
+        if (failed > 0) catalystToast.error(`${failed} attachment(s) failed to upload`);
+      }
+
       // Update scope status
       await supabase
         .from('tm_cycle_scope')
@@ -369,6 +400,7 @@ function StepRunner({
         .eq('id', scope.id);
 
       setShowSaveModal(false);
+      setPendingFiles([]);
       catalystToast.success(`Saved: ${runStatus}`);
       timer.reset();
       onSaved();
@@ -396,8 +428,8 @@ function StepRunner({
     <div style={{ padding: 24 }}>
       {/* Timer bar */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20,
-        padding: '10px 16px', borderRadius: 8,
+        display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16,
+        padding: '8px 16px', borderRadius: 8,
         background: timer.running
           ? 'var(--ds-background-information-subtle, #E9F2FF)'
           : 'var(--ds-surface-sunken, #F7F8F9)',
@@ -528,7 +560,7 @@ function StepRunner({
                     <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>{step.action}</div>
                     {step.test_data && (
                       <div style={{ marginTop: 8 }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 2 }}>TEST DATA</div>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>TEST DATA</div>
                         <code style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-code)' }}>
                           {step.test_data}
                         </code>
@@ -549,7 +581,7 @@ function StepRunner({
                         width: '100%',
                         border: '1px solid var(--ds-border, #DFE1E6)',
                         borderRadius: 4,
-                        padding: '6px 8px',
+                        padding: '8px 8px',
                         fontSize: 13,
                         fontFamily: 'var(--ds-font-family-body)',
                         color: 'var(--ds-text, #172B4D)',
@@ -568,12 +600,19 @@ function StepRunner({
         </div>
       )}
 
+      {/* Attachments */}
+      <AttachmentZone
+        files={pendingFiles}
+        onAdd={added => setPendingFiles(prev => [...prev, ...added])}
+        onRemove={i => setPendingFiles(prev => prev.filter((_, idx) => idx !== i))}
+      />
+
       {/* Action row */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
         <button
           onClick={() => setShowSaveModal(true)}
           style={{
-            padding: '10px 24px',
+            padding: '8px 24px',
             background: 'var(--ds-background-brand-bold, #0052CC)',
             color: 'var(--ds-text-inverse, #FFFFFF)',
             border: 'none', borderRadius: 4, fontSize: 14, fontWeight: 500,
@@ -595,8 +634,105 @@ function StepRunner({
   );
 }
 
+// ─── Attachment zone ────────────────────────────────────────────────────────
+function AttachmentZone({
+  files,
+  onAdd,
+  onRemove,
+}: {
+  files: File[];
+  onAdd: (added: File[]) => void;
+  onRemove: (index: number) => void;
+}) {
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+    const dropped = Array.from(e.dataTransfer.files);
+    if (dropped.length) onAdd(dropped);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const fmtSize = (bytes: number) =>
+    bytes < 1024 * 1024
+      ? `${Math.round(bytes / 1024)} KB`
+      : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
+        ATTACHMENTS (optional)
+      </div>
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={() => setDragOver(false)}
+        onClick={() => inputRef.current?.click()}
+        style={{
+          border: `2px dashed ${dragOver ? 'var(--ds-border-focused, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
+          borderRadius: 8,
+          padding: '16px 16px',
+          background: dragOver ? 'var(--ds-background-information-subtle, #E9F2FF)' : 'var(--ds-surface-sunken, #F7F8F9)',
+          cursor: 'pointer',
+          textAlign: 'center',
+          fontSize: 13,
+          color: 'var(--ds-text-subtle, #42526E)',
+          transition: 'all 0.15s',
+          marginBottom: files.length ? 8 : 0,
+        }}
+      >
+        Drop files here or <span style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500 }}>browse</span>
+        <input
+          ref={inputRef}
+          type="file"
+          multiple
+          style={{ display: 'none' }}
+          onChange={e => {
+            const picked = Array.from(e.target.files ?? []);
+            if (picked.length) onAdd(picked);
+            e.target.value = '';
+          }}
+        />
+      </div>
+      {files.map((f, i) => (
+        <div key={i} style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 8px', borderRadius: 4, marginTop: 4,
+          background: 'var(--ds-surface-sunken, #F7F8F9)',
+          border: '1px solid var(--ds-border, #DFE1E6)',
+          fontSize: 13,
+        }}>
+          <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ds-text, #172B4D)' }}>
+            {f.name}
+          </span>
+          <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+            {fmtSize(f.size)}
+          </span>
+          <button
+            onClick={e => { e.stopPropagation(); onRemove(i); }}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, lineHeight: 1, padding: 4,
+              flexShrink: 0,
+            }}
+            title="Remove"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const timerBtnStyle = (color: string): React.CSSProperties => ({
-  padding: '3px 10px', borderRadius: 4, border: `1px solid ${color}`,
+  padding: '4px 8px', borderRadius: 4, border: `1px solid ${color}`,
   background: 'none', cursor: 'pointer', fontSize: 12, color,
   fontFamily: 'var(--ds-font-family-body)',
 });
@@ -648,7 +784,7 @@ function StepBtn({
     <button
       onClick={onClick}
       style={{
-        padding: '4px 10px',
+        padding: '4px 8px',
         background: active ? activeBg : 'none',
         border: `1px solid ${active ? color : 'var(--ds-border, #DFE1E6)'}`,
         borderRadius: 4,
