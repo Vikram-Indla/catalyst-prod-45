@@ -364,6 +364,154 @@ export default function CatalystViewTestCase({
     </div>
   );
 
+  /* ── Requirements tab — tm_requirement_links. ── */
+  const { data: reqLinks = [], refetch: refetchLinks } = useQuery({
+    queryKey: ['tm-req-links', itemId],
+    queryFn: async () => {
+      if (!itemId) return [];
+      const { data, error } = await supabase
+        .from('tm_requirement_links')
+        .select('id, requirement_type, requirement_id, external_key, external_title, external_url, link_type, notes, created_at')
+        .eq('test_case_id', itemId)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!itemId,
+  });
+
+  const [linkForm, setLinkForm] = useState({ open: false, type: 'external', extKey: '', extTitle: '', linkType: 'verifies', saving: false });
+
+  const handleAddLink = useCallback(async () => {
+    if (!linkForm.extKey.trim() && !linkForm.extTitle.trim()) return;
+    setLinkForm(f => ({ ...f, saving: true }));
+    try {
+      const { error } = await supabase.rpc('tm_link_requirement', {
+        p_case_id: itemId,
+        p_requirement_type: linkForm.type,
+        p_external_key: linkForm.extKey.trim() || null,
+        p_external_title: linkForm.extTitle.trim() || null,
+        p_link_type: linkForm.linkType,
+      });
+      if (error) throw error;
+      setLinkForm(f => ({ ...f, open: false, extKey: '', extTitle: '', saving: false }));
+      refetchLinks();
+      catalystToast.success('Requirement linked');
+    } catch (err: any) {
+      catalystToast.error('Failed to link', err?.message);
+      setLinkForm(f => ({ ...f, saving: false }));
+    }
+  }, [itemId, linkForm, refetchLinks]);
+
+  const handleDeleteLink = useCallback(async (linkId: string) => {
+    const { error } = await supabase.from('tm_requirement_links').delete().eq('id', linkId);
+    if (error) { catalystToast.error('Failed to remove link'); return; }
+    refetchLinks();
+    catalystToast.success('Link removed');
+  }, [refetchLinks]);
+
+  const requirementsPanel = (
+    <div style={{ padding: '12px 16px' }}>
+      {/* Existing links */}
+      {reqLinks.length === 0 && !linkForm.open && (
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, margin: '0 0 12px' }}>
+          No requirements linked. Add one to track coverage.
+        </p>
+      )}
+      {reqLinks.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+          {reqLinks.map((l: any) => (
+            <div key={l.id} style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '8px 10px', borderRadius: 6,
+              border: '1px solid var(--ds-border)',
+              background: 'var(--ds-surface-sunken)',
+            }}>
+              {l.external_key && (
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: 'var(--ds-text-subtle)', flexShrink: 0 }}>
+                  {l.external_key}
+                </span>
+              )}
+              <span style={{ flex: 1, fontSize: 13, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {l.external_title ?? l.requirement_type ?? '—'}
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', flexShrink: 0, textTransform: 'capitalize' }}>
+                {l.link_type ?? 'verifies'}
+              </span>
+              <button
+                onClick={() => handleDeleteLink(l.id)}
+                title="Remove link"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 14, padding: 2, flexShrink: 0 }}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      {/* Add link form */}
+      {linkForm.open ? (
+        <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: 12, background: 'var(--ds-surface-sunken)', marginBottom: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>KEY</div>
+              <input
+                value={linkForm.extKey}
+                onChange={e => setLinkForm(f => ({ ...f, extKey: e.target.value }))}
+                placeholder="e.g. REQ-001"
+                style={{ width: '100%', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '5px 8px', fontSize: 13, fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box', background: 'var(--ds-surface)', color: 'var(--ds-text)', outline: 'none' }}
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>TITLE</div>
+              <input
+                value={linkForm.extTitle}
+                onChange={e => setLinkForm(f => ({ ...f, extTitle: e.target.value }))}
+                placeholder="Requirement description"
+                style={{ width: '100%', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '5px 8px', fontSize: 13, fontFamily: 'var(--ds-font-family-body)', boxSizing: 'border-box', background: 'var(--ds-surface)', color: 'var(--ds-text)', outline: 'none' }}
+              />
+            </div>
+          </div>
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>LINK TYPE</div>
+            <select
+              value={linkForm.linkType}
+              onChange={e => setLinkForm(f => ({ ...f, linkType: e.target.value }))}
+              style={{ border: '1px solid var(--ds-border)', borderRadius: 4, padding: '5px 8px', fontSize: 13, fontFamily: 'var(--ds-font-family-body)', background: 'var(--ds-surface)', color: 'var(--ds-text)' }}
+            >
+              <option value="verifies">Verifies</option>
+              <option value="covers">Covers</option>
+              <option value="implements">Implements</option>
+              <option value="relates_to">Relates to</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={handleAddLink}
+              disabled={linkForm.saving || (!linkForm.extKey.trim() && !linkForm.extTitle.trim())}
+              style={{ padding: '6px 14px', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
+            >
+              {linkForm.saving ? 'Saving…' : 'Add link'}
+            </button>
+            <button
+              onClick={() => setLinkForm(f => ({ ...f, open: false, extKey: '', extTitle: '' }))}
+              style={{ padding: '6px 14px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text)' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => setLinkForm(f => ({ ...f, open: true }))}
+          style={{ fontSize: 13, color: 'var(--ds-link)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          + Link requirement
+        </button>
+      )}
+    </div>
+  );
+
   /* ── Details tab body. ── */
   const detailsPanel = (
     <div>
@@ -424,16 +572,18 @@ export default function CatalystViewTestCase({
               <Tab>Details</Tab>
               <Tab>Steps{steps.length ? ` (${steps.length})` : ''}</Tab>
               <Tab>Versions{versions.length ? ` (${versions.length})` : ''}</Tab>
+              <Tab>Requirements{reqLinks.length ? ` (${reqLinks.length})` : ''}</Tab>
             </TabList>
             <TabPanel>{detailsPanel}</TabPanel>
             <TabPanel>{stepsPanel}</TabPanel>
             <TabPanel>{versionsPanel}</TabPanel>
+            <TabPanel>{requirementsPanel}</TabPanel>
           </Tabs>
         </div>
       </>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, steps.length, versions.length, handleTitleChange]);
+  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, requirementsPanel, steps.length, versions.length, reqLinks.length, handleTitleChange]);
 
   /* ── rightContent: canonical sidebar. ── */
   const rightContent = useMemo(() => {
