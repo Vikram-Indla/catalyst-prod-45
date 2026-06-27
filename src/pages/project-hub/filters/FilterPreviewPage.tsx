@@ -680,9 +680,11 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
   // Ask Caty inline bar — mirrors BacklogPage's setAskCatyOpen pattern
   const [askCatyOpen, setAskCatyOpen] = useState(false);
 
-  // JC-1: Basic/JQL mode toggle
-  const [filterMode, setFilterMode] = useState<'basic' | 'jql'>('basic');
-  const [jqlText, setJqlText] = useState('');
+  // JC-1: Basic/JQL mode toggle. Seed straight from ?jql= (huddle shared-tickets
+  // deep link) on the FIRST render — relying on the effect below alone left the
+  // editor empty in some mount orderings.
+  const [filterMode, setFilterMode] = useState<'basic' | 'jql'>(urlJql ? 'jql' : 'basic');
+  const [jqlText, setJqlText] = useState(urlJql ?? '');
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   useEffect(() => {

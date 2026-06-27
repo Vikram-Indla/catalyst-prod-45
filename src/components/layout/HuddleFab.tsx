@@ -5,6 +5,7 @@ import Avatar from '@atlaskit/avatar';
 import Spinner from '@atlaskit/spinner';
 import { useHuddleStore, getHuddleRemoteStream } from '@/store/huddleStore';
 import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
+import { buildSharedTicketsPath } from '@/lib/chat/huddle/sharedTickets';
 
 /**
  * HuddleFab — draggable floating call widget (replaces the old header strip).
@@ -331,6 +332,15 @@ export function HuddleFab() {
             >
               {muted ? <MicOffIcon /> : <MicIcon />}
             </button>
+            <button
+              type="button"
+              data-huddle-btn
+              onClick={() => navigate(buildSharedTicketsPath(participants.map((p) => p.name).filter(Boolean)))}
+              title="Shared tickets — refresh & open"
+              style={iconBtnStyle('var(--ds-surface-sunken, #F7F8F9)')}
+            >
+              <TicketsIcon />
+            </button>
             {screenShareBtn}
             {declineBtn}
           </span>
@@ -361,6 +371,11 @@ const MicOffIcon = () => (
 const ScreenIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" />
+  </svg>
+);
+const TicketsIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V7z" /><path d="M13 5v14" />
   </svg>
 );
 const PhoneDownIcon = () => (

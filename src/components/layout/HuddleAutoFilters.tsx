@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHuddleStore } from '@/store/huddleStore';
 import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
+import { buildSharedTicketsPath } from '@/lib/chat/huddle/sharedTickets';
 
 /**
  * HuddleAutoFilters — ~5s after a call connects, navigates both participants to
@@ -24,12 +25,7 @@ export function HuddleAutoFilters() {
     if (!active || !connected || autoOpened) return;
     const t = setTimeout(() => {
       markAutoOpened();
-      // (assignee = "A" OR reporter = "A") AND (assignee = "B" OR reporter = "B") ...
-      const jql = names.length
-        ? names.map((n) => `(assignee = "${n}" OR reporter = "${n}")`).join(' AND ')
-        : '';
-      const qs = jql ? `?jql=${encodeURIComponent(jql)}` : '';
-      navigate(`/project-hub/BAU/filters/create${qs}`);
+      navigate(buildSharedTicketsPath(names));
     }, 5000);
     return () => clearTimeout(t);
   }, [active, connected, autoOpened, namesKey, markAutoOpened, navigate]); // eslint-disable-line react-hooks/exhaustive-deps
