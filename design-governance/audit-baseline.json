@@ -1,0 +1,10 @@
+{
+  "tokens": 28913,
+  "typography": 2201,
+  "spacing": 1118,
+  "fontImports": 0,
+  "capturedOn": "2026-06-27",
+  "audit": "design-governance/rules/audit.js src",
+  "feature": "CAT-ADS-COMPLIANCE-20260627-001",
+  "note": "Per-category fail-on-increase baseline for scripts/ads-audit-gate.cjs. The gate fails only when a category EXCEEDS its baseline, so existing debt never blocks. `tokens` is noisy (var()/token() fallbacks over-reported) but the ratchet is increase-only, so the noise is inert. Lower a category via `node scripts/ads-audit-gate.cjs --update` after a remediation slice; baselines only move down."
+}

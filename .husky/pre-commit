@@ -8,11 +8,17 @@
 echo "🧪 Audit self-test (verifies scanners catch what they claim)…"
 node design-governance/scripts/self-test.mjs 2>&1 | tail -5 || true
 
+# --- BLOCKING ratchets (CAT-ADS-COMPLIANCE-20260627-001) -----------------
+# Both ratchets fail ONLY when a count rises above its committed baseline, so
+# existing debt never blocks — only NEW violations do.
 echo ""
-echo "🔍 Running Design System Audit…"
-node design-governance/rules/audit.js src 2>&1 | grep -E "^(✅|⚠️|❌)" || true
+echo "🎨 ADS color ratchet (blocks on NEW hard-coded colors)…"
+node scripts/ads-color-gate.cjs || exit 1
 
-# Note: This hook is informational - it does not block commits
-# See GOVERNANCE_POLICY.md for enforcement mechanisms
+# Runs the design-governance audit ONCE and gates per category
+# (tokens/typography/spacing/fontImports) vs design-governance/audit-baseline.json.
+echo ""
+echo "📐 ADS audit ratchet (blocks on NEW tokens/typography/spacing violations)…"
+node scripts/ads-audit-gate.cjs || exit 1
 
 exit 0

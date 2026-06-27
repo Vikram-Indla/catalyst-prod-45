@@ -268,6 +268,24 @@ grep -rn --include="*.tsx" --include="*.ts" --include="*.css" \
   src/ | grep -v "node_modules" | grep -v "\.snap"
 ```
 
+### Enforcement (CAT-ADS-COMPLIANCE-20260627-001)
+
+A **ratchet gate** blocks NEW hard-coded colors at commit time and in CI, without blocking the pre-existing debt:
+
+- `npm run lint:colors` — list every hard-coded color (`scripts/no-hardcoded-colors.cjs`).
+- `npm run lint:colors:gate` — fail only if the count exceeds the committed baseline in `design-governance/color-baseline.json`. Runs in `.husky/pre-commit` (blocking) and in `ci.yml`.
+- `npm run audit:ads` — full design-governance audit (tokens, typography, spacing, fonts).
+- `npm run audit:ads:gate` — per-category fail-on-increase ratchet over the audit vs `design-governance/audit-baseline.json` (catches Tailwind color utils, hardcoded font-size, off-grid spacing — what the hex scanner misses). Blocking in `.husky/pre-commit` and `ci.yml`.
+
+When a slice reduces a count, ratchet the relevant baseline down: `node scripts/ads-color-gate.cjs --update` and/or `node scripts/ads-audit-gate.cjs --update`, then commit the baseline file(s). Baselines only ever move down. The audit's `tokens` category is noisy (over-reports var()/token() fallbacks) but the ratchet is increase-only, so the noise is inert.
+
+**Escape hatch** (intentional, documented exceptions only — e.g. a Jira-parity hex with no ADS-token equivalent):
+```css
+/* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed YYYY-MM-DD) */
+color: #ff991f;
+```
+or `/* ads-scanner:ignore-line */` on the same line. Do not use to hide real violations.
+
 ---
 
 ## SCREENSHOT SIGNOFF MANDATORY
