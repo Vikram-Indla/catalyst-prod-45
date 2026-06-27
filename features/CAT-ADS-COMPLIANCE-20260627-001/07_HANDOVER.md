@@ -7,22 +7,29 @@
 CAT-ADS-COMPLIANCE-20260627-001
 
 ## Status
-ACTIVATED — no implementation yet.
+SLICE 1 SHIPPED (PR open). Slices 2+ not started.
 
 ## Branch
-[fill in]
+feature/ads-compliance-ci-enforcement (commit f71cb8f29)
 
-## HEAD
-[fill in]
+## PR
+https://github.com/Vikram-Indla/catalyst-prod-45/pull/289
 
 ## Plan Lock status
-NOT_WRITTEN
+Slice 1 locked + executed (CI/pre-commit enforcement). Color baseline = 709.
 
-## Next exact action
-Read this handover and 03_PLAN_LOCK.md, then ask Vikram what to do next.
+## What shipped (Slice 1)
+Ratchet gate (`scripts/ads-color-gate.cjs` + `design-governance/color-baseline.json`), scanner now honors `ads-scanner:ignore[-next]-line`, tsc-in-CI fix, blocking pre-commit + CI steps, CLAUDE.md docs.
+
+## Next candidate slices (all need a new Plan Lock + go)
+- **Slice 2 (recommended next):** ratchet down — burn real bare-hex below 709 on an unblocked surface (e.g. `src/features/all-releases/components/*` Tailwind utils, `src/types/*` bare hex). Each PR lowers the baseline.
+- **Slice 3:** ADS-13 Finding 3 — standardize ~332 `var(--ds-surface-overlay,#…)` fallbacks → `#282E33` (high visual blast radius, needs light/dark screenshots).
+- **Slice 4:** wire `audit:ads` / design-governance into main CI as blocking (currently separate workflows).
+- **BLOCKED:** 265 unmapped hexes (await Claude Design mappings); Tailwind arbitrary architecture decision.
 
 ## Open risks
-- Plan Lock not yet written — do not implement
+- Baseline 709 reflects the color scanner only — the broader `audit:ads` count (typography/spacing/fonts) is not yet ratcheted.
+- Protected colors must never be wrapped: statusPalette.ts pills, index.css ~239–247 Jira-parity hexes, workstreamColors.ts, AI magenta. See 12_AGENT_OUTPUTS.md Agent 5.
 
 ## Next prompt
 `continue feature CAT-ADS-COMPLIANCE-20260627-001`
