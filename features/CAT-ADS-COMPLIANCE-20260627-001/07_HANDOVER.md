@@ -7,10 +7,13 @@
 CAT-ADS-COMPLIANCE-20260627-001
 
 ## Status
-SLICE 1 SHIPPED (PR open). Slices 2+ not started.
+SLICE 1 + SLICE 2 SHIPPED (PR #289 open). Slices 3+ not started.
 
 ## Branch
-feature/ads-compliance-ci-enforcement (commit f71cb8f29)
+feature/ads-compliance-ci-enforcement (HEAD 7c046b2f2)
+
+## Shipped (Slice 2)
+Per-category audit ratchet: `scripts/ads-audit-gate.cjs` + `design-governance/audit-baseline.json` (tokens 28913, typography 2201, spacing 1118, fonts 0). Blocking in pre-commit + CI. `npm run audit:ads:gate`.
 
 ## PR
 https://github.com/Vikram-Indla/catalyst-prod-45/pull/289
