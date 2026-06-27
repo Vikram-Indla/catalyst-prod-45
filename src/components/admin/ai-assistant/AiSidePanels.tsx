@@ -59,9 +59,6 @@ export function AiCommandLibrary({ c }: { c: Console }) {
 
 const AVATAR_COLORS = [AVATAR.purple, AVATAR.teal, AVATAR.blue, AVATAR.red, AVATAR.amber];
 
-function initials(name: string) {
-  return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('');
-}
 function avatarBg(name: string) {
   let h = 0;
   for (const c of name) h = (h << 5) - h + c.charCodeAt(0);
@@ -84,91 +81,9 @@ interface ActivityRow {
   kind: ActivityKind;
 }
 
-export function AiUserSearch() {
-  const [q, setQ] = useState('');
-  const [dq, setDq] = useState('');
-  const timer = React.useRef<number>();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = e.target.value;
-    setQ(v);
-    clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setDq(v), 250);
-  };
-
-  React.useEffect(() => () => clearTimeout(timer.current), []);
-
-  const active = dq.trim().length >= 2;
-
-  const { data: results = [], isLoading } = useQuery({
-    queryKey: ['ai-user-search', dq],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, user_product_roles(product_roles(name))')
-        .eq('approval_status', 'APPROVED')
-        .or(`full_name.ilike.%${dq}%,email.ilike.%${dq}%`)
-        .order('full_name')
-        .limit(8);
-      return (data ?? []) as Array<{
-        id: string;
-        full_name: string | null;
-        email: string | null;
-        user_product_roles: Array<{ product_roles: { name: string } | null }>;
-      }>;
-    },
-    enabled: active,
-    staleTime: 60000,
-  });
-
-  return (
-    <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
-      <div style={{ padding: '12px 14px', borderBottom: `1px solid ${T.borderSubtle}` }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Search users</span>
-      </div>
-      <div style={{ padding: '10px 12px' }}>
-        <Textfield
-          value={q}
-          onChange={handleChange}
-          placeholder="Name or email…"
-          aria-label="Search users"
-          elemBeforeInput={<span style={{ paddingLeft: 8, display: 'inline-flex', color: T.iconSubtle }}><Icon path={ICONS.search} size={14} w={2} /></span>}
-        />
-      </div>
-      {active && (
-        <div style={{ borderTop: `1px solid ${T.borderSubtle}`, padding: '4px 6px 8px', maxHeight: 340, overflowY: 'auto' }}>
-          {isLoading && (
-            <div style={{ padding: '12px 8px', fontSize: 12, color: T.subtlest, textAlign: 'center' }}>Searching…</div>
-          )}
-          {!isLoading && results.length === 0 && (
-            <div style={{ padding: '12px 8px', fontSize: 12, color: T.subtlest, textAlign: 'center' }}>No users found for "{dq}".</div>
-          )}
-          {results.map(u => {
-            const roles = (u.user_product_roles ?? [])
-              .map(r => r.product_roles?.name)
-              .filter((n): n is string => !!n);
-            return (
-              <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 8px', borderRadius: 6 }}
-                onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <CatalystAvatar name={u.full_name ?? u.email ?? ''} size="small" />
-                <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name ?? '—'}</span>
-                  <span style={{ display: 'block', fontSize: 11, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email ?? '—'}</span>
-                  {roles.length > 0 && (
-                    <span style={{ display: 'block', fontSize: 11, color: T.subtlest, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{roles.join(' · ')}</span>
-                  )}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function AiRecentActivity() {
+  const [q, setQ] = useState('');
+
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ['ai-admin-recent-activity'],
     queryFn: async (): Promise<ActivityRow[]> => {
@@ -197,7 +112,6 @@ export function AiRecentActivity() {
           .limit(100),
       ]);
 
-      // Resolve profile + role names for role assignments
       const userIds = [...new Set((roleAssignments ?? []).map(r => r.user_id))];
       const roleIds = [...new Set((roleAssignments ?? []).map(r => r.role_id))];
       const [{ data: profiles }, { data: roles }] = userIds.length
@@ -210,7 +124,6 @@ export function AiRecentActivity() {
       const pMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.full_name ?? '']));
       const rMap = Object.fromEntries((roles ?? []).map(r => [r.id, r.name ?? '']));
 
-      // Group failed logins by email — one row per email showing total count
       const loginMap: Record<string, { count: number; latest: string }> = {};
       for (const l of (failedLogins ?? [])) {
         if (!loginMap[l.email]) loginMap[l.email] = { count: 0, latest: l.created_at };
@@ -218,7 +131,6 @@ export function AiRecentActivity() {
         if (l.created_at > loginMap[l.email].latest) loginMap[l.email].latest = l.created_at;
       }
 
-      // Deduplicate pending invites by email (keep most recent per email)
       const inviteMap: Record<string, string> = {};
       for (const i of (pendingInvites ?? [])) {
         if (!inviteMap[i.email] || i.created_at > inviteMap[i.email]) {
@@ -256,26 +168,34 @@ export function AiRecentActivity() {
     refetchInterval: 30000,
   });
 
+  const needle = q.trim().toLowerCase();
+  const filtered = needle ? rows.filter(a => a.name.toLowerCase().includes(needle)) : rows;
+
   return (
     <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', borderBottom: `1px solid ${T.borderSubtle}` }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 8px', borderBottom: `1px solid ${T.borderSubtle}` }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Recent activity</span>
         {isLoading && <span style={{ fontSize: 11, color: T.subtlest }}>Loading…</span>}
         <span style={{ marginLeft: 'auto', fontSize: 12, color: T.subtlest }}>Last 7d</span>
       </div>
+      <div style={{ padding: '8px 12px', borderBottom: `1px solid ${T.borderSubtle}` }}>
+        <Textfield
+          value={q}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQ(e.target.value)}
+          placeholder="Search by name…"
+          aria-label="Filter activity"
+          elemBeforeInput={<span style={{ paddingLeft: 8, display: 'inline-flex', color: T.iconSubtle }}><Icon path={ICONS.search} size={14} w={2} /></span>}
+        />
+      </div>
       <div style={{ padding: '4px 6px 8px', maxHeight: 460, overflowY: 'auto' }}>
-        {!isLoading && rows.length === 0 && (
-          <div style={{ padding: '16px 8px', textAlign: 'center', fontSize: 12, color: T.subtlest }}>No recent activity.</div>
+        {!isLoading && filtered.length === 0 && (
+          <div style={{ padding: '16px 8px', textAlign: 'center', fontSize: 12, color: T.subtlest }}>
+            {needle ? `No results for "${q}".` : 'No recent activity.'}
+          </div>
         )}
-        {rows.map((a, i) => {
+        {filtered.map((a, i) => {
           const isFailedLogin = a.kind === 'failed_login';
           const isPendingInvite = a.kind === 'pending_invite';
-          const avatarBgColor = isFailedLogin
-            ? AVATAR.red
-            : isPendingInvite
-            ? AVATAR.amber
-            : avatarBg(a.name);
-          const avatarText = isFailedLogin ? '!' : isPendingInvite ? '~' : initials(a.name);
           const result: 'Done' | 'Pending' | 'Stopped' = isFailedLogin
             ? 'Stopped'
             : isPendingInvite

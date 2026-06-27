@@ -5,7 +5,7 @@ import { T } from '@/components/admin/ai-assistant/tokens';
 import { useAiCommandConsole } from '@/components/admin/ai-assistant/useAiCommandConsole';
 import { AiCommandComposer } from '@/components/admin/ai-assistant/AiCommandComposer';
 import { AiActivityFeed } from '@/components/admin/ai-assistant/AiActivityFeed';
-import { AiRecentActivity, AiUserSearch } from '@/components/admin/ai-assistant/AiSidePanels';
+import { AiRecentActivity } from '@/components/admin/ai-assistant/AiSidePanels';
 
 export default function AiAccessPage() {
   const c = useAiCommandConsole();
@@ -33,7 +33,6 @@ export default function AiAccessPage() {
             <AiActivityFeed c={c} />
           </div>
           <div className="cc-rail" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <AiUserSearch />
             <AiRecentActivity />
           </div>
         </div>

@@ -24,7 +24,7 @@ export function useEntitySearch(text: string): EntitySuggestion[] {
       const [{ data: people }, { data: roles }, { data: depts }] = await Promise.all([
         supabase
           .from('profiles')
-          .select('full_name, email')
+          .select('full_name, email, user_product_roles(product_roles(name))')
           .or(`full_name.ilike.%${q}%,email.ilike.%${q}%`)
           .eq('approval_status', 'APPROVED')
           .limit(4),
@@ -42,19 +42,26 @@ export function useEntitySearch(text: string): EntitySuggestion[] {
       ]);
       if (cancelled) return;
       setSuggestions([
-        ...(people ?? []).map(p => ({
-          type: 'person' as const,
-          label: p.full_name ?? p.email,
-          subtitle: p.email,
-          insert: p.email,
-        })),
-        ...(roles ?? []).map(r => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ...(people ?? []).map((p: any) => {
+          const roleNames = (p.user_product_roles ?? [])
+            .map((r: any) => r.product_roles?.name)
+            .filter(Boolean)
+            .join(', ');
+          return {
+            type: 'person' as const,
+            label: p.full_name ?? p.email,
+            subtitle: roleNames || p.email || '',
+            insert: p.full_name ?? p.email,
+          };
+        }),
+        ...(roles ?? []).map((r: { name: string; code: string }) => ({
           type: 'role' as const,
           label: r.name,
           subtitle: r.code,
           insert: r.name,
         })),
-        ...(depts ?? []).map(d => ({
+        ...(depts ?? []).map((d: { name: string }) => ({
           type: 'department' as const,
           label: d.name,
           subtitle: 'department',
