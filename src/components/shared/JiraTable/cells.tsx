@@ -527,9 +527,11 @@ export function makeStatusEditCell<T>(opts: {
     const status = opts.getStatus(row);
     const issueType = opts.getIssueType ? opts.getIssueType(row) : null;
     const canonical = useCanonicalIssueWorkflow(issueType);
-    // Canonical (Story): options = allowed transitions; else caller options.
+    // Canonical: options = allowed transitions. Reason-required transitions are
+    // EXCLUDED from inline edit (no reason capture here) — they must go through
+    // the detail status pill's reason modal, so they never pass silently.
     const effectiveOptions = canonical.isCanonical
-      ? canonical.getAvailableStatuses(status)
+      ? canonical.getAvailableStatuses(status).filter((s) => !canonical.requiresReason(status, s) || s === status)
       : opts.options;
     const isUnmapped = canonical.isCanonical && !!status && !canonical.resolveStatusKey(status);
     const displayLabel = (s: string | null): string =>

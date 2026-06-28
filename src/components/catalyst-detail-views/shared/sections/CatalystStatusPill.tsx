@@ -26,6 +26,7 @@ import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 import { toStatusCategory } from '@/components/ads';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { ReasonCaptureModal } from '../workflow/ReasonCaptureModal';
 import { statusBg, statusFg } from './statusPalette';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -153,7 +154,7 @@ function buildGroupsFromOptions(
 interface CatalystStatusPillProps {
   status?: string | null;
   statusCategory?: string | null;
-  onStatusChange?: (newStatus: string) => void;
+  onStatusChange?: (newStatus: string, reason?: { code: string | null; text: string | null }) => void;
   issueType?: string | null;
   /** Injected workflow options (e.g. from CreateStoryModal). When provided,
    *  these replace the hardcoded STATUS_OPTION_GROUPS and bypass transition
@@ -191,7 +192,11 @@ export function CatalystStatusPill({
     statusGroups: workflowGroups,
     getAvailableStatuses,
     hasConfig,
+    isCanonical,
+    requiresReason,
   } = useCanonicalIssueWorkflow(issueType);
+  // Pending reason-required transition (opens the reason modal).
+  const [reasonTarget, setReasonTarget] = useState<string | null>(null);
 
   // Caller-injected options (e.g. from CreateStoryModal resolvedStatusOptions).
   // When provided, these take precedence and bypass transition filtering.
@@ -305,8 +310,13 @@ export function CatalystStatusPill({
   // ── Pick handler ────────────────────────────────────────────────────────
 
   const pick = (newStatus: string) => {
-    onStatusChange?.(newStatus);
     setIsOpen(false);
+    // Reason-required canonical transition → open modal instead of transitioning.
+    if (isCanonical && requiresReason(status, newStatus)) {
+      setReasonTarget(newStatus);
+      return;
+    }
+    onStatusChange?.(newStatus);
     requestAnimationFrame(() => triggerRef.current?.focus());
   };
 
@@ -584,6 +594,20 @@ export function CatalystStatusPill({
           issueTypeName={issueType as WorkItemType}
           currentStatusName={status ?? undefined}
           onClose={() => setWorkflowViewerOpen(false)}
+        />
+      )}
+
+      {reasonTarget && (
+        <ReasonCaptureModal
+          entityType={issueType ?? 'item'}
+          fromStatus={status ?? null}
+          toStatus={reasonTarget}
+          onSubmit={(reason) => {
+            onStatusChange?.(reasonTarget, reason);
+            setReasonTarget(null);
+            requestAnimationFrame(() => triggerRef.current?.focus());
+          }}
+          onCancel={() => setReasonTarget(null)}
         />
       )}
     </>

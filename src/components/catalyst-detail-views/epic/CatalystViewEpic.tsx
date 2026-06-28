@@ -116,7 +116,7 @@ export default function CatalystViewEpic({
   ), [issue, itemId, projectKey, onOpenItem, isOpen]);
 
   const rightContent = useMemo(() => (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [issue, itemId, projectId, projectKey, onOpenItem, onClose]);
 

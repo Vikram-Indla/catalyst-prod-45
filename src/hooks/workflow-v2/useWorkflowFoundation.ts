@@ -58,6 +58,20 @@ export function useWfAudit(limit = 50) {
   } });
 }
 
+export type WfReasonCode = Database['public']['Tables']['ph_wf_reason_codes']['Row'];
+/** Reason codes for canonical transitions (global = version_id null). */
+export function useReasonCodes() {
+  return useQuery({
+    queryKey: [...KEY, 'reason-codes'],
+    queryFn: async (): Promise<WfReasonCode[]> => {
+      const { data, error } = await supabase.from('ph_wf_reason_codes')
+        .select('*').order('transition_type', { ascending: true }).order('code', { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
 export interface EnforcementRow { project_key: string | null; entity_key: string; mode: string; version_no: number | null; reason: string | null; enabled_at: string | null; }
 export function useEnforcementConfig() {
   return useQuery({ queryKey: [...KEY, 'enforcement'], queryFn: async (): Promise<EnforcementRow[]> => {

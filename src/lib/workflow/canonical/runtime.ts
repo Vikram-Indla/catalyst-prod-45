@@ -245,10 +245,14 @@ export function evaluateGuardsReal(
 export interface GateResult { mode: EnforcementMode; blocked: boolean; message: string | null; auditId: string | null; }
 
 export async function gateTransition(args: {
-  entityKey: EntityKey; issueRow: any; toStatusRaw: string; reason?: string | null; sourceSurface: string;
+  entityKey: EntityKey; issueRow: any; toStatusRaw: string;
+  reason?: string | null; reasonCode?: string | null; reasonText?: string | null;
+  sourceSurface: string;
 }): Promise<GateResult> {
   try {
     const projectKey = args.issueRow?.project_key ?? null;
+    // effective reason: explicit code/text from the reason modal, or legacy string.
+    const effReason = args.reasonText ?? args.reason ?? args.reasonCode ?? null;
     const version = await resolveCanonicalVersion(args.entityKey, projectKey);
     if (!version) return { mode: 'advisory', blocked: false, message: null, auditId: null };
 
@@ -266,9 +270,9 @@ export async function gateTransition(args: {
 
     const roleOk = allowedRoles.length === 0 || actor.roles.some((r) => allowedRoles.includes(r)) || actor.isAssignee || actor.isSuperAdmin;
     const superBypass = actor.isSuperAdmin;
-    const bypassReasonOk = !superBypass || !!(args.reason && args.reason.trim());
+    const bypassReasonOk = !superBypass || !!(effReason && effReason.trim());
 
-    const guardResults = evaluateGuardsReal(match, args.issueRow, args.reason);
+    const guardResults = evaluateGuardsReal(match, args.issueRow, effReason);
     const failingGuards = guardResults.filter((g) => g.isBlocking && g.passed === false);
 
     let blocked = false;
@@ -295,7 +299,7 @@ export async function gateTransition(args: {
         reasonRequired: !!match?.requires_reason, commentRequired: !!match?.requires_comment, bypassRequired: wouldBlock,
         tooltipBasis: { currentRole: actorRole, entityType: args.entityKey, fromStatus: fromKey, toStatus: toKey, requiredRoles: allowedRoles, missingGuard },
       },
-      sourceSurface: args.sourceSurface, reasonText: args.reason ?? null, mode: enforce ? 'blocking' : 'advisory',
+      sourceSurface: args.sourceSurface, reasonCode: args.reasonCode ?? null, reasonText: effReason, mode: enforce ? 'blocking' : 'advisory',
     });
 
     return { mode, blocked: enforce && wouldBlock, message: enforce && wouldBlock ? tooltip : null, auditId };

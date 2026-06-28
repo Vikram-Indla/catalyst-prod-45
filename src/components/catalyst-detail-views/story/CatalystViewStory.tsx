@@ -197,7 +197,7 @@ export default function CatalystViewStory({
       issue={issue ?? null}
       itemId={itemId}
       projectId={projectId}
-      onStatusChange={(st) => mutations.updateStatus.mutate(st)}
+      onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)}
       onClose={onClose}
       onDelete={() => mutations.deleteIssue.mutate()}
       typeLabel="story"
@@ -209,7 +209,7 @@ export default function CatalystViewStory({
       /* jira-compare 2026-05-03 — Patch D + E · Status pill + Improve dropdown
          anchored together at the rail header. Mirrors Jira's "In QA" / "Improve
          Story" pair on the right side of BAU-5609. */
-      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
+      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st, reason) => mutations.updateStatus.mutate(reason ? { status: st, reasonCode: reason.code, reasonText: reason.text } : st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     >
       {/* Tier 3.3: Story Release + Sprint fields */}

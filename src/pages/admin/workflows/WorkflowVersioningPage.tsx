@@ -15,7 +15,7 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import {
   useWfVersions, useWfSchemes, useWfSchemeEntries, useWfSchemeAssignments,
   useWfVersionStatuses, useWfVersionTransitions, useWfAudit, useWfTemplates,
-  useCreateDraftVersion, useMigrationPreview, useEnforcementConfig,
+  useCreateDraftVersion, useMigrationPreview, useEnforcementConfig, useReasonCodes,
 } from '@/hooks/workflow-v2/useWorkflowFoundation';
 
 type LozAppearance = React.ComponentProps<typeof Lozenge>['appearance'];
@@ -163,6 +163,29 @@ function MigrationPreviewTab() {
   );
 }
 
+function ReasonCodesTab() {
+  const { data, isLoading } = useReasonCodes();
+  if (isLoading) return <Loading />;
+  const rows = data ?? [];
+  const head = { cells: [
+    { key: 'code', content: 'Code' }, { key: 'label', content: 'Label' }, { key: 'type', content: 'Transition type' },
+    { key: 'ft', content: 'Free text' }, { key: 'scope', content: 'Scope' }, { key: 'active', content: 'Active' } ] };
+  const tableRows = rows.map((r) => ({ key: r.id, cells: [
+    { key: 'code', content: r.code }, { key: 'label', content: r.label },
+    { key: 'type', content: r.transition_type ?? '(any)' },
+    { key: 'ft', content: r.requires_free_text ? 'required' : '—' },
+    { key: 'scope', content: r.version_id ? 'version' : 'global' },
+    { key: 'active', content: r.is_active ? <Lozenge appearance="success">active</Lozenge> : <Lozenge appearance="default">inactive</Lozenge> } ] }));
+  return (
+    <Panel>
+      <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', margin: '0 0 12px' }}>
+        Reason codes surfaced in the reason-capture modal for transitions requiring a reason. Global (version_id null) apply to all versions. View-only for now.
+      </p>
+      {rows.length === 0 ? <Empty msg="No reason codes seeded." /> : <DynamicTable head={head} rows={tableRows} isFixedSize rowsPerPage={20} defaultPage={1} />}
+    </Panel>
+  );
+}
+
 function EnforcementTab() {
   const { data, isLoading } = useEnforcementConfig();
   if (isLoading) return <Loading />;
@@ -216,7 +239,7 @@ export default function WorkflowVersioningPage() {
           <Tabs id="wf-versioning-tabs">
             <TabList>
               <Tab>Versions</Tab><Tab>Schemes</Tab><Tab>Assignments</Tab><Tab>Statuses</Tab>
-              <Tab>Transitions</Tab><Tab>Migration preview</Tab><Tab>Enforcement</Tab><Tab>Audit</Tab>
+              <Tab>Transitions</Tab><Tab>Migration preview</Tab><Tab>Enforcement</Tab><Tab>Reason codes</Tab><Tab>Audit</Tab>
             </TabList>
             <TabPanel><VersionsTab onSelectVersion={setSelectedVersion} /></TabPanel>
             <TabPanel><SchemesTab /></TabPanel>
@@ -224,7 +247,7 @@ export default function WorkflowVersioningPage() {
             <TabPanel><VersionScopedTab kind="statuses" versionId={selectedVersion} versions={versionOptions} onSelect={setSelectedVersion} /></TabPanel>
             <TabPanel><VersionScopedTab kind="transitions" versionId={selectedVersion} versions={versionOptions} onSelect={setSelectedVersion} /></TabPanel>
             <TabPanel><MigrationPreviewTab /></TabPanel>
-            <TabPanel><EnforcementTab /></TabPanel>
+            <TabPanel><EnforcementTab /></TabPanel><TabPanel><ReasonCodesTab /></TabPanel>
             <TabPanel><AuditTab /></TabPanel>
           </Tabs>
         </div>
