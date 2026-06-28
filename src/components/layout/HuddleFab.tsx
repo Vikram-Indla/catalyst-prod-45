@@ -203,7 +203,7 @@ export function HuddleFab() {
       data-huddle-btn
       onClick={leave}
       title="Leave huddle"
-      style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', '#FFFFFF')}
+      style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', 'var(--ds-text-inverse, #FFFFFF)')}
     >
       <PhoneDownIcon />
     </button>
@@ -234,7 +234,7 @@ export function HuddleFab() {
         borderRadius: expanded ? 16 : 999,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: `1.5px solid ${connecting ? 'var(--ds-border, #DFE1E6)' : 'var(--ds-border-success, #4BCE97)'}`,
-        boxShadow: '0 8px 28px rgba(9,30,66,.18), 0 2px 6px rgba(9,30,66,.12)',
+        boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,.18)), 0 2px 6px var(--ds-shadow-raised, rgba(9,30,66,.12))',
         transition: 'gap .18s ease, padding .18s ease, border-radius .18s ease',
         userSelect: 'none',
       }}

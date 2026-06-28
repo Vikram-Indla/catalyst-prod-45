@@ -54,6 +54,7 @@ export const AskCaty: StoryObj = {
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={askCatyLight} alt="Ask Caty dark" />)}
       </AssetRow>
       <AssetRow label="Ask Caty — Light (on dark bg)">
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={askCatyDark} alt="Ask Caty light" />)}
       </AssetRow>
     </div>
@@ -70,6 +71,7 @@ export const Caty: StoryObj = {
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={catyLight} alt="Caty dark" />)}
       </AssetRow>
       <AssetRow label="Caty — Light (on dark bg)">
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyDark} alt="Caty light" />)}
       </AssetRow>
     </div>
@@ -85,7 +87,7 @@ export const AllVariants: StoryObj = {
         {[
           { label: 'gradient', src: askCatyGradient, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
           { label: 'dark (light bg)', src: askCatyLight, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
-          { label: 'light (dark bg)', src: askCatyDark, bg: '#2A2832', textColor: '#F6F4EF' },
+          { label: 'light (dark bg)', src: askCatyDark, bg: '#2A2832', textColor: '#F6F4EF' }, // ads-scanner:ignore-line — Storybook design demo
         ].map(({ label, src, bg, textColor }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, background: bg, borderRadius: 8, padding: '12px 16px' }}>
             <img src={src} alt={`Ask Caty ${label}`} width={48} height={48} />
@@ -98,7 +100,7 @@ export const AllVariants: StoryObj = {
         {[
           { label: 'gradient', src: catyGradient, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
           { label: 'dark (light bg)', src: catyLight, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
-          { label: 'light (dark bg)', src: catyDark, bg: '#2A2832', textColor: '#F6F4EF' },
+          { label: 'light (dark bg)', src: catyDark, bg: '#2A2832', textColor: '#F6F4EF' }, // ads-scanner:ignore-line — Storybook design demo
         ].map(({ label, src, bg, textColor }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, background: bg, borderRadius: 8, padding: '12px 16px' }}>
             <img src={src} alt={`Caty ${label}`} width={48} height={48} />
@@ -115,16 +117,19 @@ export const BrandLogoMark: StoryObj = {
   render: () => (
     <div>
       <AssetRow label="Caty AI — with background (dark canvas)">
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAIBg} alt="Caty AI with bg" />)}
       </AssetRow>
       <AssetRow label="Caty AI — no background (transparent)">
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface-sunken, #F7F8F9)" src={catyAI} alt="Caty AI" />)}
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAI} alt="Caty AI on dark" />)}
       </AssetRow>
       <AssetRow label="Logo Mark — Light (on light bg)">
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={logoMarkLight} alt="Logo mark light" />)}
       </AssetRow>
       <AssetRow label="Logo Mark — Dark (on dark bg)">
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#1E2A3A" src={logoMarkDark} alt="Logo mark dark" />)}
       </AssetRow>
     </div>
@@ -136,9 +141,11 @@ export const BrandComparison: StoryObj = {
   render: () => (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
       {[
+        // ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg
         { label: 'Caty AI BG', src: catyAIBg, bg: '#2A2832', textColor: '#F6F4EF' },
         { label: 'Caty AI', src: catyAI, bg: 'var(--ds-surface-sunken, #F7F8F9)', textColor: 'var(--ds-text-subtle, #6B778C)' },
         { label: 'Logo Mark Light', src: logoMarkLight, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
+        // ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg
         { label: 'Logo Mark Dark', src: logoMarkDark, bg: '#1E2A3A', textColor: '#F6F4EF' },
       ].map(({ label, src, bg, textColor }) => (
         <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, background: bg, borderRadius: 12, padding: 24 }}>
@@ -176,7 +183,8 @@ export const CatyFabIconStory: StoryObj = {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>On dark bg</span>
-          <div style={{ background: '#2A2832', borderRadius: 12, padding: 16 }}>
+          {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
+        <div style={{ background: '#2A2832', borderRadius: 12, padding: 16 }}>
             <CatyFabIcon size={56} />
           </div>
         </div>

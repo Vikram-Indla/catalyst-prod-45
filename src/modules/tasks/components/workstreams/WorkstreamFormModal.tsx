@@ -32,6 +32,7 @@ import { useCreateWorkstream, useUpdateWorkstream, type Workstream } from '../..
 // Workstream colour swatches. These are DATA values (the user-selectable
 // task_workstreams.color hex column) — not design tokens — so literal hex is
 // correct here.
+// ads-scanner:ignore-next-line — Database color values, not design system tokens (2026-06-28)
 const SWATCHES = ['#6554C0', '#0052CC', '#00857A', '#E2B203', '#E56910', '#CA3521', '#943D73', '#5E4DB2'];
 const DEFAULT_COLOR = SWATCHES[0];
 

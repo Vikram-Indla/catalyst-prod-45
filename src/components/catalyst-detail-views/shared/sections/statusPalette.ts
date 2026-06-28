@@ -61,9 +61,9 @@ export function statusBg(appearance: string): string {
  * statusPalette.canonical.test.ts + the design-governance STATUS_COLOR_LOCK rule.
  */
 export const STATUS_CATEGORY_BG: Record<'todo' | 'in_progress' | 'done', string> = {
-  todo:        STATUS_BG.default,    // var(--ds-border, #DFE1E6) gray
-  in_progress: STATUS_BG.inprogress, // #8FB8F6 periwinkle blue
-  done:        STATUS_BG.success,    // #94C748 lime green
+  todo:        STATUS_BG.default,    // gray
+  in_progress: STATUS_BG.inprogress, // periwinkle blue
+  done:        STATUS_BG.success,    // lime green
 };
 
 /** Resolve a status-pill background from a status_category (canonical). */
