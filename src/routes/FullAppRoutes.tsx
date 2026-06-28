@@ -288,6 +288,7 @@ const VercelConnectionPage = lazy(() => import("../pages/admin/connections/Verce
 // WorkHubSyncLogs DEPRECATED 2026-06-20 — route removed
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const WorkflowVersioningPage = lazy(() => import("../pages/admin/workflows/WorkflowVersioningPage"));
+const TestOpsPage = lazy(() => import("../pages/admin/test-ops/TestOpsPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 const FieldRegistryPage = lazy(() => import("../pages/admin/FieldRegistryPage"));
@@ -945,6 +946,7 @@ export default function FullAppRoutes() {
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="workflows/versions" element={<S><WorkflowVersioningPage /></S>} />
+          <Route path="test-ops" element={<S><TestOpsPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
           {/* ── Connections hub (/admin/connections/*) — 2026-06-21 ─────────────
               Replaces the old /admin/workhub/* section. Each integration owns

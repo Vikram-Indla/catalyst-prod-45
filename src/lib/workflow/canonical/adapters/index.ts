@@ -39,7 +39,20 @@ export const DOMAIN_ADAPTER_CONFIGS: Record<EntityKey, DomainAdapterConfig> = {
       closed: 'closed', duplicate: 'closed', canceled: 'closed', reopened: 'open',
     },
   },
-  release: { entityKey: 'release', table: 'rh_releases', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
+  release: {
+    entityKey: 'release', table: 'rh_releases', statusColumn: 'status',
+    workflowKeyColumn: 'workflow_status_key', storageOption: 'A',
+    // rh_releases.status is FREE TEXT (not an enum) → safe to mirror the canonical
+    // key as the compat value. Never widens anything; releases/release_versions
+    // are untouched.
+    enumCompatMap: {
+      draft: 'draft', scope_planning: 'scope_planning', scope_locked: 'scope_locked',
+      build_packaging: 'build_packaging', qa_signoff_pending: 'qa_signoff_pending',
+      uat_signoff_pending: 'uat_signoff_pending', golive_approval_pending: 'golive_approval_pending',
+      scheduled: 'scheduled', deploying: 'deploying', deployed: 'deployed',
+      hypercare: 'hypercare', closed: 'closed', rolled_back: 'rolled_back', canceled: 'canceled',
+    },
+  },
   test_case: { entityKey: 'test_case', table: 'tm_test_cases', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
   test_plan: { entityKey: 'test_plan', table: 'tm_test_plans', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
   test_cycle: { entityKey: 'test_cycle', table: 'tm_test_cycles', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
