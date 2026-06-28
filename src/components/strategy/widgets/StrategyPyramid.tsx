@@ -38,8 +38,8 @@ const LETTER_COLORS: Record<string, string> = {
   mission: 'var(--ds-surface, rgba(255,255,255,0.30))',
   vision: 'var(--ds-surface, rgba(255,255,255,0.30))',
   themes: 'var(--ds-surface, rgba(255,255,255,0.25))',
-  goals: 'rgba(30,58,95,0.20)',
-  krs: 'rgba(30,58,95,0.20)',
+  goals: 'rgba(30,58,95,0.20)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  krs: 'rgba(30,58,95,0.20)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
 };
 
 const LAYER_POINTS: Record<string, string> = {

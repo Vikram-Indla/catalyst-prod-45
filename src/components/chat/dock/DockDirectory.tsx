@@ -100,11 +100,11 @@ function CatyStatusPill({ status, statusCategory }: { status: string; statusCate
 
   // Exact rgb values from CatalystStatusPill.tsx — canonical source of truth.
   const BG: Record<string, string> = {
-    success:    'rgb(148, 199, 72)',   // lime green
+    success:    'rgb(148, 199, 72)',   // lime green // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     inprogress: 'var(--ds-background-information, rgb(143, 184, 246))',  // light blue
-    moved:      'rgb(243, 214, 100)',  // yellow
+    moved:      'rgb(243, 214, 100)',  // yellow // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     removed:    'var(--ds-background-neutral, rgb(221, 222, 225))',  // grey-red
-    new:        'rgb(184, 172, 246)',  // purple
+    new:        'rgb(184, 172, 246)',  // purple // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     default:    'var(--ds-background-neutral, rgb(221, 222, 225))',  // grey
   };
 

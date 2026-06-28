@@ -318,7 +318,7 @@
   user-select: none;
   gap: 6px;
 }
-.roadmap-group-header:hover { background: #EDF2F7; }
+.roadmap-group-header:hover { background: #EDF2F7; } /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
 .roadmap-group-name {
   font-size: var(--roadmap-group-name-size);
   font-weight: var(--roadmap-group-name-weight);

@@ -370,7 +370,7 @@ function SortableRow({
             onClick={() => onDelete(assignment)}
             className="w-8 h-8 rounded flex items-center justify-center transition-colors"
             style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
           >
             <TrashIcon label="" size="small" />

@@ -37,7 +37,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
         flexShrink: 0,
       }}>
         <div style={{
-          width: 36, height: 24, borderRadius: 4, background: '#0D2242',
+          width: 36, height: 24, borderRadius: 4, background: '#0D2242', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'var(--bg-app)', fontSize: 9, fontWeight: 800,
         }}>MIM</div>

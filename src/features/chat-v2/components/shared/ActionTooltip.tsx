@@ -52,7 +52,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
       <div
         style={{
           padding: '6px 10px',
-          background: '#1D1D1F',
+          background: '#1D1D1F', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           color: 'var(--ds-text-inverse, #FFFFFF)',
           borderRadius: 6,
           fontFamily: 'var(--cv2-font)',
@@ -68,7 +68,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
         <div
           style={{
             padding: '2px 8px',
-            background: '#1D1D1F',
+            background: '#1D1D1F', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             color: 'var(--ds-text-inverse, #FFFFFF)',
             borderRadius: 4,
             fontFamily: 'var(--cv2-font)',

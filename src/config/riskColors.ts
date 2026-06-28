@@ -17,8 +17,8 @@ export type RiskSeverity = 'critical' | 'high' | 'medium' | 'low';
  * - Low (var(--ds-chart-teal-bold, #0d9488)) – "Manageable, track over time" (Teal)
  */
 export const RISK_COLORS = {
-  critical: '#922b21',
-  high: '#cb4335',
+  critical: '#922b21', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  high: '#cb4335', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   medium: 'var(--ds-background-warning-bold, #f59e0b)',
   low: 'var(--ds-chart-teal-bold, #0d9488)',
 } as const;

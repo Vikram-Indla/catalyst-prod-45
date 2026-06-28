@@ -123,7 +123,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         color: 'var(--ds-text, #292A2E)',
         borderRadius: 6,
-        boxShadow: '0 8px 24px rgba(9,30,66,0.18), 0 2px 6px rgba(9,30,66,0.10)',
+        boxShadow: '0 8px 24px rgba(9,30,66,0.18), 0 2px 6px rgba(9,30,66,0.10)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         border: '1px solid var(--ds-border, #DFE1E6)',
         opacity: entered ? 1 : 0,
         transform: entered ? 'translateX(0)' : 'translateX(-16px)',

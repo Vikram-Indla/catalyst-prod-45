@@ -6,13 +6,13 @@ describe('buildAllUserProjects', () => {
     { id: 'u1', key: 'BAU', name: 'Senaei BAU', avatar_url: null, color: 'var(--ds-text, #172B4D)' },
     { id: 'u2', key: 'IP', name: 'IP Implementation', avatar_url: '/ip.png', color: null },
   ];
-  const phIcons = [{ key: 'BAU', icon: 'rocket', color: '#222' }];
+  const phIcons = [{ key: 'BAU', icon: 'rocket', color: '#222' }]; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   const jiraNames = [{ project_key: 'MWR', name: 'MWR Project' }];
 
   it('maps catalyst projects and overlays ph_projects icon/color', () => {
     const out = buildAllUserProjects({ catalystProjects, phIcons, jiraNames, userIssueProjectKeys: [] });
     const bau = out.find(p => p.key === 'BAU')!;
-    expect(bau).toMatchObject({ id: 'u1', name: 'Senaei BAU', icon: 'rocket', color: '#222' });
+    expect(bau).toMatchObject({ id: 'u1', name: 'Senaei BAU', icon: 'rocket', color: '#222' }); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   });
 
   it('falls back to projects.color when ph_projects has no row', () => {

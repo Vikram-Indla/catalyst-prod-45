@@ -23,9 +23,9 @@ import { STATUS_CATEGORY_COLORS, STATUS_CATEGORY_LABELS, type StatusCategory } f
 const STATUS_BG: Record<string, string> = {
   success:    'var(--ds-background-success-bold, #6A9A23)',
   inprogress: 'var(--ds-background-information, #E9F2FF)',
-  moved:      '#F3D664',
-  new:        '#B8ACF6',
-  removed:    '#FD9891',
+  moved:      '#F3D664', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  new:        '#B8ACF6', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  removed:    '#FD9891', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   default:    'var(--ds-border, #DFE1E6)',
 };
 const STATUS_TEXT = 'var(--ds-text, #172B4D)';

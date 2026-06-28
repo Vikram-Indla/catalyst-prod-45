@@ -501,7 +501,7 @@ export function getStaleIndicator(ageDays: number, status: string, statusCategor
   const cat = getStatusCategory(status, statusCategory);
   if (cat === 'done') return null;
   if (ageDays > 21) return { icon: '⚠️', color: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', label: 'Critically stale (>21d)' };
-  if (ageDays > 14) return { icon: '🔴', color: '#E23636', label: 'Stale (>14d)' };
+  if (ageDays > 14) return { icon: '🔴', color: '#E23636', label: 'Stale (>14d)' }; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   return null;
 }
 

@@ -203,7 +203,7 @@ export function RoadmapDependencyLines({
         >
           <path 
             d="M 0 0 L 10 5 L 0 10 z" 
-            fill="#a1a1aa"
+            fill="var(--ds-icon-subtle, #a1a1aa)"
           />
         </marker>
         <marker

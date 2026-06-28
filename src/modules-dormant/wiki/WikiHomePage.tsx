@@ -314,7 +314,7 @@ StatCard.displayName = 'StatCard';
 /* ── Domain color map for quick ref icons ── */
 const DOMAIN_COLORS: Record<string, { bg: string; fg: string }> = {
   D1: { bg: 'var(--ds-background-information, #E9F2FF)', fg: 'var(--ds-link-pressed, #1e40af)' },   // blue
-  D2: { bg: '#CFFAFE', fg: '#0E7490' },   // cyan
+  D2: { bg: '#CFFAFE', fg: '#0E7490' },   // cyan // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   D3: { bg: 'var(--ds-background-warning, #FFF7D6)', fg: 'var(--ds-text-warning, #974F0C)' },   // amber
   D4: { bg: 'var(--ds-background-success, #DCFCE7)', fg: 'var(--ds-text-success, #216E4E)' },   // green
   D5: { bg: 'var(--ds-background-discovery, #F3F0FF)', fg: 'var(--ds-background-discovery-bold, #5b21b6)' },   // purple

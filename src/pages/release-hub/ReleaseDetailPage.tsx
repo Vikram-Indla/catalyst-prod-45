@@ -458,7 +458,7 @@ export function ReleaseDetailPage({
             alignItems: 'center',
             justifyContent: 'center',
             color: 'var(--ds-text-subtle, #505258)',
-            boxShadow: '0 1px 2px rgba(9,30,66,0.08)',
+            boxShadow: '0 1px 2px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             zIndex: 1,
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}

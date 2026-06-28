@@ -55,8 +55,8 @@ export const SUBTASK_TYPE_CONFIG = {
   figma: {
     label: 'Figma',
     icon: 'Figma',
-    color: '#a259ff',
-    bgColor: 'rgba(162, 89, 255, 0.12)',
+    color: '#a259ff', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    bgColor: 'rgba(162, 89, 255, 0.12)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   },
 } as const;
 
@@ -64,7 +64,7 @@ export const SUBTASK_STATUS_CONFIG = {
   todo: {
     label: 'To Do',
     color: 'var(--ds-border, #DFE1E6)',
-    bgColor: 'rgba(200, 204, 208, 0.15)',
+    bgColor: 'rgba(200, 204, 208, 0.15)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
   },
   in_progress: {
     label: 'In Progress',

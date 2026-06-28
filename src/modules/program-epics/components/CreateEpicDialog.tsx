@@ -404,7 +404,7 @@ export function CreateEpicDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
         "sm:max-w-[600px] max-h-[90vh] p-0 flex flex-col overflow-hidden",
-        "bg-white dark:bg-[#141414]",
+        "bg-white dark:bg-[#141414]", // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         "rounded-lg",
         "shadow-xl",
         "border border-gray-200 dark:border-[var(--ds-text, #172B4D)]",

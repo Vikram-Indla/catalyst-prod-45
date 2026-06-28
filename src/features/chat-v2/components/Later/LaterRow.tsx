@@ -81,8 +81,8 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
               style={{
                 display: 'inline-block',
                 padding: '2px 8px',
-                background: 'rgba(155, 89, 182, 0.25)',
-                color: '#C9A4F0',
+                background: 'rgba(155, 89, 182, 0.25)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+                color: '#C9A4F0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                 borderRadius: 10,
                 fontSize: 11,
                 fontWeight: 700,

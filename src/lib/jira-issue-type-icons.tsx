@@ -220,7 +220,7 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
   // ── Release: teal stopwatch ──
   release: {
     label: 'Release',
-    color: '#0C7A6D',
+    color: 'var(--ds-icon-success, #0C7A6D)',
     iconFile: 'release',
   },
 };

@@ -44,7 +44,7 @@ function WorkloadRow({
   const barColor = isHeavy
     ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
     : isMedium
-    ? '#F5A623'
+    ? 'var(--ds-background-warning-bold, #F5A623)'
     : 'var(--ds-chart-purple-bold, #8A7CFF)';
 
   return (

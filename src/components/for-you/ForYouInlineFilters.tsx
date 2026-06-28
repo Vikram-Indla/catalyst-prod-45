@@ -16,7 +16,7 @@ const HUB_DOT_COLORS: Record<string, string> = {
   Strategy: 'var(--ds-link, #0C66E4)',
   Plan: 'var(--ds-background-discovery-bold, #6366f1)',
 };
-const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "var(--ds-background-discovery, #6b8b7a)"];
+const AVATAR_PALETTE = ['var(--ds-chart-blue-bold, #6b7a8d)', 'var(--ds-chart-green-bold, #7a8b6b)', 'var(--ds-chart-orange-bold, #8b7a6b)', 'var(--ds-background-discovery-bold, #6b6b8b)', 'var(--ds-chart-teal-bold, #6b8b8b)', 'var(--ds-chart-magenta-bold, #8b6b7a)', 'var(--ds-chart-purple-bold, #7a6b8b)', 'var(--ds-background-discovery, #6b8b7a)'];
 function getAvatarColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);

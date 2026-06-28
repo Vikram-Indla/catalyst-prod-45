@@ -138,7 +138,7 @@ function PopupShell({
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4,
-        boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+        boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -173,7 +173,7 @@ function SearchInput({
         borderRadius: 3,
         border: `1px solid ${focused ? PILL_BLUE : 'var(--ds-border, #DFE1E6)'}`,
         background: 'var(--ds-surface, #FFFFFF)',
-        boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+        boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
         transition: 'border-color 80ms ease, box-shadow 80ms ease',
       }}
     >
@@ -639,7 +639,7 @@ export function ProductSelect({
     cursor: disabled ? 'not-allowed' : 'pointer',
     outline: 'none',
     textAlign: 'left',
-    boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+    boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
     opacity: disabled ? 0.7 : 1,
   };
 

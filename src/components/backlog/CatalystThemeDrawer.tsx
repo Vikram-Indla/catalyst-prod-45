@@ -128,9 +128,9 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
   },
   approved: {
     label: 'Approved',
-    bg: 'rgba(38,166,154,0.12)',
+    bg: 'rgba(38,166,154,0.12)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     text: 'var(--sem-success)',
-    border: 'rgba(38,166,154,0.3)',
+    border: 'rgba(38,166,154,0.3)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     icon: CheckCircle2,
   },
   on_hold: {

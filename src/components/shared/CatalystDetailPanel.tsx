@@ -460,7 +460,7 @@ function PhIssuePanelBody({
             position: 'fixed', top: morePos.top, right: morePos.right, zIndex: 10010,
             minWidth: 200, background: 'var(--ds-surface-overlay, #FFFFFF)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '6px 0',
           }}
         >

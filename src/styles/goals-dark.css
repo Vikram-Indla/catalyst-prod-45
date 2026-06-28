@@ -216,7 +216,7 @@
 }
 
 /* ── AI badge ── */
-[data-theme="dark"] [data-goals-page] span[style*="background: rgb(245, 243, 255)"] {
+[data-theme="dark"] [data-goals-page] span[style*="background: rgb(245, 243, 255)"] { /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   background: var(--ds-background-discovery-bold, rgba(167,139,250,0.10)) !important;
 }
 

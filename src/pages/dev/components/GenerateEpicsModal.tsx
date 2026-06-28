@@ -318,7 +318,7 @@ export function GenerateEpicsModal({
                   padding: '16px',
                   backgroundColor: 'var(--ds-background-success, #DFFCF0)',
                   borderRadius: '4px',
-                  border: '1px solid #4CE97',
+                  border: '1px solid #4CE97', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                   marginBottom: 16,
                 }}
               >

@@ -24,7 +24,7 @@ export const WorkListLoadingState = memo(function WorkListLoadingState() {
         style={{
           width: '32px',
           height: '32px',
-          border: '3px solid #E6EDFA',
+          border: '3px solid var(--ds-background-information, #E6EDFA)',
           borderTop: '3px solid var(--ds-link, #0C66E4)',
           borderRadius: '50%',
           animation: 'spin 1s linear infinite',

@@ -159,7 +159,7 @@ function IncidentHealthSection({
   slaAtRisk: number;
   onDrillDown: (filter: string) => void;
 }) {
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28']; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">

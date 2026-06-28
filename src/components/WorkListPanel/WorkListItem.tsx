@@ -95,7 +95,7 @@ export const WorkListItem = memo(function WorkListItem({
           fontSize: '11px',
           fontWeight: 500,
           padding: '2px 6px',
-          backgroundColor: '#E6EDFA',
+          backgroundColor: 'var(--ds-background-information, #E6EDFA)',
           color: 'var(--ds-link, #0C66E4)',
           borderRadius: '3px',
           flexShrink: 0,

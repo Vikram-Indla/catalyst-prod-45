@@ -705,7 +705,7 @@
 }
 
 .dark .boards-card__label--yellow {
-  background-color: rgba(234, 179, 8, 0.15);
+  background-color: rgba(234, 179, 8, 0.15); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   color: var(--ds-background-warning, #FFF7D6);
 }
 

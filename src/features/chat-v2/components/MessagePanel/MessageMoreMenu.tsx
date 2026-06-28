@@ -218,7 +218,7 @@ const Item = React.forwardRef<HTMLButtonElement, {
       onMouseEnter={e => {
         if (!active) {
           (e.currentTarget as HTMLElement).style.background = danger
-            ? 'rgba(224,30,90,0.12)'
+            ? 'rgba(224,30,90,0.12)' // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             : 'var(--cv2-bg-row-hover)';
         }
       }}

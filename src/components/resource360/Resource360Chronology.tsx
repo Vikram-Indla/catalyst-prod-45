@@ -126,7 +126,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                 const isPending = cat !== 'done';
                 const sc = cat === 'todo' ? T.todo : cat === 'progress' ? T.progress : T.done;
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
-                const bg = showPendingOnly && isPending ? T.pendHl : idx % 2 === 0 ? T.surface : '#FAF8F5';
+                const bg = showPendingOnly && isPending ? T.pendHl : idx % 2 === 0 ? T.surface : 'var(--ds-surface-sunken, #FAF8F5)';
                 const isExpanded = expandedId === item.work_item_id;
                 const hc = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
                 const hs = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
@@ -138,7 +138,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                       background: bg, borderBottom: `1px solid ${T.border}`, borderLeft: `4px solid ${sc}`,
                       cursor: 'pointer', transition: 'background .1s',
                     }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#EDE7E0'; }} onMouseLeave={e => { e.currentTarget.style.background = bg; }}>
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EDE7E0)'; }} onMouseLeave={e => { e.currentTarget.style.background = bg; }}>
                       <ExpandChevron expanded={isExpanded} onClick={e => { e.stopPropagation(); toggleExpand(item.work_item_id); }} />
                       {/* Key + Hub */}
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, minWidth: 64 }}>

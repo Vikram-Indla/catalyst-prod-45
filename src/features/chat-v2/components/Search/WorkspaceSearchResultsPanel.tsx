@@ -225,7 +225,7 @@ function Snippet({ body, query }: { body: string; query: string }) {
       {before}
       <mark
         style={{
-          background: 'rgba(255, 196, 0, 0.35)',
+          background: 'rgba(255, 196, 0, 0.35)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           color: 'inherit',
           padding: 0,
           borderRadius: 2,

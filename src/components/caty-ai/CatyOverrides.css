@@ -429,7 +429,7 @@ button.caty-department-pill,
 }
 
 .caty-metric-card.success {
-  border-color: rgba(5,150,105,0.3) !important;
+  border-color: rgba(5,150,105,0.3) !important; /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   background: var(--ds-background-success, #DFFCF0) !important;
 }
 

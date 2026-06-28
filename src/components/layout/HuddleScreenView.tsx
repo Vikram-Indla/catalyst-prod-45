@@ -98,7 +98,7 @@ export function HuddleScreenView() {
       autoPlay
       playsInline
       muted
-      style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }}
+      style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     />
   );
 
@@ -138,10 +138,10 @@ export function HuddleScreenView() {
   if (maximized) {
     return (
       <div role="dialog" aria-label="Shared screen (maximized)"
-        style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(9,30,66,.75)',
+        style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(9,30,66,.75)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
           display: 'flex', flexDirection: 'column', padding: 24 }}>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0,
-          background: '#000', borderRadius: 12, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}>
+          background: '#000', borderRadius: 12, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           {titleBar}
           {videoEl}
         </div>
@@ -159,9 +159,9 @@ export function HuddleScreenView() {
         position: 'fixed', top: pos.top, left: pos.left, zIndex: 65,
         width: size.w, height: size.h, minWidth: 240, minHeight: 160,
         resize: 'both', overflow: 'hidden',
-        background: '#000', borderRadius: 12,
+        background: '#000', borderRadius: 12, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         border: '1.5px solid var(--ds-border, #DFE1E6)',
-        boxShadow: '0 12px 34px rgba(9,30,66,.28)',
+        boxShadow: '0 12px 34px rgba(9,30,66,.28)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         display: 'flex', flexDirection: 'column',
       }}
     >

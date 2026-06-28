@@ -55,13 +55,13 @@ export const APPROVAL_STATUS_CONFIG = {
     // token('color.text.success.bolder') / bg: token('color.background.success.hovered')
     label: 'Approved',
     color: 'var(--ds-text-success, #006644)',
-    bgColor: '#ABF5D1',
+    bgColor: '#ABF5D1', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   },
   rejected: {
     // token('color.text.danger.bolder') / bg: token('color.background.danger.subtler')
     label: 'Rejected',
     color: 'var(--ds-text-danger, #AE2A19)',
-    bgColor: '#FFBDAD',
+    bgColor: '#FFBDAD', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   },
   waiting: {
     // Canonical StatusLozenge grey (CLAUDE.md §5) — neutral.bold text on lozenge grey

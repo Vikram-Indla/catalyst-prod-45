@@ -29,10 +29,10 @@ import { catalystToast } from '@/lib/catalystToast';
 
 const PRIORITY_COLORS: Record<string, string> = {
   highest: 'var(--ds-background-danger-bold, #C9372C)',
-  high:    '#E97F33',
+  high:    '#E97F33', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   medium:  'var(--ds-background-warning-bold, #E2B203)',
-  low:     '#2D8738',
-  lowest:  '#57A55A',
+  low:     '#2D8738', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  lowest:  '#57A55A', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
 };
 
 function PriorityIcon({ priority }: { priority: string }) {

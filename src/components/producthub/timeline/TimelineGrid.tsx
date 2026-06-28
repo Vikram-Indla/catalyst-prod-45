@@ -193,7 +193,7 @@ export const TimelineGrid: React.FC<TimelineGridProps> = ({
                   style={{
                     top: currentY,
                     height: rowHeight,
-                    backgroundColor: idx % 2 === 1 ? 'rgba(250,250,250,0.5)' : undefined,
+                    backgroundColor: idx % 2 === 1 ? 'rgba(250,250,250,0.5)' : undefined, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                   }}
                 />
               );

@@ -265,7 +265,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             }}
             onFocus={e => {
               e.currentTarget.style.borderColor = 'var(--cp-blue)';
-              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(76,110,245,0.12)';
+              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(76,110,245,0.12)'; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
               e.currentTarget.style.background = 'var(--bg-app)';
             }}
             onBlur={e => {
@@ -280,7 +280,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               className="ka-icon-btn"
               style={{
                 width: 36, height: 50, borderRadius: 8, flexShrink: 0,
-                border: 'none', background: isListening ? 'rgba(207,19,34,0.10)' : 'transparent',
+                border: 'none', background: isListening ? 'rgba(207,19,34,0.10)' : 'transparent', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             >

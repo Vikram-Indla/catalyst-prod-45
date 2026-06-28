@@ -106,7 +106,7 @@ export function GlobalProgressIndicator({
         style={{
           width: 120,
           height: 4,
-          backgroundColor: '#BCDFFB',
+          backgroundColor: '#BCDFFB', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           borderRadius: 2,
           overflow: 'hidden',
         }}

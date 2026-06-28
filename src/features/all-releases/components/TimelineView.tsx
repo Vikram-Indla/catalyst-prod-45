@@ -27,8 +27,8 @@ const HEALTH_BAR_COLORS: Record<HealthLevel, string> = {
 
 const HEALTH_BAR_BG: Record<HealthLevel, string> = {
   critical: 'var(--ds-background-danger, rgba(239,68,68,0.35))',
-  at_risk: 'rgba(249,115,22,0.35)',
-  attention: 'rgba(234,179,8,0.35)',
+  at_risk: 'rgba(249,115,22,0.35)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  attention: 'rgba(234,179,8,0.35)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   healthy: 'var(--ds-background-success-bold, rgba(34,197,94,0.35))',
 };
 

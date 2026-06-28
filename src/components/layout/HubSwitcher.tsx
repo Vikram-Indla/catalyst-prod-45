@@ -348,7 +348,7 @@ export function HubSwitcher() {
                           borderRadius: 4,
                           background: 'var(--ds-surface, #FFFFFF)',
                           border: '1px solid var(--ds-border, #DFE1E6)',
-                          boxShadow: '0 1px 3px rgba(9, 30, 66, 0.08)',
+                          boxShadow: '0 1px 3px rgba(9, 30, 66, 0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
                           marginBottom: 4,
                           outline: 'none',
                         }}

@@ -132,8 +132,8 @@ export default function NotificationPanel({
     text3: isDark ? "var(--ds-text-subtlest, #878787)" : "var(--ds-text-subtlest, #6B778C)",
     border: isDark ? "var(--ds-background-neutral, #2E2E2E)" : "rgba(15,23,42,0.15)", // Direct values, not CSS vars
     borderStrong: isDark ? "var(--ds-text-subtle, #454545)" : "rgba(15,23,42,0.20)",
-    hover: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.04)",
-    press: isDark ? "rgba(255,255,255,0.10)" : "rgba(15,23,42,0.08)",
+    hover: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.04)", // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    press: isDark ? "rgba(255,255,255,0.10)" : "rgba(15,23,42,0.08)", // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     shadow: isDark
       ? "0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.4)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.5))"
       : "0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.12)), 0 0 1px var(--ds-shadow-overlay, rgba(15,23,42,0.08))",

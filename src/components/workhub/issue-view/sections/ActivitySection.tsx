@@ -40,7 +40,7 @@ function formatRelative(date: string | null): string {
 function AvatarSmall({ name, isDark }: { name: string; isDark: boolean }) {
   const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const colors = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+  const colors = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #FA8C16)', 'var(--ds-chart-green-bold, #52C41A)', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
   return (
     <div
       className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"

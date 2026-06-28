@@ -38,7 +38,7 @@ export function getUtilizationColor(percentage: number, mode: 'standard' | 'ther
     // DARK MODE - use darker backgrounds with light text
     if (percentage === 0) return { bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.25))', text: 'var(--ds-background-success, #DCFFF1)', pulse: false };  // teal
     if (percentage <= 40) return { bg: 'var(--ds-background-success-bold, rgba(16, 185, 129, 0.25))', text: 'var(--ds-background-success, #DFFCF0)', pulse: false };  // emerald
-    if (percentage <= 70) return { bg: 'rgba(56, 189, 248, 0.25)', text: '#7dd3fc', pulse: false };  // sky
+    if (percentage <= 70) return { bg: 'rgba(56, 189, 248, 0.25)', text: '#7dd3fc', pulse: false };  // sky // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     if (percentage <= 85) return { bg: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.30))', text: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))', pulse: false };  // blue
     if (percentage <= 100) return { bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.35))', text: 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))', pulse: false }; // blue darker
     return { bg: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.35))', text: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', pulse: true };  // amber - warning

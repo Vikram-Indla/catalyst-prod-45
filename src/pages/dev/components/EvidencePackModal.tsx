@@ -170,8 +170,8 @@ export function EvidencePackModal({
       text: 'var(--ds-link, #0052CC)',
       attachment: 'var(--ds-text-warning, #974F0C)',
       screenshot: 'var(--ds-text-success, #216E4E)',
-      figma: '#9F8FEF',
-      comment: '#E2622D',
+      figma: '#9F8FEF', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+      comment: '#E2622D', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
       linked: 'var(--ds-icon-subtle, #626F86)',
     };
     return colors[type] || 'var(--ds-icon-subtle, #626F86)';

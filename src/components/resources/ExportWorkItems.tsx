@@ -491,10 +491,10 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
             background: 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1d4ed8), var(--cp-blue))', padding: '14px 16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#D6E4F0" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--ds-background-information, #D6E4F0)" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
               <span style={{ color: 'var(--ds-surface, #fff)', fontSize: 14, fontWeight: 700 }}>Export Work Items</span>
             </div>
-            <div style={{ color: '#D6E4F0', fontSize: 11, marginLeft: 26 }}>Select months · Sheet 1 = Resources</div>
+            <div style={{ color: 'var(--ds-background-information, #D6E4F0)', fontSize: 11, marginLeft: 26 }}>Select months · Sheet 1 = Resources</div>
           </div>
 
           {/* Month selection */}

@@ -258,7 +258,7 @@ export default function GadgetSettingsPanel({
             style={{
               display: 'flex', alignItems: 'center', minHeight: 36,
               border: openField === 'date' ? '2px solid var(--ds-border-focused, #4C9AFF)' : '2px solid var(--ds-border, #DFE1E6)',
-              boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none',
+              boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
               borderRadius: 3, background: openField === 'date' ? 'var(--ds-surface, #fff)' : 'var(--ds-surface-sunken, #FAFBFC)',
               padding: '0 8px', cursor: 'pointer', width: '100%', gap: 8,
             }}

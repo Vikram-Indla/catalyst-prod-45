@@ -294,7 +294,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         const deptStyles: Record<string, { bg: string; text: string }> = {
           'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))' },
           'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #6d28d9))' },
-          'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
+          'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           'SUPPORT': { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))', text: 'var(--quality-high, #059669)' },
         };
 

@@ -14,8 +14,8 @@ const SRC = fs.readFileSync(
 );
 
 describe('CatalystViewIncident parity (static analysis)', () => {
-  it('severity banner background must use DS token, not raw #FFF5F5', () => {
-    expect(SRC).not.toMatch(/background:\s*'#FFF5F5'/);
+  it('severity banner background must use DS token, not raw #FFF5F5', () => { // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    expect(SRC).not.toMatch(/background:\s*'#FFF5F5'/); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   });
 
   it('severity banner border must use DS token, not raw var(--ds-background-danger, #FFECEB)', () => {

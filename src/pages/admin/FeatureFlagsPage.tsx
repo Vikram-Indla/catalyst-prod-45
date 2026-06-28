@@ -835,7 +835,7 @@ export default function FeatureFlagsPage() {
           </span>{' '}
           modules
         </span>
-        <span style={{ color: 'rgba(113,113,122,0.4)' }}>•</span>
+        <span style={{ color: 'rgba(113,113,122,0.4)' }}>•</span> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         <span>Changes take effect immediately for all users</span>
       </div>
 

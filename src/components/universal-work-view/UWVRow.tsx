@@ -342,8 +342,8 @@ export const UWVRow = React.memo(function UWVRow({
   onToggleExpand,
   onClick,
 }: UWVRowProps) {
-  const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 #E4E6EA';
-  const restShadow = 'inset 0 -1px 0 0 #E4E6EA';
+  const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 var(--ds-border, #E4E6EA)';
+  const restShadow = 'inset 0 -1px 0 0 var(--ds-border, #E4E6EA)';
 
   return (
     <div

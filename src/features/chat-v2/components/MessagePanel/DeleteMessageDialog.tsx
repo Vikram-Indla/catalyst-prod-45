@@ -141,7 +141,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
               color: 'var(--ds-text-inverse, #FFFFFF)',
               border: '1px solid var(--cv2-danger)',
               borderRadius: 'var(--cv2-radius-sm)',
-              boxShadow: '0 0 0 3px rgba(224,30,90,0.30)',
+              boxShadow: '0 0 0 3px rgba(224,30,90,0.30)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
               fontFamily: 'inherit',
               fontSize: 14,
               fontWeight: 700,

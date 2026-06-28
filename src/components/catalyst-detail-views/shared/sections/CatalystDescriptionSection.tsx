@@ -827,7 +827,7 @@ export function CatalystDescriptionSection({
             margin: 0,
             padding: "0 16px",
             flex: 1,
-            /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88).
+            /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88). // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                TreeWalker text-node probe confirmed h2 is the direct parent of the "Description"
                text node at 14px/500. Differs from Key details/Subtasks/LWI/Activity (all 16px/653). */
             fontSize: 14,

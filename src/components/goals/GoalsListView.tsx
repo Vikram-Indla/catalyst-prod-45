@@ -22,7 +22,7 @@ const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
   'Sitah Alqahtani':    { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)' },
   'Sulaiman Alessa':    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' },
   'ibrahim alqusiyer':  { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
-  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
+  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   'Izza Ali':           { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)' },
 };
 function getAvatarColors(name: string) {

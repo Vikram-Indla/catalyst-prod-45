@@ -130,9 +130,9 @@ function priorityColor(p: string | null | undefined): string {
   const v = (p || '').toLowerCase();
   if (v.includes('highest') || v.includes('blocker')) return 'var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))';
   if (v.includes('high')) return 'var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))';
-  if (v.includes('medium')) return '#D04A02';
-  if (v.includes('low')) return '#2C8540';
-  if (v.includes('lowest')) return '#1F7344';
+  if (v.includes('medium')) return 'var(--ds-text-warning, #D04A02)';
+  if (v.includes('low')) return 'var(--ds-text-success, #2C8540)';
+  if (v.includes('lowest')) return 'var(--ds-text-success, #1F7344)';
   return 'var(--ds-text-subtlest, #6B6E76)';
 }
 

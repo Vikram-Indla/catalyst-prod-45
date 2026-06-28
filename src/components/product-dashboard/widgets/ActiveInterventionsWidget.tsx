@@ -4,7 +4,7 @@ import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
-const PHASE_APPROVAL = '#F5A623';
+const PHASE_APPROVAL = 'var(--ds-background-warning-bold, #F5A623)';
 const PHASE_PAUSED   = 'var(--ds-text-subtlest, #6B778C)';
 
 function daysWaiting(iso: string | null): number {

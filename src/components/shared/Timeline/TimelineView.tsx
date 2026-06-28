@@ -2366,7 +2366,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         gap: 4,
                         height: 26,
                         padding: "4px 10px",
-                        border: "1px solid rgba(11,18,14,0.14)",
+                        border: "1px solid rgba(11,18,14,0.14)", // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                         borderRadius: 3,
                         background: "transparent",
                         cursor: "pointer",

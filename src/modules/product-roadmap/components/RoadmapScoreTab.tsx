@@ -173,7 +173,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
     <div>
       {/* Computed score header */}
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <div style={{ fontSize: '11px', fontWeight: 600, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #a1a1aa)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
           Computed Score
         </div>
         <div style={{ fontSize: '40px', fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontVariantNumeric: 'tabular-nums' }}>

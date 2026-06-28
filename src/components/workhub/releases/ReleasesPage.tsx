@@ -118,7 +118,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
                 <label key={opt} style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
                   cursor: 'pointer', fontSize: 12, color: 'var(--fg-1)',
-                  background: checked ? '#f0f9ff' : 'transparent',
+                  background: checked ? 'var(--ds-background-information, #f0f9ff)' : 'transparent',
                 }}>
                   <input
                     type="checkbox"

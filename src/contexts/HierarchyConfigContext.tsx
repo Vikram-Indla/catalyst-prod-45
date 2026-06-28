@@ -34,7 +34,7 @@ export const DEFAULT_HIERARCHY_LEVELS: HierarchyLevel[] = [
     level: 3,
     name: 'Feature',
     jiraTypes: ['Feature'],
-    color: '#00B8D9',
+    color: 'var(--ds-chart-teal-bold, #00B8D9)',
     parentLevels: [2],
   },
   {

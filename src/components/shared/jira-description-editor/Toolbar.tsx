@@ -18,7 +18,7 @@ const TEXT_COLORS = [
   { label: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
   { label: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
   { label: 'Green', value: 'var(--ds-background-success-bold, #1F845A)' },
-  { label: 'Teal', value: '#00B8D9' },
+  { label: 'Teal', value: 'var(--ds-chart-teal-bold, #00B8D9)' },
   { label: 'Blue', value: 'var(--cp-primary-60, #0052CC)' },
   { label: 'Purple', value: 'var(--ds-background-discovery-bold, #6554C0)' },
   { label: 'Pink', value: 'var(--ds-background-danger-bold, #C9372C)' },

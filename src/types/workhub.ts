@@ -337,7 +337,7 @@ export const WH_PRIORITY_CONFIG: Record<WhPriority, { bars: number; color: strin
   High:    { bars: 3, color: 'var(--ds-background-warning-bold, #f97316)', label: 'High' },
   Medium:  { bars: 2, color: 'var(--ds-background-information-bold, #3b82f6)', label: 'Medium' },
   Low:     { bars: 1, color: 'var(--ds-background-success-bold, #1F845A)', label: 'Low' },
-  Lowest:  { bars: 0, color: '#8c8f96', label: 'Lowest' },
+  Lowest:  { bars: 0, color: '#8c8f96', label: 'Lowest' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
 };
 
 // ═══ STATUS TRANSITIONS (Jira changelog) ═══

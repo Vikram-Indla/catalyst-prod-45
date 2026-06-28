@@ -31,8 +31,8 @@ const ICON_COLORS: Record<string, string> = {
 const OUTLINE_COLORS: Record<string, string> = {
   theme: 'var(--ds-background-accent-teal-bolder, #14b8a6)',
   objective: 'var(--ds-text-brand, #3b82f6)',
-  'business-request': '#9c8466',
-  epic: '#a060f0',
+  'business-request': '#9c8466', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  epic: '#a060f0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   feature: 'var(--ds-background-warning-bold, #E2B203)',
   story: 'var(--ds-background-success, #DFFCF0)',
   task: 'var(--ds-text-brand, #3b82f6)',

@@ -172,7 +172,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
               </>
             )}
             {request.assignee_name && request.department_name && (
-              <span style={{ color: '#a1a1aa' }}>·</span>
+              <span style={{ color: 'var(--ds-icon-subtle, #a1a1aa)' }}>·</span>
             )}
             {request.department_name && (
               <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #626F86)' }}>{request.department_name}</span>

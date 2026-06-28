@@ -59,7 +59,7 @@ const getInitials = (name: string) => {
     ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
     : (parts[0]?.[0] || '?').toUpperCase();
 };
-const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 'var(--ds-background-discovery, #6b8b7a)'];
+const AVATAR_COLORS = ['var(--ds-chart-blue-bold, #6b7a8d)', 'var(--ds-chart-green-bold, #7a8b6b)', 'var(--ds-chart-orange-bold, #8b7a6b)', 'var(--ds-background-discovery-bold, #6b6b8b)', 'var(--ds-chart-teal-bold, #6b8b8b)', 'var(--ds-chart-magenta-bold, #8b6b7a)', 'var(--ds-chart-purple-bold, #7a6b8b)', 'var(--ds-background-discovery, #6b8b7a)'];
 
 const hashColor = (name: string) => {
   let hash = 0;

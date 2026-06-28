@@ -479,7 +479,7 @@ function HighlightedText({ text, query, bold = false }: { text: string; query: s
   return (
     <span style={{ fontWeight: bold ? 700 : 'inherit' }}>
       {before}
-      <mark style={{ background: 'rgba(255, 196, 0, 0.35)', color: 'inherit', padding: 0, borderRadius: 2 }}>{hit}</mark>
+      <mark style={{ background: 'rgba(255, 196, 0, 0.35)', color: 'inherit', padding: 0, borderRadius: 2 }}>{hit}</mark> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
       {after}
     </span>
   );

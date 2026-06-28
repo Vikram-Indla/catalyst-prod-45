@@ -57,7 +57,7 @@ interface Props {
 const COLOR_TO_HEX: Record<SlashIconColor, string> = {
   green: 'var(--ds-background-success-bold, #1F845A)',
   blue: 'var(--ds-link, #1868DB)',
-  orange: '#E56910',
+  orange: 'var(--ds-text-warning, #E56910)',
   purple: 'var(--ds-background-discovery-bold, #6E5DC6)',
   red: 'var(--ds-background-danger-bold, #C9372C)',
   gray: 'var(--ds-icon-subtle, #626F86)',

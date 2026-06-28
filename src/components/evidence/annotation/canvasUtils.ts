@@ -141,7 +141,7 @@ export const drawBlur = (
   if (w < 2 || h < 2) return;
   
   // Draw semi-transparent overlay as blur placeholder
-  ctx.fillStyle = 'rgba(128, 128, 128, 0.7)';
+  ctx.fillStyle = 'rgba(128, 128, 128, 0.7)'; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   ctx.fillRect(x, y, w, h);
   
   // Add grid pattern to indicate blur

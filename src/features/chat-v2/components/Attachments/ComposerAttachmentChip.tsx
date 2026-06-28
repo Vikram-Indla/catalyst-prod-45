@@ -107,7 +107,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
             width: 22,
             height: 22,
             borderRadius: '50%',
-            background: '#1A1D21',
+            background: '#1A1D21', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             color: 'var(--ds-text-inverse, #FFFFFF)',
             border: '2px solid var(--cv2-bg-panel)',
             display: 'inline-flex',

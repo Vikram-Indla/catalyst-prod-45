@@ -80,11 +80,11 @@ interface Props {
 const COLOR_TO_HEX: Record<ModalIconColor, string> = {
   green: 'var(--ds-background-success-bold, #1F845A)',
   blue: 'var(--ds-link, #1868DB)',
-  orange: '#E56910',
+  orange: 'var(--ds-text-warning, #E56910)',
   purple: 'var(--ds-background-discovery-bold, #6E5DC6)',
   red: 'var(--ds-background-danger-bold, #C9372C)',
   gray: 'var(--ds-icon-subtle, #626F86)',
-  pink: '#E774BB',
+  pink: '#E774BB', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   brand: 'var(--ds-link, #1868DB)',
 };
 

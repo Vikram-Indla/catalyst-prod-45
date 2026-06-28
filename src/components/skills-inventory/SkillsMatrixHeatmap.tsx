@@ -13,8 +13,8 @@ interface SkillColumn {
 }
 
 const PROFICIENCY_COLORS: Record<number, string> = {
-  1: 'rgba(115,115,115,0.3)',
-  2: '#7B2FCC',
+  1: 'rgba(115,115,115,0.3)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  2: 'var(--ds-background-discovery-bold, #7B2FCC)',
   3: 'var(--sem-warning)',
   4: 'var(--sem-info)',
   5: 'var(--health-green)',

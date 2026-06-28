@@ -99,7 +99,7 @@ export default function DirectNotificationRow({
     ? "var(--ds-text-subtlest, var(--cp-text-secondary, #878787))"
     : token("color.text.subtlest", "var(--ds-text-disabled, #8590A2)");
   const linkClr = isDark
-    ? "#6698FF"
+    ? "#6698FF" // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     : token("color.link", "var(--ds-link, #0C66E4)");
   const dotColor =
     "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))";

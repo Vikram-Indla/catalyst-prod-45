@@ -91,7 +91,7 @@ export function EditableSectionName({
                 borderRadius: 3,
                 outline: 'none',
                 background: 'var(--ds-surface, #FFFFFF)',
-                boxShadow: '0 0 0 1px rgba(24,104,219,0.2)',
+                boxShadow: '0 0 0 1px rgba(24,104,219,0.2)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
               }}
             />
             <button

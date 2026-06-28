@@ -59,7 +59,7 @@ export function useSubTasks(parentKey: string | null) {
 }
 
 /* ── Avatar ── */
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)', '#13C2C2', '#2F54EB'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #FA8C16)', 'var(--ds-chart-green-bold, #52C41A)', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-teal-bold, #13C2C2)', 'var(--ds-link, #2F54EB)'];
 function MiniAvatar({ name }: { name: string }) {
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   return (

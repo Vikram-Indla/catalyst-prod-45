@@ -201,7 +201,7 @@ export function HuddleFab() {
         borderRadius: hovered ? 16 : 999,
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: `1.5px solid ${connecting ? 'var(--ds-border, #DFE1E6)' : 'var(--ds-border-success, #4BCE97)'}`,
-        boxShadow: '0 8px 28px rgba(9,30,66,.18), 0 2px 6px rgba(9,30,66,.12)',
+        boxShadow: '0 8px 28px rgba(9,30,66,.18), 0 2px 6px rgba(9,30,66,.12)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         transition: 'gap .18s ease, padding .18s ease, border-radius .18s ease',
         userSelect: 'none',
       }}

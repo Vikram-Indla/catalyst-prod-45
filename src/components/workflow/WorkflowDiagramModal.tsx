@@ -26,9 +26,9 @@ const CATEGORY_BG: Record<StatusCategory, string> = {
   default:    'var(--ds-border, #DFE1E6)',
   inprogress: 'var(--ds-background-information, #E9F2FF)',
   success:    'var(--ds-background-success-bold, #6A9A23)',
-  removed:    '#FD9891',
-  new:        '#D8A0F7',
-  moved:      '#F9C84E',
+  removed:    '#FD9891', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  new:        '#D8A0F7', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  moved:      '#F9C84E', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
 };
 
 export function WorkflowDiagramModal({ workflow, currentStateId, onClose }: Props) {

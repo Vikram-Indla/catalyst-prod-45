@@ -227,7 +227,7 @@ function OverviewTab({ projects, mappingValid, deviations }: any) {
       <div style={{ background: C.bgInfo, border: `2px solid ${C.textInfo}`, borderRadius: 8, padding: '16px', marginBottom: 24 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: C.textInfo, marginBottom: 4 }}>📋 Permanent Mapping Contract</div>
         <div style={{ fontSize: 12, color: C.textInfo }}>
-          <strong>MDT</strong> (Master Data Management) always syncs to <strong>Investor Journey</strong> Product. Same key in both systems: <code style={{ background: 'rgba(7,71,166,0.1)', padding: '2px 6px', borderRadius: 3 }}>MDT</code>
+          <strong>MDT</strong> (Master Data Management) always syncs to <strong>Investor Journey</strong> Product. Same key in both systems: <code style={{ background: 'rgba(7,71,166,0.1)', padding: '2px 6px', borderRadius: 3 }}>MDT</code> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         </div>
       </div>
 

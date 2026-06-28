@@ -148,7 +148,7 @@ export function MessageBubble({
         padding: '2px var(--cv2-page-pad-x, 20px) 2px 16px',
         marginTop: showHeader ? 'var(--cv2-group-gap, 16px)' : 'var(--cv2-intra-gap, 2px)',
         background: isPinned
-          ? 'rgba(236, 178, 46, 0.08)'
+          ? 'rgba(236, 178, 46, 0.08)' // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
           : isSaved
             ? 'var(--cv2-saved-bg)'
             : hovered

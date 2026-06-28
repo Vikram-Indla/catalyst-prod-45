@@ -118,7 +118,7 @@ export function HuddleTicketsModal() {
         width: 520, maxWidth: 'calc(100vw - 32px)',
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 12,
-        boxShadow: '0 12px 34px rgba(9,30,66,.28)',
+        boxShadow: '0 12px 34px rgba(9,30,66,.28)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}
     >

@@ -30,20 +30,20 @@ const PALETTE: ColorSwatch[] = [
   { name: 'No fill', value: null },
   { name: 'Subtle gray', value: 'var(--ds-background-neutral, #F1F2F4)' },
   { name: 'Subtle red', value: 'var(--ds-background-danger, #FFECEB)' },
-  { name: 'Subtle orange', value: '#FFEFD6' },
+  { name: 'Subtle orange', value: '#FFEFD6' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   { name: 'Subtle yellow', value: 'var(--ds-background-warning, #FFF7D6)' },
   // Row 2 — light
   { name: 'Light green', value: 'var(--ds-background-success, #DFFCF0)' },
-  { name: 'Light teal', value: '#E6FCFF' },
+  { name: 'Light teal', value: '#E6FCFF' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   { name: 'Light blue', value: 'var(--ds-background-information, #E9F2FF)' },
   { name: 'Light purple', value: 'var(--ds-background-discovery, #F3F0FF)' },
-  { name: 'Light pink', value: '#FFE5F2' },
+  { name: 'Light pink', value: '#FFE5F2' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   // Row 3 — medium
   { name: 'Medium gray', value: 'var(--ds-text-disabled, #8590A2)' },
-  { name: 'Medium blue', value: '#B8DAFF' },
-  { name: 'Medium violet', value: '#C0B6F2' },
-  { name: 'Medium magenta', value: '#FFB8E6' },
-  { name: 'Medium mint', value: '#B8E8C9' },
+  { name: 'Medium blue', value: '#B8DAFF' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { name: 'Medium violet', value: '#C0B6F2' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { name: 'Medium magenta', value: '#FFB8E6' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { name: 'Medium mint', value: '#B8E8C9' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   // Row 4 — bold / dark
   { name: 'Bold gray', value: 'var(--ds-text-subtlest, #626F86)' },
   { name: 'Bold red', value: 'var(--ds-background-danger-bold, #C9372C)' },

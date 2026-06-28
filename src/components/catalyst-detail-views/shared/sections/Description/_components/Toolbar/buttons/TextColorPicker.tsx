@@ -10,7 +10,7 @@ const COLORS: string[] = [
   'var(--ds-text, #172B4D)', 'var(--ds-link-pressed, #0747A6)', 'var(--ds-text-success, #006644)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text-danger, #AE2A19)', 'var(--ds-text, #172B4D)',
   'var(--ds-text-subtle, #42526E)', 'var(--ds-link, #0052CC)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-text-subtle, #44546F)',
   'var(--ds-text-subtlest, #626F86)', 'var(--ds-link, #0C66E4)', 'var(--ds-background-success-bold, #57D9A3)', '#FFC400', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-information, #E9F2FF)',
-  'var(--ds-text-disabled, #8590A2)', 'var(--ds-background-information-bold, #0C66E4)', '#79F2C0', '#FFE380', 'var(--ds-background-danger, #FFECEB)', 'var(--ds-background-information, #E9F2FF)',
+  'var(--ds-text-disabled, #8590A2)', 'var(--ds-background-information-bold, #0C66E4)', '#79F2C0', '#FFE380', 'var(--ds-background-danger, #FFECEB)', 'var(--ds-background-information, #E9F2FF)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   'var(--ds-border, #DFE1E6)', 'var(--ds-background-information, #E9F2FF)', '#ABF5D1', 'var(--ds-background-warning, #FFF7D6)', '#FFBDAD', 'var(--ds-surface, #FFFFFF)',
 ];
 

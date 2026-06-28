@@ -160,7 +160,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '6px 12px', cursor: 'pointer', fontSize: 12,
-                background: selected.has(item.item_key) ? '#f0f9ff' : 'transparent',
+                background: selected.has(item.item_key) ? 'var(--ds-background-information, #f0f9ff)' : 'transparent',
               }}
             >
               <input
