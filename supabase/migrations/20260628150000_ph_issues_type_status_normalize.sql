@@ -9,7 +9,9 @@
 
 update ph_issues set issue_type = 'QA Bug' where issue_type = 'Defect';
 update ph_issues set issue_type = 'Task'   where issue_type = 'BRD Task';
-update ph_issues set issue_type = 'Story'  where issue_type = 'API Requirement';
+-- API Requirement (story-level reqs) and a stray Business Request mis-filed in
+-- ph_issues (BR lives in business_requests) both fold to Story.
+update ph_issues set issue_type = 'Story'  where issue_type in ('API Requirement','Business Request');
 
 update ph_issues set status = 'To Do'       where status = 'ToDo';
 update ph_issues set status = 'In Progress' where status = 'In-Progress';
