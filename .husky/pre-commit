@@ -22,3 +22,9 @@ echo "📐 ADS audit ratchet (blocks on NEW tokens/typography/spacing violations
 node scripts/ads-audit-gate.cjs || exit 1
 
 exit 0
+
+# ADS Color Gate (Phase 12 CI Guardrail)
+npm run lint:colors:gate || {
+  echo "❌ Color gate failed. Fix hardcoded colors before commit."
+  exit 1
+}
