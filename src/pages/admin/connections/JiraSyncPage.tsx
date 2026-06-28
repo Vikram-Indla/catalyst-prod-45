@@ -217,10 +217,10 @@ export function JiraSyncPage() {
       <div style={{ padding: '24px 32px', background: C.surfaceOverlay, minHeight: '100%' }}>
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 600, color: C.text, margin: 0, fontFamily: FH }}>
+          <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: C.text, margin: 0, fontFamily: FH }}>
             Jira Integration
           </h1>
-          <p style={{ fontSize: 14, color: C.textSubtle, margin: '8px 0 0 0', fontFamily: FB }}>
+          <p style={{ fontSize: 'var(--ds-font-size-400)', color: C.textSubtle, margin: '8px 0 0 0', fontFamily: FB }}>
             {getEnvironmentLabel(env.environment)} · Sync Jira into Catalyst. Mapping-first: validate before sync; preserve existing data.
           </p>
         </div>
@@ -239,12 +239,12 @@ export function JiraSyncPage() {
               {isConnected ? 'Connected' : 'Not configured'}
             </span>
             {connSiteUrl && (
-              <code style={{ fontSize: 12, fontFamily: FC, background: C.neutral, padding: '2px 6px', borderRadius: 3 }}>
+              <code style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: FC, background: C.neutral, padding: '2px 6px', borderRadius: 3 }}>
                 {connSiteUrl}
               </code>
             )}
             {connLastTested && (
-              <span style={{ color: C.textSubtle, marginLeft: 'auto', fontSize: 12, fontFamily: FB }}>
+              <span style={{ color: C.textSubtle, marginLeft: 'auto', fontSize: 'var(--ds-font-size-200)', fontFamily: FB }}>
                 Last tested {formatDistanceToNow(new Date(connLastTested), { addSuffix: true })}
               </span>
             )}
@@ -308,8 +308,8 @@ export function JiraSyncPage() {
   );
 }
 
-const TH = { padding: '12px 16px', textAlign: 'left' as const, fontSize: 12, fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}`, fontFamily: FB };
-const TD = { padding: '12px 16px', fontSize: 13, fontFamily: FB, color: C.text };
+const TH = { padding: '12px 16px', textAlign: 'left' as const, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSubtle, borderBottom: `1px solid ${C.border}`, fontFamily: FB };
+const TD = { padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', fontFamily: FB, color: C.text };
 
 // Neutral-enterprise status pill (Vikram 2026-06-24): no green/lime anywhere in the Jira
 // integration — Atlaskit's stock success Lozenge resolves to lime (#EFFFD6/#4C6B1F). Status
@@ -322,7 +322,7 @@ function StatusPill({ children, tone = 'neutral' }: { children: any; tone?: 'neu
   } as const;
   const c = palette[tone];
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 8px', borderRadius: 3, background: c.bg, color: c.fg, fontFamily: FB, fontSize: 11, fontWeight: 600, lineHeight: '20px' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 8px', borderRadius: 3, background: c.bg, color: c.fg, fontFamily: FB, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, lineHeight: '20px' }}>
       {children}
     </span>
   );
@@ -352,7 +352,7 @@ function ConnectionTab({ connection, health, env, readiness }: any) {
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: isConnected ? C.textSubtle : C.textSubtlest }} />
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: 0, fontFamily: FH }}>
+          <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.text, margin: 0, fontFamily: FH }}>
             {isConnected ? 'Connected to Jira' : 'Jira not configured'}
           </h3>
           <StatusPill>{getEnvironmentLabel(env.environment)}</StatusPill>
@@ -363,8 +363,8 @@ function ConnectionTab({ connection, health, env, readiness }: any) {
           <tbody>
             {rows.map(([k, v]) => (
               <tr key={k} style={{ borderBottom: `1px solid ${C.border}` }}>
-                <td style={{ padding: '8px 0', fontSize: 12, color: C.textSubtle, fontFamily: FB, width: 180 }}>{k}</td>
-                <td style={{ padding: '8px 0', fontSize: 13, color: C.text, fontFamily: k === 'Site URL' ? FC : FB }}>{v}</td>
+                <td style={{ padding: '8px 0', fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, fontFamily: FB, width: 180 }}>{k}</td>
+                <td style={{ padding: '8px 0', fontSize: 'var(--ds-font-size-300)', color: C.text, fontFamily: k === 'Site URL' ? FC : FB }}>{v}</td>
               </tr>
             ))}
           </tbody>
@@ -391,33 +391,33 @@ function ConnectionTab({ connection, health, env, readiness }: any) {
         </div>
 
         {testConn.isSuccess && (
-          <div style={{ marginTop: 16, fontSize: 12, color: C.textSubtle, fontFamily: FB }}>✓ Connection test passed.</div>
+          <div style={{ marginTop: 16, fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, fontFamily: FB }}>✓ Connection test passed.</div>
         )}
         {testConn.isError && (
-          <SectionMessage appearance="error" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>{testConn.error instanceof Error ? testConn.error.message : 'Test failed'}</p></SectionMessage>
+          <SectionMessage appearance="error" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>{testConn.error instanceof Error ? testConn.error.message : 'Test failed'}</p></SectionMessage>
         )}
         {disconnect.isError && (
-          <SectionMessage appearance="error" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 12 }}>{disconnect.error instanceof Error ? disconnect.error.message : 'Disconnect failed'}</p></SectionMessage>
+          <SectionMessage appearance="error" style={{ marginTop: 16 }}><p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>{disconnect.error instanceof Error ? disconnect.error.message : 'Disconnect failed'}</p></SectionMessage>
         )}
       </div>
 
       {/* Configure form */}
       {editing && (
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: '0 0 16px 0', fontFamily: FH }}>Jira Credentials</h3>
+          <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.text, margin: '0 0 16px 0', fontFamily: FH }}>Jira Credentials</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 520 }}>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>Site URL</label>
+              <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>Site URL</label>
               <Textfield placeholder="https://your-org.atlassian.net" value={form.site_url} onChange={e => setForm(f => ({ ...f, site_url: (e.target as HTMLInputElement).value }))} />
             </div>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>Auth email</label>
+              <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>Auth email</label>
               <Textfield placeholder="you@org.com" value={form.auth_email} onChange={e => setForm(f => ({ ...f, auth_email: (e.target as HTMLInputElement).value }))} />
             </div>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>API token</label>
+              <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.text, display: 'block', marginBottom: 4, fontFamily: FB }}>API token</label>
               <Textfield type="password" placeholder="Paste your Jira API token" value={form.auth_token} onChange={e => setForm(f => ({ ...f, auth_token: (e.target as HTMLInputElement).value }))} />
-              <div style={{ fontSize: 11, color: C.textSubtlest, marginTop: 4, fontFamily: FB }}>Encrypted server-side via wh-save-connection. Never stored in the browser.</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, marginTop: 4, fontFamily: FB }}>Encrypted server-side via wh-save-connection. Never stored in the browser.</div>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <Button appearance="primary" isDisabled={!form.site_url || !form.auth_email || !form.auth_token || saveConn.isPending}
@@ -427,7 +427,7 @@ function ConnectionTab({ connection, health, env, readiness }: any) {
               <Button onClick={() => setEditing(false)}>Cancel</Button>
             </div>
             {saveConn.isError && (
-              <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{saveConn.error instanceof Error ? saveConn.error.message : 'Save failed'}</p></SectionMessage>
+              <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>{saveConn.error instanceof Error ? saveConn.error.message : 'Save failed'}</p></SectionMessage>
             )}
           </div>
         </div>
@@ -455,24 +455,24 @@ function OverviewTab({ projects, health, isConnected, totalJiraIssues, env }: an
           { label: cachedLabel, value: (totalJiraIssues ?? 0).toLocaleString() },
         ].map(({ label, value }) => (
           <div key={label} style={{ background: C.surfaceSunken, border: `1px solid ${C.border}`, borderRadius: 8, padding: '20px 16px', textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 600, color: C.text, fontFamily: FB }}>{value}</div>
-            <div style={{ fontSize: 12, color: C.textSubtle, marginTop: 8, fontFamily: FB }}>{label}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: C.text, fontFamily: FB }}>{value}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, marginTop: 8, fontFamily: FB }}>{label}</div>
           </div>
         ))}
       </div>
 
       {/* Sync scope — only when connected; otherwise blocked state */}
-      <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 4, fontFamily: FH }}>Sync Scope</h3>
-      <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 16px 0', fontFamily: FB, maxWidth: 760 }}>
+      <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.text, marginBottom: 4, fontFamily: FH }}>Sync Scope</h3>
+      <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, margin: '0 0 16px 0', fontFamily: FB, maxWidth: 760 }}>
         <strong>Catalyst target</strong> is the Catalyst module a project's items route into. <strong>—</strong> means the project keeps its own Project Hub, keyed by its project code (the default). A named target means items are routed elsewhere — e.g. <code style={{ fontFamily: FC }}>MDT</code> is a Products-module project: its Jira items are Business Requests that land in <code style={{ fontFamily: FC }}>business_requests</code> (Investor Journey), never in <code style={{ fontFamily: FC }}>ph_issues</code>.
       </p>
       {!isConnected ? (
         <SectionMessage appearance="warning" title="Sync blocked — not configured">
-          <p style={{ fontFamily: FB, fontSize: 12 }}>Configure and test the Jira connection on the Connection tab. No project can sync until then.</p>
+          <p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>Configure and test the Jira connection on the Connection tab. No project can sync until then.</p>
         </SectionMessage>
       ) : projects.length === 0 ? (
         <SectionMessage appearance="information" title="No projects discovered">
-          <p style={{ fontFamily: FB, fontSize: 12 }}>Connection works but no projects are cached yet. Run a sync on the Sync Control tab.</p>
+          <p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>Connection works but no projects are cached yet. Run a sync on the Sync Control tab.</p>
         </SectionMessage>
       ) : (
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
@@ -491,7 +491,7 @@ function OverviewTab({ projects, health, isConnected, totalJiraIssues, env }: an
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                           <ProjectIcon projectKey={p.key} name={p.name} size="xsmall" />
                           <span style={{ color: C.text, fontWeight: 500 }}>{p.name}</span>
-                          <code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
+                          <code style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
                         </span>
                       </td>
                       <td style={{ ...TD, color: C.textSubtle }}>{p.module_target || '—'}</td>
@@ -567,24 +567,24 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
     <div style={{ marginTop: 20 }}>
       {!isConnected ? (
         <SectionMessage appearance="error" title="Jira not configured">
-          <p style={{ fontFamily: FB, fontSize: 12 }}>All sync actions are blocked until the Jira connection is configured and tested.</p>
+          <p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>All sync actions are blocked until the Jira connection is configured and tested.</p>
           <div style={{ marginTop: 8 }}><Button appearance="primary" onClick={onConfigure}>Go to Connection</Button></div>
         </SectionMessage>
       ) : !syncAllowed && (
         <SectionMessage appearance="warning" title={r.title}>
-          <p style={{ fontFamily: FB, fontSize: 12 }}>{r.detail}</p>
+          <p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>{r.detail}</p>
         </SectionMessage>
       )}
 
       {/* Manual sync — every Jira button disabled unless connected */}
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24, marginTop: 20, marginBottom: 20, opacity: isConnected ? 1 : 0.6 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Manual Sync</h3>
-        <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 16px 0', fontFamily: FB }}>Pull issues from Jira into Catalyst. Choose scope, then run.</p>
+        <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Manual Sync</h3>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, margin: '0 0 16px 0', fontFamily: FB }}>Pull issues from Jira into Catalyst. Choose scope, then run.</p>
 
         {/* Per-run scope: projects + date window */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 6, fontFamily: FB }}>Projects</label>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.text, display: 'block', marginBottom: 6, fontFamily: FB }}>Projects</label>
             <Select
               isMulti
               isDisabled={!isConnected || syncing}
@@ -598,15 +598,15 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
               formatOptionLabel={(opt: any) => (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <ProjectIcon projectKey={opt.value} name={opt.label} size="xsmall" />
-                  <span style={{ fontFamily: FB, fontSize: 13 }}>{opt.label}</span>
-                  {opt.count != null && <span style={{ marginLeft: 'auto', color: C.textSubtlest, fontFamily: FB, fontSize: 12 }}>{opt.count.toLocaleString()}</span>}
+                  <span style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-300)' }}>{opt.label}</span>
+                  {opt.count != null && <span style={{ marginLeft: 'auto', color: C.textSubtlest, fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>{opt.count.toLocaleString()}</span>}
                 </span>
               )}
             />
-            <p style={{ fontSize: 11, color: C.textSubtlest, margin: '6px 0 0 0', fontFamily: FB }}>Leave empty to sync all {enabledProjects.length} enabled projects.</p>
+            <p style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, margin: '6px 0 0 0', fontFamily: FB }}>Leave empty to sync all {enabledProjects.length} enabled projects.</p>
           </div>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 6, fontFamily: FB }}>Date window</label>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.text, display: 'block', marginBottom: 6, fontFamily: FB }}>Date window</label>
             <Select
               isDisabled={!isConnected || syncing}
               options={dateOptions}
@@ -616,7 +616,7 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
               menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
               styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
             />
-            <p style={{ fontSize: 11, color: C.textSubtlest, margin: '6px 0 0 0', fontFamily: FB }}>"Per-project" uses each project's saved filter. Any other value overrides this run only. Always floored to 2026.</p>
+            <p style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, margin: '6px 0 0 0', fontFamily: FB }}>"Per-project" uses each project's saved filter. Any other value overrides this run only. Always floored to 2026.</p>
           </div>
         </div>
 
@@ -636,8 +636,8 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
             { t: 'Dry run', d: 'Counts how many issues would sync. Reads only — writes nothing.' },
           ].map(x => (
             <div key={x.t} style={{ flex: '1 1 200px', minWidth: 200, maxWidth: 300 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.text, fontFamily: FB }}>{x.t}</div>
-              <div style={{ fontSize: 11, color: C.textSubtlest, fontFamily: FB, marginTop: 4, lineHeight: 1.4 }}>{x.d}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.text, fontFamily: FB }}>{x.t}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, fontFamily: FB, marginTop: 4, lineHeight: 1.4 }}>{x.d}</div>
             </div>
           ))}
         </div>
@@ -647,14 +647,14 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
           <div style={{ marginTop: 16, padding: 16, background: C.surfaceSunken, border: `1px solid ${C.border}`, borderRadius: 8 }} role="status" aria-live="polite">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               {run.currentKey && <ProjectIcon projectKey={run.currentKey} name={run.currentName || run.currentKey} size="xsmall" />}
-              <span style={{ fontSize: 13, fontWeight: 600, color: C.text, fontFamily: FB }}>Syncing {run.currentName || '…'}</span>
-              <span style={{ marginLeft: 'auto', fontSize: 12, color: C.textSubtle, fontFamily: FB, fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.text, fontFamily: FB }}>Syncing {run.currentName || '…'}</span>
+              <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, fontFamily: FB, fontVariantNumeric: 'tabular-nums' }}>
                 {Math.min(run.done + 1, run.total)} of {run.total} · {Math.round((run.done / run.total) * 100)}%
               </span>
             </div>
             <ProgressBar value={run.done / run.total} ariaLabel={`Sync progress ${Math.round((run.done / run.total) * 100)} percent`} />
             {(run.fetched > 0 || run.updated > 0) && (
-              <div style={{ fontSize: 11, color: C.textSubtlest, fontFamily: FB, marginTop: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, fontFamily: FB, marginTop: 8 }}>
                 {run.fetched.toLocaleString()} fetched · {run.updated.toLocaleString()} new or updated so far
               </div>
             )}
@@ -662,13 +662,13 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
         )}
         {syncing && run?.mode === 'dry-run' && (
           <div style={{ marginTop: 16 }} role="status" aria-live="polite">
-            <div style={{ fontSize: 12, color: C.textSubtle, marginBottom: 8, fontFamily: FB }}>Estimating issues across {run.total} project{run.total === 1 ? '' : 's'}…</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, marginBottom: 8, fontFamily: FB }}>Estimating issues across {run.total} project{run.total === 1 ? '' : 's'}…</div>
             <ProgressBar isIndeterminate ariaLabel="Estimating" />
           </div>
         )}
         {/* Completion — neutral text for success (no green); red/amber only on failure */}
         {run?.finished && !run.error && !run.failed && (
-          <div style={{ marginTop: 16, fontSize: 12, color: C.textSubtle, fontFamily: FB }}>
+          <div style={{ marginTop: 16, fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, fontFamily: FB }}>
             {run.mode === 'dry-run'
               ? `Dry run: ${(run.estimate ?? 0).toLocaleString()} issue${run.estimate === 1 ? '' : 's'} would sync.`
               : (run.fetched === 0 && run.updated === 0
@@ -678,23 +678,23 @@ function SyncControlTab({ readiness, isConnected, syncAllowed, env, projects = [
         )}
         {run?.finished && !run.error && run.failed > 0 && (
           <SectionMessage appearance="warning">
-            <p style={{ fontFamily: FB, fontSize: 12 }}>
+            <p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>
               Synced {run.total - run.failed} of {run.total} project{run.total === 1 ? '' : 's'} · {run.updated.toLocaleString()} new or updated. {run.failed} project{run.failed === 1 ? '' : 's'} failed.
             </p>
           </SectionMessage>
         )}
         {run?.finished && run.error && (
-          <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{run.error}</p></SectionMessage>
+          <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>{run.error}</p></SectionMessage>
         )}
       </div>
 
       {/* Refresh data — destructive. Enterprise "danger zone": neutral surface, danger accent only. */}
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.textDanger}`, borderRadius: 8, padding: 24, opacity: isConnected ? 1 : 0.6 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Danger zone</h3>
+        <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Danger zone</h3>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginTop: 8 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: C.text, fontFamily: FB }}>Refresh Data</div>
-            <p style={{ fontSize: 12, color: C.textSubtle, margin: '2px 0 0 0', fontFamily: FB }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.text, fontFamily: FB }}>Refresh Data</div>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, margin: '2px 0 0 0', fontFamily: FB }}>
               Delete Jira-origin rows and reload fresh from Jira. Catalyst-native records preserved. Cannot be undone.
             </p>
           </div>
@@ -716,7 +716,7 @@ function ProjectsTab({ projects, onManage }: any) {
         <Textfield placeholder="Search projects…" value={search} onChange={e => setSearch((e.target as HTMLInputElement).value)} />
       </div>
       {projects.length === 0 ? (
-        <SectionMessage appearance="information" title="No projects"><p style={{ fontFamily: FB, fontSize: 12 }}>Configure the connection to discover Jira projects.</p></SectionMessage>
+        <SectionMessage appearance="information" title="No projects"><p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>Configure the connection to discover Jira projects.</p></SectionMessage>
       ) : (
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -731,7 +731,7 @@ function ProjectsTab({ projects, onManage }: any) {
                     <td style={TD}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                         <ProjectIcon projectKey={p.key} name={p.name} size="xsmall" />
-                        <code style={{ fontSize: 11, fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
+                        <code style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: FC, background: C.neutral, padding: '1px 5px', borderRadius: 3, color: C.textSubtle }}>{p.key}</code>
                       </span>
                     </td>
                     <td style={{ ...TD, fontWeight: 500 }}>{p.name}</td>
@@ -755,7 +755,7 @@ function TypeMappingTab() {
   return (
     <div style={{ marginTop: 20 }}>
       <SectionMessage appearance="information" title="Type Mappings">
-        <p style={{ fontFamily: FB, fontSize: 12 }}>Jira issue types map to Catalyst work item types. Most land in <code style={{ fontFamily: FC }}>ph_issues</code> (Projects module); the type drives icon, hierarchy, and field availability. <strong>Business Request</strong> is the exception — it is the Products-module root and routes to <code style={{ fontFamily: FC }}>business_requests</code>, never <code style={{ fontFamily: FC }}>ph_issues</code>.</p>
+        <p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>Jira issue types map to Catalyst work item types. Most land in <code style={{ fontFamily: FC }}>ph_issues</code> (Projects module); the type drives icon, hierarchy, and field availability. <strong>Business Request</strong> is the exception — it is the Products-module root and routes to <code style={{ fontFamily: FC }}>business_requests</code>, never <code style={{ fontFamily: FC }}>ph_issues</code>.</p>
       </SectionMessage>
       <div style={{ marginTop: 20, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -767,7 +767,7 @@ function TypeMappingTab() {
               <tr key={t.jira} style={{ borderBottom: i < TYPE_MAP.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><JiraIssueTypeIcon type={t.catalyst as any} size={16} />{t.jira}</span></td>
                 <td style={TD}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><JiraIssueTypeIcon type={t.catalyst as any} size={16} />{t.catalyst}</span></td>
-                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{t.table}</td>
+                <td style={{ ...TD, fontFamily: FC, fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>{t.table}</td>
                 <td style={TD}><StatusPill>Mapped</StatusPill></td>
               </tr>
             ))}
@@ -782,7 +782,7 @@ function StatusMappingTab() {
   return (
     <div style={{ marginTop: 20 }}>
       <SectionMessage appearance="information" title="Status Mappings">
-        <p style={{ fontFamily: FB, fontSize: 12 }}>Jira status categories map to Catalyst <code style={{ fontFamily: FC }}>status_category</code>. The raw Jira status name is preserved in the <code style={{ fontFamily: FC }}>status</code> column.</p>
+        <p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>Jira status categories map to Catalyst <code style={{ fontFamily: FC }}>status_category</code>. The raw Jira status name is preserved in the <code style={{ fontFamily: FC }}>status</code> column.</p>
       </SectionMessage>
       <div style={{ marginTop: 20, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -793,7 +793,7 @@ function StatusMappingTab() {
             {STATUS_MAP.map((s, i) => (
               <tr key={s.category} style={{ borderBottom: i < STATUS_MAP.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}>{s.category}</td>
-                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{s.catalyst}</td>
+                <td style={{ ...TD, fontFamily: FC, fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>{s.catalyst}</td>
                 <td style={TD}><StatusPill>{s.terminal ? 'Yes' : 'No'}</StatusPill></td>
               </tr>
             ))}
@@ -814,7 +814,7 @@ function FieldMappingTab() {
     <div style={{ marginTop: 20 }}>
       <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
         {[{ label: 'All Fields', v: 'all' }, { label: `Mapped (${mappedCount})`, v: 'mapped' }, { label: `Raw JSON (${rawCount})`, v: 'raw' }].map(tab => (
-          <button key={tab.v} onClick={() => setFilter(tab.v as any)} style={{ padding: '8px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: FB, fontSize: 13, fontWeight: 500, background: filter === tab.v ? C.bgInfo : C.neutral, color: filter === tab.v ? C.textInfo : C.text }}>
+          <button key={tab.v} onClick={() => setFilter(tab.v as any)} style={{ padding: '8px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: FB, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, background: filter === tab.v ? C.bgInfo : C.neutral, color: filter === tab.v ? C.textInfo : C.text }}>
             {tab.label}
           </button>
         ))}
@@ -828,7 +828,7 @@ function FieldMappingTab() {
             {filtered.map((f, i) => (
               <tr key={f.jira} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}>{f.jira}</td>
-                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{f.catalyst}</td>
+                <td style={{ ...TD, fontFamily: FC, fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>{f.catalyst}</td>
                 <td style={TD}><StatusPill>{f.mapped ? 'Mapped' : 'Raw JSON'}</StatusPill></td>
               </tr>
             ))}
@@ -843,7 +843,7 @@ function DatabaseSchemaTab() {
   return (
     <div style={{ marginTop: 20 }}>
       <SectionMessage appearance="information" title="Supabase Target Schema">
-        <p style={{ fontFamily: FB, fontSize: 12 }}>All Jira work items land in <code style={{ fontFamily: FC }}>ph_issues</code> with <code style={{ fontFamily: FC }}>source='jira'</code>. Shown for transparency.</p>
+        <p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>All Jira work items land in <code style={{ fontFamily: FC }}>ph_issues</code> with <code style={{ fontFamily: FC }}>source='jira'</code>. Shown for transparency.</p>
       </SectionMessage>
       <div style={{ marginTop: 20, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -859,9 +859,9 @@ function DatabaseSchemaTab() {
             ].map((row, i, arr) => (
               <tr key={row.t} style={{ borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={TD}>{row.e}</td>
-                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{row.t}</td>
-                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{row.id}</td>
-                <td style={{ ...TD, fontFamily: FC, fontSize: 12, color: C.textSubtle }}>{row.s}</td>
+                <td style={{ ...TD, fontFamily: FC, fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>{row.t}</td>
+                <td style={{ ...TD, fontFamily: FC, fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>{row.id}</td>
+                <td style={{ ...TD, fontFamily: FC, fontSize: 'var(--ds-font-size-200)', color: C.textSubtle }}>{row.s}</td>
               </tr>
             ))}
           </tbody>
@@ -874,9 +874,9 @@ function DatabaseSchemaTab() {
 function BackupAndLogsTab({ syncLogs }: { syncLogs: any[] }) {
   return (
     <div style={{ marginTop: 20 }}>
-      <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 12, fontFamily: FH }}>Sync History (last 20)</h3>
+      <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.text, marginBottom: 12, fontFamily: FH }}>Sync History (last 20)</h3>
       {syncLogs.length === 0 ? (
-        <SectionMessage appearance="information" title="No sync history"><p style={{ fontFamily: FB, fontSize: 12 }}>No syncs have run in this environment yet.</p></SectionMessage>
+        <SectionMessage appearance="information" title="No sync history"><p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>No syncs have run in this environment yet.</p></SectionMessage>
       ) : (
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -888,10 +888,10 @@ function BackupAndLogsTab({ syncLogs }: { syncLogs: any[] }) {
                 const when = log.started_at ? formatDistanceToNow(new Date(log.started_at), { addSuffix: true }) : '—';
                 return (
                   <tr key={log.id ?? i} style={{ borderBottom: i < syncLogs.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                    <td style={{ ...TD, fontSize: 12 }}>{when}</td>
+                    <td style={{ ...TD, fontSize: 'var(--ds-font-size-200)' }}>{when}</td>
                     <td style={TD}><StatusPill>{log.sync_type || 'sync'}</StatusPill></td>
                     <td style={TD}><StatusPill tone={log.status === 'error' || log.status === 'failed' ? 'danger' : 'neutral'}>{log.status}</StatusPill></td>
-                    <td style={{ ...TD, fontSize: 12 }}>{log.issues_upserted ?? 0}</td>
+                    <td style={{ ...TD, fontSize: 'var(--ds-font-size-200)' }}>{log.issues_upserted ?? 0}</td>
                   </tr>
                 );
               })}
@@ -959,38 +959,38 @@ function ProjectDetailModal({ projectKey, projects, onClose }: { projectKey: str
       {projectKey && project && (
         <Modal onClose={() => { setLoadedFor(null); onClose(); }} width="large">
           <div style={{ padding: 24 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>
               {project.key} — {project.name}
             </h2>
-            <p style={{ fontSize: 12, color: C.textSubtle, margin: '0 0 24px 0', fontFamily: FB }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, margin: '0 0 24px 0', fontFamily: FB }}>
               {project.issues_cached > 0 ? `${project.issues_cached.toLocaleString()} issues cached` : 'No issues cached'} · Target: {existing?.module_target || project.module_target || 'unmapped'}
             </p>
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Date Filter</h3>
+              <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Date Filter</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
                 <div>
-                  <label style={{ fontSize: 12, color: C.textSubtle, display: 'block', marginBottom: 4, fontFamily: FB }}>Date Mode</label>
-                  <select value={dateMode} onChange={e => setDateMode(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13, fontFamily: FB }}>
+                  <label style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, display: 'block', marginBottom: 4, fontFamily: FB }}>Date Mode</label>
+                  <select value={dateMode} onChange={e => setDateMode(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 'var(--ds-font-size-300)', fontFamily: FB }}>
                     <option>Last 30 days</option><option>Year 2026</option><option>All time</option>
                   </select>
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: C.textSubtle, display: 'block', marginBottom: 4, fontFamily: FB }}>Date Basis</label>
-                  <select value={dateBasis} onChange={e => setDateBasis(e.target.value as 'created' | 'updated')} style={{ width: '100%', padding: 8, borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13, fontFamily: FB }}>
+                  <label style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, display: 'block', marginBottom: 4, fontFamily: FB }}>Date Basis</label>
+                  <select value={dateBasis} onChange={e => setDateBasis(e.target.value as 'created' | 'updated')} style={{ width: '100%', padding: 8, borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 'var(--ds-font-size-300)', fontFamily: FB }}>
                     <option value="created">Created date</option><option value="updated">Updated date</option>
                   </select>
                 </div>
               </div>
-              <p style={{ fontSize: 11, color: C.textSubtlest, margin: '8px 0 0 0', fontFamily: FB }}>
+              <p style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, margin: '8px 0 0 0', fontFamily: FB }}>
                 Sync always floors to 2026 (data-integrity guard). Date Mode narrows the window within it.
               </p>
             </div>
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Issue Types</h3>
-              <p style={{ fontSize: 11, color: C.textSubtlest, margin: '0 0 8px 0', fontFamily: FB }}>None selected = all types.</p>
+              <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.text, margin: '0 0 12px 0', fontFamily: FH }}>Issue Types</h3>
+              <p style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, margin: '0 0 8px 0', fontFamily: FB }}>None selected = all types.</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {SYNC_ISSUE_TYPES.map(t => (
-                  <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', background: types.includes(t) ? C.bgInfo : C.neutral, borderRadius: 6, cursor: 'pointer', fontSize: 12, fontFamily: FB }}>
+                  <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', background: types.includes(t) ? C.bgInfo : C.neutral, borderRadius: 6, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontFamily: FB }}>
                     <input type="checkbox" checked={types.includes(t)} onChange={() => toggleType(t)} />
                     {t}
                   </label>
@@ -998,29 +998,29 @@ function ProjectDetailModal({ projectKey, projects, onClose }: { projectKey: str
               </div>
             </div>
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Field Mapping</h3>
-              <p style={{ fontSize: 11, color: C.textSubtlest, margin: '0 0 12px 0', fontFamily: FB }}>
+              <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.text, margin: '0 0 4px 0', fontFamily: FH }}>Field Mapping</h3>
+              <p style={{ fontSize: 'var(--ds-font-size-100)', color: C.textSubtlest, margin: '0 0 12px 0', fontFamily: FB }}>
                 Override which Jira field feeds each column for this project. Blank = engine default. Use the Jira field id (e.g. <code style={{ fontFamily: FC }}>priority</code>, <code style={{ fontFamily: FC }}>customfield_10125</code>, <code style={{ fontFamily: FC }}>duedate</code>).
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr)', gap: '8px 16px', alignItems: 'center' }}>
                 {FIELD_MAP_TARGETS.map(({ value, label }) => (
                   <Fragment key={value}>
-                    <label htmlFor={`fm-${value}`} style={{ fontSize: 12, color: C.text, fontFamily: FB }}>
-                      {label} <code style={{ fontSize: 10, fontFamily: FC, color: C.textSubtlest }}>({value})</code>
+                    <label htmlFor={`fm-${value}`} style={{ fontSize: 'var(--ds-font-size-200)', color: C.text, fontFamily: FB }}>
+                      {label} <code style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: FC, color: C.textSubtlest }}>({value})</code>
                     </label>
                     <input
                       id={`fm-${value}`}
                       value={fieldMap[value] ?? ''}
                       onChange={e => setFieldMap(prev => ({ ...prev, [value]: e.target.value }))}
                       placeholder="default"
-                      style={{ width: '100%', padding: '6px 8px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 12, fontFamily: FC, color: C.text, background: C.surface }}
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 'var(--ds-font-size-200)', fontFamily: FC, color: C.text, background: C.surface }}
                     />
                   </Fragment>
                 ))}
               </div>
             </div>
             {(saveFilter.isError || saveFieldMap.isError) && (
-              <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{(saveFilter.error || saveFieldMap.error) instanceof Error ? ((saveFilter.error || saveFieldMap.error) as Error).message : 'Save failed'}</p></SectionMessage>
+              <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>{(saveFilter.error || saveFieldMap.error) instanceof Error ? ((saveFilter.error || saveFieldMap.error) as Error).message : 'Save failed'}</p></SectionMessage>
             )}
             <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
               <Button appearance="primary" isDisabled={saveFilter.isPending || saveFieldMap.isPending} onClick={handleSave}>{saveFilter.isPending || saveFieldMap.isPending ? 'Saving…' : 'Save'}</Button>
@@ -1054,24 +1054,24 @@ function RefreshDataModal({ isOpen, env, enabledProjects, onClose }: { isOpen: b
       {isOpen && (
         <Modal onClose={onClose} width="large">
           <div style={{ padding: 24 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 600, color: C.textDanger, margin: '0 0 16px 0', fontFamily: FH }}>⚠ Refresh Data</h2>
-            <p style={{ fontSize: 14, color: C.text, margin: '0 0 20px 0', fontFamily: FB }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: C.textDanger, margin: '0 0 16px 0', fontFamily: FH }}>⚠ Refresh Data</h2>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: C.text, margin: '0 0 20px 0', fontFamily: FB }}>
               Deletes existing Jira-imported rows and reloads from Jira using each project's filters. Catalyst-native records preserved.
             </p>
             <div style={{ background: C.bgDanger, border: `1px solid ${C.textDanger}`, borderRadius: 8, padding: 16, marginBottom: 24 }}>
-              <div style={{ fontSize: 12, color: C.textDanger, fontFamily: FB }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textDanger, fontFamily: FB }}>
                 <strong>⚠ Cannot be undone.</strong> Affects {enabledProjects.length} synced project(s): {enabledProjects.map(p => p.key).join(', ') || 'none'} — {totalRecords.toLocaleString()} Jira-origin records.
               </div>
             </div>
             <div style={{ marginBottom: 24 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: C.text, display: 'block', marginBottom: 8, fontFamily: FB }}>
+              <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.text, display: 'block', marginBottom: 8, fontFamily: FB }}>
                 Type to confirm: <code style={{ fontFamily: FC }}>{requiredPhrase}</code>
               </label>
               <input type="text" value={confirmPhrase} onChange={e => setConfirmPhrase(e.target.value)} placeholder="Type confirmation phrase"
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 13, fontFamily: FC }} />
+                style={{ width: '100%', padding: '8px 12px', borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 'var(--ds-font-size-300)', fontFamily: FC }} />
             </div>
             {refreshData.isError && (
-              <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 12 }}>{refreshData.error instanceof Error ? refreshData.error.message : 'Refresh failed'}</p></SectionMessage>
+              <SectionMessage appearance="error"><p style={{ fontFamily: FB, fontSize: 'var(--ds-font-size-200)' }}>{refreshData.error instanceof Error ? refreshData.error.message : 'Refresh failed'}</p></SectionMessage>
             )}
             <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
               <Button appearance="danger" isDisabled={!canConfirm || refreshData.isPending} onClick={handleConfirm}>

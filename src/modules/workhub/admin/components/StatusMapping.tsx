@@ -77,10 +77,10 @@ export function StatusMapping() {
   return (
     <div style={{ maxWidth: 900, fontFamily: 'var(--cp-font-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
           Status Mapping
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 4 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 4 }}>
           Map each Jira workflow status to a Catalyst category. Covers Story, Task, Sub-task, Production Incident, and QA Bug workflows.
         </p>
       </div>
@@ -90,11 +90,11 @@ export function StatusMapping() {
         padding: 20, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
             Category Mapping
           </h2>
           <span style={{
-            fontSize: 10, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', padding: '2px 8px',
+            fontSize: 'var(--ds-font-size-50)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', padding: '2px 8px',
             borderRadius: 4, fontWeight: 500,
           }}>{totalCount} statuses</span>
         </div>
@@ -118,19 +118,19 @@ export function StatusMapping() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <span style={{
-                  padding: '3px 10px', borderRadius: 4, fontSize: 10, fontWeight: 700,
+                  padding: '3px 10px', borderRadius: 4, fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                   textTransform: 'uppercase', letterSpacing: '.3px',
                   background: colors.bg, color: colors.text,
                 }}>
                   {category}
                 </span>
-                <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                   {statuses.length} Jira statuses
                 </span>
                 <button
                   onClick={() => { setAddingTo(addingTo === category ? null : category); setNewStatus('') }}
                   style={{
-                    marginLeft: 'auto', fontSize: 11, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'none',
+                    marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'none',
                     border: 'none', cursor: 'pointer', padding: '2px 6px', fontWeight: 500,
                   }}
                 >
@@ -149,7 +149,7 @@ export function StatusMapping() {
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       padding: '4px 10px', borderRadius: 4,
                       background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-                      fontSize: 12, fontFamily: 'var(--cp-font-mono)',
+                      fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)',
                       color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontWeight: 500, cursor: 'grab',
                     }}
                   >
@@ -161,7 +161,7 @@ export function StatusMapping() {
                     <button
                       onClick={() => handleRemoveStatus(category, status)}
                       style={{
-                        fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', background: 'none',
+                        fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', background: 'none',
                         border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1,
                         marginLeft: 2,
                       }}
@@ -183,15 +183,15 @@ export function StatusMapping() {
                     autoFocus
                     style={{
                       padding: '5px 10px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 4,
-                      fontSize: 12, fontFamily: 'var(--cp-font-mono)', width: 200,
+                      fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', width: 200,
                     }}
                   />
                   <button onClick={() => handleAddStatus(category)} style={{
-                    padding: '5px 12px', borderRadius: 4, fontSize: 11, fontWeight: 600,
+                    padding: '5px 12px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                     background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
                   }}>Add</button>
                   <button onClick={() => { setAddingTo(null); setNewStatus('') }} style={{
-                    padding: '5px 12px', borderRadius: 4, fontSize: 11,
+                    padding: '5px 12px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)',
                     background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
                   }}>Cancel</button>
                 </div>
@@ -205,7 +205,7 @@ export function StatusMapping() {
             onClick={handleSave}
             disabled={updateConfig.isPending}
             style={{
-              padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
+              padding: '8px 20px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
               background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
               opacity: updateConfig.isPending ? 0.6 : 1,
             }}
@@ -215,13 +215,13 @@ export function StatusMapping() {
           <button
             onClick={handleReset}
             style={{
-              padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
+              padding: '8px 20px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
               background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
             }}
           >
             Reset to Default
           </button>
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
+          <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
             Drag statuses between categories to reassign
           </span>
         </div>

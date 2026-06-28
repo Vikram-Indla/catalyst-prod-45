@@ -130,7 +130,7 @@ function StatusChip({
         height: 28,
         padding: '0 10px',
         borderRadius: 3,
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         background: bg,
         color: STATUS_TEXT,
@@ -146,7 +146,7 @@ function StatusChip({
             <span
               {...tp}
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--ds-text-brand, #0C66E4)',
                 background: 'var(--ds-background-selected, #E9F2FF)',
@@ -176,7 +176,7 @@ function StatusChip({
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--ds-text-brand, #0C66E4)',
-                fontSize: 10,
+                fontSize: 'var(--ds-font-size-50)',
                 fontWeight: 700,
                 padding: 0,
                 marginRight: -2,
@@ -254,7 +254,7 @@ function TransitionPill({
         height: 28,
         padding: '0 10px',
         borderRadius: 3,
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         background: bg,
         color: STATUS_TEXT,
@@ -324,7 +324,7 @@ function AddPill({ label, onClick }: { label: string; onClick: () => void }) {
         padding: '0 10px',
         border: '1px dashed var(--ds-border, #DFE1E6)',
         borderRadius: 3,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         color: 'var(--ds-text-brand, #0C66E4)',
         background: hovered ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
@@ -355,7 +355,7 @@ function AddStatusChip({ onClick }: { onClick: () => void }) {
         padding: '0 10px',
         border: '1px dashed var(--ds-border, #DFE1E6)',
         borderRadius: 3,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         color: 'var(--ds-text-brand, #0C66E4)',
         background: hovered ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
@@ -414,7 +414,7 @@ function TransitionGroupRow({
           gap: 8,
           padding: '8px 16px',
           textAlign: 'left',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           background: 'none',
           border: 'none',
@@ -436,7 +436,7 @@ function TransitionGroupRow({
         />
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 500,
             color: 'var(--ds-text-subtlest, #6B6E76)',
           }}
@@ -446,12 +446,12 @@ function TransitionGroupRow({
         {isGlobal ? (
           <>
             <PillDot color="var(--ds-border-bold, #8C8F97)" />
-            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
               Any status
             </span>
             <span
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--ds-text-subtle, #505258)',
                 background: 'var(--ds-background-neutral, #F1F2F4)',
@@ -468,7 +468,7 @@ function TransitionGroupRow({
               display: 'inline-block',
               padding: '2px 7px',
               borderRadius: 3,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               background: catToBg(fromStatus.category),
               color: STATUS_TEXT,
@@ -477,14 +477,14 @@ function TransitionGroupRow({
             {fromStatus.name}
           </span>
         ) : (
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
             Any status
           </span>
         )}
         <span
           style={{
             marginLeft: 'auto',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 400,
             color: 'var(--ds-text-subtlest, #6B6E76)',
           }}
@@ -507,7 +507,7 @@ function TransitionGroupRow({
           {transitions.length === 0 && !showPicker ? (
             <span
               style={{
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: 'var(--ds-text-subtlest, #6B6E76)',
                 display: 'flex',
                 alignItems: 'center',
@@ -541,7 +541,7 @@ function TransitionGroupRow({
           {showPicker ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
               {available.length === 0 ? (
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B6E76)' }}>
                   All available statuses already have transitions.
                 </span>
               ) : (
@@ -559,7 +559,7 @@ function TransitionGroupRow({
                       padding: '0 10px',
                       border: 'none',
                       borderRadius: 3,
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
                       background: catToBg(s.category),
                       color: STATUS_TEXT,
@@ -580,7 +580,7 @@ function TransitionGroupRow({
               <button
                 onClick={() => setShowPicker(false)}
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text-subtle, #505258)',
                   background: 'none',
                   border: 'none',
@@ -627,7 +627,7 @@ function ModeToggle({
           style={{
             height: 32,
             padding: '0 12px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             display: 'inline-flex',
             alignItems: 'center',
@@ -705,7 +705,7 @@ function AddStatusPicker({
           padding: '0 8px',
           border: '1px solid var(--ds-border, #DFE1E6)',
           borderRadius: 3,
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           marginBottom: 6,
           background: 'var(--ds-surface, #FFFFFF)',
           color: 'var(--ds-text, #292A2E)',
@@ -715,7 +715,7 @@ function AddStatusPicker({
         <div
           style={{
             padding: '8px 4px',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: 'var(--ds-text-subtlest, #6B6E76)',
           }}
         >
@@ -732,7 +732,7 @@ function AddStatusPicker({
               gap: 8,
               width: '100%',
               padding: '5px 8px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               borderRadius: 3,
               background: 'none',
               border: 'none',
@@ -753,7 +753,7 @@ function AddStatusPicker({
                 display: 'inline-block',
                 padding: '2px 7px',
                 borderRadius: 3,
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 background: catToBg(s.category),
                 color: STATUS_TEXT,
@@ -772,7 +772,7 @@ function AddStatusPicker({
           width: '100%',
           marginTop: 4,
           padding: '6px 8px',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           color: 'var(--ds-text-subtle, #505258)',
           background: 'none',
           border: 'none',
@@ -851,7 +851,7 @@ function CopyWorkflowMenu({
       <div
         style={{
           padding: '6px 12px 4px',
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
           color: 'var(--ds-text-subtlest, #6B6E76)',
           letterSpacing: '0.04em',
@@ -874,7 +874,7 @@ function CopyWorkflowMenu({
             gap: 8,
             width: '100%',
             padding: '7px 12px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: 'var(--ds-text, #292A2E)',
             background: 'none',
             border: 'none',
@@ -935,7 +935,7 @@ export function WorkflowTypePanel({
           justifyContent: 'center',
           gap: 12,
           color: 'var(--ds-text-subtlest, #6B6E76)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
         }}
       >
         <Spinner size="small" />
@@ -950,7 +950,7 @@ export function WorkflowTypePanel({
         style={{
           padding: 24,
           color: 'var(--ds-text-danger, #AE2E24)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
         }}
       >
         Failed to load workflow.
@@ -1036,7 +1036,7 @@ export function WorkflowTypePanel({
       >
         <span
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtle, #505258)',
             display: 'inline-flex',
             alignItems: 'center',
@@ -1050,7 +1050,7 @@ export function WorkflowTypePanel({
         </span>
         <span
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtle, #505258)',
             display: 'inline-flex',
             alignItems: 'center',
@@ -1064,7 +1064,7 @@ export function WorkflowTypePanel({
         </span>
         <span
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtle, #505258)',
             display: 'inline-flex',
             alignItems: 'center',
@@ -1091,7 +1091,7 @@ export function WorkflowTypePanel({
               padding: '0 10px',
               border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: 3,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               background: 'transparent',
               color: copyWorkflow.isPending ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #292A2E)',
@@ -1135,7 +1135,7 @@ export function WorkflowTypePanel({
             padding: 32,
             textAlign: 'center',
             color: 'var(--ds-text-subtlest, #6B6E76)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             background: 'var(--ds-surface-sunken, #F7F8F9)',
           }}
         >
@@ -1149,7 +1149,7 @@ export function WorkflowTypePanel({
           <div style={{ marginBottom: 16 }}>
             <h3
               style={{
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 653,
                 marginBottom: 2,
                 color: 'var(--ds-text, #292A2E)',
@@ -1159,7 +1159,7 @@ export function WorkflowTypePanel({
             </h3>
             <p
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtlest, #6B6E76)',
                 marginBottom: 10,
               }}
@@ -1171,7 +1171,7 @@ export function WorkflowTypePanel({
               <div
                 style={{
                   padding: '12px 0',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text-subtlest, #6B6E76)',
                 }}
               >
@@ -1201,7 +1201,7 @@ export function WorkflowTypePanel({
                       display: 'inline-block',
                       padding: '2px 7px',
                       borderRadius: 3,
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       background: catToBg(cat),
                       color: STATUS_TEXT,
@@ -1253,7 +1253,7 @@ export function WorkflowTypePanel({
                     border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: 4,
                     padding: '10px 12px',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color: 'var(--ds-text-subtlest, #6B6E76)',
                     zIndex: 50,
                     whiteSpace: 'nowrap',
@@ -1269,7 +1269,7 @@ export function WorkflowTypePanel({
           <div>
             <h3
               style={{
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 653,
                 marginBottom: 2,
                 color: 'var(--ds-text, #292A2E)',
@@ -1279,7 +1279,7 @@ export function WorkflowTypePanel({
             </h3>
             <p
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtlest, #6B6E76)',
                 marginBottom: 10,
               }}

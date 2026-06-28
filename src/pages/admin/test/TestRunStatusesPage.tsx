@@ -44,7 +44,7 @@ function StatusChip({ row }: { row: RunStatusRow }) {
   const color = STATUS_TYPE_TEXT[row.status_type] ?? 'var(--ds-text, #172B4D)';
   return (
     <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
+      display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
       background: bg, color,
     }}>
       {row.name}
@@ -111,16 +111,16 @@ export default function TestRunStatusesPage() {
         }
       />
 
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 24px' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 24px' }}>
         Statuses applied to individual test run results. System statuses cannot be deleted but display names and colors can be customized.
       </p>
 
       <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
           <thead>
             <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
               {['Preview', 'Name', 'Type', 'Marks complete', 'System', 'Actions'].map((h, i) => (
-                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{h}</th>
+                <th key={i} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -145,7 +145,7 @@ export default function TestRunStatusesPage() {
                         autoFocus
                       />
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <label style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>Color override:</label>
+                        <label style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)' }}>Color override:</label>
                         <input
                           type="color"
                           value={editColor || 'var(--ds-background-neutral, #F1F2F4)'}
@@ -155,7 +155,7 @@ export default function TestRunStatusesPage() {
                         {editColor && (
                           <button
                             onClick={() => setEditColor('')}
-                            style={{ fontSize: 11, color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer' }}
+                            style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-link, #0052CC)', background: 'none', border: 'none', cursor: 'pointer' }}
                           >
                             Reset to default
                           </button>
@@ -167,22 +167,22 @@ export default function TestRunStatusesPage() {
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>
-                  <span style={{ fontSize: 11, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtle, #42526E)' }}>
                     {row.status_type}
                   </span>
                 </td>
                 <td style={{ padding: '10px 12px' }}>
                   {row.execution_completed ? (
-                    <span style={{ fontSize: 12, color: 'var(--ds-text-success, #006644)' }}>✓ Yes</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-success, #006644)' }}>✓ Yes</span>
                   ) : (
-                    <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>
                   {row.is_system ? (
-                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>System</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>System</span>
                   ) : (
-                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>Custom</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)' }}>Custom</span>
                   )}
                 </td>
                 <td style={{ padding: '10px 12px' }}>

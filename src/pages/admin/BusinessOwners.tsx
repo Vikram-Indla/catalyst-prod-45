@@ -178,7 +178,7 @@ export default function BusinessOwners() {
       <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 653, color: "var(--ds-text, #292A2E)", margin: 0, lineHeight: "28px" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Business Owners</h1>
+            <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: "var(--ds-text, #292A2E)", margin: 0, lineHeight: "28px" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Business Owners</h1>
             <p style={{ marginTop: 8 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Manage business owners and their department mappings
             </p>
@@ -191,29 +191,29 @@ export default function BusinessOwners() {
         <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
-              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Business Owners</p>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Business Owners</p>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{owners.length}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{owners.length}</div>
           </div>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
-              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Owners</p>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Owners</p>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               {owners.filter(o => o.is_active).length}
             </div>
           </div>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
-              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Mapped to Departments</p>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Mapped to Departments</p>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{mappings.length}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{mappings.length}</div>
           </div>
         </div>
 
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Business Owner Configuration</h2>
+            <h2 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Business Owner Configuration</h2>
             <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Configure business owners and their 1:1 department mappings. When a department is selected in a Business Request, the mapped owner is auto-assigned.
             </p>
@@ -234,11 +234,11 @@ export default function BusinessOwners() {
               <table className="w-full">
                 <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <tr>
-                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", width: 40 }}></th>
-                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Business Owner</th>
-                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Mapped Department</th>
-                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Status</th>
-                    <th style={{ textAlign: "right", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: "var(--ds-text-subtle, #505258)", width: 40 }}></th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Business Owner</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Mapped Department</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Status</th>
+                    <th style={{ textAlign: "right", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -267,23 +267,23 @@ export default function BusinessOwners() {
                           <td style={{ padding: 12 }}>
                             <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><DragHandlerIcon label="" size="small" /></span>
                           </td>
-                          <td style={{ padding: 12, fontSize: 14, fontWeight: 500 }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{owner.name}</td>
-                          <td style={{ padding: 12, fontSize: 14 }}>
+                          <td style={{ padding: 12, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{owner.name}</td>
+                          <td style={{ padding: 12, fontSize: 'var(--ds-font-size-400)' }}>
                             {dept ? (
-                              <span style={{ display: "inline-flex", alignItems: "center", padding: "4px 8px", borderRadius: 16, fontSize: 12 }} style={{ background: 'var(--ds-background-brand-subtler, #E9F2FF)', color: 'var(--ds-text-brand, #0C66E4)' }}>
+                              <span style={{ display: "inline-flex", alignItems: "center", padding: "4px 8px", borderRadius: 16, fontSize: 'var(--ds-font-size-200)' }} style={{ background: 'var(--ds-background-brand-subtler, #E9F2FF)', color: 'var(--ds-text-brand, #0C66E4)' }}>
                                 {dept.name}
                               </span>
                             ) : (
                               <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>Not mapped</span>
                             )}
                           </td>
-                          <td style={{ padding: 12, fontSize: 14 }}>
+                          <td style={{ padding: 12, fontSize: 'var(--ds-font-size-400)' }}>
                             <Toggle
                               isChecked={owner.is_active ?? true}
                               onChange={() => handleToggleActive(owner.id, owner.is_active ?? true)}
                             />
                           </td>
-                          <td style={{ padding: 12, fontSize: 14, textAlign: "right" }}>
+                          <td style={{ padding: 12, fontSize: 'var(--ds-font-size-400)', textAlign: "right" }}>
                             <Button appearance="subtle" onClick={() => openEditDialog(owner)}>
                               <EditIcon label="" size="small" />
                             </Button>
@@ -307,7 +307,7 @@ export default function BusinessOwners() {
             </DialogHeader>
             <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 16, paddingBottom: 16 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label htmlFor="name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Business Owner Name</label>
+                <label htmlFor="name" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Business Owner Name</label>
                 <Textfield
                   id="name"
                   value={newOwnerName}
@@ -316,7 +316,7 @@ export default function BusinessOwners() {
                 />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label htmlFor="department" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Mapped Department (1:1)</label>
+                <label htmlFor="department" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Mapped Department (1:1)</label>
                 <AdsSelect
                   inputId="department"
                   options={departmentOptions}

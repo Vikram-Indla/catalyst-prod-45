@@ -306,18 +306,18 @@ export function SyncConfigPanel() {
     <div className="wh-card" style={{ padding: 24 }}>
       <div style={{ marginBottom: 20 }}>
         <h3 style={{
-          fontFamily: 'var(--wh-fh)', fontSize: 15, fontWeight: 700,
+          fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700,
           color: 'var(--wh-tx)', marginBottom: 4,
         }}>
           Sync Configuration
         </h3>
-        <p style={{ fontSize: 12, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', margin: 0 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', margin: 0 }}>
           Choose projects and configure per-project sync criteria: timeline, status categories, work types, and releases.
         </p>
       </div>
 
       {isLoading ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--wh-tx4)', fontSize: 13 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--wh-tx4)', fontSize: 'var(--ds-font-size-300)' }}>
           <Spinner size="small" />
           Loading configuration...
         </div>
@@ -334,7 +334,7 @@ export function SyncConfigPanel() {
               emptyMessage="No accessible projects found. Test your connection first."
               accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
             />
-            <p style={{ fontSize: 11, color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
               {selectedProjects.length === 0
                 ? 'No projects selected — select projects to configure sync criteria.'
                 : `${selectedProjects.length} of ${availableProjects.length} projects selected. Expand each to configure filters.`}
@@ -345,7 +345,7 @@ export function SyncConfigPanel() {
           {selectedProjects.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <label style={{
-                fontSize: 11, fontWeight: 600, color: 'var(--wh-tx3)', textTransform: 'uppercase' as const,
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--wh-tx3)', textTransform: 'uppercase' as const,
                 letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 6,
               }}>
                 <SettingsIcon label="" size="small" />
@@ -382,16 +382,16 @@ export function SyncConfigPanel() {
                         : <span style={{ color: 'var(--wh-tx4)', flexShrink: 0, display: 'inline-flex' }}><ChevronRightIcon label="" size="small" /></span>
                       }
                       <span style={{
-                        fontFamily: 'var(--wh-mo)', fontSize: 12, fontWeight: 700,
+                        fontFamily: 'var(--wh-mo)', fontSize: 'var(--ds-font-size-200)', fontWeight: 700,
                         color: 'var(--wh-pri)', minWidth: 50,
                       }}>
                         {pk}
                       </span>
-                      <span style={{ fontSize: 11, color: 'var(--wh-tx3)', flex: 1, fontFamily: 'var(--wh-fn)' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--wh-tx3)', flex: 1, fontFamily: 'var(--wh-fn)' }}>
                         {projectInfo?.name || pk}
                       </span>
                       <span style={{
-                        fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)',
+                        fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)',
                       }}>
                         {configSummary(config)}
                       </span>
@@ -406,7 +406,7 @@ export function SyncConfigPanel() {
                         {/* Timeline Lookback */}
                         <div>
                           <label style={{
-                            fontSize: 10, fontWeight: 600, color: 'var(--wh-tx3)',
+                            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--wh-tx3)',
                             textTransform: 'uppercase' as const, letterSpacing: '.4px',
                             fontFamily: 'var(--cp-font-body)', display: 'block', marginBottom: 6,
                           }}>
@@ -424,7 +424,7 @@ export function SyncConfigPanel() {
                                     border: isActive ? '2px solid var(--wh-pri)' : '1px solid var(--wh-bdr)',
                                     background: isActive ? 'var(--wh-pri-bg)' : 'var(--wh-bg)',
                                     color: isActive ? 'var(--wh-pri)' : 'var(--wh-tx2)',
-                                    fontSize: 11, fontWeight: isActive ? 600 : 400,
+                                    fontSize: 'var(--ds-font-size-100)', fontWeight: isActive ? 600 : 400,
                                     fontFamily: 'var(--wh-fn)', cursor: 'pointer', transition: 'all .15s',
                                   }}
                                 >
@@ -447,7 +447,7 @@ export function SyncConfigPanel() {
                             emptyMessage="No categories available."
                             accentColor="var(--cp-purple-60, #7C3AED)"
                           />
-                          <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
+                          <p style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.status_categories.length === 0
                               ? 'No filter — all Jira status categories will be synced.'
                               : `Only issues in ${config.status_categories.join(', ')} category will be synced.`}
@@ -465,7 +465,7 @@ export function SyncConfigPanel() {
                             emptyMessage="No issue types found. Run a sync first."
                             accentColor="var(--ds-link, #0C66E4)"
                           />
-                          <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
+                          <p style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.issue_types.length === 0
                               ? 'No filter — all work types will be synced.'
                               : `Only ${config.issue_types.length} type(s) will be synced for ${pk}.`}
@@ -483,7 +483,7 @@ export function SyncConfigPanel() {
                             emptyMessage={`No versions found for ${pk}. Sync first to discover releases.`}
                             accentColor="var(--quality-high, #059669)"
                           />
-                          <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
+                          <p style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.sprint_release.length === 0
                               ? 'No filter — all releases will be synced.'
                               : `Only ${config.sprint_release.length} release(s) will be synced for ${pk}.`}
@@ -527,7 +527,7 @@ export function SyncConfigPanel() {
             )}
 
             {selectedProjects.length === 0 && (
-              <span style={{ fontSize: 11, color: 'var(--wh-warn)', fontFamily: 'var(--wh-fn)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--wh-warn)', fontFamily: 'var(--wh-fn)' }}>
                 Select at least one project to enable sync
               </span>
             )}
@@ -571,13 +571,13 @@ function SyncProgressPanel({
           {phase === 'syncing' && <Spinner size="small" />}
           {phase === 'done' && <span style={{ color: 'var(--wh-suc)', display: 'flex' }}><CheckCircleIcon label="" size="small" /></span>}
           {phase === 'error' && <span style={{ color: 'var(--wh-dng)', display: 'flex' }}><ErrorIcon label="" size="small" /></span>}
-          <span style={{ fontFamily: 'var(--wh-fh)', fontSize: 13, fontWeight: 600, color: 'var(--wh-tx)' }}>
+          <span style={{ fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--wh-tx)' }}>
             {phase === 'syncing' && currentProject
               ? `Syncing ${currentProject.name}...`
               : phase === 'done' ? 'Sync complete' : phase === 'error' ? 'Sync completed with errors' : 'Syncing...'}
           </span>
         </div>
-        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>
           {completedCount + errorCount} / {totalCount} projects · {Math.round(progressPct)}%
         </span>
       </div>
@@ -603,13 +603,13 @@ function SyncProgressPanel({
               {p.status === 'error' && <span style={{ color: 'var(--wh-dng)', display: 'flex' }}><ErrorIcon label="" size="small" /></span>}
             </div>
             <span style={{
-              fontFamily: 'var(--wh-mo)', fontSize: 11, fontWeight: 700,
+              fontFamily: 'var(--wh-mo)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
               color: p.status === 'syncing' ? 'var(--wh-pri)' : p.status === 'done' ? 'var(--wh-suc)' : p.status === 'error' ? 'var(--wh-dng)' : 'var(--wh-tx3)',
               minWidth: 50,
             }}>
               {p.key}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', flex: 1 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', flex: 1 }}>
               {p.name !== p.key ? p.name : ''}
             </span>
             <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 4, background: 'var(--wh-sf3)', overflow: 'hidden' }}>
@@ -619,7 +619,7 @@ function SyncProgressPanel({
                 background: p.status === 'done' ? 'var(--wh-suc)' : p.status === 'syncing' ? 'var(--wh-pri)' : p.status === 'error' ? 'var(--wh-dng)' : 'var(--wh-tx4)',
               }} />
             </div>
-            <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', minWidth: 70, textAlign: 'right' as const }}>
+            <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', minWidth: 70, textAlign: 'right' as const }}>
               {p.status === 'done' && p.issuesFetched != null ? `${p.issuesFetched} issues` : ''}
               {p.status === 'done' && p.durationMs != null ? ` · ${(p.durationMs / 1000).toFixed(1)}s` : ''}
               {p.status === 'syncing' ? 'syncing...' : ''}
@@ -672,20 +672,20 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ color: 'var(--wh-tx3)', display: 'flex' }}><ChartBarIcon label="" size="small" /></span>
-          <span style={{ fontFamily: 'var(--wh-fh)', fontSize: 13, fontWeight: 600, color: 'var(--wh-tx)' }}>
+          <span style={{ fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--wh-tx)' }}>
             Last Sync Summary
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 11, fontWeight: 600, color: statusColor,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: statusColor,
             background: statusBackground, padding: '2px 8px', borderRadius: 12,
           }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: statusColor }} />
             {statusLabel}
           </span>
-          <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)' }}>
             {formatTimeAgo(syncEntry.started_at)}
           </span>
         </div>
@@ -697,10 +697,10 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
             background: 'var(--wh-sf2)', borderRadius: 6, padding: '10px 12px',
             border: '1px solid var(--wh-bdr)', textAlign: 'center' as const,
           }}>
-            <div style={{ fontFamily: 'var(--wh-fh)', fontSize: 20, fontWeight: 700, color: 'var(--wh-tx)', marginBottom: 2 }}>
+            <div style={{ fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--wh-tx)', marginBottom: 2 }}>
               {s.value}
             </div>
-            <div style={{ fontSize: 10, fontWeight: 500, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)', textTransform: 'uppercase' as const, letterSpacing: '.3px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)', textTransform: 'uppercase' as const, letterSpacing: '.3px' }}>
               {s.label}
             </div>
           </div>
@@ -708,7 +708,7 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
       </div>
 
       <div style={{
-        display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 11, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)',
+        display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 'var(--ds-font-size-100)', color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)',
         paddingTop: 10, borderTop: '1px solid var(--wh-bdr)',
       }}>
         {syncEntry.duration_ms != null && (
@@ -721,7 +721,7 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
             <span style={{ display: 'inline-flex', gap: 3, flexWrap: 'wrap' }}>
               {syncEntry.projects_synced.map(pk => (
                 <span key={pk} style={{
-                  padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+                  padding: '1px 6px', borderRadius: 4, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                   background: 'var(--wh-pri-bg)', color: 'var(--wh-pri)', fontFamily: 'var(--wh-mo)',
                 }}>{pk}</span>
               ))}
@@ -732,19 +732,19 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
 
       {syncEntry.warnings && syncEntry.warnings.length > 0 && (
         <div style={{ marginTop: 10, padding: '8px 10px', background: 'var(--wh-warn-bg)', borderRadius: 6, border: '1px solid var(--wh-warn)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--wh-warn)', marginBottom: 4 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--wh-warn)', marginBottom: 4 }}>
             {syncEntry.warnings.length} warning{syncEntry.warnings.length !== 1 ? 's' : ''}
           </div>
           {syncEntry.warnings.slice(0, 3).map((w, i) => (
-            <div key={i} style={{ fontSize: 10, color: 'var(--wh-tx2)', lineHeight: 1.4 }}>• {w}</div>
+            <div key={i} style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx2)', lineHeight: 1.4 }}>• {w}</div>
           ))}
         </div>
       )}
 
       {syncEntry.error_message && (
         <div style={{ marginTop: 10, padding: '8px 10px', background: 'var(--wh-dng-bg)', borderRadius: 6, border: '1px solid var(--wh-dng)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 2 }}>Error</div>
-          <div style={{ fontSize: 10, color: 'var(--wh-tx2)', lineHeight: 1.4 }}>{syncEntry.error_message}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 2 }}>Error</div>
+          <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx2)', lineHeight: 1.4 }}>{syncEntry.error_message}</div>
         </div>
       )}
     </div>
