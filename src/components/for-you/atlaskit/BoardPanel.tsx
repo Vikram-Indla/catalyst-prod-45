@@ -47,7 +47,30 @@ export default function BoardPanel() {
           .limit(200);
 
         if (error) throw error;
-        setItems(data || []);
+
+        // Transform ph_issues to R360WorkItem format
+        const transformed = (data || []).map((row: any) => ({
+          id: row.id,
+          item_key: row.issue_key,
+          item_type: row.issue_type,
+          title: row.summary,
+          status: row.status,
+          status_category: row.status_category,
+          project_key: row.project_key,
+          project_name: row.project_name,
+          age_days: row.age_days || 0,
+          parent_key: row.parent_issue_key,
+          parent_title: row.parent_summary,
+          assignee_name: row.assignee_display_name,
+          reporter_name: row.reporter_display_name,
+          created_at: row.created_at,
+          jira_updated_at: row.jira_updated_at,
+          fix_version: row.fix_version,
+          due_date: row.due_date,
+          priority: row.priority,
+        } as R360WorkItem));
+
+        setItems(transformed);
       } catch (err) {
         console.error('Failed to fetch board items:', err);
       } finally {
