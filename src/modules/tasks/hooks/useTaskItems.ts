@@ -7,6 +7,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
 import type { PlannerStatus } from './useTaskStatuses';
 
@@ -182,6 +183,12 @@ export function useUpdatePlannerTask() {
           throw new Error(`Unknown status slug: ${updates.status}`);
         }
         dbUpdates.status_id = match.id;
+        // Advisory audit: use workflow_status_key from the resolved task_statuses row.
+        const wfKey = (match as any).workflow_status_key ?? updates.status ?? null;
+        recordAdvisoryStatusChange({
+          entityKey: 'task', entityId: id, projectKey: null,
+          fromStatusRaw: null, toStatusRaw: wfKey, sourceSurface: 'task_hub',
+        }).catch(() => {/* advisory — non-blocking */});
       }
 
       // Workstream: direct teamId → workstream_id passthrough. null is valid

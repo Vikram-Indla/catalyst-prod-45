@@ -102,13 +102,23 @@ const ENTITY_WIRING: Record<string, WiringKnowledge> = {
     reasonModalWired: false, reasonModalNote: 'not wired',
   },
   business_request: {
-    runtimeReadWired: false, runtimeReadNote: 'no wiring — process_step field used instead of canonical status',
-    runtimeWriteWired: false, runtimeWriteNote: 'not wired — no published version seeded',
-    reasonModalWired: false, reasonModalNote: 'not wired',
+    runtimeReadWired: true, runtimeReadNote: 'useBusinessRequestsSource (backlogDataSource) + useCanonicalIssueWorkflow(Business Request)',
+    runtimeWriteWired: true, runtimeWriteNote: 'backlogDataSource.onUpdate → canonical key → process_step (A-lite) + recordAdvisoryStatusChange',
+    reasonModalWired: false, reasonModalNote: 'advisory only — reason not surfaced on status change UI',
   },
   product_milestone: {
-    runtimeReadWired: false, runtimeReadNote: 'no wiring — no active status mutation surface identified',
-    runtimeWriteWired: false, runtimeWriteNote: 'not wired — no published version seeded',
+    runtimeReadWired: false, runtimeReadNote: 'card/manager display only — no canonical read hook wired',
+    runtimeWriteWired: true, runtimeWriteNote: 'productMilestoneService.updateMilestone → status (A-lite) + recordAdvisoryStatusChange',
+    reasonModalWired: false, reasonModalNote: 'not wired',
+  },
+  task: {
+    runtimeReadWired: false, runtimeReadNote: 'task_statuses.workflow_status_key added (A_projection) — read hook not yet wired',
+    runtimeWriteWired: true, runtimeWriteNote: 'useUpdatePlannerTask → status_id + recordAdvisoryStatusChange (advisory)',
+    reasonModalWired: false, reasonModalNote: 'not wired',
+  },
+  sprint: {
+    runtimeReadWired: false, runtimeReadNote: 'no canonical read surface — sprint status shown as raw text',
+    runtimeWriteWired: true, runtimeWriteNote: 'useCanonicalSprintUpdate (useEntities.ts) → status (A-lite) + recordAdvisoryStatusChange',
     reasonModalWired: false, reasonModalNote: 'not wired',
   },
 };
@@ -117,6 +127,7 @@ const ENTITY_LABELS: Record<string, string> = {
   story: 'Story', epic: 'Epic', feature: 'Feature', subtask: 'Sub-task',
   defect: 'Defect', incident: 'Incident', release: 'Release',
   business_request: 'Business Request', product_milestone: 'Product Milestone',
+  task: 'Task', sprint: 'Sprint',
 };
 
 // Guard evidence status per guard type (static knowledge)
@@ -138,7 +149,7 @@ function HealthTab() {
   const { data: healthRows, isLoading } = useWfHealthSummary();
   if (isLoading) return <Loading />;
 
-  const ENTITIES = ['story', 'epic', 'feature', 'subtask', 'defect', 'incident', 'release', 'business_request', 'product_milestone'];
+  const ENTITIES = ['story', 'epic', 'feature', 'subtask', 'defect', 'incident', 'release', 'business_request', 'product_milestone', 'task', 'sprint'];
 
   const head = { cells: [
     { key: 'entity', content: 'Entity' },
@@ -391,7 +402,7 @@ function VersionScopedTab({ versionId, versions, onSelect, kind }: {
 }
 
 // ─── Migration preview tab ────────────────────────────────────────────────────
-const PREVIEW_ENTITIES = ['story', 'epic', 'feature', 'subtask', 'defect', 'incident', 'release', 'business_request', 'product_milestone'] as const;
+const PREVIEW_ENTITIES = ['story', 'epic', 'feature', 'subtask', 'defect', 'incident', 'release', 'business_request', 'product_milestone', 'task', 'sprint'] as const;
 function MigrationPreviewTab() {
   const [entity, setEntity] = useState<string>('story');
   const { data, isLoading } = useMigrationPreview(entity);

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 import type {
   ProductMilestone,
   ProductMilestoneWithProgress,
@@ -96,6 +97,15 @@ export class ProductMilestoneService {
    * Update milestone
    */
   async updateMilestone(id: string, input: UpdateMilestoneInput): Promise<ProductMilestone> {
+    // A-lite: product_milestones.status IS the canonical store. Capture current
+    // status before write so the advisory audit has a meaningful "from" value.
+    let prevStatus: string | null = null;
+    if (input.status !== undefined) {
+      const { data: cur } = await supabase
+        .from('product_milestones').select('status').eq('id', id).maybeSingle();
+      prevStatus = (cur as any)?.status ?? null;
+    }
+
     const { data, error } = await supabase
       .from('product_milestones')
       .update({
@@ -111,6 +121,16 @@ export class ProductMilestoneService {
       .single();
 
     if (error) throw error;
+
+    // Advisory audit for status changes. Canonical key = the status value (A-lite).
+    if (input.status !== undefined && prevStatus !== input.status) {
+      recordAdvisoryStatusChange({
+        entityKey: 'product_milestone', entityId: id, projectKey: null,
+        fromStatusRaw: prevStatus, toStatusRaw: input.status ?? null,
+        sourceSurface: 'milestone_manager',
+      }).catch(() => {/* advisory — non-blocking */});
+    }
+
     return this.mapToDomain(data);
   }
 
