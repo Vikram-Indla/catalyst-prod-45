@@ -394,7 +394,7 @@ export function CatalystLoginPage() {
             <button type="button" className="clmp-nav-btn" onClick={toggleLang} aria-label={lang === 'en' ? 'Switch to Arabic' : 'Switch to English'}>
               {lang === 'en' ? t(lang, 'nav.ar') : t(lang, 'nav.en')}
             </button>
-            <a className="clmp-btn clmp-btn-quiet" style={{ height: 34, fontSize: 13 }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
+            <a className="clmp-btn clmp-btn-quiet" style={{ height: 34, fontSize: 'var(--ds-font-size-300)' }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
             <button
               type="button"
               className="clmp-ham"
@@ -605,7 +605,7 @@ export function CatalystLoginPage() {
         <div className="clmp-container clmp-rv">
           <h2>{t(lang, 'final.title')}</h2>
           <p>{t(lang, 'final.sub')}</p>
-          <a className="clmp-btn clmp-btn-primary" style={{ height: 46, paddingInline: 32, fontSize: 15 }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
+          <a className="clmp-btn clmp-btn-primary" style={{ height: 46, paddingInline: 32, fontSize: 'var(--ds-font-size-400)' }} href="#main-form">{t(lang, 'form.tab.signin')}</a>
         </div>
       </div>
 

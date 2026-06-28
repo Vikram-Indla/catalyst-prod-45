@@ -35,10 +35,10 @@ export default function IncidentInsightsPage() {
               <Sparkles size={18} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <div>
-              <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 650, color: textPrimary, marginBottom: 4 }}>
+              <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: textPrimary, marginBottom: 4 }}>
                 Pattern Analysis
               </h3>
-              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: textBody, lineHeight: 1.6 }}>
+              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', color: textBody, lineHeight: 1.6 }}>
                 {sev1Count > 0
                   ? `${sev1Count} SEV-1 incident(s) detected in the current window. Analysis suggests correlation with recent deployment activities. ${breachedCount > 0 ? `${breachedCount} SLA breach(es) require immediate attention.` : 'SLA targets are currently being met.'}`
                   : 'No critical incidents detected. System health appears stable across all monitored services.'}
@@ -51,7 +51,7 @@ export default function IncidentInsightsPage() {
         <div className="grid grid-cols-2 gap-4">
           {/* Risk Signals */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
-            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: textPrimary }}>
+            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: textPrimary }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', display: 'inline-block' }} />
               Risk Signals
             </h3>
@@ -65,8 +65,8 @@ export default function IncidentInsightsPage() {
                   borderRadius: 4,
                   border: `1px solid ${'var(--cp-danger-light, #FECACA)'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-danger-text, #B91C1C)' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-danger-text, #B91C1C)' }}>{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -74,7 +74,7 @@ export default function IncidentInsightsPage() {
 
           {/* Improvements */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
-            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: textPrimary }}>
+            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: textPrimary }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-success, var(--cp-success, #16A34A))', display: 'inline-block' }} />
               Improvements
             </h3>
@@ -88,8 +88,8 @@ export default function IncidentInsightsPage() {
                   borderRadius: 4,
                   border: `1px solid ${'var(--cp-success-light, #BBF7D0)'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-success-text, #166534)', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-success, #15803D)' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-success-text, #166534)', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-success, #15803D)' }}>{item.desc}</p>
                 </div>
               ))}
             </div>

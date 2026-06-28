@@ -40,7 +40,7 @@ function pillStyle(active: boolean, whiteBg = false): React.CSSProperties {
     border: `1px solid ${active ? PILL_BLUE : 'var(--ds-border, #DFE1E6)'}`,
     background: active && !whiteBg ? PILL_BG_ACTIVE : 'var(--ds-surface, #FFFFFF)',
     color: active ? PILL_TEXT_ACTIVE : 'var(--ds-text, #292A2E)',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 500,
     fontFamily: 'inherit',
     cursor: 'pointer',
@@ -192,7 +192,7 @@ function SearchInput({
           border: 'none',
           outline: 'none',
           background: 'transparent',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--ds-text, #292A2E)',
           fontFamily: 'inherit',
           padding: 0,
@@ -253,7 +253,7 @@ function CheckboxRow({
       <Checkbox isChecked={checked} onChange={() => { /* handled by label click */ }} />
       <span
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: checked ? PILL_TEXT_ACTIVE : 'var(--ds-text, #292A2E)',
           fontWeight: checked ? 500 : 400,
         }}
@@ -294,7 +294,7 @@ function RadioRow({
         padding: '8px 12px 8px 16px',
         cursor: 'pointer',
         background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: checked ? PILL_TEXT_ACTIVE : 'var(--ds-text, #292A2E)',
         fontWeight: checked ? 500 : 400,
       }}
@@ -471,7 +471,7 @@ export function ProductFilter({
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
           {filtered.length === 0 ? (
-            <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
               No matches
             </div>
           ) : (
@@ -501,7 +501,7 @@ export function ProductFilter({
               cursor: 'pointer',
               padding: '10px 12px',
               borderTop: '1px solid var(--ds-border, #DFE1E6)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: PILL_TEXT_ACTIVE,
               fontWeight: 500,
               textAlign: 'center',
@@ -633,7 +633,7 @@ export function ProductSelect({
     border: `1px solid ${open ? PILL_BLUE : hasError ? 'var(--ds-border-danger, #AE2A19)' : 'var(--ds-border, #DFE1E6)'}`,
     background: disabled ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-surface, #FFFFFF)',
     color: disabled ? 'var(--ds-text-disabled, #A5ADBA)' : selected ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 400,
     fontFamily: 'inherit',
     cursor: disabled ? 'not-allowed' : 'pointer',
@@ -708,7 +708,7 @@ export function ProductSelect({
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
           {filtered.length === 0 ? (
-            <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
               No matches
             </div>
           ) : (

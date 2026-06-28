@@ -35,7 +35,7 @@ export default function ReportFormulaDrawer({ reportSlug }: Props) {
           <p
             style={{
               margin: 0,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 700,
               color: 'var(--ds-text-subtlest)',
               letterSpacing: '0.05em',
@@ -45,13 +45,13 @@ export default function ReportFormulaDrawer({ reportSlug }: Props) {
           >
             How this is calculated
           </p>
-          <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text)', lineHeight: 1.6 }}>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', lineHeight: 1.6 }}>
             {explanation}
           </p>
           <p
             style={{
               margin: '10px 0 0',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               color: 'var(--ds-text-subtlest)',
               fontStyle: 'italic',
             }}

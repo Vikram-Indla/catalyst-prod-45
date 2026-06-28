@@ -237,7 +237,7 @@ export const WithBulkSelect: StoryObj = {
           density="compact"
         />
         {sel.size > 0 && (
-          <div style={{ padding: '8px 16px', background: 'var(--ds-surface-sunken, #F7F8F9)', borderTop: '1px solid var(--ds-border, #DFE1E6)', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+          <div style={{ padding: '8px 16px', background: 'var(--ds-surface-sunken, #F7F8F9)', borderTop: '1px solid var(--ds-border, #DFE1E6)', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #42526E)' }}>
             {sel.size} selected — BulkFooterBar renders here
           </div>
         )}
@@ -274,7 +274,7 @@ export const Empty: StoryObj = {
         data={[]}
         columns={columns}
         getRowId={(r) => r.id}
-        emptyView={<div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ds-text-subtle, #42526E)', fontSize: 14 }}>No items match your filters.</div>}
+        emptyView={<div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-400)' }}>No items match your filters.</div>}
         density="compact"
       />
     </Frame>

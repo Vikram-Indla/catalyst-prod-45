@@ -53,10 +53,10 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
     return (
       <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: 'var(--cp-font-body)' }}>
         <div style={{ fontSize: 32, marginBottom: 8 }}>📋</div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 4 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: 4 }}>
           {roleFilter !== 'all' ? 'No items match role filter' : 'No work items'}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--fg-3)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
           {roleFilter !== 'all' ? 'Try switching to "All" to see all items' : 'Work items will appear here as they are assigned'}
         </div>
       </div>
@@ -82,7 +82,7 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                   <tr>
                     <td colSpan={9} style={{
                       padding: '8px 10px', background: sc.bg,
-                      fontSize: 11, fontWeight: 700, color: sc.text,
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: sc.text,
                     }}>
                       {groupLabel[cat]} <span style={{ fontWeight: 400, marginLeft: 4 }}>({catItems.length})</span>
                     </td>
@@ -106,10 +106,10 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = ''; }}
                       >
-                        <td style={{ padding: '0 10px', fontSize: 11, fontWeight: 800, fontFamily: 'monospace', color: 'var(--fg-1)' }}>
+                        <td style={{ padding: '0 10px', fontSize: 'var(--ds-font-size-100)', fontWeight: 800, fontFamily: 'monospace', color: 'var(--fg-1)' }}>
                           {it.item_key}
                         </td>
-                        <td style={{ padding: '0 10px', fontSize: 12, color: 'var(--fg-1)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '0 10px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {it.title}
                         </td>
                         <td style={{ padding: '0 10px' }}>
@@ -118,28 +118,28 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                           </span>
                         </td>
                         <td style={{ padding: '0 10px' }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: hubColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: hubColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                             {HUB_SHORT[it.source_hub] || it.source_hub}
                           </span>
                         </td>
                         <td style={{ padding: '0 10px' }}>
                           <span style={{
                             display: 'inline-flex', alignItems: 'center', gap: 4,
-                            fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 12,
+                            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 8px', borderRadius: 12,
                             background: sc.bg, color: sc.text,
                           }}>
                             <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc.dot }} />
                             {it.status}
                           </span>
                         </td>
-                        <td style={{ padding: '0 10px', fontSize: 11 }}>
+                        <td style={{ padding: '0 10px', fontSize: 'var(--ds-font-size-100)' }}>
                           {PRIORITY_ICONS[it.priority] || ''} {it.priority}
                         </td>
-                        <td style={{ padding: '0 10px', fontSize: 11, color: 'var(--fg-2)' }}>
+                        <td style={{ padding: '0 10px', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-2)' }}>
                           {it.project_name || '—'}
                         </td>
                         <td style={{
-                          padding: '0 10px', fontSize: 11, fontWeight: 600,
+                          padding: '0 10px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                           color: ageColor(it.age_days),
                           display: 'flex', alignItems: 'center', gap: 2, height: 44,
                         }}>
@@ -150,7 +150,7 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                           <span style={{
                             width: 18, height: 18, borderRadius: '50%',
                             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 9, fontWeight: 700,
+                            fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                             background: isReported ? 'transparent' : sc.dot,
                             color: isReported ? sc.dot : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                             border: isReported ? `1.5px solid ${sc.dot}` : 'none',

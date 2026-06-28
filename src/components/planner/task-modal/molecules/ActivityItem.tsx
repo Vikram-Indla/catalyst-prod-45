@@ -39,14 +39,14 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({
         >
           <span
             style={{
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               color: COLORS.textPrimary
             }}
           >
             {author}
           </span>
-          <span style={{ fontSize: '13px', color: COLORS.textLight }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.textLight }}>
             {createdAt}
           </span>
         </div>
@@ -57,7 +57,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({
             padding: '14px 18px',
             backgroundColor: COLORS.surfacePage,
             borderRadius: '12px',
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             lineHeight: 1.5,
             color: COLORS.textSecondary
           }}

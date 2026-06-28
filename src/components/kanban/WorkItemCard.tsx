@@ -141,7 +141,7 @@ function SubtaskStrip({ subtasks, tk }: { subtasks: BoardIssue[]; tk: KanbanThem
               borderRadius: 3,
               background: 'var(--ds-background-neutral, #F1F2F4)',
               color: tk.textMuted,
-              fontSize: 11, fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-body)',
               lineHeight: '16px',
               cursor: 'default',
               userSelect: 'none',
@@ -435,7 +435,7 @@ export function WorkItemCard({
           marginBottom: 4, maxWidth: '100%',
         }}>
           <span style={{
-            fontSize: 11, fontWeight: 400, color: tk.epicLozengeText,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: tk.epicLozengeText,
             background: tk.epicLozengeBg,
             borderRadius: 3, padding: '4px 8px',
             lineHeight: '16px', fontFamily: 'var(--cp-font-body)',
@@ -614,7 +614,7 @@ export function WorkItemCard({
                     width: '100%', padding: '8px 12px', border: 'none',
                     background: statusSubmenuOpen ? hoverBg : 'transparent',
                     cursor: 'pointer', textAlign: 'left',
-                    fontSize: 13, color: tk.textPrimary,
+                    fontSize: 'var(--ds-font-size-300)', color: tk.textPrimary,
                     fontFamily: 'var(--cp-font-body)',
                     outline: 'none',
                   }}
@@ -660,7 +660,7 @@ export function WorkItemCard({
                           display: 'flex', alignItems: 'center', gap: 8,
                           width: '100%', padding: '8px 12px', border: 'none',
                           background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                          fontSize: 13, color: tk.textPrimary,
+                          fontSize: 'var(--ds-font-size-300)', color: tk.textPrimary,
                           fontFamily: 'var(--cp-font-body)',
                           textTransform: 'capitalize',
                           outline: 'none',
@@ -689,7 +689,7 @@ export function WorkItemCard({
                   display: 'flex', alignItems: 'center',
                   width: '100%', padding: '8px 12px', border: 'none',
                   background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                  fontSize: 13, color: tk.textPrimary,
+                  fontSize: 'var(--ds-font-size-300)', color: tk.textPrimary,
                   fontFamily: 'var(--cp-font-body)',
                   outline: 'none',
                 }}
@@ -710,7 +710,7 @@ export function WorkItemCard({
                   display: 'flex', alignItems: 'center',
                   width: '100%', padding: '8px 12px', border: 'none',
                   background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                  fontSize: 13, color: tk.textPrimary,
+                  fontSize: 'var(--ds-font-size-300)', color: tk.textPrimary,
                   fontFamily: 'var(--cp-font-body)',
                   outline: 'none',
                 }}

@@ -27,7 +27,7 @@ export const PermissionBanner: React.FC<PermissionBannerProps> = ({
       }}
     >
       <Lock size={20} style={{ color: COLORS.warningIcon, flexShrink: 0 }} />
-      <span style={{ fontSize: '13px', color: COLORS.warningText }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.warningText }}>
         {message}
       </span>
     </div>

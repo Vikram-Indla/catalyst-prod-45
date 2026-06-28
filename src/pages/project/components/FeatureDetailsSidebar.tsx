@@ -73,7 +73,7 @@ export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
           <span className={styles.fieldValue}>
             {feature.owner ? (
               <div className={styles.ownerField}>
-                <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 9 }}>
+                <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 'var(--ds-font-size-100)' }}>
                   {getInitials(feature.owner.name)}
                 </div>
                 <span className={styles.ownerName}>{feature.owner.name}</span>
@@ -90,7 +90,7 @@ export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
           <span className={styles.fieldValue}>
             {feature.reporter ? (
               <div className={styles.ownerField}>
-                <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 9 }}>
+                <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 'var(--ds-font-size-100)' }}>
                   {getInitials(feature.reporter.name)}
                 </div>
                 <span>{feature.reporter.name}</span>

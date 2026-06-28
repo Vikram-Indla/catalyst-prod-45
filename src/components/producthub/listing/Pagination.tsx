@@ -20,13 +20,13 @@ export function Pagination({ total, page, pageSize, onPageChange, onPageSizeChan
   return (
     <div className="pb-pagination" style={{ height: 44, flexShrink: 0 }}>
       {/* Left: Rows per page */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--pb-ink-muted)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-200)', color: 'var(--pb-ink-muted)' }}>
         <span>Rows per page:</span>
         <select
           value={pageSize}
           onChange={(e) => { onPageSizeChange(Number(e.target.value)); onPageChange(1); }}
           className="pb-pagination"
-          style={{ height: 28, padding: '0 8px', fontSize: 12, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-sm)', color: 'var(--pb-ink)', outline: 'none', background: 'var(--pb-surface)' }}
+          style={{ height: 28, padding: '0 8px', fontSize: 'var(--ds-font-size-200)', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-sm)', color: 'var(--pb-ink)', outline: 'none', background: 'var(--pb-surface)' }}
         >
           {PAGE_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
@@ -39,7 +39,7 @@ export function Pagination({ total, page, pageSize, onPageChange, onPageSizeChan
             type="button"
             disabled={page <= 1}
             onClick={() => onPageChange(page - 1)}
-            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--pb-r-sm)', fontSize: 14, color: 'var(--pb-ink-tertiary)', background: 'none', border: 'none', cursor: page <= 1 ? 'default' : 'pointer', opacity: page <= 1 ? 0.3 : 1 }}
+            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--pb-r-sm)', fontSize: 'var(--ds-font-size-400)', color: 'var(--pb-ink-tertiary)', background: 'none', border: 'none', cursor: page <= 1 ? 'default' : 'pointer', opacity: page <= 1 ? 0.3 : 1 }}
           >
             ‹
           </button>
@@ -50,7 +50,7 @@ export function Pagination({ total, page, pageSize, onPageChange, onPageSizeChan
               onClick={() => onPageChange(p)}
               style={{
                 width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: 'var(--pb-r-sm)', fontSize: 12, fontWeight: 500,
+                borderRadius: 'var(--pb-r-sm)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                 fontVariantNumeric: 'tabular-nums', border: 'none', cursor: 'pointer',
                 background: p === page ? 'var(--pb-primary)' : 'none',
                 color: p === page ? 'var(--bg-app)' : 'var(--pb-ink-tertiary)',
@@ -63,7 +63,7 @@ export function Pagination({ total, page, pageSize, onPageChange, onPageSizeChan
             type="button"
             disabled={page >= totalPages}
             onClick={() => onPageChange(page + 1)}
-            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--pb-r-sm)', fontSize: 14, color: 'var(--pb-ink-tertiary)', background: 'none', border: 'none', cursor: page >= totalPages ? 'default' : 'pointer', opacity: page >= totalPages ? 0.3 : 1 }}
+            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--pb-r-sm)', fontSize: 'var(--ds-font-size-400)', color: 'var(--pb-ink-tertiary)', background: 'none', border: 'none', cursor: page >= totalPages ? 'default' : 'pointer', opacity: page >= totalPages ? 0.3 : 1 }}
           >
             ›
           </button>

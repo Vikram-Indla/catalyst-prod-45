@@ -659,7 +659,7 @@ function renderFacetRow(
         padding: "8px 8px",
         borderRadius: 3,
         cursor: "pointer",
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: "var(--ds-text, #292A2E)",
       }}
       onMouseEnter={(e) =>
@@ -904,7 +904,7 @@ export function FilterChip({
                   padding: "8px 12px",
                   borderBottom:
                     "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: "var(--ds-text-subtle, #505258)",
                 }}
               >
@@ -927,7 +927,7 @@ export function FilterChip({
                 style={{
                   width: "100%",
                   padding: "8px 8px",
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   border:
                     "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
                   borderRadius: 3,
@@ -943,7 +943,7 @@ export function FilterChip({
                 <div
                   style={{
                     padding: 16,
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color: "var(--ds-text-subtle, #505258)",
                     textAlign: "center",
                   }}
@@ -963,7 +963,7 @@ export function FilterChip({
                 padding: "8px 12px",
                 borderTop:
                   "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 color: "var(--ds-text-subtle, #505258)",
                 display: "flex",
                 justifyContent: "space-between",
@@ -985,7 +985,7 @@ export function FilterChip({
                     border: "none",
                     cursor: "pointer",
                     color: "var(--ds-link, #0C66E4)",
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     padding: "2px 4px",
                     fontFamily: "inherit",
                   }}
@@ -1134,7 +1134,7 @@ function SavedFiltersDropdown({
                 <span
                   style={{
                     color: "var(--ds-text-danger, #DE350B)",
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                   }}
                 >
                   Delete
@@ -1144,7 +1144,7 @@ function SavedFiltersDropdown({
           >
             {row.name}
             {row.is_shared && (
-              <span style={{ marginLeft: 8, fontSize: 10, color: SUBTLE }}>
+              <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-50)', color: SUBTLE }}>
                 · shared
               </span>
             )}

@@ -23,7 +23,7 @@ export function ProjectHealthBadge({ health }: { health: ProjectHealth }) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: 5,
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 500,
         color: s.text,
         whiteSpace: 'nowrap',

@@ -195,7 +195,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
             style={{
               width: '100%',
               padding: '6px 10px',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               border: searchFocused
                 ? '2px solid var(--ds-border-focused, #2684FF)'
                 : '2px solid var(--ds-border, #DFE1E6)',
@@ -214,7 +214,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
         {items.length === 0 && (
           <div
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--ds-text-subtlest, #6B778C)',
               padding: 16,
               textAlign: 'center',
@@ -269,11 +269,11 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
               {renderIcon(item.iconId, item.iconColor)}
             </span>
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-              <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
                 {item.label}
               </span>
               {item.description && (
-                <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                   {item.description}
                 </span>
               )}
@@ -281,7 +281,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
             {item.shortcut && (
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   color: 'var(--ds-text-subtlest, #6B778C)',
                   flexShrink: 0,
                 }}
@@ -304,7 +304,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
           borderTop: '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-surface-sunken, #F7F8F9)',
           color: 'var(--ds-text-subtle, #44546F)',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           cursor: 'pointer',
           /* Flex so the ellipsis + label sit on one row and align
@@ -316,7 +316,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
       >
         {/* U+22EF MIDLINE HORIZONTAL ELLIPSIS — three dots that sit at the
             line midline (vs U+2026 "…" which sits at the baseline). */}
-        <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>⋯</span>
+        <span aria-hidden style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}>⋯</span>
         <span>View more</span>
       </button>
     </div>

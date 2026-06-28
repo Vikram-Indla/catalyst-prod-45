@@ -160,23 +160,23 @@ export default function AuditTrailPage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 2,
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 13, color: 'var(--ds-text-subtle, #475569)', fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #475569)', fontFamily: 'var(--cp-font-body)',
               marginBottom: 4,
             }}
           >
             <ChevronLeft size={14} color="var(--ds-text-subtle, #475569)" />
             Back to Cleanup
           </button>
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
             Audit Trail
           </div>
-          <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 2 }}>
             AI Cleanup governance log
           </div>
         </div>
         <Button
           variant="outline"
-          style={{ height: 36, fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+          style={{ height: 36, fontSize: 'var(--ds-font-size-300)', display: 'flex', alignItems: 'center', gap: 6 }}
           onClick={handleExport}
         >
           <Download size={14} />
@@ -194,13 +194,13 @@ export default function AuditTrailPage() {
           value={statusFilter}
           onValueChange={(v) => { setStatusFilter(v as any); setPage(0); }}
         >
-          <SelectTrigger style={{ width: 160, height: 36, fontSize: 13, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+          <SelectTrigger style={{ width: 160, height: 36, fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-            <SelectItem value="all" style={{ fontSize: 13 }}>All events</SelectItem>
-            <SelectItem value="closed" style={{ fontSize: 13 }}>Force closed</SelectItem>
-            <SelectItem value="restored" style={{ fontSize: 13 }}>Restored</SelectItem>
+            <SelectItem value="all" style={{ fontSize: 'var(--ds-font-size-300)' }}>All events</SelectItem>
+            <SelectItem value="closed" style={{ fontSize: 'var(--ds-font-size-300)' }}>Force closed</SelectItem>
+            <SelectItem value="restored" style={{ fontSize: 'var(--ds-font-size-300)' }}>Restored</SelectItem>
           </SelectContent>
         </Select>
 
@@ -208,35 +208,35 @@ export default function AuditTrailPage() {
           value={categoryFilter !== null ? String(categoryFilter) : 'all'}
           onValueChange={(v) => { setCategoryFilter(v === 'all' ? null : Number(v)); setPage(0); }}
         >
-          <SelectTrigger style={{ width: 180, height: 36, fontSize: 13, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+          <SelectTrigger style={{ width: 180, height: 36, fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             {CATEGORY_OPTIONS.map(o => (
-              <SelectItem key={o.value} value={o.value} style={{ fontSize: 13 }}>{o.label}</SelectItem>
+              <SelectItem key={o.value} value={o.value} style={{ fontSize: 'var(--ds-font-size-300)' }}>{o.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>From</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>From</span>
           <input
             type="date"
             value={dateFrom}
             onChange={e => { setDateFrom(e.target.value); setPage(0); }}
             style={{
-              height: 36, fontSize: 13, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+              height: 36, fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
               borderRadius: 6, padding: '0 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
             }}
           />
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>To</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>To</span>
           <input
             type="date"
             value={dateTo}
             onChange={e => { setDateTo(e.target.value); setPage(0); }}
             style={{
-              height: 36, fontSize: 13, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+              height: 36, fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
               borderRadius: 6, padding: '0 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
             }}
@@ -246,7 +246,7 @@ export default function AuditTrailPage() {
         {hasActiveFilters && (
           <span
             onClick={clearFilters}
-            style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer', textDecoration: 'underline' }}
+            style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer', textDecoration: 'underline' }}
           >
             Clear filters
           </span>
@@ -266,13 +266,13 @@ export default function AuditTrailPage() {
         ].map(cell => (
           <div key={cell.label}>
             <div style={{
-              fontFamily: 'var(--cp-font-mono)', fontSize: 20,
+              fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)',
               fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
             }}>
               {cell.value}
             </div>
             <div style={{
-              fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 2,
             }}>
               {cell.label}
@@ -292,7 +292,7 @@ export default function AuditTrailPage() {
               <tr style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
                 {['ITEM', 'CATEGORY', 'CLOSED BY', 'CLOSED', 'REASON', 'RESTORE STATUS', 'RESTORED BY'].map(h => (
                   <th key={h} style={{
-                    padding: '10px 12px', fontSize: 11, fontWeight: 500,
+                    padding: '10px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                     textTransform: 'uppercase', letterSpacing: '0.05em',
                     color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                     whiteSpace: 'nowrap',
@@ -305,13 +305,13 @@ export default function AuditTrailPage() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
+                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                     Loading audit trail...
                   </td>
                 </tr>
               ) : entries.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
+                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                     No audit events found
                   </td>
                 </tr>
@@ -328,12 +328,12 @@ export default function AuditTrailPage() {
                     <td style={{ padding: '8px 12px', minWidth: 200, verticalAlign: 'top' }}>
                       <div style={{
                         fontFamily: 'var(--cp-font-mono)',
-                        fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                        fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       }}>
                         {entry.item_key}
                       </div>
                       <div style={{
-                        fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginTop: 2,
+                        fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginTop: 2,
                         maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                       }}>
@@ -342,7 +342,7 @@ export default function AuditTrailPage() {
                     </td>
 
                     {/* CATEGORY */}
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', verticalAlign: 'top' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', verticalAlign: 'top' }}>
                       {CATEGORY_MAP[entry.governance_category] ?? 'Unknown'}
                     </td>
 
@@ -354,11 +354,11 @@ export default function AuditTrailPage() {
                           background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', display: 'flex',
                           alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                         }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                             {initials(entry.closed_by_name)}
                           </span>
                         </div>
-                        <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                           {entry.closed_by_name}
                         </span>
                       </div>
@@ -368,18 +368,18 @@ export default function AuditTrailPage() {
                     <td style={{ padding: '8px 12px', verticalAlign: 'top' }}>
                       <div style={{
                         fontFamily: 'var(--cp-font-mono)',
-                        fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+                        fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                       }}>
                         {relativeTime(entry.closed_at)}
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 2 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 2 }}>
                         {formatDate(entry.closed_at)}
                       </div>
                     </td>
 
                     {/* REASON */}
                     <td style={{
-                      padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtle, #475569)',
+                      padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #475569)',
                       maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap', verticalAlign: 'top',
                     }}
@@ -391,7 +391,7 @@ export default function AuditTrailPage() {
                     {/* RESTORE STATUS */}
                     <td style={{ padding: '8px 12px', verticalAlign: 'top' }}>
                       <span style={{
-                        display: 'inline-block', fontSize: 11, fontWeight: 500,
+                        display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                         textTransform: 'uppercase', borderRadius: 3,
                         padding: '2px 8px', background: rs.bg, color: rs.color,
                         border: `1px solid ${rs.border}`, whiteSpace: 'nowrap',
@@ -410,16 +410,16 @@ export default function AuditTrailPage() {
                               background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', display: 'flex',
                               alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                             }}>
-                              <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                                 {initials(entry.restored_by_name)}
                               </span>
                             </div>
-                            <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+                            <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                               {entry.restored_by_name}
                             </span>
                           </div>
                           {entry.restored_at && (
-                            <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 2, paddingLeft: 30 }}>
+                            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 2, paddingLeft: 30 }}>
                               {formatDate(entry.restored_at)}
                             </div>
                           )}
@@ -442,27 +442,27 @@ export default function AuditTrailPage() {
         padding: '12px 24px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderTop: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
         flexShrink: 0,
       }}>
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
           {total > 0 ? `Showing ${fromRow}\u2013${toRow} of ${total} events` : 'No events'}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Button
             variant="outline"
             size="sm"
-            style={{ height: 32, fontSize: 13, opacity: page === 0 ? 0.4 : 1, pointerEvents: page === 0 ? 'none' : 'auto' }}
+            style={{ height: 32, fontSize: 'var(--ds-font-size-300)', opacity: page === 0 ? 0.4 : 1, pointerEvents: page === 0 ? 'none' : 'auto' }}
             onClick={() => setPage(p => Math.max(0, p - 1))}
             disabled={page === 0}
           >
             <ChevronLeft size={14} />
             Previous
           </Button>
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
             Page {page + 1} of {totalPages}
           </span>
           <Button
             variant="outline"
             size="sm"
-            style={{ height: 32, fontSize: 13, opacity: page + 1 >= totalPages ? 0.4 : 1, pointerEvents: page + 1 >= totalPages ? 'none' : 'auto' }}
+            style={{ height: 32, fontSize: 'var(--ds-font-size-300)', opacity: page + 1 >= totalPages ? 0.4 : 1, pointerEvents: page + 1 >= totalPages ? 'none' : 'auto' }}
             onClick={() => setPage(p => p + 1)}
             disabled={page + 1 >= totalPages}
           >

@@ -95,7 +95,7 @@ export function AdvancedFilterPanel({
     borderRadius: 'var(--wh-radius-md, 8px)',
     border: '1px solid var(--divider)',
     padding: '0 10px',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontFamily: 'var(--cp-font-body)',
     color: 'var(--fg-1)',
     backgroundColor: 'var(--cp-float)',

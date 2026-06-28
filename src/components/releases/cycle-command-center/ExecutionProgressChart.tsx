@@ -55,12 +55,12 @@ export function ExecutionProgressChart({ cycleId }: ExecutionProgressChartProps)
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11, fill: 'var(--ds-text-subtlest, #64748b)' }}
+                tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #64748b)' }}
                 axisLine={{ stroke: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}
                 tickLine={false}
               />
               <YAxis 
-                tick={{ fontSize: 11, fill: 'var(--ds-text-subtlest, #64748b)' }}
+                tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #64748b)' }}
                 axisLine={false}
                 tickLine={false}
               />

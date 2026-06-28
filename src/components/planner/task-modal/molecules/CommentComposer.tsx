@@ -56,7 +56,7 @@ export const CommentComposer: React.FC<CommentComposerProps> = ({
             padding: '16px 18px',
             border: 'none',
             fontFamily: 'inherit',
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             lineHeight: 1.5,
             color: COLORS.textPrimary,
             resize: 'none',

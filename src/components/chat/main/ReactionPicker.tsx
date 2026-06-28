@@ -118,7 +118,7 @@ export function ReactionPicker({
           padding: '8px 12px',
           border: 'none',
           borderBottom: `1px solid var(--ds-border, #DFE1E6)`,
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontFamily: 'var(--ds-font-family-body, -apple-system, sans-serif)',
           outline: 'none',
         }}
@@ -151,7 +151,7 @@ export function ReactionPicker({
                 padding: '4px',
                 background: 'transparent',
                 border: 'none',
-                fontSize: 20,
+                fontSize: 'var(--ds-font-size-700)',
                 cursor: 'pointer',
                 borderRadius: 4,
                 transition: 'background 100ms',
@@ -192,7 +192,7 @@ export function ReactionPicker({
                 padding: '4px 8px',
                 background: activeCategory === cat ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
                 border: 'none',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: activeCategory === cat ? 600 : 400,
                 cursor: 'pointer',
                 borderRadius: 4,
@@ -231,7 +231,7 @@ export function ReactionPicker({
               padding: '4px',
               background: 'transparent',
               border: 'none',
-              fontSize: 20,
+              fontSize: 'var(--ds-font-size-700)',
               cursor: 'pointer',
               borderRadius: 4,
               transition: 'background 100ms',
@@ -256,7 +256,7 @@ export function ReactionPicker({
             padding: '24px 12px',
             textAlign: 'center',
             color: 'var(--ds-text-subtle, #42526E)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           No emoji found for "{searchTerm}"

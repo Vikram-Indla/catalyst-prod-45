@@ -64,7 +64,7 @@ export const WorkListPanel: React.FC<WorkListPanelProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               height: '100%',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-subtlest, #626F86)',
             }}
           >
@@ -95,7 +95,7 @@ export const WorkListPanel: React.FC<WorkListPanelProps> = ({
             <p
               style={{
                 margin: '0 0 12px 0',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               }}
@@ -109,7 +109,7 @@ export const WorkListPanel: React.FC<WorkListPanelProps> = ({
                 onClearFilters?.();
               }}
               style={{
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 color: 'var(--ds-link, #0055CC)',
                 textDecoration: 'underline',
                 cursor: 'pointer',

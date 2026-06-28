@@ -165,7 +165,7 @@ export default function ResetPassword() {
         </svg>
         <span
           style={{
-            fontSize: 22,
+            fontSize: 'var(--ds-font-size-700)',
             fontWeight: 700,
             color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
             letterSpacing: '-0.3px',
@@ -176,7 +176,7 @@ export default function ResetPassword() {
         </span>
         <span
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             marginTop: 2,
@@ -337,7 +337,7 @@ export default function ResetPassword() {
       <p
         style={{
           marginTop: 24,
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
         }}

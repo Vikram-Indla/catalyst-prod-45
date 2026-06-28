@@ -180,7 +180,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               <CatySparkle size={18} />
               <span
                 style={{
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 650,
                   letterSpacing: '-0.1px',
                   lineHeight: 1,
@@ -214,7 +214,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
           <div
             style={{
               padding: '8px 12px 6px',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               color: 'var(--cp-t3, var(--cp-text-secondary, #6B778C))',
               textTransform: 'uppercase',
@@ -241,7 +241,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 background: 'transparent',
                 borderRadius: 8,
                 cursor: 'pointer',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: 'var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 transition: 'background 100ms',

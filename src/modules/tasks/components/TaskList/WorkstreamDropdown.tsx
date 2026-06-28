@@ -46,7 +46,7 @@ function WorkstreamDropdownItem({ value, color, isSelected, onClick }: { value: 
           flexShrink: 0,
         }}
       />
-      <span style={{ fontSize: '14px', color: value === 'None' ? COLORS.textMuted : COLORS.textPrimary }}>{value}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: value === 'None' ? COLORS.textMuted : COLORS.textPrimary }}>{value}</span>
       {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
     </div>
   );
@@ -102,7 +102,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
               flexShrink: 0,
             }}
           />
-          <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>
+          <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: COLORS.textPrimary }}>
             {displayName}
           </span>
           <ChevronDown size={14} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />

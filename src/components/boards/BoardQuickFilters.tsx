@@ -24,7 +24,7 @@ export default function BoardQuickFilters() {
               border: 'none',
               background: active ? 'var(--cp-blue)' : 'var(--cp-bd-zone)',
               color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-2)',
-              fontSize: 12, fontWeight: active ? 600 : 500,
+              fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 500,
               fontFamily: 'var(--cp-font-body)',
               cursor: 'pointer',
               transition: 'all 80ms',
@@ -41,13 +41,13 @@ export default function BoardQuickFilters() {
         display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 26, padding: '0 10px', borderRadius: 13,
         border: 'none', background: 'var(--cp-bd-zone)',
-        color: 'var(--fg-2)', fontSize: 12, fontWeight: 500,
+        color: 'var(--fg-2)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
         fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
       }}>
         <SlidersHorizontal size={12} /> Filters
       </button>
       {/* Sync indicator */}
-      <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>
+      <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>
         synced: just now
       </span>
     </div>

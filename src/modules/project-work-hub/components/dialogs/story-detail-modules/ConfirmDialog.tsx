@@ -30,12 +30,12 @@ export function ConfirmDialog({
         background: 'var(--ds-surface, #FFF)', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw',
         animation: 'sdm-confirm-in 200ms ease-out',
       }}>
-        <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 8 }}>{title}</h3>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)', lineHeight: 1.6, marginBottom: 20 }}>{message}</p>
+        <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 8 }}>{title}</h3>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #5E6C84)', lineHeight: 1.6, marginBottom: 20 }}>{message}</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onCancel} style={{
             padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface, #FFF)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
-            fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text-subtle, #5E6C84)',
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text-subtle, #5E6C84)',
             transition: 'background 0.15s',
           }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
@@ -44,7 +44,7 @@ export function ConfirmDialog({
           <button onClick={onConfirm} style={{
             padding: '7px 16px', borderRadius: 4,
             background: destructive ? 'var(--ds-background-danger-bold, #C9372C)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-            color: 'var(--ds-surface, #FFF)', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            color: 'var(--ds-surface, #FFF)', border: 'none', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
             transition: 'opacity 0.15s',
           }}
             onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}

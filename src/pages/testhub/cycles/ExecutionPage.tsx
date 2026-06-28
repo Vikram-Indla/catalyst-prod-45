@@ -182,7 +182,7 @@ export default function ExecutionPage() {
               border: 'none',
               cursor: 'pointer',
               color: 'var(--ds-link, #0052CC)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               display: 'flex',
               alignItems: 'center',
               gap: 4,
@@ -193,7 +193,7 @@ export default function ExecutionPage() {
             <ArrowLeft size={13} />
             Back to cycle
           </button>
-          <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          <h3 style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
             {scopeItems.length} {scopeItems.length === 1 ? 'case' : 'cases'}
           </h3>
         </div>
@@ -214,10 +214,10 @@ export default function ExecutionPage() {
             >
               <RunStatusDot status={item.status} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)' }}>
                   {item.test_case?.key ?? '—'}
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {item.test_case?.title ?? '—'}
                 </div>
               </div>
@@ -238,7 +238,7 @@ export default function ExecutionPage() {
             onSaved={() => queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] })}
           />
         ) : (
-          <div style={{ padding: 48, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+          <div style={{ padding: 48, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>
             Select a case from the list
           </div>
         )}
@@ -314,11 +314,11 @@ function SaveRunModal({
         <ModalTitle>Save execution</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--ds-text-subtle)' }}>
+        <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
           Optionally add notes before saving this run result.
         </p>
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle)', display: 'block', marginBottom: 4 }}>
+          <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', display: 'block', marginBottom: 4 }}>
             Notes (optional)
           </label>
           <Textarea
@@ -565,7 +565,7 @@ function StepRunner({
             ? 'var(--ds-background-warning)'
             : 'var(--ds-background-danger)',
           border: `1px solid ${isOnline ? 'var(--ds-border)' : 'var(--ds-border-danger)'}`,
-          fontSize: 13, color: isOnline ? 'var(--ds-text-warning)' : 'var(--ds-text-danger)',
+          fontSize: 'var(--ds-font-size-300)', color: isOnline ? 'var(--ds-text-warning)' : 'var(--ds-text-danger)',
           fontWeight: 500,
         }}>
           {isOnline
@@ -584,7 +584,7 @@ function StepRunner({
         border: '1px solid var(--ds-border, #DFE1E6)',
       }}>
         <span style={{
-          fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 18, fontWeight: 600,
+          fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-600)', fontWeight: 600,
           color: timer.running ? 'var(--ds-text-information, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
           minWidth: 72,
         }}>
@@ -605,7 +605,7 @@ function StepRunner({
           onClick={handleReset}
           style={{
             padding: '4px 12px', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)',
-            background: 'none', cursor: 'pointer', fontSize: 12,
+            background: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
             color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-body)',
           }}
         >
@@ -615,10 +615,10 @@ function StepRunner({
 
       {/* Case header */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)', marginBottom: 4 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)', marginBottom: 4 }}>
           {caseDetail.key}
         </div>
-        <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <h2 style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
           {caseDetail.title}
         </h2>
         {caseDetail.preconditions && (
@@ -627,7 +627,7 @@ function StepRunner({
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 6,
             padding: 12,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtle, #42526E)',
           }}>
             <strong style={{ display: 'block', marginBottom: 4, color: 'var(--ds-text, #172B4D)' }}>Preconditions</strong>
@@ -638,7 +638,7 @@ function StepRunner({
 
       {/* Steps */}
       {steps.length === 0 ? (
-        <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, padding: '24px 0' }}>
+        <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)', padding: '24px 0' }}>
           No steps defined for this test case.
         </div>
       ) : (
@@ -668,7 +668,7 @@ function StepRunner({
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                  <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+                  <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
                     Step {i + 1}
                   </span>
                   <div style={{ display: 'flex', gap: 8 }}>
@@ -704,23 +704,23 @@ function StepRunner({
                 </div>
                 <div style={{ padding: '12px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>ACTION</div>
-                    <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>{step.action}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>ACTION</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>{step.action}</div>
                     {step.test_data && (
                       <div style={{ marginTop: 8 }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>TEST DATA</div>
-                        <code style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-code)' }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>TEST DATA</div>
+                        <code style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-code)' }}>
                           {step.test_data}
                         </code>
                       </div>
                     )}
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>EXPECTED RESULT</div>
-                    <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>EXPECTED RESULT</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>
                       {step.expected_result}
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>ACTUAL RESULT</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>ACTUAL RESULT</div>
                     <Textarea
                       value={state?.actualResult ?? ''}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateActualResult(i, e.target.value)}
@@ -746,7 +746,7 @@ function StepRunner({
       {/* Action row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
         {completedRunCount > 0 && (
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
             {completedRunCount} prior {completedRunCount === 1 ? 'run' : 'runs'} · saving as Run #{completedRunCount + 1}
           </span>
         )}
@@ -756,7 +756,7 @@ function StepRunner({
             padding: '8px 24px',
             background: 'var(--ds-background-brand-bold, #0052CC)',
             color: 'var(--ds-text-inverse, #FFFFFF)',
-            border: 'none', borderRadius: 4, fontSize: 14, fontWeight: 500,
+            border: 'none', borderRadius: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
             cursor: 'pointer',
           }}
         >
@@ -807,7 +807,7 @@ function AttachmentZone({
 
   return (
     <div style={{ marginBottom: 24 }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
         ATTACHMENTS (optional)
       </div>
       <div
@@ -822,7 +822,7 @@ function AttachmentZone({
           background: dragOver ? 'var(--ds-background-information-subtle, #E9F2FF)' : 'var(--ds-surface-sunken, #F7F8F9)',
           cursor: 'pointer',
           textAlign: 'center',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--ds-text-subtle, #42526E)',
           transition: 'all 0.15s',
           marginBottom: files.length ? 8 : 0,
@@ -847,19 +847,19 @@ function AttachmentZone({
           padding: '8px 8px', borderRadius: 4, marginTop: 4,
           background: 'var(--ds-surface-sunken, #F7F8F9)',
           border: '1px solid var(--ds-border, #DFE1E6)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
         }}>
           <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ds-text, #172B4D)' }}>
             {f.name}
           </span>
-          <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
             {fmtSize(f.size)}
           </span>
           <button
             onClick={e => { e.stopPropagation(); onRemove(i); }}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, lineHeight: 1, padding: 4,
+              color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)', lineHeight: 1, padding: 4,
               flexShrink: 0,
             }}
             title="Remove"
@@ -874,7 +874,7 @@ function AttachmentZone({
 
 const timerBtnStyle = (color: string): React.CSSProperties => ({
   padding: '4px 8px', borderRadius: 4, border: `1px solid ${color}`,
-  background: 'none', cursor: 'pointer', fontSize: 12, color,
+  background: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color,
   fontFamily: 'var(--ds-font-family-body)',
 });
 
@@ -930,7 +930,7 @@ function StepBtn({
         border: `1px solid ${active ? color : 'var(--ds-border, #DFE1E6)'}`,
         borderRadius: 4,
         cursor: 'pointer',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         color: active ? color : 'var(--ds-text-subtle, #42526E)',
         fontWeight: active ? 600 : 400,
         display: 'flex',

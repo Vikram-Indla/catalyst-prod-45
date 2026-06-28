@@ -150,7 +150,7 @@ export function CatalystAiSearch({
           background: 'transparent',
           boxShadow: 'none',
           font: 'inherit',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           appearance: 'none',
           WebkitAppearance: 'none',
@@ -187,7 +187,7 @@ export function CatalystAiSearch({
         }}
       >
         <CatyHead size={16} title="Ask Caty" />
-        <span style={{ fontSize: 12, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>Ask</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>Ask</span>
       </button>
     </div>
   );

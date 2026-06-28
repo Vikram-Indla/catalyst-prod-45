@@ -69,7 +69,7 @@ export const CreateModal = memo(function CreateModal({
         <h2
           style={{
             margin: '0 0 20px 0',
-            fontSize: '18px',
+            fontSize: 'var(--ds-font-size-600)',
             fontWeight: 600,
             color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
           }}
@@ -103,7 +103,7 @@ export const CreateModal = memo(function CreateModal({
                   color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                   border: 'none',
                   borderRadius: '3px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   cursor: 'pointer',
                   transition: 'background-color 150ms',
@@ -125,7 +125,7 @@ export const CreateModal = memo(function CreateModal({
                   color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                   border: 'none',
                   borderRadius: '3px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   cursor: 'pointer',
                 }}
@@ -152,7 +152,7 @@ export const CreateModal = memo(function CreateModal({
                 color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                 border: 'none',
                 borderRadius: '3px',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 cursor: 'pointer',
               }}

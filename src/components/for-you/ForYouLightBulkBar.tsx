@@ -22,7 +22,7 @@ export function ForYouLightBulkBar({
     display: 'flex', alignItems: 'center', gap: 6,
     height: 32, padding: '0 14px',
     backgroundColor: 'transparent', border: 'none', borderRadius: 8,
-    cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)',
+    cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-t2)',
     transition: 'background 0.1s', fontFamily: 'var(--cp-font-body)',
   };
 
@@ -39,7 +39,7 @@ export function ForYouLightBulkBar({
       <span style={{
         display: 'flex', alignItems: 'center', height: 32,
         padding: '0 14px', backgroundColor: 'var(--cp-blue-wash)', color: 'var(--cp-blue-text)',
-        borderRadius: 8, fontSize: 13, fontWeight: 600, marginRight: 8,
+        borderRadius: 8, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, marginRight: 8,
       }}>
         {selectedCount} selected
       </span>

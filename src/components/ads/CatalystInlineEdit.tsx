@@ -32,7 +32,7 @@ export function CatalystInlineEdit({
       readView={() => (
         <div
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             lineHeight: '20px',
             padding: '8px 6px',
             color: defaultValue ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),

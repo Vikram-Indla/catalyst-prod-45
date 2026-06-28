@@ -25,7 +25,7 @@ export default function DeactivatedPage() {
         <div style={{ fontSize: 40, marginBottom: 16 }}>🔒</div>
         <h1 style={{
           margin: '0 0 12px',
-          fontSize: 24,
+          fontSize: 'var(--ds-font-size-800)',
           fontWeight: 600,
           color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         }}>
@@ -33,7 +33,7 @@ export default function DeactivatedPage() {
         </h1>
         <p style={{
           margin: '0 0 8px',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
           lineHeight: 1.6,
         }}>
@@ -41,7 +41,7 @@ export default function DeactivatedPage() {
         </p>
         <p style={{
           margin: '0 0 32px',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
           lineHeight: 1.6,
         }}>
@@ -51,7 +51,7 @@ export default function DeactivatedPage() {
           onClick={handleSignOut}
           style={{
             padding: '8px 20px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             background: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))',

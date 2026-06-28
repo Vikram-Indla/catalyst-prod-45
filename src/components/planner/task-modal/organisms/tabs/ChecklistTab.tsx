@@ -36,7 +36,7 @@ export const ChecklistTab: React.FC<ChecklistTabProps> = ({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <span style={{ fontSize: '14px', color: COLORS.textMuted }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textMuted }}>
             {completedCount} of {totalCount} complete ({progressPercent}%)
           </span>
           <ProgressBar percent={progressPercent} />

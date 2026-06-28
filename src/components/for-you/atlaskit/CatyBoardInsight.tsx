@@ -246,7 +246,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
         borderRadius: 999,
         background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         color: token('color.text', 'var(--ds-text, #172B4D)'),
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         cursor: isLoading ? 'default' : 'pointer',
         opacity: isLoading ? 0.7 : 1,

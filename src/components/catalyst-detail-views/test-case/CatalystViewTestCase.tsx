@@ -298,7 +298,7 @@ export default function CatalystViewTestCase({
   const stepsPanel = (
     <div style={{ padding: '8px 16px' }}>
       {steps.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, margin: 0 }}>No steps.</p>
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: 0 }}>No steps.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {steps.map((s: any, i: number) => (
@@ -308,10 +308,10 @@ export default function CatalystViewTestCase({
               padding: 12,
               background: 'var(--ds-surface-raised)',
             }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>
                 Step {s.step_number ?? i + 1}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 'var(--ds-font-size-300)' }}>
                 <div>
                   <div style={miniLabel}>Action</div>
                   <div style={{ color: 'var(--ds-text)' }}>{s.action || '—'}</div>
@@ -324,7 +324,7 @@ export default function CatalystViewTestCase({
               {s.test_data ? (
                 <div style={{ marginTop: 8 }}>
                   <div style={miniLabel}>Test data</div>
-                  <div style={{ color: 'var(--ds-text)', fontSize: 13 }}>{s.test_data}</div>
+                  <div style={{ color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)' }}>{s.test_data}</div>
                 </div>
               ) : null}
             </div>
@@ -338,7 +338,7 @@ export default function CatalystViewTestCase({
   const versionsPanel = (
     <div style={{ padding: '8px 16px' }}>
       {versions.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, margin: 0 }}>No version history. Use "New version" in the repository to create a snapshot.</p>
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: 0 }}>No version history. Use "New version" in the repository to create a snapshot.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {versions.map((v: any, idx: number) => (
@@ -349,21 +349,21 @@ export default function CatalystViewTestCase({
               background: idx === 0 ? 'var(--ds-background-selected)' : 'var(--ds-surface-raised)',
             }}>
               <span style={{
-                fontSize: 12, fontWeight: 700, color: 'var(--ds-text)',
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text)',
                 fontFamily: 'var(--ds-font-family-code, monospace)',
                 minWidth: 28,
               }}>
                 v{v.version_number}
               </span>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)', flex: 1 }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', flex: 1 }}>
                 {v.change_summary || '—'}
               </span>
               {v.changed_by_profile?.full_name && (
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
                   {v.changed_by_profile.full_name}
                 </span>
               )}
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
                 {v.created_at ? new Date(v.created_at).toLocaleDateString() : ''}
               </span>
               {idx > 0 && (
@@ -371,7 +371,7 @@ export default function CatalystViewTestCase({
                   onClick={() => restoreVersion.mutate({ testCaseId: itemId!, versionNumber: v.version_number })}
                   disabled={restoreVersion.isPending}
                   style={{
-                    padding: '3px 10px', fontSize: 12,
+                    padding: '3px 10px', fontSize: 'var(--ds-font-size-200)',
                     border: '1px solid var(--ds-border)', borderRadius: 4,
                     background: 'none', cursor: 'pointer',
                     color: 'var(--ds-text)', whiteSpace: 'nowrap',
@@ -381,7 +381,7 @@ export default function CatalystViewTestCase({
                 </button>
               )}
               {idx === 0 && (
-                <span style={{ fontSize: 11, color: 'var(--ds-text-brand)', fontWeight: 600 }}>Current</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-brand)', fontWeight: 600 }}>Current</span>
               )}
             </div>
           ))}
@@ -440,7 +440,7 @@ export default function CatalystViewTestCase({
     <div style={{ padding: '12px 16px' }}>
       {/* Existing links */}
       {reqLinks.length === 0 && !linkForm.open && (
-        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, margin: '0 0 12px' }}>
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: '0 0 12px' }}>
           No requirements linked. Add one to track coverage.
         </p>
       )}
@@ -454,20 +454,20 @@ export default function CatalystViewTestCase({
               background: 'var(--ds-surface-sunken)',
             }}>
               {l.external_key && (
-                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: 'var(--ds-text-subtle)', flexShrink: 0 }}>
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', flexShrink: 0 }}>
                   {l.external_key}
                 </span>
               )}
-              <span style={{ flex: 1, fontSize: 13, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {l.external_title ?? l.requirement_type ?? '—'}
               </span>
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', flexShrink: 0, textTransform: 'capitalize' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', flexShrink: 0, textTransform: 'capitalize' }}>
                 {l.link_type ?? 'verifies'}
               </span>
               <button
                 onClick={() => handleDeleteLink(l.id)}
                 title="Remove link"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 14, padding: 2, flexShrink: 0 }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: 2, flexShrink: 0 }}
               >
                 ✕
               </button>
@@ -480,7 +480,7 @@ export default function CatalystViewTestCase({
         <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: 12, background: 'var(--ds-surface-sunken)', marginBottom: 8 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>KEY</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>KEY</div>
               <Textfield
                 value={linkForm.extKey}
                 onChange={e => setLinkForm(f => ({ ...f, extKey: e.target.value }))}
@@ -488,7 +488,7 @@ export default function CatalystViewTestCase({
               />
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>TITLE</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>TITLE</div>
               <Textfield
                 value={linkForm.extTitle}
                 onChange={e => setLinkForm(f => ({ ...f, extTitle: e.target.value }))}
@@ -497,7 +497,7 @@ export default function CatalystViewTestCase({
             </div>
           </div>
           <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>LINK TYPE</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>LINK TYPE</div>
             <Select
               value={{ label: linkForm.linkType, value: linkForm.linkType }}
               options={[
@@ -513,13 +513,13 @@ export default function CatalystViewTestCase({
             <button
               onClick={handleAddLink}
               disabled={linkForm.saving || (!linkForm.extKey.trim() && !linkForm.extTitle.trim())}
-              style={{ padding: '6px 14px', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
+              style={{ padding: '6px 14px', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
             >
               {linkForm.saving ? 'Saving…' : 'Add link'}
             </button>
             <button
               onClick={() => setLinkForm(f => ({ ...f, open: false, extKey: '', extTitle: '' }))}
-              style={{ padding: '6px 14px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text)' }}
+              style={{ padding: '6px 14px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text)' }}
             >
               Cancel
             </button>
@@ -528,7 +528,7 @@ export default function CatalystViewTestCase({
       ) : (
         <button
           onClick={() => setLinkForm(f => ({ ...f, open: true }))}
-          style={{ fontSize: 13, color: 'var(--ds-link)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-link)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           + Link requirement
         </button>
@@ -666,7 +666,7 @@ export default function CatalystViewTestCase({
 }
 
 const miniLabel: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 'var(--ds-font-size-100)',
   fontWeight: 600,
   color: 'var(--ds-text-subtlest)',
   textTransform: 'uppercase',

@@ -117,7 +117,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           <span
             className="relative truncate"
             style={{
-              zIndex: 1, fontSize: 11, fontWeight: 600,
+              zIndex: 1, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               paddingLeft: 8, paddingRight: 4, lineHeight: '26px',
               flex: 1,
@@ -135,7 +135,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
             style={{
               zIndex: 1,
               fontFamily: FONT.mono,
-              fontSize: 9,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               color: 'var(--ds-surface, rgba(255,255,255,0.7))',
               paddingRight: 8,
@@ -194,17 +194,17 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
             fontFamily: FONT.body,
           }}
         >
-          <div style={{ fontWeight: 600, fontSize: 13, color: ink[1], marginBottom: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: ink[1], marginBottom: 6 }}>
             {item.initiativeKey}: {item.titleEn}
           </div>
-          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: ink[3], marginBottom: 4 }}>
+          <div className="flex items-center gap-1.5" style={{ fontSize: 'var(--ds-font-size-200)', color: ink[3], marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {fmtDate(item.startDate)} → {fmtDate(item.endDate)}
-            {isFallbackEnd && <span style={{ fontSize: 10, color: ink[4], fontStyle: 'italic' }}>(est.)</span>}
+            {isFallbackEnd && <span style={{ fontSize: 'var(--ds-font-size-50)', color: ink[4], fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: barColor }} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: ink[2] }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[2] }}>
               {typeConfig?.label || item.type}
             </span>
             {item.progress > 0 && (
@@ -212,7 +212,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
                 <div style={{ width: 60, height: 4, background: progressTrackBg, borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: barColor, borderRadius: 999 }} />
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: ink[1] }}>{item.progress}%</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ink[1] }}>{item.progress}%</span>
               </div>
             )}
           </div>

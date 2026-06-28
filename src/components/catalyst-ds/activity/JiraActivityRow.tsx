@@ -243,7 +243,7 @@ export function HistoryPill({ label = 'HISTORY' }: { label?: string }) {
         border: '1px solid var(--ds-border, #DFE1E6)',
         background: 'var(--ds-background-neutral, #F4F5F7)',
         color: 'var(--ds-text-subtle, #42526E)',
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         letterSpacing: 0.5,
         lineHeight: '14px',
@@ -284,10 +284,10 @@ export function JiraActivityRow({
           <Avatar src={item.actor.avatarUrl ?? undefined} name={item.actor.name} size="small" />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
             <strong>{item.actor.name}</strong> {item.description ?? 'updated this work item'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>
             {formatAbsolute(item.timestamp)}
           </div>
           {showTypePill && <div style={{ marginTop: 6 }}><HistoryPill /></div>}
@@ -318,11 +318,11 @@ export function JiraActivityRow({
         <Avatar src={item.actor.avatarUrl ?? undefined} name={item.actor.name} size="small" />
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
           <strong style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 600 }}>{item.actor.name}</strong>{' '}
           <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>{action}</span>
         </div>
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', marginTop: 2 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)', marginTop: 2 }}>
           {formatAbsolute(item.timestamp)}
         </div>
         {showTypePill && <div style={{ marginTop: 6 }}><HistoryPill /></div>}
@@ -336,7 +336,7 @@ export function JiraActivityRow({
               gap: 12,
               alignItems: 'start',
               marginTop: 8,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--ds-text, #172B4D)',
             }}
           >
@@ -349,7 +349,7 @@ export function JiraActivityRow({
             </div>
           </div>
         ) : (
-          <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', marginTop: 8, fontSize: 13 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', marginTop: 8, fontSize: 'var(--ds-font-size-300)' }}>
             {renderSide(fc.oldValue)}
             <Arrow />
             {renderSide(fc.newValue)}

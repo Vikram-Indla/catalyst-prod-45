@@ -30,7 +30,7 @@ export const WorkListLoadingState = memo(function WorkListLoadingState() {
           animation: 'spin 1s linear infinite',
         }}
       />
-      <p style={{ margin: 0, fontSize: '14px' }}>Loading work items...</p>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)' }}>Loading work items...</p>
       <style>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
@@ -65,14 +65,14 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
       <h3
         style={{
           margin: 0,
-          fontSize: '16px',
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 600,
           color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
         }}
       >
         No items found
       </h3>
-      <p style={{ margin: 0, fontSize: '14px', textAlign: 'center' }}>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', textAlign: 'center' }}>
         Create your first issue or adjust your filters to see items here.
       </p>
       <button
@@ -83,7 +83,7 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
           color: 'var(--ds-text-inverse, #FFFFFF)',
           border: 'none',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           cursor: 'pointer',
           transition: 'background-color 150ms',

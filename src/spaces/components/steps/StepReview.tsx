@@ -26,7 +26,7 @@ function Row({ label, children }: RowProps) {
       <div style={{ width: 140, flexShrink: 0 }}>
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             color: token('color.text.subtlest'),
           }}
@@ -37,7 +37,7 @@ function Row({ label, children }: RowProps) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: token('color.text'),
             wordBreak: 'break-word',
           }}
@@ -61,7 +61,7 @@ export function StepReview({ draft }: Props) {
       <div>
         <Heading size="small">Review</Heading>
         <div style={{ paddingTop: 4 }}>
-          <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
             Confirm the details below, then create the project.
           </span>
         </div>
@@ -80,7 +80,7 @@ export function StepReview({ draft }: Props) {
           <code
             style={{
               fontFamily: 'var(--cp-font-mono)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               padding: '2px 6px',
               borderRadius: 3,
               background: token('color.background.neutral'),

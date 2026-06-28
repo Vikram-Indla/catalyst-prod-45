@@ -71,8 +71,8 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
   if (items.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--fg-3)' }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
-        <div style={{ fontSize: 13 }}>Items assigned to {memberName || 'this member'} will appear here.</div>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)' }}>Items assigned to {memberName || 'this member'} will appear here.</div>
       </div>
     );
   }
@@ -87,10 +87,10 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
             paddingBottom: '10px', marginBottom: '10px', borderBottom: `2px solid ${col.color}`,
           }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color }} />
-            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--fg-1)' }}>{col.label}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--fg-1)' }}>{col.label}</span>
             <div style={{
               width: '22px', height: '22px', borderRadius: '50%', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700,
+              alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))', background: col.color, marginLeft: 'auto',
             }}>{col.items.length}</div>
           </div>
@@ -98,7 +98,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
           {/* Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {col.items.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--fg-4)', fontSize: 12, fontWeight: 500, border: '1px dashed var(--divider)', borderRadius: 8, background: 'var(--bg-1)' }}>
+              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: '1px dashed var(--divider)', borderRadius: 8, background: 'var(--bg-1)' }}>
                 No items
               </div>
             ) : col.items.map(item => {
@@ -121,9 +121,9 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                     <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                     {item.project_key && (
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
                     )}
-                    <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0) }}>{item.age_days ?? 0}d</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ageCol(item.age_days ?? 0) }}>{item.age_days ?? 0}d</span>
                   </div>
 
                   {/* Title */}
@@ -138,7 +138,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: priDot }} />
-                      <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--fg-2)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
                     </div>
                     <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--fg-2)', maxWidth: '70px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.assigner_name ? item.assigner_name.split(' ')[0] : 'Unassigned'}

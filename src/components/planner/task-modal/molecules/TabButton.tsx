@@ -35,7 +35,7 @@ export const TabButton: React.FC<TabButtonProps> = ({
         border: 'none',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: '14px',
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
         color: isActive ? COLORS.accent : (isHovered ? COLORS.textSecondary : COLORS.textMuted),
         whiteSpace: 'nowrap',

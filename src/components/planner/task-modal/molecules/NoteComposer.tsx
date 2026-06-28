@@ -47,7 +47,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             minHeight: '70px',
             border: 'none',
             fontFamily: 'inherit',
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             lineHeight: 1.5,
             color: COLORS.textPrimary,
             resize: 'none',
@@ -78,7 +78,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: 'none',
             borderRadius: '12px',
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             cursor: 'pointer',
             fontFamily: 'inherit'

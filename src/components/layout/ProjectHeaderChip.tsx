@@ -282,7 +282,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
   };
   const modalTitleStyle: React.CSSProperties = {
     margin: 0,
-    fontSize: 20,
+    fontSize: 'var(--ds-font-size-700)',
     fontWeight: 653,
     letterSpacing: '-0.003em',
     color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -325,7 +325,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
           data-testid="catalyst-project-header.name"
           style={{
             margin: 0, padding: 0,
-            fontSize: 20, fontWeight: 653, lineHeight: '24px',
+            fontSize: 'var(--ds-font-size-700)', fontWeight: 653, lineHeight: '24px',
             color: 'var(--ds-text, #292A2E)',
             fontFamily: 'inherit',
           }}
@@ -412,7 +412,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                     display: 'block', width: '100%',
                     padding: '8px 16px',
                     border: 'none', background: 'transparent',
-                    textAlign: 'left', fontSize: 14, fontWeight: 400,
+                    textAlign: 'left', fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
                     fontFamily: 'inherit',
                     color: token('color.text', 'var(--ds-text, #172B4D)'),
                     cursor: 'pointer',
@@ -442,7 +442,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               <h2 id="phc-add-people-title" style={modalTitleStyle}>Add people to {projectName}</h2>
             </div>
             <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
                 Add a registered user by email. Press Enter or click Add.
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -469,11 +469,11 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
 
               {/* Current members list (live from project_members / product_members) */}
               <div style={{ marginTop: 4 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 8 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 8 }}>
                   Members ({members.length})
                 </div>
                 {members.length === 0 ? (
-                  <div style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), padding: '8px 0' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), padding: '8px 0' }}>
                     No members yet. Add someone above.
                   </div>
                 ) : (
@@ -492,15 +492,15 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                           background: token('color.background.accent.blue.subtler', '#CCE0FF'),
                           color: token('color.text', 'var(--ds-text, #172B4D)'),
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 11, fontWeight: 700, flexShrink: 0,
+                          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, flexShrink: 0,
                         }}>
                           {(m.name || m.email || '?').slice(0, 2).toUpperCase()}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--ds-text, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {m.name}
                           </div>
-                          <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {m.email} · {m.role}
                           </div>
                         </div>

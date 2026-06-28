@@ -97,7 +97,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
       <div style={{ textAlign: 'center' }}>
         <h2 style={{
           margin: '0 0 6px',
-          fontSize: 20,
+          fontSize: 'var(--ds-font-size-700)',
           fontWeight: 600,
           color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         }}>
@@ -105,7 +105,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         </h2>
         <p style={{
           margin: 0,
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
         }}>
           Set a strong password to access your account.
@@ -123,7 +123,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label
             htmlFor="fpr-new"
-            style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
           >
             New password
           </label>
@@ -166,7 +166,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
               <li
                 key={r.id}
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
@@ -176,7 +176,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
                   transition: 'color 0.15s',
                 }}
               >
-                <span style={{ fontSize: 11, minWidth: 10 }}>{r.passed ? '✓' : '○'}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', minWidth: 10 }}>{r.passed ? '✓' : '○'}</span>
                 {r.label}
               </li>
             ))}
@@ -187,7 +187,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label
             htmlFor="fpr-confirm"
-            style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
           >
             Confirm password
           </label>
@@ -213,7 +213,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
             }
           />
           {confirmPwd.length > 0 && !passwordsMatch && (
-            <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)' }}>
+            <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)' }}>
               Passwords do not match
             </p>
           )}
@@ -240,7 +240,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         alignItems: 'center',
         gap: 8,
       }}>
-        <p style={{ margin: 0, fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #626F86)' }}>
           Having trouble setting a password?
         </p>
         <Button

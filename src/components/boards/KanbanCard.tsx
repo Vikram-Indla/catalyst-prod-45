@@ -76,12 +76,12 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
         <JiraIssueTypeIcon type={card.type} size={16} />
         <span style={{
-          fontSize: 11, fontWeight: 500,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
           fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)',
         }}>{card.key || '—'}</span>
         {/* Source badge */}
         <span style={{
-          fontSize: 11, fontWeight: 600, padding: '1px 5px', borderRadius: 4,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '1px 5px', borderRadius: 4,
           background: source === 'JIRA' ? '#E3F0FF' : 'var(--cp-bd-zone)',
           color: source === 'JIRA' ? 'var(--cp-primary-60, #0052CC)' : 'var(--fg-3)',
           fontFamily: 'var(--cp-font-body)',
@@ -178,7 +178,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
               width: 22, height: 22, borderRadius: '50%',
               background: hashColor(card.assignee.id),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontFamily: 'var(--cp-font-heading)',
             }} title={card.assignee.displayName}>
               {card.assignee.initials}

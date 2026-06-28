@@ -153,7 +153,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
                 border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 background: token('elevation.surface.sunken', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
                 color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 fontFamily: 'var(--cp-font-body)',
               }}

@@ -151,7 +151,7 @@ const Resource360MemberDetail: React.FC = () => {
                 key={m.id}
                 to={`/resource360/members/${m.id}`}
                 style={{
-                  fontSize: 11, padding: '3px 10px', borderRadius: 6, textDecoration: 'none',
+                  fontSize: 'var(--ds-font-size-100)', padding: '3px 10px', borderRadius: 6, textDecoration: 'none',
                   background: m.id === memberId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                   color: m.id === memberId ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   fontWeight: m.id === memberId ? 600 : 400,
@@ -167,11 +167,11 @@ const Resource360MemberDetail: React.FC = () => {
         {/* Error state — inline, not full-page */}
         {hasError && (
           <div style={{ textAlign: 'center', padding: 40, background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid var(--ds-background-danger, #FFECEB)', borderRadius: 12, marginBottom: 12 }} role="alert">
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, #991B1B)', marginBottom: 4 }}>Failed to load data</div>
-            <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-danger, #991B1B)', marginBottom: 4 }}>Failed to load data</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
             <button
               onClick={() => window.location.reload()}
-              style={{ fontSize: 12, padding: '6px 16px', borderRadius: 6, border: '1px solid var(--ds-background-danger, #FFECEB)', background: 'var(--ds-surface, #FFF)', color: 'var(--ds-text-danger, #991B1B)', cursor: 'pointer' }}
+              style={{ fontSize: 'var(--ds-font-size-200)', padding: '6px 16px', borderRadius: 6, border: '1px solid var(--ds-background-danger, #FFECEB)', background: 'var(--ds-surface, #FFF)', color: 'var(--ds-text-danger, #991B1B)', cursor: 'pointer' }}
             >
               Retry
             </button>

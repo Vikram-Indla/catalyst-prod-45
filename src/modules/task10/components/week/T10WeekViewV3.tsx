@@ -123,7 +123,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 700,
     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
     backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
@@ -135,7 +135,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   const titleStyle: React.CSSProperties = {
     flex: 1,
     minWidth: 0,
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 500,
     color: isCompleted ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-text, #0f172a)',
     textDecoration: isCompleted ? 'line-through' : 'none',
@@ -157,7 +157,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     display: 'flex',
     alignItems: 'center',
     gap: 5,
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     color: 'var(--ds-text-subtlest, #64748b)',
     whiteSpace: 'nowrap',
   };
@@ -165,7 +165,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   // Label style - GRAY pills
   const labelStyle: React.CSSProperties = {
     padding: '3px 8px',
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 500,
     backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
     color: 'var(--ds-text-subtlest, #64748b)',
@@ -657,20 +657,20 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const logoTitleStyle: React.CSSProperties = {
-    fontSize: 16,
+    fontSize: 'var(--ds-font-size-500)',
     fontWeight: 600,
     color: 'var(--ds-text, #0f172a)',
     lineHeight: 1.2,
   };
 
   const logoSubtitleStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     color: 'var(--ds-text-subtlest, #64748b)',
   };
 
   const listKeyStyle: React.CSSProperties = {
     padding: '4px 10px',
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace",
     fontWeight: 600,
     borderRadius: 6,
@@ -680,7 +680,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const listNameStyle: React.CSSProperties = {
-    fontSize: 15,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 500,
     color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
   };
@@ -707,7 +707,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     background: 'var(--ds-surface-sunken, #f8fafc)',
     border: `1px solid var(--ds-border, #e2e8f0)`,
     borderRadius: 8,
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
     color: 'var(--ds-text, #0f172a)',
     whiteSpace: 'nowrap',
@@ -715,7 +715,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
   const statusBadgeStyle: React.CSSProperties = {
     padding: '4px 10px',
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 700,
     background: isCurrentWeek ? 'var(--ds-text-success, #10b981)' : 'var(--ds-text-subtlest, #64748b)',
     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
@@ -747,7 +747,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const progressTextStyle: React.CSSProperties = {
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
     whiteSpace: 'nowrap',
@@ -758,7 +758,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     gap: 8,
     padding: '8px 18px',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 600,
     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
     background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
@@ -807,7 +807,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     gap: 6,
     padding: '8px 16px',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
@@ -831,7 +831,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const addInputStyle: React.CSSProperties = {
     flex: 1,
     padding: 0,
-    fontSize: 15,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 400,
     color: 'var(--ds-text, #0f172a)',
     background: 'transparent',
@@ -842,7 +842,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const kbdStyle: React.CSSProperties = {
     padding: '6px 12px',
     fontFamily: 'inherit',
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
@@ -858,7 +858,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const sectionTitleStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 700,
     color: 'var(--ds-text-subtlest, #94a3b8)',
     textTransform: 'uppercase',
@@ -866,7 +866,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   };
 
   const sectionCountStyle: React.CSSProperties = {
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     color: 'var(--ds-text-subtlest, #94a3b8)',
   };
 
@@ -905,7 +905,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 600,
     color: 'var(--ds-text-subtlest, #94a3b8)',
     background: 'transparent',
@@ -916,7 +916,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
   const bufferSwapBtnStyle: React.CSSProperties = {
     padding: '6px 12px',
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 500,
     color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     background: 'var(--ds-background-selected, #dbeafe)',
@@ -928,7 +928,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
   const bufferPromoteBtnStyle: React.CSSProperties = {
     padding: '6px 14px',
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 600,
     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
     background: 'var(--ds-text-brand, #3b82f6)',
@@ -1016,8 +1016,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
               <div style={aiIconStyle}>
                 <Zap size={16} strokeWidth={2} />
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #0f172a)', whiteSpace: 'nowrap' }}>AI Suggestions</span>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748b)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #0f172a)', whiteSpace: 'nowrap' }}>AI Suggestions</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #64748b)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {uniqueParticipants.length > 0 
                   ? `Based on TaskHub items for ${uniqueParticipants.join(', ')}`
                   : 'Based on TaskHub backlog items'
@@ -1059,7 +1059,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 13,
+                        fontSize: 'var(--ds-font-size-300)',
                         fontWeight: 700,
                         borderRadius: 12,
                         background: i === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : i === 1 ? 'var(--ds-text-brand, #3b82f6)' : 'var(--ds-text-brand, #60a5fa)',
@@ -1069,14 +1069,14 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         P{i + 1}
                       </span>
                       <div>
-                        <span style={{ display: 'block', fontSize: 15, fontWeight: 600, color: 'var(--ds-text, #0f172a)', marginBottom: 4 }}>{suggestion.title}</span>
-                        <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748b)' }}>
+                        <span style={{ display: 'block', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #0f172a)', marginBottom: 4 }}>{suggestion.title}</span>
+                        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #64748b)' }}>
                           {suggestion.due_date && `Due ${formatShortDate(suggestion.due_date)}`}
                           {suggestion.assignee_name && ` · ${suggestion.assignee_name}`}
                         </div>
                       </div>
                     </div>
-                    <span style={{ fontSize: 13, fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace", fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', flexShrink: 0 }}>{suggestion.key}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace", fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', flexShrink: 0 }}>{suggestion.key}</span>
                   </div>
                 ))
               ) : (
@@ -1116,7 +1116,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 8, 
-                fontSize: 13, 
+                fontSize: 'var(--ds-font-size-300)', 
                 color: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtlest, #94a3b8)', 
                 flexShrink: 0,
                 background: 'transparent',
@@ -1187,8 +1187,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
         <div style={bufferSectionStyle}>
           <div style={bufferHeaderStyle}>
             <Layers size={16} strokeWidth={2} style={{ color: 'var(--ds-text-subtlest, #64748b)' }} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Buffer Zone</span>
-            <span style={{ padding: '2px 10px', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', background: 'var(--ds-surface-sunken, #f1f5f9)', borderRadius: 6 }}>{bufferItems?.length || 0}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Buffer Zone</span>
+            <span style={{ padding: '2px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', background: 'var(--ds-surface-sunken, #f1f5f9)', borderRadius: 6 }}>{bufferItems?.length || 0}</span>
           </div>
           {bufferItems && bufferItems.length > 0 ? (
             bufferItems.map((item, i) => {

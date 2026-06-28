@@ -22,11 +22,11 @@ export default function NativeFeatureBacklogPage() {
   });
 
   if (isLoading) {
-    return <div className="h-full flex items-center justify-center" style={{ background: 'var(--bg-0)' }}><span style={{ color: 'var(--fg-3)', fontSize: 13 }}>Loading…</span></div>;
+    return <div className="h-full flex items-center justify-center" style={{ background: 'var(--bg-0)' }}><span style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-300)' }}>Loading…</span></div>;
   }
 
   if (!project) {
-    return <div className="h-full flex items-center justify-center" style={{ background: 'var(--bg-0)' }}><span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontSize: 13 }}>Project not found</span></div>;
+    return <div className="h-full flex items-center justify-center" style={{ background: 'var(--bg-0)' }}><span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontSize: 'var(--ds-font-size-300)' }}>Project not found</span></div>;
   }
 
   return <FeatureBacklogPage projectId={project.id} />;

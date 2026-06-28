@@ -125,7 +125,7 @@ export function StatusTransitionDropdown({
               name={currentStatusName ?? '—'}
             />
             {!isFrozen && (
-              <span aria-hidden="true" style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #44546F)' }}>▾</span>
+              <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, #44546F)' }}>▾</span>
             )}
           </button>
         )}

@@ -131,18 +131,18 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         height: 24,
                         background: avatarColor,
                         color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                        fontSize: 10,
+                        fontSize: 'var(--ds-font-size-50)',
                         fontWeight: 700,
                       }}
                     >
                       {isUnassigned ? <User className="w-3 h-3" /> : initials}
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
                       {lane.name}
                     </span>
                     <span
                       style={{
-                        fontSize: 10,
+                        fontSize: 'var(--ds-font-size-50)',
                         fontWeight: 600,
                         color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                         background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
@@ -186,7 +186,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         ) : (
                           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-                            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Outside range</span>
+                            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Outside range</span>
                           </div>
                         )}
                       </div>

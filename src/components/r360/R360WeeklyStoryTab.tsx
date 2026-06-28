@@ -87,10 +87,10 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
         <div style={{
           border: '1px solid var(--divider)', borderRadius: 8, padding: 16, background: 'var(--bg-app)',
         }}>
-          <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 8 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 8 }}>
             {weekLabel}
           </div>
-          <div style={{ fontSize: 14, color: INK2, lineHeight: 1.5 }}>{headline}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', color: INK2, lineHeight: 1.5 }}>{headline}</div>
         </div>
       </div>
 
@@ -103,8 +103,8 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: 'var(--bg-app)',
           }}>
             <CalendarX size={20} color={MUTED} />
-            <span style={{ fontSize: 13, color: INK4 }}>No activity recorded this week</span>
-            <span style={{ fontSize: 12, color: MUTED }}>Items will appear as work progresses</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: INK4 }}>No activity recorded this week</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: MUTED }}>Items will appear as work progresses</span>
           </div>
         ) : (
           <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}>
@@ -115,13 +115,13 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
                 borderBottom: idx < timelineItems.length - 1 ? '0.75px solid var(--divider)' : 'none',
               }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
-                <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: INK4, flexShrink: 0 }}>{item.item_key}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: INK4, flexShrink: 0 }}>{item.item_key}</span>
                 <span style={{
-                  flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
+                  flex: 1, fontSize: 'var(--ds-font-size-300)', color: INK2, overflow: 'hidden',
                   textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
                 }}>{item.title}</span>
                 <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
-                <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{relativeTime(item.updated_at)}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: MUTED, flexShrink: 0 }}>{relativeTime(item.updated_at)}</span>
               </div>
             ))}
           </div>
@@ -156,8 +156,8 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
-              <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: INK1 }}>{tile.value}</div>
-              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
+              <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: INK1 }}>{tile.value}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
             </div>
           ))}
         </div>

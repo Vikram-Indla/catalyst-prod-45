@@ -175,7 +175,7 @@ function FieldRow({
       <div
         className="cv-rail-value"
         style={{
-          fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
+          fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
           minWidth: 0,
           flex: isRow ? 1 : undefined,
           alignSelf: isRow ? 'stretch' : undefined,
@@ -210,7 +210,7 @@ function AssignToMeLink({ onClick }: { onClick: () => void }) {
         padding: compact ? '0 8px 4px 8px' : '0 0 4px 152px',
         cursor: 'pointer',
         color: 'var(--ds-link, #1868DB)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 400,
         lineHeight: '16px',
         textAlign: 'left',
@@ -530,7 +530,7 @@ export function CatalystSidebarDetails({
       {pinnedFields.length > 0 && (
         <div style={{ marginBottom: 8 }}>
           <div style={{
-            fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             letterSpacing: '0.06em',
             padding: '0 0 6px',
           }}>
@@ -673,7 +673,7 @@ export function CatalystSidebarDetails({
             {/* jira-compare 2026-05-11 TreeWalker probe: Details header = 16px/653 matching
                 Key details, Subtasks, LWI, Activity. All section headers share the same spec. */}
             <h2
-              style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
+              style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
             >
               Details
             </h2>
@@ -958,7 +958,7 @@ export function CatalystSidebarDetails({
       <div style={{ marginTop: 16, padding: '12px 0 0' }}>
         {issue?.jira_created_at && (
           <div
-            style={{ marginBottom: 4, fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
+            style={{ marginBottom: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
             title={issue.jira_created_at}
           >
             Created {fmtJiraDate(issue.jira_created_at)}
@@ -966,7 +966,7 @@ export function CatalystSidebarDetails({
         )}
         {issue?.jira_updated_at && (
           <div
-            style={{ fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
             title={issue.jira_updated_at}
           >
             Updated {fmtRelative(issue.jira_updated_at)}

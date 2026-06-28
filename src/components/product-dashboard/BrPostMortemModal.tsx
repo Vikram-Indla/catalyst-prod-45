@@ -71,7 +71,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
           <h2
             style={{
               margin: 0,
-              fontSize: 16,
+              fontSize: 'var(--ds-font-size-500)',
               fontWeight: 600,
               color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             }}
@@ -87,7 +87,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
               border: 'none',
               cursor: 'pointer',
               color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
-              fontSize: 18,
+              fontSize: 'var(--ds-font-size-600)',
               lineHeight: 1,
               padding: 4,
               borderRadius: 4,
@@ -135,7 +135,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                 padding: token('space.150', '12px'),
                 background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
                 borderRadius: 6,
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
               }}
             >
@@ -152,7 +152,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                 <h3
                   style={{
                     margin: '0 0 6px',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                     textTransform: 'uppercase',
@@ -161,7 +161,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                 >
                   Summary
                 </h3>
-                <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}>
+                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}>
                   {data.summary}
                 </p>
               </section>
@@ -170,7 +170,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                 <h3
                   style={{
                     margin: '0 0 6px',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                     textTransform: 'uppercase',
@@ -179,7 +179,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                 >
                   Timeline
                 </h3>
-                <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}>
+                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}>
                   {data.timeline}
                 </p>
               </section>
@@ -189,7 +189,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                   <h3
                     style={{
                       margin: '0 0 6px',
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
                       color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                       textTransform: 'uppercase',
@@ -202,7 +202,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                     {data.lessons.map((lesson, i) => (
                       <li
                         key={i}
-                        style={{ fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}
+                        style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}
                       >
                         {lesson}
                       </li>

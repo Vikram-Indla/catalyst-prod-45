@@ -39,11 +39,11 @@ class ChatDirectoryErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div style={{ padding: 24, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', textAlign: 'center' }}>
+        <div style={{ padding: 24, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', textAlign: 'center' }}>
           <span>Messages failed to load.</span>
           <button
             type="button"
-            style={{ fontSize: 12, cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px' }}
+            style={{ fontSize: 'var(--ds-font-size-200)', cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px' }}
             onClick={() => this.setState({ error: null })}
           >
             Retry
@@ -74,11 +74,11 @@ class ChatPaneErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)', display: 'flex', flexDirection: 'column', gap: 8 }}>
           <span>This conversation failed to load.</span>
           <button
             type="button"
-            style={{ alignSelf: 'flex-start', fontSize: 12, cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px' }}
+            style={{ alignSelf: 'flex-start', fontSize: 'var(--ds-font-size-200)', cursor: 'pointer', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px' }}
             onClick={() => this.setState({ error: null })}
           >
             Retry

@@ -71,7 +71,7 @@ export const FileItem: React.FC<FileItemProps> = ({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: COLORS.textPrimary,
             marginBottom: '4px',
@@ -82,7 +82,7 @@ export const FileItem: React.FC<FileItemProps> = ({
         >
           {name}
         </div>
-        <div style={{ fontSize: '13px', color: COLORS.textMuted }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.textMuted }}>
           {size} · {uploadedAt}
         </div>
       </div>

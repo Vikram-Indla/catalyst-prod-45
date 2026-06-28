@@ -61,7 +61,7 @@ export default function EvidenceToExecutionSimple() {
         <div style={{ padding: '32px', borderRight: '1px solid var(--ds-border, #DFE1E6)' }}>
           <h1 style={{ marginBottom: '32px' }}>Preparing Evidence Pack</h1>
           <div style={{ marginBottom: '32px' }}>
-            <div style={{ fontSize: '14px', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '8px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '8px' }}>
               {currentStep}
             </div>
             <div style={{
@@ -78,7 +78,7 @@ export default function EvidenceToExecutionSimple() {
                 transition: 'width 0.2s',
               }} />
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginTop: '8px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginTop: '8px' }}>
               {progress}% complete
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function EvidenceToExecutionSimple() {
         </div>
         <div style={{ padding: '16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)' }}>
           <h4>Job Details</h4>
-          <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.6' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.6' }}>
             <div><strong>Item:</strong> BR-104</div>
             <div><strong>Owner:</strong> Vikram Indla</div>
             <div><strong>Progress:</strong> {progress}%</div>
@@ -137,9 +137,9 @@ export default function EvidenceToExecutionSimple() {
                   cursor: 'pointer',
                 }}>
                   <input type="checkbox" defaultChecked={item.checked} style={{ marginTop: '2px', cursor: 'pointer' }} />
-                  <span style={{ flex: 1, fontSize: '13px' }}>
+                  <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)' }}>
                     <div style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{item.name}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>{item.type} • {item.lang}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>{item.type} • {item.lang}</div>
                   </span>
                 </label>
               ))}
@@ -158,7 +158,7 @@ export default function EvidenceToExecutionSimple() {
               ].map((opt) => (
                 <label key={opt.label} style={{ display: 'flex', gap: '8px', cursor: 'pointer' }}>
                   <input type="checkbox" defaultChecked={opt.checked} style={{ cursor: 'pointer' }} />
-                  <span style={{ fontSize: '13px' }}>{opt.label}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{opt.label}</span>
                 </label>
               ))}
             </div>
@@ -173,7 +173,7 @@ export default function EvidenceToExecutionSimple() {
                 borderRadius: '4px',
                 backgroundColor: 'var(--ds-surface, #FFFFFF)',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
               }}
             >
@@ -188,7 +188,7 @@ export default function EvidenceToExecutionSimple() {
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
               }}
             >
@@ -199,7 +199,7 @@ export default function EvidenceToExecutionSimple() {
 
         <div style={{ padding: '16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)' }}>
           <h4 style={{ marginTop: 0 }}>Summary</h4>
-          <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.8' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.8' }}>
             <div><strong>Files:</strong> 5</div>
             <div><strong>Attachments:</strong> 4 files</div>
             <div><strong>Comments:</strong> 8 items</div>
@@ -232,10 +232,10 @@ export default function EvidenceToExecutionSimple() {
           alignItems: 'center',
         }}>
           <div>
-            <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>
               Senael BAU / BAU-22 / BAU-6086
             </div>
-            <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 600 }}>
+            <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 600 }}>
               Industrial License Renewal Enhancement
             </h1>
           </div>
@@ -249,7 +249,7 @@ export default function EvidenceToExecutionSimple() {
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
               }}
             >
@@ -261,7 +261,7 @@ export default function EvidenceToExecutionSimple() {
               border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: '4px',
               cursor: 'pointer',
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
             }}>
               Discuss
             </button>
@@ -281,7 +281,7 @@ export default function EvidenceToExecutionSimple() {
                 borderBottom: selectedTab === tab ? '3px solid var(--ds-link, #0052CC)' : 'none',
                 color: selectedTab === tab ? 'var(--ds-link, #0052CC)' : 'var(--ds-icon-subtle, #626F86)',
                 cursor: 'pointer',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: selectedTab === tab ? 500 : 400,
                 textTransform: 'capitalize',
               }}
@@ -338,17 +338,17 @@ export default function EvidenceToExecutionSimple() {
               <h3>Comments (8)</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ padding: '12px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: '4px' }}>
-                  <div style={{ fontWeight: 600, fontSize: '13px', marginBottom: '4px' }}>Vikram Indla (Product Owner)</div>
+                  <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', marginBottom: '4px' }}>Vikram Indla (Product Owner)</div>
                   <div>Decision: Arabic + English support mandatory across all screens and communications.</div>
                 </div>
                 <div style={{ padding: '12px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: '4px' }}>
-                  <div style={{ fontWeight: 600, fontSize: '13px', marginBottom: '4px' }}>Abdullah Almetwally (BA)</div>
+                  <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', marginBottom: '4px' }}>Abdullah Almetwally (BA)</div>
                   <div>Scope change: Add phone OTP verification as additional security measure.</div>
                 </div>
                 <div style={{ padding: '12px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: '4px' }}>
-                  <div style={{ fontWeight: 600, fontSize: '13px', marginBottom: '4px' }}>Aisha Mohammed (Arabic Translator)</div>
+                  <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', marginBottom: '4px' }}>Aisha Mohammed (Arabic Translator)</div>
                   <div style={{ direction: 'rtl', textAlign: 'right' }}>ما هي متطلبات التحقق من الهوية؟</div>
-                  <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>(What are the identity verification requirements?)</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>(What are the identity verification requirements?)</div>
                 </div>
               </div>
             </div>
@@ -369,28 +369,28 @@ export default function EvidenceToExecutionSimple() {
 
       {/* Right Sidebar - Details */}
       <div style={{ padding: '32px 16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', overflowY: 'auto' }}>
-        <h4 style={{ marginTop: 0, marginBottom: '16px', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', color: 'var(--ds-icon-subtle, #626F86)' }}>
+        <h4 style={{ marginTop: 0, marginBottom: '16px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--ds-icon-subtle, #626F86)' }}>
           Details
         </h4>
 
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Status</div>
-          <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>🟢 Active</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Status</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>🟢 Active</div>
         </div>
 
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Product</div>
-          <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>Licensing Platform</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Product</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>Licensing Platform</div>
         </div>
 
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Request Type</div>
-          <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>Feature</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Request Type</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>Feature</div>
         </div>
 
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Created</div>
-          <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>15 June 2026</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Created</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>15 June 2026</div>
         </div>
 
         <div style={{
@@ -398,11 +398,11 @@ export default function EvidenceToExecutionSimple() {
           paddingTop: '16px',
           marginTop: '16px',
         }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '8px' }}>Linked Items</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '8px' }}>Linked Items</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ fontSize: '12px', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>🔵 EPIC-312</div>
-            <div style={{ fontSize: '12px', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>🟢 FEAT-445</div>
-            <div style={{ fontSize: '12px', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>◻️ STORY-1204</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>🔵 EPIC-312</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>🟢 FEAT-445</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>◻️ STORY-1204</div>
           </div>
         </div>
       </div>

@@ -59,7 +59,7 @@ export function ConfluenceEditor({
             minHeight: 300,
             padding: '2rem',
             color: 'hsl(var(--muted-foreground))',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             lineHeight: 1.6,
           }}
         >

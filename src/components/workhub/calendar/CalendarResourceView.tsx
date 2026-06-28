@@ -43,7 +43,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
         <Users style={{ width: 48, height: 48, marginBottom: 16 }} />
-        <p style={{ fontSize: 14, margin: 0 }}>No work items due in {getMonthName(month)} {year}</p>
+        <p style={{ fontSize: 'var(--ds-font-size-400)', margin: 0 }}>No work items due in {getMonthName(month)} {year}</p>
       </div>
     );
   }
@@ -70,7 +70,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
           </div>
         ))}
         {extra > 0 && (
-          <span style={{ fontSize: 10, color: 'var(--fg-3)', fontFamily: 'var(--wh-font-sans)', lineHeight: '20px', fontWeight: 600 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontFamily: 'var(--wh-font-sans)', lineHeight: '20px', fontWeight: 600 }}>
             +{extra}
           </span>
         )}
@@ -115,7 +115,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
               onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = ''; }}
             >
               <AvatarChip name={m.name} color={m.color} size={24} />
-              <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{m.name}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>{m.name}</span>
             </button>
           );
         })}
@@ -124,7 +124,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
           <button
             onClick={() => setFilterAssignee(null)}
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cp-blue)',
               background: 'none',
               border: 'none',

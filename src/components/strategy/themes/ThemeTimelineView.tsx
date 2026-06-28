@@ -68,7 +68,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '8px 12px' }}>
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
               <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" title={theme.title}>{theme.title}</span>
-              <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: sc.bg, color: sc.text }}>
+              <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, background: sc.bg, color: sc.text }}>
                 <span className="rounded-full" style={{ width: 4, height: 4, background: sc.dot }} />
                 {sc.label}
               </span>
@@ -88,7 +88,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
               {/* Today marker */}
               {todayPct !== null && (
                 <div className="absolute top-0 bottom-0" style={{ left: `${todayPct}%`, width: 2, background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', zIndex: 2 }}>
-                  <div style={{ position: 'absolute', top: -16, left: -14, fontSize: 9, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontWeight: 600, whiteSpace: 'nowrap' }}>Today</div>
+                  <div style={{ position: 'absolute', top: -16, left: -14, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontWeight: 600, whiteSpace: 'nowrap' }}>Today</div>
                 </div>
               )}
 

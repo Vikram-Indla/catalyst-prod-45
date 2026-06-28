@@ -402,7 +402,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       <span
                         data-testid="r360-country"
                         style={{
-                          fontSize: 12,
+                          fontSize: 'var(--ds-font-size-200)',
                           color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -416,7 +416,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                             style={{ width: 16, height: 11, borderRadius: 2, objectFit: 'cover' }}
                           />
                         ) : (overview as any).country_code ? (
-                          <span style={{ fontSize: 14, lineHeight: 1 }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}>
                             {/* Convert ISO code to flag emoji */}
                             {String.fromCodePoint(
                               ...((overview as any).country_code as string)
@@ -433,7 +433,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       <span
                         data-testid="r360-location"
                         style={{
-                          fontSize: 11,
+                          fontSize: 'var(--ds-font-size-100)',
                           fontWeight: 500,
                           padding: '1px 6px',
                           borderRadius: 3,
@@ -448,7 +448,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   </div>
                   {/* Reports to row — only render when manager is set or actively editing */}
                   {(managerName || editingManager) && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                    <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), fontWeight: 500 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), fontWeight: 500 }}>
                       Reports to:
                     </span>
                     {editingManager ? (
@@ -458,7 +458,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                           value={pendingManagerId}
                           onChange={e => setPendingManagerId(e.target.value)}
                           style={{
-                            fontSize: 11, padding: '1px 4px', borderRadius: 3,
+                            fontSize: 'var(--ds-font-size-100)', padding: '1px 4px', borderRadius: 3,
                             border: `1px solid ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`,
                             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                             background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
@@ -493,7 +493,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       <>
                         <span
                           data-testid="r360-manager-name"
-                          style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}
+                          style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}
                         >
                           {managerName ?? '—'}
                         </span>
@@ -543,10 +543,10 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))');
                     }}
                   >
-                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
                       {bannerOpenCount}
                     </div>
-                    <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                       active
                     </div>
                   </div>
@@ -557,7 +557,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       title={`${bannerStaleCount} of ${bannerOpenCount} items untouched for >14 days`}
                       style={{
                         display: 'inline-flex', alignItems: 'center', gap: 3,
-                        fontSize: 11, fontWeight: 500, cursor: 'pointer',
+                        fontSize: 'var(--ds-font-size-100)', fontWeight: 500, cursor: 'pointer',
                         color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
                         padding: '1px 4px', borderRadius: 3,
                       }}
@@ -570,7 +570,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), borderLeft: `3px solid ${token('color.border.warning', 'var(--cp-warning, #D97706)')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), borderLeft: `3px solid ${token('color.border.warning', 'var(--cp-warning, #D97706)')}`, borderRadius: '0 4px 4px 0', fontSize: 'var(--ds-font-size-300)', color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}
@@ -587,7 +587,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                 {!embedded && (
                   <button
                     onClick={() => navigate(backPath)}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
                     onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
                     onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
                   >
@@ -595,7 +595,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   </button>
                 )}
                 {/* Quarter label — computed from current date */}
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), border: 'none', borderRadius: '6px', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), border: 'none', borderRadius: '6px', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
                 {/* Ask Caty - Profile — opens R360 profile drawer.
@@ -645,7 +645,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               <div className="r3-empty">No work items assigned in this period.</div>
               {workItems.length > 0 && lastActivityDate && (
                 <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: `1px solid ${token('color.border', '#091E4224')}`, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), textAlign: 'center' }}>
-                  <div style={{ fontSize: '13px', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), marginBottom: '10px' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), marginBottom: '10px' }}>
                     <strong style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
                     {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
                   </div>
@@ -689,7 +689,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       borderRadius: 999,
                       background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
                       color: token('color.text.information', 'var(--ds-link, #0052CC)'),
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
                       fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
                       boxShadow: token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))'),

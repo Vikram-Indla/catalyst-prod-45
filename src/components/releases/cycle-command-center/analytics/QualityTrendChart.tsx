@@ -51,12 +51,12 @@ export function QualityTrendChart({ cycleId, days = 14 }: QualityTrendChartProps
               <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e5e7eb)" />
               <XAxis 
                 dataKey="dateLabel" 
-                tick={{ fontSize: 11 }} 
+                tick={{ fontSize: 'var(--ds-font-size-100)' }} 
                 stroke="var(--ds-text-subtlest, #626F86)"
               />
               <YAxis 
                 domain={[0, 100]} 
-                tick={{ fontSize: 11 }} 
+                tick={{ fontSize: 'var(--ds-font-size-100)' }} 
                 stroke="var(--ds-text-subtlest, #626F86)"
                 tickFormatter={(v) => `${v}%`}
               />
@@ -65,7 +65,7 @@ export function QualityTrendChart({ cycleId, days = 14 }: QualityTrendChartProps
                   backgroundColor: 'white', 
                   border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: '8px',
-                  fontSize: '12px'
+                  fontSize: 'var(--ds-font-size-200)'
                 }}
                 formatter={(value: number) => [`${value.toFixed(1)}%`, '']}
               />

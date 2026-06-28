@@ -10,7 +10,7 @@ type Story = StoryObj;
 
 export const InlineCode: Story = {
   render: () => (
-    <p style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
+    <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>
       Use <CatalystInlineCode>JiraTable</CatalystInlineCode> for all work item lists.
       Import from <CatalystInlineCode>@/components/shared/JiraTable</CatalystInlineCode>.
     </p>

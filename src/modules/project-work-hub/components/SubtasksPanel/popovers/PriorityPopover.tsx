@@ -104,7 +104,7 @@ export function PriorityPopover({ priority, onChange, children, showActive = tru
                   onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
                   onClick={() => { onChange(value); setIsOpen(false); }}
                 >
-                  <PriorityIndicator priority={value} showLabel fontSize={13} />
+                  <PriorityIndicator priority={value} showLabel fontSize={'var(--ds-font-size-300)'} />
                   {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
                 </button>
               );

@@ -43,7 +43,7 @@ export function StepPermissions({ draft, errors, onChange }: Props) {
           style={{
             margin: 0,
             color: token('color.text.subtle'),
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             lineHeight: 1.5,
           }}
         >

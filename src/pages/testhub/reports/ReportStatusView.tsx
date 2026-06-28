@@ -22,8 +22,8 @@ const cardStyle: React.CSSProperties = {
   background: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)',
   borderRadius: 'var(--ds-border-radius)', padding: 'var(--ds-space-200)', flex: '1 1 14rem',
 };
-const metricValue: React.CSSProperties = { fontSize: 26, fontWeight: 600, color: 'var(--ds-text)' };
-const metricLabel: React.CSSProperties = { fontSize: 12, color: 'var(--ds-text-subtle)', marginTop: 'var(--ds-space-050)', textTransform: 'uppercase' };
+const metricValue: React.CSSProperties = { fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text)' };
+const metricLabel: React.CSSProperties = { fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 'var(--ds-space-050)', textTransform: 'uppercase' };
 const sectionH: React.CSSProperties = { margin: 'var(--ds-space-100) 0' };
 const subtle: React.CSSProperties = { color: 'var(--ds-text-subtlest)', fontWeight: 400 };
 
@@ -74,7 +74,7 @@ export function ReportStatusView({ data, insight, onRowOpen, uncoveredEmpty }: R
           <div style={metricValue}>{data.coveragePct}%</div>
           <div style={metricLabel}>Story coverage</div>
           <div style={{ marginTop: 8 }}><Lozenge appearance={health.appearance}>{health.label}</Lozenge></div>
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', marginTop: 'var(--ds-space-100)' }}>{data.coveredStories}/{data.totalStories} stories</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 'var(--ds-space-100)' }}>{data.coveredStories}/{data.totalStories} stories</div>
         </div>
         <div style={cardStyle}>
           <div style={metricValue}>{data.exec.total}</div>
@@ -102,7 +102,7 @@ export function ReportStatusView({ data, insight, onRowOpen, uncoveredEmpty }: R
       </div>
 
       {insight && (
-        <div style={{ background: 'var(--ds-background-information)', border: '1px solid var(--ds-border)', borderRadius: 8, padding: '12px 16px', marginBottom: 24, color: 'var(--ds-text)', fontSize: 14 }}>
+        <div style={{ background: 'var(--ds-background-information)', border: '1px solid var(--ds-border)', borderRadius: 8, padding: '12px 16px', marginBottom: 24, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
           <strong style={{ color: 'var(--ds-text-information)' }}>Insight</strong> — {insight}
         </div>
       )}

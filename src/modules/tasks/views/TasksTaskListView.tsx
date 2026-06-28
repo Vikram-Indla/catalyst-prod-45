@@ -206,7 +206,7 @@ function TasksGroupByControl({
           color: (isOpen || value !== 'none')
             ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
             : token('color.text', 'var(--ds-text, #172B4D)'),
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           fontFamily: 'inherit',
           cursor: 'pointer',
@@ -234,7 +234,7 @@ function TasksGroupByControl({
             padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           {TASKS_GROUP_BY_ORDER.map((opt, i) => {
@@ -264,7 +264,7 @@ function TasksGroupByControl({
                       : 'transparent',
                   color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                   fontWeight: active ? 500 : 400,
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontFamily: 'inherit',
                   textAlign: 'left',
                   cursor: 'pointer',
@@ -421,7 +421,7 @@ function TasksSavedFiltersControl({
                 onChange={(e) => setNameInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') submitName(); }}
                 placeholder="Filter name"
-                style={{ flex: 1, padding: '6px 8px', fontSize: 13, border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 3, outline: 'none' }}
+                style={{ flex: 1, padding: '6px 8px', fontSize: 'var(--ds-font-size-300)', border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, borderRadius: 3, outline: 'none' }}
               />
               <Button appearance="primary" onClick={submitName}>Save</Button>
             </div>
@@ -434,14 +434,14 @@ function TasksSavedFiltersControl({
                 display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
                 background: 'transparent', border: 'none', cursor: hasCurrent ? 'pointer' : 'not-allowed',
                 color: hasCurrent ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.disabled', '#9B9DA1'),
-                fontSize: 13, fontFamily: 'inherit',
+                fontSize: 'var(--ds-font-size-300)', fontFamily: 'inherit',
               }}
             >
               {hasCurrent ? 'Save current filter as…' : 'Apply a filter first to save'}
             </button>
           )}
           {saved.length === 0 ? (
-            <div style={{ padding: '12px 16px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>No saved filters yet.</div>
+            <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>No saved filters yet.</div>
           ) : (
             <div style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, padding: '4px 0' }}>
               {saved.map((s) => (
@@ -451,11 +451,11 @@ function TasksSavedFiltersControl({
                     onClick={() => { onApply(s.filters); setIsOpen(false); }}
                     style={{
                       flex: 1, textAlign: 'left', padding: '4px 8px', background: 'transparent',
-                      border: 'none', cursor: 'pointer', fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'),
+                      border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--ds-text, #172B4D)'),
                       fontFamily: 'inherit',
                     }}
                   >
-                    {s.name} <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 11 }}>({countActiveFilters(s.filters)})</span>
+                    {s.name} <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 'var(--ds-font-size-100)' }}>({countActiveFilters(s.filters)})</span>
                   </button>
                   <button
                     type="button"
@@ -761,7 +761,7 @@ function TasksInlineCreateRow({
           border: 'none',
           outline: 'none',
           background: 'transparent',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           fontFamily: 'inherit',
         }}
@@ -787,7 +787,7 @@ function TasksInlineCreateRow({
             borderRadius: 3,
             background: 'transparent',
             color: token('color.text', 'var(--ds-text, #172B4D)'),
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'inherit',
             cursor: 'pointer',
             flexShrink: 0,
@@ -826,11 +826,11 @@ function TasksInlineCreateRow({
               padding: '6px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             {workstreams.length === 0 ? (
-              <div style={{ padding: '8px 16px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+              <div style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
                 No workstreams
               </div>
             ) : workstreams.map((w) => {
@@ -854,7 +854,7 @@ function TasksInlineCreateRow({
                     boxShadow: active ? 'inset 3px 0 0 0 var(--ds-border-focused, #0C66E4)' : undefined,
                     color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                     fontWeight: active ? 500 : 400,
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontFamily: 'inherit',
                     textAlign: 'left',
                     cursor: 'pointer',
@@ -933,7 +933,7 @@ function TasksInlineCreateRow({
               fontFamily: 'var(--cp-font-body)',
             }}
           >
-            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 6 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 6 }}>
               Due date
             </div>
             <div style={{ position: 'relative', marginBottom: 12 }}>
@@ -951,7 +951,7 @@ function TasksInlineCreateRow({
                   width: '100%',
                   height: 32,
                   padding: '0 32px 0 8px',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   border: dateInputFocused
                     ? `2px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`
                     : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
@@ -994,30 +994,30 @@ function TasksInlineCreateRow({
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto auto 1fr auto auto', alignItems: 'center', gap: 4, marginBottom: 8 }}>
               <button type="button" aria-label="Previous year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() - 1, d.getMonth(), 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1, borderRadius: 3 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >«</button>
               <button type="button" aria-label="Previous month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1, borderRadius: 3 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >‹</button>
-              <span style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{monthLabel}</span>
+              <span style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{monthLabel}</span>
               <button type="button" aria-label="Next month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1, borderRadius: 3 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >›</button>
               <button type="button" aria-label="Next year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() + 1, d.getMonth(), 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1, borderRadius: 3 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >»</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-                <div key={d} style={{ fontSize: 11, fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>{d}</div>
+                <div key={d} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>{d}</div>
               ))}
               {dayCells.map((cell) => {
                 const highlight = cell.isSelected || (cell.isToday && !dueDate);
@@ -1034,7 +1034,7 @@ function TasksInlineCreateRow({
                         : '2px solid transparent',
                       background: 'transparent',
                       cursor: 'pointer',
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       fontFamily: 'inherit',
                       color: cell.outside
                         ? token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)')
@@ -1109,7 +1109,7 @@ function TasksInlineCreateRow({
               padding: 8,
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
@@ -1123,7 +1123,7 @@ function TasksInlineCreateRow({
               placeholder="Search people…"
               style={{
                 padding: '8px 8px',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 borderRadius: 3,
                 outline: 'none',
@@ -1142,7 +1142,7 @@ function TasksInlineCreateRow({
                   border: 'none', outline: 'none',
                   background: assigneeIdx === -1 ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
                   color: token('color.text', 'var(--ds-text, #172B4D)'),
-                  fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
+                  fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', textAlign: 'left',
                   cursor: 'pointer', borderRadius: 3,
                 }}
               >
@@ -1150,7 +1150,7 @@ function TasksInlineCreateRow({
                 <span>Unassigned</span>
               </button>
               {filteredMembers.length === 0 && assigneeQuery && (
-                <div style={{ padding: '8px 8px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+                <div style={{ padding: '8px 8px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
                   No matches
                 </div>
               )}
@@ -1170,7 +1170,7 @@ function TasksInlineCreateRow({
                       border: 'none', outline: 'none',
                       background: isActive ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
                       color: token('color.text', 'var(--ds-text, #172B4D)'),
-                      fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
+                      fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', textAlign: 'left',
                       cursor: 'pointer', borderRadius: 3,
                     }}
                     onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
@@ -1206,7 +1206,7 @@ function TasksInlineCreateRow({
           color: canSubmit
             ? token('color.text.inverse', 'var(--ds-surface, #FFFFFF)')
             : token('color.text.disabled', 'var(--ds-text-subtlest, #6B6E76)'),
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           fontFamily: 'inherit',
           cursor: canSubmit ? 'pointer' : 'not-allowed',
@@ -1946,7 +1946,7 @@ export default function TasksTaskListView() {
               padding: '0 12px',
               marginLeft: 8,
               color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 500,
               whiteSpace: 'nowrap',
             }}

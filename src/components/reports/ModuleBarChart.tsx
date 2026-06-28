@@ -32,8 +32,8 @@ export function ModuleBarChart({ data, isLoading }: ModuleBarChartProps) {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={formattedData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
-                <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 12 }} />
+                <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 'var(--ds-font-size-200)' }} tickFormatter={(v) => `${v}%`} />
+                <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 'var(--ds-font-size-200)' }} />
                 <Tooltip formatter={(value: number) => [`${value}%`, 'Pass Rate']} />
                 <Bar dataKey="pass_rate" radius={[0, 4, 4, 0]}>
                   {formattedData.map((entry, index) => <Cell key={index} fill={getBarColor(entry.pass_rate)} />)}

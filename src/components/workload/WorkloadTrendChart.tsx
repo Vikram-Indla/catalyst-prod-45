@@ -60,7 +60,7 @@ export function WorkloadTrendChart({ teamId }: { teamId: string }) {
               <XAxis
                 dataKey="date"
                 tickFormatter={(d) => format(parseISO(d), 'd')}
-                tick={{ fontSize: 10, fill: CATALYST_V5.slate[500] }}
+                tick={{ fontSize: 'var(--ds-font-size-50)', fill: CATALYST_V5.slate[500] }}
                 axisLine={false}
                 tickLine={false}
               />

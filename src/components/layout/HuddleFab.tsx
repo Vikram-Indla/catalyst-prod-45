@@ -312,11 +312,11 @@ export function HuddleFab() {
               data-huddle-btn
               onClick={() => navigate('/chat')}
               style={{ border: 'none', background: 'transparent', padding: 0, textAlign: 'left', cursor: 'pointer',
-                fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis' }}
             >
               {connecting ? 'Connecting…' : active.conversationName}
             </button>
-            <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', fontVariantNumeric: 'tabular-nums' }}>
               {connecting ? '—' : `${mm}:${ss}`}
             </span>
           </span>

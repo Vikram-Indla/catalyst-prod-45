@@ -68,9 +68,9 @@ export function OwnerAlignmentStrip() {
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-        <span style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text }}>Owner alignment</span>
+        <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text }}>Owner alignment</span>
         {allAligned && (
-          <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.success }}>All signoffs cleared</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.success }}>All signoffs cleared</span>
         )}
       </div>
 
@@ -93,7 +93,7 @@ export function OwnerAlignmentStrip() {
               }}
             >
               {/* Release name */}
-              <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{r.name}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{r.name}</span>
 
               {/* Signoff progress bar */}
               {r.signoffTotal > 0 && (
@@ -103,7 +103,7 @@ export function OwnerAlignmentStrip() {
               )}
 
               {/* Fraction label */}
-              <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, color: TIER_COLOR[tier] }}>{label}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: TIER_COLOR[tier] }}>{label}</span>
             </div>
           );
         })}

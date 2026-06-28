@@ -359,7 +359,7 @@ function EvidenceRow({
             {item.language === 'ar' ? 'AR' : 'EN'}
           </Badge>
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>
           <div>{item.source}</div>
           <div>{item.descriptor}</div>
         </div>

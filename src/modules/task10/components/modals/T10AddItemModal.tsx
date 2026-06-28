@@ -134,7 +134,7 @@ export function T10AddItemModal({
             borderBottom: '1px solid var(--ds-border, #e5e7eb)',
           }}
         >
-          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #111827)', margin: 0 }}>
+          <h2 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text, #111827)', margin: 0 }}>
             Add Priority Item
           </h2>
           <button
@@ -165,7 +165,7 @@ export function T10AddItemModal({
               <label
                 style={{
                   display: 'block',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
@@ -185,14 +185,14 @@ export function T10AddItemModal({
                 style={{
                   width: '100%',
                   padding: '12px 14px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   border: '1px solid var(--ds-border, #d1d5db)',
                   borderRadius: '8px',
                   outline: 'none',
                 }}
               />
               {error && (
-                <p style={{ fontSize: '13px', color: 'var(--ds-text-danger, #ef4444)', marginTop: '4px' }}>{error}</p>
+                <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, #ef4444)', marginTop: '4px' }}>{error}</p>
               )}
             </div>
 
@@ -203,7 +203,7 @@ export function T10AddItemModal({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
@@ -223,7 +223,7 @@ export function T10AddItemModal({
                 style={{
                   width: '100%',
                   padding: '12px 14px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontFamily: "'SF Mono', Monaco, monospace",
                   border: '1px solid var(--ds-border, #d1d5db)',
                   borderRadius: '8px',
@@ -237,7 +237,7 @@ export function T10AddItemModal({
               <label
                 style={{
                   display: 'block',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
@@ -266,7 +266,7 @@ export function T10AddItemModal({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '14px',
+                        fontSize: 'var(--ds-font-size-400)',
                         fontWeight: 600,
                         color: isSelected
                           ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'
@@ -306,7 +306,7 @@ export function T10AddItemModal({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px',
@@ -324,7 +324,7 @@ export function T10AddItemModal({
                   style={{
                     width: '100%',
                     padding: '12px 14px',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     border: '1px solid var(--ds-border, #d1d5db)',
                     borderRadius: '8px',
                     outline: 'none',
@@ -339,7 +339,7 @@ export function T10AddItemModal({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px',
@@ -357,7 +357,7 @@ export function T10AddItemModal({
                     width: '100%',
                     height: '44px',
                     padding: '0 14px',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     border: '1px solid var(--ds-border, #d1d5db)',
                     borderRadius: '8px',
                     outline: 'none',
@@ -391,7 +391,7 @@ export function T10AddItemModal({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                fontSize: '12px',
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtlest, #9ca3af)',
               }}
             >
@@ -404,7 +404,7 @@ export function T10AddItemModal({
                   height: '20px',
                   padding: '0 6px',
                   fontFamily: "'SF Mono', Monaco, monospace",
-                  fontSize: '11px',
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtlest, #6b7280)',
                   backgroundColor: 'var(--ds-border, #e5e7eb)',
@@ -422,7 +422,7 @@ export function T10AddItemModal({
                 onClick={handleClose}
                 style={{
                   padding: '10px 20px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--ds-text, #374151)',
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -438,7 +438,7 @@ export function T10AddItemModal({
                 disabled={!title.trim() || createItem.isPending}
                 style={{
                   padding: '10px 20px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',

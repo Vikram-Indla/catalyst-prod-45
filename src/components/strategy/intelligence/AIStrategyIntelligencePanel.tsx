@@ -145,7 +145,7 @@ export function AIStrategyIntelligencePanel({
               style={{
                 color: activeTab === tab.id ? 'var(--fg-1)' : 'var(--fg-3)',
                 fontWeight: activeTab === tab.id ? 700 : 500,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 letterSpacing: '0.03em',
                 textTransform: 'uppercase',
               }}
@@ -181,7 +181,7 @@ export function AIStrategyIntelligencePanel({
           <span style={{ color: 'var(--ds-text-brand, #60A5FA)' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
+          <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)' }}>
             Regenerate
           </button>
           <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
@@ -231,7 +231,7 @@ function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) 
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text, #172B4D)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+    <div className="mb-2.5 mt-1" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text, #172B4D)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
       {children}
     </div>
   );
@@ -329,23 +329,23 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
       {/* At-a-Glance Metrics */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>Goal Progress</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: goalProgress >= 60 ? 'var(--sem-success)' : goalProgress >= 40 ? 'var(--sem-warning)' : 'var(--sem-danger)' }}>
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>Goal Progress</p>
+          <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: goalProgress >= 60 ? 'var(--sem-success)' : goalProgress >= 40 ? 'var(--sem-warning)' : 'var(--sem-danger)' }}>
             {goalProgress}%
           </p>
         </div>
         <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>AI Health</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>AI Health</p>
+          <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
             {goalHealth}/100
           </p>
         </div>
         <div className="border border-slate-200 rounded-lg p-3.5">
-          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>Key Results</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: 'var(--cp-teal-60, #0D9488)' }}>
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>Key Results</p>
+          <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color: 'var(--cp-teal-60, #0D9488)' }}>
             {krCount}
           </p>
-          <p className="text-slate-500 mt-0.5" style={{ fontSize: 10 }}>{krsOnTrack} on track</p>
+          <p className="text-slate-500 mt-0.5" style={{ fontSize: 'var(--ds-font-size-50)' }}>{krsOnTrack} on track</p>
         </div>
       </div>
 
@@ -369,8 +369,8 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             style={{ width: 48, height: 48, background: 'var(--ds-background-warning, #FFF7D6)' }}>
             <X size={20} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
           </div>
-          <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 15 }}>Briefing Unavailable</p>
-          <p className="text-slate-500" style={{ fontSize: 13, maxWidth: 300 }}>{briefError}</p>
+          <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 'var(--ds-font-size-400)' }}>Briefing Unavailable</p>
+          <p className="text-slate-500" style={{ fontSize: 'var(--ds-font-size-300)', maxWidth: 300 }}>{briefError}</p>
           {onRegenerate && (
             <button onClick={onRegenerate} className="mt-4 px-3 py-1.5 rounded-md border border-slate-200 text-[12px] font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
               <RefreshCw size={14} /> Retry
@@ -383,12 +383,12 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             components={{
               h2: ({ children }) => (
                 <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b border-slate-100 first:mt-0 text-slate-900"
-                  style={{ fontSize: 15 }}>
+                  style={{ fontSize: 'var(--ds-font-size-400)' }}>
                   {children}
                 </h2>
               ),
               p: ({ children }) => (
-                <p className="mb-4 text-slate-600" style={{ fontSize: 14, lineHeight: 1.8 }}>{children}</p>
+                <p className="mb-4 text-slate-600" style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.8 }}>{children}</p>
               ),
               strong: ({ children }) => (
                 <strong className="font-semibold text-slate-900">{children}</strong>
@@ -397,7 +397,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
                 <ul className="my-3 space-y-1.5">{children}</ul>
               ),
               li: ({ children }) => (
-                <li className="pl-1 text-slate-600" style={{ fontSize: 13, lineHeight: 1.6 }}>
+                <li className="pl-1 text-slate-600" style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1.6 }}>
                   <span className="mr-2 text-slate-400">•</span>{children}
                 </li>
               ),
@@ -406,7 +406,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             {briefContent}
           </ReactMarkdown>
           {isBriefGenerating && (
-            <div className="flex items-center gap-2 mt-4" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 12 }}>
+            <div className="flex items-center gap-2 mt-4" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 'var(--ds-font-size-200)' }}>
               <Sparkles size={14} className="animate-pulse" />
               <span className="font-medium">Generating…</span>
             </div>

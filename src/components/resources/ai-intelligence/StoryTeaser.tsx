@@ -30,11 +30,11 @@ export const StoryTeaser: React.FC<StoryTeaserProps> = ({
       <div className="rai-teaser-icon"><BookIcon /></div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--rai-primary)', textTransform: 'uppercase' as const }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--rai-primary)', textTransform: 'uppercase' as const }}>
             WEEKLY STORY
           </span>
           <span style={{
-            fontFamily: 'var(--rai-font-mono)', fontSize: 10,
+            fontFamily: 'var(--rai-font-mono)', fontSize: 'var(--ds-font-size-50)',
             background: 'var(--rai-surface)', border: '1px solid var(--rai-border)',
             padding: '1px 6px', borderRadius: 4,
           }}>
@@ -69,7 +69,7 @@ export const StoryTeaser: React.FC<StoryTeaserProps> = ({
           </span>
         </div>
       </div>
-      <div style={{ color: 'var(--rai-primary)', alignSelf: 'center', fontSize: 16, flexShrink: 0 }}>→</div>
+      <div style={{ color: 'var(--rai-primary)', alignSelf: 'center', fontSize: 'var(--ds-font-size-500)', flexShrink: 0 }}>→</div>
     </div>
   );
 };

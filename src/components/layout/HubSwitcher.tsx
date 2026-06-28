@@ -114,7 +114,7 @@ function HubRowLabel({ hub }: { hub: HubEntry }) {
       <span
         data-hub-shortcut={hub.key}
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           color: 'var(--ds-text-subtlest, #626F86)',
           fontFamily: 'var(--ds-font-family-code, ui-monospace, SFMono-Regular, monospace)',
           fontWeight: 500,
@@ -287,7 +287,7 @@ export function HubSwitcher() {
               border: 'none',
               outline: 'none',
               background: 'transparent',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #f0f0f0)))',
             }}
           />

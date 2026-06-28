@@ -72,7 +72,7 @@ export function CalendarPage() {
           <NavButton onClick={goPrev} aria-label="Previous month">
             <ChevronLeft style={{ width: 18, height: 18 }} />
           </NavButton>
-          <span style={{ fontFamily: 'var(--wh-font-display)', fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', minWidth: 180, textAlign: 'center' }}>
+          <span style={{ fontFamily: 'var(--wh-font-display)', fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--fg-1)', minWidth: 180, textAlign: 'center' }}>
             {monthName} {year}
           </span>
           <NavButton onClick={goNext} aria-label="Next month">
@@ -83,7 +83,7 @@ export function CalendarPage() {
             style={{
               marginLeft: 8,
               padding: '4px 14px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               fontFamily: 'var(--wh-font-sans)',
               color: 'var(--cp-blue)',
@@ -107,7 +107,7 @@ export function CalendarPage() {
               onClick={() => setViewMode(t.key)}
               style={{
                 padding: '5px 14px',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 fontFamily: 'var(--wh-font-sans)',
                 border: 'none',
@@ -132,10 +132,10 @@ export function CalendarPage() {
         {isError && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px', backgroundColor: 'var(--wh-danger-light)', border: '1px solid var(--sem-danger)', borderRadius: 'var(--wh-radius-lg)', marginBottom: 16, fontFamily: 'var(--wh-font-sans)' }}>
             <AlertTriangle style={{ width: 20, height: 20, color: 'var(--sem-danger)' }} />
-            <span style={{ flex: 1, fontSize: 14, color: 'var(--sem-danger)' }}>Failed to load calendar events</span>
+            <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--sem-danger)' }}>Failed to load calendar events</span>
             <button
               onClick={() => refetch()}
-              style={{ padding: '6px 14px', fontSize: 13, fontWeight: 500, backgroundColor: 'var(--sem-danger)', color: 'var(--bg-app)', border: 'none', borderRadius: 'var(--wh-radius-md)', cursor: 'pointer' }}
+              style={{ padding: '6px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, backgroundColor: 'var(--sem-danger)', color: 'var(--bg-app)', border: 'none', borderRadius: 'var(--wh-radius-md)', cursor: 'pointer' }}
             >
               Retry
             </button>

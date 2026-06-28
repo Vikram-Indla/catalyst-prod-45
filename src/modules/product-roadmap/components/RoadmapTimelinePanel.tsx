@@ -100,7 +100,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
           // Fallback: bar is entirely outside visible timeline range — show indicator
           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Outside timeline range</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Outside timeline range</span>
           </div>
         )}
       </div>
@@ -140,7 +140,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
               {groups.map(group => (
                 <div key={group.key}>
                   <div style={{ height: 50, background: 'var(--ds-surface-sunken, #FAFBFC)', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', paddingLeft: 16, lineHeight: '36px' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', paddingLeft: 16, lineHeight: '36px' }}>
                       {group.label}
                     </span>
                   </div>

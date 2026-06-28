@@ -21,7 +21,7 @@ export const BehavioralPatterns: React.FC<Props> = ({ insights }) => (
       </span>
     </div>
     {insights.length === 0 && (
-      <p style={{ fontSize: 13, color: 'var(--rai-ink-muted)', margin: 0, fontStyle: 'italic' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--rai-ink-muted)', margin: 0, fontStyle: 'italic' }}>
         Click "Refresh AI" to generate behavioral pattern insights.
       </p>
     )}

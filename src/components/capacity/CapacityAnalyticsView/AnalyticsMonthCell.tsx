@@ -69,7 +69,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             backgroundImage: 'repeating-linear-gradient(-45deg, var(--bg-1), var(--bg-1) 4px, var(--ds-surface-sunken, #f1f5f9) 4px, var(--ds-surface-sunken, #f1f5f9) 8px)',
           }}
         >
-          <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--fg-4)', background: 'var(--ds-surface, rgba(255,255,255,0.9))', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', background: 'var(--ds-surface, rgba(255,255,255,0.9))', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
         </div>
       </td>
     );
@@ -90,7 +90,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             backgroundImage: 'repeating-linear-gradient(-45deg, var(--bg-1), var(--bg-1) 4px, var(--ds-surface-sunken, #f1f5f9) 4px, var(--ds-surface-sunken, #f1f5f9) 8px)',
           }}
         >
-          <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--fg-4)', background: 'var(--ds-surface, rgba(255,255,255,0.9))', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', background: 'var(--ds-surface, rgba(255,255,255,0.9))', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
         </div>
       </td>
     );
@@ -109,7 +109,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
           background: 'var(--bg-app)',
           border: '1px solid var(--divider)',
         }}>
-          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--fg-4)' }}>Available</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-4)' }}>Available</span>
         </div>
       </td>
     );
@@ -164,7 +164,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
           >
             {/* Text content - dark on white - POLISH: Larger percent text */}
             <span className="alloc-percent" style={{
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
               color: isOverAllocated ? 'var(--sem-danger)' : 'var(--ds-text, #172B4D)',
               letterSpacing: '-0.01em',
@@ -174,7 +174,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             </span>
             {/* POLISH: Larger project text (11px) */}
             <span className="alloc-project" style={{
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               color: 'var(--fg-3)',
               maxWidth: '100px',

@@ -32,7 +32,7 @@ export function WidgetIconBtn({
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: 16,
+        fontSize: 'var(--ds-font-size-500)',
         lineHeight: 1,
         flexShrink: 0,
       }}
@@ -96,7 +96,7 @@ export function WidgetShell({
           <h2
             style={{
               margin: 0,
-              fontSize: 20,
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 500,
               color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               lineHeight: '24px',
@@ -107,7 +107,7 @@ export function WidgetShell({
           {question && (
             <span
               style={{
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 lineHeight: '18px',
                 color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 marginTop: 2,
@@ -143,7 +143,7 @@ export function WidgetShell({
               style={{
                 padding: '10px 24px',
                 borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 lineHeight: '16px',
                 color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 display: 'flex',

@@ -50,7 +50,7 @@ export function StepFeatures({ draft, onChange }: Props) {
           style={{
             margin: 0,
             color: token('color.text.subtle'),
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             lineHeight: 1.5,
           }}
         >
@@ -76,7 +76,7 @@ export function StepFeatures({ draft, onChange }: Props) {
                       style={{
                         display: 'block',
                         color: token('color.text.subtle'),
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                         marginTop: 2,
                       }}
                     >

@@ -102,7 +102,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
         {/* Quick-set section */}
         <div
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             letterSpacing: '0.06em',
             color: token('color.text.subtle', 'var(--ds-text-subtle, #6B778C)'),
@@ -132,7 +132,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                     ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FE)')
                     : 'transparent',
                   cursor: 'pointer',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: isActive ? 500 : 400,
                   color: token('color.text', 'var(--ds-text, #172B4D)'),
                   width: '100%',
@@ -164,7 +164,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   <span
                     aria-hidden="true"
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       color: token('color.text.brand', 'var(--ds-link, #0052CC)'),
                       fontWeight: 600,
                       marginLeft: 'auto',
@@ -197,7 +197,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
             >
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
                   letterSpacing: '0.06em',
                   color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
@@ -212,7 +212,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   background: 'none',
                   border: 'none',
                   cursor: clearing ? 'not-allowed' : 'pointer',
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
                   color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
                   padding: '4px',
@@ -230,7 +230,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                     padding: '4px 8px',
                     borderRadius: 3,
                     background: token('color.background.information.subtle', 'var(--ds-background-selected, #E9F2FF)'),
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     color: token('color.text', 'var(--ds-text, #172B4D)'),
                   }}
                 >
@@ -257,7 +257,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
               border: 'none',
               padding: '4px 0',
               cursor: 'pointer',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 400,
               color: token('color.link', 'var(--ds-link, #0052CC)'),
               width: '100%',

@@ -73,13 +73,13 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
             <card.icon size={18} color={card.iconColor} />
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t2 : 'var(--fg-3)', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t2 : 'var(--fg-3)', marginBottom: 4 }}>
               {card.label}
             </div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)', lineHeight: 1.2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)', lineHeight: 1.2 }}>
               {card.value}
             </div>
-            <div style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{card.sub}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{card.sub}</div>
           </div>
         </div>
       ))}

@@ -162,7 +162,7 @@ export function CatalystHeader() {
                 style={{ height: '24px', width: '24px', flexShrink: 0 }}
               />
               <span style={{
-                fontSize: '16px',
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 500,
                 fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
                 color: isDark ? 'var(--ds-border, #CECFD2)' : 'var(--ds-text, #101214)',

@@ -30,7 +30,7 @@ export function WorkItemTraceabilityPanel({ workItemKey }: { workItemKey: string
 
   return (
     <div style={{ marginTop: 16 }}>
-      <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: '0 0 8px' }}>Release &amp; Change traceability</h2>
+      <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: '0 0 8px' }}>Release &amp; Change traceability</h2>
       <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
         {data.changes.map((c) => (
           <div
@@ -38,9 +38,9 @@ export function WorkItemTraceabilityPanel({ workItemKey }: { workItemKey: string
             onClick={() => navigate(`/release-hub/changes/${c.id}`)}
             style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}`, cursor: 'pointer' }}
           >
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, minWidth: 56 }}>Change</span>
-            <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{c.chgNumber}</span>
-            <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 14, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.title}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, minWidth: 56 }}>Change</span>
+            <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link }}>{c.chgNumber}</span>
+            <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.title}</span>
             <StatusLozenge status={c.status} />
           </div>
         ))}
@@ -50,8 +50,8 @@ export function WorkItemTraceabilityPanel({ workItemKey }: { workItemKey: string
             onClick={() => navigate(`/release-hub/${r.id}`)}
             style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${T.border}`, cursor: 'pointer' }}
           >
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, minWidth: 56 }}>Release</span>
-            <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.name}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, minWidth: 56 }}>Release</span>
+            <span style={{ flex: 1, minWidth: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.name}</span>
             <StatusLozenge status={r.status} />
           </div>
         ))}

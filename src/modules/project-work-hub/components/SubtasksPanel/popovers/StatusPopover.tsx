@@ -128,7 +128,7 @@ export function StatusPopover({ status, issueType, onChange, children, showActiv
             {displayGroups.map((group) => (
               <div key={group.category}>
                 <div style={{
-                  fontSize: 11, fontWeight: 700,
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                   color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                   textTransform: 'uppercase', letterSpacing: '0.06em',
                   padding: '8px 12px 4px', marginTop: 4,

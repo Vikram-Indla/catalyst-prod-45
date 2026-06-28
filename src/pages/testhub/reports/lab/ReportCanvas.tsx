@@ -62,7 +62,7 @@ const STATUS_APPEARANCE: Record<string, 'success' | 'removed' | 'moved' | 'defau
 
 const TH: React.CSSProperties = {
   padding: '9px 14px',
-  fontSize: 11,
+  fontSize: 'var(--ds-font-size-100)',
   fontWeight: 700,
   color: 'var(--ds-text-subtlest)',
   textAlign: 'left',
@@ -77,7 +77,7 @@ const TH: React.CSSProperties = {
 
 const TD: React.CSSProperties = {
   padding: '9px 14px',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   color: 'var(--ds-text)',
   borderBottom: '1px solid var(--ds-border)',
   verticalAlign: 'middle',
@@ -132,7 +132,7 @@ function ChartWrap({ title, children, height = 260 }: { title?: string; children
   return (
     <div style={{ marginBottom: 20 }}>
       {title && (
-        <p style={{ margin: '0 0 10px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
+        <p style={{ margin: '0 0 10px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
           {title}
         </p>
       )}
@@ -156,7 +156,7 @@ function PassRateBar({ rate }: { rate: number }) {
       <div style={{ flex: 1, height: 8, background: 'var(--ds-background-neutral)', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ width: `${rate}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 0.3s' }} />
       </div>
-      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text)', minWidth: 36, textAlign: 'right' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)', minWidth: 36, textAlign: 'right' }}>
         {rate}%
       </span>
     </div>
@@ -213,8 +213,8 @@ function ExecutionSummary({ data }: { data: SeededData }) {
         <ChartWrap title="Pass / Fail / Blocked per cycle">
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
+            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
             <RechartTooltip />
             <Legend />
             <Bar dataKey="passed" stackId="a" fill={P.green} name="Passed" />
@@ -255,8 +255,8 @@ function ExecutionBurndown({ data }: { data: SeededData }) {
         <ChartWrap title="Remaining vs Ideal (Sprint 16 — Release Candidate)">
           <ComposedChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
+            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
             <RechartTooltip labelFormatter={formatDate} />
             <Legend />
             <Line type="monotone" dataKey="ideal" stroke={P.blue} strokeDasharray="6 3" name="Ideal remaining" dot={false} />
@@ -282,8 +282,8 @@ function ExecutionBurnup({ data }: { data: SeededData }) {
         <ChartWrap title="Cumulative executed and passed over time">
           <ComposedChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
+            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
             <RechartTooltip labelFormatter={formatDate} />
             <Legend />
             <Line type="monotone" dataKey="scope" stroke="var(--ds-border-bold)" strokeDasharray="6 3" name="Total scope" dot={false} />
@@ -310,8 +310,8 @@ function ExecutionDistribution({ data }: { data: SeededData }) {
         <ChartWrap title="Run count by status">
           <BarChart data={dist} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis type="number" tick={{ fontSize: 11 }} />
-            <YAxis dataKey="status" type="category" tick={{ fontSize: 11 }} width={80} />
+            <XAxis type="number" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis dataKey="status" type="category" tick={{ fontSize: 'var(--ds-font-size-100)' }} width={80} />
             <RechartTooltip />
             <Bar dataKey="count" name="Runs">
               {dist.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
@@ -347,11 +347,11 @@ function ExecutionHistory({ data }: { data: SeededData }) {
           { label: 'Result', width: '10%', align: 'center' },
         ]}
         rows={rows.map(r => [
-          <span key={r.date} style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>{formatDate(r.date)}</span>,
-          <code key={r.caseKey} style={{ fontSize: 12, color: 'var(--ds-text-brand)' }}>{r.caseKey}</code>,
+          <span key={r.date} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{formatDate(r.date)}</span>,
+          <code key={r.caseKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.caseKey}</code>,
           r.caseTitle,
           r.executor,
-          <span key={r.cycleName} style={{ fontSize: 12 }}>{r.cycleName}</span>,
+          <span key={r.cycleName} style={{ fontSize: 'var(--ds-font-size-200)' }}>{r.cycleName}</span>,
           <Lozenge key={r.status} appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status.replace(/_/g, ' ')}</Lozenge>,
         ])}
       />
@@ -379,8 +379,8 @@ function CaseDistribution({ data }: { data: SeededData }) {
           <ChartWrap title="By priority">
             <BarChart data={priorityData}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
+              <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+              <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
               <RechartTooltip />
               <Bar dataKey="value" name="Cases">
                 {priorityData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
@@ -413,7 +413,7 @@ function CaseUsage({ data }: { data: SeededData }) {
           { label: 'State', width: '10%', align: 'center' },
         ]}
         rows={rows.map(r => [
-          <code key={r.caseKey} style={{ fontSize: 12, color: 'var(--ds-text-brand)' }}>{r.caseKey}</code>,
+          <code key={r.caseKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.caseKey}</code>,
           r.title,
           r.folder,
           r.cycleCount,
@@ -439,8 +439,8 @@ function DefectSummary({ data }: { data: SeededData }) {
         <ChartWrap title="Defects by severity">
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
+            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
             <RechartTooltip />
             <Bar dataKey="total" name="Defects">
               {chartData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
@@ -478,7 +478,7 @@ function DefectImpact({ data }: { data: SeededData }) {
           { label: 'Linked Cases', width: '19%' },
         ]}
         rows={rows.map(r => [
-          <code key={r.defectKey} style={{ fontSize: 12, color: 'var(--ds-text-brand)' }}>{r.defectKey}</code>,
+          <code key={r.defectKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.defectKey}</code>,
           r.title,
           <Lozenge key={r.severity} appearance={STATUS_APPEARANCE[r.severity] ?? 'default'}>{r.severity}</Lozenge>,
           <Lozenge key={r.status} appearance={STATUS_APPEARANCE[r.status] ?? 'default'}>{r.status}</Lozenge>,
@@ -499,13 +499,13 @@ function DefectTrend({ data }: { data: SeededData }) {
         <ChartWrap title="Defects created per day">
           <AreaChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
+            <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
             <RechartTooltip labelFormatter={formatDate} />
             <Area type="monotone" dataKey="count" fill={P.redFill} stroke={P.red} name="Created" />
           </AreaChart>
         </ChartWrap>
-        <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>
+        <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>
           Closure trend available after resolved_at field confirmation (Phase 8).
         </p>
       </Section>
@@ -529,8 +529,8 @@ function MultiCycleComparison({ data }: { data: SeededData }) {
         <ChartWrap title="Pass rate trend across cycles">
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-            <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
+            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 'var(--ds-font-size-100)' }} unit="%" />
             <RechartTooltip formatter={(v) => [`${v}%`, 'Pass rate']} />
             <Line type="monotone" dataKey="passRate" stroke={P.blue} strokeWidth={2} dot={{ r: 4 }} name="Pass rate" />
           </LineChart>
@@ -554,7 +554,7 @@ function MultiCycleComparison({ data }: { data: SeededData }) {
             r.failed,
             r.blocked,
             <PassRateBar key={r.cycleName} rate={r.passRate} />,
-            <span key={i} style={{ fontSize: 12, color: r.delta !== null && r.delta >= 0 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)' }}>
+            <span key={i} style={{ fontSize: 'var(--ds-font-size-200)', color: r.delta !== null && r.delta >= 0 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)' }}>
               {cycleDeltaStr(r.passRate, r.delta !== null ? r.passRate - r.delta : null)}
             </span>,
           ])}
@@ -618,11 +618,11 @@ function MultiCycleDetail({ data }: { data: SeededData }) {
                 onMouseEnter={e => ((e.currentTarget as HTMLTableRowElement).style.background = 'var(--ds-background-neutral-subtle)')}
                 onMouseLeave={e => ((e.currentTarget as HTMLTableRowElement).style.background = '')}
               >
-                <td style={{ ...TD, fontSize: 12 }}>
+                <td style={{ ...TD, fontSize: 'var(--ds-font-size-200)' }}>
                   <code style={{ color: 'var(--ds-text-brand)' }}>{row.caseKey}</code>
                 </td>
                 <td style={TD}>{row.title}</td>
-                <td style={{ ...TD, fontSize: 12, color: 'var(--ds-text-subtle)' }}>{row.folder}</td>
+                <td style={{ ...TD, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{row.folder}</td>
                 {cycles.map(cy => {
                   const st = row.statuses[cy.id] ?? null;
                   return (
@@ -630,7 +630,7 @@ function MultiCycleDetail({ data }: { data: SeededData }) {
                       {st ? (
                         <Lozenge appearance={STATUS_APPEARANCE[st] ?? 'default'}>{st.replace(/_/g, ' ')}</Lozenge>
                       ) : (
-                        <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 12 }}>—</span>
+                        <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>—</span>
                       )}
                     </td>
                   );
@@ -666,8 +666,8 @@ function MultiCycleDistribution({ data }: { data: SeededData }) {
         <ChartWrap title="Status distribution by cycle">
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
+            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
             <RechartTooltip />
             <Legend />
             <Bar dataKey="passed" stackId="a" fill={P.green} name="Passed" />
@@ -729,10 +729,10 @@ function ProjectOverview({ data }: { data: SeededData }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
         {metrics.map(m => (
           <div key={m.label} style={{ background: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)', borderRadius: 6, padding: '14px 16px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
               {m.label}
             </div>
-            <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text)', fontVariantNumeric: 'tabular-nums' }}>
               {m.value}
             </div>
           </div>
@@ -756,8 +756,8 @@ function ProjectMetrics({ data }: { data: SeededData }) {
         <ChartWrap title="Pass rate trend by cycle">
           <LineChart data={trendData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-            <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-            <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
+            <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+            <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
             <RechartTooltip formatter={(v) => [`${v}%`, 'Pass rate']} />
             <Line type="monotone" dataKey="passRate" stroke={P.green} strokeWidth={2} dot={{ r: 5 }} name="Pass rate" />
           </LineChart>
@@ -766,7 +766,7 @@ function ProjectMetrics({ data }: { data: SeededData }) {
       <Section>
         <DataTable
           headers={[{ label: 'Metric', width: '60%' }, { label: 'Value', align: 'right', width: '40%' }]}
-          rows={metrics.map(m => [m.metric, <strong key={m.metric} style={{ fontSize: 15 }}>{m.value}</strong>])}
+          rows={metrics.map(m => [m.metric, <strong key={m.metric} style={{ fontSize: 'var(--ds-font-size-400)' }}>{m.value}</strong>])}
         />
       </Section>
     </>
@@ -794,11 +794,11 @@ function ProjectActivity({ data }: { data: SeededData }) {
           { label: 'Cycle', width: '48%' },
         ]}
         rows={rows.map(r => [
-          <span key={r.date} style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>{formatDate(r.date)}</span>,
+          <span key={r.date} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{formatDate(r.date)}</span>,
           <Lozenge key={r.action} appearance={STATUS_APPEARANCE[r.action.split(' ')[1]] ?? 'default'}>{r.action}</Lozenge>,
           r.user,
-          <code key={r.entity} style={{ fontSize: 12, color: 'var(--ds-text-brand)' }}>{r.entity}</code>,
-          <span key={r.cycle} style={{ fontSize: 12 }}>{r.cycle}</span>,
+          <code key={r.entity} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.entity}</code>,
+          <span key={r.cycle} style={{ fontSize: 'var(--ds-font-size-200)' }}>{r.cycle}</span>,
         ])}
       />
     </Section>
@@ -815,16 +815,16 @@ function TraceabilitySummary({ data }: { data: SeededData }) {
       <Section>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center', padding: '8px 0' }}>
           <div>
-            <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Overall Coverage</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Overall Coverage</div>
             <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--ds-text)' }}>{coveragePercent(linkedCases, totalCases)}</div>
-            <div style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>{linkedCases} of {totalCases} cases linked to requirements</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{linkedCases} of {totalCases} cases linked to requirements</div>
           </div>
           <div style={{ flex: 1, maxWidth: 400 }}>
             <ChartWrap title="Pass rate per requirement" height={200}>
               <BarChart data={rows.map(r => ({ name: r.issueKey, passRate: r.passRate }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
+                <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+                <YAxis domain={[0, 100]} unit="%" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
                 <RechartTooltip formatter={(v) => [`${v}%`, 'Pass rate']} />
                 <Bar dataKey="passRate" fill={P.blue} name="Pass rate" />
               </BarChart>
@@ -842,7 +842,7 @@ function TraceabilitySummary({ data }: { data: SeededData }) {
             { label: 'Pass Rate', align: 'right', width: '18%' },
           ]}
           rows={rows.map(r => [
-            <code key={r.issueKey} style={{ fontSize: 12, color: 'var(--ds-text-brand)' }}>{r.issueKey}</code>,
+            <code key={r.issueKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.issueKey}</code>,
             r.summary,
             r.caseCount,
             `${r.coveragePct}%`,
@@ -869,9 +869,9 @@ function TraceabilityDetail({ data }: { data: SeededData }) {
           { label: 'Defects', align: 'right', width: '9%' },
         ]}
         rows={rows.map(r => [
-          <code key={r.issueKey} style={{ fontSize: 12, color: 'var(--ds-text-brand)' }}>{r.issueKey}</code>,
-          <span key={r.issueSummary} style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>{r.issueSummary}</span>,
-          <code key={r.caseKey} style={{ fontSize: 12, color: 'var(--ds-text)' }}>{r.caseKey}</code>,
+          <code key={r.issueKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)' }}>{r.issueKey}</code>,
+          <span key={r.issueSummary} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{r.issueSummary}</span>,
+          <code key={r.caseKey} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>{r.caseKey}</code>,
           r.caseTitle,
           r.owner,
           <Lozenge key={r.lastRunStatus} appearance={STATUS_APPEARANCE[r.lastRunStatus] ?? 'default'}>{r.lastRunStatus.replace(/_/g, ' ')}</Lozenge>,
@@ -930,7 +930,7 @@ export default function ReportCanvas({ slug, data, filters }: Props) {
             background: 'var(--ds-background-warning)',
             borderBottom: '1px solid var(--ds-border-warning, var(--ds-border))',
             padding: '8px 20px',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: 'var(--ds-text-warning)',
           }}
         >

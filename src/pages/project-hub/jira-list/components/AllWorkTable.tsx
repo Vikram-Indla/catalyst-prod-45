@@ -176,7 +176,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               padding: '0 8px 0 32px',
               border: `1px solid ${T.borderColor}`,
               borderRadius: 4,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: T.textPrimary,
               background: T.white,
               outline: 'none',
@@ -194,7 +194,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             padding: '0 32px 0 8px',
             border: `1px solid ${T.borderColor}`,
             borderRadius: 4,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: T.textPrimary,
             background: T.white,
             cursor: 'pointer',
@@ -218,7 +218,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               height: 28, padding: '0 8px',
               border: `1px solid ${sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.borderColor}`,
               borderRadius: 3,
-              fontSize: 11, fontWeight: 600,
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.textSecondary,
               background: sortBy === 'updated' ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -232,7 +232,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               height: 28, padding: '0 8px',
               border: `1px solid ${sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.borderColor}`,
               borderRadius: 3,
-              fontSize: 11, fontWeight: 600,
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.textSecondary,
               background: sortBy === 'created' ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -240,7 +240,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
           >
             Created {sortBy === 'created' ? (sortDir === 'DESC' ? '↓' : '↑') : ''}
           </button>
-          <span style={{ fontSize: 12, color: T.textMuted, fontWeight: 500 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.textMuted, fontWeight: 500 }}>
             {filteredLen} item{filteredLen !== 1 ? 's' : ''}
           </span>
         </div>
@@ -262,7 +262,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
           <tbody>
             {pageItems.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ padding: 32, textAlign: 'center', color: T.textMuted, fontSize: 13 }}>
+                <td colSpan={6} style={{ padding: 32, textAlign: 'center', color: T.textMuted, fontSize: 'var(--ds-font-size-300)' }}>
                   No work items found.
                 </td>
               </tr>
@@ -284,7 +284,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                 <td style={tdStyle}>
                   <span style={{
                     fontFamily: 'var(--cp-font-mono)',
-                    fontSize: 13, fontWeight: 500,
+                    fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
                     color: T.keyColor,
                   }}>
                     {formatWorkItemKey(item.jiraKey)}
@@ -294,7 +294,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                 {/* Summary */}
                 <td style={tdStyle}>
                   <span style={{
-                    fontSize: 13, fontWeight: 400, color: T.textPrimary,
+                    fontSize: 'var(--ds-font-size-300)', fontWeight: 400, color: T.textPrimary,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     display: 'block',
                   }}>
@@ -331,20 +331,20 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                         width: 24, height: 24, borderRadius: '50%',
                         background: item.assignee.color || hashColor(item.assignee.name),
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
+                        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface, #fff)',
                         flexShrink: 0,
                       }}>
                         {item.assignee.initials || getInitials(item.assignee.name)}
                       </div>
                       <span style={{
-                        fontSize: 13, color: T.textPrimary,
+                        fontSize: 'var(--ds-font-size-300)', color: T.textPrimary,
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>
                         {item.assignee.name}
                       </span>
                     </div>
                   ) : (
-                    <span style={{ fontSize: 13, color: T.textMuted }}>—</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', color: T.textMuted }}>—</span>
                   )}
                 </td>
               </tr>
@@ -362,7 +362,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
           background: T.white,
           flexShrink: 0,
         }}>
-          <span style={{ fontSize: 12, color: T.textMuted }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.textMuted }}>
             {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filteredLen)} of {filteredLen}
           </span>
           <div style={{ display: 'flex', gap: 4 }}>
@@ -404,7 +404,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
 /* ── Styles ── */
 const thStyle: React.CSSProperties = {
   padding: '8px 12px',
-  fontSize: 11,
+  fontSize: 'var(--ds-font-size-100)',
   fontWeight: 653,
   color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #44546F))',
   fontFamily: 'var(--cp-font-body)',
@@ -418,7 +418,7 @@ const thStyle: React.CSSProperties = {
 
 const tdStyle: React.CSSProperties = {
   padding: '0 12px',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontFamily: 'var(--cp-font-body)',
   verticalAlign: 'middle',
 };
@@ -438,7 +438,7 @@ function PaginationBtn({ children, disabled, active, onClick }: {
         height: 28, minWidth: 28, padding: '0 8px',
         border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-border-default, #DDDEE1)'}`,
         borderRadius: 3,
-        fontSize: 12, fontWeight: active ? 600 : 400,
+        fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 400,
         color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
         background: active ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         cursor: disabled ? 'default' : 'pointer',

@@ -110,10 +110,10 @@ const KPI_CARD: React.CSSProperties = {
 function KpiCard({ label, value }: { label: string; value: number | string }) {
   return (
     <div style={KPI_CARD}>
-      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.04em' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.04em' }}>
         {label}
       </span>
-      <span style={{ fontSize: 26, fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1 }}>
         {value}
       </span>
     </div>
@@ -144,10 +144,10 @@ function ReportTileCard({ tile, projectKey }: { tile: ReportTile; projectKey: st
       onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
     >
-      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1.3 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1.3 }}>
         {tile.label}
       </span>
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
         {tile.description}
       </span>
     </button>
@@ -184,7 +184,7 @@ export default function ReportsPage() {
 
         {groupedTiles.map(({ group, tiles }) => (
           <div key={group} style={{ marginBottom: 32 }}>
-            <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 12, marginTop: 0, letterSpacing: '0.04em' }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 12, marginTop: 0, letterSpacing: '0.04em' }}>
               {group}
             </h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>

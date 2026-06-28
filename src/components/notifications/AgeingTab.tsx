@@ -179,7 +179,7 @@ function StatusLozenge({ status }: { status: StatusType }) {
   return (
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', borderRadius: 3, padding: '0 7px',
       background: bg, color: fg, whiteSpace: 'nowrap',
       fontFamily: 'var(--cp-font-body)',
@@ -239,7 +239,7 @@ function FilterPill({ label, isActive, count, onClick }: {
     >
       {label}
       <span style={{
-        fontSize: 11, fontWeight: 700,
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
         background: isActive ? 'var(--ds-link, rgba(12,102,228,0.14))' : ADS.neutralSubtle,
         color: isActive ? ADS.textSelected : ADS.textSubtle,
         borderRadius: 8, padding: '1px 6px',
@@ -285,7 +285,7 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
             {label}
           </span>
           <span style={{
-            fontSize: 11, fontWeight: 700, color: ADS.textInverse,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: ADS.textInverse,
             background: accentColor, borderRadius: 3,
             padding: '1px 6px', minWidth: 22, textAlign: 'center',
           }}>
@@ -358,7 +358,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
           </span>
           {isOverdue && (
             <span style={{
-              fontSize: 11, fontWeight: 700, borderRadius: 3, padding: '2px 6px',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, borderRadius: 3, padding: '2px 6px',
               background: ADS.dangerBg, color: ADS.textDanger,
             }}>
               Overdue
@@ -366,7 +366,7 @@ function AgeingRow({ item }: { item: AgeingItem }) {
           )}
           {isWatch && (
             <span style={{
-              fontSize: 11, fontWeight: 700, borderRadius: 3, padding: '2px 6px',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, borderRadius: 3, padding: '2px 6px',
               background: ADS.warningBg, color: ADS.textWarning,
             }}>
               Watch
@@ -422,7 +422,7 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           borderRadius: 20, padding: '3px 10px',
-          fontSize: 11, fontWeight: 700,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
           background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color,
           cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           letterSpacing: '0.04em',
@@ -700,7 +700,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
           font: ADS_FONT.body, color: ADS.textWarning,
           lineHeight: 1.5,
         }}>
-          <span style={{ flexShrink: 0, fontSize: 14, color: ADS.iconWarning, fontWeight: 700 }}>!</span>
+          <span style={{ flexShrink: 0, fontSize: 'var(--ds-font-size-400)', color: ADS.iconWarning, fontWeight: 700 }}>!</span>
           <span>
             <strong>{items.length} aging items</strong> assigned to you.
             Address them before they reach governance breach.
@@ -715,7 +715,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
           font: ADS_FONT.body, color: ADS.textDanger,
           lineHeight: 1.5,
         }}>
-          <span style={{ flexShrink: 0, fontSize: 14, color: ADS.iconDanger, fontWeight: 700 }}>!</span>
+          <span style={{ flexShrink: 0, fontSize: 'var(--ds-font-size-400)', color: ADS.iconDanger, fontWeight: 700 }}>!</span>
           <span>
             Governance breach — <strong>{items.length} aging items</strong>, {govData.breachStreak} day streak.{' '}
             <span
@@ -903,7 +903,7 @@ function StatChip({ label, value, intent }: { label: string; value: string | num
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
       <span style={{
-        fontSize: 16, fontWeight: 700, color: numericColor,
+        fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: numericColor,
         fontVariantNumeric: 'tabular-nums',
         fontFamily: 'var(--cp-font-body)',
       }}>

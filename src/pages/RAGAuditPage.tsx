@@ -24,10 +24,10 @@ const statusColors: Record<string, { bg: string; fg: string; label: string }> = 
 const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
 function DataTable({ data }: { data: any[] }) {
-  if (!data || data.length === 0) return <span style={{ color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))", fontSize: 12 }}>No rows</span>;
+  if (!data || data.length === 0) return <span style={{ color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))", fontSize: 'var(--ds-font-size-200)' }}>No rows</span>;
   const keys = Object.keys(data[0]);
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, marginTop: 8 }}>
+    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 'var(--ds-font-size-200)', marginTop: 8 }}>
       <thead>
         <tr>
           {keys.map((k) => (
@@ -51,7 +51,7 @@ function DataTable({ data }: { data: any[] }) {
 function StatusBadge({ status }: { status: CheckStatus }) {
   const s = statusColors[status];
   return (
-    <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, background: s.bg, color: s.fg, fontWeight: 700, fontSize: 11, letterSpacing: 0.5 }}>
+    <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, background: s.bg, color: s.fg, fontWeight: 700, fontSize: 'var(--ds-font-size-100)', letterSpacing: 0.5 }}>
       {s.label}
     </span>
   );
@@ -61,13 +61,13 @@ function CheckCard({ result }: { result: CheckResult }) {
   return (
     <div style={{ border: "0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))", borderRadius: 6, background: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", padding: 16, marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <span style={{ fontWeight: 600, fontSize: 13 }}>{result.id} · {result.title}</span>
+        <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)' }}>{result.id} · {result.title}</span>
         <StatusBadge status={result.status} />
       </div>
-      {result.message && <p style={{ fontSize: 12, color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", marginBottom: 4 }}>{result.message}</p>}
+      {result.message && <p style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", marginBottom: 4 }}>{result.message}</p>}
       {result.data && Array.isArray(result.data) && result.data.length > 0 && <DataTable data={result.data} />}
       {result.data && !Array.isArray(result.data) && typeof result.data === "object" && (
-        <div style={{ fontSize: 12, marginTop: 4 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', marginTop: 4 }}>
           {Object.entries(result.data).map(([k, v]) => (
             <div key={k} style={{ display: "flex", gap: 8, padding: "2px 0" }}>
               <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", fontWeight: 500, minWidth: 140 }}>{k}:</span>
@@ -266,15 +266,15 @@ export default function RAGAuditPage() {
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: 'var(--cp-font-heading)' }}>
-      <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>RAG Pipeline Audit — Layers 1–3</h1>
-      <p style={{ fontSize: 13, color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
+      <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, marginBottom: 4 }}>RAG Pipeline Audit — Layers 1–3</h1>
+      <p style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
 
       <button
         onClick={runAllChecks}
         disabled={running}
         style={{
           height: 50, padding: "0 20px", background: running ? "var(--ds-background-information-bold, #0C66E4)" : "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))", color: "var(--ds-surface, #FFF)",
-          border: "none", borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: running ? "not-allowed" : "pointer", marginBottom: 24,
+          border: "none", borderRadius: 6, fontWeight: 600, fontSize: 'var(--ds-font-size-400)', cursor: running ? "not-allowed" : "pointer", marginBottom: 24,
         }}
       >
         {running ? "Running…" : "Run All Checks"}
@@ -285,7 +285,7 @@ export default function RAGAuditPage() {
       ))}
 
       {done && (
-        <div style={{ marginTop: 24, padding: 16, borderRadius: 6, background: summaryBg, textAlign: "center", fontWeight: 600, fontSize: 14 }}>
+        <div style={{ marginTop: 24, padding: 16, borderRadius: 6, background: summaryBg, textAlign: "center", fontWeight: 600, fontSize: 'var(--ds-font-size-400)' }}>
           Layer 1: {passCount(1)}/{totalForLayer(1)} PASS &nbsp;|&nbsp;
           Layer 2: {passCount(2)}/{totalForLayer(2)} PASS &nbsp;|&nbsp;
           Layer 3: {passCount(3)}/{totalForLayer(3)} PASS &nbsp;|&nbsp;

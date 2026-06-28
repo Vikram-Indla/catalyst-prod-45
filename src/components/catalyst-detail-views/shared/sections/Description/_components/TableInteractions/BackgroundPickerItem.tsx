@@ -95,7 +95,7 @@ export function BackgroundPickerItem({
           color: disabled
             ? 'var(--ds-text-disabled, #B3B9C4)'
             : 'var(--ds-text, #292A2E)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 400,
           cursor: disabled ? 'not-allowed' : 'pointer',
           textAlign: 'start',

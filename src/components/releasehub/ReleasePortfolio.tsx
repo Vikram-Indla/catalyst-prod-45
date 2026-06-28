@@ -68,11 +68,11 @@ function ReleaseRow({ r, onOpen }: { r: ReleasePortfolioRow; onOpen: (id: string
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: isTerminal || isDraft ? T.subtle : T.text }}>{r.name}</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isTerminal || isDraft ? T.subtle : T.text }}>{r.name}</span>
           {r.targetEnv && <StatusLozenge appearance={ENV_APPEARANCE[r.targetEnv] ?? 'inprogress'} label={titleCase(r.targetEnv)} />}
-          {r.health === 'at_risk' && !isTerminal && <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.warning }}>at risk</span>}
+          {r.health === 'at_risk' && !isTerminal && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.warning }}>at risk</span>}
         </div>
-        <div style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+        <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
           {isDraft ? (
             <span>Draft · go-live not set{r.scopeItems === 0 ? ' · no scope' : ''}</span>
           ) : (
@@ -95,12 +95,12 @@ function ReleaseRow({ r, onOpen }: { r: ReleasePortfolioRow; onOpen: (id: string
         )}
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: c.fg, background: c.bg, padding: '4px 8px', borderRadius: 12, whiteSpace: 'nowrap' }}>{CONFIDENCE_LABEL[r.confidence]}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: c.fg, background: c.bg, padding: '4px 8px', borderRadius: 12, whiteSpace: 'nowrap' }}>{CONFIDENCE_LABEL[r.confidence]}</span>
         {!isDraft && r.signoffTotal > 0 && (
-          <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest, marginTop: 4 }}>sign-offs {r.signoffDone} / {r.signoffTotal}{!isTerminal ? ` · ${pct}%` : ''}</div>
+          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, marginTop: 4 }}>sign-offs {r.signoffDone} / {r.signoffTotal}{!isTerminal ? ` · ${pct}%` : ''}</div>
         )}
         {!isDraft && r.signoffTotal === 0 && !isTerminal && (
-          <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest, marginTop: 4 }}>{pct}%</div>
+          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, marginTop: 4 }}>{pct}%</div>
         )}
       </div>
     </div>
@@ -115,13 +115,13 @@ export function ReleasePortfolio() {
   return (
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-        <span style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text }}>Release portfolio</span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>confidence = dates · sign-offs · quality · readiness</span>
+        <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text }}>Release portfolio</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>confidence = dates · sign-offs · quality · readiness</span>
       </div>
       {isLoading ? (
-        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>Loading…</div>
+        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>Loading…</div>
       ) : rows.length === 0 ? (
-        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>No releases</div>
+        <div style={{ padding: 32, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>No releases</div>
       ) : (
         rows.map((r) => <ReleaseRow key={r.id} r={r} onOpen={onOpen} />)
       )}

@@ -239,10 +239,10 @@ export default function ProjectListPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center" style={{ padding: '80px 40px', background: T.cardBg, border: `1px solid ${T.border}`, borderRadius: 8 }}>
             <FolderKanban size={48} style={{ color: T.t4 }} strokeWidth={1.25} />
-            <h3 style={{ fontSize: 18, fontWeight: 600, color: T.t1, marginTop: 16, fontFamily: 'var(--cp-font-heading)' }}>
+            <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: T.t1, marginTop: 16, fontFamily: 'var(--cp-font-heading)' }}>
               {hasFilters ? 'No projects match your filters' : 'No projects yet'}
             </h3>
-            <p style={{ fontSize: 14, color: T.t2, marginTop: 4, textAlign: 'center', maxWidth: 360 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: T.t2, marginTop: 4, textAlign: 'center', maxWidth: 360 }}>
               {hasFilters
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Projects help you organize and track work across your team.'}
@@ -251,7 +251,7 @@ export default function ProjectListPage() {
               <button
                 onClick={onNewProject}
                 className="flex items-center gap-1.5 mt-6 rounded-md transition-all"
-                style={{ height: 50, padding: '0 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                style={{ height: 50, padding: '0 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
               >
@@ -268,7 +268,7 @@ export default function ProjectListPage() {
 
         {/* Pagination */}
         {filtered.length > 0 && (
-          <div className="flex items-center justify-between mt-4" style={{ fontSize: 12, color: T.t3 }}>
+          <div className="flex items-center justify-between mt-4" style={{ fontSize: 'var(--ds-font-size-200)', color: T.t3 }}>
             <span>
               Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects
             </span>
@@ -280,7 +280,7 @@ export default function ProjectListPage() {
                 const pageNum = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
                 return (
                   <button key={pageNum} onClick={() => setPage(pageNum)} className="flex items-center justify-center rounded transition-colors"
-                    style={{ width: 28, height: 28, border: pageNum === page ? 'none' : `1px solid ${T.border}`, background: pageNum === page ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-bg-elevated)', color: pageNum === page ? 'var(--ds-surface, #FFF)' : T.t2, fontSize: 12, fontWeight: pageNum === page ? 600 : 400, cursor: 'pointer' }}
+                    style={{ width: 28, height: 28, border: pageNum === page ? 'none' : `1px solid ${T.border}`, background: pageNum === page ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-bg-elevated)', color: pageNum === page ? 'var(--ds-surface, #FFF)' : T.t2, fontSize: 'var(--ds-font-size-200)', fontWeight: pageNum === page ? 600 : 400, cursor: 'pointer' }}
                   >
                     {pageNum + 1}
                   </button>
@@ -289,7 +289,7 @@ export default function ProjectListPage() {
               <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: `1px solid ${T.border}`, background: 'var(--cp-bg-elevated)', cursor: 'pointer' }}>
                 <ChevronRightIcon size={14} style={{ color: T.t2 }} />
               </button>
-              <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: `1px solid ${T.border}`, fontSize: 12, color: T.t2, background: 'var(--cp-bg-elevated)', cursor: 'pointer' }}>
+              <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: `1px solid ${T.border}`, fontSize: 'var(--ds-font-size-200)', color: T.t2, background: 'var(--cp-bg-elevated)', cursor: 'pointer' }}>
                 <option value={25}>25 / page</option>
                 <option value={50}>50 / page</option>
                 <option value={100}>100 / page</option>
@@ -317,7 +317,7 @@ export default function ProjectListPage() {
           >
             <button onClick={() => { navigate(`/project-hub/${ctxMenu.project.key}/dashboard`); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 'var(--ds-font-size-300)', color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -325,7 +325,7 @@ export default function ProjectListPage() {
             </button>
             <button onClick={() => { window.open(`/project-hub/${ctxMenu.project.key}/dashboard`, '_blank'); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 'var(--ds-font-size-300)', color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -333,7 +333,7 @@ export default function ProjectListPage() {
             </button>
             <button onClick={() => { navigator.clipboard.writeText(ctxMenu.project.key); catalystToast.success('Copied'); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 'var(--ds-font-size-300)', color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -342,7 +342,7 @@ export default function ProjectListPage() {
             <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
             <button onClick={() => { toggleStar(ctxMenu.project.id); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 'var(--ds-font-size-300)', color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -352,7 +352,7 @@ export default function ProjectListPage() {
             <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
             <button onClick={() => { archiveProject(ctxMenu.project.id, ctxMenu.project.name); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 50, fontSize: 13, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-err-bg, #FEF2F2)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >

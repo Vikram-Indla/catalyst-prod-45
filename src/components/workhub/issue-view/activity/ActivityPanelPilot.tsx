@@ -144,7 +144,7 @@ function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 background: 'var(--ds-background-neutral-subtle, #F4F5F7)',
                 color: 'var(--ds-text-subtle, #42526E)',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 letterSpacing: 0.5,
                 lineHeight: '14px',

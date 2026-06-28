@@ -178,12 +178,12 @@ export function ProductRoadmapPage() {
     return (
       <div className="flex flex-col h-full" style={{ fontFamily: FONT.body }}>
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${surface.border}`, background: surface.card }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: ink[1], margin: 0 }}>Product Roadmap</h1>
+          <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: ink[1], margin: 0 }}>Product Roadmap</h1>
         </div>
         <div className="flex flex-col items-center justify-center flex-1 gap-3">
           <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: 'var(--cp-danger-light, #FEF2F2)', border: `1px solid ${'var(--cp-danger-light, #FECACA)'}` }}>
             <AlertCircle size={18} style={{ color: 'var(--ds-text-danger, #EF4444)' }} />
-            <span style={{ fontSize: 14, color: 'var(--cp-danger-text, #991B1B)', fontWeight: 500 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-danger-text, #991B1B)', fontWeight: 500 }}>
               Failed to load roadmap data: {(error as Error).message}
             </span>
           </div>
@@ -235,7 +235,7 @@ export function ProductRoadmapPage() {
 
       {isFullscreen && (
         <div className="flex items-center justify-between px-4 py-1.5" style={{ background: surface.page, borderBottom: `1px solid ${surface.border}` }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: ink[1] }}>Product Roadmap</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: ink[1] }}>Product Roadmap</span>
           <button
             onClick={toggleFullscreen}
             className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs font-medium rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
@@ -253,8 +253,8 @@ export function ProductRoadmapPage() {
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center flex-1 gap-4">
           <div style={{ fontSize: 48 }}>📋</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: ink[2] }}>No business requests on the roadmap yet</div>
-          <p style={{ fontSize: 13, fontWeight: 500, color: ink[3], maxWidth: 360, textAlign: 'center' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: ink[2] }}>No business requests on the roadmap yet</div>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: ink[3], maxWidth: 360, textAlign: 'center' }}>
             Add your first business request from the product backlog to get started.
           </p>
           <button

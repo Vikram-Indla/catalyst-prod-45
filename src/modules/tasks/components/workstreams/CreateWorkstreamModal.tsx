@@ -391,7 +391,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                                 style={{ 
                                   background: 'var(--ds-text-warning, #f59e0b)', 
                                   color: 'white', 
-                                  fontSize: '10px', 
+                                  fontSize: 'var(--ds-font-size-50)', 
                                   fontWeight: 600 
                                 }}
                               >
@@ -405,7 +405,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                                 style={{ 
                                   background: 'var(--ds-background-neutral, #f3f4f6)',
                                   color: 'var(--ds-text-subtlest, #6b7280)',
-                                  fontSize: '9px', 
+                                  fontSize: 'var(--ds-font-size-100)', 
                                   fontWeight: 500 
                                 }}
                               >
@@ -432,7 +432,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                               }}
                             />
                           </div>
-                          <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, #9ca3af)' }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, #9ca3af)' }}>
                             {resource.capacity}%
                           </span>
                         </div>
@@ -498,7 +498,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                                 className="w-5 h-5 rounded-full flex items-center justify-center text-white"
                                 style={{ 
                                   background: getAvatarColor(resource.name),
-                                  fontSize: '9px',
+                                  fontSize: 'var(--ds-font-size-100)',
                                   fontWeight: 600
                                 }}
                               >

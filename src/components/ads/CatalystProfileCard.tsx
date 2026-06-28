@@ -27,9 +27,9 @@ export function CatalystProfileCard({
     <div style={{ display: 'flex', gap: 12, alignItems: 'center', padding: 4 }}>
       <CatalystAvatar name={name} src={avatarUrl} size="medium" />
       <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{name}</div>
-        {role && <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{role}</div>}
-        {email && <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>{email}</div>}
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{name}</div>
+        {role && <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{role}</div>}
+        {email && <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>{email}</div>}
       </div>
     </div>
   );

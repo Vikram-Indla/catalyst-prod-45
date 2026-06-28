@@ -234,13 +234,13 @@ export function HuddleScreenView() {
       }}
     >
       <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-icon-success, #22A06B)', flex: '0 0 auto' }} />
-      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {title}
       </span>
       <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         {localSharing && (
           <button type="button" data-huddle-btn onClick={() => { void stopScreen(); }}
-            style={{ border: 'none', cursor: 'pointer', borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600,
+            style={{ border: 'none', cursor: 'pointer', borderRadius: 6, padding: '3px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
               background: 'var(--ds-background-danger-bold, #C9372C)', color: 'var(--ds-text-inverse, #FFFFFF)', marginRight: 4 }}>
             Stop
           </button>

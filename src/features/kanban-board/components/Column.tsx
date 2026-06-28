@@ -32,14 +32,14 @@ export const ColumnHeader: React.FC<{ column: KanbanColumn; count: number }> = (
       height: SIZES.COLUMN_HEADER_HEIGHT, padding: '12px 12px 8px 12px',
     }}>
       <span style={{
-        fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.3,
+        fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.3,
         color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, lineHeight: '16px',
       }}>
         {column.name}
       </span>
       <span style={{
-        fontSize: 12, fontWeight: 500, lineHeight: '16px', flexShrink: 0, color: countColor,
+        fontSize: 'var(--ds-font-size-200)', fontWeight: 500, lineHeight: '16px', flexShrink: 0, color: countColor,
         background: wip === 'normal' ? token('color.background.neutral', '#091E420F') : 'transparent',
         borderRadius: 10, padding: '0 6px', minWidth: 18, textAlign: 'center',
       }}>

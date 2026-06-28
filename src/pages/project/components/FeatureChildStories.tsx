@@ -312,7 +312,7 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
                       <div className={styles.assigneeCell}>
                         {story.assignee ? (
                           <>
-                            <div className={styles.avatar} style={{ width: 24, height: 24, fontSize: 10 }}>
+                            <div className={styles.avatar} style={{ width: 24, height: 24, fontSize: 'var(--ds-font-size-50)' }}>
                               {getInitials(story.assignee.full_name)}
                             </div>
                             <span>{story.assignee.full_name}</span>

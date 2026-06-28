@@ -57,7 +57,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
 function ToggleRow({ label, checked, onChange, tk }: { label: string; checked: boolean; onChange: (v: boolean) => void; tk: KanbanThemeTokens }) {
   return (
     <div className="flex items-center justify-between" style={{ padding: '8px 0' }}>
-      <span style={{ fontSize: 14, color: tk.textSecondary, fontFamily: 'var(--cp-font-body)' }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: tk.textSecondary, fontFamily: 'var(--cp-font-body)' }}>{label}</span>
       <Toggle checked={checked} onChange={onChange} tk={tk} />
     </div>
   );
@@ -67,7 +67,7 @@ function ToggleRow({ label, checked, onChange, tk }: { label: string; checked: b
 function SectionHeader({ title, tk }: { title: string; tk: KanbanThemeTokens }) {
   return (
     <div style={{
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       color: tk.textMuted, letterSpacing: '0.06em',
       padding: '10px 0 4px',
       fontFamily: 'var(--cp-font-heading)',
@@ -148,7 +148,7 @@ export function ViewSettingsPanel({
     >
       {/* Header */}
       <div style={{
-        fontSize: 14, fontWeight: 600, color: tk.textPrimary,
+        fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary,
         fontFamily: 'var(--cp-font-heading)', marginBottom: 4,
       }}>
         View settings
@@ -190,7 +190,7 @@ export function ViewSettingsPanel({
                     flex: 1,
                     height: 28,
                     padding: '0 8px',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: selected ? 600 : 500,
                     color: selected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textSecondary,
                     background: selected ? tk.selectedAccent : tk.chipBg,
@@ -248,7 +248,7 @@ export function ViewSettingsPanel({
               onClick={() => onUpdate({ cardColorMode: value })}
               style={{
                 flex: 1, height: 28, padding: '0 8px',
-                fontSize: 12, fontWeight: active ? 600 : 500,
+                fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 500,
                 color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textSecondary,
                 background: active ? tk.selectedAccent : tk.chipBg,
                 border: `1px solid ${active ? tk.selectedAccent : tk.border}`,
@@ -273,7 +273,7 @@ export function ViewSettingsPanel({
               onClick={canExpandAll ? onExpandAll : undefined}
               disabled={!canExpandAll}
               style={{
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: canExpandAll ? tk.selectedAccent : tk.textMuted,
                 background: 'none',
                 border: 'none',
@@ -291,7 +291,7 @@ export function ViewSettingsPanel({
               onClick={canCollapseAll ? onCollapseAll : undefined}
               disabled={!canCollapseAll}
               style={{
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: canCollapseAll ? tk.selectedAccent : tk.textMuted,
                 background: 'none',
                 border: 'none',

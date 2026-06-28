@@ -59,7 +59,7 @@ export function ThemeToolbar(props: Props) {
           onChange={e => props.onSearchChange(e.target.value)}
           className="w-full"
           style={{
-            fontSize: 12, height: 32, borderRadius: 6,
+            fontSize: 'var(--ds-font-size-200)', height: 32, borderRadius: 6,
             border: `1px solid ${borderColor}`,
             background: isDark ? DK.bg : 'var(--bg-app)',
             color: isDark ? DK.t1 : 'var(--fg-2)',
@@ -194,7 +194,7 @@ export function ThemeToolbar(props: Props) {
             background: 'var(--cp-blue)',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
             borderRadius: 20, padding: '0 16px', height: 32,
-            fontSize: 12, fontWeight: 600, letterSpacing: '0.3px',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, letterSpacing: '0.3px',
             cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
             transition: 'all 200ms ease',
@@ -214,7 +214,7 @@ export function ThemeToolbar(props: Props) {
       <button
         className="flex items-center gap-1.5 rounded-md"
         style={{
-          fontSize: 12, fontWeight: 500, height: 32,
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 500, height: 32,
           padding: '8px 12px',
           border: `1px solid ${borderColor}`,
           background: isDark ? 'transparent' : 'var(--bg-app)',
@@ -230,7 +230,7 @@ export function ThemeToolbar(props: Props) {
         onClick={props.onNewTheme}
         className="flex items-center gap-1.5 rounded-md"
         style={{
-          fontSize: 12, fontWeight: 600, height: 32,
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 600, height: 32,
           padding: '0 14px', border: 'none',
           background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
           borderRadius: 6,

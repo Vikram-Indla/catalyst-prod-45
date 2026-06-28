@@ -49,12 +49,12 @@ interface DisplayProps {
  * canonical Atlassian alignment and the picker is the column anchor.
  * 2026-05-31 right-rail alignment fix (iteration 2). */
 const VALUE_STYLE: React.CSSProperties = {
-  fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
+  fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
   fontFamily: 'inherit',
   paddingInlineStart: 8,
 };
 const EMPTY_STYLE: React.CSSProperties = {
-  fontSize: 14, lineHeight: '20px', color: 'var(--ds-text-subtle, #6B6E76)',
+  fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', color: 'var(--ds-text-subtle, #6B6E76)',
   fontFamily: 'inherit',
   paddingInlineStart: 8,
 };

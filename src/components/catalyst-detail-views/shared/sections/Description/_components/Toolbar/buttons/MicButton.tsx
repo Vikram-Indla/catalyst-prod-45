@@ -70,7 +70,7 @@ export function MicButton({
                     padding: '2px 8px',
                     border: 'none',
                     borderRadius: 999,
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: sel ? 600 : 400,
                     background: sel
                       ? 'var(--ds-background-selected, #E9F2FE)'

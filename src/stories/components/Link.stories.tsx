@@ -23,7 +23,7 @@ export const External: Story = {
 
 export const InContext: Story = {
   render: () => (
-    <p style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
+    <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>
       This issue is tracked in <CatalystLink href="/project-hub/BAU/backlog">BAU-5757</CatalystLink> and
       linked to <CatalystLink href="https://digital-transformation.atlassian.net" isExternal>Jira</CatalystLink>.
     </p>

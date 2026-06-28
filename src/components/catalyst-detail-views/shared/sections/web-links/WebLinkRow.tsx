@@ -142,7 +142,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
             flex: '0 1 auto',
             minWidth: 0,
             maxWidth: '100%',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: linkHovered
               ? 'var(--ds-text-subtle, #6B6E76)'
               : 'var(--ds-text, #292A2E)',
@@ -230,7 +230,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
               style={{
                 flex: 1,
                 minWidth: 0,
-                fontSize: 15,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
                 color: 'var(--ds-link, #0052CC)',
                 textDecoration: 'none',
@@ -246,7 +246,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
           {/* Static descriptive blurb (spec point #6). */}
           <div
             style={{
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--ds-text-subtle, #505258)',
               lineHeight: '18px',
               wordBreak: 'break-word',
@@ -273,7 +273,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
                   ? 'var(--ds-background-neutral-hovered, #F1F2F4)'
                   : 'transparent',
                 color: 'var(--ds-text, #292A2E)',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontFamily: 'inherit',
                 cursor: 'pointer',
                 borderRadius: 3,

@@ -160,7 +160,7 @@ export function ProfileMenu() {
           <div style={{ minWidth: 0, flex: 1 }}>
             <div
               style={{
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
                 color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                 whiteSpace: 'nowrap',
@@ -172,7 +172,7 @@ export function ProfileMenu() {
             </div>
             <div
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -188,7 +188,7 @@ export function ProfileMenu() {
           <DropdownMenuLabel
             style={{
               padding: '4px 12px',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               letterSpacing: '0.06em',
               color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),

@@ -35,7 +35,7 @@ function MetricCard({ label, value, sub, highlight = 'neutral' }: Metric) {
     >
       <span
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
           color: 'var(--ds-text-subtlest)',
           letterSpacing: '0.05em',
@@ -47,7 +47,7 @@ function MetricCard({ label, value, sub, highlight = 'neutral' }: Metric) {
       </span>
       <span
         style={{
-          fontSize: 22,
+          fontSize: 'var(--ds-font-size-700)',
           fontWeight: 700,
           color: HIGHLIGHT_COLOR[highlight],
           lineHeight: 1.1,
@@ -57,7 +57,7 @@ function MetricCard({ label, value, sub, highlight = 'neutral' }: Metric) {
         {value}
       </span>
       {sub && (
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', lineHeight: 1.2 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', lineHeight: 1.2 }}>
           {sub}
         </span>
       )}

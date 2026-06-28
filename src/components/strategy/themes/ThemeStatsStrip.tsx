@@ -88,7 +88,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
         >
           <div className="flex items-start justify-between mb-2">
             <span style={{
-              fontSize: 11, fontWeight: 600,
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: isDark ? DK.t2 : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
               letterSpacing: '0.5px',
             }}>{c.label}</span>
@@ -100,12 +100,12 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
             </div>
           </div>
           <p style={{
-            fontSize: 26, fontWeight: 800,
+            fontSize: 'var(--ds-font-size-800)', fontWeight: 800,
             color: (c as any).valueColor || (isDark ? DK.t1 : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))'),
             lineHeight: 1.1, marginBottom: 4, letterSpacing: '-0.5px',
           }}>{c.value}</p>
           <p style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             color: (c as any).subColor || (isDark ? DK.t2 : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'),
           }}>{c.sub}</p>
         </div>

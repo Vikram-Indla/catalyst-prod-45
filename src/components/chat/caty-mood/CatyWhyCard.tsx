@@ -142,10 +142,10 @@ export function CatyWhyCard({
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, marginBottom: 4 }}>
               <Lozenge appearance={style.appearance}>{style.label}</Lozenge>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)' }}>
               {mood.message}
             </div>
           </div>
@@ -174,7 +174,7 @@ export function CatyWhyCard({
                 background: 'var(--ds-background-information-subtle, #DFFCF0)',
                 border: '1px solid var(--ds-border-information, #85E6C5)',
                 borderRadius: 6,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text, #172B4D)',
                 cursor: 'pointer',
                 fontWeight: 500,
@@ -184,7 +184,7 @@ export function CatyWhyCard({
             </button>
           ))
         ) : (
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>No updates</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>No updates</div>
         )}
       </div>
 
@@ -196,7 +196,7 @@ export function CatyWhyCard({
           background: 'var(--ds-background-danger-subtle, #FFECEB)',
           border: '1px solid var(--ds-border-danger, #F87462)',
           borderRadius: 4,
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           color: 'var(--ds-text-danger, #AE2A19)',
           fontFamily: 'var(--ds-font-family-body, inherit)',
         }}>
@@ -234,14 +234,14 @@ export function CatyWhyCard({
           catalystToast.info('Alert muted until tomorrow');
           onClose();
         }}
-        style={{ width: '100%', marginBottom: 12, fontSize: 12 }}
+        style={{ width: '100%', marginBottom: 12, fontSize: 'var(--ds-font-size-200)' }}
       >
         Dismiss for 24 hours
       </Button>
 
       {/* Help text */}
       <div style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         color: 'var(--ds-text-subtlest, #6B778C)',
         fontFamily: 'var(--ds-font-family-body, inherit)',
         lineHeight: '1.4',

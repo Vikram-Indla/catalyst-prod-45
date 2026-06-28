@@ -638,7 +638,7 @@ function InlineCreateCardComponent({
             color: 'var(--ds-text-danger, #AE2A19)',
             padding: '4px 6px',
             borderRadius: 3,
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
           }}
         >
           {error}
@@ -667,7 +667,7 @@ function InlineCreateCardComponent({
           outline: 'none',
           background: 'transparent',
           resize: 'none',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           lineHeight: '20px',
           fontFamily: 'var(--cp-font-body)',
           color: 'var(--ds-text, #292A2E)',
@@ -708,7 +708,7 @@ function InlineCreateCardComponent({
                     width: '100%', padding: '8px 12px',
                     border: 'none', background: 'transparent',
                     cursor: 'pointer', textAlign: 'left',
-                    fontSize: 13, color: 'var(--ds-text, #292A2E)',
+                    fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)',
                     fontFamily: 'var(--cp-font-body)',
                   }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
@@ -750,7 +750,7 @@ function InlineCreateCardComponent({
               <path d="M5 1.5v3M11 1.5v3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
             </svg>
             {dueDate && (
-              <span style={{ fontSize: 12, fontWeight: 500 }}>{formatDueDate(dueDate)}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500 }}>{formatDueDate(dueDate)}</span>
             )}
           </button>
           <SmartPopover isOpen={showDatePicker} triggerRef={dateTriggerRef}>
@@ -808,7 +808,7 @@ function InlineCreateCardComponent({
                       background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
                       color: 'var(--ds-text, #172B4D)',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, fontWeight: 700,
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                     }}
                   >
                     {assigneeName.slice(0, 1).toUpperCase()}
@@ -831,7 +831,7 @@ function InlineCreateCardComponent({
                   style={{
                     width: '100%', padding: '6px 8px',
                     border: '1px solid var(--ds-border, #DFE1E6)',
-                    borderRadius: 4, fontSize: 13,
+                    borderRadius: 4, fontSize: 'var(--ds-font-size-300)',
                     fontFamily: 'var(--cp-font-body)', outline: 'none',
                   }}
                 />
@@ -851,7 +851,7 @@ function InlineCreateCardComponent({
                       width: '100%', padding: '8px 12px',
                       border: 'none', background: 'transparent',
                       cursor: 'pointer', textAlign: 'left',
-                      fontSize: 13, color: 'var(--ds-text-subtle, #44546F)',
+                      fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)',
                       fontFamily: 'var(--cp-font-body)',
                     }}
                     onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
@@ -877,7 +877,7 @@ function InlineCreateCardComponent({
                           width: '100%', padding: '8px 12px',
                           border: 'none', background: 'transparent',
                           cursor: 'pointer', textAlign: 'left',
-                          fontSize: 13, color: 'var(--ds-text, #292A2E)',
+                          fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)',
                           fontFamily: 'var(--cp-font-body)',
                         }}
                         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-information, #E9F2FE)'; }}
@@ -892,7 +892,7 @@ function InlineCreateCardComponent({
                               background: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
                               color: 'var(--ds-text, #172B4D)',
                               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                              fontSize: 11, fontWeight: 700,
+                              fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                             }}
                           >
                             {option.name.slice(0, 1).toUpperCase()}
@@ -903,11 +903,11 @@ function InlineCreateCardComponent({
                     );
                   })
                 ) : assigneeOptions.length === 0 ? (
-                  <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>
                     No assignees available
                   </div>
                 ) : (
-                  <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>
                     No results for "{assigneeSearch}"
                   </div>
                 )}

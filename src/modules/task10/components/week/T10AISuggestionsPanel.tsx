@@ -68,7 +68,7 @@ export function T10AISuggestionsPanel({
                   gap: 4, 
                   marginLeft: 8,
                   padding: '2px 8px',
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
                   background: 'var(--ds-background-discovery, #F3F0FF)',
                   color: 'var(--ds-background-discovery-bold, #7C3AED)',
@@ -115,7 +115,7 @@ export function T10AISuggestionsPanel({
             gap: 10,
             padding: '12px 16px',
             marginBottom: 12,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtlest, #64748b)',
             background: 'var(--ds-surface-sunken, #f1f5f9)',
             borderRadius: 8
@@ -174,7 +174,7 @@ export function T10AISuggestionsPanel({
                       alignItems: 'center', 
                       gap: 6, 
                       marginTop: 6,
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       color: 'var(--ds-background-discovery-bold, #7C3AED)'
                     }}>
                       <Sparkles size={12} />
@@ -189,7 +189,7 @@ export function T10AISuggestionsPanel({
                   alignItems: 'center',
                   gap: 6,
                   padding: '8px 14px',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
                   color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                   background: 'var(--ds-background-selected, #eff6ff)',

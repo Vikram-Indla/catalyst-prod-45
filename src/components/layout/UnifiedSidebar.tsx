@@ -369,7 +369,7 @@ export function UnifiedSidebar({
                     {item.badge && (
                       <span style={{ 
                         padding: '2px 6px', 
-                        fontSize: '11px', 
+                        fontSize: 'var(--ds-font-size-100)', 
                         fontWeight: 600, 
                         background: 'hsl(var(--brand-primary))', 
                         color: 'var(--bg-app)',
@@ -416,7 +416,7 @@ export function UnifiedSidebar({
                 border: 'none',
                 background: 'transparent',
                 color: 'hsl(var(--foreground))',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 400,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',

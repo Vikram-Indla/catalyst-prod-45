@@ -124,7 +124,7 @@ export function ReleaseTimeline() {
         <div style={{
           width: NAME_W, flexShrink: 0, padding: '0 10px 0 16px',
           fontFamily: RH.fontBody,
-          fontSize: 12, fontWeight: dimmed ? 400 : 500,
+          fontSize: 'var(--ds-font-size-200)', fontWeight: dimmed ? 400 : 500,
           color: dimmed ? T.subtlest : T.text,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
@@ -175,7 +175,7 @@ export function ReleaseTimeline() {
               position: 'absolute',
               left: `calc(${barRight * 100}% + 5px)`,
               fontFamily: RH.fontBody,
-              fontSize: 10, color: T.subtlest, whiteSpace: 'nowrap', zIndex: 3,
+              fontSize: 'var(--ds-font-size-50)', color: T.subtlest, whiteSpace: 'nowrap', zIndex: 3,
             }}>
               {format(new Date(release.goLiveDate), 'MMM d')}
             </span>
@@ -190,7 +190,7 @@ export function ReleaseTimeline() {
           {release.scopeItems > 0 && (
             <span style={{
               fontFamily: RH.fontBody,
-              fontSize: 10, fontWeight: 600, borderRadius: 10, padding: '1px 7px',
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 600, borderRadius: 10, padding: '1px 7px',
               background: dimmed ? T.neutral : style.badge.bg,
               color: dimmed ? T.subtle : style.badge.text,
               whiteSpace: 'nowrap',
@@ -199,7 +199,7 @@ export function ReleaseTimeline() {
             </span>
           )}
           <span style={{
-            fontSize: 12, color: T.link, fontWeight: 700,
+            fontSize: 'var(--ds-font-size-200)', color: T.link, fontWeight: 700,
             opacity: isHovered ? 1 : 0.15, transition: 'opacity 0.1s',
           }}>↗</span>
         </div>
@@ -215,13 +215,13 @@ export function ReleaseTimeline() {
         padding: '10px 16px', borderBottom: `1px solid ${T.border}`,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text }}>
+          <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>
             Release Timeline
           </span>
           {freezes.length > 0 && (
             <span style={{
               fontFamily: RH.fontBody,
-              fontSize: 10, fontWeight: 600, color: T.danger,
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.danger,
               background: T.dangerBg, border: `1px solid ${T.dangerBorder}`,
               borderRadius: 3, padding: '1px 6px',
             }}>
@@ -233,7 +233,7 @@ export function ReleaseTimeline() {
               onClick={() => setShowPast(v => !v)}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                fontSize: 11, color: T.link, fontFamily: 'inherit', fontWeight: 500,
+                fontSize: 'var(--ds-font-size-100)', color: T.link, fontFamily: 'inherit', fontWeight: 500,
                 display: 'flex', alignItems: 'center', gap: 3,
               }}
             >
@@ -241,7 +241,7 @@ export function ReleaseTimeline() {
             </button>
           )}
         </div>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
           {format(rangeStart, 'MMM d')} – {format(rangeEnd, 'MMM d, yyyy')}
         </span>
       </div>
@@ -268,7 +268,7 @@ export function ReleaseTimeline() {
           }}>
             <span style={{
               fontFamily: RH.fontBody,
-              fontSize: 10, fontWeight: 600, color: T.subtlest,
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.subtlest,
               letterSpacing: '0.06em', textTransform: 'uppercase',
             }}>
               Release
@@ -281,7 +281,7 @@ export function ReleaseTimeline() {
                 left: `${toRatio(tick) * 100}%`,
                 transform: 'translateX(-50%)',
                 fontFamily: RH.fontBody,
-                fontSize: 10, whiteSpace: 'nowrap',
+                fontSize: 'var(--ds-font-size-50)', whiteSpace: 'nowrap',
                 color: Math.abs(differenceInDays(tick, today)) <= 3 ? T.link : T.subtlest,
                 fontWeight: Math.abs(differenceInDays(tick, today)) <= 3 ? 700 : 400,
               }}>
@@ -302,8 +302,8 @@ export function ReleaseTimeline() {
               background: T.sunken, cursor: 'pointer', padding: '0 16px',
             }}
           >
-            <span style={{ fontSize: 9, color: T.subtlest }}>{effectiveShowPast ? '▼' : '▶'}</span>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 600, color: T.subtlest, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{effectiveShowPast ? '▼' : '▶'}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.subtlest, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               {noUpcoming
                 ? `Released — showing ${shownPast.length} of ${past.length}`
                 : `Released — ${past.length}`}
@@ -325,7 +325,7 @@ export function ReleaseTimeline() {
             top: '50%', transform: 'translate(-50%, -50%)',
             background: T.link, color: 'var(--ds-surface, #FFFFFF)',
             fontFamily: RH.fontBody,
-            fontSize: 9, fontWeight: 800, padding: '1px 6px',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '1px 6px',
             borderRadius: 2, letterSpacing: '0.07em', whiteSpace: 'nowrap',
             zIndex: 6,
           }}>
@@ -341,7 +341,7 @@ export function ReleaseTimeline() {
             padding: '0 16px',
           }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-border, #DFE1E6)', flexShrink: 0 }} />
-            <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, fontStyle: 'italic' }}>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, fontStyle: 'italic' }}>
               No active release in progress
             </span>
           </div>
@@ -360,17 +360,17 @@ export function ReleaseTimeline() {
         {Object.entries(BAR).map(([key, { bar, label }]) => (
           <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 12, height: 8, borderRadius: 2, background: bar, flexShrink: 0 }} />
-            <span style={{ fontFamily: RH.fontBody, fontSize: 10, color: T.subtle }}>{label}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>{label}</span>
           </div>
         ))}
         {freezes.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 12, height: 8, borderRadius: 2, background: T.dangerBorder, flexShrink: 0 }} />
-            <span style={{ fontFamily: RH.fontBody, fontSize: 10, color: T.danger }}>Freeze</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.danger }}>Freeze</span>
           </div>
         )}
         <div style={{ flex: 1 }} />
-        <span style={{ fontFamily: RH.fontBody, fontSize: 10, color: T.subtlest, fontStyle: 'italic' }}>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest, fontStyle: 'italic' }}>
           Click release → opens filter module
         </span>
       </div>

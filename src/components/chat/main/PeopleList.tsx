@@ -103,7 +103,7 @@ export function PeopleList({ onConversationCreated }: PeopleListProps) {
               border: 'none',
               outline: 'none',
               background: 'transparent',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--ds-text, #172B4D)',
               padding: 0,
             }}

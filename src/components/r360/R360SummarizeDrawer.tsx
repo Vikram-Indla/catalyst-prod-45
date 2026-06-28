@@ -272,7 +272,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
     return (
       <div style={{ padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
         <Spinner size="large" />
-        <span style={{ fontSize: 14, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
           Generating summary...
         </span>
       </div>
@@ -287,7 +287,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
           borderRadius: 8,
           background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
           color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
         }}>
           {error}
         </div>
@@ -301,7 +301,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 20, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
           ✦ Ask Caty — Summarize
         </span>
         <button
@@ -310,7 +310,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            fontSize: 20,
+            fontSize: 'var(--ds-font-size-700)',
             color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             padding: 4,
             lineHeight: 1,
@@ -326,10 +326,10 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
 
       {/* Sub-header */}
       <div style={{ padding: '16px 24px 8px' }}>
-        <div style={{ fontSize: 16, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
           Work summary for {summary.resourceName}
         </div>
-        <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 4 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 4 }}>
           Generated {generatedLabel} · Based on {summary.totalItems} items
           {fromCache && ' · Cached'}
         </div>
@@ -345,7 +345,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
           padding: 16,
           marginBottom: 16,
         }}>
-          <div style={{ fontSize: 12, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 8 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 8 }}>
             Capacity snapshot
           </div>
           <div style={{ display: 'flex', gap: 24, marginBottom: 8 }}>
@@ -367,7 +367,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
         {/* Recommendations */}
         {summary.recommendations.length > 0 && (
           <div style={{ marginTop: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
               Recommendations
             </div>
             {summary.recommendations.map((rec, i) => (
@@ -379,7 +379,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
                   marginBottom: 8,
                   borderRadius: '0 4px 4px 0',
                   background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: token('color.text', 'var(--ds-text, #172B4D)'),
                 }}
               >
@@ -391,7 +391,7 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
 
         {/* Cache indicator */}
         <div style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
           marginTop: 16,
           textAlign: 'center',
@@ -406,10 +406,10 @@ export default function R360SummarizeDrawer({ resourceId, onClose }: R360Summari
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div>
-      <div style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+      <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
         {value}
       </div>
-      <div style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
         {label}
       </div>
     </div>
@@ -445,10 +445,10 @@ function ProjectCard({ project }: { project: ProjectSummary }) {
       marginBottom: 8,
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
           {project.projectKey}
         </span>
-        <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
           {project.total} items
         </span>
       </div>
@@ -472,7 +472,7 @@ function ProjectCard({ project }: { project: ProjectSummary }) {
         <div
           key={item.key}
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: token('color.text', 'var(--ds-text, #172B4D)'),
             padding: '2px 0',
             whiteSpace: 'nowrap',
@@ -501,7 +501,7 @@ function StatusDot({ color, label, count }: { color: string; label: string; coun
         background: color,
         flexShrink: 0,
       }} />
-      <span style={{ fontSize: 12, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
         {count} {label}
       </span>
     </div>

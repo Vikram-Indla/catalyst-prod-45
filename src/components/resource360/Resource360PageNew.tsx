@@ -66,8 +66,8 @@ export default function Resource360PageNew() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)' }}>
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: 40, marginBottom: 8 }}>👤</p>
-          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-2)' }}>No resource selected</p>
-          <p style={{ fontSize: 13, color: 'var(--fg-4)', marginTop: 4 }}>Select a team member to view their 360° workload</p>
+          <p style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--fg-2)' }}>No resource selected</p>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)', marginTop: 4 }}>Select a team member to view their 360° workload</p>
         </div>
       </div>
     );
@@ -85,7 +85,7 @@ export default function Resource360PageNew() {
           </div>
         </div>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-1)' }}>
-          <div style={{ textAlign: 'center', color: 'var(--fg-3)', fontSize: 13 }}>Loading Resource 360°...</div>
+          <div style={{ textAlign: 'center', color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-300)' }}>Loading Resource 360°...</div>
         </div>
       </div>
     );
@@ -109,7 +109,7 @@ export default function Resource360PageNew() {
               key={tab.key}
               onClick={() => setActiveView(tab.key)}
               style={{
-                padding: '8px 12px', height: 40, fontSize: 13,
+                padding: '8px 12px', height: 40, fontSize: 'var(--ds-font-size-300)',
                 fontWeight: active ? 700 : 500,
                 color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                 background: 'transparent', border: 'none',
@@ -123,7 +123,7 @@ export default function Resource360PageNew() {
 
         {/* Quarter select */}
         <select style={{
-          height: 28, fontSize: 12, border: '1px solid var(--divider)',
+          height: 28, fontSize: 'var(--ds-font-size-200)', border: '1px solid var(--divider)',
           borderRadius: 6, padding: '0 8px', marginRight: 8,
           background: 'var(--bg-app)', color: 'var(--fg-1)',
           fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
@@ -139,7 +139,7 @@ export default function Resource360PageNew() {
           style={{
             background: 'var(--cp-blue)',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 20,
-            padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
+            padding: '0 16px', height: 32, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
             letterSpacing: '0.3px', cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
             transition: 'all 200ms ease',

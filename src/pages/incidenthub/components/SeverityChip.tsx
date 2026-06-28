@@ -27,7 +27,7 @@ export function SeverityChip({ severity }: SeverityChipProps) {
     <span
       style={{
         height: 18,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.02em',

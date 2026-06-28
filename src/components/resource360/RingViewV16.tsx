@@ -233,7 +233,7 @@ const StatusPill: React.FC<{ status: StatusCat; small?: boolean }> = ({ status, 
       padding: '0 7px', height: h,
     }}>
       <span style={{
-        fontSize: 11, fontWeight: 700, lineHeight: `${h}px`,
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, lineHeight: `${h}px`,
         color: 'var(--ds-text, rgb(41, 42, 46))', textTransform: 'uppercase',
         letterSpacing: '0.06em', whiteSpace: 'nowrap',
       }}>
@@ -261,7 +261,7 @@ const PriorityPill: React.FC<{ priority: string }> = ({ priority }) => {
   return (
     <span style={{
       display: 'inline-block', padding: '1px 6px', borderRadius: 4,
-      fontSize: 9, fontWeight: 700, border: `1px solid ${color}`,
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, border: `1px solid ${color}`,
       color, background: 'transparent', lineHeight: 1.5,
     }}>{priority}</span>
   );
@@ -463,7 +463,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
         display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px',
         background: 'var(--bg-app)', borderBottom: `1px solid ${T.border}`, height: 38, flexShrink: 0,
       }}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>ACTIVE</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>ACTIVE</span>
         <div style={{ display: 'flex', gap: 4 }}>
           {([
             { key: 'all' as const, label: `All (${activeItems.length})` },
@@ -473,7 +473,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
             const active = statusFilter === f.key;
             return (
               <button key={f.key} onClick={() => setStatusFilter(f.key)} style={{
-                height: 26, padding: '0 10px', borderRadius: 9999, fontSize: 11, fontWeight: 600,
+                height: 26, padding: '0 10px', borderRadius: 9999, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                 background: active ? 'transparent' : 'transparent',
                 color: active ? 'var(--cp-blue)' : 'var(--fg-2)',
                 border: `1px solid ${active ? 'var(--cp-blue)' : T.border}`, cursor: 'pointer',
@@ -486,13 +486,13 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
         {/* Search */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', height: 26,
-          border: `1px solid ${T.border}`, borderRadius: 6, background: 'var(--bg-app)', fontSize: 11, color: 'var(--fg-4)',
+          border: `1px solid ${T.border}`, borderRadius: 6, background: 'var(--bg-app)', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)',
         }}>
           <span>Q</span>
           <span>Search… (/)</span>
         </div>
         {/* Pagination */}
-        <span style={{ fontSize: 11, color: 'var(--fg-3)', fontWeight: 600, fontFamily: T.inter }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontWeight: 600, fontFamily: T.inter }}>
           {filteredActive.length} items · Page {ringPage + 1}/{Math.max(1, Math.ceil(filteredActive.length / MAX_PER_PAGE))}
         </span>
         <div style={{ display: 'flex', gap: 2 }}>
@@ -529,10 +529,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Calendar size={16} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)', fontFamily: T.sora }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1)', fontFamily: T.sora }}>
             {currentWeek ? weekLabel(currentWeek.weekStart, weekIdx) : 'No items'}
           </span>
-          <span style={{ fontSize: 12, color: 'var(--fg-3)', fontWeight: 500 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontWeight: 500 }}>
             {currentWeek ? weekRange(currentWeek.weekStart) : ''}
           </span>
         </div>
@@ -624,10 +624,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: '0 0 0 4px var(--ds-surface, #fff), 0 0 0 6px var(--cp-blue), 0 0 20px var(--ds-background-information, rgba(37,99,235,.2))',
               }}>
-                <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>{initials}</span>
+                <span style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>{initials}</span>
               </div>
-              <div style={{ fontFamily: T.sora, fontSize: 12, fontWeight: 700, color: 'var(--fg-1)', marginTop: 6 }}>{resourceName}</div>
-              <div style={{ fontSize: 10, color: 'var(--fg-3)', fontWeight: 500 }}>{resourceRole}</div>
+              <div style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--fg-1)', marginTop: 6 }}>{resourceName}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontWeight: 500 }}>{resourceRole}</div>
             </div>
 
             {/* Orbital cards — percentage positioned */}
@@ -675,21 +675,21 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '1px 6px', borderRadius: 4, background: typeBadge.bg }}>
                         {getJiraIconForType(item.type)}
-                        <span style={{ fontSize: 9, fontWeight: 700, color: typeBadge.color, textTransform: 'uppercase' }}>{item.type}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: typeBadge.color, textTransform: 'uppercase' }}>{item.type}</span>
                       </div>
-                      <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority}</span>
                     </div>
 
                     {/* Row 2: key + project tag + age */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                      <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)' }}>{item.key}</span>
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)' }}>{item.key}</span>
                       {item.projectKey && (
                         <span style={{
-                          fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
+                          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '1px 5px', borderRadius: 4,
                           background: projColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', letterSpacing: '0.02em',
                         }}>{item.projectKey}</span>
                       )}
-                      <span style={{ fontFamily: T.mono, fontSize: 9, color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto' }}>{age}d</span>
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto' }}>{age}d</span>
                     </div>
 
                     {/* Title: 2-line clamp */}
@@ -703,7 +703,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <StatusPill status={item.status} small />
                       {stale && (
-                        <span style={{ fontSize: 9, fontWeight: 700, color: stale === 'critical' ? T.danger : T.warning }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: stale === 'critical' ? T.danger : T.warning }}>
                           {stale === 'critical' ? 'CRITICAL' : 'STALE'}
                         </span>
                       )}
@@ -727,7 +727,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   width: 48, height: 48, borderRadius: '50%',
                   background: 'var(--sem-success)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: T.mono, fontSize: 18, fontWeight: 700,
+                  fontFamily: T.mono, fontSize: 'var(--ds-font-size-600)', fontWeight: 700,
                   boxShadow: '0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))',
                 }}>{doneCount}</div>
                 <span style={{
@@ -753,11 +753,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px',
                 borderBottom: `1px solid ${T.border}`,
               }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)' }}>Completed</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1)' }}>Completed</span>
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   minWidth: 20, height: 18, borderRadius: 8, background: T.done,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))', fontSize: 9, fontWeight: 800, padding: '0 5px',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))', fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '0 5px',
                 }}>{doneCount}</span>
                 <div style={{ flex: 1 }} />
                 <button onClick={closePanel} style={{
@@ -779,10 +779,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     <div style={{ width: 3, height: 28, borderRadius: 4, background: T.done, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: 'var(--fg-1)' }}>{item.key}</span>
+                        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--fg-1)' }}>{item.key}</span>
                         <HubBadge hub={item.hub} />
                       </div>
-                      <div style={{ fontSize: 10, color: 'var(--fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
                     </div>
                   </div>
                 ))}
@@ -811,7 +811,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 </button>
 
                 {/* Key — mono blue */}
-                <div style={{ fontFamily: T.mono, fontSize: 14, fontWeight: 700, color: 'var(--cp-blue)', marginBottom: 8 }}>
+                <div style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cp-blue)', marginBottom: 8 }}>
                   {selectedItem.key}
                 </div>
 
@@ -821,7 +821,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   <PriorityPill priority={selectedItem.priority} />
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 4,
-                    background: getTypeBadgeStyle(selectedItem.type).bg, fontSize: 10, fontWeight: 600,
+                    background: getTypeBadgeStyle(selectedItem.type).bg, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                     color: getTypeBadgeStyle(selectedItem.type).color,
                   }}>
                     {getJiraIconForType(selectedItem.type)}
@@ -829,7 +829,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   </span>
                   {selectedItem.projectKey && (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: 4,
                       background: getProjectColor(selectedItem), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
                     }}>
                       {selectedItem.projectKey}
@@ -839,7 +839,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
                 {/* Title */}
                 <div style={{
-                  fontFamily: T.inter, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)',
+                  fontFamily: T.inter, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)',
                   lineHeight: 1.4,
                 }}>{selectedItem.title}</div>
 
@@ -852,7 +852,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     <div style={{
                       marginTop: 10, padding: '8px 12px', borderRadius: 8,
                       background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid var(--ds-background-danger, #FFECEB)',
-                      fontSize: 12, fontWeight: 600, color: 'var(--sem-danger)',
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--sem-danger)',
                     }}>
                       {s === 'critical' ? 'Critical' : 'Stale'} — {age} days without resolution
                     </div>
@@ -865,11 +865,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
                 {/* Breadcrumb */}
                 {selectedItem.parentKey && (
-                  <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', fontSize: 11 }}>
+                  <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', fontSize: 'var(--ds-font-size-100)' }}>
                     <HubBadge hub={selectedItem.hub} />
-                    <span style={{ fontFamily: T.mono, fontSize: 10, color: 'var(--fg-3)' }}>{selectedItem.parentKey}</span>
-                    <span style={{ color: 'var(--fg-4)', fontSize: 10 }}>›</span>
-                    <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: 'var(--cp-blue)' }}>{selectedItem.key}</span>
+                    <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)' }}>{selectedItem.parentKey}</span>
+                    <span style={{ color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-50)' }}>›</span>
+                    <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-blue)' }}>{selectedItem.key}</span>
                   </div>
                 )}
 
@@ -907,7 +907,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                             borderRight: ci === 0 ? `1px solid ${T.border}` : 'none',
                           }}>
                             <div style={{
-                              fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
+                              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
                               marginBottom: 4, letterSpacing: '0.04em',
                             }}>{cell.label}</div>
                             <div style={{
@@ -942,20 +942,20 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 {/* Hierarchy */}
                 {selectedItem.parentKey && (
                   <div style={{ marginTop: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', marginBottom: 8, letterSpacing: '0.05em' }}>HIERARCHY</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', marginBottom: 8, letterSpacing: '0.05em' }}>HIERARCHY</div>
                     {/* Parent node */}
                     <div style={{
                       padding: '10px 12px', borderRadius: 8, border: `1px solid ${T.border}`, marginBottom: 0,
                       display: 'flex', alignItems: 'center', gap: 8,
                     }}>
                       {getJiraIconForType(selectedItem.type === 'Sub-task' ? 'Story' : 'Epic')}
-                      <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: 'var(--fg-2)' }}>{selectedItem.parentKey}</span>
-                      <span style={{ fontSize: 12, color: 'var(--fg-2)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-2)' }}>{selectedItem.parentKey}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {selectedItem.parentTitle || ''}
                       </span>
                     </div>
                     {/* Connector */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingLeft: 20, color: 'var(--fg-4)', fontSize: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingLeft: 20, color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)' }}>
                       <div style={{ width: 2, height: 12, background: 'var(--divider)' }} />
                     </div>
                     {/* Current node — blue border highlight */}
@@ -965,8 +965,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                       display: 'flex', alignItems: 'center', gap: 8,
                     }}>
                       {getJiraIconForType(selectedItem.type)}
-                      <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)' }}>{selectedItem.key}</span>
-                      <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>Current</span>
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)' }}>{selectedItem.key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>Current</span>
                       <div style={{ marginLeft: 'auto' }}><StatusPill status={selectedItem.status} small /></div>
                     </div>
                   </div>
@@ -980,16 +980,16 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   const sibs = (siblingMap.get(selectedItem.parentKey) || []).filter(s => s.key !== selectedItem.key);
                   if (sibs.length === 0) return (
                     <div style={{ marginTop: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.05em', marginBottom: 8 }}>SIBLINGS</div>
-                      <div style={{ fontSize: 12, color: 'var(--fg-4)' }}>No sibling items</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.05em', marginBottom: 8 }}>SIBLINGS</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>No sibling items</div>
                     </div>
                   );
                   const sibDoneCount = sibs.filter(s => s.status === 'done').length;
                   return (
                     <div style={{ marginTop: 20 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.05em' }}>SIBLINGS</span>
-                        <span style={{ fontFamily: T.mono, fontSize: 10, color: 'var(--fg-3)', marginLeft: 'auto' }}>{sibDoneCount}/{sibs.length} done</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.05em' }}>SIBLINGS</span>
+                        <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', marginLeft: 'auto' }}>{sibDoneCount}/{sibs.length} done</span>
                       </div>
                       <div style={{ height: 4, borderRadius: 4, background: 'var(--divider)', overflow: 'hidden', marginBottom: 8 }}>
                         <div style={{ height: '100%', borderRadius: 4, width: `${(sibDoneCount / sibs.length) * 100}%`, background: 'var(--sem-success)' }} />
@@ -1006,10 +1006,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                             onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                           >
                             <span style={{ flexShrink: 0 }}>{getJiraIconForType(s.type)}</span>
-                            <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: 'var(--cp-blue)', width: 72, flexShrink: 0 }}>{s.key}</span>
+                            <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-blue)', width: 72, flexShrink: 0 }}>{s.key}</span>
                             <StatusPill status={s.status} small />
-                            <span style={{ flex: 1, fontSize: 11, color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</span>
-                            <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: ageHeatColor(s.ageDays) }}>{s.ageDays}d</span>
+                            <span style={{ flex: 1, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</span>
+                            <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: ageHeatColor(s.ageDays) }}>{s.ageDays}d</span>
                           </div>
                         );
                       })}

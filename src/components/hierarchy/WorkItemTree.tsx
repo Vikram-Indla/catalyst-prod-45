@@ -95,7 +95,7 @@ function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   const bgColor = getAvatarColor(assignee.displayName);
   return (
     <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
     </div>
   );
 }
@@ -113,7 +113,7 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
       <div style={{ height: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 4, transition: 'width 300ms ease' }} />
       </div>
-      <span style={{ fontSize: 11, fontWeight: 500, color: textColor, fontFamily: 'var(--cp-font-body)', fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: textColor, fontFamily: 'var(--cp-font-body)', fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
         {pct}%
       </span>
     </div>
@@ -152,7 +152,7 @@ function ActionsMenu({ item, onDelete }: { item: WorkItem; onDelete?: (item: Wor
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete?.(item); }}
             style={{
-              width: '100%', padding: '8px 12px', fontSize: 13, fontFamily: 'var(--cp-font-body)',
+              width: '100%', padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)',
               color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
               display: 'flex', alignItems: 'center', gap: 8,
             }}
@@ -185,12 +185,12 @@ function NoChildrenMessage({ parentLevel, depth, onAdd, parent }: { parentLevel:
       paddingLeft: (depth + 1) * 20 + 12, paddingRight: 12,
       borderBottom: '1px solid var(--divider)', fontFamily: 'var(--cp-font-body)',
     }}>
-      <span style={{ fontSize: 12, color: 'var(--fg-3)', fontStyle: 'italic' }}>No child items</span>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontStyle: 'italic' }}>No child items</span>
       {onAdd && (
         <button
           onClick={() => onAdd(parent)}
           style={{
-            fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'none', border: 'none',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', background: 'none', border: 'none',
             cursor: 'pointer', fontFamily: 'var(--cp-font-body)', padding: 0,
           }}
         >
@@ -268,11 +268,11 @@ function TreeRow({
         <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.hierarchyColor, flexShrink: 0 }} />
       )}
 
-      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', fontVariantNumeric: 'tabular-nums', minWidth: 56, flexShrink: 0 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-blue)', fontVariantNumeric: 'tabular-nums', minWidth: 56, flexShrink: 0 }}>
         {item.key}
       </span>
 
-      <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {item.title}
       </span>
 
@@ -280,7 +280,7 @@ function TreeRow({
       <ProgressBar stats={item.stats} />
 
       {item.fixVersion && (
-        <span style={{ height: 20, padding: '0 8px', fontSize: 10, fontWeight: 600, color: 'var(--ds-chart-teal-bolder, #0f766e)', background: 'var(--ds-background-success, #DCFFF1)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+        <span style={{ height: 20, padding: '0 8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-chart-teal-bolder, #0f766e)', background: 'var(--ds-background-success, #DCFFF1)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
           {item.fixVersion.name}
         </span>
       )}
@@ -520,7 +520,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
       <div style={{
         height: 50, background: 'var(--cp-bg-page, #FAFAFA)', borderBottom: '1px solid var(--divider)',
         display: 'flex', alignItems: 'center', padding: '8px 12px',
-        fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 600,
+        fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
         textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em',
       }}>
         <span style={{ flex: 1 }}>Work</span>

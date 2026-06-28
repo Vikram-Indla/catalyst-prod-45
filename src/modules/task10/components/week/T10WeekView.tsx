@@ -132,7 +132,7 @@ export function T10WeekView() {
             color: 'var(--ds-text-subtlest, #64748b)'
           }}>
             <p style={{ margin: 0 }}>Priority cards will be implemented in Prompt 7</p>
-            <p style={{ margin: '8px 0 0', fontSize: '13px' }}>
+            <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-300)' }}>
               {items?.length || 0} items loaded from database
             </p>
           </div>

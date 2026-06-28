@@ -497,8 +497,8 @@ export default function AllReleasesPage() {
           <AlertTriangle className="w-6 h-6" style={{ color: 'var(--ds-text-danger, #ef4444)' }} />
         </div>
         <div className="text-center">
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>Failed to load releases</h3>
-          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px', maxWidth: '360px' }}>
+          <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>Failed to load releases</h3>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px', maxWidth: '360px' }}>
             {error instanceof Error ? error.message : 'An unexpected error occurred'}
           </p>
         </div>
@@ -521,8 +521,8 @@ export default function AllReleasesPage() {
           <Package className="w-6 h-6" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />
         </div>
         <div className="text-center">
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>No releases yet</h3>
-          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Create your first release to get started</p>
+          <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>No releases yet</h3>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Create your first release to get started</p>
         </div>
         <button
           onClick={() => setIsNewReleaseModalOpen(true)}
@@ -542,7 +542,7 @@ export default function AllReleasesPage() {
       <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>
         <div className="flex items-center gap-3">
           <CatalystPageHeader title="All Releases" />
-          <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--ds-text-subtlest, #94a3b8)' }}>{releases.length} releases</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 400, color: 'var(--ds-text-subtlest, #94a3b8)' }}>{releases.length} releases</span>
         </div>
         <div className="flex items-center gap-2">
           {/* Export */}
@@ -550,7 +550,7 @@ export default function AllReleasesPage() {
             <button
               onClick={() => setIsExportDropdownOpen(p => !p)}
               className="flex items-center gap-1.5 transition-colors"
-              style={{ height: '32px', padding: '8px 12px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', fontSize: '13px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}
+              style={{ height: '32px', padding: '8px 12px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}
             >
               <Download className="w-3.5 h-3.5" /> Export
             </button>
@@ -568,7 +568,7 @@ export default function AllReleasesPage() {
           <button
             onClick={() => setIsNewReleaseModalOpen(true)}
             className="flex items-center gap-1.5 transition-colors"
-            style={{ height: '32px', padding: '0 14px', borderRadius: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', color: 'var(--ds-surface, #fff)', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+            style={{ height: '32px', padding: '0 14px', borderRadius: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', color: 'var(--ds-surface, #fff)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, border: 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1d4ed8)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')}
           >
@@ -591,7 +591,7 @@ export default function AllReleasesPage() {
           <button
             onClick={() => setIsAIDrawerOpen(true)}
             className="flex items-center gap-1.5 transition-colors"
-            style={{ border: '1px solid var(--ds-background-discovery-bold, rgba(139,92,246,0.3))', borderRadius: '16px', padding: '4px 12px', color: 'var(--ds-text-discovery, #8b5cf6)', fontSize: '12px', fontWeight: 600, background: 'transparent', cursor: 'pointer' }}
+            style={{ border: '1px solid var(--ds-background-discovery-bold, rgba(139,92,246,0.3))', borderRadius: '16px', padding: '4px 12px', color: 'var(--ds-text-discovery, #8b5cf6)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, background: 'transparent', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-discovery-bold, rgba(139,92,246,0.05))')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
@@ -611,7 +611,7 @@ export default function AllReleasesPage() {
             onChange={e => { setSearchQuery(e.target.value); }}
             placeholder="Search releases..."
             className="focus:outline-none"
-            style={{ width: '200px', height: '32px', paddingLeft: '32px', paddingRight: searchQuery ? '28px' : '8px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', fontSize: '13px', background: 'var(--ds-surface-sunken, #f8fafc)' }}
+            style={{ width: '200px', height: '32px', paddingLeft: '32px', paddingRight: searchQuery ? '28px' : '8px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', fontSize: 'var(--ds-font-size-300)', background: 'var(--ds-surface-sunken, #f8fafc)' }}
             onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')}
             onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))')}
           />
@@ -681,7 +681,7 @@ export default function AllReleasesPage() {
         <button
           onClick={() => setSortDirection(d => d === 'asc' ? 'desc' : 'asc')}
           className="flex items-center gap-1 transition-colors"
-          style={{ fontSize: '13px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', background: 'none', border: 'none', cursor: 'pointer' }}
+          style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', background: 'none', border: 'none', cursor: 'pointer' }}
         >
           <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />
           {sortFieldLabel} {sortArrow}
@@ -699,7 +699,7 @@ export default function AllReleasesPage() {
               onClick={() => setActiveView(v.key)}
               className="flex items-center gap-1 transition-colors"
               style={{
-                padding: '4px 12px', fontSize: '13px', fontWeight: 500,
+                padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
                 background: activeView === v.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-surface, #fff)',
                 color: activeView === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : 'var(--ds-text-subtlest, #64748b)',
                 border: 'none', cursor: 'pointer',
@@ -717,7 +717,7 @@ export default function AllReleasesPage() {
         {selectedIds.size > 0 && (
           <div
             className="absolute top-0 left-6 right-6 z-10 flex items-center gap-3 px-4"
-            style={{ height: '44px', background: 'var(--ds-surface-overlay, #1e293b)', borderRadius: '0 0 8px 8px', color: 'var(--ds-surface, #fff)', fontSize: '13px', animation: 'slideDown 200ms ease' }}
+            style={{ height: '44px', background: 'var(--ds-surface-overlay, #1e293b)', borderRadius: '0 0 8px 8px', color: 'var(--ds-surface, #fff)', fontSize: 'var(--ds-font-size-300)', animation: 'slideDown 200ms ease' }}
           >
             <span style={{ fontWeight: 500 }}>{selectedIds.size} releases selected</span>
             <div className="relative" data-dropdown>
@@ -727,7 +727,7 @@ export default function AllReleasesPage() {
               {bulkStatusDropdown && (
                 <div className="absolute top-full mt-1 left-0 z-50" style={{ background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.1))', minWidth: '140px' }}>
                   {(['planned', 'active', 'testing', 'uat', 'released'] as const).map(s => (
-                    <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-3 py-1.5 transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                    <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-3 py-1.5 transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'none', background: 'transparent', cursor: 'pointer' }}>
                       {getStatusConfig(s).label}
                     </button>
                   ))}
@@ -741,7 +741,7 @@ export default function AllReleasesPage() {
               Delete
             </button>
             <div className="flex-1" />
-            <button onClick={() => setSelectedIds(new Set())} style={{ color: 'var(--ds-surface, rgba(255,255,255,0.7))', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>✕</button>
+            <button onClick={() => setSelectedIds(new Set())} style={{ color: 'var(--ds-surface, rgba(255,255,255,0.7))', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)' }}>✕</button>
           </div>
         )}
 
@@ -750,10 +750,10 @@ export default function AllReleasesPage() {
           {filteredReleases.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full" style={{ animation: 'fadeInUp 0.3s ease both' }}>
               <Rocket className="w-12 h-12 mb-4" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }} />
-              <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>
                 {releases.length === 0 ? 'No releases yet' : 'No releases match your filters'}
               </div>
-              <div style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>
                 {releases.length === 0 ? 'Create your first release to get started' : 'Try adjusting your search or filter criteria'}
               </div>
               {releases.length === 0 ? (
@@ -829,7 +829,7 @@ export default function AllReleasesPage() {
 
       {/* ═══ STATUS BAR (32px) ═══ */}
       <div className="all-releases-pagination flex items-center px-6" style={{ height: '32px', flexShrink: 0, borderTop: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)' }}>
-        <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)' }}>
           {filteredReleases.length} of {releases.length} releases
         </span>
       </div>
@@ -840,7 +840,7 @@ export default function AllReleasesPage() {
           <div className="fixed inset-0 z-[200]" style={{ background: 'var(--ds-shadow-raised, rgba(0,0,0,0.3))' }} onClick={() => setDetailRelease(null)} />
           <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '480px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', boxShadow: '-4px 0 20px var(--ds-shadow-raised, rgba(0,0,0,0.1))', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{detailRelease.name}</h2>
+              <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{detailRelease.name}</h2>
               <button onClick={() => setDetailRelease(null)} style={closeBtnStyle}>✕</button>
             </div>
             <div className="px-6 py-5">
@@ -864,8 +864,8 @@ export default function AllReleasesPage() {
               </div>
               {detailRelease.description && (
                 <div className="mt-6">
-                  <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '6px' }}>DESCRIPTION</div>
-                  <p style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', lineHeight: '1.6' }}>{detailRelease.description}</p>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '6px' }}>DESCRIPTION</div>
+                  <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', lineHeight: '1.6' }}>{detailRelease.description}</p>
                 </div>
               )}
               <div className="mt-6 flex gap-2">
@@ -890,7 +890,7 @@ export default function AllReleasesPage() {
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4" style={{ color: 'var(--ds-text-discovery, #8b5cf6)' }} />
-                <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>AI Insights</h2>
+                <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>AI Insights</h2>
               </div>
               <button onClick={() => setIsAIDrawerOpen(false)} style={closeBtnStyle}>✕</button>
             </div>
@@ -908,8 +908,8 @@ export default function AllReleasesPage() {
                     <div className="flex items-start gap-2">
                       <div className="mt-0.5">{INSIGHT_ICONS[insight.iconType]}</div>
                       <div>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{insight.title}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '2px', lineHeight: '1.5' }}>{insight.desc}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{insight.title}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '2px', lineHeight: '1.5' }}>{insight.desc}</div>
                       </div>
                     </div>
                   </div>
@@ -934,10 +934,10 @@ export default function AllReleasesPage() {
         <>
           <div className="fixed inset-0 z-50" style={{ background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))' }} onClick={() => setDeleteConfirm(false)} />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '400px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', borderRadius: '12px', boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.15))', padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)', marginBottom: '8px' }}>Archive {selectedIds.size} releases?</h3>
-            <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)', marginBottom: '20px' }}>These releases will be archived and hidden from the list. They can be restored later.</p>
+            <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #0f172a)', marginBottom: '8px' }}>Archive {selectedIds.size} releases?</h3>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #64748b)', marginBottom: '20px' }}>These releases will be archived and hidden from the list. They can be restored later.</p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer' }}>Cancel</button>
               <button
                 onClick={handleBulkDelete}
                 disabled={bulkDeleteMutation.isPending}
@@ -1019,7 +1019,7 @@ function generateDynamicInsights(releases: ViewRelease[]) {
 // ─── Sub-components ────────────────────────────────────────────
 
 const colHeaderStyle: React.CSSProperties = {
-  fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase',
+  fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase',
   letterSpacing: '0.05em', textAlign: 'left', padding: '8px 12px', whiteSpace: 'nowrap',
   height: '32px', lineHeight: '32px', borderBottom: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--ds-surface-sunken, #f8fafc)',
 };
@@ -1028,19 +1028,19 @@ const filterDividerStyle: React.CSSProperties = {
   borderTop: '1px solid var(--ds-border, #e2e8f0)', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between',
 };
 const clearBtnStyle: React.CSSProperties = {
-  fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', background: 'none', border: 'none', cursor: 'pointer',
+  fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #64748b)', background: 'none', border: 'none', cursor: 'pointer',
 };
 const applyBtnStyle: React.CSSProperties = {
-  fontSize: '12px', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer',
+  fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer',
 };
 const bulkBarBtnStyle: React.CSSProperties = {
-  padding: '4px 10px', border: '1px solid var(--ds-surface, rgba(255,255,255,0.3))', borderRadius: '4px', color: 'var(--ds-surface, #fff)', background: 'transparent', fontSize: '12px', cursor: 'pointer',
+  padding: '4px 10px', border: '1px solid var(--ds-surface, rgba(255,255,255,0.3))', borderRadius: '4px', color: 'var(--ds-surface, #fff)', background: 'transparent', fontSize: 'var(--ds-font-size-200)', cursor: 'pointer',
 };
 const closeBtnStyle: React.CSSProperties = {
-  color: 'var(--ds-text-subtlest, #64748b)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px',
+  color: 'var(--ds-text-subtlest, #64748b)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-600)',
 };
 const primaryBtnStyle: React.CSSProperties = {
-  padding: '6px 16px', borderRadius: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', color: 'var(--ds-surface, #fff)', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer',
+  padding: '6px 16px', borderRadius: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', color: 'var(--ds-surface, #fff)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, border: 'none', cursor: 'pointer',
 };
 
 
@@ -1048,8 +1048,8 @@ function StatItem({ number, label, dotColor }: { number: number; label: string; 
   return (
     <div className="flex items-center gap-1.5" style={{ gap: '6px' }}>
       {dotColor && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor }} />}
-      <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{number}</span>
-      <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)' }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{number}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)' }}>{label}</span>
     </div>
   );
 }
@@ -1057,7 +1057,7 @@ function StatItem({ number, label, dotColor }: { number: number; label: string; 
 function StatusPill({ status }: { status: string }) {
   const c = getStatusConfig(status);
   return (
-    <span className="inline-flex items-center gap-1" style={{ padding: '0 8px', borderRadius: '11px', background: c.bg, color: c.text, fontSize: '11px', fontWeight: 500, height: '22px', lineHeight: '22px', border: `1px solid ${c.bg === 'var(--ds-surface-sunken, #f1f5f9)' ? 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' : 'transparent'}` }}>
+    <span className="inline-flex items-center gap-1" style={{ padding: '0 8px', borderRadius: '11px', background: c.bg, color: c.text, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, height: '22px', lineHeight: '22px', border: `1px solid ${c.bg === 'var(--ds-surface-sunken, #f1f5f9)' ? 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' : 'transparent'}` }}>
       <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.dot }} />
       {c.label}
     </span>
@@ -1114,8 +1114,8 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
         />
       </td>
       <td style={{ ...cellStyle, minWidth: '280px' }}>
-        <span style={{ display: 'inline-block', padding: '2px 6px', background: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtlest, #94a3b8)', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', marginRight: '6px', verticalAlign: 'middle' }}>{r.version}</span>
-        <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #0f172a)' }}>{r.name}</span>
+        <span style={{ display: 'inline-block', padding: '2px 6px', background: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtlest, #94a3b8)', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', marginRight: '6px', verticalAlign: 'middle' }}>{r.version}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #0f172a)' }}>{r.name}</span>
       </td>
       <td style={{ ...cellStyle, width: '100px' }}><StatusPill status={r.status} /></td>
       <td style={{ ...cellStyle, width: '130px' }}>
@@ -1123,7 +1123,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
           <div style={{ width: '64px', height: '6px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{ width: `${r.progress}%`, height: '100%', background: r.progress <= 30 ? 'var(--ds-text-danger, #ef4444)' : r.progress <= 60 ? 'var(--ds-text-warning, #d97706)' : 'var(--ds-text-success, #0d9488)', borderRadius: '4px' }} />
           </div>
-          <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>{r.progress}%</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>{r.progress}%</span>
         </div>
       </td>
       <td style={cellStyle}>
@@ -1136,10 +1136,10 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
               </>
             )}
           </div>
-          <span style={{ fontSize: '13px', fontWeight: testRatio < 0.8 ? 600 : 400, color: 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>{r.testsPass}/{r.testsTotal}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: testRatio < 0.8 ? 600 : 400, color: 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>{r.testsPass}/{r.testsTotal}</span>
         </div>
       </td>
-      <td style={{ ...cellStyle, width: '72px', fontSize: '14px', fontWeight: 600, color: r.defects >= 20 ? 'var(--ds-text-danger, #ef4444)' : r.defects >= 10 ? 'var(--ds-text-warning, #d97706)' : r.defects > 0 ? 'var(--ds-text-success, #10b981)' : 'var(--ds-text-subtlest, #94a3b8)', fontFamily: 'var(--cp-font-mono)' }}>
+      <td style={{ ...cellStyle, width: '72px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: r.defects >= 20 ? 'var(--ds-text-danger, #ef4444)' : r.defects >= 10 ? 'var(--ds-text-warning, #d97706)' : r.defects > 0 ? 'var(--ds-text-success, #10b981)' : 'var(--ds-text-subtlest, #94a3b8)', fontFamily: 'var(--cp-font-mono)' }}>
         {r.defects > 0 ? r.defects : '—'}
       </td>
       <td style={{ ...cellStyle, width: '100px' }}>
@@ -1148,23 +1148,23 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
             <div style={{ width: '48px', height: '4px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
               <div style={{ width: `${r.coverage}%`, height: '100%', background: covColor, borderRadius: '4px' }} />
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 500, color: covColor, fontFamily: 'var(--cp-font-mono)' }}>{r.coverage}%</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: covColor, fontFamily: 'var(--cp-font-mono)' }}>{r.coverage}%</span>
           </div>
         ) : (
-          <span style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #94a3b8)' }}>—</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #94a3b8)' }}>—</span>
         )}
       </td>
       <td style={{ ...cellStyle, width: '80px' }}>
         <div className="flex items-center gap-1.5">
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health) }} />
-          <span style={{ fontSize: '14px', fontWeight: 700, color: getHealthColor(r.health) }}>{r.health}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: getHealthColor(r.health) }}>{r.health}</span>
         </div>
       </td>
       <td style={{ ...cellStyle, width: '80px' }}>
         {r.status === 'released' ? (
-          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--quality-high, var(--ds-background-success-bold, #059669))', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>Released</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--quality-high, var(--ds-background-success-bold, #059669))', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>Released</span>
         ) : (
-          <span style={{ fontSize: '13px', fontWeight: r.daysRemaining <= 7 ? 600 : 500, color: r.daysRemaining <= 7 ? 'var(--ds-text-danger, #ef4444)' : r.daysRemaining <= 14 ? 'var(--ds-text-warning, #d97706)' : 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: r.daysRemaining <= 7 ? 600 : 500, color: r.daysRemaining <= 7 ? 'var(--ds-text-danger, #ef4444)' : r.daysRemaining <= 14 ? 'var(--ds-text-warning, #d97706)' : 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>
             {r.overdue ? `-${r.daysRemaining}d` : `${r.daysRemaining}d`}
           </span>
         )}
@@ -1175,10 +1175,10 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
             <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-surface-sunken, #f1f5f9)', border: '1px dashed var(--ds-border, #cbd5e1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Plus className="w-2.5 h-2.5" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }} />
             </div>
-            <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>Assign</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>Assign</span>
           </div>
         ) : (
-          <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{r.owner}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 400, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{r.owner}</span>
         )}
       </td>
     </tr>
@@ -1187,7 +1187,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
 
 function CheckboxRow({ checked, label, onChange }: { checked: boolean; label: string; onChange: () => void }) {
   return (
-    <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ padding: '6px 12px', fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
+    <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />
       {label}
     </label>
@@ -1203,7 +1203,7 @@ function FilterPill({ label, active, count, isOpen, onToggle, children }: {
         onClick={onToggle}
         className="flex items-center gap-1 transition-colors"
         style={{
-          height: '32px', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
+          height: '32px', padding: '8px 12px', borderRadius: '6px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
           border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'}`,
           background: active ? 'var(--ds-background-information, #dbeafe)' : 'var(--ds-surface, #fff)',
           color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
@@ -1225,7 +1225,7 @@ function DropdownItem({ icon, label, onClick }: { icon: React.ReactNode; label: 
     <button
       onClick={onClick}
       className="flex items-center gap-2 w-full text-left transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]"
-      style={{ padding: '8px 12px', fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
+      style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
     >
       {icon} {label}
     </button>
@@ -1235,8 +1235,8 @@ function DropdownItem({ icon, label, onClick }: { icon: React.ReactNode; label: 
 function MetricBox({ value, label, color }: { value: number | string; label: string; color: string }) {
   return (
     <div className="flex-1 text-center" style={{ padding: '12px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px' }}>
-      <div style={{ fontSize: '20px', fontWeight: 700, color }}>{value}</div>
-      <div style={{ fontSize: '11px', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)', marginTop: '2px' }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color }}>{value}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)', marginTop: '2px' }}>{label}</div>
     </div>
   );
 }
@@ -1244,8 +1244,8 @@ function MetricBox({ value, label, color }: { value: number | string; label: str
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between" style={{ padding: '6px 0', borderBottom: '1px solid var(--ds-background-neutral, #f1f5f9)' }}>
-      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>{label}</span>
-      <span style={{ fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{value}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{value}</span>
     </div>
   );
 }
@@ -1264,10 +1264,10 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
   };
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '8px 12px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', fontSize: '13px', outline: 'none',
+    width: '100%', padding: '8px 12px', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '6px', fontSize: 'var(--ds-font-size-300)', outline: 'none',
   };
   const labelStyle: React.CSSProperties = {
-    fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', display: 'block',
+    fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', display: 'block',
   };
 
   return (
@@ -1275,7 +1275,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
       <div className="fixed inset-0 z-50" style={{ background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))', backdropFilter: 'blur(4px)' }} onClick={onClose} />
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '500px', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', borderRadius: '12px', boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.15))', animation: 'scaleIn 200ms ease' }}>
         <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>Create New Release</h2>
+          <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>Create New Release</h2>
           <button onClick={onClose} style={closeBtnStyle}>✕</button>
         </div>
         <div className="px-6 py-5 space-y-4">
@@ -1308,7 +1308,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
-          <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border, #e2e8f0)', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={handleSubmit}
             disabled={isCreating}
@@ -1367,9 +1367,9 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 onMouseLeave={e => { if (!selected) e.currentTarget.style.opacity = '0'; }}
               />
               <div className="flex items-center gap-1.5 mb-2">
-                <span style={{ padding: '1px 6px', background: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtle, #475569)', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{r.version}</span>
-                <span className="flex-1 truncate" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{r.name}</span>
-                <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, background: hBadge.bg, color: hBadge.text, flexShrink: 0 }}>
+                <span style={{ padding: '1px 6px', background: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtle, #475569)', border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>{r.version}</span>
+                <span className="flex-1 truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{r.name}</span>
+                <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, background: hBadge.bg, color: hBadge.text, flexShrink: 0 }}>
                   {getHealthDisplay(r.health)}
                 </span>
               </div>
@@ -1377,13 +1377,13 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 <div style={{ flex: 1, height: '4px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{ width: `${r.health}%`, height: '100%', background: getHealthColor(r.health), borderRadius: '4px', transition: 'width 400ms ease-out' }} />
                 </div>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)' }}>{r.health}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)' }}>{r.health}</span>
               </div>
-              <div className="flex items-center gap-2 flex-wrap" style={{ fontSize: '12px' }}>
+              <div className="flex items-center gap-2 flex-wrap" style={{ fontSize: 'var(--ds-font-size-200)' }}>
                 <StatusPill status={r.status} />
                 <span style={{ color: 'var(--ds-text-subtlest, #64748b)' }}><Calendar className="w-3 h-3 inline-block mr-0.5" style={{ verticalAlign: 'middle' }} /> {r.targetDate}</span>
                 {r.overdue && (
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--ds-text-danger, #ef4444)', background: 'var(--ds-background-danger, rgba(239,68,68,0.1))', borderRadius: '8px', padding: '1px 6px' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-danger, #ef4444)', background: 'var(--ds-background-danger, rgba(239,68,68,0.1))', borderRadius: '8px', padding: '1px 6px' }}>
                     {r.daysRemaining}d overdue
                   </span>
                 )}
@@ -1394,17 +1394,17 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                     </div>
                   </div>
                 ) : (
-                  <span className="ml-auto" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: '12px' }}>{r.owner}</span>
+                  <span className="ml-auto" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: 'var(--ds-font-size-200)' }}>{r.owner}</span>
                 )}
               </div>
               <div className="flex items-center gap-4" style={{ borderTop: '1px solid var(--ds-border, #e2e8f0)', marginTop: '8px', paddingTop: '8px' }}>
-                <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #64748b)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #64748b)' }}>
                   <span style={{ fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{r.testsPass}/{r.testsTotal}</span> Tests
                 </span>
-                <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #64748b)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #64748b)' }}>
                   <span style={{ fontWeight: 600, color: r.defects > 0 ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-subtlest, #64748b)' }}>{r.defects}</span> Defects
                 </span>
-                <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #64748b)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #64748b)' }}>
                   {r.coverage !== null ? (
                     <span className="inline-flex items-center gap-1">
                       <span style={{ display: 'inline-block', width: '32px', height: '3px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden', verticalAlign: 'middle' }}>
@@ -1464,7 +1464,7 @@ function TimelineView({ releases, onBarClick }: {
         <div />
         <div className="flex items-center gap-4">
           {LEGEND_ITEMS.map(l => (
-            <div key={l.label} className="flex items-center" style={{ gap: '6px', fontSize: '12px', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)' }}>
+            <div key={l.label} className="flex items-center" style={{ gap: '6px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)' }}>
               {l.shape === 'circle' ? (
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: l.color }} />
               ) : (
@@ -1479,7 +1479,7 @@ function TimelineView({ releases, onBarClick }: {
       <div className="flex flex-1 min-h-0" style={{ border: '1px solid var(--ds-border, #e2e8f0)', borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))' }}>
         <div style={{ width: '260px', flexShrink: 0, borderRight: '1px solid var(--ds-border, #e2e8f0)' }}>
           <div style={{ height: '32px', background: 'var(--ds-surface-sunken, #f8fafc)', display: 'flex', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #e2e8f0)' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>RELEASE</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>RELEASE</span>
           </div>
           {releases.map(r => (
             <div
@@ -1490,7 +1490,7 @@ function TimelineView({ releases, onBarClick }: {
             >
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health), flexShrink: 0 }} />
               <div className="min-w-0 flex-1">
-                <div className="truncate" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #0f172a)', lineHeight: '36px' }}>{r.name}</div>
+                <div className="truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #0f172a)', lineHeight: '36px' }}>{r.name}</div>
               </div>
             </div>
           ))}
@@ -1499,7 +1499,7 @@ function TimelineView({ releases, onBarClick }: {
         <div className="flex-1 overflow-x-auto relative">
           <div className="flex" style={{ height: '32px', background: 'var(--ds-surface-sunken, #f8fafc)', borderBottom: '1px solid var(--ds-border, #e2e8f0)' }}>
             {MONTHS.map(m => (
-              <div key={m} className="flex-1" style={{ minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.05em', borderRight: '1px solid var(--ds-surface-sunken, #F7F8F9)' }}>
+              <div key={m} className="flex-1" style={{ minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase' as const, letterSpacing: '0.05em', borderRight: '1px solid var(--ds-surface-sunken, #F7F8F9)' }}>
                 {m}
               </div>
             ))}
@@ -1507,7 +1507,7 @@ function TimelineView({ releases, onBarClick }: {
 
           {/* Today marker */}
           <div className="absolute" style={{ left: `${todayPos}%`, top: '32px', bottom: 0, width: '2px', background: 'var(--ds-text-danger, #ef4444)', zIndex: 5 }}>
-            <span style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-danger, #ef4444)', whiteSpace: 'nowrap' }}>Today</span>
+            <span style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger, #ef4444)', whiteSpace: 'nowrap' }}>Today</span>
           </div>
 
           {releases.map((r, i) => {
@@ -1539,7 +1539,7 @@ function TimelineView({ releases, onBarClick }: {
                   {r.progress > 0 && !isPlanned && (
                     <div style={{ width: `${r.progress}%`, height: '100%', background: 'var(--ds-surface, rgba(255,255,255,0.35))', position: 'absolute', left: 0, top: 0 }} />
                   )}
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: isPlanned ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-surface, #fff)', padding: '0 6px', lineHeight: '24px', position: 'relative', zIndex: 1, textShadow: isPlanned ? 'none' : '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: isPlanned ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-surface, #fff)', padding: '0 6px', lineHeight: '24px', position: 'relative', zIndex: 1, textShadow: isPlanned ? 'none' : '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))' }}>
                     {r.progress}%
                   </span>
                 </div>
@@ -1559,14 +1559,14 @@ function TimelineView({ releases, onBarClick }: {
             animation: 'fadeInUp 150ms ease both', minWidth: '200px',
           }}
         >
-          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{hoveredRelease.name}</div>
-          <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Status: {getStatusConfig(hoveredRelease.status).label}</div>
-          <div style={{ fontSize: '12px', marginTop: '2px' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{hoveredRelease.name}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Status: {getStatusConfig(hoveredRelease.status).label}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', marginTop: '2px' }}>
             <span style={{ color: 'var(--ds-text-subtlest, #64748b)' }}>Health: </span>
             <span style={{ color: getHealthColor(hoveredRelease.health), fontWeight: 600 }}>{hoveredRelease.health} ({getHealthDisplay(hoveredRelease.health)})</span>
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '2px' }}>Progress: {hoveredRelease.progress}%</div>
-          <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '2px' }}>Target: {hoveredRelease.targetDate}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '2px' }}>Progress: {hoveredRelease.progress}%</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '2px' }}>Target: {hoveredRelease.targetDate}</div>
         </div>
       )}
     </div>

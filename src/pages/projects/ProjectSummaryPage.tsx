@@ -454,8 +454,8 @@ function SummaryView() {
             <div className="h-48 py-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={priorityData}>
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
+                  <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-100)' }} />
+                  <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} />
                   <Bar dataKey="value" fill="hsl(var(--muted-foreground))" />
                 </BarChart>
               </ResponsiveContainer>

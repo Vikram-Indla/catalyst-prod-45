@@ -99,7 +99,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
               <div
                 style={{
                   padding: '8px 12px 4px',
-                  fontSize: 10,
+                  fontSize: 'var(--ds-font-size-50)',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
@@ -116,7 +116,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
                   className="w-full flex items-center gap-2 text-left transition-colors"
                   style={{
                     padding: '7px 12px',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: value === option.value ? 600 : 500,
                     color: value === option.value ? 'var(--cp-blue)' : 'var(--ds-text, #172B4D)',
                     background: value === option.value ? 'var(--cp-blue-wash)' : 'transparent',

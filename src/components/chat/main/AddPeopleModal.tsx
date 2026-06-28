@@ -158,7 +158,7 @@ export function AddPeopleModal({
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 4,
                 marginBottom: 12,
@@ -167,7 +167,7 @@ export function AddPeopleModal({
             {error && (
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-danger, #AE2A19)',
                   background: 'var(--ds-background-danger, #FFEDEB)',
                   padding: '6px 10px',
@@ -181,7 +181,7 @@ export function AddPeopleModal({
             )}
             <div style={{ maxHeight: 360, overflowY: 'auto' }}>
               {candidates.length === 0 && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>
                   No matches.
                 </div>
               )}
@@ -219,14 +219,14 @@ export function AddPeopleModal({
                     />
                     <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {c.name}
                         </span>
                         {isAdded && (
                           <span
                             style={{
-                              fontSize: 10,
+                              fontSize: 'var(--ds-font-size-50)',
                               fontWeight: 600,
                               padding: '1px 6px',
                               borderRadius: 3,
@@ -239,7 +239,7 @@ export function AddPeopleModal({
                         )}
                       </div>
                       {c.subtitle && (
-                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>{c.subtitle}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>{c.subtitle}</div>
                       )}
                     </div>
                   </button>

@@ -200,7 +200,7 @@ export function MessageSearchPanel({
         >
           <div
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: 'var(--ds-text-subtlest, #6B778C)',
               marginBottom: 4,
@@ -227,10 +227,10 @@ export function MessageSearchPanel({
               onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
             >
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                 {c.title}
               </span>
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 8 }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 8 }}>
                 {c.matchCount} {c.matchCount === 1 ? 'mention' : 'mentions'}
               </span>
             </button>

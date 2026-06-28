@@ -182,7 +182,7 @@ export function SuggestChildIssuesDialog({
         <ModalTitle>{triggerLabel} — Suggest {childLabel.toLowerCase()}</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)') }}>
+        <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)') }}>
           {loading
             ? 'Generating suggestions…'
             : suggestions.length > 0
@@ -192,7 +192,7 @@ export function SuggestChildIssuesDialog({
 
         <div>
           {loading && (
-            <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 14 }}>
+            <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 'var(--ds-font-size-400)' }}>
               Generating suggestions…
             </div>
           )}
@@ -204,7 +204,7 @@ export function SuggestChildIssuesDialog({
                 borderRadius: 4,
                 background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'),
                 color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
               }}
             >
               {error}
@@ -212,7 +212,7 @@ export function SuggestChildIssuesDialog({
           )}
 
           {!loading && !error && suggestions.length === 0 && (
-            <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 14 }}>
+            <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), fontSize: 'var(--ds-font-size-400)' }}>
               No suggestions returned.
             </div>
           )}
@@ -246,7 +246,7 @@ export function SuggestChildIssuesDialog({
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span
                         style={{
-                          fontSize: 14,
+                          fontSize: 'var(--ds-font-size-400)',
                           fontWeight: 600,
                           color: token('color.text', 'var(--ds-text, #172B4D)'),
                         }}
@@ -255,7 +255,7 @@ export function SuggestChildIssuesDialog({
                       </span>
                       <span
                         style={{
-                          fontSize: 11,
+                          fontSize: 'var(--ds-font-size-100)',
                           fontWeight: 700,
                           color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                           textTransform: 'uppercase',
@@ -269,7 +269,7 @@ export function SuggestChildIssuesDialog({
                       <p
                         style={{
                           margin: '4px 0 0',
-                          fontSize: 13,
+                          fontSize: 'var(--ds-font-size-300)',
                           lineHeight: '18px',
                           color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                           whiteSpace: 'pre-wrap',

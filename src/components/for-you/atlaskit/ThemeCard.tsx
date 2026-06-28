@@ -553,7 +553,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             lineHeight: '16px',
             padding: '2px 8px',

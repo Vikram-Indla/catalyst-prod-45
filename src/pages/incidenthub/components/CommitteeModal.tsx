@@ -30,7 +30,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[760px]" style={{ borderRadius: 8, padding: 0 }}>
         <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' }}>
-          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>Escalation Committee</DialogTitle>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700 }}>Escalation Committee</DialogTitle>
         </DialogHeader>
 
         {/* Tabs */}
@@ -42,7 +42,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
               onClick={() => setActiveTab(i)}
               className="px-3 py-2"
               style={{
-                fontFamily: 'var(--cp-font-body)', fontSize: 12,
+                fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)',
                 fontWeight: activeTab === i ? 650 : 400,
                 color: activeTab === i ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                 borderBottom: activeTab === i ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
@@ -57,29 +57,29 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           {activeTab === 0 && (
             <div className="space-y-3">
               {members.length === 0 && (
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No committee members assigned.</p>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No committee members assigned.</p>
               )}
               {members.map((m: any) => {
                 const vote = m.vote;
                 const voteStatus = vote?.vote || 'pending';
                 return (
                   <div key={m.id} className="flex items-center gap-3 p-2" style={{ border: `1px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`, borderRadius: 4 }}>
-                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
+                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
                       {(m.user?.full_name || 'U').charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+                        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                           {m.user?.full_name || 'Member'}
                         </span>
                         {m.role === 'chair' && (
-                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: 'var(--cp-purple-60, var(--cp-purple-60, #7C3AED))', borderRadius: 3 }}>CHAIR</span>
+                          <span className="px-1.5" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: 'var(--cp-purple-60, var(--cp-purple-60, #7C3AED))', borderRadius: 3 }}>CHAIR</span>
                         )}
                         {m.has_veto && (
-                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'var(--cp-danger-light, #FEE2E2)', color: 'var(--cp-danger-text, #991B1B)', borderRadius: 3 }}>VETO</span>
+                          <span className="px-1.5" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, backgroundColor: 'var(--cp-danger-light, #FEE2E2)', color: 'var(--cp-danger-text, #991B1B)', borderRadius: 3 }}>VETO</span>
                         )}
                       </div>
-                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{m.role || 'Member'}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{m.role || 'Member'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       {['approved', 'rejected', 'pending'].map(v => (
@@ -87,7 +87,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                           key={v}
                           className="px-2 py-0.5 capitalize"
                           style={{
-                            fontSize: 11,
+                            fontSize: 'var(--ds-font-size-100)',
                             fontWeight: voteStatus === v ? 700 : 400,
                             borderRadius: 4,
                             backgroundColor: voteStatus === v
@@ -110,11 +110,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
 
           {activeTab === 1 && (
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Approver management coming soon.</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Approver management coming soon.</p>
           )}
 
           {activeTab === 2 && (
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Activity log coming soon.</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Activity log coming soon.</p>
           )}
         </div>
 

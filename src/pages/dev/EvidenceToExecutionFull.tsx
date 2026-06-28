@@ -79,8 +79,8 @@ export default function EvidenceToExecutionFull() {
           {/* Top Action Bar */}
           <div style={{ padding: '16px 32px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Senael BAU / BAU-104</div>
-              <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 600 }}>Industrial License Renewal Enhancement</h1>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Senael BAU / BAU-104</div>
+              <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 600 }}>Industrial License Renewal Enhancement</h1>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
@@ -92,13 +92,13 @@ export default function EvidenceToExecutionFull() {
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
                 }}
               >
                 ✨ Prepare
               </button>
-              <button style={{ padding: '8px 16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>
+              <button style={{ padding: '8px 16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: '4px', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)' }}>
                 Discuss
               </button>
             </div>
@@ -117,7 +117,7 @@ export default function EvidenceToExecutionFull() {
                   borderBottom: selectedTab === tab ? '3px solid var(--ds-link, #0052CC)' : 'none',
                   color: selectedTab === tab ? 'var(--ds-link, #0052CC)' : 'var(--ds-icon-subtle, #626F86)',
                   cursor: 'pointer',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: selectedTab === tab ? 500 : 400,
                   textTransform: 'capitalize',
                 }}
@@ -172,8 +172,8 @@ export default function EvidenceToExecutionFull() {
                     { author: 'Aisha Mohammed', role: 'Arabic Translator', text: 'ما هي متطلبات التحقق من الهوية؟ (What are the identity verification requirements?)' },
                   ].map((c, i) => (
                     <div key={i} style={{ padding: '12px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: '4px' }}>
-                      <div style={{ fontWeight: 600, fontSize: '13px', marginBottom: '4px' }}>{c.author} ({c.role})</div>
-                      <div style={{ fontSize: '13px' }}>{c.text}</div>
+                      <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', marginBottom: '4px' }}>{c.author} ({c.role})</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-300)' }}>{c.text}</div>
                     </div>
                   ))}
                 </div>
@@ -194,25 +194,25 @@ export default function EvidenceToExecutionFull() {
 
         {/* Right Sidebar */}
         <div style={{ padding: '32px 16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', overflowY: 'auto' }}>
-          <h4 style={{ marginTop: 0, fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', color: 'var(--ds-icon-subtle, #626F86)' }}>Details</h4>
+          <h4 style={{ marginTop: 0, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--ds-icon-subtle, #626F86)' }}>Details</h4>
           <div style={{ marginBottom: '24px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Status</div>
-            <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>🟢 Active</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Status</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>🟢 Active</div>
           </div>
           <div style={{ marginBottom: '24px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Product</div>
-            <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>Licensing Platform</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Product</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>Licensing Platform</div>
           </div>
           <div style={{ marginBottom: '24px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Request Type</div>
-            <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>Feature</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>Request Type</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>Feature</div>
           </div>
           <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)', paddingTop: '16px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '8px' }}>Linked Items</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '8px' }}>Linked Items</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ fontSize: '12px', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>🔵 EPIC-312</div>
-              <div style={{ fontSize: '12px', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>🟢 FEAT-445</div>
-              <div style={{ fontSize: '12px', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>◻️ STORY-1204</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>🔵 EPIC-312</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>🟢 FEAT-445</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>◻️ STORY-1204</div>
             </div>
           </div>
         </div>
@@ -260,9 +260,9 @@ export default function EvidenceToExecutionFull() {
                     onChange={() => toggleEvidenceItem(item.key)}
                     style={{ marginTop: '2px', cursor: 'pointer' }}
                   />
-                  <span style={{ flex: 1, fontSize: '13px' }}>
+                  <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)' }}>
                     <div style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{item.name}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>{item.type} • {item.lang}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>{item.type} • {item.lang}</div>
                   </span>
                 </label>
               ))}
@@ -278,7 +278,7 @@ export default function EvidenceToExecutionFull() {
                 borderRadius: '4px',
                 backgroundColor: 'var(--ds-surface, #FFFFFF)',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
               }}
             >
@@ -293,7 +293,7 @@ export default function EvidenceToExecutionFull() {
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
               }}
             >
@@ -304,7 +304,7 @@ export default function EvidenceToExecutionFull() {
 
         <div style={{ padding: '16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)' }}>
           <h4 style={{ marginTop: 0 }}>Summary</h4>
-          <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.8' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.8' }}>
             <div><strong>Files:</strong> 5</div>
             <div><strong>Attachments:</strong> 4</div>
             <div><strong>Comments:</strong> 8</div>
@@ -325,11 +325,11 @@ export default function EvidenceToExecutionFull() {
         <div style={{ padding: '32px', borderRight: '1px solid var(--ds-border, #DFE1E6)' }}>
           <h1>Preparing Evidence Pack</h1>
           <div style={{ marginBottom: '16px' }}>
-            <div style={{ fontSize: '14px', color: 'var(--ds-icon-subtle, #626F86)' }}>{currentStep}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-icon-subtle, #626F86)' }}>{currentStep}</div>
             <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--ds-background-neutral, #F0F0F0)', borderRadius: '4px', overflow: 'hidden', marginTop: '8px' }}>
               <div style={{ height: '100%', backgroundColor: 'var(--ds-link, #0052CC)', width: `${progress}%`, transition: 'width 0.2s' }} />
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginTop: '8px' }}>{progress}% complete</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginTop: '8px' }}>{progress}% complete</div>
           </div>
           {progress === 100 && (
             <div style={{ padding: '16px', backgroundColor: 'var(--ds-background-success, #DFFCF0)', borderRadius: '4px', marginTop: '24px' }}>
@@ -344,7 +344,7 @@ export default function EvidenceToExecutionFull() {
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                 }}
               >
@@ -355,7 +355,7 @@ export default function EvidenceToExecutionFull() {
         </div>
         <div style={{ padding: '16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)' }}>
           <h4>Job Details</h4>
-          <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.6' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.6' }}>
             <div><strong>Item:</strong> BR-104</div>
             <div><strong>Owner:</strong> Vikram Indla</div>
             <div><strong>Progress:</strong> {progress}%</div>
@@ -374,7 +374,7 @@ export default function EvidenceToExecutionFull() {
         <div style={{ borderRight: '1px solid var(--ds-border, #DFE1E6)' }}>
           <div style={{ padding: '32px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
             <h1 style={{ margin: '0 0 8px 0' }}>Evidence Pack — BR-104</h1>
-            <div style={{ fontSize: '14px', color: 'var(--ds-icon-subtle, #626F86)' }}>Industrial License Renewal Enhancement</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-icon-subtle, #626F86)' }}>Industrial License Renewal Enhancement</div>
           </div>
 
           <div style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)', padding: '0 32px', display: 'flex', gap: '16px', overflowX: 'auto' }}>
@@ -389,7 +389,7 @@ export default function EvidenceToExecutionFull() {
                   borderBottom: selectedTab === tab ? '3px solid var(--ds-link, #0052CC)' : 'none',
                   color: selectedTab === tab ? 'var(--ds-link, #0052CC)' : 'var(--ds-icon-subtle, #626F86)',
                   cursor: 'pointer',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: selectedTab === tab ? 500 : 400,
                   whiteSpace: 'nowrap',
                 }}
@@ -415,8 +415,8 @@ export default function EvidenceToExecutionFull() {
                     { label: 'OCR Confidence', value: '94%' },
                   ].map((stat) => (
                     <div key={stat.label} style={{ padding: '12px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: '4px', border: '1px solid var(--ds-border, #DFE1E6)' }}>
-                      <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>{stat.label}</div>
-                      <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{stat.value}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '4px' }}>{stat.label}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{stat.value}</div>
                     </div>
                   ))}
                 </div>
@@ -462,13 +462,13 @@ export default function EvidenceToExecutionFull() {
                         borderLeft: `4px solid ${c.color}`,
                       }}
                     >
-                      <div style={{ fontSize: '12px', marginBottom: '4px' }}>
-                        <span style={{ backgroundColor: c.color, color: 'var(--ds-surface, #FFFFFF)', padding: '2px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', marginBottom: '4px' }}>
+                        <span style={{ backgroundColor: c.color, color: 'var(--ds-surface, #FFFFFF)', padding: '2px 6px', borderRadius: '3px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500 }}>
                           {c.type}
                         </span>
-                        <span style={{ marginLeft: '8px', color: 'var(--ds-icon-subtle, #626F86)', fontSize: '11px' }}>{c.author}</span>
+                        <span style={{ marginLeft: '8px', color: 'var(--ds-icon-subtle, #626F86)', fontSize: 'var(--ds-font-size-100)' }}>{c.author}</span>
                       </div>
-                      <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>{c.text}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>{c.text}</div>
                     </div>
                   ))}
                 </div>
@@ -493,7 +493,7 @@ export default function EvidenceToExecutionFull() {
                           color: 'var(--ds-text-inverse, #FFFFFF)',
                           padding: '2px 8px',
                           borderRadius: '3px',
-                          fontSize: '11px',
+                          fontSize: 'var(--ds-font-size-100)',
                           fontWeight: 600,
                           minWidth: '35px',
                           textAlign: 'center',
@@ -501,7 +501,7 @@ export default function EvidenceToExecutionFull() {
                       >
                         {issue.severity}
                       </div>
-                      <span style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>{issue.issue}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>{issue.issue}</span>
                     </div>
                   ))}
                 </div>
@@ -534,9 +534,9 @@ export default function EvidenceToExecutionFull() {
                       }}
                     >
                       {source.included && <span>✓</span>}
-                      <span style={{ flex: 1, fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>{source.name}</span>
+                      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>{source.name}</span>
                       {source.lang && (
-                        <span style={{ fontSize: '11px', backgroundColor: '#E3F2FD', color: 'var(--ds-link, #0052CC)', padding: '2px 6px', borderRadius: '3px', fontWeight: 500 }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', backgroundColor: '#E3F2FD', color: 'var(--ds-link, #0052CC)', padding: '2px 6px', borderRadius: '3px', fontWeight: 500 }}>
                           {source.lang}
                         </span>
                       )}
@@ -550,9 +550,9 @@ export default function EvidenceToExecutionFull() {
               <div style={{ padding: '16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', borderRadius: '4px', border: '1px solid var(--ds-border, #DFE1E6)' }}>
                 <div style={{ marginBottom: '12px' }}>
                   <strong>Evidence Pack v1</strong>
-                  <span style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: '8px' }}>(current)</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: '8px' }}>(current)</span>
                 </div>
-                <div style={{ fontSize: '14px', color: 'var(--ds-icon-subtle, #626F86)' }}>No previous version found. All sources processed for the first time.</div>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-icon-subtle, #626F86)' }}>No previous version found. All sources processed for the first time.</div>
               </div>
             )}
 
@@ -579,9 +579,9 @@ export default function EvidenceToExecutionFull() {
                         opacity: option.title === 'Generate Epics' ? 1 : 0.5,
                       }}
                     >
-                      <div style={{ fontSize: '28px', marginBottom: '8px' }}>{option.icon}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-800)', marginBottom: '8px' }}>{option.icon}</div>
                       <h4 style={{ margin: '0 0 4px 0' }}>{option.title}</h4>
-                      <p style={{ margin: 0, fontSize: '13px', color: 'var(--ds-icon-subtle, #626F86)' }}>{option.desc}</p>
+                      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-icon-subtle, #626F86)' }}>{option.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -591,8 +591,8 @@ export default function EvidenceToExecutionFull() {
         </div>
 
         <div style={{ padding: '32px 16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)', overflowY: 'auto' }}>
-          <h4 style={{ marginTop: 0, fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', color: 'var(--ds-icon-subtle, #626F86)' }}>Summary</h4>
-          <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.8' }}>
+          <h4 style={{ marginTop: 0, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--ds-icon-subtle, #626F86)' }}>Summary</h4>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.8' }}>
             <div><strong>Status:</strong> Ready</div>
             <div><strong>Item:</strong> BR-104</div>
             <div><strong>Evidence Files:</strong> 5</div>
@@ -600,7 +600,7 @@ export default function EvidenceToExecutionFull() {
             <div><strong>Linked Items:</strong> 3</div>
             <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
               <div><strong>Ready to generate:</strong></div>
-              <div style={{ fontSize: '11px', marginTop: '4px' }}>1 Epic + 3 Features + 8 Stories</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', marginTop: '4px' }}>1 Epic + 3 Features + 8 Stories</div>
             </div>
           </div>
         </div>
@@ -657,7 +657,7 @@ export default function EvidenceToExecutionFull() {
                     padding: '8px 12px',
                     border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: '4px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontFamily: 'inherit',
                   }}
                 >
@@ -671,7 +671,7 @@ export default function EvidenceToExecutionFull() {
               </div>
               <div style={{ padding: '12px', backgroundColor: 'var(--ds-background-success, #DFFCF0)', borderRadius: '4px', marginBottom: '24px' }}>
                 <strong>Expected output:</strong>
-                <div style={{ fontSize: '13px', marginTop: '8px', color: 'var(--ds-text, #172B4D)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', marginTop: '8px', color: 'var(--ds-text, #172B4D)' }}>
                   <strong>12 draft work items</strong> (1 Epic + 3 Features + 8 Stories)
                 </div>
               </div>
@@ -684,7 +684,7 @@ export default function EvidenceToExecutionFull() {
                     borderRadius: '4px',
                     backgroundColor: 'var(--ds-surface, #FFFFFF)',
                     cursor: 'pointer',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 500,
                   }}
                 >
@@ -700,7 +700,7 @@ export default function EvidenceToExecutionFull() {
                     border: 'none',
                     borderRadius: '4px',
                     cursor: selectedProject ? 'pointer' : 'not-allowed',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 500,
                   }}
                 >
@@ -713,7 +713,7 @@ export default function EvidenceToExecutionFull() {
           {generateStage === 'preview' && (
             <div>
               <h3>Generated Hierarchy — {projects.find((p) => p.value === selectedProject)?.label}</h3>
-              <div style={{ fontSize: '13px', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '16px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: '16px' }}>
                 12 of 12 items approved for creation
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto' }}>
@@ -729,7 +729,7 @@ export default function EvidenceToExecutionFull() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '18px' }}>{typeIcon[item.type as keyof typeof typeIcon]}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-600)' }}>{typeIcon[item.type as keyof typeof typeIcon]}</span>
                       <strong style={{ flex: 1 }}>{item.title}</strong>
                       <span
                         style={{
@@ -737,14 +737,14 @@ export default function EvidenceToExecutionFull() {
                           color: 'var(--ds-link, #0052CC)',
                           padding: '2px 8px',
                           borderRadius: '3px',
-                          fontSize: '11px',
+                          fontSize: 'var(--ds-font-size-100)',
                           fontWeight: 600,
                         }}
                       >
                         {item.confidence}%
                       </span>
                     </div>
-                    <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: '26px' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: '26px' }}>
                       <strong>Source:</strong> {item.sources.join(' • ')}
                     </div>
                   </div>
@@ -759,7 +759,7 @@ export default function EvidenceToExecutionFull() {
                     borderRadius: '4px',
                     backgroundColor: 'var(--ds-surface, #FFFFFF)',
                     cursor: 'pointer',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 500,
                   }}
                 >
@@ -774,7 +774,7 @@ export default function EvidenceToExecutionFull() {
                     border: 'none',
                     borderRadius: '4px',
                     cursor: 'pointer',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 500,
                   }}
                 >
@@ -801,11 +801,11 @@ export default function EvidenceToExecutionFull() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '20px' }}>✅</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-700)' }}>✅</span>
                   <span style={{ color: 'var(--ds-text-success, #216E4E)', fontWeight: 500 }}>In production, these items would be created as drafts in your project.</span>
                 </div>
               </div>
-              <p style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>This is a prototype. Actual creation is mocked.</p>
+              <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>This is a prototype. Actual creation is mocked.</p>
               <button
                 onClick={() => setStage('evidence-pack')}
                 style={{
@@ -815,7 +815,7 @@ export default function EvidenceToExecutionFull() {
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                 }}
               >
@@ -827,7 +827,7 @@ export default function EvidenceToExecutionFull() {
 
         <div style={{ padding: '16px', backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)' }}>
           <h4 style={{ marginTop: 0 }}>Status</h4>
-          <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.6' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', lineHeight: '1.6' }}>
             <div><strong>Stage:</strong> {generateStage}</div>
             <div><strong>Project:</strong> {projects.find((p) => p.value === selectedProject)?.label || 'Not selected'}</div>
             <div><strong>Items:</strong> 12</div>

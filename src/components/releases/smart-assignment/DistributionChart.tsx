@@ -102,7 +102,7 @@ export function DistributionChart({
                     backgroundColor: 'white',
                     border: `1px solid ${CATALYST_V5.slate[200]}`,
                     borderRadius: 8,
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                   }}
                 />
               </PieChart>

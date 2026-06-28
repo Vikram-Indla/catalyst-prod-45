@@ -110,7 +110,7 @@ export function CatyButton({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '11px',
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             lineHeight: '1',
           }}

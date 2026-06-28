@@ -29,7 +29,7 @@ export const TimelineDateCursor: React.FC<TimelineDateCursorProps> = ({ x, date,
       <div
         className="absolute top-0 -translate-x-1/2 bg-foreground text-background px-1.5 py-0.5 rounded-sm"
         style={{
-          fontSize: 10,
+          fontSize: 'var(--ds-font-size-50)',
           fontWeight: 500,
           fontFamily: 'var(--cp-font-mono)',
           fontVariantNumeric: 'tabular-nums',

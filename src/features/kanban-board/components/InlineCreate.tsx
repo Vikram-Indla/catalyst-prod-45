@@ -49,7 +49,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
           display: 'flex', alignItems: 'center', gap: 6, width: 'calc(100% - 16px)',
           padding: '6px 8px', margin: '2px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
           background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
-          fontSize: 14, fontFamily: 'inherit', cursor: 'pointer',
+          fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer',
         }}
         onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
@@ -78,7 +78,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
         disabled={busy}
         style={{
           width: '100%', minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
-          fontSize: 14, lineHeight: '20px', color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: 'inherit',
+          fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: 'inherit',
         }}
       />
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -102,7 +102,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
           style={{ display: 'inline-flex', alignItems: 'center', gap: 2, border: 'none', background: dueDate ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent', borderRadius: 3, padding: 2, cursor: 'pointer' }}
         >
           <CalendarIcon label="" size="small" primaryColor={dueDate ? token('color.icon.selected', 'var(--ds-link, #0C66E4)') : token('color.icon.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))')} />
-          {dueDate && <span style={{ fontSize: 11, color: token('color.text.selected', 'var(--ds-link, #0C66E4)') }}>{dueDate.slice(5)}</span>}
+          {dueDate && <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.selected', 'var(--ds-link, #0C66E4)') }}>{dueDate.slice(5)}</span>}
         </button>
         {showDue && (
           <input
@@ -124,7 +124,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
             border: `1px solid ${token('color.border', '#091E4224')}`, borderRadius: 3,
             background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), cursor: summary.trim() ? 'pointer' : 'not-allowed',
             opacity: summary.trim() ? 1 : 0.5,
-            color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 14, lineHeight: 1,
+            color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 'var(--ds-font-size-400)', lineHeight: 1,
           }}
         >
           ↵

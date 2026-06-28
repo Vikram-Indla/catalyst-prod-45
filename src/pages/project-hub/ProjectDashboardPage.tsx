@@ -70,7 +70,7 @@ function EditKebabMenu({
     border: 0,
     background: 'transparent',
     textAlign: 'left',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     color: token('color.text', 'var(--ds-text, #172B4D)'),
     cursor: 'pointer',
     whiteSpace: 'nowrap',
@@ -475,7 +475,7 @@ useEffect(() => {
     gap: 4,
     padding: '0 8px',
     height: 32,
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 500,
     color: token('color.text', 'var(--ds-text, #172B4D)'),
     cursor: 'pointer',
@@ -563,7 +563,7 @@ useEffect(() => {
               color={(project as any)?.color ?? 'var(--ds-link, #2563eb)'}
               name={(project as any)?.name ?? pKey}
             />
-            <span style={{ fontSize: 16, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: "'Atlassian Sans', -apple-system, sans-serif" }}>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: "'Atlassian Sans', -apple-system, sans-serif" }}>
               {(project as any)?.name ?? pKey} — Dashboard
             </span>
           </div>
@@ -672,7 +672,7 @@ useEffect(() => {
                     {liveReplayLoading ? 'Building…' : 'Replay Live'}
                   </Button>
                   {liveReplayError && (
-                    <span style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', maxWidth: 420 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)', maxWidth: 420 }}>
                       {liveReplayError}
                     </span>
                   )}

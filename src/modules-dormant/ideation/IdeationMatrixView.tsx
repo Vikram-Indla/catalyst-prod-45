@@ -72,9 +72,9 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           { label: 'SIZE', value: 'Votes' },
         ].map(ctrl => (
           <div key={ctrl.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
-              width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
+              width: '160px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '5px 10px',
               background: 'var(--cp-bg-page, #F8FAFC)', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '6px',
               color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
             }}>
@@ -101,7 +101,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                 alignItems: q.top === 0 ? 'flex-start' : 'flex-end',
               }}>
                 <span style={{
-                  fontSize: '12px', fontWeight: 800, textTransform: 'uppercase',
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 800, textTransform: 'uppercase',
                   letterSpacing: '1.5px', color: q.labelColor, opacity: 0.9, userSelect: 'none',
                 }}>
                   {q.label}
@@ -128,7 +128,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                   borderRadius: '50%', background: dot.color,
                   border: '2px solid white', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '10px', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  fontSize: 'var(--ds-font-size-50)', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   fontFamily: 'var(--cp-font-mono)',
                   textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.3))',
                   boxShadow: hoveredDot === dot.key ? '0 4px 14px var(--ds-shadow-raised, rgba(0,0,0,0.25))' : '0 2px 6px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
@@ -142,12 +142,12 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                 {hoveredDot === dot.key && (
                   <div style={{
                     position: 'absolute', bottom: `${dot.size + 8}px`, left: '50%', transform: 'translateX(-50%)',
-                    background: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', borderRadius: '8px',
+                    background: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-200)', borderRadius: '8px',
                     padding: '8px 12px', whiteSpace: 'nowrap', zIndex: 20,
                     boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.2))',
                   }}>
                     <div style={{ fontWeight: 700, marginBottom: '2px' }}>{dot.key} · {dot.title}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--ds-text-disabled, #CBD5E1)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled, #CBD5E1)' }}>
                       IMPACT: {dot.impact.toFixed(2)} · Votes: {dot.votes} · {dot.status}
                     </div>
                     <div style={{
@@ -164,14 +164,14 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           {/* Axis labels */}
           <div style={{
             position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
-            fontSize: '11px', fontWeight: 700, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', letterSpacing: '1px',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', letterSpacing: '1px',
             textTransform: 'uppercase', whiteSpace: 'nowrap',
           }}>
             ← LOW COMPLEXITY — HIGH COMPLEXITY →
           </div>
           <div style={{
             position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%) rotate(-90deg)',
-            fontSize: '11px', fontWeight: 700, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', letterSpacing: '1px',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', letterSpacing: '1px',
             textTransform: 'uppercase', whiteSpace: 'nowrap',
           }}>
             ← LOW STRATEGIC VALUE — HIGH STRATEGIC VALUE →
@@ -191,10 +191,10 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: l.color, flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontWeight: 600 }}>{l.label}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontWeight: 600 }}>{l.label}</span>
           </div>
         ))}
-        <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Dot size = Vote count</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Dot size = Vote count</span>
       </div>
     </div>
   );

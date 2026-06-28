@@ -205,7 +205,7 @@ export function T10LabelsFieldNew({
               flex: 1,
               height: '50px',
               padding: '8px 12px',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: '6px',
               outline: 'none',
@@ -219,7 +219,7 @@ export function T10LabelsFieldNew({
             style={{
               height: '50px',
               padding: '8px 12px',
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
@@ -242,7 +242,7 @@ export function T10LabelsFieldNew({
               padding: '20px',
               textAlign: 'center',
               color: 'var(--ds-text-disabled, #8590A2)',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             Loading...
@@ -255,7 +255,7 @@ export function T10LabelsFieldNew({
               padding: '20px',
               textAlign: 'center',
               color: 'var(--ds-text-disabled, #8590A2)',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             No labels yet. Create one above!
@@ -281,7 +281,7 @@ export function T10LabelsFieldNew({
                   border: isSelected ? '1px solid var(--ds-background-information, #E9F2FF)' : '1px solid transparent',
                   borderRadius: '6px',
                   cursor: 'pointer',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   color: 'var(--ds-text-subtle, #44546F)',
                 }}
               >
@@ -329,7 +329,7 @@ export function T10LabelsFieldNew({
               alignItems: 'center',
               gap: '6px',
               padding: '6px 10px',
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               backgroundColor: `${label.color}20`,
               color: label.color,
@@ -377,7 +377,7 @@ export function T10LabelsFieldNew({
             alignItems: 'center',
             gap: '4px',
             padding: '6px 12px',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             color: 'var(--ds-text-subtlest, #626F86)',
             backgroundColor: 'var(--ds-background-neutral-subtle, #F7F8F9)',

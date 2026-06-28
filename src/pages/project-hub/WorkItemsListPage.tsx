@@ -268,11 +268,11 @@ export default function WorkItemsListPage() {
       <div style={{ paddingInline: token('space.300', '24px'), paddingBlock: token('space.200', '16px'), maxWidth: 1400, marginInline: 'auto' }}>
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), marginBlockEnd: token('space.150', '12px') }}>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>ProjectHub</span>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>List</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>ProjectHub</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>List</span>
         </div>
 
         {/* Page header */}
@@ -283,7 +283,7 @@ export default function WorkItemsListPage() {
             style={{
               height: 32, paddingInline: token('space.150', '12px'), borderRadius: 4,
               border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, background: 'none',
-              fontSize: 11, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
               fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px'),
             }}

@@ -383,7 +383,7 @@ function NotificationItemInner({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 650,
           color:
             "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
@@ -476,7 +476,7 @@ function NotificationItemInner({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: T.text1,
                 lineHeight: "18px",
                 overflow: "hidden",
@@ -502,7 +502,7 @@ function NotificationItemInner({
             >
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   color:
                     "var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))",
                   fontWeight: 400,
@@ -578,7 +578,7 @@ function NotificationItemInner({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: isDeleted ? T.text3 : T.text1,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -605,7 +605,7 @@ function NotificationItemInner({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 500,
                 color: isDeleted ? T.text3 : "var(--ds-text-brand, #3B82F6)",
                 textDecoration: isDeleted ? "line-through" : "none",
@@ -616,7 +616,7 @@ function NotificationItemInner({
             </span>
             {statusProps && (
               <>
-                <span style={{ color: T.text3, fontSize: 10 }}>•</span>
+                <span style={{ color: T.text3, fontSize: 'var(--ds-font-size-50)' }}>•</span>
                 <AdsStatusLozenge status={TYPE_TO_CATEGORY[statusProps.type]}>
                   {statusProps.label}
                 </AdsStatusLozenge>
@@ -664,7 +664,7 @@ function NotificationItemInner({
               <span
                 style={{
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: "var(--cp-warning-text, #92400E)",
                 }}
               >

@@ -14,7 +14,7 @@ const SEVERITY_COLORS: Record<string, { bg: string; text: string; label: string 
 export function DatePulseHoverCard({ violations }: DatePulseHoverCardProps) {
   if (!violations || violations.length === 0) {
     return (
-      <div style={{ fontSize: '12px', color: 'var(--ds-text-subtle, #42526E)', padding: '4px 0' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', padding: '4px 0' }}>
         No violations detected
       </div>
     );
@@ -31,7 +31,7 @@ export function DatePulseHoverCard({ violations }: DatePulseHoverCardProps) {
 
   return (
     <div>
-      <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         Violations
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -43,7 +43,7 @@ export function DatePulseHoverCard({ violations }: DatePulseHoverCardProps) {
                 display: 'inline-block',
                 padding: '1px 6px',
                 borderRadius: 3,
-                fontSize: '10px',
+                fontSize: 'var(--ds-font-size-50)',
                 fontWeight: 600,
                 background: style.bg,
                 color: style.text,
@@ -53,14 +53,14 @@ export function DatePulseHoverCard({ violations }: DatePulseHoverCardProps) {
               }}>
                 {style.label}
               </span>
-              <span style={{ fontSize: '12px', color: 'var(--ds-text, #172B4D)', lineHeight: '16px' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)', lineHeight: '16px' }}>
                 {v.title}
               </span>
             </div>
           );
         })}
         {remaining > 0 && (
-          <div style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
             +{remaining} more violation{remaining !== 1 ? 's' : ''}
           </div>
         )}

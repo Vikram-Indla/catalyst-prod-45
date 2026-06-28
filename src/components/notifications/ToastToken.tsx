@@ -78,14 +78,14 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           width: 36, height: 50, borderRadius: '50%', flexShrink: 0,
           background: isSystemAssign ? 'var(--ds-text-subtlest, #626F86)' : getAvatarColor(actorId),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 700,
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 700,
         }}>
           {isSystemAssign ? <UserCheck size={18} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" /> : getUserInitials(actorName)}
         </div>
 
         {/* Body */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', lineHeight: '18px' }}>
+          <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', lineHeight: '18px' }}>
             <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
             {getActionVerb(n.notification_type)}
           </div>
@@ -93,13 +93,13 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
             <WorkItemIcon type={n.entity_icon_type} />
             {/* m-06: entity title truncation increased to 260px */}
             <span style={{
-              fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+              fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               maxWidth: 260,
             }}>
               {n.entity_title}
             </span>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500, flexShrink: 0 }}>
+            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500, flexShrink: 0 }}>
               {n.entity_key}
             </span>
           </div>
@@ -114,7 +114,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
                   style={{
                     padding: '4px 10px', borderRadius: 4,
                     border: '0.5px solid var(--ds-shadow-overlay, rgba(15,23,42,.12))', background: 'transparent',
-                    cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500,
+                    cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                     color: 'var(--ds-text-subtle, #475569)',
                     minHeight: 44, // responsive: min tap target
                   }}

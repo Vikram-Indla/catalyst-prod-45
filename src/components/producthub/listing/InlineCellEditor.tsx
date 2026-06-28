@@ -39,7 +39,7 @@ const editorStyles: React.CSSProperties = {
   boxShadow: '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.15))',
   outline: 'none',
   fontFamily: 'var(--cp-font-body)',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   color: 'var(--ds-text, #172B4D)',
   background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
 };

@@ -40,7 +40,7 @@ const ITEM_BASE: React.CSSProperties = {
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   color: 'var(--ds-text, #172B4D)',
   textAlign: 'left',
 };
@@ -287,7 +287,7 @@ export function HeaderOverflowMenu({
             <div
               style={{
                 padding: '6px 12px',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtlest, #6B778C)',
               }}
             >

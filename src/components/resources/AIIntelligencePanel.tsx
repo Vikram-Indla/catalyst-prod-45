@@ -85,7 +85,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
           <button className="rai-topbar-btn" onClick={onClose}>← Back to Resources</button>
           <div style={{ flex: 1 }} />
           {stalenessLabel && (
-            <span style={{ fontSize: 11, color: 'var(--rai-ink-muted)', fontFamily: 'var(--rai-font-mono)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--rai-ink-muted)', fontFamily: 'var(--rai-font-mono)' }}>
               Data: {stalenessLabel}
             </span>
           )}
@@ -157,10 +157,10 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                 animation: 'spin 1s linear infinite',
               }} />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-link-pressed, #1e40af)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-link-pressed, #1e40af)' }}>
                   Generating AI Intelligence…
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--cp-blue)', marginTop: 2 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-blue)', marginTop: 2 }}>
                   First-time analysis — computing metrics and generating behavioral patterns.
                 </div>
               </div>

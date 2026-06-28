@@ -420,7 +420,7 @@ export function CatalystStatusPill({
                   <div
                     style={{
                       padding: '8px 8px 4px',
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                       letterSpacing: '0.06em',
@@ -481,7 +481,7 @@ export function CatalystStatusPill({
                             height: 20,
                             padding: '0 8px',
                             borderRadius: 3,
-                            fontSize: 11,
+                            fontSize: 'var(--ds-font-size-100)',
                             fontWeight: 700,
                             letterSpacing: '0.04em',
                             textTransform: 'uppercase' as const,
@@ -492,7 +492,7 @@ export function CatalystStatusPill({
                           {st}
                         </span>
                         {isSelected && (
-                          <span style={{ fontSize: 12, color: token('color.text.brand', 'var(--ds-link, #0C66E4)'), fontWeight: 600 }}>✓</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.brand', 'var(--ds-link, #0C66E4)'), fontWeight: 600 }}>✓</span>
                         )}
                       </button>
                     );
@@ -533,7 +533,7 @@ export function CatalystStatusPill({
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               outline: 'none',
             }}
@@ -567,7 +567,7 @@ export function CatalystStatusPill({
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               outline: 'none',
             }}

@@ -69,7 +69,7 @@ function FilterDropdown({
         onClick={() => setOpen(!open)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
-          padding: '5px 10px', fontSize: 12, fontWeight: 500,
+          padding: '5px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
           color: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? DK.t2 : 'var(--fg-3)'),
           background: selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : (isDark ? 'transparent' : 'var(--bg-app)'),
           border: `1px solid ${selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.3))' : (isDark ? DK.border : 'var(--divider)')}`,
@@ -77,7 +77,7 @@ function FilterDropdown({
         }}
       >
         {label}
-        {selected.length > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--ds-surface, #FFF)', borderRadius: 99, padding: '0 5px', lineHeight: '16px' }}>{selected.length}</span>}
+        {selected.length > 0 && <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--ds-surface, #FFF)', borderRadius: 99, padding: '0 5px', lineHeight: '16px' }}>{selected.length}</span>}
         <ChevronDown size={12} />
       </button>
       {open && (
@@ -89,14 +89,14 @@ function FilterDropdown({
           padding: 6, minWidth: 180, zIndex: 9999, maxHeight: 240, overflowY: 'auto',
         }}>
           {selected.length > 0 && (
-            <button onClick={() => { onClear(); }} style={{ fontSize: 11, color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', width: '100%', textAlign: 'left', marginBottom: 4 }}>
+            <button onClick={() => { onClear(); }} style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', width: '100%', textAlign: 'left', marginBottom: 4 }}>
               Clear all
             </button>
           )}
           {options.map(opt => {
             const isSelected = selected.includes(opt.id);
             return (
-              <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 12, color: isDark ? DK.t1 : 'var(--fg-1)' }}
+              <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t1 : 'var(--fg-1)' }}
                 onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--cp-bd-zone)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
@@ -144,7 +144,7 @@ export function GoalsToolbar({
             return (
               <button key={vb.key} onClick={() => onViewChange(vb.key)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
-                padding: '5px 12px', fontSize: 12,
+                padding: '5px 12px', fontSize: 'var(--ds-font-size-200)',
                 fontWeight: active ? 600 : 500,
                 color: active ? (isDark ? 'var(--bg-app)' : 'var(--fg-1)') : (isDark ? 'var(--fg-4)' : 'var(--fg-3)'),
                 background: active ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bg-app)') : 'transparent',
@@ -165,7 +165,7 @@ export function GoalsToolbar({
           <input
             type="text" placeholder="Search goals or KRs..."
             value={searchQuery} onChange={e => onSearch(e.target.value)}
-            style={{ border: 'none', outline: 'none', fontSize: 12, color: isDark ? 'var(--cp-t1)' : 'var(--fg-1)', background: 'transparent', width: '100%' }}
+            style={{ border: 'none', outline: 'none', fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--cp-t1)' : 'var(--fg-1)', background: 'transparent', width: '100%' }}
           />
           {searchQuery && (
             <button onClick={() => onSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
@@ -189,7 +189,7 @@ export function GoalsToolbar({
         {hasActiveFilters && (
           <button
             onClick={() => onFiltersChange?.({})}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', fontSize: 11, fontWeight: 500, color: 'var(--sem-danger)', background: 'var(--ds-background-danger, rgba(239,68,68,0.06))', border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))', borderRadius: 8, cursor: 'pointer' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--sem-danger)', background: 'var(--ds-background-danger, rgba(239,68,68,0.06))', border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))', borderRadius: 8, cursor: 'pointer' }}
           >
             <X size={11} /> Clear all
           </button>
@@ -198,7 +198,7 @@ export function GoalsToolbar({
         {currentView === 'tree' && (
           <button onClick={onExpandAll} style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            padding: '5px 12px', fontSize: 12, fontWeight: 500,
+            padding: '5px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
             color: isDark ? DK.t2 : 'var(--fg-3)',
             background: isDark ? 'transparent' : 'var(--bg-app)',
             border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, cursor: 'pointer',

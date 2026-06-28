@@ -291,7 +291,7 @@ export function SprintsPage() {
         <h1 style={{ fontSize: 'var(--ds-font-size-400, 24px)', fontWeight: 600, margin: 0, color: 'var(--ds-text, #292A2E)' }}>
           Sprints
         </h1>
-        <span style={{ fontSize: '14px', color: 'var(--ds-text-subtle, #505258)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #505258)' }}>
           This space has {sprints.length} sprints
         </span>
       </div>

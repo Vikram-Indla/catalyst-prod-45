@@ -142,13 +142,13 @@ function ReactionChip({
           ? 'var(--ds-text-selected, #0055CC)'
           : 'var(--ds-text-information, #0C66E4)',
         fontFamily: 'inherit',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         lineHeight: 1,
         cursor: 'pointer',
       }}
     >
-      <span style={{ fontSize: 14 }}>{emoji}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)' }}>{emoji}</span>
       <span>{count}</span>
     </button>
   );
@@ -293,7 +293,7 @@ export function CommentToolbar({
               aria-label={`React with ${emoji}`}
               title={`React with ${emoji}`}
             >
-              <span style={{ fontSize: 14, lineHeight: 1 }}>{emoji}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}>{emoji}</span>
             </IconButton>
           ))}
         </>
@@ -431,7 +431,7 @@ function MenuItem({ icon, onClick, children }: MenuItemProps) {
         color: 'var(--ds-text, #172B4D)',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 400,
         textAlign: 'left',
       }}

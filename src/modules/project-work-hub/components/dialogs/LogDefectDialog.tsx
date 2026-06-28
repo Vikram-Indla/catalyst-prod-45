@@ -92,7 +92,7 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="summary" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="summary" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Summary <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
             </label>
             <Textfield
@@ -104,7 +104,7 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="story" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="story" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Story <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
             </label>
             <Select
@@ -114,14 +114,14 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
               onChange={(opt: any) => setStory(opt ? opt.value : '')}
               placeholder="Select related story (required)"
             />
-            <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
               Defects must be linked to a Story
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label htmlFor="quarter" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              <label htmlFor="quarter" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                 Quarter <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
               </label>
               <Select
@@ -133,7 +133,7 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
               />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label htmlFor="release" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              <label htmlFor="release" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                 Release Version <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
               </label>
               <Select
@@ -147,7 +147,7 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="priority" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="priority" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Priority <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
             </label>
             <Select
@@ -160,7 +160,7 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Description
             </label>
             <TextArea

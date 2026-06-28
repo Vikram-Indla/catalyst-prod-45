@@ -173,7 +173,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
   if (source === 'catalyst') {
     return (
       <span style={{
-        fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em',
         padding: '1px 4px', borderRadius: 4,
         background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bolder, #0f766e)',
         textTransform: 'uppercase', flexShrink: 0,
@@ -182,7 +182,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
   }
   return (
     <span style={{
-      fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em',
       padding: '1px 4px', borderRadius: 4,
       background: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       textTransform: 'uppercase', flexShrink: 0,
@@ -204,7 +204,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
         <UnassignedAvatar size={24} />
-        <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
       </div>
     );
   }
@@ -217,10 +217,10 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
         <img src={avatarUrl} alt={assignee.displayName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
       ) : (
         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
         </div>
       )}
-      <span className="hi-assignee-name" style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
+      <span className="hi-assignee-name" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
     </div>
   );
 }
@@ -248,25 +248,25 @@ function PriorityBarsCell({ level }: { level: number }) {
 
 /* ── Labels pills (F9) ── */
 function LabelsPills({ labels }: { labels: string[] }) {
-  if (!labels || labels.length === 0) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
+  if (!labels || labels.length === 0) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</span>;
   const show = labels.slice(0, 2);
   const rest = labels.length - 2;
   return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', overflow: 'hidden' }}>
       {show.map(l => (
         <span key={l} style={{
-          fontSize: 10, padding: '2px 8px', borderRadius: 9999,
+          fontSize: 'var(--ds-font-size-50)', padding: '2px 8px', borderRadius: 9999,
           background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', whiteSpace: 'nowrap',
         }}>{l}</span>
       ))}
-      {rest > 0 && <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>+{rest}</span>}
+      {rest > 0 && <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)' }}>+{rest}</span>}
     </div>
   );
 }
 
 /* ── Due date with color coding (F11) ── */
 function DueDateCell({ date }: { date?: string }) {
-  if (!date) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
+  if (!date) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</span>;
   const d = new Date(date);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -275,7 +275,7 @@ function DueDateCell({ date }: { date?: string }) {
   if (dDate < today) color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
   else if (dDate.getTime() === today.getTime()) color = 'var(--ds-link, var(--ds-link, #0284c7))';
   return (
-    <span style={{ fontSize: 12, color }}>
+    <span style={{ fontSize: 'var(--ds-font-size-200)', color }}>
       {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
     </span>
   );
@@ -292,7 +292,7 @@ function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Ma
   const parentKey = item.parentKey || item.parentId;
 
   if (!parentKey) {
-    return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
+    return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</span>;
   }
 
   // Look up parent by id (which is issue_key) OR by key field
@@ -316,7 +316,7 @@ function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Ma
           height: 20,
           padding: '0 6px',
           borderRadius: 4,
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 500,
           maxWidth: 212,
           overflow: 'hidden',
@@ -351,7 +351,7 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
       onClick={() => onSort(sortKey)}
       style={{
         width, flex, height: 36, display: 'flex', alignItems: 'center', padding: '0 8px',
-        fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
         letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', minWidth: 0,
       }}
     >
@@ -576,7 +576,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
             <span className="hi-type-icon-wrapper">{item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}</span>
 
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
               {item.key}
             </span>
 
@@ -598,7 +598,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 }}
                 style={{
                   flexShrink: 0,
-                  fontSize: 9,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 700,
                   letterSpacing: '0.06em',
                   padding: '1px 6px',
@@ -641,7 +641,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'created':
         return (
           <div style={{ padding: '0 16px 0 8px', textAlign: 'right' }}>
-            <span style={{ fontSize: 12, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
               {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
           </div>
@@ -650,10 +650,10 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         return (
           <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
-            ) : <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>}
+            ) : <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</span>}
           </div>
         );
       case 'labels':
@@ -665,7 +665,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'storyPoints':
         return (
           <div style={{ padding: '0 8px', textAlign: 'right' }}>
-            <span style={{ fontSize: 12, color: item.storyPoints != null ? 'var(--fg-1)' : 'var(--fg-4)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: item.storyPoints != null ? 'var(--fg-1)' : 'var(--fg-4)' }}>
               {item.storyPoints != null ? item.storyPoints : '—'}
             </span>
           </div>
@@ -679,7 +679,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'reporter':
         return (
           <div style={{ padding: '0 8px', overflow: 'hidden' }}>
-            <span style={{ fontSize: 12, color: item.reporter ? 'var(--fg-1)' : 'var(--fg-4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: item.reporter ? 'var(--fg-1)' : 'var(--fg-4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {item.reporter || '—'}
             </span>
           </div>
@@ -687,7 +687,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'updated':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
               {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
           </div>
@@ -698,7 +698,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
               onClick={(e) => { e.stopPropagation(); openDropdown('priority', item.id); }}>
               <PriorityBarsCell level={priorityToLevel(item.priority?.name)} />
-              <span style={{ fontSize: 11, color: 'var(--fg-3)' }}>{item.priority?.name || '—'}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{item.priority?.name || '—'}</span>
             </div>
             {activeDropdown?.type === 'priority' && activeDropdown.itemId === item.id && (
               <PriorityDropdown currentPriority={item.priority?.name}
@@ -709,7 +709,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'type':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
               {item.issueType || '—'}
             </span>
           </div>
@@ -828,13 +828,13 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       {/* Footer */}
       <div style={{ height: 40, background: 'var(--bg-1)', borderTop: '1px solid var(--divider)', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
           Showing {Math.min(perPage, totalFlat)} of {totalFlat} items
         </span>
         {perPage < totalFlat && (
           <button
             onClick={() => setPerPage(p => p + 50)}
-            style={{ marginLeft: 8, background: 'none', border: 'none', padding: 0, fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', cursor: 'pointer' }}
+            style={{ marginLeft: 8, background: 'none', border: 'none', padding: 0, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', cursor: 'pointer' }}
           >
             Show more
           </button>

@@ -65,11 +65,11 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
       </div>
       {/* Label */}
       {labelText ? (
-        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: labelColor, whiteSpace: 'nowrap' }}>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: labelColor, whiteSpace: 'nowrap' }}>
           {labelText}
         </span>
       ) : (
-        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 13 }}>—</span>
+        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 'var(--ds-font-size-300)' }}>—</span>
       )}
     </div>
   );

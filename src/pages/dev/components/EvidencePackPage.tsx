@@ -37,7 +37,7 @@ export function EvidencePackPage({ itemKey }: EvidencePackPageProps) {
           </Heading>
           <Badge appearance="success">Ready</Badge>
         </Inline>
-        <div style={{ fontSize: '14px', color: 'var(--ds-icon-subtle, #626F86)', marginTop: 8 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-icon-subtle, #626F86)', marginTop: 8 }}>
           All evidence has been processed and indexed. Ready for generation.
         </div>
       </div>
@@ -151,10 +151,10 @@ function OverviewSection() {
               border: '1px solid var(--ds-border, #DFE1E6)',
             }}
           >
-            <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: 4 }}>
               {stat.label}
             </div>
-            <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
               {stat.value}
             </div>
           </div>
@@ -217,12 +217,12 @@ function DetailedSummarySection() {
               {section.title}
             </Heading>
             {section.content && (
-              <p style={{ margin: 0, color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
+              <p style={{ margin: 0, color: 'var(--ds-text, #172B4D)', fontSize: 'var(--ds-font-size-400)' }}>
                 {section.content}
               </p>
             )}
             {section.items && (
-              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
+              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: 'var(--ds-font-size-400)' }}>
                 {section.items.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -297,9 +297,9 @@ function CommentsIntelligenceSection() {
           >
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
               <Badge appearance="default">{comment.type}</Badge>
-              <span style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>{comment.author}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>{comment.author}</span>
             </div>
-            <div style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>{comment.text}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>{comment.text}</div>
           </div>
         ))}
       </Stack>
@@ -346,7 +346,7 @@ function DocumentationHealthSection() {
             >
               {issue.severity}
             </Badge>
-            <span style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>{issue.issue}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>{issue.issue}</span>
           </div>
         ))}
       </Stack>
@@ -387,11 +387,11 @@ function SourceEvidenceSection() {
             {source.included && (
               <span>✓</span>
             )}
-            <span style={{ flex: 1, fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>
+            <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>
               {source.name}
             </span>
             {source.lang && <Badge appearance="default">{source.lang}</Badge>}
-            <span style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>{source.type}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>{source.type}</span>
           </div>
         ))}
       </Stack>
@@ -415,11 +415,11 @@ function DeltaHistorySection() {
       >
         <div style={{ marginBottom: 12 }}>
           <strong>Evidence Pack v1</strong>
-          <span style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: 8 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginLeft: 8 }}>
             (current)
           </span>
         </div>
-        <div style={{ fontSize: '14px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-icon-subtle, #626F86)' }}>
           No previous version found. All sources processed for the first time.
         </div>
       </div>
@@ -489,11 +489,11 @@ function GenerateSection({ onGenerateEpics }: { onGenerateEpics: () => void }) {
             }}
             onClick={option.title === 'Generate Epics' ? onGenerateEpics : () => {}}
           >
-            <div style={{ fontSize: '28px', marginBottom: 8 }}>{option.icon}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-800)', marginBottom: 8 }}>{option.icon}</div>
             <Heading as="h3" level="h600" style={{ marginBottom: 4 }}>
               {option.title}
             </Heading>
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-icon-subtle, #626F86)' }}>
               {option.description}
             </p>
           </div>

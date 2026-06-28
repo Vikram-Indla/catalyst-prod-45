@@ -46,7 +46,7 @@ function RiskPill({ risk }: { risk: string | null }) {
     critical: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
   };
   const m = map[risk.toLowerCase()] ?? { fg: T.subtle, bg: T.sunken };
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{risk}</span>;
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{risk}</span>;
 }
 
 function titleCase(v: string | null) {
@@ -107,8 +107,8 @@ export default function AllChangesPage() {
       id: 'change', label: 'Change', flex: true, sortable: true,
       cell: ({ row }) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 600, color: T.link }}>{row.chg_number}</span>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title}</span>
+          <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link }}>{row.chg_number}</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title}</span>
         </div>
       ),
     },
@@ -117,7 +117,7 @@ export default function AllChangesPage() {
       cell: ({ row }) => {
         const external = row.source === 'external';
         return (
-          <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: external ? 'var(--ds-text-information, #0055CC)' : T.subtle, background: external ? 'var(--ds-background-information, #E9F2FE)' : T.sunken, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: external ? 'var(--ds-text-information, #0055CC)' : T.subtle, background: external ? 'var(--ds-background-information, #E9F2FE)' : T.sunken, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>
             {external ? 'External' : 'Catalyst'}
           </span>
         );
@@ -125,39 +125,39 @@ export default function AllChangesPage() {
     },
     { id: 'status', label: 'Status', width: 12, sortable: true, cell: ({ row }) => <StatusLozenge status={row.status} /> },
     { id: 'risk', label: 'Risk', width: 9, cell: ({ row }) => <RiskPill risk={row.risk_level} /> },
-    { id: 'change_type', label: 'Type', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.change_type)}</span> },
-    { id: 'target_env', label: 'Env', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.target_env)}</span> },
-    { id: 'deployment_category', label: 'Category', width: 11, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.deployment_category)}</span> },
+    { id: 'change_type', label: 'Type', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.change_type)}</span> },
+    { id: 'target_env', label: 'Env', width: 9, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.target_env)}</span> },
+    { id: 'deployment_category', label: 'Category', width: 11, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.deployment_category)}</span> },
     {
       id: 'window', label: 'Window', width: 10, sortable: true,
       accessor: (row) => row.window_start ?? row.deployment_date,
       cell: ({ row }) => {
         const d = row.window_start ?? row.deployment_date;
-        return <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{d ? format(new Date(d), 'MMM d, yyyy') : '—'}</span>;
+        return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{d ? format(new Date(d), 'MMM d, yyyy') : '—'}</span>;
       },
     },
-    { id: 'release', label: 'Release', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: row.releaseName ? T.text : T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.releaseName ?? 'Unassigned'}</span> },
+    { id: 'release', label: 'Release', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: row.releaseName ? T.text : T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.releaseName ?? 'Unassigned'}</span> },
     {
       id: 'sop', label: 'SOP', width: 8, align: 'end',
-      cell: ({ row }) => row.sopProgress ? <span style={{ fontFamily: T.mono, fontSize: 13, color: T.subtle }}>{row.sopProgress.done}/{row.sopProgress.total}</span> : <span style={{ color: T.subtlest }}>—</span>,
+      cell: ({ row }) => row.sopProgress ? <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{row.sopProgress.done}/{row.sopProgress.total}</span> : <span style={{ color: T.subtlest }}>—</span>,
     },
     {
       id: 'appr', label: 'APPR', width: 8, align: 'end',
-      cell: ({ row }) => row.apprProgress ? <span style={{ fontFamily: T.mono, fontSize: 13, color: T.subtle }}>{row.apprProgress.approved}/{row.apprProgress.total}</span> : <span style={{ color: T.subtlest }}>—</span>,
+      cell: ({ row }) => row.apprProgress ? <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{row.apprProgress.approved}/{row.apprProgress.total}</span> : <span style={{ color: T.subtlest }}>—</span>,
     },
     {
       id: 'manager', label: 'Manager', width: 11,
       cell: ({ row }) => row.manager ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           <Avatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
-          <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
         </div>
       ) : <span style={{ color: T.subtlest }}>—</span>,
     },
     {
       id: 'updated', label: 'Updated', width: 10, sortable: true,
       accessor: (row) => row.updated_at,
-      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>{row.updated_at ? `${formatDistanceToNowStrict(new Date(row.updated_at))} ago` : '—'}</span>,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{row.updated_at ? `${formatDistanceToNowStrict(new Date(row.updated_at))} ago` : '—'}</span>,
     },
   ], []);
 
@@ -172,7 +172,7 @@ export default function AllChangesPage() {
             onClick={() => canManage && openCreate('external')}
             disabled={!canManage}
             title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
           >
             Map external change
           </button>
@@ -180,7 +180,7 @@ export default function AllChangesPage() {
             onClick={() => canManage && openCreate('catalyst')}
             disabled={!canManage}
             title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
           >
             <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New change
           </button>
@@ -196,7 +196,7 @@ export default function AllChangesPage() {
             placeholder="Search changes…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ height: 32, width: 240, padding: '0 8px 0 32px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 13, outline: 'none' }}
+            style={{ height: 32, width: 240, padding: '0 8px 0 32px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', outline: 'none' }}
           />
         </div>
       </div>

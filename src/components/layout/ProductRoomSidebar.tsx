@@ -176,7 +176,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
             background: 'transparent',
             border: 'none',
             outline: 'none',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
           }}
         />
@@ -184,7 +184,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
 
       <div style={{ maxHeight: 300, overflowY: 'auto', padding: '4px 0' }}>
         {filtered.length === 0 ? (
-          <div style={{ padding: '12px 16px', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+          <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             No products found
           </div>
         ) : (
@@ -206,7 +206,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                     ? isDark ? 'var(--ds-background-selected, #1C2B41)' : 'var(--ds-background-selected, #E9F2FF)'
                     : 'transparent',
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: isCurrent ? 600 : 400,
                   color: isCurrent
                     ? 'var(--cp-text-link, var(--cp-primary-60, #0052CC))'
@@ -228,7 +228,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                     borderRadius: 4,
                     background: p.color || 'var(--cp-blue, var(--cp-primary-60, #0052CC))',
                     color: 'var(--ds-text-inverse, #FFFFFF)',
-                    fontSize: 10,
+                    fontSize: 'var(--ds-font-size-50)',
                     fontWeight: 700,
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -239,15 +239,15 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                   {p.code.slice(0, 2)}
                 </span>
                 <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: 'block', fontWeight: isCurrent ? 600 : 500, fontSize: 13 }}>
+                  <span style={{ display: 'block', fontWeight: isCurrent ? 600 : 500, fontSize: 'var(--ds-font-size-300)' }}>
                     {p.name}
                   </span>
-                  <span style={{ display: 'block', fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontFamily: 'var(--cp-font-mono)' }}>
+                  <span style={{ display: 'block', fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontFamily: 'var(--cp-font-mono)' }}>
                     {p.code}
                   </span>
                 </span>
                 {isCurrent && (
-                  <span style={{ fontSize: 10, color: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))', fontWeight: 600 }}>✓</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))', fontWeight: 600 }}>✓</span>
                 )}
               </button>
             );
@@ -299,10 +299,10 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
           }}
         />
         <Clock size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }} />
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
           Recents
         </span>
-        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)' }}>
+        <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)' }}>
           {recentItems.length}
         </span>
       </button>
@@ -337,7 +337,7 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
               }}
             >
               {item.entity_key && (
-                <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }}>
                   {item.entity_key}
                 </span>
               )}

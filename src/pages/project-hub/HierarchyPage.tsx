@@ -122,7 +122,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       onClick={onClick}
       style={{
         height: 32, padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`, display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px'),
-        fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
+        fontSize: 'var(--ds-font-size-200)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
         color: active ? token('color.text.brand', 'var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb))') : token('color.text.subtle', 'var(--cp-text-secondary)'),
         background: active ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.06))') : token('elevation.surface', 'var(--cp-bg-elevated)'),
         border: `1px solid ${active ? token('color.border.selected', 'var(--ds-background-information, rgba(37,99,235,0.3))') : token('color.border', 'var(--cp-border-default)')}`,
@@ -134,7 +134,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       {label}
       {active && (
         <span style={{
-          fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
           borderRadius: 9999, minWidth: 16, height: 16, display: 'inline-flex',
           alignItems: 'center', justifyContent: 'center', padding: '0 4px',
         }}>{values.length}</span>
@@ -228,7 +228,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 autoFocus
                 style={{
                   flex: 1, border: 'none', outline: 'none', background: 'transparent',
-                  fontSize: 12, fontFamily: 'var(--cp-font-body)', color: token('color.text', 'var(--cp-text-primary)'),
+                  fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)', color: token('color.text', 'var(--cp-text-primary)'),
                 }}
               />
             </div>
@@ -237,8 +237,8 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
 
         {/* Select all / Clear */}
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`, borderBottom: `1px solid ${token('color.border', 'var(--cp-border-default)')}` }}>
-          <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: token('color.text.brand', 'var(--ds-link, #2563eb)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
-          <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
+          <button onClick={selectAll} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: token('color.text.brand', 'var(--ds-link, #2563eb)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
+          <button onClick={clearAll} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
         </div>
 
         {/* Options */}
@@ -250,7 +250,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 key={opt}
                 style={{
                   display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-                  cursor: 'pointer', fontSize: 13, color: token('color.text', 'var(--cp-text-primary)'), fontFamily: 'var(--cp-font-body)',
+                  cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--cp-text-primary)'), fontFamily: 'var(--cp-font-body)',
                   transition: 'background 80ms', borderRadius: 0,
                   background: isSelected ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.04))') : 'transparent',
                 }}
@@ -283,7 +283,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                         <img src={avatarUrl} alt={opt} loading="lazy" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                       ) : (
                         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>{initials}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>{initials}</span>
                         </div>
                       )}
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt}</span>
@@ -308,7 +308,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 {variant === 'release' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
                     <div style={{ width: 6, height: 6, borderRadius: 4, background: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', flexShrink: 0 }} />
-                    <span style={{ fontSize: 12 }}>{opt}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)' }}>{opt}</span>
                   </div>
                 )}
 
@@ -317,12 +317,12 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
             );
           })}
           {filtered.length === 0 && (
-            <div style={{ padding: '16px 12px', fontSize: 12, color: 'var(--cp-text-tertiary)', textAlign: 'center' }}>No results found</div>
+            <div style={{ padding: '16px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary)', textAlign: 'center' }}>No results found</div>
           )}
         </div>
 
         {/* Footer: count */}
-        <div style={{ padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`, borderTop: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, fontSize: 11, color: token('color.text.subtler', 'var(--cp-text-tertiary)'), textAlign: 'center' }}>
+        <div style={{ padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`, borderTop: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtler', 'var(--cp-text-tertiary)'), textAlign: 'center' }}>
           {selected.length} of {options.length} selected
         </div>
       </div>
@@ -410,7 +410,7 @@ export default function HierarchyPage() {
             className=""
             style={{
               flex: 1, border: 'none', background: 'transparent', outline: 'none',
-              fontSize: 13, fontFamily: 'var(--cp-font-body)', color: token('color.text', 'var(--cp-text-primary)'),
+              fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)', color: token('color.text', 'var(--cp-text-primary)'),
               WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none',
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
               padding: 0,
@@ -423,7 +423,7 @@ export default function HierarchyPage() {
           onClick={handleFilterToggle}
           style={{
             height: 34, padding: `0 ${token('space.150', '12px')}`, display: 'flex', alignItems: 'center', gap: token('space.075', '6px'),
-            fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
             color: activeFilterCount > 0 ? token('color.text.brand', 'var(--ds-link, #2563eb)') : token('color.text.subtle', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))'),
             background: activeFilterCount > 0 ? token('color.background.selected', 'var(--cp-interact-selected)') : token('elevation.surface', 'var(--cp-bg-elevated)'),
             border: `1px solid ${activeFilterCount > 0 ? token('color.border.selected', 'var(--ds-link, #2563eb)') : token('color.border', 'var(--cp-border-default)')}`,
@@ -434,7 +434,7 @@ export default function HierarchyPage() {
           Filter
           {activeFilterCount > 0 && (
             <span style={{
-              fontSize: 10, fontWeight: 700, background: token('color.background.brand.bold', 'var(--ds-link, #2563eb)'), color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'),
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: token('color.background.brand.bold', 'var(--ds-link, #2563eb)'), color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'),
               borderRadius: 9999, minWidth: 18, height: 18, display: 'inline-flex',
               alignItems: 'center', justifyContent: 'center', padding: `0 ${token('space.050', '4px')}`,
             }}>{activeFilterCount}</span>
@@ -573,9 +573,9 @@ export default function HierarchyPage() {
             <TableSkeleton rows={10} />
           ) : isError ? (
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>Failed to load work items</p>
-              <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', margin: 0 }}>There was an error fetching the work items.</p>
-              <button onClick={() => refetch()} style={{ height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'), background: token('color.background.brand.bold', 'var(--ds-link, #2563eb)'), border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>Failed to load work items</p>
+              <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary)', margin: 0 }}>There was an error fetching the work items.</p>
+              <button onClick={() => refetch()} style={{ height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'), background: token('color.background.brand.bold', 'var(--ds-link, #2563eb)'), border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: token('space.075', '6px') }}>
                 <RefreshCw size={14} /> Retry
               </button>
             </div>
@@ -584,15 +584,15 @@ export default function HierarchyPage() {
               <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9))))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Search size={20} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
               </div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0 }}>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0 }}>
                 {search || activeFilterCount > 0 ? 'No items match your filters' : 'No work items found'}
               </p>
-              <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', margin: 0 }}>
+              <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary)', margin: 0 }}>
                 {search || activeFilterCount > 0 ? 'Try adjusting your search or filters.' : `No Jira issues found for ${projectKey?.toUpperCase()}.`}
               </p>
               {(search || activeFilterCount > 0) && (
                 <button onClick={handleClearAllFilters} style={{
-                  height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
+                  height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), background: token('elevation.surface', 'var(--cp-bg-elevated)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 6, cursor: 'pointer',
                 }}>
                   Clear filters

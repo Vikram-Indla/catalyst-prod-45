@@ -343,7 +343,7 @@ export function T10WeekPage() {
             alignItems: 'center', 
             gap: 6, 
             padding: '10px 20px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
             color: 'var(--ds-text-subtlest, #64748b)',
             background: 'var(--ds-surface-sunken, #f1f5f9)',
