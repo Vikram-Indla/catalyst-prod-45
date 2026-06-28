@@ -97,7 +97,7 @@ function SeverityBadge({ severity }: { severity: string }) {
       case 'SEV4':
       default:
         // Gray variant for dark mode
-        return "bg-[var(--ds-background-neutral-subtle, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)] dark:bg-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border dark:border-[var(--ds-text-subtle, #44546F)]";
+        return "bg-[var(--ds-background-neutral-subtle, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border dark:border-[var(--ds-text-subtle, #44546F)]";
     }
   };
   
@@ -168,10 +168,10 @@ export const KanbanCard = memo(function KanbanCard({
         "cursor-pointer transition-all group",
         isDragging && "opacity-50",
         // Dark mode compliant backgrounds
-        "bg-white dark:bg-[var(--ds-text, #172B4D)]",
-        "border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-text, #172B4D)]",
+        "bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]",
+        "border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]",
         // Hover state
-        "hover:border-[var(--ds-background-neutral-hovered, #D4D4D4)] dark:hover:border-[var(--ds-text-subtle, #44546F)] dark:hover:bg-[var(--ds-text, #172B4D)]",
+        "hover:border-[var(--ds-background-neutral-hovered, #D4D4D4)] dark:hover:border-[var(--ds-border-bold,#454545)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
         // Shadow
         "shadow-[0_1px_3px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.05))),0_1px_2px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.03)))]",
         "dark:shadow-none",

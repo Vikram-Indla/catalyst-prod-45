@@ -14,7 +14,7 @@ export const KanbanBreadcrumb = memo(function KanbanBreadcrumb() {
       className={cn(
         "px-4 sm:px-6 py-2",
         "border-b border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-text, #172B4D)]",
-        "bg-[var(--ds-surface-sunken, #FAFAFA)] dark:bg-[var(--ds-text, #172B4D)]"
+        "bg-[var(--ds-surface-sunken, #FAFAFA)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]"
       )}
     >
       <nav className="flex items-center gap-2 text-sm">

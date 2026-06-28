@@ -255,7 +255,7 @@ export function CatalystTable<T>({
         <div ref={scrollRef} className="w-full overflow-x-auto">
           {/* Header - 32px height */}
           <div
-            className="grid items-center h-9 bg-muted dark:bg-[var(--ds-text, #172B4D)] border-b-2 border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] sticky top-0 z-20"
+            className="grid items-center h-9 bg-muted dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] border-b-2 border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] sticky top-0 z-20"
             style={{ gridTemplateColumns: gridTemplate, minWidth: 'max-content' }}
           >
             {columns.map((col, idx) => {
@@ -268,7 +268,7 @@ export function CatalystTable<T>({
                     idx === 0 && "pl-4",
                     col.align === 'center' && "justify-center",
                     col.align === 'right' && "justify-end",
-                    stickyFirst && "sticky left-0 z-30 border-r border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-muted dark:bg-[var(--ds-text, #172B4D)]"
+                    stickyFirst && "sticky left-0 z-30 border-r border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-muted dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]"
                   )}
                 >
                   <span className={cn(HEADER_STYLES, "text-muted-foreground truncate")}>
