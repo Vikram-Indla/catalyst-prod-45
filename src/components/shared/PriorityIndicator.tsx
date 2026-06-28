@@ -77,8 +77,8 @@ interface PriorityIndicatorProps {
   showLabel?: boolean;
   /** Dark mode flag — auto-detected from CSS var if omitted */
   isDark?: boolean;
-  /** Font size for label (default: 13) */
-  fontSize?: number;
+  /** Font size for label */
+  fontSize?: string | number;
   /** Bar dimensions */
   barWidth?: number;
   barHeight?: number;
@@ -88,7 +88,7 @@ export function PriorityIndicator({
   priority: raw,
   showLabel = true,
   isDark = false,
-  fontSize={'var(--ds-font-size-300)'},
+  fontSize = 'var(--ds-font-size-300)',
   barWidth,
   barHeight,
 }: PriorityIndicatorProps) {
