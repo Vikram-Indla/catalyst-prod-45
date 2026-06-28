@@ -75,14 +75,11 @@ export function CatyAiSearch({
         padding: "0 8px 0 6px",
         boxSizing: "border-box",
         background: "var(--ds-surface)",
-        border: `1px solid ${
-          focused
-            ? "var(--ds-border-focused)"
-            : "var(--ds-border)"
-        }`,
+        border: `1px solid var(--ds-border)`,
         borderRadius: 8,
-        transition: "border-color 120ms ease",
+        transition: "all 120ms ease",
         fontFamily: "var(--cp-font-body)",
+        boxShadow: focused ? `0 0 0 2px var(--ds-border-focused)` : "none",
       }}
     >
       <Tooltip content="Ask Caty">
