@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { WorkItem } from '@/types/workhub';
+import type { WorkItem } from '@/types/workItem.types';
 
 export interface JQLValuePool {
   status: string[];
