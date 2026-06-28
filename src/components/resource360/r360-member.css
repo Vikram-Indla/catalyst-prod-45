@@ -536,10 +536,12 @@
 }
 
 /* ─── RING VIEW ─── */
+/* r360-layout-critical: The ring canvas uses JS-measured width (W) to position 8 cards at percentage-based slots.
+   Do not add width/min-width constraints. The container must adapt to available space so JS positioning calculations
+   match actual rendered dimensions. See src/pages/r360-member/helpers.ts CARD_W/CARD_H and RingView.tsx measure(). */
 #r360-root .r3-ring-canvas {
   position: relative !important;
   height: 620px !important;
-  min-width: 1100px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
   border-radius: 12px !important;
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) !important;

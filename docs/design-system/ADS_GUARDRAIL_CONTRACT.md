@@ -273,6 +273,28 @@ Violations that block commit/merge:
 
 ---
 
+## Special Cases & Layout-Critical Components
+
+### Resource 360° Ring View (`r360-member`)
+
+**Component:** Ring/spider diagram with force-directed layout (avatar center, 8 orbital cards)
+
+**Layout-Critical Properties:** Card dimensions (width, height, padding) in `r360-member.css` are used by JS layout engine in `src/pages/r360-member/helpers.ts` (CARD_W=228px, CARD_H=145px) to calculate connector spokes and card slot positions.
+
+**Guardrail:** 
+- **DO NOT** add `width`, `min-width`, `max-width` constraints to `.r3-ring-canvas`. Container must adapt to available space.
+- **DO NOT** change CARD_W/CARD_H CSS values without updating corresponding JS constants in `helpers.ts`.
+- **DO NOT** modify `padding`, `border`, `box-sizing` on `.r3-ring-card` without re-measuring JS layout impact.
+- Color properties (background, border-color) use ADS tokens as normal.
+
+**Why:** CSS width constraints force container larger than JS-measured width, causing card positions (calculated from percentage-based SLOT_POSITIONS × measured W) to render outside visible bounds → clipping, text overflow, layout collapse.
+
+**Precedent:** CAT-R360-LAYOUT-20260629-001 (min-width constraint removed, layout restored)
+
+**Testing:** Visual regression test on `/for-you/r360` required for any `r360-member.css` changes. Verify: avatar centered, all 8 cards visible without clipping, spokes connecting correctly.
+
+---
+
 ## Support & Escalation
 
 **Questions or blockers?**
