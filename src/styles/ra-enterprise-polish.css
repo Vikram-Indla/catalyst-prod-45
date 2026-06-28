@@ -267,7 +267,7 @@
 .ra-polish [class*="DepartmentGroup"] td,
 .ra-polish tr td[colspan] {
   font-size: 11px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
   letter-spacing: 0.75px !important;
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   padding: 16px 16px 10px !important;

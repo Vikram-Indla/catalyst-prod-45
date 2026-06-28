@@ -109,7 +109,7 @@
 
 #r360-root .r3-week-strip-left {
   font-size: 13px !important;
-  font-weight: 650 !important;
+  font-weight: 600 !important;
   color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A))) !important;
   white-space: nowrap !important;
 }
@@ -577,7 +577,7 @@
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF)))) !important;
   font-family: var(--cp-font-heading);
   font-size: 24px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
 }
 
 #r360-root .r3-ring-card {

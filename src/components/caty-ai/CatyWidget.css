@@ -162,7 +162,7 @@
 .caty-header-title {
   font-family: var(--cp-font-body);
   font-size: 1.25rem !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
   color: var(--ds-text, #0f172a) !important;
   letter-spacing: -0.02em !important;
   line-height: 1.2 !important;

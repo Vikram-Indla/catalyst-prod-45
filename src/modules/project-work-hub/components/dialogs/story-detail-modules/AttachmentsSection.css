@@ -67,7 +67,7 @@
 .att-heading-label {
   display: block;
   font-size: 16px;
-  font-weight: 653;
+  font-weight: 600;
   color: var(--ds-text, #292A2E);
   line-height: 20px;
   user-select: none;

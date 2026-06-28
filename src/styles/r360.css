@@ -19,7 +19,7 @@
 /* ── Layout ── */
 .r3-page { padding: 20px 16px; max-width: none; margin: 0; }
 .r3-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
-.r3-title { font-size: 24px; font-weight: 800; color: var(--ds-text, #172B4D); letter-spacing: -0.5px; margin: 0; }
+.r3-title { font-size: 24px; font-weight: 700; color: var(--ds-text, #172B4D); letter-spacing: -0.5px; margin: 0; }
 .r3-count { font-size: 14px; font-weight: 500; color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 
 /* ── Toolbar ── */

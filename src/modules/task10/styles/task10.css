@@ -331,7 +331,7 @@
   justify-content: center !important;
   color: white !important;
   font-size: 18px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
 }
 
 .t10-module .t10-logo-text {
@@ -1585,7 +1585,7 @@
   align-items: center !important;
   justify-content: center !important;
   font-size: 14px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
   flex-shrink: 0 !important;
 }
 
@@ -1880,7 +1880,7 @@
   align-items: center !important;
   justify-content: center !important;
   font-size: 15px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
 }
 
 .t10-panel-title-text {
@@ -2362,7 +2362,7 @@
 
 .t10-checkout-stat-value {
   font-size: 28px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
   margin-bottom: 4px !important;
 }
 

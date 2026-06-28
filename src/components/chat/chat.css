@@ -1110,7 +1110,7 @@
 .cc-empty-state__heading {
   margin: 0;
   font-size: 16px;
-  font-weight: 653;
+  font-weight: 600;
   color: var(--ds-text, #172B4D);
 }
 

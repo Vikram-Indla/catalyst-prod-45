@@ -2117,7 +2117,7 @@ html:has(body[data-scroll-locked]) {
    Inter:          Body, UI labels, field values, navigation, form controls
    JetBrains Mono: Data, code, IDs, monospace content
    ─────────────────────────────────────────────────────────────────────────
-   Body emphasis:  font-weight 650 (NOT 700) per CLAUDE.md
+   Body emphasis:  font-weight 600 (semibold) per CLAUDE.md
    Uppercase:      Table headers + sidebar section labels ONLY
    ════════════════════════════════════════════════════════════════════════════ */
 
@@ -2133,12 +2133,12 @@ html:has(body[data-scroll-locked]) {
 
   /* ── HEADING STYLES (Charlie Display) ── */
 
-  /* Page Title — Charlie Display 24px/28px weight 650 */
+  /* Page Title — Charlie Display 24px/28px weight 600 */
   .c-page-title {
     font-family: var(--cp-font-heading);
     font-size: 1.5rem; /* 24px */
     line-height: 1.75rem; /* 28px */
-    font-weight: 650;
+    font-weight: 600;
     letter-spacing: -0.01em;
     color: hsl(var(--text-primary));
   }
@@ -2217,12 +2217,12 @@ html:has(body[data-scroll-locked]) {
     color: hsl(var(--text-primary));
   }
 
-  /* Body Emphasis — Charlie Text 14px weight 650 (NOT 700) */
+  /* Body Emphasis — Charlie Text 14px weight 600 (semibold) */
   .c-body-emphasis {
     font-family: var(--cp-font-body);
     font-size: 0.875rem; /* 14px */
     line-height: 1.25rem; /* 20px */
-    font-weight: 650;
+    font-weight: 600;
     color: hsl(var(--text-primary));
   }
 
@@ -2307,7 +2307,7 @@ html:has(body[data-scroll-locked]) {
     font-family: var(--cp-font-body);
     font-size: 0.75rem; /* 12px */
     line-height: 1rem; /* 16px */
-    font-weight: 650;
+    font-weight: 600;
     letter-spacing: 0.03em;
     text-transform: uppercase;
     color: hsl(var(--text-secondary));
@@ -3889,7 +3889,7 @@ input[type="range"]::-moz-range-thumb {
   );
   --cp-font-weight-regular: 400;
   --cp-font-weight-medium: 500;
-  --cp-font-weight-semibold: 650;
+  --cp-font-weight-semibold: 600;
   --cp-font-weight-bold: 700;
 }
 
@@ -6342,7 +6342,7 @@ html.dark .cp-feed-type-tile,
 }
 .dark .jus-stat-value {
   color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
-  font-weight: 650;
+  font-weight: 600;
 }
 .dark .jus-stat-label {
   color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86)) !important;
@@ -6516,7 +6516,7 @@ html.dark .cp-feed-type-tile,
 .dark .jus-stat-value,
 [data-theme="dark"] .jus-stat-value {
   color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
-  font-weight: 650;
+  font-weight: 600;
 }
 .dark .jus-stat-label,
 [data-theme="dark"] .jus-stat-label {
@@ -7344,7 +7344,7 @@ html[data-presentation="true"]
    jira-compare Patch #1+#2 (2026-04-28) — Atlaskit Lozenge Jira parity
    ────────────────────────────────────────────────────────────────────────
    Atlaskit @atlaskit/lozenge v11 renders a two-span nesting where the
-   inner label span carries `text-transform: uppercase`, `font-weight: 653`,
+   inner label span carries `text-transform: uppercase`, `font-weight: 600`,
    and `letter-spacing > 0`. Modern Jira renders status/lozenges in
    sentence case ("In QA", "Ready for QA", "Done"). We override at the
    wrapper attribute we add in components/ads/Lozenge and

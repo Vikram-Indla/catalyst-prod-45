@@ -97,7 +97,7 @@
 /* ─── HUB BADGE — PUNCHY ─── */
 .r360-root .r360-hub-badge {
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--ds-surface, #fff);
   padding: 2px 7px;
   border-radius: 4px;
@@ -108,7 +108,7 @@
 /* ─── PRIORITY INDICATOR ─── */
 .r360-root .r360-pri {
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -130,7 +130,7 @@
 /* ─── SECTION HEADER ─── */
 .r360-root .r360-section-hdr {
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--r360-text-1);
   text-transform: uppercase;
   letter-spacing: 0.08em;

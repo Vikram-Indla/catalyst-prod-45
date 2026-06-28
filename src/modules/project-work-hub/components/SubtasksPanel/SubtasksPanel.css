@@ -64,7 +64,7 @@
    Corrects 2026-05-08 14/600 lesson which measured wrapper levels. */
 .sp-title {
   font-size: 16px;
-  font-weight: 653;
+  font-weight: 600;
   color: var(--ds-text, #292A2E);
   padding: 0 4px;
   line-height: 20px;
@@ -172,7 +172,7 @@
   padding: 0 12px !important;
   color: var(--ds-text-subtle, #505258) !important;
   font-size: 12px !important;
-  font-weight: 653 !important;
+  font-weight: 600 !important;
   box-shadow: inset 0 -1px 0 0 var(--ds-border, #EBECF0) !important;
 }
 /* 2026-06-23 — Subtasks body rows have no expand-chevron column, so the
