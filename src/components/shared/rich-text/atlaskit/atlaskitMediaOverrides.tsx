@@ -129,7 +129,7 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }) {
         onClick={onClose}
         style={{
           position: 'absolute', top: 16, right: 16,
-          color: 'var(--ds-surface, #fff)', fontSize: 24, cursor: 'pointer',
+          color: 'var(--ds-surface)', fontSize: 24, cursor: 'pointer',
           background: 'transparent', border: 'none', zIndex: 1001,
         }}
       >
@@ -179,9 +179,9 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
     return (
       <div style={{
         margin: '8px 0', padding: '12px 16px', borderRadius: 'var(--ds-border-radius, 4px)',
-        background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-        fontSize: 14, color: 'var(--ds-text, #292A2E)',
+        background: 'var(--ds-background-neutral-subtle)',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+        fontSize: 14, color: 'var(--ds-text)',
         display: 'inline-flex', alignItems: 'center', gap: 12, maxWidth: '100%',
         fontFamily: '"Atlassian Sans", -apple-system, sans-serif',
       }}>
@@ -192,12 +192,12 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
         </svg>
         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <span style={{ fontWeight: 500 }}>{filename}</span>
-          <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginLeft: 8, fontSize: 12 }}>
+          <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', marginLeft: 8, fontSize: 12 }}>
             hosted on Jira · auth required
           </span>
         </span>
         <a href={openHref} target="_blank" rel="noopener noreferrer"
-           style={{ color: 'var(--ds-text-brand, #0C66E4)', fontSize: 13, textDecoration: 'none' }}
+           style={{ color: 'var(--ds-text-brand)', fontSize: 13, textDecoration: 'none' }}
            onClick={(e) => e.stopPropagation()}>
           {issueKey ? `Open in Jira ↗` : `Open ↗`}
         </a>
@@ -215,10 +215,10 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
       {!loaded && (
         <div style={{
           width: '100%', height: 200, borderRadius: 3,
-          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <Loader2 size={24} style={{ color: 'var(--ds-text-subtlest, #6B6E76)', animation: 'spin 0.86s cubic-bezier(0.4,0.15,0.6,0.85) infinite' }} />
+          <Loader2 size={24} style={{ color: 'var(--ds-text-subtlest)', animation: 'spin 0.86s cubic-bezier(0.4,0.15,0.6,0.85) infinite' }} />
         </div>
       )}
       {/* Natural proportional rendering — width:100% of container, height:auto.
@@ -249,7 +249,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
             background: 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.54))',
             border: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 0.15s',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', transition: 'background 0.15s',
             zIndex: 2,
           }}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(9, 30, 66, 0.71))'; }}

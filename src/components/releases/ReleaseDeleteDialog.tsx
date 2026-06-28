@@ -57,10 +57,10 @@ export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess, confi
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
                 You are about to permanently delete <strong>{release.name}</strong>. This action cannot be undone.
               </p>
-              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #505258)' }}>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                 Type <strong>delete</strong> below to confirm.
               </p>
               <Textfield

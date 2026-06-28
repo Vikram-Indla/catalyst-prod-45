@@ -64,163 +64,163 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
   // ── Epic: purple lightning bolt ──
   epic: {
     label: 'Epic',
-    color: 'var(--ds-text-discovery, #6554C0)',
+    color: 'var(--ds-text-discovery)',
     iconFile: 'epic',
   },
 
   // ── Task: blue empty square ──
   task: {
     label: 'Task',
-    color: 'var(--ds-link, #2684FF)',
+    color: 'var(--ds-link)',
     iconFile: 'task',
   },
 
   // ── Story: green bookmark ──
   story: {
     label: 'Story',
-    color: 'var(--ds-text-success, #36B37E)',
+    color: 'var(--ds-text-success)',
     iconFile: 'story',
   },
 
   // ── Incident: red beacon ──
   incident: {
     label: 'Incident',
-    color: 'var(--ds-text-danger, #FF5630)',
+    color: 'var(--ds-text-danger)',
     iconFile: 'incident',
   },
   'production incident': {
     label: 'Production Incident',
-    color: 'var(--ds-text-danger, #FF5630)',
+    color: 'var(--ds-text-danger)',
     iconFile: 'incident',
   },
 
   // ── Bug / QA Bug / Defect: red filled circle ──
   bug: {
     label: 'Bug',
-    color: 'var(--ds-text-danger, #FF5630)',
+    color: 'var(--ds-text-danger)',
     iconFile: 'bug',
   },
   'qa bug': {
     label: 'QA Bug',
-    color: 'var(--ds-text-danger, #FF5630)',
+    color: 'var(--ds-text-danger)',
     iconFile: 'bug',
   },
   defect: {
     label: 'Defect',
-    color: 'var(--ds-text-danger, #FF5630)',
+    color: 'var(--ds-text-danger)',
     iconFile: 'bug',
   },
 
   // ── Problem: red circle with slash ──
   problem: {
     label: 'Problem',
-    color: 'var(--ds-text-danger, #FF5630)',
+    color: 'var(--ds-text-danger)',
     iconFile: 'problem',
   },
 
   // ── Question: purple circle with ? ──
   question: {
     label: 'Question',
-    color: 'var(--ds-text-discovery, #6554C0)',
+    color: 'var(--ds-text-discovery)',
     iconFile: 'question',
   },
 
   // ── Changes / Change Request: amber arrows ──
   changes: {
     label: 'Changes',
-    color: 'var(--ds-text-warning, #FFAB00)',
+    color: 'var(--ds-text-warning)',
     iconFile: 'changes',
   },
   'change request': {
     label: 'Change Request',
-    color: 'var(--ds-text-warning, #FFAB00)',
+    color: 'var(--ds-text-warning)',
     iconFile: 'changes',
   },
 
   // ── Issue: blue square with checkmark ──
   issue: {
     label: 'Issue',
-    color: 'var(--ds-link, #2684FF)',
+    color: 'var(--ds-link)',
     iconFile: 'issue',
   },
 
   // ── New Feature / Feature: green plus ──
   'new feature': {
     label: 'New Feature',
-    color: 'var(--ds-text-success, #36B37E)',
+    color: 'var(--ds-text-success)',
     iconFile: 'new-feature',
   },
   feature: {
     label: 'Feature',
-    color: 'var(--ds-text-success, #36B37E)',
+    color: 'var(--ds-text-success)',
     iconFile: 'new-feature',
   },
 
   // ── Improvement: green up arrow ──
   improvement: {
     label: 'Improvement',
-    color: 'var(--ds-text-success, #36B37E)',
+    color: 'var(--ds-text-success)',
     iconFile: 'improvement',
   },
 
   // ── Subtask / Sub-task: blue two squares ──
   subtask: {
     label: 'Subtask',
-    color: 'var(--ds-link, #2684FF)',
+    color: 'var(--ds-link)',
     iconFile: 'subtask',
   },
   'sub-task': {
     label: 'Sub-task',
-    color: 'var(--ds-link, #2684FF)',
+    color: 'var(--ds-link)',
     iconFile: 'subtask',
   },
 
   // ── Business Gap: purple delta (Δ = gap/difference) ──
   'business gap': {
     label: 'Business Gap',
-    color: 'var(--ds-text-discovery, #6554C0)',
+    color: 'var(--ds-text-discovery)',
     iconFile: 'business-gap',
   },
 
   // ── API Requirement: uses task ──
   'api requirement': {
     label: 'API Requirement',
-    color: 'var(--ds-link, #2684FF)',
+    color: 'var(--ds-link)',
     iconFile: 'task',
   },
 
   // ── BRD Task: BR subtask category (purple document) ──
   'brd task': {
     label: 'BRD Task',
-    color: 'var(--ds-text-discovery, #6554C0)',
+    color: 'var(--ds-text-discovery)',
     iconFile: 'subtask',
   },
 
   // ── UAT Finding: BR subtask category (purple document + check) ──
   'uat finding': {
     label: 'UAT Finding',
-    color: 'var(--ds-text-discovery, #6554C0)',
+    color: 'var(--ds-text-discovery)',
     iconFile: 'subtask',
   },
 
   // ── Backend / Frontend / Integration / Figma: uses subtask ──
-  backend: { label: 'Backend', color: 'var(--ds-text, #5243AA)', iconFile: 'backend' },
-  frontend: { label: 'Frontend', color: 'var(--ds-text, #00B8D9)', iconFile: 'frontend' },
-  integration: { label: 'Integration', color: 'var(--ds-link, #2684FF)', iconFile: 'subtask' },
-  figma: { label: 'Figma', color: 'var(--ds-link, #2684FF)', iconFile: 'subtask' },
-  'entity figma': { label: 'Entity FIGMA', color: 'var(--ds-link, #2684FF)', iconFile: 'subtask' },
+  backend: { label: 'Backend', color: 'var(--ds-text)', iconFile: 'backend' },
+  frontend: { label: 'Frontend', color: 'var(--ds-text)', iconFile: 'frontend' },
+  integration: { label: 'Integration', color: 'var(--ds-link)', iconFile: 'subtask' },
+  figma: { label: 'Figma', color: 'var(--ds-link)', iconFile: 'subtask' },
+  'entity figma': { label: 'Entity FIGMA', color: 'var(--ds-link)', iconFile: 'subtask' },
 
   // ── Business Request: amber lightbulb ──
   'business request': {
     label: 'Business Request',
-    color: 'var(--ds-text-warning, #FFAB00)',
+    color: 'var(--ds-text-warning)',
     iconFile: 'business-request',
   },
 
   // ── Release: teal stopwatch ──
   release: {
     label: 'Release',
-    color: 'var(--ds-icon-success, #0C7A6D)',
+    color: 'var(--ds-icon-success)',
     iconFile: 'release',
   },
 };
@@ -306,7 +306,7 @@ export function resolveJiraTypeConfig(issueType: string): JiraTypeConfig {
   // Fallback → task icon
   return {
     label: issueType || 'Unknown',
-    color: 'var(--ds-text-subtlest, #6B778C)',
+    color: 'var(--ds-text-subtlest)',
     iconFile: 'task',
   };
 }
@@ -346,26 +346,26 @@ const INLINE_SVGS: Record<string, (size: number) => React.ReactNode> = {
    * Frontend = monitor (cyan), Backend = server stack (indigo). */
   frontend: (size) => (
     <svg width={size} height={size} viewBox="0 0 16 16" role="img" aria-label="Frontend">
-      <rect width="16" height="16" rx="2" fill="var(--ds-text, #00B8D9)" />
-      <rect x="3" y="4" width="10" height="6" rx="0.5" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.2" />
-      <rect x="6.5" y="11" width="3" height="1.6" fill="var(--ds-surface, #FFFFFF)" />
-      <rect x="5" y="12.6" width="6" height="0.8" fill="var(--ds-surface, #FFFFFF)" />
+      <rect width="16" height="16" rx="2" fill="var(--ds-text)" />
+      <rect x="3" y="4" width="10" height="6" rx="0.5" fill="none" stroke="var(--ds-surface)" strokeWidth="1.2" />
+      <rect x="6.5" y="11" width="3" height="1.6" fill="var(--ds-surface)" />
+      <rect x="5" y="12.6" width="6" height="0.8" fill="var(--ds-surface)" />
     </svg>
   ),
   backend: (size) => (
     <svg width={size} height={size} viewBox="0 0 16 16" role="img" aria-label="Backend">
-      <rect width="16" height="16" rx="2" fill="var(--ds-text, #5243AA)" />
-      <ellipse cx="8" cy="4.5" rx="3.5" ry="1.4" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.1" />
-      <path d="M4.5 4.5v3c0 .77 1.57 1.4 3.5 1.4s3.5-.63 3.5-1.4v-3" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.1" />
-      <path d="M4.5 7.5v3c0 .77 1.57 1.4 3.5 1.4s3.5-.63 3.5-1.4v-3" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.1" />
+      <rect width="16" height="16" rx="2" fill="var(--ds-text)" />
+      <ellipse cx="8" cy="4.5" rx="3.5" ry="1.4" fill="none" stroke="var(--ds-surface)" strokeWidth="1.1" />
+      <path d="M4.5 4.5v3c0 .77 1.57 1.4 3.5 1.4s3.5-.63 3.5-1.4v-3" fill="none" stroke="var(--ds-surface)" strokeWidth="1.1" />
+      <path d="M4.5 7.5v3c0 .77 1.57 1.4 3.5 1.4s3.5-.63 3.5-1.4v-3" fill="none" stroke="var(--ds-surface)" strokeWidth="1.1" />
     </svg>
   ),
   epic: (size) => (
     <svg width={size} height={size} viewBox="0 0 16 16" role="img" aria-label="Epic">
-      <rect width="16" height="16" rx="2" fill="var(--ds-text-discovery, #904EE2)" />
+      <rect width="16" height="16" rx="2" fill="var(--ds-text-discovery)" />
       <path
         d="M8.6 2.9a.4.4 0 0 0-.75-.17L4.4 8.35a.4.4 0 0 0 .34.61h2.1l-.47 4.13a.4.4 0 0 0 .75.26l3.95-5.72a.4.4 0 0 0-.33-.63h-2.3L8.6 2.9z"
-        fill="var(--ds-surface, #FFFFFF)"
+        fill="var(--ds-surface)"
       />
     </svg>
   ),

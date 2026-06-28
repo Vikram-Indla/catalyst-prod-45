@@ -62,9 +62,9 @@ const LAYOUT_WRAP_RIGHT = 'wrap-right' as const;
 type BorderColor = 'light' | 'medium' | 'dark';
 type BorderSize = 'small' | 'medium' | 'large';
 const BORDER_COLOR_HEX: Record<BorderColor, string> = {
-  light: 'var(--ds-border-disabled, #DCDFE4)',
-  medium: 'var(--ds-text-disabled, #8590A2)',
-  dark: 'var(--ds-surface, #FFFFFF)',
+  light: 'var(--ds-border-disabled)',
+  medium: 'var(--ds-text-disabled)',
+  dark: 'var(--ds-surface)',
 };
 const BORDER_SIZE_PX: Record<BorderSize, number> = {
   small: 1,
@@ -73,15 +73,15 @@ const BORDER_SIZE_PX: Record<BorderSize, number> = {
 };
 
 const T = {
-  surface: 'var(--ds-surface-overlay, #FFFFFF)',
-  border: 'var(--ds-border, #DFE1E6)',
-  textSubtle: 'var(--ds-text-subtle, #44546F)',
-  textBold: 'var(--ds-text, #172B4D)',
-  hoverBg: 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)',
-  activeBg: 'var(--ds-background-selected, #E9F2FF)',
-  activeText: 'var(--ds-text-selected, #0C66E4)',
-  dangerText: 'var(--ds-text-danger, #AE2A19)',
-  dangerBg: 'var(--ds-background-danger, #FFEDEB)',
+  surface: 'var(--ds-surface-overlay)',
+  border: 'var(--ds-border)',
+  textSubtle: 'var(--ds-text-subtle)',
+  textBold: 'var(--ds-text)',
+  hoverBg: 'var(--ds-background-neutral-subtle-hovered)',
+  activeBg: 'var(--ds-background-selected)',
+  activeText: 'var(--ds-text-selected)',
+  dangerText: 'var(--ds-text-danger)',
+  dangerBg: 'var(--ds-background-danger)',
   shadow: '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
 };
 
@@ -1060,7 +1060,7 @@ function AddAltPanel({
             cursor: 'pointer',
             padding: '6px 10px',
             fontSize: 'var(--ds-font-size-300)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--ds-text-inverse)',
             background: T.activeText,
             borderRadius: 3,
             fontWeight: 500,

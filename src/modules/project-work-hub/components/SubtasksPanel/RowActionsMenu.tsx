@@ -31,13 +31,13 @@ export function RowActionsMenu({ onOpen, onRename, onDelete }: RowActionsMenuPro
     >
       <DropdownItemGroup>
         <DropdownItem
-          elemBefore={<ExternalLink size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />}
+          elemBefore={<ExternalLink size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />}
           onClick={() => onOpen()}
         >
           Open subtask
         </DropdownItem>
         <DropdownItem
-          elemBefore={<Pencil size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />}
+          elemBefore={<Pencil size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />}
           onClick={() => onRename()}
         >
           Rename
@@ -45,10 +45,10 @@ export function RowActionsMenu({ onOpen, onRename, onDelete }: RowActionsMenuPro
       </DropdownItemGroup>
       <DropdownItemGroup>
         <DropdownItem
-          elemBefore={<Trash2 size={14} color="var(--ds-text-danger, #AE2A19)" />}
+          elemBefore={<Trash2 size={14} color="var(--ds-text-danger)" />}
           onClick={() => onDelete()}
         >
-          <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>Delete</span>
+          <span style={{ color: 'var(--ds-text-danger)' }}>Delete</span>
         </DropdownItem>
       </DropdownItemGroup>
     </DropdownMenu>

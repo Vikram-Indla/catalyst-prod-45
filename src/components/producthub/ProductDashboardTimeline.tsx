@@ -7,33 +7,33 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // ─── Atlassian Design Tokens ──────────────────────────────────────────────────
 const T = {
-  card:           'var(--ds-surface-raised, #FFFFFF)',
-  sunken:         'var(--ds-surface-sunken, #F7F8F9)',
-  border:         'var(--ds-border, #DFE1E6)',
-  borderSub:      'var(--ds-border-subtle, #F1F2F4)',
-  text:           'var(--ds-text, #172B4D)',
-  subtle:         'var(--ds-text-subtle, #44546F)',
-  subtlest:       'var(--ds-text-subtlest, #626F86)',
-  neutral:        'var(--ds-background-neutral, #F1F2F4)',
-  textInverse:    'var(--ds-text-inverse, #FFFFFF)',
+  card:           'var(--ds-surface-raised)',
+  sunken:         'var(--ds-surface-sunken)',
+  border:         'var(--ds-border)',
+  borderSub:      'var(--ds-border-subtle)',
+  text:           'var(--ds-text)',
+  subtle:         'var(--ds-text-subtle)',
+  subtlest:       'var(--ds-text-subtlest)',
+  neutral:        'var(--ds-background-neutral)',
+  textInverse:    'var(--ds-text-inverse)',
   shadow:         'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.25))',
   // Active release — blue
-  activeSolid:    'var(--ds-link, #0C66E4)',
-  activeBoldBg:   'var(--ds-background-information-bold, #0C66E4)',
-  activeBg:       'var(--ds-background-information, #E9F2FF)',
-  activeText:     'var(--ds-link, #0C66E4)',
+  activeSolid:    'var(--ds-link)',
+  activeBoldBg:   'var(--ds-background-information-bold)',
+  activeBg:       'var(--ds-background-information)',
+  activeText:     'var(--ds-link)',
   // Upcoming — purple
-  upcomingBar:    'var(--ds-icon-discovery, #8270DB)',
-  upcomingBoldBg: 'var(--ds-background-discovery-bold, #6E5DC6)',
-  upcomingBg:     'var(--ds-background-discovery, #F3F0FF)',
-  upcomingText:   'var(--ds-text-discovery, #6E5DC6)',
+  upcomingBar:    'var(--ds-icon-discovery)',
+  upcomingBoldBg: 'var(--ds-background-discovery-bold)',
+  upcomingBg:     'var(--ds-background-discovery)',
+  upcomingText:   'var(--ds-text-discovery)',
   // Released — green
-  doneBar:        'var(--ds-icon-success, #22A06B)',
-  doneBoldBg:     'var(--ds-background-success-bold, #1F845A)',
-  doneBg:         'var(--ds-background-success, #DCFFF1)',
-  doneText:       'var(--ds-text-success, #1F845A)',
+  doneBar:        'var(--ds-icon-success)',
+  doneBoldBg:     'var(--ds-background-success-bold)',
+  doneBg:         'var(--ds-background-success)',
+  doneText:       'var(--ds-text-success)',
   // Draft / low confidence — neutral
-  neutralBoldBg:  'var(--ds-background-neutral-bold, #626F86)',
+  neutralBoldBg:  'var(--ds-background-neutral-bold)',
 };
 
 type ReleaseStatus = 'released' | 'active' | 'upcoming';

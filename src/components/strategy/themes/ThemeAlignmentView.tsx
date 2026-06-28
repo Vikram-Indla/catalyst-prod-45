@@ -28,33 +28,33 @@ import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
-  theme:      { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: 'var(--ds-link-pressed, #0747A6)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  goal:       { color: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', badgeBg: 'var(--ds-background-success, #DFFCF0)', badgeText: 'var(--ds-text-success, #216E4E)', border: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
-  kr:         { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-information, #E9F2FF)', badgeText: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  initiative: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', badgeBg: 'var(--ds-background-warning, #FFF7D6)', badgeText: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  epic:       { color: 'var(--ds-background-discovery-bold, #6E5DC6)', badgeBg: '#EEF2FF', badgeText: 'var(--ds-background-discovery-bold, #3730a3)', border: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  theme:      { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', badgeBg: 'var(--ds-background-selected)', badgeText: 'var(--ds-link-pressed)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  goal:       { color: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', badgeBg: 'var(--ds-background-success)', badgeText: 'var(--ds-text-success)', border: 'var(--cp-teal-60, var(--ds-chart-teal-bold))' },
+  kr:         { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', badgeBg: 'var(--ds-background-information)', badgeText: 'var(--ds-link-pressed)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  initiative: { color: 'var(--ds-text-warning, var(--cp-warning))', badgeBg: 'var(--ds-background-warning)', badgeText: 'var(--ds-text-warning)', border: 'var(--ds-text-warning, var(--cp-warning))' },
+  epic:       { color: 'var(--ds-background-discovery-bold)', badgeBg: '#EEF2FF', badgeText: 'var(--ds-background-discovery-bold)', border: 'var(--ds-background-discovery-bold)' },
 } as const;
 
 const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-  active:       { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'Active' },
-  on_track:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'On Track' },
-  at_risk:      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', label: 'At Risk' },
-  off_track:    { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)', label: 'Off Track' },
-  draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
-  planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
-  completed:    { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'Done' },
-  cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
-  in_progress:  { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'In Progress' },
-  not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
-  approved:     { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'Approved' },
-  proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
-  analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', text: 'var(--ds-text-subtle, #475569)', label: 'Analyzing' },
+  active:       { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'Active' },
+  on_track:     { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'On Track' },
+  at_risk:      { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', label: 'At Risk' },
+  off_track:    { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', label: 'Off Track' },
+  draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Draft' },
+  planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Planned' },
+  completed:    { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', text: 'var(--ds-link-pressed)', label: 'Done' },
+  cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Cancelled' },
+  in_progress:  { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', text: 'var(--ds-link-pressed)', label: 'In Progress' },
+  not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Not Started' },
+  approved:     { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'Approved' },
+  proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Proposed' },
+  analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1, var(--ds-surface-sunken))', text: 'var(--ds-text-subtle)', label: 'Analyzing' },
 };
 
 function getProgressColor(v: number) {
-  if (v >= 60) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  if (v >= 40) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  return 'var(--ds-text-danger, #EF4444)';
+  if (v >= 60) return 'var(--ds-text-success, var(--cp-success))';
+  if (v >= 40) return 'var(--ds-text-warning, var(--cp-warning))';
+  return 'var(--ds-text-danger)';
 }
 
 // ── Sub-components ──
@@ -72,7 +72,7 @@ function StatusBadge({ status }: { status: string }) {
 
 function ChainStat({ label, value, total }: { label: string; value: number; total: number }) {
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-  const clr = pct >= 70 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+  const clr = pct >= 70 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
   return (
     <div className="text-center" style={{ minWidth: 100 }}>
       <div className="flex items-baseline justify-center gap-1">
@@ -88,9 +88,9 @@ function ChainStat({ label, value, total }: { label: string; value: number; tota
 function GhostNode({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
-      style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled, #CBD5E1)', background: 'var(--ds-surface, rgba(248,250,252,0.5))' }}>
-      <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No linked {label}</span>
+      style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled)', background: 'var(--ds-surface, rgba(248,250,252,0.5))' }}>
+      <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
+      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>No linked {label}</span>
     </div>
   );
 }
@@ -102,7 +102,7 @@ function ChainPill({ color, keyLabel, title }: { color: string; keyLabel: string
         style={{ fontSize: 'var(--ds-font-size-100)', background: `${color}15`, color }}>
         {keyLabel}
       </span>
-      <span className="font-medium truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{title}</span>
+      <span className="font-medium truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>{title}</span>
     </div>
   );
 }
@@ -127,8 +127,8 @@ function AILoadingState() {
   return (
     <div className="px-8 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: 'var(--ds-background-discovery, #F3F0FF)' }}>
-          <Sparkles size={16} className="animate-pulse" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
+        <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: 'var(--ds-background-discovery)' }}>
+          <Sparkles size={16} className="animate-pulse" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
         </div>
         <div>
           <div className="h-3 w-48 bg-muted rounded-full animate-pulse" />
@@ -165,13 +165,13 @@ function getChainHealthLabel(chain: LockedChainData | null): string {
 function getChainHealthColor(chain: LockedChainData | null): string {
   const label = getChainHealthLabel(chain);
   switch (label) {
-    case 'Strong': return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-    case 'Moderate': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-    case 'At Risk': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-    case 'Critical': return 'var(--ds-text-danger, #EF4444)';
-    case 'Broken': return 'var(--ds-text-danger, #EF4444)';
-    case 'Partial': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-    default: return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+    case 'Strong': return 'var(--ds-text-success, var(--cp-success))';
+    case 'Moderate': return 'var(--ds-text-warning, var(--cp-warning))';
+    case 'At Risk': return 'var(--ds-text-warning, var(--cp-warning))';
+    case 'Critical': return 'var(--ds-text-danger)';
+    case 'Broken': return 'var(--ds-text-danger)';
+    case 'Partial': return 'var(--ds-text-warning, var(--cp-warning))';
+    default: return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
   }
 }
 
@@ -670,7 +670,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
   function getPathStyle(p: RenderedPath) {
     if (!isFocused && !anyHover) {
-      return { stroke: 'var(--ds-border, #DFE1E6)', strokeWidth: 1, opacity: 0.35, filter: 'none' };
+      return { stroke: 'var(--ds-border)', strokeWidth: 1, opacity: 0.35, filter: 'none' };
     }
     if (isFocused) {
       const srcIn = focusedChain!.nodes.has(p.sourceId);
@@ -678,12 +678,12 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       if (srcIn && tgtIn) {
         return { stroke: p.layerColor, strokeWidth: 3, opacity: 1, filter: 'drop-shadow(0 0 4px var(--ds-background-information, rgba(37, 99, 235, 0.3)))' };
       }
-      return { stroke: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
+      return { stroke: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
     }
     // Hover-only
     const isLit = highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
     if (isLit) return { stroke: p.layerColor, strokeWidth: 2.5, opacity: 1, filter: 'none' };
-    return { stroke: 'var(--ds-border, #DFE1E6)', strokeWidth: 1, opacity: 0.08, filter: 'none' };
+    return { stroke: 'var(--ds-border)', strokeWidth: 1, opacity: 0.08, filter: 'none' };
   }
 
   // ── Loading / empty states ──
@@ -799,15 +799,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 'var(--ds-font-size-200)' }}>
           <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-selected, #EFF6FF)', borderColor: 'var(--ds-background-information, #E9F2FF)' }}>● Theme</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed)', background: 'var(--ds-background-selected)', borderColor: 'var(--ds-background-information)' }}>● Theme</span>
           <span>breaks down into</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-success, #216E4E)', background: 'var(--ds-background-success, #DFFCF0)', borderColor: 'var(--ds-background-success, #DFFCF0)' }}>● Goals</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-success)', background: 'var(--ds-background-success)', borderColor: 'var(--ds-background-success)' }}>● Goals</span>
           <span>measured by</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-information, #E9F2FF)', borderColor: 'var(--ds-background-information-bold, #0C66E4)' }}>● Key Results</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed)', background: 'var(--ds-background-information)', borderColor: 'var(--ds-background-information-bold)' }}>● Key Results</span>
           <span>delivered through</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-warning, #974F0C)', background: 'var(--ds-background-warning, #FFF7D6)', borderColor: 'var(--ds-background-warning, #FFF7D6)' }}>● Requests</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-warning)', background: 'var(--ds-background-warning)', borderColor: 'var(--ds-background-warning)' }}>● Requests</span>
           <span>executed as</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-background-discovery-bold, #3730a3)', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-background-discovery-bold)', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</span>
         </div>
       </div>
 
@@ -818,7 +818,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           ref={canvasRef}
           className="overflow-auto select-none transition-all duration-400 ease-out"
           style={{
-            background: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))',
+            background: 'var(--bg-1, var(--ds-surface-sunken))',
             cursor: isPanning ? 'grabbing' : 'grab',
             width: isIntelOpen ? '50vw' : '100%',
             flexShrink: 0,

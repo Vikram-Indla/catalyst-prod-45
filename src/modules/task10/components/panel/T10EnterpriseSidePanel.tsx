@@ -24,44 +24,44 @@ interface T10EnterpriseSidePanelProps {
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════
 const COLORS = {
-  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  gray50: 'var(--ds-surface-sunken, #f8fafc)',
-  gray100: 'var(--ds-surface-sunken, #f1f5f9)',
-  gray200: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
-  gray300: 'var(--ds-text-disabled, #cbd5e1)',
-  gray400: 'var(--ds-text-subtlest, #94a3b8)',
-  gray500: 'var(--ds-text-subtlest, #64748b)',
-  gray600: 'var(--ds-text-subtle, #475569)',
-  gray700: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-  gray800: 'var(--ds-text, #172B4D)',
-  gray900: 'var(--ds-text, #0f172a)',
-  blue: 'var(--ds-text-brand, #3b82f6)',
-  blue50: 'var(--ds-background-selected, #eff6ff)',
-  blueDark: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-  teal: 'var(--ds-chart-teal-bold, #0d9488)',
-  teal50: 'var(--ds-background-success, #DFFCF0)',
-  green: 'var(--ds-text-success, #22c55e)',
-  green50: 'var(--ds-background-success, #DFFCF0)',
-  red: 'var(--ds-text-danger, #ef4444)',
-  red50: 'var(--ds-background-danger, #fef2f2)',
+  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  gray50: 'var(--ds-surface-sunken)',
+  gray100: 'var(--ds-surface-sunken)',
+  gray200: 'var(--ds-border, var(--cp-bg-sunken))',
+  gray300: 'var(--ds-text-disabled)',
+  gray400: 'var(--ds-text-subtlest)',
+  gray500: 'var(--ds-text-subtlest)',
+  gray600: 'var(--ds-text-subtle)',
+  gray700: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
+  gray800: 'var(--ds-text)',
+  gray900: 'var(--ds-text)',
+  blue: 'var(--ds-text-brand)',
+  blue50: 'var(--ds-background-selected)',
+  blueDark: 'var(--ds-background-brand-bold-hovered)',
+  teal: 'var(--ds-chart-teal-bold)',
+  teal50: 'var(--ds-background-success)',
+  green: 'var(--ds-text-success)',
+  green50: 'var(--ds-background-success)',
+  red: 'var(--ds-text-danger)',
+  red50: 'var(--ds-background-danger)',
 };
 
 const LABEL_COLORS = [
-  { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
-  { name: 'Orange', value: 'var(--ds-background-warning-bold, #f97316)' },
-  { name: 'Amber', value: 'var(--ds-text-warning, #f59e0b)' },
-  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Lime', value: 'var(--ds-background-success-bold, #1F845A)' },
-  { name: 'Green', value: 'var(--ds-text-success, #22c55e)' },
-  { name: 'Emerald', value: 'var(--ds-background-success-bold, #059669)' },
-  { name: 'Teal', value: 'var(--ds-background-accent-teal-bolder, #14b8a6)' },
-  { name: 'Cyan', value: 'var(--ds-icon-information, #1D7AFC)' },
-  { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
-  { name: 'Indigo', value: 'var(--ds-background-discovery-bold, #6366f1)' },
-  { name: 'Violet', value: 'var(--ds-background-discovery-bold, #8b5cf6)' },
-  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #a855f7)' },
-  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
-  { name: 'Gray', value: 'var(--ds-text-subtlest, #626F86)' },
+  { name: 'Red', value: 'var(--ds-text-danger)' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Amber', value: 'var(--ds-text-warning)' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Lime', value: 'var(--ds-background-success-bold)' },
+  { name: 'Green', value: 'var(--ds-text-success)' },
+  { name: 'Emerald', value: 'var(--ds-background-success-bold)' },
+  { name: 'Teal', value: 'var(--ds-background-accent-teal-bolder)' },
+  { name: 'Cyan', value: 'var(--ds-icon-information)' },
+  { name: 'Blue', value: 'var(--ds-text-brand)' },
+  { name: 'Indigo', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Violet', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder)' },
+  { name: 'Gray', value: 'var(--ds-text-subtlest)' },
 ];
 
 export function T10EnterpriseSidePanel({
@@ -86,7 +86,7 @@ export function T10EnterpriseSidePanel({
   const [labelSearch, setLabelSearch] = useState('');
   const [showCreateLabel, setShowCreateLabel] = useState(false);
   const [newLabelName, setNewLabelName] = useState('');
-  const [newLabelColor, setNewLabelColor] = useState('var(--ds-text-subtlest, #626F86)');
+  const [newLabelColor, setNewLabelColor] = useState('var(--ds-text-subtlest)');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [editDate, setEditDate] = useState('');
   
@@ -490,7 +490,7 @@ export function T10EnterpriseSidePanel({
                     gap: '12px',
                     padding: '14px',
                     background: isCompleted ? COLORS.green50 : COLORS.gray50,
-                    border: `1px solid ${isCompleted ? 'var(--ds-background-success, #DFFCF0)' : COLORS.gray200}`,
+                    border: `1px solid ${isCompleted ? 'var(--ds-background-success)' : COLORS.gray200}`,
                     borderRadius: '12px',
                     cursor: isReadOnly ? 'default' : 'pointer',
                     transition: 'all 0.15s',
@@ -852,7 +852,7 @@ export function T10EnterpriseSidePanel({
                                     borderRadius: '4px',
                                     background: color.value,
                                     border: newLabelColor === color.value 
-                                      ? '2px solid var(--ds-text, #172B4D)' 
+                                      ? '2px solid var(--ds-text)' 
                                       : '2px solid transparent',
                                     cursor: 'pointer',
                                   }}

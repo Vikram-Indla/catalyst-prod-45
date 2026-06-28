@@ -103,19 +103,19 @@ export function T10AIBanner({
               width: '36px',
               height: '50px',
               borderRadius: '12px',
-              border: '1.5px solid var(--ds-background-discovery-bold, #6E5DC6)',
+              border: '1.5px solid var(--ds-background-discovery-bold)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
             }}
           >
-            <Sparkles size={16} color="var(--ds-background-discovery-bold, #6E5DC6)" />
+            <Sparkles size={16} color="var(--ds-background-discovery-bold)" />
           </div>
-          <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap' }}>
+          <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', whiteSpace: 'nowrap' }}>
             AI Suggestions
           </span>
-          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #64748b)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} based on your patterns
           </span>
         </div>
@@ -133,9 +133,9 @@ export function T10AIBanner({
             padding: '6px 12px',
             fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
-            color: 'var(--ds-background-discovery-bold, #6E5DC6)',
+            color: 'var(--ds-background-discovery-bold)',
             background: 'transparent',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border)',
             borderRadius: '6px',
             cursor: 'pointer',
             whiteSpace: 'nowrap',

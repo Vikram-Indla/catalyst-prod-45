@@ -39,13 +39,13 @@ import { AddWorkItemsModal } from './AddWorkItemsModal';
 import { MoveToVersionModal } from './MoveToVersionModal';
 import { catalystFlag } from '@/lib/catalystFlag';
 
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const BLUE = 'var(--ds-border-selected, #1868DB)';
-const BLUE_BG = 'var(--ds-background-selected, #E9F2FE)';
-const BLUE_TEXT = 'var(--ds-text-selected, #0C66E4)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #505258)';
-const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
+const BORDER = 'var(--ds-border)';
+const BLUE = 'var(--ds-border-selected)';
+const BLUE_BG = 'var(--ds-background-selected)';
+const BLUE_TEXT = 'var(--ds-text-selected)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
+const SUBTLEST = 'var(--ds-text-subtlest)';
 
 // 2026-06-26: hover background on every menu-item button inside the row
 // 3-dot action menu (Move to / View all versions / Remove from version).
@@ -54,7 +54,7 @@ const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
 const WIS_MENU_STYLE_ID = 'wis-row-menu-item-css';
 const WIS_MENU_CSS = `
   .wis-row-menu-item:hover {
-    background: var(--ds-background-neutral-subtle-hovered, #F1F2F4) !important;
+    background: var(--ds-background-neutral-subtle-hovered) !important;
   }
 `;
 if (typeof document !== 'undefined') {
@@ -107,9 +107,9 @@ const DISPLAY_DEFAULT: Record<DisplayKey, boolean> = {
 };
 
 const STATUS_BG: Record<string, { bg: string; color: string }> = {
-  todo: { bg: 'var(--ds-background-neutral, #F1F2F4)', color: TEXT },
-  'in progress': { bg: 'var(--ds-background-information, #E9F2FE)', color: BLUE_TEXT },
-  done: { bg: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-text-success, #216E4E)' },
+  todo: { bg: 'var(--ds-background-neutral)', color: TEXT },
+  'in progress': { bg: 'var(--ds-background-information)', color: BLUE_TEXT },
+  done: { bg: 'var(--ds-background-success)', color: 'var(--ds-text-success)' },
 };
 
 function priorityIcon(priority: string | null) {
@@ -408,7 +408,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
               fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: TEXT,
-              background: 'var(--ds-background-neutral, #F1F2F4)',
+              background: 'var(--ds-background-neutral)',
               padding: '1px 8px',
               borderRadius: 3,
               minWidth: 18,
@@ -465,9 +465,9 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                 label="Status category"
                 selectedCount={statusCatFilter.length}
                 options={[
-                  { id: 'To Do', label: 'TO DO', pillBg: 'var(--ds-background-neutral, #F1F2F4)', pillColor: TEXT },
-                  { id: 'In Progress', label: 'IN PROGRESS', pillBg: 'var(--ds-background-information, #E9F2FE)', pillColor: BLUE_TEXT },
-                  { id: 'Done', label: 'DONE', pillBg: 'var(--ds-background-success, #DCFFF1)', pillColor: 'var(--ds-text-success, #216E4E)' },
+                  { id: 'To Do', label: 'TO DO', pillBg: 'var(--ds-background-neutral)', pillColor: TEXT },
+                  { id: 'In Progress', label: 'IN PROGRESS', pillBg: 'var(--ds-background-information)', pillColor: BLUE_TEXT },
+                  { id: 'Done', label: 'DONE', pillBg: 'var(--ds-background-success)', pillColor: 'var(--ds-text-success)' },
                 ]}
                 value={statusCatFilter}
                 onChange={setStatusCatFilter}
@@ -537,7 +537,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                 gap: 0,
                 border: `1px solid ${BORDER}`,
                 borderRadius: 3,
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
                 overflow: 'hidden auto',
                 maxHeight: 560,
               }}
@@ -559,7 +559,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
                 <div style={{ padding: '16px 12px', color: SUBTLEST, fontSize: 'var(--ds-font-size-300)' }}>Loading work items…</div>
               )}
               {error && (
-                <div style={{ padding: '16px 12px', color: 'var(--ds-text-danger, #C9372C)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: '16px 12px', color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-300)' }}>
                   Query error: {(error as any)?.message || String(error)}
                 </div>
               )}
@@ -600,7 +600,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             top: moreMenuPos.top,
             right: moreMenuPos.right,
             zIndex: 10010,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
@@ -677,7 +677,7 @@ function SearchField({ value, onChange }: { value: string; onChange: (v: string)
         padding: '0 8px',
         border: `1px solid ${focused ? BLUE : BORDER}`,
         borderRadius: 3,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         minWidth: 180,
         boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
         transition: 'border-color 80ms ease, box-shadow 80ms ease',
@@ -747,13 +747,13 @@ function DisplayCheckRow({
         padding: '6px 12px',
         cursor: 'pointer',
         background: checked
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : hover
-            ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'
+            ? 'var(--ds-background-neutral-subtle-hovered)'
             : 'transparent',
         color: checked
-          ? 'var(--ds-text-selected, #0C66E4)'
-          : 'var(--ds-text-subtle, #505258)',
+          ? 'var(--ds-text-selected)'
+          : 'var(--ds-text-subtle)',
         fontWeight: 400,
         fontSize: 'var(--ds-font-size-400)',
       }}
@@ -831,8 +831,8 @@ function CheckboxFilterPill({
         {selectedCount > 0 && (
           <span style={{
             minWidth: 22, height: 18, padding: '0 6px', borderRadius: 3,
-            background: 'var(--ds-background-accent-blue-subtle, #CCE0FF)',
-            color: 'var(--ds-text, #292A2E)',
+            background: 'var(--ds-background-accent-blue-subtle)',
+            color: 'var(--ds-text)',
             fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           }}>{selectedCount}</span>
@@ -845,7 +845,7 @@ function CheckboxFilterPill({
           style={{
             position: 'fixed', top: pos.top, left: pos.left, zIndex: 10010,
             minWidth: 220, maxHeight: 360, overflow: 'hidden', display: 'flex', flexDirection: 'column',
-            background: 'var(--ds-surface-overlay, #FFFFFF)', border: `1px solid ${BORDER}`, borderRadius: 4,
+            background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
           }}
         >
@@ -953,8 +953,8 @@ function PillFilter({
         {selectedCount > 0 && (
           <span style={{
             minWidth: 22, height: 18, padding: '0 6px', borderRadius: 3,
-            background: 'var(--ds-background-accent-blue-subtle, #CCE0FF)',
-            color: 'var(--ds-text, #292A2E)',
+            background: 'var(--ds-background-accent-blue-subtle)',
+            color: 'var(--ds-text)',
             fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           }}>{selectedCount}</span>
@@ -967,7 +967,7 @@ function PillFilter({
           style={{
             position: 'fixed', top: pos.top, left: pos.left, zIndex: 10010,
             minWidth: 180,
-            background: 'var(--ds-surface-overlay, #FFFFFF)', border: `1px solid ${BORDER}`, borderRadius: 4,
+            background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '6px 0',
           }}
@@ -1019,7 +1019,7 @@ function pillBtn(active: boolean): React.CSSProperties {
     height: 32,
     padding: '0 10px',
     border: `1px solid ${active ? BLUE : BORDER}`,
-    background: 'var(--ds-surface, #FFFFFF)',
+    background: 'var(--ds-surface)',
     color: active ? BLUE_TEXT : TEXT,
     borderRadius: 3,
     fontSize: 'var(--ds-font-size-300)',
@@ -1145,7 +1145,7 @@ function WorkItemRow({
           gap: 12,
           padding: '10px 12px',
           borderBottom: isLast ? 'none' : `1px solid ${BORDER}`,
-          background: hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
+          background: hover ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
           cursor: 'pointer',
         }}
       >
@@ -1156,7 +1156,7 @@ function WorkItemRow({
           href="#"
           onClick={(e) => { e.preventDefault(); onOpen?.(); }}
           style={{
-            color: 'var(--ds-link, #0C66E4)',
+            color: 'var(--ds-link)',
             fontWeight: 400,
             fontSize: 'var(--ds-font-size-400)',
             fontFamily: 'inherit',
@@ -1173,7 +1173,7 @@ function WorkItemRow({
         <span style={{
           flex: 1,
           minWidth: 0,
-          color: 'var(--ds-text, #292A2E)',
+          color: 'var(--ds-text)',
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 400,
           fontFamily: 'inherit',
@@ -1221,7 +1221,7 @@ function WorkItemRow({
           style={{
             position: 'fixed', top: pos.top, right: pos.right, zIndex: 10010,
             minWidth: 220,
-            background: 'var(--ds-surface-overlay, #FFFFFF)', border: `1px solid ${BORDER}`, borderRadius: 4,
+            background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '6px 0',
           }}
@@ -1277,10 +1277,10 @@ function WorkItemRow({
 
 // ─── Progress section ───────────────────────────────────────────────────────
 
-const PROGRESS_DONE = 'var(--ds-background-success-bold, #22A06B)';
-const PROGRESS_WIP = 'var(--ds-background-information-bold, #1868DB)';
-const PROGRESS_TODO = 'var(--ds-border, #DFE1E6)';
-const PROGRESS_WARN = 'var(--ds-background-warning-bold, #E2B203)';
+const PROGRESS_DONE = 'var(--ds-background-success-bold)';
+const PROGRESS_WIP = 'var(--ds-background-information-bold)';
+const PROGRESS_TODO = 'var(--ds-border)';
+const PROGRESS_WARN = 'var(--ds-background-warning-bold)';
 
 function ProgressSection({ items }: { items: Issue[] }) {
   const [collapsed, setCollapsed] = useState(false);

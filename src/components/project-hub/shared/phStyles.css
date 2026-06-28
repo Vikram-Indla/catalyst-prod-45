@@ -5,19 +5,19 @@
 }
 
 .ph-skeleton {
-  background: linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 25%, #E8EDF2 37%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 63%) !important;
+  background: linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 25%, #E8EDF2 37%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 63%) !important;
   background-size: 200% 100% !important;
   animation: ph-shimmer 1.5s ease-in-out infinite;
 }
 
 .dark .ph-skeleton {
-  background: linear-gradient(90deg, var(--ds-surface-overlay, #1F1F1F) 25%, var(--ds-border, var(--cp-ink-1, #2E2E2E)) 37%, var(--ds-surface-overlay, #1F1F1F) 63%) !important;
+  background: linear-gradient(90deg, var(--ds-surface-overlay) 25%, var(--ds-border, var(--cp-ink-1)) 37%, var(--ds-surface-overlay) 63%) !important;
 }
 
 /* Card enterprise styling override */
 .ph-card {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 1px 3px 0 var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 1px 2px -1px var(--ds-shadow-raised, rgba(0,0,0,0.1));
@@ -25,7 +25,7 @@
 
 .dark .ph-card {
   background: transparent;
-  border-color: var(--ds-border-bold, #454545);
+  border-color: var(--ds-border-bold);
   box-shadow: none;
 }
 
@@ -36,32 +36,32 @@
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb {
-  background: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  background: var(--ds-border, var(--cp-ink-1));
   border-radius: 4px;
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb:hover,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb:hover {
-  background: var(--ds-border-bold, #454545);
+  background: var(--ds-border-bold);
 }
 
 .ph-card-title {
   font-size: 15px;
   font-weight: 600;
-  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)));
   font-family: var(--cp-font-heading);
   padding-bottom: 12px;
   margin-bottom: 16px;
-  border-bottom: 1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
+  border-bottom: 1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
 }
 
 .dark .ph-card-title {
-  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  border-bottom-color: var(--ds-border, var(--cp-ink-1, #292929));
+  color: var(--ds-text, var(--cp-bg-neutral));
+  border-bottom-color: var(--ds-border, var(--cp-ink-1));
 }
 
 /* Focus ring for form inputs */
 .ph-input:focus {
-  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1)) !important;
 }
 

@@ -11,12 +11,12 @@ import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
+  card: 'var(--ds-surface-raised)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 

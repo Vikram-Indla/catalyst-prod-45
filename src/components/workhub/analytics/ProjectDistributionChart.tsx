@@ -35,7 +35,7 @@ export function ProjectDistributionChart({ data }: Props) {
             tick={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace' }}
           />
           <Tooltip content={<ChartTooltip />} />
-          <Bar dataKey="value" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" radius={[0, 4, 4, 0]} barSize={20} />
+          <Bar dataKey="value" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" radius={[0, 4, 4, 0]} barSize={20} />
         </BarChart>
       </ResponsiveContainer>
     </div>

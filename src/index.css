@@ -62,49 +62,49 @@
    GREEN = Done / Approved / Completed
    ───────────────────────────────────────────────────────────── */
 :root {
-  --status-todo-bg: var(--ds-text-subtle, #42526e);
+  --status-todo-bg: var(--ds-text-subtle);
   --status-todo-text: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
-  --status-inprogress-bg: var(--ds-link, #0c66e4);
+  --status-inprogress-bg: var(--ds-link);
   --status-inprogress-text: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   --status-done-bg: var(
     --cp-lozenge-green-bg,
-    var(--ds-background-success-bold, #1f845a)
+    var(--ds-background-success-bold)
   );
   --status-done-text: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   /* 2026-06-23 — canonical lozenge green for Done status pills (Vikram).
-     Replaces prior var(--ds-background-success-bold, #6A9A23) lime. Consumed by statusPalette.ts STATUS_BG.success
+     Replaces prior var(--ds-background-success-bold) lime. Consumed by statusPalette.ts STATUS_BG.success
      via inline var() so every renderer picks it up. */
-  --cp-status-done-green: var(--ds-background-success-bold, #6a9a23);
+  --cp-status-done-green: var(--ds-background-success-bold);
 }
 .dark {
-  --status-todo-bg: var(--ds-text-subtle, #42526e);
+  --status-todo-bg: var(--ds-text-subtle);
   --status-todo-text: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
-  --status-inprogress-bg: var(--ds-link, #0c66e4);
+  --status-inprogress-bg: var(--ds-link);
   --status-inprogress-text: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   --status-done-bg: var(
     --cp-lozenge-green-bg,
-    var(--ds-background-success-bold, #1f845a)
+    var(--ds-background-success-bold)
   );
   --status-done-text: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
-  --cp-status-done-green: var(--ds-background-success-bold, #6a9a23);
+  --cp-status-done-green: var(--ds-background-success-bold);
 }
 .status-badge-base {
   display: inline-flex;
@@ -144,20 +144,20 @@
   --app-top-offset: calc(var(--app-safe-top) + var(--app-header-h));
 
   /* ═══ Requirement Assist Capability Accents ═══ */
-  --cap-brd: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
-  --cap-translate: var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488));
-  --cap-epic: var(--cp-purple-60, var(--ds-background-discovery-bold, #7c3aed));
-  --cap-uat: var(--cp-warning, var(--ds-background-warning-bold, #d97706));
+  --cap-brd: var(--cp-workstream-catalyst-primary, var(--ds-link));
+  --cap-translate: var(--cp-teal-60, var(--ds-chart-teal-bold));
+  --cap-epic: var(--cp-purple-60, var(--ds-background-discovery-bold));
+  --cap-uat: var(--cp-warning, var(--ds-background-warning-bold));
   --quality-high: var(
     --quality-high,
-    var(--ds-background-success-bold, #059669)
+    var(--ds-background-success-bold)
   );
-  --quality-mid: var(--cp-warning, var(--ds-background-warning-bold, #d97706));
-  --quality-low: var(--cp-danger, var(--ds-background-danger-bold, #dc2626));
-  --primary-50: var(--ds-background-information, #e9f2ff);
-  --teal-50: var(--ds-background-success, #dffcf0);
-  --violet-50: var(--ds-background-discovery, #f3f0ff);
-  --warning-50: var(--ds-background-warning, #fff7d6);
+  --quality-mid: var(--cp-warning, var(--ds-background-warning-bold));
+  --quality-low: var(--cp-danger, var(--ds-background-danger-bold));
+  --primary-50: var(--ds-background-information);
+  --teal-50: var(--ds-background-success);
+  --violet-50: var(--ds-background-discovery);
+  --warning-50: var(--ds-background-warning);
 
   /* ── REQ ASSIST V2 RING-FENCED TOKENS ── */
   --ra-row-h: 36px;
@@ -170,59 +170,59 @@
   --ra-radius-lozenge: 3px;
   --ra-slot-w: 22px;
   --ra-slot-h: 6px;
-  --ra-slot-done: var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488));
+  --ra-slot-done: var(--cp-teal-60, var(--ds-chart-teal-bold));
   --ra-slot-processing: var(
     --cp-workstream-catalyst-primary,
-    var(--ds-link, #2563eb)
+    var(--ds-link)
   );
-  --ra-slot-pending: var(--ds-border, #dfe1e6);
-  --ra-slot-error: var(--cp-danger, var(--ds-background-danger-bold, #dc2626));
+  --ra-slot-pending: var(--ds-border);
+  --ra-slot-error: var(--cp-danger, var(--ds-background-danger-bold));
 
   /* ═══ CATALYST V12 HYBRID PRECISION — NotifyHub Tokens ═══ */
-  --cp-primary: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
-  --cp-primary-hover: var(--ds-link-pressed, #1d4ed8);
-  --cp-primary-light: var(--ds-background-information, #e9f2ff);
-  --cp-primary-border: var(--ds-background-information, #e9f2ff);
-  --cp-ink-1: var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172b4d)));
-  --cp-ink-2: var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546f)));
+  --cp-primary: var(--cp-workstream-catalyst-primary, var(--ds-link));
+  --cp-primary-hover: var(--ds-link-pressed);
+  --cp-primary-light: var(--ds-background-information);
+  --cp-primary-border: var(--ds-background-information);
+  --cp-ink-1: var(--cp-ink-1, var(--cp-ink-1, var(--ds-text)));
+  --cp-ink-2: var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle)));
   --cp-ink-3: var(
     --cp-ink-3,
-    var(--cp-text-secondary, var(--ds-text-subtlest, #626f86))
+    var(--cp-text-secondary, var(--ds-text-subtlest))
   );
   --cp-ink-4: var(
     --cp-ink-4,
-    var(--cp-border-neutral-light, var(--ds-text-disabled, #8590a2))
+    var(--cp-border-neutral-light, var(--ds-text-disabled))
   );
-  --cp-surface: var(--ds-surface-sunken, #f8fafc);
+  --cp-surface: var(--ds-surface-sunken);
   --cp-card: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
-  --cp-border: var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #dfe1e6)));
+  --cp-border: var(--cp-border, var(--cp-bg-sunken, var(--ds-border)));
   --cp-border-lt: var(
     --cp-bg-sunken,
-    var(--cp-bg-sunken, var(--ds-surface-sunken, #f7f8f9))
+    var(--cp-bg-sunken, var(--ds-surface-sunken))
   );
-  --cp-success: var(--ds-background-success-bold, #1f845a);
-  --cp-success-light: var(--ds-background-success, #dffcf0);
-  --cp-success-text: var(--ds-text-success, #006644);
-  --cp-warning: var(--ds-background-warning-bold, #d97706);
-  --cp-warning-light: var(--ds-background-warning, #fff7d6);
-  --cp-warning-text: var(--ds-text-warning, #974f0c);
-  --cp-danger: var(--ds-background-danger-bold, #dc2626);
-  --cp-danger-light: var(--ds-background-danger, #ffeceb);
-  --cp-danger-text: var(--ds-text-danger, #ae2a19);
-  --cp-danger-50: var(--ds-background-danger-bold, #ef4444);
-  --cp-amber: var(--ds-background-warning-bold, #f59e0b);
+  --cp-success: var(--ds-background-success-bold);
+  --cp-success-light: var(--ds-background-success);
+  --cp-success-text: var(--ds-text-success);
+  --cp-warning: var(--ds-background-warning-bold);
+  --cp-warning-light: var(--ds-background-warning);
+  --cp-warning-text: var(--ds-text-warning);
+  --cp-danger: var(--ds-background-danger-bold);
+  --cp-danger-light: var(--ds-background-danger);
+  --cp-danger-text: var(--ds-text-danger);
+  --cp-danger-50: var(--ds-background-danger-bold);
+  --cp-amber: var(--ds-background-warning-bold);
   --sl-todo-bg: var(
     --cp-lozenge-grey-bg,
-    var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+    var(--cp-border-neutral, var(--ds-border))
   );
-  --sl-todo-text: var(--ds-text, #253858);
-  --sl-inprog-bg: var(--ds-background-information, #e9f2ff);
-  --sl-inprog-text: var(--ds-link-pressed, #0747a6);
-  --sl-done-bg: var(--ds-background-success, #dffcf0);
-  --sl-done-text: var(--ds-text-success, #006644);
+  --sl-todo-text: var(--ds-text);
+  --sl-inprog-bg: var(--ds-background-information);
+  --sl-inprog-text: var(--ds-link-pressed);
+  --sl-done-bg: var(--ds-background-success);
+  --sl-done-text: var(--ds-text-success);
   --radius-sm: 3px;
   --radius-md: 6px;
   --radius-lg: 8px;
@@ -231,11 +231,11 @@
 
   /* ═══ CATALYST V12 HYBRID PRECISION — Wiki Design Tokens ═══ */
   /* ADS bridge (V9 migration 2026-06-13): surface tokens now use --ds-* as primary source */
-  --cp-bg-page: var(--ds-surface, #ffffff);
-  --cp-bg-hub-page: var(--ds-surface, #ffffff);
-  --cp-bg-surface: var(--ds-surface, #ffffff);
-  --cp-bg-sunken: var(--ds-surface-sunken, #f7f8f9);
-  --cp-bg-elevated: var(--ds-surface, #ffffff);
+  --cp-bg-page: var(--ds-surface);
+  --cp-bg-hub-page: var(--ds-surface);
+  --cp-bg-surface: var(--ds-surface);
+  --cp-bg-sunken: var(--ds-surface-sunken);
+  --cp-bg-elevated: var(--ds-surface);
   /* Jira Plans dependency-list tints — exact Jira hex, no ADS token matches (jira-parity bypass). */
   --cat-dep-row-bg: #f0f1f2;
   --cat-dep-row-hover: #f8f8f8;
@@ -245,11 +245,11 @@
   --cat-inline-create-bg: #dddee1;
   /* Inline-create input border on blur — exact grey #858585, no ADS token matches. */
   --cat-input-blur-border: #858585;
-  --cp-text-primary: var(--ds-text, #172b4d);
-  --cp-text-secondary: var(--ds-text-subtle, #42526e);
-  --cp-text-tertiary: var(--ds-text-subtlest, #6b778c);
-  --cp-text-muted: var(--ds-text-subtlest, #6b778c);
-  --cp-text-link: var(--ds-link, #0052cc);
+  --cp-text-primary: var(--ds-text);
+  --cp-text-secondary: var(--ds-text-subtle);
+  --cp-text-tertiary: var(--ds-text-subtlest);
+  --cp-text-muted: var(--ds-text-subtlest);
+  --cp-text-link: var(--ds-link);
   --cp-border-subtle: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.06));
   --cp-border-default: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.12));
   --cp-border-strong: var(--ds-shadow-overlay, rgba(15, 23, 42, 0.2));
@@ -259,42 +259,42 @@
      --ds-background-selected (atlassian.design/tokens) and Jira NIN
      measured value rgb(233,242,254). Was Tailwind blue-600/8 which
      rendered the rail card selection ~3 shades too saturated vs Jira. */
-  --cp-interact-selected: var(--ds-background-selected, #e9f2ff);
-  --cp-primary-60: var(--ds-link, #0052cc);
-  --cp-primary-70: var(--ds-link-pressed, #0747a6);
-  --cp-primary-5: var(--ds-background-selected, #e9f2ff);
-  --cp-purple-60: var(--ds-background-discovery-bold, #7c3aed);
-  --cp-purple-5: var(--ds-background-discovery, #f3f0ff);
+  --cp-interact-selected: var(--ds-background-selected);
+  --cp-primary-60: var(--ds-link);
+  --cp-primary-70: var(--ds-link-pressed);
+  --cp-primary-5: var(--ds-background-selected);
+  --cp-purple-60: var(--ds-background-discovery-bold);
+  --cp-purple-5: var(--ds-background-discovery);
   --cp-success-60: var(
     --cp-success,
-    var(--ds-background-success-bold, #1f845a)
+    var(--ds-background-success-bold)
   );
   --cp-warning-60: var(
     --cp-warning,
-    var(--ds-background-warning-bold, #d97706)
+    var(--ds-background-warning-bold)
   );
-  --cp-danger-60: var(--cp-danger, var(--ds-background-danger-bold, #dc2626));
-  --cp-teal-60: var(--ds-chart-teal-bold, #0d9488);
-  --cp-lozenge-grey-bg: var(--ds-border, #dfe1e6);
-  --cp-lozenge-grey-text: var(--ds-text-subtle, #42526e);
+  --cp-danger-60: var(--cp-danger, var(--ds-background-danger-bold));
+  --cp-teal-60: var(--ds-chart-teal-bold);
+  --cp-lozenge-grey-bg: var(--ds-border);
+  --cp-lozenge-grey-text: var(--ds-text-subtle);
   /* 2026-06-23 — Resize handle hover indicator. Distinct grey that signals
      "draggable boundary" without competing with --ds-border-selected (used
      for active drag + selection). No ADS token matches this exact value;
      Catalyst-scoped. */
-  --cp-resize-handle-hover: var(--ds-text-subtlest, #626f86);
-  --cp-lozenge-blue-bg: var(--ds-link, #0c66e4);
+  --cp-resize-handle-hover: var(--ds-text-subtlest);
+  --cp-lozenge-blue-bg: var(--ds-link);
   --cp-lozenge-blue-text: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   /* ADS canonical subtle success tokens (light) — spec 2026-05-29.
-     bg = color.background.success (var(--ds-background-success, #DFFCF0)), text = color.text.success (var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))). */
-  --cp-lozenge-green-bg: var(--ds-background-success, #dffcf0);
-  --cp-lozenge-green-text: var(--ds-text-success, #216e4e);
+     bg = color.background.success (var(--ds-background-success)), text = color.text.success (var(--ds-text-success, var(--ds-chart-green-bold))). */
+  --cp-lozenge-green-bg: var(--ds-background-success);
+  --cp-lozenge-green-text: var(--ds-text-success);
 
   /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
-  --cp-primary: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
-  --cp-primary-hover: var(--ds-link-pressed, #1d4ed8);
+  --cp-primary: var(--cp-workstream-catalyst-primary, var(--ds-link));
+  --cp-primary-hover: var(--ds-link-pressed);
   --cp-bg-hover: var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
   --cp-bg-selected: var(--ds-background-information, rgba(37, 99, 235, 0.08));
   --ph-row-height: 36px;
@@ -308,58 +308,58 @@
 
   /* ═══ SHORTHAND TOKENS — ADS bridge (V9 migration 2026-06-13) ═══ */
   /* All --cp-* shorthand tokens now use --ds-* as primary source */
-  --cp-bg: var(--ds-surface, #ffffff);
-  --cp-float: var(--ds-surface-raised, #ffffff);
+  --cp-bg: var(--ds-surface);
+  --cp-float: var(--ds-surface-raised);
   --cp-hover: var(
     --ds-background-neutral-subtle-hovered,
     rgba(9, 30, 66, 0.06)
   );
-  --cp-bd: var(--ds-border, #dfe1e6);
-  --cp-bd-zone: var(--ds-background-neutral-subtle, #f7f8f9);
-  --cp-bd-table: var(--ds-border, #dfe1e6);
-  --cp-t1: var(--ds-text, #172b4d);
-  --cp-t2: var(--ds-text-subtle, #42526e);
-  --cp-t3: var(--ds-text-subtlest, #6b778c);
-  --cp-t4: var(--ds-text-disabled, #8993a5);
-  --cp-blue: var(--ds-link, #0052cc);
-  --cp-blue-wash: var(--ds-background-selected, #e9f2fe);
-  --cp-blue-text: var(--ds-link, #0052cc);
-  --cp-blue-link: var(--ds-link, #0052cc);
-  --cp-ok: var(--ds-text-success, #216e4e);
-  --cp-ok-bg: var(--ds-background-success, #dffcf0);
-  --cp-warn: var(--ds-text-warning, #974f0c);
-  --cp-warn-bg: var(--ds-background-warning, #fff7d6);
-  --cp-err: var(--ds-text-danger, #ae2a19);
-  --cp-err-bg: var(--ds-background-danger, #ffebe6);
-  --cp-err-text: var(--ds-text-danger, #ae2a19);
-  --cp-prg-bg: var(--ds-background-information, #e9f2fe);
+  --cp-bd: var(--ds-border);
+  --cp-bd-zone: var(--ds-background-neutral-subtle);
+  --cp-bd-table: var(--ds-border);
+  --cp-t1: var(--ds-text);
+  --cp-t2: var(--ds-text-subtle);
+  --cp-t3: var(--ds-text-subtlest);
+  --cp-t4: var(--ds-text-disabled);
+  --cp-blue: var(--ds-link);
+  --cp-blue-wash: var(--ds-background-selected);
+  --cp-blue-text: var(--ds-link);
+  --cp-blue-link: var(--ds-link);
+  --cp-ok: var(--ds-text-success);
+  --cp-ok-bg: var(--ds-background-success);
+  --cp-warn: var(--ds-text-warning);
+  --cp-warn-bg: var(--ds-background-warning);
+  --cp-err: var(--ds-text-danger);
+  --cp-err-bg: var(--ds-background-danger);
+  --cp-err-text: var(--ds-text-danger);
+  --cp-prg-bg: var(--ds-background-information);
   --cp-lz-gy-bg: var(
     --cp-lozenge-grey-bg,
-    var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+    var(--cp-border-neutral, var(--ds-border))
   );
-  --cp-lz-gy-t: var(--ds-text-subtle, #42526e);
-  --cp-lz-bl-bg: var(--ds-link, #0c66e4);
+  --cp-lz-gy-t: var(--ds-text-subtle);
+  --cp-lz-bl-bg: var(--ds-link);
   --cp-lz-bl-t: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   --cp-lz-gn-bg: var(
     --cp-lozenge-green-bg,
-    var(--ds-background-success, #dffcf0)
+    var(--ds-background-success)
   );
-  --cp-lz-gn-t: var(--ds-text-success, #216e4e);
-  --cp-lozenge-green-text: var(--ds-text-success, #216e4e);
+  --cp-lz-gn-t: var(--ds-text-success);
+  --cp-lozenge-green-text: var(--ds-text-success);
 
   /* ═══ Source Badge Tokens ═══ */
-  --src-catalyst-bg: var(--ds-background-information, #e9f2ff);
+  --src-catalyst-bg: var(--ds-background-information);
   --src-catalyst-text: var(
     --cp-workstream-catalyst-primary,
-    var(--ds-link, #2563eb)
+    var(--ds-link)
   );
-  --src-catalyst-border: var(--ds-background-information, #e9f2ff);
-  --src-jira-bg: var(--ds-background-warning, #fff7d6);
-  --src-jira-text: var(--ds-text-danger, #ae2a19);
-  --src-jira-border: var(--ds-background-warning, #fff7d6);
+  --src-catalyst-border: var(--ds-background-information);
+  --src-jira-bg: var(--ds-background-warning);
+  --src-jira-text: var(--ds-text-danger);
+  --src-jira-border: var(--ds-background-warning);
   --cp-font-heading: "Charlie Display", system-ui, -apple-system, sans-serif;
   --cp-font-body: "Charlie Text", system-ui, -apple-system, sans-serif;
   --cp-font-mono: "Charlie Code", ui-monospace, monospace;
@@ -381,18 +381,18 @@
     0px 0px 1px var(--ds-text, rgba(30, 31, 33, 0.31));
 
   /* ═══ Issue View 3-Column Layout Tokens ═══ */
-  --iv-bg-app: var(--ds-surface-sunken, #f7f8f9);
+  --iv-bg-app: var(--ds-surface-sunken);
   --iv-bg-panel: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   --iv-border: var(
     --cp-lozenge-grey-bg,
-    var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+    var(--cp-border-neutral, var(--ds-border))
   );
-  --iv-hover: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #f4f5f7));
-  --iv-selected: var(--ds-background-selected, #e9f2ff);
-  --iv-accent: var(--ds-link, #0c66e4);
+  --iv-hover: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
+  --iv-selected: var(--ds-background-selected);
+  --iv-accent: var(--ds-link);
   --iv-shadow-panel: 0 1px 2px
     var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08));
   --iv-left-default: 360px;
@@ -403,45 +403,45 @@
   --iv-right-max: 520px;
 
   /* ═══ Board Manager Tokens ═══ */
-  --cp-primary-10: var(--ds-background-information, #e9f2ff);
-  --cp-success-5: var(--ds-background-success, #dffcf0);
-  --cp-success-10: var(--ds-background-success, #dffcf0);
-  --cp-danger-5: var(--ds-background-danger, #ffeceb);
-  --cp-warning-5: var(--ds-background-warning, #fff7d6);
-  --cp-purple-10: var(--ds-background-discovery, #f3f0ff);
-  --cp-info-60: var(--ds-link, #0284c7);
-  --cp-neutral-60: var(--ds-text-subtle, #44546f);
+  --cp-primary-10: var(--ds-background-information);
+  --cp-success-5: var(--ds-background-success);
+  --cp-success-10: var(--ds-background-success);
+  --cp-danger-5: var(--ds-background-danger);
+  --cp-warning-5: var(--ds-background-warning);
+  --cp-purple-10: var(--ds-background-discovery);
+  --cp-info-60: var(--ds-link);
+  --cp-neutral-60: var(--ds-text-subtle);
   --cp-neutral-0: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
-  --cp-neutral-5: var(--ds-surface-sunken, #fafafa);
-  --cp-neutral-10: var(--ds-surface-sunken, #f7f8f9);
+  --cp-neutral-5: var(--ds-surface-sunken);
+  --cp-neutral-10: var(--ds-surface-sunken);
   --cp-neutral-15: var(
     --cp-bg-sunken,
-    var(--cp-bg-sunken, var(--ds-surface-sunken, #f7f8f9))
+    var(--cp-bg-sunken, var(--ds-surface-sunken))
   );
-  --cp-neutral-20: var(--ds-border, #dfe1e6);
+  --cp-neutral-20: var(--ds-border);
   --cp-neutral-25: var(
     --cp-border,
-    var(--cp-bg-sunken, var(--ds-border, #dfe1e6))
+    var(--cp-bg-sunken, var(--ds-border))
   );
-  --cp-neutral-30: var(--ds-background-neutral-hovered, #d4d4d4);
-  --cp-neutral-40: var(--ds-text-disabled, #8590a2);
-  --cp-neutral-50: var(--ds-text-subtlest, #626f86);
-  --cp-neutral-70: var(--ds-text-subtle, #44546f);
-  --cp-neutral-80: var(--ds-text, #172b4d);
-  --cp-primary-20: var(--ds-background-information, #e9f2ff);
-  --cp-primary-40: var(--ds-background-information-bold, #0c66e4);
-  --cp-primary-80: var(--ds-text-inverse, #1e3a8a);
-  --cp-success-80: var(--ds-text-success, #216e4e);
-  --cp-warning-10: var(--ds-background-warning, #fff7d6);
-  --cp-warning-80: var(--ds-text-warning, #974f0c);
-  --cp-danger-10: var(--ds-background-danger, #ffeceb);
-  --cp-danger-80: var(--ds-text-danger, #ae2a19);
+  --cp-neutral-30: var(--ds-background-neutral-hovered);
+  --cp-neutral-40: var(--ds-text-disabled);
+  --cp-neutral-50: var(--ds-text-subtlest);
+  --cp-neutral-70: var(--ds-text-subtle);
+  --cp-neutral-80: var(--ds-text);
+  --cp-primary-20: var(--ds-background-information);
+  --cp-primary-40: var(--ds-background-information-bold);
+  --cp-primary-80: var(--ds-text-inverse);
+  --cp-success-80: var(--ds-text-success);
+  --cp-warning-10: var(--ds-background-warning);
+  --cp-warning-80: var(--ds-text-warning);
+  --cp-danger-10: var(--ds-background-danger);
+  --cp-danger-80: var(--ds-text-danger);
   --cp-text-inverse: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
 
   /* ═══ CATALYST10 Typography Tokens ═══ */
@@ -581,20 +581,20 @@
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
-  color: var(--ds-text, #172b4d);
-  border-bottom: 1px solid var(--ds-border, #ebecf0);
+  color: var(--ds-text);
+  border-bottom: 1px solid var(--ds-border);
   vertical-align: top;
 }
 .dashboard-widget-body tbody tr:hover td {
-  background-color: var(--ds-background-neutral-subtle-hovered, #f4f5f7);
+  background-color: var(--ds-background-neutral-subtle-hovered);
 }
 .dashboard-widget-body th {
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
-  color: var(--ds-text-subtle, #6b778c);
-  border-bottom: 2px solid var(--ds-border, #dfe1e6);
+  color: var(--ds-text-subtle);
+  border-bottom: 2px solid var(--ds-border);
   text-transform: none;
   letter-spacing: 0;
   vertical-align: middle;
@@ -630,16 +630,16 @@
 .dashboard-widget-body thead th[aria-sort="ascending"],
 .dashboard-widget-body thead th[aria-sort="descending"] {
   font-weight: 700;
-  color: var(--ds-text, #172b4d);
+  color: var(--ds-text);
 }
 .dashboard-widget-body thead th[aria-sort="ascending"] svg,
 .dashboard-widget-body thead th[aria-sort="descending"] svg {
-  fill: var(--ds-icon-brand, #0c66e4) !important;
-  color: var(--ds-icon-brand, #0c66e4) !important;
+  fill: var(--ds-icon-brand) !important;
+  color: var(--ds-icon-brand) !important;
 }
 .dashboard-widget-body thead th[aria-sort="ascending"] button,
 .dashboard-widget-body thead th[aria-sort="descending"] button {
-  color: var(--ds-text-brand, #0c66e4) !important;
+  color: var(--ds-text-brand) !important;
 }
 
 /* Auto-refresh pulse (Session 4 P2-A). The RefreshCw icon wrapper
@@ -651,12 +651,12 @@
   0% {
     opacity: 0.3;
     transform: scale(0.85);
-    color: var(--ds-icon-brand, #0c66e4);
+    color: var(--ds-icon-brand);
   }
   60% {
     opacity: 1;
     transform: scale(1.15);
-    color: var(--ds-icon-brand, #0c66e4);
+    color: var(--ds-icon-brand);
   }
   100% {
     opacity: 1;
@@ -760,44 +760,44 @@ html:has(body[data-scroll-locked]) {
     /* ═══════════════════════════════════════════════════════════════
        LIGHT MODE — Clean White backgrounds, Blue Primary
        ═══════════════════════════════════════════════════════════════ */
-    --background: 0 0% 100%; /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) — V3 Canonical White Canvas
+    --background: 0 0% 100%; /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))) — V3 Canonical White Canvas
                                              (Apr 27, 2026 audit, lesson L36).
-                                             Was 210 40% 98% (var(--ds-surface-sunken, #F8FAFC) slate-50)
+                                             Was 210 40% 98% (var(--ds-surface-sunken) slate-50)
                                              which painted body+`.bg-background`
                                              as a slate wash visible behind
                                              every page card. */
-    --foreground: 0 0% 4%; /* var(--ds-text, #172B4D) near-black */
+    --foreground: 0 0% 4%; /* var(--ds-text) near-black */
 
-    --card: 0 0% 100%; /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) */
-    --card-foreground: 0 0% 4%; /* var(--ds-text, #172B4D) */
+    --card: 0 0% 100%; /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))) */
+    --card-foreground: 0 0% 4%; /* var(--ds-text) */
 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 4%;
 
-    --primary: 217 91% 60%; /* var(--ds-background-information-bold, #3b82f6) blue-500 - PRIMARY BRAND */
+    --primary: 217 91% 60%; /* var(--ds-background-information-bold) blue-500 - PRIMARY BRAND */
     --primary-foreground: 0 0% 100%; /* white */
 
     --secondary: 0 0% 96%; /* neutral off-white */
-    --secondary-foreground: 0 0% 9%; /* var(--ds-text, #172B4D) */
+    --secondary-foreground: 0 0% 9%; /* var(--ds-text) */
 
     --muted: 0 0% 96%; /* neutral muted */
-    --muted-foreground: 0 0% 35%; /* var(--ds-text-subtle, #44546F) - better contrast */
+    --muted-foreground: 0 0% 35%; /* var(--ds-text-subtle) - better contrast */
 
-    --accent: 217 91% 60%; /* var(--ds-background-information-bold, #3b82f6) blue accent */
+    --accent: 217 91% 60%; /* var(--ds-background-information-bold) blue accent */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%; /* red */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 88%; /* var(--ds-border, #DFE1E6) - better contrast */
-    --input: 0 0% 82%; /* var(--ds-border, #DFE1E6) */
+    --border: 0 0% 88%; /* var(--ds-border) - better contrast */
+    --input: 0 0% 82%; /* var(--ds-border) */
     --ring: 217 91% 60%; /* blue focus ring */
 
     --radius: 8px;
 
     /* Sidebar */
-    --sidebar-background: 0 0% 99%; /* var(--ds-surface, #FCFCFC) */
-    --sidebar-foreground: 0 0% 9%; /* var(--ds-text, #172B4D) */
+    --sidebar-background: 0 0% 99%; /* var(--ds-surface) */
+    --sidebar-foreground: 0 0% 9%; /* var(--ds-text) */
     --sidebar-primary: 217 91% 60%; /* blue */
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 217 91% 60%; /* blue for active */
@@ -811,11 +811,11 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
 
     /* === TEXT TOKENS === */
-    --text-primary: 0 0% 4%; /* var(--ds-text, #172B4D) */
-    --text-secondary: 0 0% 9%; /* var(--ds-text, #172B4D) */
-    --text-tertiary: 0 0% 25%; /* var(--ds-text-subtle, #44546F) */
-    --text-muted: 0 0% 42%; /* var(--ds-text-subtlest, #626F86) */
-    --text-inverse: 0 0% 100%; /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) */
+    --text-primary: 0 0% 4%; /* var(--ds-text) */
+    --text-secondary: 0 0% 9%; /* var(--ds-text) */
+    --text-tertiary: 0 0% 25%; /* var(--ds-text-subtle) */
+    --text-muted: 0 0% 42%; /* var(--ds-text-subtlest) */
+    --text-inverse: 0 0% 100%; /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))) */
 
     /* === SURFACE TOKENS ===
        Stored as COMPLETE hsl() color values (not raw triples) so that bare
@@ -824,47 +824,47 @@ html:has(body[data-scroll-locked]) {
        an extra hsl() wrapper — see tailwind.config.ts. */
     --surface-0: hsl(
       0 0% 100%
-    ); /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) - cards, dialogs */
+    ); /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))) - cards, dialogs */
     --surface-1: hsl(
       210 40% 98%
-    ); /* var(--ds-surface-sunken, #F8FAFC) - page background */
+    ); /* var(--ds-surface-sunken) - page background */
     --surface-2: hsl(
       0 0% 97%
-    ); /* var(--ds-surface-sunken, var(--ds-surface-sunken, #F8F8F7)) - subtle sections */
+    ); /* var(--ds-surface-sunken, var(--ds-surface-sunken)) - subtle sections */
     --surface-3: hsl(
       0 0% 95%
-    ); /* var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9)) - muted containers */
+    ); /* var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle)) - muted containers */
     --surface-elevated: hsl(
       0 0% 100%
-    ); /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) - popovers, dropdowns */
+    ); /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))) - popovers, dropdowns */
     --surface-overlay: hsl(0 0% 0%); /* black base for overlays */
 
     /* === BORDER TOKENS === */
-    --border-subtle: 0 0% 91%; /* var(--ds-border, #E8E8E8) */
-    --border-default: 0 0% 88%; /* var(--ds-border, #DFE1E6) */
-    --border-strong: 0 0% 78%; /* var(--ds-border, #DFE1E6) */
+    --border-subtle: 0 0% 91%; /* var(--ds-border) */
+    --border-default: 0 0% 88%; /* var(--ds-border) */
+    --border-strong: 0 0% 78%; /* var(--ds-border) */
     --border-focus: 217 91% 60%; /* blue */
 
     /* === BRAND/ACTION TOKENS (Catalyst V5 Spec) === */
-    --brand-primary: 217 91% 53%; /* var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb)) */
-    --brand-primary-hover: 217 91% 45%; /* var(--ds-link-pressed, #1d4ed8) */
-    --brand-primary-light: 214 100% 93%; /* var(--ds-background-information, #E9F2FF) */
-    --brand-primary-dark: 217 91% 37%; /* var(--ds-link-pressed, #1e40af) */
+    --brand-primary: 217 91% 53%; /* var(--cp-workstream-catalyst-primary, var(--ds-link)) */
+    --brand-primary-hover: 217 91% 45%; /* var(--ds-link-pressed) */
+    --brand-primary-light: 214 100% 93%; /* var(--ds-background-information) */
+    --brand-primary-dark: 217 91% 37%; /* var(--ds-link-pressed) */
     --brand-primary-foreground: 0 0% 100%;
-    --brand-teal: 173 58% 39%; /* var(--ds-chart-teal-bold, #0d9488) */
-    --brand-teal-hover: 173 58% 33%; /* var(--ds-chart-teal-bolder, #0f766e) */
-    --brand-teal-light: 166 76% 89%; /* var(--ds-background-success, #DCFFF1) */
+    --brand-teal: 173 58% 39%; /* var(--ds-chart-teal-bold) */
+    --brand-teal-hover: 173 58% 33%; /* var(--ds-chart-teal-bolder) */
+    --brand-teal-light: 166 76% 89%; /* var(--ds-background-success) */
 
     /* === AI PURPLE TOKENS (A5 Spec) === */
-    --ai-purple: 263 70% 58%; /* var(--ds-background-discovery-bold, #7C3AED) */
-    --ai-purple-light: 263 69% 96%; /* var(--ds-background-discovery, #F3F0FF) */
-    --ai-purple-dark: 263 70% 42%; /* var(--ds-background-discovery-bold, #5b21b6) */
+    --ai-purple: 263 70% 58%; /* var(--ds-background-discovery-bold) */
+    --ai-purple-light: 263 69% 96%; /* var(--ds-background-discovery) */
+    --ai-purple-dark: 263 70% 42%; /* var(--ds-background-discovery-bold) */
 
     /* === SEMANTIC LIGHT BACKGROUNDS (A2 Spec) === */
-    --sem-success-light: var(--ds-background-success, #dffcf0); /* Green-100 */
-    --sem-warning-light: var(--ds-background-warning, #fff7d6); /* Amber-100 */
-    --sem-danger-light: var(--ds-background-danger, #ffeceb); /* Red-100 */
-    --sem-info-light: var(--ds-background-information, #e9f2ff); /* Sky-100 */
+    --sem-success-light: var(--ds-background-success); /* Green-100 */
+    --sem-warning-light: var(--ds-background-warning); /* Amber-100 */
+    --sem-danger-light: var(--ds-background-danger); /* Red-100 */
+    --sem-info-light: var(--ds-background-information); /* Sky-100 */
 
     /* ═══════════════════════════════════════════════════════════════
        CATALYST V5 CANONICAL — Semantic State Tokens (Light Mode)
@@ -872,43 +872,43 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
 
     /* V5 CANONICAL SEMANTIC COLORS (A2 Spec Exact) */
-    --success: 160 84% 39%; /* var(--quality-high, var(--ds-background-success-bold, #059669)) emerald-600 */
+    --success: 160 84% 39%; /* var(--quality-high, var(--ds-background-success-bold)) emerald-600 */
     --success-foreground: 0 0% 100%;
     --success-bg: 160 84% 39%;
     --success-border: 160 84% 39%;
 
-    --warning: 38 92% 50%; /* var(--ds-background-warning-bold, #d97706) amber-600 */
+    --warning: 38 92% 50%; /* var(--ds-background-warning-bold) amber-600 */
     --warning-foreground: 0 0% 100%;
     --warning-bg: 38 92% 50%;
     --warning-border: 38 92% 50%;
 
-    --danger: 0 72% 51%; /* var(--ds-background-danger-bold, #dc2626) red-600 */
+    --danger: 0 72% 51%; /* var(--ds-background-danger-bold) red-600 */
     --danger-foreground: 0 0% 100%;
     --danger-bg: 0 72% 51%;
     --danger-border: 0 72% 51%;
 
-    --info: 201 96% 32%; /* var(--ds-link, #0284c7) sky-600 */
+    --info: 201 96% 32%; /* var(--ds-link) sky-600 */
     --info-foreground: 0 0% 100%;
     --info-bg: 201 96% 32%;
     --info-border: 201 96% 32%;
 
     /* === FOCUS & OVERLAY TOKENS === */
-    --focus-ring: 217 91% 60%; /* var(--ds-background-information-bold, #3b82f6) */
+    --focus-ring: 217 91% 60%; /* var(--ds-background-information-bold) */
     --overlay: 0 0% 0%; /* black - use with alpha */
 
     /* === V5 ADDITIONAL TOKENS (Light Mode) === */
-    --bg-app: var(--ds-surface-sunken, #f7f8f9);
+    --bg-app: var(--ds-surface-sunken);
     --bg-0: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
-    --bg-1: var(--ds-surface-sunken, #f8fafc);
-    --bg-2: var(--ds-surface-sunken, #f7f8f9);
-    --bg-3: var(--ds-background-neutral, #f0f0f0);
-    --text-1: var(--ds-text, #172b4d);
-    --text-2: var(--ds-text-subtle, #44546f);
-    --text-3: var(--ds-text-subtlest, #626f86);
-    --text-4: var(--ds-text-disabled, #8590a2);
+    --bg-1: var(--ds-surface-sunken);
+    --bg-2: var(--ds-surface-sunken);
+    --bg-3: var(--ds-background-neutral);
+    --text-1: var(--ds-text);
+    --text-2: var(--ds-text-subtle);
+    --text-3: var(--ds-text-subtlest);
+    --text-4: var(--ds-text-disabled);
     --stroke-1: var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
     --stroke-2: var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
     --divider: var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
@@ -917,12 +917,12 @@ html:has(body[data-scroll-locked]) {
     --row-active: var(--ds-background-information, rgba(37, 99, 235, 0.12));
     --input-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
     --input-bd: var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
     --input-focus: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
     --shadow-1: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05)),
       0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.03));
@@ -935,26 +935,26 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     --chart-passed: var(
       --ds-chart-teal-bold,
-      var(--ds-chart-teal-bold, #0d9488)
+      var(--ds-chart-teal-bold)
     ); /* Teal for success/passed */
     --chart-failed: var(
       --ds-background-danger-bold,
-      var(--ds-background-danger-bold, #ef4444)
+      var(--ds-background-danger-bold)
     ); /* Red for danger/failed */
     --chart-blocked: var(
       --ds-background-warning-bold,
-      var(--ds-background-warning-bold, #d97706)
+      var(--ds-background-warning-bold)
     ); /* Orange for warning/blocked */
     --chart-active: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* Blue for in-progress */
-    --chart-neutral-1: var(--ds-text-subtle, #44546f);
-    --chart-neutral-2: var(--ds-text-subtle, #44546f);
-    --chart-neutral-3: var(--ds-text-subtlest, #626f86);
-    --chart-neutral-4: var(--ds-text-disabled, #8590a2);
-    --chart-neutral-5: var(--ds-border, #dfe1e6);
-    --chart-neutral-6: var(--ds-border, #dfe1e6);
+    --chart-neutral-1: var(--ds-text-subtle);
+    --chart-neutral-2: var(--ds-text-subtle);
+    --chart-neutral-3: var(--ds-text-subtlest);
+    --chart-neutral-4: var(--ds-text-disabled);
+    --chart-neutral-5: var(--ds-border);
+    --chart-neutral-6: var(--ds-border);
 
     --chart-1: var(--chart-active); /* Blue primary */
     --chart-2: var(--chart-passed); /* Teal success */
@@ -971,20 +971,20 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
 
     /* Semantic tokens → V5 CANONICAL (Light Mode) - Exact A2 Spec */
-    --sem-danger: var(--ds-background-danger-bold, #dc2626); /* Red-600 */
-    --sem-warning: var(--ds-background-warning-bold, #d97706); /* Amber-600 */
+    --sem-danger: var(--ds-background-danger-bold); /* Red-600 */
+    --sem-warning: var(--ds-background-warning-bold); /* Amber-600 */
     --sem-success: var(
       --quality-high,
-      var(--ds-background-success-bold, #059669)
+      var(--ds-background-success-bold)
     ); /* Emerald-600 - A2 Spec */
-    --sem-info: var(--ds-link, #0284c7); /* Sky-600 - A2 Spec */
-    --sem-critical: var(--ds-background-danger-bold, #dc2626); /* Red-600 */
-    --sem-blocked: var(--ds-background-warning-bold, #d97706); /* Orange */
-    --sem-overdue: var(--ds-background-danger-bold, #dc2626); /* Red */
-    --sem-high: var(--ds-background-danger-bold, #dc2626); /* Red */
-    --sem-medium: var(--ds-background-warning-bold, #d97706); /* Orange */
-    --sem-low: var(--ds-text-subtlest, #626f86); /* Gray-500 */
-    --sem-done: var(--ds-chart-teal-bold, #0d9488); /* Teal */
+    --sem-info: var(--ds-link); /* Sky-600 - A2 Spec */
+    --sem-critical: var(--ds-background-danger-bold); /* Red-600 */
+    --sem-blocked: var(--ds-background-warning-bold); /* Orange */
+    --sem-overdue: var(--ds-background-danger-bold); /* Red */
+    --sem-high: var(--ds-background-danger-bold); /* Red */
+    --sem-medium: var(--ds-background-warning-bold); /* Orange */
+    --sem-low: var(--ds-text-subtlest); /* Gray-500 */
+    --sem-done: var(--ds-chart-teal-bold); /* Teal */
 
     /* Backgrounds → Semantic colors with alpha */
     --sem-danger-bg: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.08));
@@ -1030,20 +1030,20 @@ html:has(body[data-scroll-locked]) {
     /* === V5 CANONICAL — NO-DRIFT Semantic Tokens (Light Mode) === */
     --info-fg: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* Blue-600 */
     --info-bg: var(--ds-background-information, rgba(37, 99, 235, 0.08));
     --info-bd: var(--ds-background-information, rgba(37, 99, 235, 0.15));
 
-    --success-fg: var(--ds-chart-teal-bold, #0d9488); /* Teal-600 */
+    --success-fg: var(--ds-chart-teal-bold); /* Teal-600 */
     --success-bg: var(--ds-background-success, rgba(13, 148, 136, 0.08));
     --success-bd: var(--ds-background-success, rgba(13, 148, 136, 0.15));
 
-    --warning-fg: var(--ds-background-warning-bold, #d97706); /* Amber-600 */
+    --warning-fg: var(--ds-background-warning-bold); /* Amber-600 */
     --warning-bg: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
     --warning-bd: var(--ds-background-warning, rgba(217, 119, 6, 0.15));
 
-    --danger-fg: var(--ds-background-danger-bold, #dc2626); /* Red-600 */
+    --danger-fg: var(--ds-background-danger-bold); /* Red-600 */
     --danger-bg: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.08));
     --danger-bd: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.15));
 
@@ -1052,7 +1052,7 @@ html:has(body[data-scroll-locked]) {
     --neutral-bd: var(--ds-shadow-raised, rgba(0, 0, 0, 0.1));
 
     /* === SHADOW TOKENS (D1 Spec Compliant) === */
-    --shadow-color: 0 0% 10%; /* var(--ds-text, #172B4D) */
+    --shadow-color: 0 0% 10%; /* var(--ds-text) */
     --shadow-elev-1: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
     --shadow-elev-2: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
 
@@ -1062,36 +1062,36 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
 
     /* Primary */
-    --users-primary: 217 91% 53%; /* var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb)) */
-    --users-primary-hover: 217 91% 45%; /* var(--ds-link-pressed, #1d4ed8) */
+    --users-primary: 217 91% 53%; /* var(--cp-workstream-catalyst-primary, var(--ds-link)) */
+    --users-primary-hover: 217 91% 45%; /* var(--ds-link-pressed) */
     --users-primary-light: 217 91% 53% / 0.08;
 
     /* Resource Types */
-    --users-variable: 217 91% 53%; /* var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb)) blue */
+    --users-variable: 217 91% 53%; /* var(--cp-workstream-catalyst-primary, var(--ds-link)) blue */
     --users-variable-bg: 217 91% 53% / 0.08;
-    --users-permanent: 173 58% 39%; /* var(--ds-chart-teal-bold, #0d9488) teal */
+    --users-permanent: 173 58% 39%; /* var(--ds-chart-teal-bold) teal */
     --users-permanent-bg: 173 58% 39% / 0.1;
-    --users-fixed: 38 92% 50%; /* var(--ds-background-warning-bold, #d97706) amber */
+    --users-fixed: 38 92% 50%; /* var(--ds-background-warning-bold) amber */
     --users-fixed-bg: 38 92% 50% / 0.1;
-    --users-freelance: 262 83% 58%; /* var(--ds-background-discovery-bold, #8b5cf6) purple */
+    --users-freelance: 262 83% 58%; /* var(--ds-background-discovery-bold) purple */
     --users-freelance-bg: 262 83% 58% / 0.1;
 
     /* Status */
-    --users-success: 160 84% 39%; /* var(--ds-background-success-bold, #059669) */
+    --users-success: 160 84% 39%; /* var(--ds-background-success-bold) */
     --users-success-bg: 160 84% 39% / 0.1;
-    --users-danger: 0 84% 60%; /* var(--ds-background-danger-bold, #ef4444) */
+    --users-danger: 0 84% 60%; /* var(--ds-background-danger-bold) */
     --users-danger-bg: 0 84% 60% / 0.1;
 
     /* Neutrals */
-    --users-bg: 210 40% 98%; /* var(--ds-surface-sunken, #F8FAFC) */
-    --users-surface: 0 0% 100%; /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) */
-    --users-surface-hover: 210 40% 98%; /* var(--ds-surface-sunken, #F8FAFC) */
-    --users-surface-active: 213 27% 96%; /* var(--ds-surface-sunken, #F7F8F9) */
-    --users-text: 222 47% 11%; /* var(--ds-text, #172B4D) */
-    --users-text-secondary: 215 16% 47%; /* var(--ds-text-subtle, #44546F) */
-    --users-text-muted: 215 16% 47%; /* var(--ds-text-subtlest, #626F86) - WCAG AA compliant */
-    --users-border: 214 32% 91%; /* var(--cp-bg-sunken, var(--ds-border, #DFE1E6)) */
-    --users-border-light: 213 27% 96%; /* var(--ds-surface-sunken, #F7F8F9) */
+    --users-bg: 210 40% 98%; /* var(--ds-surface-sunken) */
+    --users-surface: 0 0% 100%; /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))) */
+    --users-surface-hover: 210 40% 98%; /* var(--ds-surface-sunken) */
+    --users-surface-active: 213 27% 96%; /* var(--ds-surface-sunken) */
+    --users-text: 222 47% 11%; /* var(--ds-text) */
+    --users-text-secondary: 215 16% 47%; /* var(--ds-text-subtle) */
+    --users-text-muted: 215 16% 47%; /* var(--ds-text-subtlest) - WCAG AA compliant */
+    --users-border: 214 32% 91%; /* var(--cp-bg-sunken, var(--ds-border)) */
+    --users-border-light: 213 27% 96%; /* var(--ds-surface-sunken) */
     --shadow-elev-3: 0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12));
     --shadow-brand: 0 4px 14px -2px var(--ds-background-information, rgba(37, 99, 235, 0.25));
     --shadow-ai: 0 4px 14px -2px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.3));
@@ -1103,65 +1103,65 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
 
     /* Legacy surface tokens (HEX for direct use) */
-    --bg: var(--ds-surface-sunken, #f8fafc);
-    --bg-workspace: var(--ds-surface-sunken, #f8fafc);
-    --bg-cream: var(--ds-surface-sunken, #f8fafc);
+    --bg: var(--ds-surface-sunken);
+    --bg-workspace: var(--ds-surface-sunken);
+    --bg-cream: var(--ds-surface-sunken);
     --bg-card: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
-    --bg-sidebar: var(--ds-surface, #fcfcfc);
+    --bg-sidebar: var(--ds-surface);
     --surface-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
-    --surface-subtle: var(--ds-surface-sunken, #fafafa);
-    --surface-hover: var(--ds-surface-sunken, #f7f8f9);
+    --surface-subtle: var(--ds-surface-sunken);
+    --surface-hover: var(--ds-surface-sunken);
     --surface-active: var(--ds-background-information, rgba(37, 99, 235, 0.1));
     --surface-card: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
-    --surface-muted: var(--ds-surface-sunken, #f8f8f7);
+    --surface-muted: var(--ds-surface-sunken);
 
     /* ═══════════════════════════════════════════════════════════════
        V9.5 NAVIGATION SHELL — AAA Contrast (Linear/Stripe Standard)
        Primary: 15:1 | Secondary: 8.5:1 | Tertiary: 6:1
        ═══════════════════════════════════════════════════════════════ */
-    --nav-text-primary: var(--ds-text, #172b4d); /* 15.4:1 contrast */
-    --nav-text-secondary: var(--ds-text-subtle, #44546f); /* 8.59:1 contrast */
-    --nav-text-tertiary: var(--ds-text-subtle, #44546f); /* 6.04:1 contrast */
+    --nav-text-primary: var(--ds-text); /* 15.4:1 contrast */
+    --nav-text-secondary: var(--ds-text-subtle); /* 8.59:1 contrast */
+    --nav-text-tertiary: var(--ds-text-subtle); /* 6.04:1 contrast */
     --nav-module-badge: var(
       --ds-text-subtle,
-      var(--ds-text-subtle, #44546f)
+      var(--ds-text-subtle)
     ); /* Neutral badge (not colored) */
-    --nav-section-label: var(--ds-text-subtle, #44546f); /* Section headers */
+    --nav-section-label: var(--ds-text-subtle); /* Section headers */
     --nav-accent-bar: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* Left accent bar */
 
     /* Legacy text tokens (HEX for direct use) */
-    --text-1: var(--ds-text, #172b4d);
-    --text-2: var(--ds-text-subtle, #44546f);
-    --text-3: var(--ds-text-subtle, #44546f);
-    --text-4: var(--ds-text-subtlest, #626f86);
-    --text-secondary-strong: var(--ds-text-subtle, #44546f);
+    --text-1: var(--ds-text);
+    --text-2: var(--ds-text-subtle);
+    --text-3: var(--ds-text-subtle);
+    --text-4: var(--ds-text-subtlest);
+    --text-secondary-strong: var(--ds-text-subtle);
 
     /* Icon tokens (HEX) */
-    --icon-default: var(--ds-text-subtle, #44546f);
-    --icon-muted: var(--ds-text-subtlest, #626f86);
+    --icon-default: var(--ds-text-subtle);
+    --icon-muted: var(--ds-text-subtlest);
 
     /* Divider and border legacy (HEX) */
-    --divider: var(--ds-border, #dfe1e6);
-    --border-color: var(--ds-border, #dfe1e6);
-    --border-subtle-hex: var(--ds-border, #e8e8e8);
-    --border-default-hex: var(--ds-border, #dfe1e6);
+    --divider: var(--ds-border);
+    --border-color: var(--ds-border);
+    --border-subtle-hex: var(--ds-border);
+    --border-default-hex: var(--ds-border);
 
     /* Text tokens HEX (for inline styles) */
-    --text-primary-hex: var(--ds-text, #172b4d);
-    --text-secondary-hex: var(--ds-text-disabled, #8590a2);
-    --text-muted-hex: var(--ds-text-subtlest, #626f86);
+    --text-primary-hex: var(--ds-text);
+    --text-secondary-hex: var(--ds-text-disabled);
+    --text-muted-hex: var(--ds-text-subtlest);
 
     /* ═══════════════════════════════════════════════════════════════
        V10 NAVIGATION TOKENS — QA Checklist Compliant
@@ -1169,97 +1169,97 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     --nav-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
     --nav-text: var(
       --cp-ink-3,
-      var(--cp-text-secondary, var(--ds-text-subtlest, #626f86))
+      var(--cp-text-secondary, var(--ds-text-subtlest))
     ); /* V11: Inactive nav items */
     --nav-text-hover: var(
       --cp-ink-1,
-      var(--cp-ink-1, var(--ds-text, #172b4d))
+      var(--cp-ink-1, var(--ds-text))
     ); /* V11: Nav hover state */
     --nav-active: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* V11: Active nav text + underline */
     --nav-hover-bg: transparent; /* V11: NO background on hover */
     --nav-active-bg: transparent; /* V11: NO background on active */
     --nav-underline: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* V11: 2px active underline */
     --nav-border: var(
       --cp-border,
-      var(--cp-bg-sunken, var(--ds-border, #dfe1e6))
+      var(--cp-bg-sunken, var(--ds-border))
     ); /* V11: Header bottom border */
     --nav-shadow: 0 1px 0 var(--ds-shadow-overlay, rgba(15, 23, 42, 0.06)); /* V11: Subtle shadow */
     --nav-logo-separator: var(
       --cp-bg-sunken,
-      var(--cp-bg-sunken, var(--ds-surface-sunken, #f7f8f9))
+      var(--cp-bg-sunken, var(--ds-surface-sunken))
     ); /* V11: Logo right divider */
     --sidebar-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     ); /* V11: Sidebar background */
     --sidebar-border: var(
       --cp-border,
-      var(--cp-bg-sunken, var(--ds-border, #dfe1e6))
+      var(--cp-bg-sunken, var(--ds-border))
     ); /* V11: Sidebar right border */
     --sidebar-shadow: 1px 0 0 var(--ds-shadow-overlay, rgba(15, 23, 42, 0.06)); /* V11: Sidebar shadow */
     --sidebar-section-label: var(
       --cp-ink-4,
-      var(--cp-border-neutral-light, var(--ds-text-disabled, #8590a2))
+      var(--cp-border-neutral-light, var(--ds-text-disabled))
     ); /* V11: Section headers */
     --sidebar-item-text: var(
       --cp-ink-2,
-      var(--cp-ink-2, var(--ds-text-subtle, #44546f))
+      var(--cp-ink-2, var(--ds-text-subtle))
     ); /* V11: Default nav item text */
     --sidebar-item-hover-bg: var(
       --cp-bg-sunken,
-      var(--cp-bg-sunken, var(--ds-surface-sunken, #f7f8f9))
+      var(--cp-bg-sunken, var(--ds-surface-sunken))
     ); /* V11: Item hover bg */
     --sidebar-item-active-bg: var(
       --ds-background-information,
-      var(--ds-background-information, #e9f2ff)
+      var(--ds-background-information)
     ); /* V11: Active item bg */
     --sidebar-item-active-text: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* V11: Active item text */
     --sidebar-accent-bar: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* V11: 3px left accent */
     --sidebar-divider: var(
       --cp-bg-sunken,
-      var(--cp-bg-sunken, var(--ds-surface-sunken, #f7f8f9))
+      var(--cp-bg-sunken, var(--ds-surface-sunken))
     ); /* V11: Collapsed section divider */
 
     /* Legacy HEX aliases (DO NOT override canonical HSL tokens above) */
     --brand-active-hex: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
     --brand-primary-hex: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
-    --brand-primary-hover-hex: var(--ds-link-pressed, #1d4ed8);
+    --brand-primary-hover-hex: var(--ds-link-pressed);
 
     /* Brand colors (HEX) */
     --accent-blue: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
-    --accent-blue-hover: var(--ds-link-pressed, #1d4ed8);
+    --accent-blue-hover: var(--ds-link-pressed);
 
     /* Card tokens (HEX) */
     --card-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
-    --card-border: var(--ds-background-neutral, #f0f0f0);
+    --card-border: var(--ds-background-neutral);
 
     /* ═══════════════════════════════════════════════════════════════
        TABLE TOKENS - CATALYST V5 LIGHT MODE SPECIFICATION
@@ -1268,51 +1268,51 @@ html:has(body[data-scroll-locked]) {
     /* Table container */
     --table-container-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     ); /* surface-0 */
-    --table-container-border: var(--ds-border, #e8e8e8); /* border-subtle */
+    --table-container-border: var(--ds-border); /* border-subtle */
 
     /* Table header */
-    --table-header-bg: var(--ds-surface-sunken, #f8f8f7); /* surface-2 */
-    --table-header-text: var(--ds-text, #172b4d); /* text-primary */
-    --table-header-border: var(--ds-border, #dfe1e6); /* border-default */
+    --table-header-bg: var(--ds-surface-sunken); /* surface-2 */
+    --table-header-text: var(--ds-text); /* text-primary */
+    --table-header-border: var(--ds-border); /* border-default */
 
     /* Table body rows */
     --table-row-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     ); /* surface-0 */
     --table-row-alt-bg: var(
       --ds-surface-sunken,
-      var(--ds-surface-sunken, #fafafa)
+      var(--ds-surface-sunken)
     ); /* surface-1 - alternating */
-    --table-row-hover: var(--ds-surface-sunken, #f7f8f9); /* surface-hover */
+    --table-row-hover: var(--ds-surface-sunken); /* surface-hover */
     --table-row-selected: var(
       --ds-background-information,
       rgba(37, 99, 235, 0.06)
     );
-    --table-row-border: var(--ds-border, #e8e8e8); /* border-subtle */
+    --table-row-border: var(--ds-border); /* border-subtle */
 
     /* Table cell dividers (column separators) */
-    --table-cell-divider: var(--ds-border, #e8e8e8); /* border-subtle */
+    --table-cell-divider: var(--ds-border); /* border-subtle */
 
     /* Table cell text hierarchy */
-    --table-text-primary: var(--ds-text, #172b4d); /* text-primary */
-    --table-text-secondary: var(--ds-text-subtle, #44546f); /* text-secondary */
-    --table-text-muted: var(--ds-text-subtlest, #626f86); /* muted-foreground */
+    --table-text-primary: var(--ds-text); /* text-primary */
+    --table-text-secondary: var(--ds-text-subtle); /* text-secondary */
+    --table-text-muted: var(--ds-text-subtlest); /* muted-foreground */
 
     /* Table icons */
-    --table-icon-default: var(--ds-text-subtle, #44546f); /* icon-default */
-    --table-icon-hover: var(--ds-text, #172b4d); /* text-primary */
-    --table-icon-disabled: var(--ds-text-disabled, #8590a2); /* muted */
+    --table-icon-default: var(--ds-text-subtle); /* icon-default */
+    --table-icon-hover: var(--ds-text); /* text-primary */
+    --table-icon-disabled: var(--ds-text-disabled); /* muted */
 
     /* Table toolbar */
-    --table-toolbar-bg: var(--ds-surface-sunken, #fafafa); /* surface-1 */
+    --table-toolbar-bg: var(--ds-surface-sunken); /* surface-1 */
     --table-toolbar-input-bg: var(
       --ds-background-neutral-subtle,
-      var(--ds-surface-sunken, #f7f8f9)
+      var(--ds-surface-sunken)
     ); /* surface-3 */
-    --table-toolbar-input-border: var(--ds-border, #e8e8e8); /* border-subtle */
+    --table-toolbar-input-border: var(--ds-border); /* border-subtle */
 
     /* Table selection */
     --table-section-bg: var(--ds-shadow-raised, rgba(0, 0, 0, 0.02));
@@ -1323,29 +1323,29 @@ html:has(body[data-scroll-locked]) {
     );
     --selection-bar-accent: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
     --focus-ring-hex: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
 
     /* Table empty state */
     --table-empty-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     ); /* surface-0 */
-    --table-empty-border: var(--ds-border, #e8e8e8); /* border-subtle */
-    --table-empty-title: var(--ds-text, #172b4d); /* text-primary */
-    --table-empty-text: var(--ds-text-subtle, #44546f); /* text-secondary */
+    --table-empty-border: var(--ds-border); /* border-subtle */
+    --table-empty-title: var(--ds-text); /* text-primary */
+    --table-empty-text: var(--ds-text-subtle); /* text-secondary */
 
     /* Link colors (HSL triplets for hsl() usage) */
     --link-color: 217 91% 53%;
     --link-color-hover: 217 91% 45%;
 
     /* Status colors (HEX for direct use) */
-    --status-success: var(--ds-chart-teal-bold, #0d9488);
-    --status-success-light: var(--ds-background-accent-teal-bolder, #14b8a6);
+    --status-success: var(--ds-chart-teal-bold);
+    --status-success-light: var(--ds-background-accent-teal-bolder);
     --status-success-bg: var(--ds-background-success, rgba(13, 148, 136, 0.08));
     --status-success-bg-hover: var(
       --ds-background-success,
@@ -1356,7 +1356,7 @@ html:has(body[data-scroll-locked]) {
       rgba(13, 148, 136, 0.2)
     );
 
-    --status-warning: var(--ds-background-warning-bold, #d97706);
+    --status-warning: var(--ds-background-warning-bold);
     --status-warning-bg: var(--ds-background-warning, rgba(217, 119, 6, 0.08));
     --status-warning-border: var(
       --ds-background-warning,
@@ -1365,7 +1365,7 @@ html:has(body[data-scroll-locked]) {
 
     --status-info: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
     --status-info-bg: var(--ds-background-information, rgba(37, 99, 235, 0.08));
     --status-info-border: var(
@@ -1373,11 +1373,11 @@ html:has(body[data-scroll-locked]) {
       rgba(37, 99, 235, 0.2)
     );
 
-    --status-muted: var(--ds-text-subtlest, #626f86);
+    --status-muted: var(--ds-text-subtlest);
     --status-muted-bg: rgba(107, 114, 128, 0.08);
     --status-muted-border: rgba(107, 114, 128, 0.2);
 
-    --status-danger: var(--ds-background-danger-bold, #dc2626);
+    --status-danger: var(--ds-background-danger-bold);
     --status-danger-bg: var(
       --ds-background-danger-bold,
       rgba(220, 38, 38, 0.08)
@@ -1401,112 +1401,112 @@ html:has(body[data-scroll-locked]) {
     --secondary-teal-bg: var(--ds-background-success, rgba(13, 148, 136, 0.1));
 
     /* Progress tokens (HEX) */
-    --progress-success: var(--ds-chart-teal-bold, #0d9488);
-    --progress-warning: var(--ds-background-warning-bold, #d97706);
-    --progress-danger: var(--ds-background-danger-bold, #ef4444);
-    --progress-bg: var(--ds-background-neutral, #f0f0f0);
-    --progress-track: var(--ds-background-neutral, #f0f0f0);
+    --progress-success: var(--ds-chart-teal-bold);
+    --progress-warning: var(--ds-background-warning-bold);
+    --progress-danger: var(--ds-background-danger-bold);
+    --progress-bg: var(--ds-background-neutral);
+    --progress-track: var(--ds-background-neutral);
 
     /* Brand background tokens (HEX with alpha) */
     --brand-blue-bg: var(--ds-background-information, rgba(37, 99, 235, 0.1));
     --brand-teal-bg: var(--ds-background-success, rgba(13, 148, 136, 0.08));
 
     /* Industry Backlog tokens (HEX) */
-    --industry-bg-page: var(--ds-surface-sunken, #f7f8f9);
+    --industry-bg-page: var(--ds-surface-sunken);
     --industry-bg-card: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
-    --industry-bg-subtle: var(--ds-background-neutral-subtle, #f7f8f9);
-    --industry-bg-hover: var(--ds-surface-sunken, #fafafa);
-    --industry-border-default: var(--ds-border, #dfe1e6);
-    --industry-border-subtle: var(--ds-border, #dfe1e6);
-    --industry-text-primary: var(--ds-text, #172b4d);
-    --industry-text-secondary: var(--ds-text-subtle, #44546f);
+    --industry-bg-subtle: var(--ds-background-neutral-subtle);
+    --industry-bg-hover: var(--ds-surface-sunken);
+    --industry-border-default: var(--ds-border);
+    --industry-border-subtle: var(--ds-border);
+    --industry-text-primary: var(--ds-text);
+    --industry-text-secondary: var(--ds-text-subtle);
     --industry-text-muted: var(
       --cp-text-secondary,
-      var(--ds-text-subtlest, #626f86)
+      var(--ds-text-subtlest)
     );
-    --industry-text-disabled: var(--ds-text-disabled, #8590a2);
+    --industry-text-disabled: var(--ds-text-disabled);
 
     /* Industry Status Colors (HEX) */
     --industry-status-new: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
     --industry-status-progress: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
-    --industry-status-review: var(--ds-background-discovery-bold, #8b5cf6);
-    --industry-status-approved: var(--ds-chart-teal-bold, #0d9488);
-    --industry-status-blocked: var(--ds-background-danger-bold, #ef4444);
+    --industry-status-review: var(--ds-background-discovery-bold);
+    --industry-status-approved: var(--ds-chart-teal-bold);
+    --industry-status-blocked: var(--ds-background-danger-bold);
 
     /* Process step colors (HEX) - QA spec colors */
     --process-new-demand: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
-    --process-draft: var(--ds-text-subtlest, #626f86);
+    --process-draft: var(--ds-text-subtlest);
     --process-in-review: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
     --process-ea-review: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
     --process-analyse: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
-    --process-approved: var(--ds-chart-teal-bold, #0d9488);
-    --process-ready-to-implement: var(--ds-chart-teal-bold, #0d9488);
+    --process-approved: var(--ds-chart-teal-bold);
+    --process-ready-to-implement: var(--ds-chart-teal-bold);
     --process-implement: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
-    --process-closed: var(--ds-chart-teal-bold, #0d9488);
-    --process-completed: var(--ds-chart-teal-bold, #0d9488);
-    --process-rejected: var(--ds-background-danger-bold, #ef4444);
-    --process-on-hold: var(--ds-background-warning-bold, #d97706);
+    --process-closed: var(--ds-chart-teal-bold);
+    --process-completed: var(--ds-chart-teal-bold);
+    --process-rejected: var(--ds-background-danger-bold);
+    --process-on-hold: var(--ds-background-warning-bold);
 
     /* Priority colors (HEX) - QA spec colors */
-    --priority-critical: var(--ds-background-danger-bold, #ef4444);
-    --priority-high: var(--ds-background-danger-bold, #ef4444);
-    --priority-medium: var(--ds-background-warning-bold, #d97706);
-    --priority-low: var(--ds-text-subtlest, #626f86);
+    --priority-critical: var(--ds-background-danger-bold);
+    --priority-high: var(--ds-background-danger-bold);
+    --priority-medium: var(--ds-background-warning-bold);
+    --priority-low: var(--ds-text-subtlest);
 
     /* Dialog tokens (HEX) */
     --dialog-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
-    --dialog-border: var(--ds-border, #dfe1e6);
-    --dialog-divider: var(--ds-border, #dfe1e6);
-    --dialog-footer-bg: var(--ds-surface-sunken, #fafafa);
-    --dialog-title-color: var(--ds-text, #172b4d);
-    --dialog-desc-color: var(--ds-text-subtlest, #626f86);
-    --dialog-close-color: var(--ds-text-subtlest, #626f86);
-    --dialog-section-bg: var(--ds-surface-sunken, #f8f8f7);
-    --dialog-section-border: var(--ds-background-neutral, #f0f0f0);
+    --dialog-border: var(--ds-border);
+    --dialog-divider: var(--ds-border);
+    --dialog-footer-bg: var(--ds-surface-sunken);
+    --dialog-title-color: var(--ds-text);
+    --dialog-desc-color: var(--ds-text-subtlest);
+    --dialog-close-color: var(--ds-text-subtlest);
+    --dialog-section-bg: var(--ds-surface-sunken);
+    --dialog-section-border: var(--ds-background-neutral);
     --dialog-input-bg: var(
       --cp-bg-elevated,
-      var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+      var(--cp-bg-elevated, var(--ds-surface))
     );
-    --dialog-input-border: var(--ds-border, #dfe1e6);
-    --dialog-label-color: var(--ds-text-subtle, #44546f);
+    --dialog-input-border: var(--ds-border);
+    --dialog-label-color: var(--ds-text-subtle);
     --dialog-label-required: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
 
     /* === TINT SURFACE TOKENS === */
-    --tint-blue: var(--ds-background-information, #e9f2ff);
-    --tint-green: var(--ds-background-success, #dffcf0);
-    --tint-green-soft: var(--ds-background-success, #dffcf0);
-    --tint-red: var(--ds-background-danger, #ffeceb);
-    --tint-amber: var(--ds-background-warning, #fff7d6);
+    --tint-blue: var(--ds-background-information);
+    --tint-green: var(--ds-background-success);
+    --tint-green-soft: var(--ds-background-success);
+    --tint-red: var(--ds-background-danger);
+    --tint-amber: var(--ds-background-warning);
   }
 
   .dark,
@@ -1521,45 +1521,45 @@ html:has(body[data-scroll-locked]) {
     /* === BRAND TOKENS (V5 Compliant) === */
     --brand-dark: var(
       --cp-bg-elevated,
-      var(--ds-surface, #ffffff)
+      var(--ds-surface)
     ); /* ADS dark elevated surface (blue-grey) */
-    --brand-gold: var(--ds-chart-teal-bold, #0d9488);
-    --brand-gold-hover: var(--ds-chart-teal-bolder, #0f766e);
-    --brand-teal: var(--ds-chart-teal-bold, #0d9488);
+    --brand-gold: var(--ds-chart-teal-bold);
+    --brand-gold-hover: var(--ds-chart-teal-bolder);
+    --brand-teal: var(--ds-chart-teal-bold);
 
     /* === A) SURFACE LADDER (ADS canonical dark — Atlassian Jira-parity) ===
        2026-04-29: hex values pulled from
        node_modules/@atlaskit/tokens/figma/atlassian-dark.json. Truly
        neutral RGB (no blue cast). */
-    --bg-0: var(--ds-surface, #ffffff); /* App background — ADS page */
-    --bg-1: var(--ds-surface, #ffffff); /* Page canvas */
+    --bg-0: var(--ds-surface); /* App background — ADS page */
+    --bg-1: var(--ds-surface); /* Page canvas */
     --bg-2: var(
       --cp-ink-1,
-      var(--ds-surface, #ffffff)
+      var(--ds-surface)
     ); /* Panels / elevated surface */
-    --bg-3: var(--cp-ink-1, var(--ds-surface, #ffffff)); /* Cards — flush */
-    --bg-4: var(--ds-surface, #ffffff); /* Raised/hover (overlay) */
-    --bg-5: var(--ds-background-neutral, #f1f2f4); /* Active/selected surface */
+    --bg-3: var(--cp-ink-1, var(--ds-surface)); /* Cards — flush */
+    --bg-4: var(--ds-surface); /* Raised/hover (overlay) */
+    --bg-5: var(--ds-background-neutral); /* Active/selected surface */
     --bg-app: var(--bg-0);
 
     /* Shadcn surface mappings — ADS canonical neutral */
-    --background: 240 3% 12%; /* var(--ds-surface, #FFFFFF) ADS page */
-    --foreground: 0 0% 93%; /* var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)) Neutral white */
+    --background: 240 3% 12%; /* var(--ds-surface) ADS page */
+    --foreground: 0 0% 93%; /* var(--cp-bg-neutral, var(--ds-background-neutral)) Neutral white */
 
     --card: 240 3% 12%; /* Same as --background — flush cards */
     --card-foreground: 0 0% 93%;
 
-    --popover: 240 3% 16%; /* var(--cp-ink-1, var(--ds-surface, #FFFFFF)) ADS surface */
+    --popover: 240 3% 16%; /* var(--cp-ink-1, var(--ds-surface)) ADS surface */
     --popover-foreground: 0 0% 93%;
 
-    --primary: 217 91% 60%; /* var(--ds-background-information-bold, #3b82f6) blue */
+    --primary: 217 91% 60%; /* var(--ds-background-information-bold) blue */
     --primary-foreground: 0 0% 100%; /* pure white on buttons only */
 
     --secondary: 0 0% 10%; /* Neutral card */
     --secondary-foreground: 0 0% 93%;
 
-    --muted: 0 0% 10%; /* var(--cp-ink-1, var(--ds-text, #172B4D)) */
-    --muted-foreground: 0 0% 63%; /* var(--ds-text-subtlest, #626F86) */
+    --muted: 0 0% 10%; /* var(--cp-ink-1, var(--ds-text)) */
+    --muted-foreground: 0 0% 63%; /* var(--ds-text-subtlest) */
 
     --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
@@ -1570,20 +1570,20 @@ html:has(body[data-scroll-locked]) {
     /* === B) TEXT LADDER (Neutral Dark text) === */
     --fg-1: var(
       --cp-bg-neutral,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     ); /* Primary text — Neutral white */
-    --fg-2: var(--ds-text-subtlest, #626f86); /* Secondary text */
+    --fg-2: var(--ds-text-subtlest); /* Secondary text */
     --fg-3: var(
       --cp-text-secondary,
-      var(--ds-text-subtlest, #626f86)
+      var(--ds-text-subtlest)
     ); /* Muted/hints */
-    --fg-4: var(--ds-text-subtlest, #626f86); /* Disabled / placeholder */
+    --fg-4: var(--ds-text-subtlest); /* Disabled / placeholder */
 
     --text-1: var(--fg-1);
     --text-2: var(--fg-2);
     --text-3: var(--fg-3);
     --text-4: var(--fg-4);
-    --text-inverse: var(--ds-text, #172b4d);
+    --text-inverse: var(--ds-text);
 
     /* HSL versions for Tailwind */
     --text-primary: 0 0% 93%;
@@ -1597,30 +1597,30 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     --nav-text-primary: var(
       --cp-bg-neutral,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     );
-    --nav-text-secondary: var(--ds-text-subtlest, #626f86);
+    --nav-text-secondary: var(--ds-text-subtlest);
     --nav-text-tertiary: var(
       --cp-text-secondary,
-      var(--ds-text-subtlest, #626f86)
+      var(--ds-text-subtlest)
     );
     --nav-module-badge: var(
       --cp-border,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     ); /* Neutral badge */
     --nav-section-label: var(
       --cp-text-secondary,
-      var(--ds-text-subtlest, #626f86)
+      var(--ds-text-subtlest)
     );
     --nav-accent-bar: var(
       --ds-background-information-bold,
-      var(--ds-background-information-bold, #3b82f6)
+      var(--ds-background-information-bold)
     ); /* Left accent bar */
 
     /* === C) DIVIDER + BORDER GRAMMAR (ADS neutral borders) === */
-    --divider: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-    --border-subtle: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-    --border-strong: var(--ds-text-subtle, #44546f);
+    --divider: var(--cp-border, var(--ds-background-neutral));
+    --border-subtle: var(--cp-border, var(--ds-background-neutral));
+    --border-strong: var(--ds-text-subtle);
     --stroke-1: var(--divider);
     --stroke-2: var(--border-subtle);
 
@@ -1633,16 +1633,16 @@ html:has(body[data-scroll-locked]) {
       --ds-background-information-bold,
       rgba(59, 130, 246, 0.55)
     ); /* Blue focus */
-    --hover: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-    --active: var(--ds-text, #172b4d);
+    --hover: var(--cp-border, var(--ds-background-neutral));
+    --active: var(--ds-text);
     --selected: var(
       --cp-border,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     ); /* Neutral selected */
 
     --row-hover: var(--hover);
-    --row-selected: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-    --row-active: var(--ds-text-subtle, #44546f);
+    --row-selected: var(--cp-border, var(--ds-background-neutral));
+    --row-active: var(--ds-text-subtle);
 
     /* === TINT SURFACE TOKENS (Dark Mode) === */
     --tint-blue: var(
@@ -1663,37 +1663,37 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
 
     /* V5 CANONICAL SEMANTIC COLORS (NOT neutral) */
-    --info-fg: var(--ds-background-information-bold, #0c66e4); /* Blue-400 */
+    --info-fg: var(--ds-background-information-bold); /* Blue-400 */
     --info-bg: var(--ds-background-information, rgba(37, 99, 235, 0.12));
     --info-bd: var(--ds-background-information, rgba(37, 99, 235, 0.25));
 
-    --success-fg: var(--ds-background-success, #dcfff1); /* Teal-400 */
+    --success-fg: var(--ds-background-success); /* Teal-400 */
     --success-bg: var(--ds-background-success, rgba(13, 148, 136, 0.12));
     --success-bd: var(--ds-background-success, rgba(13, 148, 136, 0.25));
 
-    --warning-fg: var(--ds-background-warning-bold, #e2b203); /* Amber-400 */
+    --warning-fg: var(--ds-background-warning-bold); /* Amber-400 */
     --warning-bg: var(--ds-background-warning, rgba(217, 119, 6, 0.12));
     --warning-bd: var(--ds-background-warning, rgba(217, 119, 6, 0.25));
 
-    --danger-fg: var(--ds-background-danger, #ffeceb); /* Red-400 */
+    --danger-fg: var(--ds-background-danger); /* Red-400 */
     --danger-bg: var(--ds-background-danger, rgba(239, 68, 68, 0.12));
     --danger-bd: var(--ds-background-danger, rgba(239, 68, 68, 0.25));
 
     /* Neutral fallback (for non-semantic use) */
-    --neutral-fg: var(--ds-text-subtlest, #626f86);
-    --neutral-bg: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-    --neutral-bd: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    --neutral-fg: var(--ds-text-subtlest);
+    --neutral-bg: var(--cp-border, var(--ds-background-neutral));
+    --neutral-bd: var(--cp-border, var(--ds-background-neutral));
 
     /* === F) SHADOWS (Modern, soft depth) === */
-    --shadow-1: 0 1px 0 var(--ds-text, #172b4d),
+    --shadow-1: 0 1px 0 var(--ds-text),
       0 8px 24px var(--ds-shadow-raised, rgba(0, 0, 0, 0.55));
-    --shadow-2: 0 1px 0 var(--cp-border, var(--ds-background-neutral, #f1f2f4)),
+    --shadow-2: 0 1px 0 var(--cp-border, var(--ds-background-neutral)),
       0 14px 38px var(--ds-shadow-raised, rgba(0, 0, 0, 0.6));
     --shadow-color: 0 0% 0%;
     --shadow-elev-1: var(--shadow-1);
     --shadow-elev-2: var(--shadow-2);
     --shadow-elev-3: 0 1px 0
-        var(--cp-border, var(--ds-background-neutral, #f1f2f4)),
+        var(--cp-border, var(--ds-background-neutral)),
       0 20px 50px var(--ds-shadow-raised, rgba(0, 0, 0, 0.65));
     --shadow-brand: 0 4px 12px
       var(--ds-background-information-bold, rgba(59, 130, 246, 0.25)); /* Blue brand shadow */
@@ -1737,14 +1737,14 @@ html:has(body[data-scroll-locked]) {
     /* === BRAND ACCENT (Blue primary) === */
     --accent-primary: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
-    --accent-primary-hover: var(--ds-background-information-bold, #3b82f6);
+    --accent-primary-hover: var(--ds-background-information-bold);
     --accent-primary-soft: var(
       --ds-background-information,
       rgba(37, 99, 235, 0.14)
     );
-    --accent-text: var(--ds-background-information-bold, #3b82f6);
+    --accent-text: var(--ds-background-information-bold);
     --accent-bg: var(--ds-background-information, rgba(37, 99, 235, 0.14));
     --accent-border: var(--ds-background-information, rgba(37, 99, 235, 0.3));
 
@@ -1767,34 +1767,34 @@ html:has(body[data-scroll-locked]) {
     ); /* Blue tint active */
 
     /* === HSL FALLBACKS (for shadcn) - V5 CANONICAL === */
-    --success: 173 58% 39%; /* var(--ds-chart-teal-bold, #0d9488) teal */
+    --success: 173 58% 39%; /* var(--ds-chart-teal-bold) teal */
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%; /* var(--ds-background-warning-bold, #d97706) orange */
+    --warning: 38 92% 50%; /* var(--ds-background-warning-bold) orange */
     --warning-foreground: 0 0% 100%;
-    --danger: 0 84% 60%; /* var(--ds-background-danger-bold, #ef4444) red */
+    --danger: 0 84% 60%; /* var(--ds-background-danger-bold) red */
     --danger-foreground: 0 0% 100%;
-    --info: 217 91% 60%; /* var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb)) blue */
+    --info: 217 91% 60%; /* var(--cp-workstream-catalyst-primary, var(--ds-link)) blue */
     --info-foreground: 0 0% 100%;
 
     /* === SURFACE TOKEN ALIASES (Neutral dark) ===
-       Jira-parity ADS pairing (2026-04-30): canvas = var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9)) (background.neutral),
-       elevated chrome = var(--ds-surface, #FFFFFF) (elevation.surface). Stored as complete hsl()
+       Jira-parity ADS pairing (2026-04-30): canvas = var(--ds-surface-sunken, var(--ds-background-neutral-subtle)) (background.neutral),
+       elevated chrome = var(--ds-surface) (elevation.surface). Stored as complete hsl()
        so bare var(--surface-N) callers render valid CSS. */
     --surface-0: hsl(
       210 11% 13%
-    ); /* var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9)) — page canvas */
+    ); /* var(--ds-surface-sunken, var(--ds-background-neutral-subtle)) — page canvas */
     --surface-1: hsl(
       210 11% 13%
-    ); /* var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9)) — page canvas */
+    ); /* var(--ds-surface-sunken, var(--ds-background-neutral-subtle)) — page canvas */
     --surface-2: hsl(
       210 9% 15%
-    ); /* var(--ds-surface, #FFFFFF) — elevated chrome */
+    ); /* var(--ds-surface) — elevated chrome */
     --surface-3: hsl(
       210 8% 18%
-    ); /* var(--ds-surface-overlay, #FFFFFF) — raised cards */
+    ); /* var(--ds-surface-overlay) — raised cards */
     --surface-elevated: hsl(
       210 8% 18%
-    ); /* var(--ds-surface-overlay, #FFFFFF) — popovers */
+    ); /* var(--ds-surface-overlay) — popovers */
     --surface-overlay: hsl(0 0% 0%);
 
     /* === INPUT TOKENS === */
@@ -1808,32 +1808,32 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     --chart-passed: var(
       --ds-chart-teal-bold,
-      var(--ds-chart-teal-bold, #0d9488)
+      var(--ds-chart-teal-bold)
     ); /* Teal for success/passed */
     --chart-failed: var(
       --ds-background-danger-bold,
-      var(--ds-background-danger-bold, #ef4444)
+      var(--ds-background-danger-bold)
     ); /* Red for danger/failed */
     --chart-blocked: var(
       --ds-background-warning-bold,
-      var(--ds-background-warning-bold, #d97706)
+      var(--ds-background-warning-bold)
     ); /* Orange for warning/blocked */
     --chart-active: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* Blue for in-progress */
     --chart-neutral-1: var(
       --cp-bg-neutral,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     );
-    --chart-neutral-2: var(--ds-text-subtlest, #626f86);
+    --chart-neutral-2: var(--ds-text-subtlest);
     --chart-neutral-3: var(
       --cp-text-secondary,
-      var(--ds-text-subtlest, #626f86)
+      var(--ds-text-subtlest)
     );
-    --chart-neutral-4: var(--ds-text-subtlest, #626f86);
-    --chart-neutral-5: var(--ds-text-subtlest, #626f86);
-    --chart-neutral-6: var(--ds-text-subtle, #44546f);
+    --chart-neutral-4: var(--ds-text-subtlest);
+    --chart-neutral-5: var(--ds-text-subtlest);
+    --chart-neutral-6: var(--ds-text-subtle);
 
     --chart-1: var(--chart-active); /* Blue primary */
     --chart-2: var(--chart-passed); /* Teal success */
@@ -1849,13 +1849,13 @@ html:has(body[data-scroll-locked]) {
     --link-color-hover: 217 91% 70%; /* Lighter blue on hover */
 
     /* === STATUS ALIASES (V5 CANONICAL semantic colors) === */
-    --status-success: var(--ds-chart-teal-bold, #0d9488); /* Teal */
+    --status-success: var(--ds-chart-teal-bold); /* Teal */
     --status-success-bg: var(--ds-background-success, rgba(13, 148, 136, 0.12));
     --status-success-border: var(
       --ds-background-success,
       rgba(13, 148, 136, 0.25)
     );
-    --status-warning: var(--ds-background-warning-bold, #d97706); /* Orange */
+    --status-warning: var(--ds-background-warning-bold); /* Orange */
     --status-warning-bg: var(--ds-background-warning, rgba(217, 119, 6, 0.12));
     --status-warning-border: var(
       --ds-background-warning,
@@ -1863,14 +1863,14 @@ html:has(body[data-scroll-locked]) {
     );
     --status-info: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     ); /* Blue */
     --status-info-bg: var(--ds-background-information, rgba(37, 99, 235, 0.12));
     --status-info-border: var(
       --ds-background-information,
       rgba(37, 99, 235, 0.25)
     );
-    --status-danger: var(--ds-background-danger-bold, #ef4444); /* Red */
+    --status-danger: var(--ds-background-danger-bold); /* Red */
     --status-danger-bg: var(--ds-background-danger, rgba(239, 68, 68, 0.12));
     --status-danger-border: var(
       --ds-background-danger,
@@ -1898,9 +1898,9 @@ html:has(body[data-scroll-locked]) {
     --text-3-hex: var(--fg-3);
     --text-4-hex: var(--fg-4);
     --text-secondary-strong: var(--fg-2);
-    --text-primary-hex: var(--ds-border, #dfe1e6);
-    --text-secondary-hex: var(--ds-text-disabled, #8590a2);
-    --text-muted-hex: var(--ds-text-subtlest, #626f86);
+    --text-primary-hex: var(--ds-border);
+    --text-secondary-hex: var(--ds-text-disabled);
+    --text-muted-hex: var(--ds-text-subtlest);
 
     --icon-default: var(--fg-2);
     --icon-muted: var(--fg-3);
@@ -1915,61 +1915,61 @@ html:has(body[data-scroll-locked]) {
     --nav-bg: var(--bg-2);
     --nav-text: var(
       --ds-text-disabled,
-      var(--ds-text-disabled, #8590a2)
+      var(--ds-text-disabled)
     ); /* V10: Inactive nav items (dark) */
     --nav-text-hover: var(
       --cp-bg-sunken,
-      var(--ds-border, #dfe1e6)
+      var(--ds-border)
     ); /* V10: Nav hover state (dark) */
     --nav-active: var(
       --ds-background-information-bold,
-      var(--ds-link, #0c66e4)
+      var(--ds-link)
     ); /* V10: Active nav text (lighter blue in dark) */
     --nav-hover-bg: transparent; /* V10: NO background on hover */
     --nav-active-bg: transparent; /* V10: NO background on active */
     --nav-underline: var(
       --ds-background-information-bold,
-      var(--ds-link, #0c66e4)
+      var(--ds-link)
     ); /* V10: 2px active underline (dark) */
 
-    --brand-active-hex: var(--ds-background-information-bold, #3b82f6);
-    --brand-primary-hex: var(--ds-background-information-bold, #3b82f6);
-    --brand-primary-hover-hex: var(--ds-background-information-bold, #0c66e4);
-    --accent-blue: var(--ds-background-information-bold, #3b82f6);
+    --brand-active-hex: var(--ds-background-information-bold);
+    --brand-primary-hex: var(--ds-background-information-bold);
+    --brand-primary-hover-hex: var(--ds-background-information-bold);
+    --accent-blue: var(--ds-background-information-bold);
     --accent-blue-hover: var(
       --cp-workstream-catalyst-primary,
-      var(--ds-link, #2563eb)
+      var(--ds-link)
     );
 
     --card-bg: var(--bg-3);
     --card-border: var(--divider);
 
     /* === TABLE TOKENS (Bloomberg grade — surface only) === */
-    --table-container-bg: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
+    --table-container-bg: var(--cp-bg-page, var(--ds-surface-sunken));
     --table-container-border: var(
       --cp-border,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     );
-    --table-header-bg: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
+    --table-header-bg: var(--cp-bg-page, var(--ds-surface-sunken));
     --table-header-text: var(
       --cp-text-secondary,
-      var(--ds-text-subtlest, #626f86)
+      var(--ds-text-subtlest)
     );
     --table-header-border: var(
       --cp-border,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     );
-    --table-row-bg: var(--cp-bg-elevated, var(--ds-surface, #ffffff));
-    --table-row-alt-bg: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
-    --table-row-hover: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    --table-row-bg: var(--cp-bg-elevated, var(--ds-surface));
+    --table-row-alt-bg: var(--cp-bg-page, var(--ds-surface-sunken));
+    --table-row-hover: var(--cp-border, var(--ds-background-neutral));
     --table-row-selected: var(
       --cp-border,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     );
-    --table-row-border: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    --table-row-border: var(--cp-border, var(--ds-background-neutral));
     --table-cell-divider: var(
       --cp-border,
-      var(--ds-background-neutral, #f1f2f4)
+      var(--ds-background-neutral)
     );
     --table-text-primary: var(--fg-1);
     --table-text-secondary: var(--fg-2);
@@ -1982,8 +1982,8 @@ html:has(body[data-scroll-locked]) {
     --table-toolbar-input-border: var(--border-subtle);
     --table-section-bg: var(--bg-1);
     --selection-row-bg: var(--row-selected);
-    --selection-bar-accent: var(--ds-background-information-bold, #3b82f6);
-    --focus-ring-hex: var(--ds-background-information-bold, #3b82f6);
+    --selection-bar-accent: var(--ds-background-information-bold);
+    --focus-ring-hex: var(--ds-background-information-bold);
     --table-empty-bg: var(--bg-2);
     --table-empty-border: var(--border-subtle);
     --table-empty-title: var(--fg-1);
@@ -2017,7 +2017,7 @@ html:has(body[data-scroll-locked]) {
     --industry-text-disabled: var(--fg-4);
     --industry-status-new: var(--info-fg);
     --industry-status-progress: var(--info-fg);
-    --industry-status-review: var(--ds-background-discovery, #f3f0ff);
+    --industry-status-review: var(--ds-background-discovery);
     --industry-status-approved: var(--success-fg);
     --industry-status-blocked: var(--danger-fg);
 
@@ -2077,19 +2077,19 @@ html:has(body[data-scroll-locked]) {
     /* Global border softening — solid hex only (ADS) */
     .card,
     [class*="rounded-lg"][class*="border"] {
-      border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+      border-color: var(--cp-border, var(--ds-background-neutral));
     }
 
     /* Dividers and separators */
     hr,
     [role="separator"] {
-      border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-      background-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+      border-color: var(--cp-border, var(--ds-background-neutral));
+      background-color: var(--cp-border, var(--ds-background-neutral));
     }
 
     /* Table rows */
     tr {
-      border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+      border-color: var(--cp-border, var(--ds-background-neutral));
     }
 
     /* Input borders */
@@ -2097,7 +2097,7 @@ html:has(body[data-scroll-locked]) {
     textarea,
     select,
     [role="combobox"] {
-      border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+      border-color: var(--cp-border, var(--ds-background-neutral));
     }
 
     /* Focus states use brand color */
@@ -2105,7 +2105,7 @@ html:has(body[data-scroll-locked]) {
     textarea:focus,
     select:focus,
     [role="combobox"]:focus {
-      border-color: var(--ds-background-information-bold, #3b82f6);
+      border-color: var(--ds-background-information-bold);
     }
   }
 }
@@ -2637,7 +2637,7 @@ html:has(body[data-scroll-locked]) {
 
   /* === DARK MODE SIDEBAR OVERRIDES — ECLIPSE D8-R3 ===
      SidebarBase uses inline styles with isDark conditional tokens.
-     These CSS rules must NOT fight inline styles. Use var(--ds-text, #172B4D) (ECLIPSE surface). */
+     These CSS rules must NOT fight inline styles. Use var(--ds-text) (ECLIPSE surface). */
   .dark aside,
   .dark [data-sidebar],
   .dark .sidebar,
@@ -2645,8 +2645,8 @@ html:has(body[data-scroll-locked]) {
   [data-theme="dark"] [data-sidebar],
   .dark .sidebar,
   [data-theme="dark"] .sidebar {
-    background-color: var(--ds-surface-raised, var(--cp-bg-elevated, #22272b));
-    border-right-color: var(--ds-border, var(--cp-border, #2c333a));
+    background-color: var(--ds-surface-raised, var(--cp-bg-elevated));
+    border-right-color: var(--ds-border, var(--cp-border));
     box-shadow: none;
   }
 
@@ -2658,7 +2658,7 @@ html:has(body[data-scroll-locked]) {
   .dark .text-muted-visible,
   .dark .text-muted-visible,
   [data-theme="dark"] .text-muted-visible {
-    color: var(--ds-text-disabled, #8590a2);
+    color: var(--ds-text-disabled);
   }
 
   .text-muted-subtle {
@@ -2668,7 +2668,7 @@ html:has(body[data-scroll-locked]) {
   .dark .text-muted-subtle,
   .dark .text-muted-subtle,
   [data-theme="dark"] .text-muted-subtle {
-    color: var(--ds-text-subtlest, #626f86);
+    color: var(--ds-text-subtlest);
   }
 
   /* Icon visibility boost for dark mode empty states */
@@ -2679,7 +2679,7 @@ html:has(body[data-scroll-locked]) {
   .dark .icon-muted-visible,
   .dark .icon-muted-visible,
   [data-theme="dark"] .icon-muted-visible {
-    color: var(--ds-text-subtlest, #626f86);
+    color: var(--ds-text-subtlest);
   }
 }
 
@@ -2740,7 +2740,7 @@ html:has(body[data-scroll-locked]) {
   scrollbar-width: thin;
   scrollbar-color: var(
       --cp-border,
-      var(--cp-bg-sunken, var(--ds-border, #dfe1e6))
+      var(--cp-bg-sunken, var(--ds-border))
     )
     transparent;
 }
@@ -2748,7 +2748,7 @@ html:has(body[data-scroll-locked]) {
   width: 3px;
 }
 [data-catalyst-sidebar] nav::-webkit-scrollbar-thumb {
-  background: var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #dfe1e6)));
+  background: var(--cp-border, var(--cp-bg-sunken, var(--ds-border)));
   border-radius: 3px;
 }
 [data-catalyst-sidebar] nav::-webkit-scrollbar-track {
@@ -3107,7 +3107,7 @@ html:has(body[data-scroll-locked]) {
  * - Tailwind: border-*, divide-*, ring-*, outline-*
  * - shadcn/ui: Separator, Table, Card, Dialog, Popover, DropdownMenu, Tabs
  * - Global: hr, table, tr, thead, tbody, .container, .panel, .section
- * - Hardcoded: var(--ds-surface, #fff), rgba(255,255,255,0.1+), border-white/*
+ * - Hardcoded: var(--ds-surface), rgba(255,255,255,0.1+), border-white/*
  */
 
 /* All border classes: force ultra-subtle */
@@ -3267,25 +3267,25 @@ html:has(body[data-scroll-locked]) {
 :root:not(.dark) .text-neutral-300,
 :root:not(.dark) .text-slate-300,
 :root:not(.dark) .text-zinc-300 {
-  color: var(--ds-text-disabled, #8590a2) !important;
+  color: var(--ds-text-disabled) !important;
 }
 
 :root:not(.dark) .text-gray-400,
 :root:not(.dark) .text-neutral-400,
 :root:not(.dark) .text-slate-400,
 :root:not(.dark) .text-zinc-400 {
-  color: var(--ds-text-subtlest, #626f86) !important;
+  color: var(--ds-text-subtlest) !important;
 }
 
 :root:not(.dark) .text-gray-500,
 :root:not(.dark) .text-neutral-500,
 :root:not(.dark) .text-slate-500,
 :root:not(.dark) .text-zinc-500 {
-  color: var(--ds-text-subtlest, #626f86) !important;
+  color: var(--ds-text-subtlest) !important;
 }
 
 :root:not(.dark) .text-muted-foreground {
-  color: var(--ds-text-subtlest, #626f86) !important;
+  color: var(--ds-text-subtlest) !important;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -3321,7 +3321,7 @@ select:focus-visible,
 }
 
 /* ── Kill inner focus rectangle on ALL inputs/textareas globally ──
-   The container (border: 2px solid var(--ds-background-information-bold, #0C66E4)) provides the focus indicator.
+   The container (border: 2px solid var(--ds-background-information-bold)) provides the focus indicator.
    Browser default outline + box-shadow creates an ugly inner rectangle. */
 input:focus,
 input:focus-visible,
@@ -3790,9 +3790,9 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
+  background: var(--cp-workstream-catalyst-primary, var(--ds-link));
   border: 2px solid
-    var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #ffffff)));
+    var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)));
   box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
   cursor: pointer;
   margin-top: -6px;
@@ -3802,9 +3802,9 @@ input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
+  background: var(--cp-workstream-catalyst-primary, var(--ds-link));
   border: 2px solid
-    var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #ffffff)));
+    var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)));
   box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15));
   cursor: pointer;
 }
@@ -3897,37 +3897,37 @@ input[type="range"]::-moz-range-thumb {
    ECLIPSE — DARK MODE DARK MODE OVERRIDES v2.0
    Consolidated: April 2026
    DO NOT ADD BLOCKS BELOW THIS — CONSOLIDATE ONLY
-   DARK MODE: var(--ds-text, #172B4D) page / var(--cp-ink-1, var(--ds-text, #172B4D)) surface / var(--cp-ink-1, var(--ds-text, #172B4D)) elevated
+   DARK MODE: var(--ds-text) page / var(--cp-ink-1, var(--ds-text)) surface / var(--cp-ink-1, var(--ds-text)) elevated
    ═══════════════════════════════════════════════════ */
 
 .dark .c-section,
 .dark .c-section,
 [data-theme="dark"] .c-section {
-  background-color: var(--cp-bg-elevated, var(--ds-surface, #ffffff));
+  background-color: var(--cp-bg-elevated, var(--ds-surface));
 }
 
 .dark .c-section-header,
 .dark .c-section-header,
 [data-theme="dark"] .c-section-header {
-  background-color: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
+  background-color: var(--cp-bg-page, var(--ds-surface-sunken));
 }
 
 .dark .c-card-surface,
 .dark .c-card-surface,
 [data-theme="dark"] .c-card-surface {
-  background-color: var(--cp-bg-elevated, var(--ds-surface, #ffffff));
+  background-color: var(--cp-bg-elevated, var(--ds-surface));
 }
 
 .dark .c-divider,
 .dark .c-divider,
 [data-theme="dark"] .c-divider {
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
 }
 
 .dark .c-surface-hover:hover,
 .dark .c-surface-hover:hover,
 [data-theme="dark"] .c-surface-hover:hover {
-  background-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  background-color: var(--cp-border, var(--ds-background-neutral));
 }
 
 .dark .glow-blue,
@@ -3949,111 +3949,111 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] {
   /* 2026-04-29: ADS canonical dark surfaces. Hex pulled from
      node_modules/@atlaskit/tokens/figma/atlassian-dark.json —
-     elevation.surface=var(--ds-surface, #FFFFFF), raised=var(--cp-ink-1, var(--ds-surface, #FFFFFF)), sunken=var(--ds-text, #172B4D). */
+     elevation.surface=var(--ds-surface), raised=var(--cp-ink-1, var(--ds-surface)), sunken=var(--ds-text). */
   /* 2026-04-30 Jira parity: aligned to ADS dark elevation pair.
-     background.neutral=var(--ds-surface-sunken, #F7F8F9) (canvas) + elevation.surface=var(--ds-surface, #FFFFFF)
-     (raised). Prior collapse to var(--ds-surface, #FFFFFF) produced the split-tone seam
+     background.neutral=var(--ds-surface-sunken) (canvas) + elevation.surface=var(--ds-surface)
+     (raised). Prior collapse to var(--ds-surface) produced the split-tone seam
      between sidebar (--ds-surface) and canvas (--cp-bg). */
-  --bg-0: var(--ds-surface-sunken, #f7f8f9);
-  --bg-1: var(--ds-surface-sunken, #f7f8f9);
-  --bg-2: var(--ds-surface, #ffffff);
-  --bg-3: var(--ds-surface, #ffffff);
-  --bg-4: var(--ds-surface-overlay, #ffffff);
-  --border: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-bd: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-bd-table: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-bd-zone: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-bg: var(--ds-surface-sunken, #f7f8f9);
-  --cp-bg-elevated: var(--ds-surface, #ffffff);
-  --cp-bg-page: var(--ds-surface-sunken, #f7f8f9);
+  --bg-0: var(--ds-surface-sunken);
+  --bg-1: var(--ds-surface-sunken);
+  --bg-2: var(--ds-surface);
+  --bg-3: var(--ds-surface);
+  --bg-4: var(--ds-surface-overlay);
+  --border: var(--cp-border, var(--ds-background-neutral));
+  --cp-bd: var(--cp-border, var(--ds-background-neutral));
+  --cp-bd-table: var(--cp-border, var(--ds-background-neutral));
+  --cp-bd-zone: var(--cp-border, var(--ds-background-neutral));
+  --cp-bg: var(--ds-surface-sunken);
+  --cp-bg-elevated: var(--ds-surface);
+  --cp-bg-page: var(--ds-surface-sunken);
   /* <AtlaskitPageShell> hub-page bg — ADS page bg in dark mode. */
-  --cp-bg-hub-page: var(--ds-surface-sunken, #f7f8f9);
-  --cp-bg-sunken: var(--ds-surface, #ffffff);
-  --cp-bg-surface: var(--ds-surface, #ffffff);
-  --cp-blue: var(--ds-background-information-bold, #3b82f6);
-  --cp-primary-60: var(--ds-background-information-bold, #0c66e4);
-  --cp-purple-60: var(--ds-background-discovery, #f3f0ff);
-  --cp-teal-60: var(--ds-background-success, #dcfff1);
-  --cp-success: var(--ds-background-success, #dffcf0);
-  --cp-warning: var(--ds-background-warning-bold, #e2b203);
-  --cp-danger: var(--ds-background-danger, #ffeceb);
-  --cp-danger-50: var(--ds-background-danger, #ffeceb);
-  --cp-amber: var(--ds-background-warning, #fff7d6);
-  --cp-blue-link: var(--ds-background-information-bold, #0c66e4);
-  --cp-blue-text: var(--ds-background-information-bold, #0c66e4);
+  --cp-bg-hub-page: var(--ds-surface-sunken);
+  --cp-bg-sunken: var(--ds-surface);
+  --cp-bg-surface: var(--ds-surface);
+  --cp-blue: var(--ds-background-information-bold);
+  --cp-primary-60: var(--ds-background-information-bold);
+  --cp-purple-60: var(--ds-background-discovery);
+  --cp-teal-60: var(--ds-background-success);
+  --cp-success: var(--ds-background-success);
+  --cp-warning: var(--ds-background-warning-bold);
+  --cp-danger: var(--ds-background-danger);
+  --cp-danger-50: var(--ds-background-danger);
+  --cp-amber: var(--ds-background-warning);
+  --cp-blue-link: var(--ds-background-information-bold);
+  --cp-blue-text: var(--ds-background-information-bold);
   --cp-blue-wash: var(
     --ds-background-information-bold,
     rgba(59, 130, 246, 0.1)
   );
-  --cp-border-default: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-border-strong: var(--ds-text-subtle, #44546f);
-  --cp-border-subtle: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-err: var(--ds-background-danger, #ffeceb);
+  --cp-border-default: var(--cp-border, var(--ds-background-neutral));
+  --cp-border-strong: var(--ds-text-subtle);
+  --cp-border-subtle: var(--cp-border, var(--ds-background-neutral));
+  --cp-err: var(--ds-background-danger);
   --cp-err-bg: rgba(248, 113, 113, 0.1);
-  --cp-err-text: var(--ds-background-danger, #ffeceb);
-  --cp-float: var(--ds-surface-raised, #282e33);
-  --cp-hover: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-interact-hover: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-interact-press: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  --cp-err-text: var(--ds-background-danger);
+  --cp-float: var(--ds-surface-raised);
+  --cp-hover: var(--cp-border, var(--ds-background-neutral));
+  --cp-interact-hover: var(--cp-border, var(--ds-background-neutral));
+  --cp-interact-press: var(--cp-border, var(--ds-background-neutral));
   /* jira-compare Phase 0 (2026-05-02): dark variant of
      --ds-background-selected per atlassian.design/tokens.
      Was Tailwind blue-600/15. */
-  --cp-interact-selected: var(--ds-text, #172b4d);
-  --cp-lozenge-blue-bg: var(--ds-link, #0c66e4);
+  --cp-interact-selected: var(--ds-text);
+  --cp-lozenge-blue-bg: var(--ds-link);
   --cp-lozenge-blue-text: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   /* ADS canonical subtle success tokens (dark) — spec 2026-05-29.
-     bg = color.background.success dark (var(--ds-text-success, #216E4E)), text = color.text.success dark (var(--ds-background-success, #DCFFF1)). */
-  --cp-lozenge-green-bg: var(--ds-text-success, #216e4e);
-  --cp-lozenge-green-text: var(--ds-background-success, #dcfff1);
-  --cp-lozenge-grey-bg: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --cp-lozenge-grey-text: var(--ds-background-neutral-hovered, #d4d4d4);
-  --cp-lz-bl-bg: var(--ds-link, #0c66e4);
+     bg = color.background.success dark (var(--ds-text-success)), text = color.text.success dark (var(--ds-background-success)). */
+  --cp-lozenge-green-bg: var(--ds-text-success);
+  --cp-lozenge-green-text: var(--ds-background-success);
+  --cp-lozenge-grey-bg: var(--cp-border, var(--ds-background-neutral));
+  --cp-lozenge-grey-text: var(--ds-background-neutral-hovered);
+  --cp-lz-bl-bg: var(--ds-link);
   --cp-lz-bl-t: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   --cp-lz-gn-bg: var(
     --cp-lozenge-green-bg,
-    var(--ds-background-success-bold, #1f845a)
+    var(--ds-background-success-bold)
   );
   --cp-lz-gn-t: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
-  --cp-lz-gy-bg: var(--ds-text-subtle, #42526e);
+  --cp-lz-gy-bg: var(--ds-text-subtle);
   --cp-lz-gy-t: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
-  --cp-ok: var(--ds-background-success, #dffcf0);
+  --cp-ok: var(--ds-background-success);
   --cp-ok-bg: var(--ds-background-success-bold, rgba(74, 222, 128, 0.1));
   --cp-prg-bg: var(--ds-background-information-bold, rgba(59, 130, 246, 0.1));
   --cp-shadow-overlay: 0px 8px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.5)),
     0px 0px 1px var(--ds-shadow-raised, rgba(0, 0, 0, 0.6));
   --cp-shadow-xs: 0 1px 2px 0 var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
-  --cp-t1: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
-  --cp-t2: var(--ds-text-subtlest, #626f86);
-  --cp-t3: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
-  --cp-t4: var(--ds-text-subtle, #44546f);
-  --cp-text-link: var(--ds-background-information-bold, #0c66e4);
-  --cp-text-muted: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
+  --cp-t1: var(--cp-bg-neutral, var(--ds-background-neutral));
+  --cp-t2: var(--ds-text-subtlest);
+  --cp-t3: var(--cp-text-secondary, var(--ds-text-subtlest));
+  --cp-t4: var(--ds-text-subtle);
+  --cp-text-link: var(--ds-background-information-bold);
+  --cp-text-muted: var(--cp-text-secondary, var(--ds-text-subtlest));
   --cp-text-primary: var(
     --cp-bg-neutral,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   );
-  --cp-text-secondary: var(--ds-border, #dfe1e6);
-  --cp-text-tertiary: var(--ds-text-disabled, #8590a2);
-  --cp-warn: var(--ds-background-warning-bold, #e2b203);
+  --cp-text-secondary: var(--ds-border);
+  --cp-text-tertiary: var(--ds-text-disabled);
+  --cp-warn: var(--ds-background-warning-bold);
   --cp-warn-bg: var(--ds-background-warning-bold, rgba(251, 191, 36, 0.1));
-  --divider: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  --divider: var(--cp-border, var(--ds-background-neutral));
   --ring: var(--ds-background-information-bold, rgba(59, 130, 246, 0.7));
   --shadow: 0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
-  --text-1: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
-  --text-2: var(--ds-text-subtlest, #626f86);
-  --text-3: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
+  --text-1: var(--cp-bg-neutral, var(--ds-background-neutral));
+  --text-2: var(--ds-text-subtlest);
+  --text-3: var(--cp-text-secondary, var(--ds-text-subtlest));
 }
 
 .dark ::-webkit-scrollbar-track,
@@ -4065,47 +4065,47 @@ input[type="range"]::-moz-range-thumb {
 .dark ::-webkit-scrollbar-thumb,
 .dark ::-webkit-scrollbar-thumb,
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: var(--ds-text-subtle, #44546f);
+  background: var(--ds-text-subtle);
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover,
 .dark ::-webkit-scrollbar-thumb:hover,
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: var(--ds-text-subtle, #44546f);
+  background: var(--ds-text-subtle);
 }
 
 .dark *,
 .dark *,
 [data-theme="dark"] * {
-  scrollbar-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4))
-    var(--ds-text, #172b4d);
+  scrollbar-color: var(--cp-border, var(--ds-background-neutral))
+    var(--ds-text);
 }
 
 .dark .avatar-ring:hover,
 .dark .avatar-ring:hover,
 [data-theme="dark"] .avatar-ring:hover {
-  box-shadow: 0 0 0 2px var(--ds-text, #172b4d),
-    0 0 0 4px var(--ds-background-information-bold, #3b82f6);
+  box-shadow: 0 0 0 2px var(--ds-text),
+    0 0 0 4px var(--ds-background-information-bold);
 }
 
 .dark .focus-ring:focus-visible,
 .dark .focus-ring:focus-visible,
 [data-theme="dark"] .focus-ring:focus-visible {
-  box-shadow: 0 0 0 2px var(--ds-text, #172b4d),
+  box-shadow: 0 0 0 2px var(--ds-text),
     0 0 0 4px var(--ds-background-information-bold, rgba(59, 130, 246, 0.4));
 }
 
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb,
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb,
 [data-theme="dark"] .scrollbar-catalyst::-webkit-scrollbar-thumb {
-  background: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  background: var(--cp-border, var(--ds-background-neutral));
 }
 
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb:hover,
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb:hover,
 [data-theme="dark"] .scrollbar-catalyst::-webkit-scrollbar-thumb:hover {
-  background: var(--ds-text-subtle, #44546f);
+  background: var(--ds-text-subtle);
 }
 
 .dark table,
@@ -4115,7 +4115,7 @@ input[type="range"]::-moz-range-thumb {
   border: none !important;
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -4147,7 +4147,7 @@ input[type="range"]::-moz-range-thumb {
   background-color: var(--table-header-bg);
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -4190,7 +4190,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] td {
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
   border-left: none !important;
   border-right: none !important;
@@ -4238,20 +4238,20 @@ input[type="range"]::-moz-range-thumb {
 .dark .capacity-heatmap,
 .dark .capacity-heatmap,
 [data-theme="dark"] .capacity-heatmap {
-  background-color: var(--surface-0, var(--ds-text, #172b4d));
-  border-color: var(--border-subtle, var(--ds-text, #172b4d));
+  background-color: var(--surface-0, var(--ds-text));
+  border-color: var(--border-subtle, var(--ds-text));
 }
 
 .dark [class*="EnhancedHeatmapGrid"] .text-muted-foreground,
 .dark [class*="EnhancedHeatmapGrid"] .text-muted-foreground,
 [data-theme="dark"] [class*="EnhancedHeatmapGrid"] .text-muted-foreground {
-  color: var(--text-secondary, var(--ds-text-disabled, #8590a2)) !important;
+  color: var(--text-secondary, var(--ds-text-disabled)) !important;
 }
 
 .dark [class*="heatmap"] .text-sm.font-medium,
 .dark [class*="heatmap"] .text-sm.font-medium,
 [data-theme="dark"] [class*="heatmap"] .text-sm.font-medium {
-  color: var(--text-primary, var(--ds-surface-sunken, #f7f8f9)) !important;
+  color: var(--text-primary, var(--ds-surface-sunken)) !important;
 }
 
 .dark [class*="Heatmap"] [class*="text-"],
@@ -4269,14 +4269,14 @@ input[type="range"]::-moz-range-thumb {
 .dark [class*="InsightsCell"],
 .dark [class*="InsightsCell"],
 [data-theme="dark"] [class*="InsightsCell"] {
-  background-color: var(--surface-1, var(--ds-text, #172b4d)) !important;
-  border-left-color: var(--border-subtle, var(--ds-text, #172b4d)) !important;
+  background-color: var(--surface-1, var(--ds-text)) !important;
+  border-left-color: var(--border-subtle, var(--ds-text)) !important;
 }
 
 .dark .text-rose-600,
 .dark .text-rose-600,
 [data-theme="dark"] .text-rose-600 {
-  color: var(--ds-background-danger, #ffeceb) !important;
+  color: var(--ds-background-danger) !important;
 }
 
 .dark .text-amber-300,
@@ -4418,13 +4418,13 @@ input[type="range"]::-moz-range-thumb {
 .dark [class*="bg-muted/50"],
 .dark [class*="bg-muted/50"],
 [data-theme="dark"] [class*="bg-muted/50"] {
-  background-color: var(--surface-2, var(--ds-text, #172b4d)) !important;
+  background-color: var(--surface-2, var(--ds-text)) !important;
 }
 
 .dark [class*="border-border"],
 .dark [class*="border-border"],
 [data-theme="dark"] [class*="border-border"] {
-  border-color: var(--border-subtle, var(--ds-text, #172b4d));
+  border-color: var(--border-subtle, var(--ds-text));
 }
 
 .dark [data-radix-tooltip-content],
@@ -4485,7 +4485,7 @@ input[type="range"]::-moz-range-thumb {
 .dark .ring-primary,
 .dark .ring-primary,
 [data-theme="dark"] .ring-primary {
-  --tw-ring-color: var(--ds-background-information-bold, #3b82f6);
+  --tw-ring-color: var(--ds-background-information-bold);
 }
 
 .dark [class*="capacity"] *,
@@ -4497,7 +4497,7 @@ input[type="range"]::-moz-range-thumb {
 .dark [class*="ring-muted-foreground"],
 .dark [class*="ring-muted-foreground"],
 [data-theme="dark"] [class*="ring-muted-foreground"] {
-  --tw-ring-color: var(--border-strong, var(--ds-text-subtle, #44546f));
+  --tw-ring-color: var(--border-strong, var(--ds-text-subtle));
 }
 
 .dark [data-radix-separator],
@@ -4507,11 +4507,11 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] hr {
   background-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
   opacity: 0.5 !important;
 }
@@ -4546,32 +4546,32 @@ input[type="range"]::-moz-range-thumb {
   --sidebar-ring: 217 91% 60%;
 
   /* ADS surface tokens */
-  --surface-page: var(--ds-surface-sunken, #f7f8f9);
-  --surface-card: var(--ds-surface, #ffffff);
-  --surface-hover: var(--ds-surface-overlay, #ffffff);
-  --surface-active: var(--ds-background-neutral, #f1f2f4);
-  --border-default: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --border-subtle: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  --border-medium: var(--ds-text-subtle, #44546f);
-  --text-primary: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
-  --text-secondary: var(--ds-text-subtlest, #626f86);
-  --text-muted: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
-  --text-tertiary: var(--ds-text-subtlest, #626f86);
-  --placeholder: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
+  --surface-page: var(--ds-surface-sunken);
+  --surface-card: var(--ds-surface);
+  --surface-hover: var(--ds-surface-overlay);
+  --surface-active: var(--ds-background-neutral);
+  --border-default: var(--cp-border, var(--ds-background-neutral));
+  --border-subtle: var(--cp-border, var(--ds-background-neutral));
+  --border-medium: var(--ds-text-subtle);
+  --text-primary: var(--cp-bg-neutral, var(--ds-background-neutral));
+  --text-secondary: var(--ds-text-subtlest);
+  --text-muted: var(--cp-text-secondary, var(--ds-text-subtlest));
+  --text-tertiary: var(--ds-text-subtlest);
+  --placeholder: var(--cp-text-secondary, var(--ds-text-subtlest));
 
   /* Legacy aliases */
-  --bg-0: var(--ds-surface-sunken, #f7f8f9);
-  --bg-1: var(--ds-surface-sunken, #f7f8f9);
-  --bg-2: var(--ds-surface, #ffffff);
-  --bg-3: var(--ds-surface, #ffffff);
-  --bg-4: var(--ds-surface-overlay, #ffffff);
-  --bg-5: var(--ds-background-neutral, #f1f2f4);
-  --text-1: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
-  --text-2: var(--ds-text-subtlest, #626f86);
-  --text-3: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
-  --divider: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  --bg-0: var(--ds-surface-sunken);
+  --bg-1: var(--ds-surface-sunken);
+  --bg-2: var(--ds-surface);
+  --bg-3: var(--ds-surface);
+  --bg-4: var(--ds-surface-overlay);
+  --bg-5: var(--ds-background-neutral);
+  --text-1: var(--cp-bg-neutral, var(--ds-background-neutral));
+  --text-2: var(--ds-text-subtlest);
+  --text-3: var(--cp-text-secondary, var(--ds-text-subtlest));
+  --divider: var(--cp-border, var(--ds-background-neutral));
   --shadow: 0 2px 8px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
-  --stroke-1: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  --stroke-1: var(--cp-border, var(--ds-background-neutral));
 
   /* Atlaskit Modal blanket — Jira parity: neutral darken, NOT navy/blue tint.
      Atlaskit's default --ds-blanket in dark mode has a blue cast (rgba(10,17,33,0.5)).
@@ -4673,7 +4673,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] nav {
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -4684,7 +4684,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] tfoot {
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -4693,11 +4693,11 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] tr {
   border-bottom-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
   border-left: none !important;
   border-right: none !important;
@@ -4707,14 +4707,14 @@ input[type="range"]::-moz-range-thumb {
 .dark th,
 .dark th,
 [data-theme="dark"] th {
-  background-color: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
+  background-color: var(--cp-bg-page, var(--ds-surface-sunken));
+  color: var(--cp-text-secondary, var(--ds-text-subtlest));
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
   border-bottom: 1px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    var(--cp-border, var(--ds-background-neutral));
   border-left: none !important;
   border-right: none !important;
 }
@@ -4766,11 +4766,11 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [class*="ring-"] {
   --tw-ring-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
   outline-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -4822,7 +4822,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] input {
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -4873,23 +4873,23 @@ input[type="range"]::-moz-range-thumb {
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
   background-color: transparent !important;
   border-color: transparent !important;
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
   -webkit-text-fill-color: var(
     --cp-bg-neutral,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
   box-shadow: none !important;
   outline: none !important;
   caret-color: var(
     --cp-bg-neutral,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
 .dark .global-search-portal input::placeholder,
 .dark .global-search-portal input::placeholder,
 [data-theme="dark"] .global-search-portal input::placeholder {
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86)) !important;
+  color: var(--cp-text-secondary, var(--ds-text-subtlest)) !important;
 }
 
 .dark .text-red-300,
@@ -5076,23 +5076,23 @@ input[type="range"]::-moz-range-thumb {
 .dark .text-zinc-800,
 .dark .text-zinc-900,
 .dark .text-zinc-950,
-.dark [class*="text-\\[\\var(--ds-text, #172B4D)\\]"],
-.dark [class*="text-\\[\\var(--ds-text, #172B4D)\\]"],
-.dark [class*="text-\\[\\var(--ds-text, #172B4D)\\]"],
-.dark [class*="text-\\[\\var(--ds-surface, #FFFFFF)\\]"],
-.dark [class*="text-\\[\\var(--ds-surface, #FFFFFF)\\]"],
-.dark [class*="text-\\[\\var(--ds-text, #172B4D)\\]"],
-.dark [class*="text-\\[\\var(--ds-text-subtle, #44546F)\\]"],
-.dark [class*="text-\\[\\var(--ds-text-subtle, #44546F)\\]"],
-.dark [class*="text-\\[\\var(--ds-border, #DFE1E6)\\]"],
+.dark [class*="text-\\[\\var(--ds-text)\\]"],
+.dark [class*="text-\\[\\var(--ds-text)\\]"],
+.dark [class*="text-\\[\\var(--ds-text)\\]"],
+.dark [class*="text-\\[\\var(--ds-surface)\\]"],
+.dark [class*="text-\\[\\var(--ds-surface)\\]"],
+.dark [class*="text-\\[\\var(--ds-text)\\]"],
+.dark [class*="text-\\[\\var(--ds-text-subtle)\\]"],
+.dark [class*="text-\\[\\var(--ds-text-subtle)\\]"],
+.dark [class*="text-\\[\\var(--ds-border)\\]"],
 .dark
-  [class*="text-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))\\]"],
-.dark [class*="text-\\[\\var(--ds-surface, #FFFFFF)\\]"],
-.dark [class*="text-\\[\\var(--ds-border, #DFE1E6)\\]"],
-.dark [class*="text-\\[\\var(--ds-border, #DFE1E6)\\]"],
-.dark [class*="text-\\[\\var(--ds-surface, #FFFFFF)\\]"],
+  [class*="text-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))\\]"],
+.dark [class*="text-\\[\\var(--ds-surface)\\]"],
+.dark [class*="text-\\[\\var(--ds-border)\\]"],
+.dark [class*="text-\\[\\var(--ds-border)\\]"],
+.dark [class*="text-\\[\\var(--ds-surface)\\]"],
 .dark
-  [class*="text-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))\\]"],
+  [class*="text-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))\\]"],
 .dark [class*="text-white\\/8"],
 .dark [class*="text-white\\/9"],
 [data-theme="dark"] .hover\:text-gray-300:hover,
@@ -5163,23 +5163,23 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .text-zinc-800,
 [data-theme="dark"] .text-zinc-900,
 [data-theme="dark"] .text-zinc-950,
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text, #172B4D)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text, #172B4D)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text, #172B4D)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-surface, #FFFFFF)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-surface, #FFFFFF)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text, #172B4D)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtle, #44546F)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtle, #44546F)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-border, #DFE1E6)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-surface)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-surface)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtle)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtle)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-border)\\]"],
 [data-theme="dark"]
-  [class*="text-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-surface, #FFFFFF)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-border, #DFE1E6)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-border, #DFE1E6)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-surface, #FFFFFF)\\]"],
+  [class*="text-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-surface)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-border)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-border)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-surface)\\]"],
 [data-theme="dark"]
-  [class*="text-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))\\]"],
+  [class*="text-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))\\]"],
 [data-theme="dark"] [class*="text-white\\/8"],
 .dark [class*="text-white\\/9"],
 [data-theme="dark"] [class*="text-white\\/9"] {
@@ -5195,12 +5195,12 @@ input[type="range"]::-moz-range-thumb {
 .dark .text-slate-400,
 .dark .text-stone-400,
 .dark .text-zinc-400,
-.dark [class*="text-\\[\\var(--ds-text-subtlest, #626F86)\\]"],
-.dark [class*="text-\\[\\var(--ds-text-subtlest, #626F86)\\]"],
-.dark [class*="text-\\[\\var(--ds-text-disabled, #8590A2)\\]"],
-.dark [class*="text-\\[\\var(--ds-text-subtlest, #626F86)\\]"],
-.dark [class*="text-\\[\\var(--ds-text-disabled, #8590A2)\\]"],
-.dark [class*="text-\\[\\var(--ds-text-disabled, #8590A2)\\]"],
+.dark [class*="text-\\[\\var(--ds-text-subtlest)\\]"],
+.dark [class*="text-\\[\\var(--ds-text-subtlest)\\]"],
+.dark [class*="text-\\[\\var(--ds-text-disabled)\\]"],
+.dark [class*="text-\\[\\var(--ds-text-subtlest)\\]"],
+.dark [class*="text-\\[\\var(--ds-text-disabled)\\]"],
+.dark [class*="text-\\[\\var(--ds-text-disabled)\\]"],
 .dark [class*="text-white\\/4"],
 .dark [class*="text-white\\/5"],
 [data-theme="dark"] .text-gray-400,
@@ -5208,12 +5208,12 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .text-slate-400,
 [data-theme="dark"] .text-stone-400,
 [data-theme="dark"] .text-zinc-400,
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtlest, #626F86)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtlest, #626F86)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text-disabled, #8590A2)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtlest, #626F86)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text-disabled, #8590A2)\\]"],
-[data-theme="dark"] [class*="text-\\[\\var(--ds-text-disabled, #8590A2)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtlest)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtlest)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text-disabled)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text-subtlest)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text-disabled)\\]"],
+[data-theme="dark"] [class*="text-\\[\\var(--ds-text-disabled)\\]"],
 [data-theme="dark"] [class*="text-white\\/4"],
 .dark [class*="text-white\\/5"],
 [data-theme="dark"] [class*="text-white\\/5"] {
@@ -5265,7 +5265,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .text-violet-400,
 .dark .text-violet-500,
 [data-theme="dark"] .text-violet-500 {
-  color: var(--ds-background-discovery, #f3f0ff) !important;
+  color: var(--ds-background-discovery) !important;
 }
 
 .dark .bg-purple-100,
@@ -5301,7 +5301,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .text-rose-400,
 .dark .text-rose-500,
 [data-theme="dark"] .text-rose-500 {
-  color: var(--ds-background-accent-magenta-subtle, #fce7f3) !important;
+  color: var(--ds-background-accent-magenta-subtle) !important;
 }
 
 .dark .text-card-foreground,
@@ -5352,13 +5352,13 @@ input[type="range"]::-moz-range-thumb {
 .dark .dark\:bg-zinc-700,
 .dark .dark\:bg-zinc-800,
 .dark .dark\:bg-zinc-900,
-.dark [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-.dark [class*="bg-\\[\\var(--ds-text, #172B4D)\\]"],
-.dark [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-.dark [class*="bg-\\[\\var(--ds-text, #172B4D)\\]"],
-.dark [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-.dark [class*="bg-\\[\\var(--ds-text, #172B4D)\\]"],
-.dark [class*="bg-\\[\\var(--ds-background-neutral, #F1F2F4)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+.dark [class*="bg-\\[\\var(--ds-text)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+.dark [class*="bg-\\[\\var(--ds-text)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+.dark [class*="bg-\\[\\var(--ds-text)\\]"],
+.dark [class*="bg-\\[\\var(--ds-background-neutral)\\]"],
 [data-theme="dark"] .bg-background,
 [data-theme="dark"] .bg-card,
 [data-theme="dark"] .bg-gray-700,
@@ -5382,15 +5382,15 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-zinc-800,
 [data-theme="dark"] .bg-zinc-900,
 [data-theme="dark"] .bg-zinc-950,
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-text, #172B4D)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-text, #172B4D)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-text, #172B4D)\\]"],
-.dark [class*="bg-\\[\\var(--ds-background-neutral, #F1F2F4)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-text)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-text)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-text)\\]"],
+.dark [class*="bg-\\[\\var(--ds-background-neutral)\\]"],
 [data-theme="dark"]
-  [class*="bg-\\[\\var(--ds-background-neutral, #F1F2F4)\\]"] {
+  [class*="bg-\\[\\var(--ds-background-neutral)\\]"] {
   background-color: var(--bg-1) !important;
 }
 
@@ -5513,17 +5513,17 @@ input[type="range"]::-moz-range-thumb {
 .dark .bg-zinc-100,
 .dark .bg-zinc-50,
 .dark [class*="Skeleton"],
-.dark [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-.dark [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
 .dark
-  [class*="bg-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))\\]"],
-.dark [class*="bg-\\[\\var(--ds-surface, #FFFFFF)\\]"],
-.dark [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-.dark [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-.dark [class*="bg-\\[\\var(--ds-surface-sunken, #FAFAFA)\\]"],
-.dark [class*="bg-\\[\\var(--ds-surface, #FFFFFF)\\]"],
+  [class*="bg-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+.dark [class*="bg-\\[\\var(--ds-surface)\\]"],
 .dark
-  [class*="bg-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))\\]"],
+  [class*="bg-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))\\]"],
 .dark [data-state="open"] > [data-radix-select-content],
 [data-theme="dark"] .animate-pulse,
 [data-theme="dark"] .bg-gray-100,
@@ -5538,17 +5538,17 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-zinc-100,
 [data-theme="dark"] .bg-zinc-50,
 [data-theme="dark"] [class*="Skeleton"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
 [data-theme="dark"]
-  [class*="bg-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface, #FFFFFF)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken, #FAFAFA)\\]"],
-[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface, #FFFFFF)\\]"],
+  [class*="bg-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface-sunken)\\]"],
+[data-theme="dark"] [class*="bg-\\[\\var(--ds-surface)\\]"],
 [data-theme="dark"]
-  [class*="bg-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))\\]"],
+  [class*="bg-\\[\\var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))\\]"],
 .dark [data-state="open"] > [data-radix-select-content],
 [data-theme="dark"] [data-state="open"] > [data-radix-select-content] {
   background-color: var(--bg-2) !important;
@@ -5617,7 +5617,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .bg-background {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
 }
 
@@ -5630,13 +5630,13 @@ input[type="range"]::-moz-range-thumb {
 .dark [class*="DetailPanel"] {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
 }
 .dark [class*="drawer"] input,
 .dark [class*="Drawer"] input,
@@ -5646,12 +5646,12 @@ input[type="range"]::-moz-range-thumb {
 .dark [class*="Drawer"] textarea {
   background-color: var(
     --cp-bg-page,
-    var(--ds-surface-sunken, #f7f8f9)
+    var(--ds-surface-sunken)
   ) !important;
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -5735,11 +5735,11 @@ input[type="range"]::-moz-range-thumb {
 .dark .divide-zinc-100 > * + *,
 .dark .divide-zinc-200 > * + *,
 .dark .divide-zinc-300 > * + *,
-.dark [class*="border-\\[\\var(--ds-background-neutral, #F1F2F4)\\]"],
-.dark [class*="border-\\[\\var(--ds-border, #DFE1E6)\\]"],
-.dark [class*="border-\\[\\var(--ds-border, #DFE1E6)\\]"],
-.dark [class*="border-\\[\\var(--ds-border, #DFE1E6)\\]"],
-.dark [class*="border-\\[\\var(--ds-background-neutral, #F0F0F0)\\]"],
+.dark [class*="border-\\[\\var(--ds-background-neutral)\\]"],
+.dark [class*="border-\\[\\var(--ds-border)\\]"],
+.dark [class*="border-\\[\\var(--ds-border)\\]"],
+.dark [class*="border-\\[\\var(--ds-border)\\]"],
+.dark [class*="border-\\[\\var(--ds-background-neutral)\\]"],
 [data-theme="dark"] .border-gray-100,
 [data-theme="dark"] .border-gray-200,
 [data-theme="dark"] .border-neutral-100,
@@ -5763,13 +5763,13 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .divide-zinc-200 > * + *,
 [data-theme="dark"] .divide-zinc-300 > * + *,
 [data-theme="dark"]
-  [class*="border-\\[\\var(--ds-background-neutral, #F1F2F4)\\]"],
-[data-theme="dark"] [class*="border-\\[\\var(--ds-border, #DFE1E6)\\]"],
-[data-theme="dark"] [class*="border-\\[\\var(--ds-border, #DFE1E6)\\]"],
-[data-theme="dark"] [class*="border-\\[\\var(--ds-border, #DFE1E6)\\]"],
-.dark [class*="border-\\[\\var(--ds-background-neutral, #F0F0F0)\\]"],
+  [class*="border-\\[\\var(--ds-background-neutral)\\]"],
+[data-theme="dark"] [class*="border-\\[\\var(--ds-border)\\]"],
+[data-theme="dark"] [class*="border-\\[\\var(--ds-border)\\]"],
+[data-theme="dark"] [class*="border-\\[\\var(--ds-border)\\]"],
+.dark [class*="border-\\[\\var(--ds-background-neutral)\\]"],
 [data-theme="dark"]
-  [class*="border-\\[\\var(--ds-background-neutral, #F0F0F0)\\]"] {
+  [class*="border-\\[\\var(--ds-background-neutral)\\]"] {
   border-color: var(--divider) !important;
 }
 
@@ -5806,10 +5806,10 @@ input[type="range"]::-moz-range-thumb {
 .dark .hover\:bg-zinc-100:hover,
 .dark .hover\:bg-zinc-50:hover,
 .dark [class*="bg-white\\/"],
-.dark [class*="hover\\:bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"]:hover,
-.dark [class*="hover\\:bg-\\[\\var(--ds-background-neutral, #F1F2F4)\\]"]:hover,
-.dark [class*="hover\\:bg-\\[\\var(--ds-border, #DFE1E6)\\]"]:hover,
-.dark [class*="hover\\:bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"]:hover,
+.dark [class*="hover\\:bg-\\[\\var(--ds-surface-sunken)\\]"]:hover,
+.dark [class*="hover\\:bg-\\[\\var(--ds-background-neutral)\\]"]:hover,
+.dark [class*="hover\\:bg-\\[\\var(--ds-border)\\]"]:hover,
+.dark [class*="hover\\:bg-\\[\\var(--ds-surface-sunken)\\]"]:hover,
 .dark [class*="hover\\:bg-white\\/10"]:hover,
 .dark [class*="hover\\:bg-white\\/5"]:hover,
 [data-theme="dark"] .hover\:bg-gray-100:hover,
@@ -5822,13 +5822,13 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .hover\:bg-zinc-50:hover,
 [data-theme="dark"] [class*="bg-white\\/"],
 [data-theme="dark"]
-  [class*="hover\\:bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"]:hover,
+  [class*="hover\\:bg-\\[\\var(--ds-surface-sunken)\\]"]:hover,
 [data-theme="dark"]
-  [class*="hover\\:bg-\\[\\var(--ds-background-neutral, #F1F2F4)\\]"]:hover,
+  [class*="hover\\:bg-\\[\\var(--ds-background-neutral)\\]"]:hover,
 [data-theme="dark"]
-  [class*="hover\\:bg-\\[\\var(--ds-border, #DFE1E6)\\]"]:hover,
+  [class*="hover\\:bg-\\[\\var(--ds-border)\\]"]:hover,
 [data-theme="dark"]
-  [class*="hover\\:bg-\\[\\var(--ds-surface-sunken, #F7F8F9)\\]"]:hover,
+  [class*="hover\\:bg-\\[\\var(--ds-surface-sunken)\\]"]:hover,
 [data-theme="dark"] [class*="hover\\:bg-white\\/10"]:hover,
 .dark [class*="hover\\:bg-white\\/5"]:hover,
 [data-theme="dark"] [class*="hover\\:bg-white\\/5"]:hover {
@@ -5907,22 +5907,22 @@ input[type="range"]::-moz-range-thumb {
 .dark [style*="border-color: rgb(255"],
 .dark [style*="border: 1px solid rgba(255"],
 .dark [style*="border: 1px solid rgb(255"],
-.dark [style*="border: 1px solid var(--ds-surface, #FFFFFF)"],
-.dark [style*="border: 1px solid var(--ds-surface, #FFFFFF)"],
-.dark [style*="border-color: var(--ds-surface, #FFFFFF)"],
-.dark [style*="border-color: var(--ds-surface, #FFFFFF)"],
-.dark [style*="border-color: var(--ds-surface, #FFFFFF)"],
-.dark [style*="border-color: var(--ds-surface, #FFFFFF)"],
+.dark [style*="border: 1px solid var(--ds-surface)"],
+.dark [style*="border: 1px solid var(--ds-surface)"],
+.dark [style*="border-color: var(--ds-surface)"],
+.dark [style*="border-color: var(--ds-surface)"],
+.dark [style*="border-color: var(--ds-surface)"],
+.dark [style*="border-color: var(--ds-surface)"],
 [data-theme="dark"] [style*="border-color: rgba(255"],
 [data-theme="dark"] [style*="border-color: rgb(255"],
 [data-theme="dark"] [style*="border: 1px solid rgba(255"],
 [data-theme="dark"] [style*="border: 1px solid rgb(255"],
-[data-theme="dark"] [style*="border: 1px solid var(--ds-surface, #FFFFFF)"],
-[data-theme="dark"] [style*="border: 1px solid var(--ds-surface, #FFFFFF)"],
-[data-theme="dark"] [style*="border-color: var(--ds-surface, #FFFFFF)"],
-[data-theme="dark"] [style*="border-color: var(--ds-surface, #FFFFFF)"],
-[data-theme="dark"] [style*="border-color: var(--ds-surface, #FFFFFF)"],
-[data-theme="dark"] [style*="border-color: var(--ds-surface, #FFFFFF)"],
+[data-theme="dark"] [style*="border: 1px solid var(--ds-surface)"],
+[data-theme="dark"] [style*="border: 1px solid var(--ds-surface)"],
+[data-theme="dark"] [style*="border-color: var(--ds-surface)"],
+[data-theme="dark"] [style*="border-color: var(--ds-surface)"],
+[data-theme="dark"] [style*="border-color: var(--ds-surface)"],
+[data-theme="dark"] [style*="border-color: var(--ds-surface)"],
 [data-theme="dark"] .border-border,
 .dark .divide-border > * + *,
 [data-theme="dark"] .divide-border > * + * {
@@ -6065,14 +6065,14 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [data-sidebar],
 .dark aside,
 [data-theme="dark"] aside {
-  background-color: var(--cp-bg, var(--ds-surface-sunken, #f7f8f9)) !important;
-  border-color: var(--ds-border, #2c333a) !important;
+  background-color: var(--cp-bg, var(--ds-surface-sunken)) !important;
+  border-color: var(--ds-border) !important;
   box-shadow: none !important;
 }
 
 /* DARK SURFACE COHERENCE (2026-06-16, revised 2026-06-18; ramp 2026-06-24; ADS-13 cleanup 2026-06-27) —
    Dark-mode surface ramp for the whole viewport, mapped to ADS Jira-parity tones
-   (var(--ds-surface-sunken, #1D2125) canvas, var(--ds-surface, #22272B) raised, var(--ds-surface-overlay, #282E33) elevated/overlay, #161A1D sunken). Elevation
+   (var(--ds-surface-sunken) canvas, var(--ds-surface) raised, var(--ds-surface-overlay) elevated/overlay, #161A1D sunken). Elevation
    reads from the tonal step PLUS shadow + 1px separators. This is the highest-specificity
    dark selector in the app (html + class), so it is the single source of truth — it beats
    the lower-specificity .dark / [data-theme="dark"] token blocks. Light untouched.
@@ -6082,21 +6082,21 @@ html.dark,
 html[data-color-mode="dark"],
 [data-theme="dark"] {
   /* ── ADS dark elevation ramp — single source of truth.
-     page var(--ds-surface-sunken, #1D2125) → raised var(--ds-surface, #22272B) → overlay var(--ds-surface-overlay, #282E33) → sunken #161A1D.
+     page var(--ds-surface-sunken) → raised var(--ds-surface) → overlay var(--ds-surface-overlay) → sunken #161A1D.
      Do NOT reintroduce a second !important --ds-surface* block after this. */
-  --ds-surface:          var(--ds-surface-sunken, #1D2125) !important;
-  --ds-surface-raised:   var(--ds-surface, #22272B) !important;
-  --ds-surface-overlay:  var(--ds-surface-overlay, #282E33) !important;
+  --ds-surface:          var(--ds-surface-sunken) !important;
+  --ds-surface-raised:   var(--ds-surface) !important;
+  --ds-surface-overlay:  var(--ds-surface-overlay) !important;
   --ds-surface-sunken:   #161A1D !important;
-  --ds-surface-pressed:  var(--ds-background-neutral, #2C333A) !important;
-  --ds-surface-hovered:  var(--ds-surface, #22272B) !important;
+  --ds-surface-pressed:  var(--ds-background-neutral) !important;
+  --ds-surface-hovered:  var(--ds-surface) !important;
 
   /* Text — DarkNeutral ramp (legible inactive labels = buried-text fix) */
   --ds-text:           #C7D1DB !important;
   --ds-text-subtle:    #9FADBC !important;
   --ds-text-subtlest:  #8C9BAB !important;
   --ds-text-disabled:  #738496 !important;
-  --ds-text-inverse:   var(--ds-surface-sunken, #1D2125) !important;
+  --ds-text-inverse:   var(--ds-surface-sunken) !important;
   --ds-text-brand:     #579DFF !important;
   --ds-link:           #579DFF !important;
 
@@ -6109,63 +6109,63 @@ html[data-color-mode="dark"],
   --ds-border:         rgba(166,189,219,0.16) !important;
   --ds-border-subtle:  rgba(166,189,219,0.08) !important;
   --ds-border-bold:    #738496 !important;
-  --ds-border-focused: var(--ds-border-focused, #388BFF) !important;
+  --ds-border-focused: var(--ds-border-focused) !important;
 
   /* Elevation shadows (deep; the alpha border does the separating) */
   --ds-shadow-raised:  0 1px 1px rgba(3,4,5,0.50), 0 0 1px rgba(3,4,5,0.60) !important;
   --ds-shadow-overlay: 0 8px 12px rgba(3,4,5,0.36), 0 0 1px rgba(3,4,5,0.50) !important;
 
   /* Catalyst legacy --cp / --bg surface aliases → ADS ramp */
-  --cp-bg:            var(--ds-surface-sunken, #1D2125) !important;
-  --cp-bg-page:       var(--ds-surface-sunken, #1D2125) !important;
-  --cp-bg-hub-page:   var(--ds-surface-sunken, #1D2125) !important;
-  --cp-bg-canvas:     var(--ds-surface-sunken, #1D2125) !important;
+  --cp-bg:            var(--ds-surface-sunken) !important;
+  --cp-bg-page:       var(--ds-surface-sunken) !important;
+  --cp-bg-hub-page:   var(--ds-surface-sunken) !important;
+  --cp-bg-canvas:     var(--ds-surface-sunken) !important;
   --cp-bg-sunken:     #161A1D !important;
-  --cp-bg-elevated:   var(--ds-surface, #22272B) !important;   /* raised: sidebar/header/cards */
-  --cp-bg-overlay:    var(--ds-surface-overlay, #282E33) !important;   /* overlay: popovers/flyouts/menus */
-  --cp-float:         var(--ds-surface-overlay, #282E33) !important;
-  --surface-page:     var(--ds-surface-sunken, #1D2125) !important;
-  --surface-bg:       var(--ds-surface-sunken, #1D2125) !important;
+  --cp-bg-elevated:   var(--ds-surface) !important;   /* raised: sidebar/header/cards */
+  --cp-bg-overlay:    var(--ds-surface-overlay) !important;   /* overlay: popovers/flyouts/menus */
+  --cp-float:         var(--ds-surface-overlay) !important;
+  --surface-page:     var(--ds-surface-sunken) !important;
+  --surface-bg:       var(--ds-surface-sunken) !important;
   --surface-subtle:   #161A1D !important;
-  --bg:               var(--ds-surface-sunken, #1D2125) !important;
-  --bg-0:             var(--ds-surface-sunken, #1D2125) !important;
-  --bg-1:             var(--ds-surface, #22272B) !important;
-  --bg-app:           var(--ds-surface-sunken, #1D2125) !important;
-  --bg-workspace:     var(--ds-surface-sunken, #1D2125) !important;
-  --bg-sidebar:       var(--ds-surface, #22272B) !important;
-  --bg-cream:         var(--ds-surface, #22272B) !important;
-  --industry-bg-page: var(--ds-surface-sunken, #1D2125) !important;
-  --table-section-bg: var(--ds-surface-sunken, #1D2125) !important;
-  --table-toolbar-bg: var(--ds-surface, #22272B) !important;
+  --bg:               var(--ds-surface-sunken) !important;
+  --bg-0:             var(--ds-surface-sunken) !important;
+  --bg-1:             var(--ds-surface) !important;
+  --bg-app:           var(--ds-surface-sunken) !important;
+  --bg-workspace:     var(--ds-surface-sunken) !important;
+  --bg-sidebar:       var(--ds-surface) !important;
+  --bg-cream:         var(--ds-surface) !important;
+  --industry-bg-page: var(--ds-surface-sunken) !important;
+  --table-section-bg: var(--ds-surface-sunken) !important;
+  --table-toolbar-bg: var(--ds-surface) !important;
 
   /* Catalyst legacy text aliases → DarkNeutral */
   --cp-text-primary:    #C7D1DB !important;
   --cp-text-secondary:  #9FADBC !important;
-  --cp-text-inverse:    var(--ds-surface-sunken, #1D2125) !important;
+  --cp-text-inverse:    var(--ds-surface-sunken) !important;
   --nav-text-secondary: #9FADBC !important;
   --nav-text-tertiary:  #8C9BAB !important;
   --nav-section-label:  #8C9BAB !important;
 
   /* shadcn HSL tier → ADS ramp (themes every Radix menu: profile, notifications…) */
-  --background:         210 12% 13% !important;   /* var(--ds-surface-sunken, #1D2125) */
+  --background:         210 12% 13% !important;   /* var(--ds-surface-sunken) */
   --foreground:         210 22% 81% !important;   /* #C7D1DB */
-  --card:               213 13% 15% !important;   /* var(--ds-surface, #22272B) */
+  --card:               213 13% 15% !important;   /* var(--ds-surface) */
   --card-foreground:    210 22% 81% !important;
-  --popover:            210 12% 18% !important;   /* var(--ds-surface-overlay, #282E33) overlay */
+  --popover:            210 12% 18% !important;   /* var(--ds-surface-overlay) overlay */
   --popover-foreground: 210 22% 81% !important;   /* #C7D1DB */
   --secondary:          213 13% 15% !important;
   --muted:              213 13% 15% !important;
   --muted-foreground:   210 14% 68% !important;   /* #9FADBC */
-  --accent:             213 13% 21% !important;   /* var(--ds-background-neutral, #2C333A) hover */
+  --accent:             213 13% 21% !important;   /* var(--ds-background-neutral) hover */
   --accent-foreground:  210 22% 81% !important;
   --border:             213 14% 24% !important;
   --input:              213 14% 24% !important;
 }
 .dark body,
 [data-theme="dark"] body {
-  /* ADS page tone (var(--ds-surface-sunken, #1D2125)) so raised chrome (sidebar/header/cards var(--ds-surface, #22272B)) lifts.
+  /* ADS page tone (var(--ds-surface-sunken)) so raised chrome (sidebar/header/cards var(--ds-surface)) lifts.
      (2026-06-27 ADS parity Task 02 — was --cp-bg-elevated/uniform shell.) */
-  background: var(--cp-bg, var(--ds-surface, #ffffff)) !important;
+  background: var(--cp-bg, var(--ds-surface)) !important;
 }
 
 /* 2026-06-18 (Vikram): For You feed type-icon tile. Light keeps the grey
@@ -6176,7 +6176,7 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] .cp-feed-type-tile {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
 }
 
@@ -6238,8 +6238,8 @@ html.dark .cp-feed-type-tile,
     rgba(59, 130, 246, 0.1)
   ) !important;
   border-left: 2px solid
-    var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb)) !important;
-  color: var(--ds-background-information-bold, #0c66e4) !important;
+    var(--cp-workstream-catalyst-primary, var(--ds-link)) !important;
+  color: var(--ds-background-information-bold) !important;
 }
 
 .dark [data-sidebar] svg,
@@ -6257,13 +6257,13 @@ html.dark .cp-feed-type-tile,
 
 /* Light mode badge defaults */
 .badge-jira-proxy {
-  background: var(--ds-background-information, #e9f2ff);
-  color: var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
-  border: 1px solid var(--ds-background-information, #e9f2ff);
+  background: var(--ds-background-information);
+  color: var(--cp-workstream-catalyst-primary, var(--ds-link));
+  border: 1px solid var(--ds-background-information);
 }
 .badge-local-auth {
-  background: var(--ds-background-discovery, #f3f0ff);
-  color: var(--cp-purple-60, var(--ds-background-discovery-bold, #7c3aed));
+  background: var(--ds-background-discovery);
+  color: var(--cp-purple-60, var(--ds-background-discovery-bold));
   border: 1px solid
     var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.25));
 }
@@ -6272,40 +6272,40 @@ html.dark .cp-feed-type-tile,
 .dark .jus-page {
   background-color: var(
     --cp-bg-page,
-    var(--ds-surface-sunken, #f7f8f9)
+    var(--ds-surface-sunken)
   ) !important;
 }
 .dark .jus-surface,
 .dark .admin-content-area {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-surface-sunken {
   background-color: var(
     --cp-bg-sunken,
-    var(--ds-surface-sunken, #f7f8f9)
+    var(--ds-surface-sunken)
   ) !important;
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-surface-elevated {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
   box-shadow: 0 1px 3px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4));
 }
 .dark .jus-table-row {
   border-bottom: 0.75px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-table-row:hover {
   background-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 .dark .jus-table-row.selected {
@@ -6317,82 +6317,82 @@ html.dark .cp-feed-type-tile,
 .dark .jus-table-header {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
   border-bottom: 0.75px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
+    var(--cp-border, var(--ds-background-neutral));
+  color: var(--cp-text-secondary, var(--ds-text-subtlest));
 }
 .dark .jus-text-primary {
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
 }
 .dark .jus-text-secondary {
-  color: var(--ds-text-subtlest, #626f86) !important;
+  color: var(--ds-text-subtlest) !important;
 }
 .dark .jus-text-muted {
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86)) !important;
+  color: var(--cp-text-secondary, var(--ds-text-subtlest)) !important;
 }
 .dark .jus-stat-card {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border: 0.75px solid var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border: 0.75px solid var(--cp-border, var(--ds-background-neutral));
   border-radius: 8px;
 }
 .dark .jus-stat-value {
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
   font-weight: 650;
 }
 .dark .jus-stat-label {
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86)) !important;
+  color: var(--cp-text-secondary, var(--ds-text-subtlest)) !important;
   font-size: 11px;
 }
 .dark .jus-toolbar {
   background-color: var(
     --cp-bg-page,
-    var(--ds-surface-sunken, #f7f8f9)
+    var(--ds-surface-sunken)
   ) !important;
   border-bottom: 0.75px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-search-input {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border: 0.75px solid var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  border: 0.75px solid var(--cp-border, var(--ds-background-neutral));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
 }
 .dark .jus-search-input::placeholder {
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
+  color: var(--cp-text-secondary, var(--ds-text-subtlest));
 }
 .dark .jus-filter-tab {
-  color: var(--ds-text-subtlest, #626f86);
+  color: var(--ds-text-subtlest);
 }
 .dark .jus-filter-tab.active {
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
   border-bottom: 2px solid
-    var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
+    var(--cp-workstream-catalyst-primary, var(--ds-link));
 }
 .dark .lozenge-active {
-  background: var(--ds-text-success, #216e4e) !important;
-  color: var(--ds-background-success, #dffcf0) !important;
+  background: var(--ds-text-success) !important;
+  color: var(--ds-background-success) !important;
 }
 .dark .lozenge-inactive {
-  background: var(--ds-background-danger, #ffeceb) !important;
-  color: var(--ds-background-danger, #ffeceb) !important;
+  background: var(--ds-background-danger) !important;
+  color: var(--ds-background-danger) !important;
 }
 .dark .lozenge-conflict {
-  background: var(--ds-text-warning, #974f0c) !important;
-  color: var(--ds-background-warning, #fff7d6) !important;
+  background: var(--ds-text-warning) !important;
+  color: var(--ds-background-warning) !important;
 }
 .dark .badge-jira-proxy {
   background: var(
     --ds-background-information,
     rgba(37, 99, 235, 0.18)
   ) !important;
-  color: var(--ds-background-information-bold, #0c66e4) !important;
+  color: var(--ds-background-information-bold) !important;
   border: 0.75px solid var(--ds-background-information, rgba(37, 99, 235, 0.3)) !important;
 }
 .dark .badge-local-auth {
@@ -6400,7 +6400,7 @@ html.dark .cp-feed-type-tile,
     --ds-background-discovery-bold,
     rgba(124, 58, 237, 0.18)
   ) !important;
-  color: var(--ds-background-discovery, #f3f0ff) !important;
+  color: var(--ds-background-discovery) !important;
   border: 0.75px solid
     var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.3)) !important;
 }
@@ -6408,36 +6408,36 @@ html.dark .cp-feed-type-tile,
   width: 6px;
 }
 .dark .jus-scroll::-webkit-scrollbar-track {
-  background: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
+  background: var(--cp-bg-page, var(--ds-surface-sunken));
 }
 .dark .jus-scroll::-webkit-scrollbar-thumb {
-  background: var(--ds-text-subtle, #44546f);
+  background: var(--ds-text-subtle);
   border-radius: 3px;
 }
 .dark .jus-pagination {
   background-color: var(
     --cp-bg-page,
-    var(--ds-surface-sunken, #f7f8f9)
+    var(--ds-surface-sunken)
   ) !important;
   border-top: 0.75px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-pagination-btn {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--ds-text-subtlest, #626f86);
+  border-color: var(--cp-border, var(--ds-background-neutral));
+  color: var(--ds-text-subtlest);
 }
 .dark .jus-pagination-btn.active {
   background-color: var(
     --cp-workstream-catalyst-primary,
-    var(--ds-link, #2563eb)
+    var(--ds-link)
   ) !important;
   color: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   ) !important;
 }
 .dark .jus-selection-bar {
@@ -6459,20 +6459,20 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] .jus-surface-elevated {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-table-row,
 [data-theme="dark"] .jus-table-row {
   border-bottom: 0.75px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-table-row:hover,
 [data-theme="dark"] .jus-table-row:hover {
   background-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 .dark .jus-table-row.selected,
@@ -6486,89 +6486,89 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] .jus-table-header {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
   border-bottom: 0.75px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
+    var(--cp-border, var(--ds-background-neutral));
+  color: var(--cp-text-secondary, var(--ds-text-subtlest));
 }
 .dark .jus-text-primary,
 [data-theme="dark"] .jus-text-primary {
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
 }
 .dark .jus-text-secondary,
 [data-theme="dark"] .jus-text-secondary {
-  color: var(--ds-text-subtlest, #626f86) !important;
+  color: var(--ds-text-subtlest) !important;
 }
 .dark .jus-text-muted,
 [data-theme="dark"] .jus-text-muted {
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86)) !important;
+  color: var(--cp-text-secondary, var(--ds-text-subtlest)) !important;
 }
 .dark .jus-stat-card,
 [data-theme="dark"] .jus-stat-card {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border: 0.75px solid var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border: 0.75px solid var(--cp-border, var(--ds-background-neutral));
   border-radius: 8px;
 }
 .dark .jus-stat-value,
 [data-theme="dark"] .jus-stat-value {
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
   font-weight: 650;
 }
 .dark .jus-stat-label,
 [data-theme="dark"] .jus-stat-label {
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86)) !important;
+  color: var(--cp-text-secondary, var(--ds-text-subtlest)) !important;
   font-size: 11px;
 }
 .dark .jus-toolbar,
 [data-theme="dark"] .jus-toolbar {
   background-color: var(
     --cp-bg-page,
-    var(--ds-surface-sunken, #f7f8f9)
+    var(--ds-surface-sunken)
   ) !important;
   border-bottom: 0.75px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-search-input,
 [data-theme="dark"] .jus-search-input {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border: 0.75px solid var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  border: 0.75px solid var(--cp-border, var(--ds-background-neutral));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
 }
 .dark .jus-search-input::placeholder,
 [data-theme="dark"] .jus-search-input::placeholder {
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #626f86));
+  color: var(--cp-text-secondary, var(--ds-text-subtlest));
 }
 .dark .jus-filter-tab,
 [data-theme="dark"] .jus-filter-tab {
-  color: var(--ds-text-subtlest, #626f86);
+  color: var(--ds-text-subtlest);
 }
 .dark .jus-filter-tab.active,
 [data-theme="dark"] .jus-filter-tab.active {
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
   border-bottom: 2px solid
-    var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb));
+    var(--cp-workstream-catalyst-primary, var(--ds-link));
 }
 .dark .lozenge-active,
 [data-theme="dark"] .lozenge-active {
-  background: var(--ds-text-success, #216e4e) !important;
-  color: var(--ds-background-success, #dffcf0) !important;
+  background: var(--ds-text-success) !important;
+  color: var(--ds-background-success) !important;
 }
 .dark .lozenge-inactive,
 [data-theme="dark"] .lozenge-inactive {
-  background: var(--ds-background-danger, #ffeceb) !important;
-  color: var(--ds-background-danger, #ffeceb) !important;
+  background: var(--ds-background-danger) !important;
+  color: var(--ds-background-danger) !important;
 }
 .dark .lozenge-conflict,
 [data-theme="dark"] .lozenge-conflict {
-  background: var(--ds-text-warning, #974f0c) !important;
-  color: var(--ds-background-warning, #fff7d6) !important;
+  background: var(--ds-text-warning) !important;
+  color: var(--ds-background-warning) !important;
 }
 .dark .badge-jira-proxy,
 [data-theme="dark"] .badge-jira-proxy {
@@ -6576,7 +6576,7 @@ html.dark .cp-feed-type-tile,
     --ds-background-information,
     rgba(37, 99, 235, 0.18)
   ) !important;
-  color: var(--ds-background-information-bold, #0c66e4) !important;
+  color: var(--ds-background-information-bold) !important;
   border: 0.75px solid var(--ds-background-information, rgba(37, 99, 235, 0.3)) !important;
 }
 .dark .badge-local-auth,
@@ -6585,7 +6585,7 @@ html.dark .cp-feed-type-tile,
     --ds-background-discovery-bold,
     rgba(124, 58, 237, 0.18)
   ) !important;
-  color: var(--ds-background-discovery, #f3f0ff) !important;
+  color: var(--ds-background-discovery) !important;
   border: 0.75px solid
     var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.3)) !important;
 }
@@ -6593,29 +6593,29 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] .jus-pagination {
   background-color: var(
     --cp-bg-page,
-    var(--ds-surface-sunken, #f7f8f9)
+    var(--ds-surface-sunken)
   ) !important;
   border-top: 0.75px solid
-    var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+    var(--cp-border, var(--ds-background-neutral));
 }
 .dark .jus-pagination-btn,
 [data-theme="dark"] .jus-pagination-btn {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--ds-text-subtlest, #626f86);
+  border-color: var(--cp-border, var(--ds-background-neutral));
+  color: var(--ds-text-subtlest);
 }
 .dark .jus-pagination-btn.active,
 [data-theme="dark"] .jus-pagination-btn.active {
   background-color: var(
     --cp-workstream-catalyst-primary,
-    var(--ds-link, #2563eb)
+    var(--ds-link)
   ) !important;
   color: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   ) !important;
 }
 .dark .jus-selection-bar,
@@ -6633,11 +6633,11 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] .jus-detail-panel {
   background-color: var(
     --cp-bg-elevated,
-    var(--ds-surface, #ffffff)
+    var(--ds-surface)
   ) !important;
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -6651,10 +6651,10 @@ html.dark .cp-feed-type-tile,
 .dark [role="dialog"][aria-label="Notifications"],
 [data-theme="dark"] [role="dialog"][aria-label="Notifications"] {
   /* 2026-06-27 ADS parity (Task 04): the notifications flyout is a floating panel
-     → ADS overlay surface (var(--ds-surface-overlay, #282E33) dark) + readable text + ADS border. Was raised
+     → ADS overlay surface (var(--ds-surface-overlay) dark) + readable text + ADS border. Was raised
      tone (--cp-bg-elevated) with a bg token wrongly used as text color. */
-  background: var(--ds-surface-overlay, var(--cp-bg-overlay, #ffffff)) !important;
-  color: var(--ds-text, #CECFD2) !important;
+  background: var(--ds-surface-overlay, var(--cp-bg-overlay)) !important;
+  color: var(--ds-text) !important;
   border-color: var(--ds-border, rgba(9,30,66,0.14)) !important;
 }
 
@@ -6663,7 +6663,7 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] [role="dialog"][aria-label="Notifications"] * {
   background: transparent !important;
   color: inherit;
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
 }
 
 .dark [role="dialog"][aria-label="Notifications"] [role="button"],
@@ -6672,7 +6672,7 @@ html.dark .cp-feed-type-tile,
   [role="dialog"][aria-label="Notifications"]
   [role="button"] {
   background: transparent !important;
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
 }
 
 .dark [role="dialog"][aria-label="Notifications"] [role="button"]:hover,
@@ -6682,7 +6682,7 @@ html.dark .cp-feed-type-tile,
   [role="button"]:hover {
   background: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -6690,7 +6690,7 @@ html.dark .cp-feed-type-tile,
 .dark section[aria-label="Notifications"],
 .dark section[aria-label="Notifications"],
 [data-theme="dark"] section[aria-label="Notifications"] {
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
 }
 .dark [data-radix-popper-content-wrapper] > div,
 .dark [data-radix-popover-content],
@@ -6701,11 +6701,11 @@ html.dark .cp-feed-type-tile,
 .dark [role="dialog"],
 [data-theme="dark"] [role="dialog"] {
   /* 2026-06-27 ADS parity (Task 03): popovers / menus / dialogs are floating
-     surfaces → ADS overlay tone (var(--ds-surface-overlay, #282E33) dark / var(--ds-surface, #FFFFFF) light), one step above
-     the raised chrome (var(--ds-surface, #22272B)). Was --cp-bg-elevated (raised) which sat flat. */
-  background: var(--ds-surface-overlay, var(--cp-bg-overlay, #ffffff)) !important;
+     surfaces → ADS overlay tone (var(--ds-surface-overlay) dark / var(--ds-surface) light), one step above
+     the raised chrome (var(--ds-surface)). Was --cp-bg-elevated (raised) which sat flat. */
+  background: var(--ds-surface-overlay, var(--cp-bg-overlay)) !important;
   /* readable text token so all dark popovers/dropdowns/dialogs inherit legible text */
-  color: var(--ds-text, #CECFD2) !important;
+  color: var(--ds-text) !important;
   /* ADS alpha border (was --cp-bg-neutral = ~7% alpha, near-invisible) */
   border-color: var(--ds-border, rgba(9,30,66,0.14)) !important;
 }
@@ -6713,7 +6713,7 @@ html.dark .cp-feed-type-tile,
 .dark [data-radix-popper-content-wrapper] > div *,
 .dark [data-radix-popper-content-wrapper] > div *,
 [data-theme="dark"] [data-radix-popper-content-wrapper] > div * {
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
 }
 
 /* .dark .bg-white — consolidated above (single block) */
@@ -6721,28 +6721,28 @@ html.dark .cp-feed-type-tile,
 /* Aggressive catch-all: any panel/sheet/drawer with white inline style */
 .dark [style*="background: white"],
 .dark [style*="background-color: white"],
-.dark [style*="background: var(--ds-surface, #FFFFFF)"],
-.dark [style*="background-color: var(--ds-surface, #FFFFFF)"],
-.dark [style*="background: var(--ds-surface, #FFFFFF)"],
-.dark [style*="background-color: var(--ds-surface, #FFFFFF)"],
+.dark [style*="background: var(--ds-surface)"],
+.dark [style*="background-color: var(--ds-surface)"],
+.dark [style*="background: var(--ds-surface)"],
+.dark [style*="background-color: var(--ds-surface)"],
 .dark [style*="background: rgb(255"],
 .dark [style*="background-color: rgb(255"],
-.dark [style*="background:var(--ds-surface, #FFFFFF)"],
-.dark [style*="background:var(--ds-surface, #FFFFFF)"],
+.dark [style*="background:var(--ds-surface)"],
+.dark [style*="background:var(--ds-surface)"],
 [data-theme="dark"] [style*="background: white"],
 [data-theme="dark"] [style*="background-color: white"],
-[data-theme="dark"] [style*="background: var(--ds-surface, #FFFFFF)"],
-[data-theme="dark"] [style*="background-color: var(--ds-surface, #FFFFFF)"],
-[data-theme="dark"] [style*="background: var(--ds-surface, #FFFFFF)"],
-[data-theme="dark"] [style*="background-color: var(--ds-surface, #FFFFFF)"],
+[data-theme="dark"] [style*="background: var(--ds-surface)"],
+[data-theme="dark"] [style*="background-color: var(--ds-surface)"],
+[data-theme="dark"] [style*="background: var(--ds-surface)"],
+[data-theme="dark"] [style*="background-color: var(--ds-surface)"],
 [data-theme="dark"] [style*="background: rgb(255"],
 .dark [style*="background-color: rgb(255"],
 [data-theme="dark"] [style*="background-color: rgb(255"] {
-  background: var(--cp-bg-elevated, var(--ds-surface, #ffffff)) !important;
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4)) !important;
+  background: var(--cp-bg-elevated, var(--ds-surface)) !important;
+  color: var(--cp-bg-neutral, var(--ds-background-neutral)) !important;
   border-color: var(
     --cp-border,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   ) !important;
 }
 
@@ -6753,7 +6753,7 @@ html.dark .cp-feed-type-tile,
 [data-theme="dark"] [class*="bg-card"],
 .dark [class*="bg-background"],
 [data-theme="dark"] [class*="bg-background"] {
-  background: var(--cp-bg-elevated, var(--ds-surface, #ffffff)) !important;
+  background: var(--cp-bg-elevated, var(--ds-surface)) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -6782,7 +6782,7 @@ html.dark .cp-feed-type-tile,
   border: 1px solid
     var(
       --cp-lozenge-grey-bg,
-      var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+      var(--cp-border-neutral, var(--ds-border))
     );
 }
 
@@ -6793,7 +6793,7 @@ html.dark .cp-feed-type-tile,
   border: 1px solid
     var(
       --cp-lozenge-grey-bg,
-      var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+      var(--cp-border-neutral, var(--ds-border))
     );
   padding: 8px 10px;
   text-align: left;
@@ -6805,7 +6805,7 @@ html.dark .cp-feed-type-tile,
   line-height: 1.43;
   color: var(
     --cp-text-primary,
-    var(--cp-text-inverse, var(--ds-text, #172b4d))
+    var(--cp-text-inverse, var(--ds-text))
   );
 }
 
@@ -6813,12 +6813,12 @@ html.dark .cp-feed-type-tile,
 .adf-description-content table th {
   background-color: var(
     --cp-bg-sunken,
-    var(--ds-background-neutral-subtle, #f4f5f7)
+    var(--ds-background-neutral-subtle)
   );
   font-weight: 600;
   color: var(
     --cp-text-primary,
-    var(--cp-text-inverse, var(--ds-text, #172b4d))
+    var(--cp-text-inverse, var(--ds-text))
   );
 }
 
@@ -6826,21 +6826,21 @@ html.dark .cp-feed-type-tile,
 .adf-description-content table tbody th {
   background-color: var(
     --cp-bg-sunken,
-    var(--ds-background-neutral-subtle, #f4f5f7)
+    var(--ds-background-neutral-subtle)
   );
   font-weight: 600;
 }
 
 .adf-content table tr:hover td,
 .adf-description-content table tr:hover td {
-  background-color: var(--ds-surface-sunken, #f7f8f9);
+  background-color: var(--ds-surface-sunken);
 }
 
 /* ── ADF inline elements ── */
 
 .adf-description-content .adf-mention {
-  color: var(--ds-link-pressed, #0747a6);
-  background: var(--ds-background-information, #e9f2ff);
+  color: var(--ds-link-pressed);
+  background: var(--ds-background-information);
   border-radius: 3px;
   padding: 1px 4px;
   font-weight: 500;
@@ -6857,40 +6857,40 @@ html.dark .cp-feed-type-tile,
   letter-spacing: 0.03em;
 }
 .adf-description-content .adf-status--green {
-  background: var(--ds-background-success, #dffcf0);
-  color: var(--ds-text-success, #006644);
+  background: var(--ds-background-success);
+  color: var(--ds-text-success);
 }
 .adf-description-content .adf-status--yellow {
-  background: var(--ds-background-warning, #fff7d6);
-  color: var(--ds-background-warning-bold, #e2b203);
+  background: var(--ds-background-warning);
+  color: var(--ds-background-warning-bold);
 }
 .adf-description-content .adf-status--red {
-  background: var(--ds-background-danger, #ffeceb);
-  color: var(--ds-background-danger-bold, #c9372c);
+  background: var(--ds-background-danger);
+  color: var(--ds-background-danger-bold);
 }
 .adf-description-content .adf-status--blue {
-  background: var(--ds-background-information, #e9f2ff);
-  color: var(--ds-link-pressed, #0747a6);
+  background: var(--ds-background-information);
+  color: var(--ds-link-pressed);
 }
 .adf-description-content .adf-status--neutral,
 .adf-description-content .adf-status--grey {
   background: var(
     --cp-lozenge-grey-bg,
-    var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+    var(--cp-border-neutral, var(--ds-border))
   );
-  color: var(--ds-text, #253858);
+  color: var(--ds-text);
 }
 .adf-description-content .adf-status--purple {
-  background: var(--ds-background-discovery, #f3f0ff);
-  color: var(--ds-background-discovery-bold, #6e5dc6);
+  background: var(--ds-background-discovery);
+  color: var(--ds-background-discovery-bold);
 }
 
 .adf-description-content .adf-date {
   display: inline-block;
-  background: var(--ds-border, #dfe1e6);
+  background: var(--ds-border);
   color: var(
     --cp-text-primary,
-    var(--cp-text-inverse, var(--ds-text, #172b4d))
+    var(--cp-text-inverse, var(--ds-text))
   );
   border-radius: 3px;
   padding: 1px 6px;
@@ -6916,24 +6916,24 @@ html.dark .cp-feed-type-tile,
   min-width: 0;
 }
 .adf-description-content .adf-panel--info {
-  background: var(--ds-background-information, #e9f2ff);
-  border-left: 3px solid var(--ds-link-pressed, #0747a6);
+  background: var(--ds-background-information);
+  border-left: 3px solid var(--ds-link-pressed);
 }
 .adf-description-content .adf-panel--note {
-  background: var(--ds-background-discovery, #f3f0ff);
-  border-left: 3px solid var(--ds-background-discovery-bold, #6e5dc6);
+  background: var(--ds-background-discovery);
+  border-left: 3px solid var(--ds-background-discovery-bold);
 }
 .adf-description-content .adf-panel--warning {
-  background: var(--ds-background-warning, #fff7d6);
-  border-left: 3px solid var(--ds-background-warning-bold, #e2b203);
+  background: var(--ds-background-warning);
+  border-left: 3px solid var(--ds-background-warning-bold);
 }
 .adf-description-content .adf-panel--success {
-  background: var(--ds-background-success, #dffcf0);
-  border-left: 3px solid var(--ds-text-success, #006644);
+  background: var(--ds-background-success);
+  border-left: 3px solid var(--ds-text-success);
 }
 .adf-description-content .adf-panel--error {
-  background: var(--ds-background-danger, #ffeceb);
-  border-left: 3px solid var(--ds-background-danger-bold, #c9372c);
+  background: var(--ds-background-danger);
+  border-left: 3px solid var(--ds-background-danger-bold);
 }
 
 /* ── ADF task lists ── */
@@ -6951,7 +6951,7 @@ html.dark .cp-feed-type-tile,
 }
 .adf-description-content .adf-task-item input[type="checkbox"] {
   margin-top: 4px;
-  accent-color: var(--ds-link-pressed, #0747a6);
+  accent-color: var(--ds-link-pressed);
 }
 
 /* ── ADF expand/collapse ── */
@@ -6959,7 +6959,7 @@ html.dark .cp-feed-type-tile,
   border: 1px solid
     var(
       --cp-lozenge-grey-bg,
-      var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+      var(--cp-border-neutral, var(--ds-border))
     );
   border-radius: 3px;
   margin: 8px 0;
@@ -6968,7 +6968,7 @@ html.dark .cp-feed-type-tile,
   padding: 8px 12px;
   font-weight: 500;
   cursor: pointer;
-  background: var(--ds-surface-sunken, #f7f8f9);
+  background: var(--ds-surface-sunken);
   font-size: 14px;
 }
 .adf-description-content .adf-expand-content {
@@ -6987,12 +6987,12 @@ html.dark .cp-feed-type-tile,
 
 /* ── ADF inline card ── */
 .adf-description-content .adf-inline-card {
-  color: var(--ds-link-pressed, #0747a6);
+  color: var(--ds-link-pressed);
   text-decoration: none;
-  border-bottom: 1px solid var(--ds-background-information, #e9f2ff);
+  border-bottom: 1px solid var(--ds-background-information);
 }
 .adf-description-content .adf-inline-card:hover {
-  border-bottom-color: var(--ds-link-pressed, #0747a6);
+  border-bottom-color: var(--ds-link-pressed);
 }
 
 /* ── ADF block card ── */
@@ -7002,21 +7002,21 @@ html.dark .cp-feed-type-tile,
   border: 1px solid
     var(
       --cp-lozenge-grey-bg,
-      var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+      var(--cp-border-neutral, var(--ds-border))
     );
   border-radius: 3px;
-  color: var(--ds-link-pressed, #0747a6);
+  color: var(--ds-link-pressed);
   text-decoration: none;
   font-size: 14px;
   margin: 4px 0;
 }
 .adf-description-content .adf-block-card:hover {
-  background: var(--ds-surface-sunken, #f7f8f9);
+  background: var(--ds-surface-sunken);
 }
 
 /* ── ADF code blocks ── */
 .adf-description-content pre {
-  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #f4f5f7));
+  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   border-radius: 3px;
   padding: 12px 16px;
   overflow-x: auto;
@@ -7028,7 +7028,7 @@ html.dark .cp-feed-type-tile,
 .adf-description-content code {
   font-family: var(--cp-font-mono);
   font-size: 13px;
-  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #f4f5f7));
+  background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   border-radius: 3px;
   padding: 1px 4px;
 }
@@ -7042,11 +7042,11 @@ html.dark .cp-feed-type-tile,
   border-left: 3px solid
     var(
       --cp-lozenge-grey-bg,
-      var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+      var(--cp-border-neutral, var(--ds-border))
     );
   margin: 8px 0;
   padding: 4px 16px;
-  color: var(--cp-text-secondary, var(--ds-text-subtlest, #6b778c));
+  color: var(--cp-text-secondary, var(--ds-text-subtlest));
 }
 
 /* ── ADF horizontal rule ── */
@@ -7055,7 +7055,7 @@ html.dark .cp-feed-type-tile,
   border-top: 1px solid
     var(
       --cp-lozenge-grey-bg,
-      var(--cp-border-neutral, var(--ds-border, #dfe1e6))
+      var(--cp-border-neutral, var(--ds-border))
     );
   margin: 16px 0;
 }
@@ -7106,47 +7106,47 @@ html.dark .cp-feed-type-tile,
 /* ── Dark mode ADF tables ── */
 .dark .adf-content table,
 .dark .adf-description-content table {
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
 }
 
 .dark .adf-content table th,
 .dark .adf-content table td,
 .dark .adf-description-content table th,
 .dark .adf-description-content table td {
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
 }
 
 .dark .adf-content table th,
 .dark .adf-description-content table th {
-  background-color: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
-  color: var(--ds-text-subtlest, #626f86);
+  background-color: var(--cp-bg-page, var(--ds-surface-sunken));
+  color: var(--ds-text-subtlest);
 }
 
 .dark .adf-content table tbody th,
 .dark .adf-description-content table tbody th {
-  background-color: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
-  color: var(--ds-text-subtlest, #626f86);
+  background-color: var(--cp-bg-page, var(--ds-surface-sunken));
+  color: var(--ds-text-subtlest);
 }
 
 .dark .adf-content table td,
 .dark .adf-description-content table td {
-  background-color: var(--cp-bg-elevated, var(--ds-surface, #ffffff));
+  background-color: var(--cp-bg-elevated, var(--ds-surface));
 }
 
 .dark .adf-content table tr:hover td,
 .dark .adf-description-content table tr:hover td {
-  background-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  background-color: var(--cp-border, var(--ds-background-neutral));
 }
 
 /* ── Dark mode ADF elements ── */
 .dark .adf-description-content .adf-mention {
   background: var(--ds-shadow-raised, rgba(9, 30, 66, 0.4));
-  color: var(--ds-background-information-bold, #0c66e4);
+  color: var(--ds-background-information-bold);
 }
 .dark .adf-description-content .adf-date {
-  background: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  background: var(--cp-border, var(--ds-background-neutral));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
 }
 .dark .adf-description-content .adf-panel--info {
   background: rgba(7, 71, 166, 0.15);
@@ -7164,37 +7164,37 @@ html.dark .cp-feed-type-tile,
   background: rgba(222, 53, 11, 0.12);
 }
 .dark .adf-description-content .adf-expand {
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-color: var(--cp-border, var(--ds-background-neutral));
 }
 .dark .adf-description-content .adf-expand summary {
-  background: var(--cp-bg-elevated, var(--ds-surface, #ffffff));
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  background: var(--cp-bg-elevated, var(--ds-surface));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
 }
 .dark .adf-description-content pre {
-  background: var(--cp-bg-page, var(--ds-surface-sunken, #f7f8f9));
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  background: var(--cp-bg-page, var(--ds-surface-sunken));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
 }
 .dark .adf-description-content code {
-  background: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  background: var(--cp-border, var(--ds-background-neutral));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
 }
 .dark .adf-description-content blockquote {
-  border-left-color: var(--ds-text-subtle, #44546f);
-  color: var(--ds-text-subtlest, #626f86);
+  border-left-color: var(--ds-text-subtle);
+  color: var(--ds-text-subtlest);
 }
 .dark .adf-description-content hr {
-  border-top-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  border-top-color: var(--cp-border, var(--ds-background-neutral));
 }
 .dark .adf-description-content .adf-block-card {
-  border-color: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
-  color: var(--ds-background-information-bold, #0c66e4);
+  border-color: var(--cp-border, var(--ds-background-neutral));
+  color: var(--ds-background-information-bold);
 }
 .dark .adf-description-content .adf-block-card:hover {
-  background: var(--cp-border, var(--ds-background-neutral, #f1f2f4));
+  background: var(--cp-border, var(--ds-background-neutral));
 }
 .dark .adf-description-content .adf-inline-card {
-  color: var(--ds-background-information-bold, #0c66e4);
-  border-bottom-color: var(--ds-text-subtle, #44546f);
+  color: var(--ds-background-information-bold);
+  border-bottom-color: var(--ds-text-subtle);
 }
 .dark .adf-description-content h1,
 .dark .adf-description-content h2,
@@ -7202,7 +7202,7 @@ html.dark .cp-feed-type-tile,
 .dark .adf-description-content h4,
 .dark .adf-description-content h5,
 .dark .adf-description-content h6 {
-  color: var(--cp-bg-neutral, var(--ds-background-neutral, #f1f2f4));
+  color: var(--cp-bg-neutral, var(--ds-background-neutral));
 }
 
 /* ═══ ProjectHub Work Views — Table & Chrome classes ═══ */
@@ -7384,22 +7384,22 @@ table th[class*="css-"] {
    className-agnostic background override on the deepest span layer.
    ────────────────────────────────────────────────────────────────────── */
 .dark [data-cp-lozenge-jira-parity] {
-  --ds-background-success-bold: var(--cp-lozenge-green-bg, #1b7f37);
-  --ds-background-success: var(--cp-lozenge-green-bg, #1b7f37);
+  --ds-background-success-bold: var(--cp-lozenge-green-bg);
+  --ds-background-success: var(--cp-lozenge-green-bg);
   --ds-text-inverse: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--ds-surface, #ffffff))
+    var(--cp-bg-elevated, var(--ds-surface))
   );
   --ds-background-warning-bold: #7f4f01;
   --ds-background-warning: #7f4f01;
   --ds-background-danger-bold: #8e1a12;
   --ds-background-danger: #8e1a12;
-  --ds-background-information-bold: var(--ds-link, #0c66e4);
-  --ds-background-information: var(--ds-link, #0c66e4);
-  --ds-background-discovery-bold: var(--ds-background-discovery-bold, #6e5dc6);
-  --ds-background-discovery: var(--ds-background-discovery-bold, #6e5dc6);
-  --ds-background-neutral-bold: var(--ds-text-subtle, #42526e);
-  --ds-background-neutral: var(--ds-text-subtle, #42526e);
+  --ds-background-information-bold: var(--ds-link);
+  --ds-background-information: var(--ds-link);
+  --ds-background-discovery-bold: var(--ds-background-discovery-bold);
+  --ds-background-discovery: var(--ds-background-discovery-bold);
+  --ds-background-neutral-bold: var(--ds-text-subtle);
+  --ds-background-neutral: var(--ds-text-subtle);
 }
 /* Backup: target Atlaskit's known computed bg values for the inner pill */
 .dark [data-cp-lozenge-jira-parity] span span,
@@ -7499,7 +7499,7 @@ table th[class*="css-"] {
 .cv-drawer-sidebar [class*="-select__control"]:hover {
   background: var(
     --ds-background-neutral-subtle-hovered,
-    var(--cp-bg-sunken, #f4f5f7)
+    var(--cp-bg-sunken)
   ) !important;
   border-color: transparent !important;
 }
@@ -7539,7 +7539,7 @@ table th[class*="css-"] {
 [data-cv-section="br-center-details"] [class*="-select__control"]:hover {
   background: var(
     --ds-background-neutral-subtle-hovered,
-    var(--cp-bg-sunken, #f4f5f7)
+    var(--cp-bg-sunken)
   ) !important;
 }
 
@@ -7581,7 +7581,7 @@ table th[class*="css-"] {
 .cv-drawer-sidebar .cv-date-field:hover input {
   background-color: var(
     --ds-background-neutral-subtle-hovered,
-    var(--cp-bg-sunken, #f4f5f7)
+    var(--cp-bg-sunken)
   ) !important;
 }
 
@@ -7591,25 +7591,25 @@ table th[class*="css-"] {
    components in the CatalystSidebarDetails right rail.
    ────────────────────────────────────────────────────────────────────────── */
 .cv-sprintreleases-select__multi-value {
-  border: 1px solid var(--cp-jira-fixver-border, var(--ds-border, #dfe1e6));
+  border: 1px solid var(--cp-jira-fixver-border, var(--ds-border));
   border-radius: 3px;
   background-color: var(
     --cp-jira-fixver-bg,
-    var(--ds-background-neutral, #f1f2f4)
+    var(--ds-background-neutral)
   );
   padding: 2px 4px;
   margin: 2px;
 }
 
 .cv-sprintreleases-select__multi-value__label {
-  color: var(--cp-jira-fixver-fg, var(--ds-text, #172b4d));
+  color: var(--cp-jira-fixver-fg, var(--ds-text));
   padding: 2px 4px;
   font-size: 13px;
   font-weight: 400;
 }
 
 .cv-sprintreleases-select__multi-value__remove {
-  color: var(--cp-jira-fixver-fg, var(--ds-text, #172b4d));
+  color: var(--cp-jira-fixver-fg, var(--ds-text));
   padding: 0 2px;
 }
 

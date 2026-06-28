@@ -7,56 +7,56 @@
 
 .planner-calendar-content {
   /* ==================== SURFACES ==================== */
-  --pln-cal-surface-page: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --pln-cal-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --pln-cal-surface-hover: var(--ds-surface-sunken, #f8fafc);
-  --pln-cal-surface-selected: var(--ds-background-selected, #eff6ff);
-  --pln-cal-surface-today: var(--ds-background-information, #E9F2FF);
-  --pln-cal-surface-weekend: var(--ds-surface-sunken, #f8fafc);
-  --pln-cal-surface-adjacent: var(--ds-surface-sunken, #f1f5f9);
+  --pln-cal-surface-page: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --pln-cal-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --pln-cal-surface-hover: var(--ds-surface-sunken);
+  --pln-cal-surface-selected: var(--ds-background-selected);
+  --pln-cal-surface-today: var(--ds-background-information);
+  --pln-cal-surface-weekend: var(--ds-surface-sunken);
+  --pln-cal-surface-adjacent: var(--ds-surface-sunken);
   
   /* ==================== TEXT ==================== */
-  --pln-cal-text-primary: var(--ds-text, #0f172a);
-  --pln-cal-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --pln-cal-text-tertiary: var(--ds-text-subtlest, #64748b);
-  --pln-cal-text-muted: var(--ds-text-subtlest, #94a3b8);
-  --pln-cal-text-adjacent: var(--ds-text-disabled, #cbd5e1);
+  --pln-cal-text-primary: var(--ds-text);
+  --pln-cal-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --pln-cal-text-tertiary: var(--ds-text-subtlest);
+  --pln-cal-text-muted: var(--ds-text-subtlest);
+  --pln-cal-text-adjacent: var(--ds-text-disabled);
   
   /* ==================== BORDERS ==================== */
-  --pln-cal-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --pln-cal-border-light: var(--ds-surface-sunken, #f1f5f9);
-  --pln-cal-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  --pln-cal-border: var(--ds-border, var(--cp-bg-sunken));
+  --pln-cal-border-light: var(--ds-surface-sunken);
+  --pln-cal-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   
   /* ==================== STATUS COLORS ==================== */
-  --pln-cal-status-backlog: var(--ds-text-subtlest, #94a3b8);
-  --pln-cal-status-planned: var(--ds-text-brand, #3b82f6);
-  --pln-cal-status-progress: var(--ds-text-warning, #f59e0b);
-  --pln-cal-status-review: var(--ds-background-discovery-bold, #8b5cf6);
-  --pln-cal-status-done: var(--ds-background-success-bold, #059669);
+  --pln-cal-status-backlog: var(--ds-text-subtlest);
+  --pln-cal-status-planned: var(--ds-text-brand);
+  --pln-cal-status-progress: var(--ds-text-warning);
+  --pln-cal-status-review: var(--ds-background-discovery-bold);
+  --pln-cal-status-done: var(--ds-background-success-bold);
   
   /* ==================== PRIORITY COLORS ==================== */
-  --pln-cal-priority-critical: var(--ds-text-danger, #dc2626);
-  --pln-cal-priority-high: var(--ds-background-warning-bold, #E2B203);
-  --pln-cal-priority-medium: var(--ds-text-warning, #974F0C);
-  --pln-cal-priority-low: var(--ds-text-subtlest, #64748b);
+  --pln-cal-priority-critical: var(--ds-text-danger);
+  --pln-cal-priority-high: var(--ds-background-warning-bold);
+  --pln-cal-priority-medium: var(--ds-text-warning);
+  --pln-cal-priority-low: var(--ds-text-subtlest);
   
   /* ==================== WORKSTREAM COLORS (Planner 7) ==================== */
-  --pln-cal-ws-senaie: var(--ds-icon-information, #1D7AFC);
-  --pln-cal-ws-catalyst: var(--ds-background-discovery-bold, #8b5cf6);
-  --pln-cal-ws-tahommona: var(--ds-background-discovery-bold, #6366f1);
-  --pln-cal-ws-delivery: var(--ds-background-warning-bold, #f97316);
-  --pln-cal-ws-mim: var(--ds-background-accent-magenta-bolder, #ec4899);
-  --pln-cal-ws-standalone: var(--ds-text-subtlest, #64748b);
-  --pln-cal-ws-data-ai: var(--ds-background-accent-teal-bolder, #14b8a6);
+  --pln-cal-ws-senaie: var(--ds-icon-information);
+  --pln-cal-ws-catalyst: var(--ds-background-discovery-bold);
+  --pln-cal-ws-tahommona: var(--ds-background-discovery-bold);
+  --pln-cal-ws-delivery: var(--ds-background-warning-bold);
+  --pln-cal-ws-mim: var(--ds-background-accent-magenta-bolder);
+  --pln-cal-ws-standalone: var(--ds-text-subtlest);
+  --pln-cal-ws-data-ai: var(--ds-background-accent-teal-bolder);
   
   /* ==================== ACCENT ==================== */
-  --pln-cal-accent: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --pln-cal-accent-light: var(--ds-background-selected, #eff6ff);
+  --pln-cal-accent: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --pln-cal-accent-light: var(--ds-background-selected);
   
   /* ==================== CAPACITY ==================== */
-  --pln-cal-capacity-normal: var(--ds-text-success, #22c55e);
-  --pln-cal-capacity-warning: var(--ds-text-warning, #f59e0b);
-  --pln-cal-capacity-overload: var(--ds-text-danger, #ef4444);
+  --pln-cal-capacity-normal: var(--ds-text-success);
+  --pln-cal-capacity-warning: var(--ds-text-warning);
+  --pln-cal-capacity-overload: var(--ds-text-danger);
   
   /* ==================== SPACING ==================== */
   --pln-cal-space-1: 4px;
@@ -188,7 +188,7 @@
   font-size: 9px;
   font-weight: var(--pln-cal-font-weight-semibold);
   color: var(--pln-cal-priority-critical);
-  background: var(--ds-background-danger, #FFECEB);
+  background: var(--ds-background-danger);
   padding: 1px 4px;
   border-radius: 4px;
   white-space: nowrap;
@@ -385,7 +385,7 @@
 }
 
 .cal-context-menu-item.danger:hover {
-  background: var(--ds-background-danger, #fef2f2);
+  background: var(--ds-background-danger);
 }
 
 .cal-context-menu-divider {
@@ -798,25 +798,25 @@
 .dark .planner-calendar-content,
 .dark .planner-calendar-content , [data-theme="dark"] .planner-calendar-content {
   /* Surfaces */
-  --pln-cal-surface-page: var(--ds-text, #0f172a);
-  --pln-cal-surface-card: var(--ds-text, #172B4D);
-  --pln-cal-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --pln-cal-surface-selected: var(--ds-text, #172B4D);
-  --pln-cal-surface-today: var(--ds-text, #172B4D);
+  --pln-cal-surface-page: var(--ds-text);
+  --pln-cal-surface-card: var(--ds-text);
+  --pln-cal-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --pln-cal-surface-selected: var(--ds-text);
+  --pln-cal-surface-today: var(--ds-text);
   --pln-cal-surface-weekend: #1a2432;
-  --pln-cal-surface-adjacent: var(--ds-text, #0f172a);
+  --pln-cal-surface-adjacent: var(--ds-text);
   
   /* Text */
-  --pln-cal-text-primary: var(--ds-surface-sunken, #f8fafc);
-  --pln-cal-text-secondary: var(--ds-text-disabled, #cbd5e1);
-  --pln-cal-text-tertiary: var(--ds-text-subtlest, #94a3b8);
-  --pln-cal-text-muted: var(--ds-text-subtlest, #64748b);
-  --pln-cal-text-adjacent: var(--ds-text-subtle, #475569);
+  --pln-cal-text-primary: var(--ds-surface-sunken);
+  --pln-cal-text-secondary: var(--ds-text-disabled);
+  --pln-cal-text-tertiary: var(--ds-text-subtlest);
+  --pln-cal-text-muted: var(--ds-text-subtlest);
+  --pln-cal-text-adjacent: var(--ds-text-subtle);
   
   /* Borders */
-  --pln-cal-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --pln-cal-border-light: var(--ds-text, #172B4D);
-  --pln-cal-border-focus: var(--ds-text-brand, #60a5fa);
+  --pln-cal-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --pln-cal-border-light: var(--ds-text);
+  --pln-cal-border-focus: var(--ds-text-brand);
   
   /* Shadows */
   --pln-cal-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
@@ -825,15 +825,15 @@
   --pln-cal-shadow-hover: 0 4px 16px var(--ds-background-information-bold, rgba(59, 130, 246, 0.3));
   
   /* Accent */
-  --pln-cal-accent: var(--ds-text-brand, #3b82f6);
-  --pln-cal-accent-light: var(--ds-text, #172B4D);
+  --pln-cal-accent: var(--ds-text-brand);
+  --pln-cal-accent-light: var(--ds-text);
 }
 
 /* Overdue badge dark mode adjustment */
 .dark .cal-overdue-badge,
 .dark .cal-overdue-badge , [data-theme="dark"] .cal-overdue-badge {
   background: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.2));
-  color: var(--ds-border-danger, #fca5a5);
+  color: var(--ds-border-danger);
 }
 
 /* Context menu dark mode danger item */

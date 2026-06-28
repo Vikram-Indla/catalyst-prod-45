@@ -48,7 +48,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
           inset: 0,
           borderRadius: 8,
           background: 'var(--cv2-bg-input)',
-          border: `1px solid ${errored ? 'var(--cv2-danger, #E01E5A)' : 'var(--cv2-border)'}`,
+          border: `1px solid ${errored ? 'var(--cv2-danger)' : 'var(--cv2-border)'}`,
           overflow: 'hidden',
         }}
       >
@@ -84,8 +84,8 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
               left: 0,
               right: 0,
               padding: '2px 4px',
-              background: 'var(--cv2-danger, #E01E5A)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--cv2-danger)',
+              color: 'var(--ds-text-inverse)',
               fontSize: 'var(--ds-font-size-50)',
               fontWeight: 700,
               textAlign: 'center',
@@ -108,7 +108,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
             height: 22,
             borderRadius: '50%',
             background: '#1A1D21', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--ds-text-inverse)',
             border: '2px solid var(--cv2-bg-panel)',
             display: 'inline-flex',
             alignItems: 'center',
@@ -179,7 +179,7 @@ function Spinner() {
         height: 22,
         borderRadius: '50%',
         border: '2px solid var(--ds-surface, rgba(255,255,255,0.3))',
-        borderTopColor: 'var(--ds-surface, #FFFFFF)',
+        borderTopColor: 'var(--ds-surface)',
         animation: 'cv2-attach-spin 0.8s linear infinite',
       }}
     />

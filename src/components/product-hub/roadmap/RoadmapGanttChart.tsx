@@ -112,8 +112,8 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
   const periodMinWidth = Math.round(baseWidth * zoomScale);
   const totalMinWidth = periods.length * periodMinWidth;
 
-  const headerBg = 'var(--cp-bg-page, #FAFBFC)';
-  const hoverRowBg = 'var(--cp-bg-page, #FAFBFC)';
+  const headerBg = 'var(--cp-bg-page)';
+  const hoverRowBg = 'var(--cp-bg-page)';
   const selectedRowBg = 'var(--cp-interact-selected, rgba(37,99,235,0.06))';
   const currentPeriodBg = 'var(--cp-interact-selected, rgba(37,99,235,0.04))';
   const currentPeriodGridBg = isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.04))' : 'var(--ds-background-information, rgba(37,99,235,0.03))';
@@ -143,7 +143,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   {p.sublabel && (
                     <span style={{
                       fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
-                      color: isCurrentQ ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))') : ink[2],
+                      color: isCurrentQ ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary))') : ink[2],
                       textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
                       {p.sublabel}
@@ -151,7 +151,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   )}
                   <span style={{
                     fontSize: 'var(--ds-font-size-200)', fontWeight: p.isCurrent ? 700 : 600,
-                    color: p.isCurrent ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))') : ink[1],
+                    color: p.isCurrent ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary))') : ink[1],
                     letterSpacing: '0.02em',
                   }}>
                     {p.label}
@@ -184,7 +184,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
                   position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
-                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-danger, #EF4444)',
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', background: 'var(--ds-text-danger)',
                   padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>
@@ -192,14 +192,14 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                 </div>
                 <div style={{
                   width: 2, height: '100%', margin: '0 auto', marginTop: 18,
-                  background: 'linear-gradient(180deg, var(--ds-text-danger, #EF4444) 0%, var(--ds-background-danger, rgba(239,68,68,0.15)) 100%)',
+                  background: 'linear-gradient(180deg, var(--ds-text-danger) 0%, var(--ds-background-danger, rgba(239,68,68,0.15)) 100%)',
                 }} />
               </div>
             )}
 
             {/* Groups + Rows */}
             {groups.map((group, gi) => {
-              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
               const isCollapsed = collapsedGroups.has(group.key);
               return (
                 <div key={group.key}>
@@ -208,7 +208,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                     className="flex items-center gap-2 px-3 relative cursor-pointer select-none"
                     style={{
                       height: GROUP_HEADER_HEIGHT,
-                      background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : SURFACE.page,
+                      background: isDark ? 'var(--ds-surface-overlay)' : SURFACE.page,
                       borderBottom: `1px solid ${surface.border}`,
                       borderTop: gi > 0 ? `1px solid ${surface.border}` : 'none',
                       zIndex: 10,

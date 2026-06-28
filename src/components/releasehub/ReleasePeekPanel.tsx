@@ -13,12 +13,12 @@ import { ReleasePredictorCard } from '@/components/releasehub/ReleasePredictorCa
 import { useReleaseBits, useGenerateReleaseNotes, type Prediction } from '@/hooks/useReleaseHub';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  surface: 'var(--ds-surface)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
 };
 
 type Tab = 'predictor' | 'notes' | 'changes' | 'sprints';
@@ -86,7 +86,7 @@ export function ReleasePeekPanel({
                 {gen.isPending ? <Spinner size="small" /> : <CatyPulseIcon size={15} />}
                 {bits?.notes ? 'Regenerate with Caty' : 'Generate with Caty'}
               </button>
-              {gen.isError && <div style={{ marginTop: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)' }}>Could not generate notes.</div>}
+              {gen.isError && <div style={{ marginTop: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>Could not generate notes.</div>}
             </div>
           )}
 
@@ -119,7 +119,7 @@ export function ReleasePeekPanel({
 }
 
 function Empty({ text }: { text: string }) {
-  return <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #626F86)', padding: 16, textAlign: 'center' }}>{text}</div>;
+  return <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)', padding: 16, textAlign: 'center' }}>{text}</div>;
 }
 
 export default ReleasePeekPanel;

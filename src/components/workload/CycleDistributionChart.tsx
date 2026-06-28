@@ -9,7 +9,7 @@ import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { useCycleDistribution } from '@/hooks/workload';
 
-const MEMBER_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-brand, #3b82f6)', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-subtlest, #64748b)'];
+const MEMBER_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-icon-information)', 'var(--ds-text-brand)', 'var(--ds-icon-information)', 'var(--ds-text-subtlest)'];
 
 const URGENCY_APPEARANCE: Record<'overdue' | 'due_soon' | 'on_track', LozengeAppearance> = {
   overdue: 'removed',

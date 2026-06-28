@@ -16,10 +16,10 @@ interface RoadmapSidePanelProps {
 
 const QUARTERS: RoadmapQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
 const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
-  Q1: { bg: 'var(--ds-background-discovery, #F3F0FF)', color: 'var(--ds-background-discovery-bold, #6d28d9)' },
-  Q2: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
-  Q3: { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #216E4E)' },
-  Q4: { bg: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, #974F0C)' },
+  Q1: { bg: 'var(--ds-background-discovery)', color: 'var(--ds-background-discovery-bold)' },
+  Q2: { bg: 'var(--ds-background-selected)', color: 'var(--ds-background-brand-bold-hovered)' },
+  Q3: { bg: 'var(--ds-background-success)', color: 'var(--ds-text-success)' },
+  Q4: { bg: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)' },
 };
 const isConverted = (status: string) => status.toLowerCase() === 'converted';
 
@@ -82,13 +82,13 @@ export function RoadmapSidePanel({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase',
+    fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', textTransform: 'uppercase',
     letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)',
   };
 
   const fieldRowStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    height: 32, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
+    height: 32, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', fontFamily: 'var(--cp-font-body)',
   };
 
   return (
@@ -120,7 +120,7 @@ export function RoadmapSidePanel({
             background: 'var(--bg-app)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={14} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
+            <X size={14} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-4)' }}>
@@ -141,7 +141,7 @@ export function RoadmapSidePanel({
               onClick={() => onToggleCommitted(idea)}
               style={{
                 width: 32, height: 18, borderRadius: 8, border: 'none', cursor: 'pointer',
-                background: idea.isCommitted ? 'var(--sem-success)' : 'var(--ds-text-disabled, #CBD5E1)', position: 'relative',
+                background: idea.isCommitted ? 'var(--sem-success)' : 'var(--ds-text-disabled)', position: 'relative',
                 transition: 'background 150ms',
               }}
             >
@@ -184,9 +184,9 @@ export function RoadmapSidePanel({
           {idea.isCommitted && (
             isConverted(idea.status) ? (
               <div style={{
-                padding: '10px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)',
+                padding: '10px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg)',
                 color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-300)', fontWeight: 650, textAlign: 'center',
-                border: '1px solid var(--ds-background-success, #B7EBD1)',
+                border: '1px solid var(--ds-background-success)',
               }}>
                 ✓ Already converted to Request
               </div>
@@ -213,8 +213,8 @@ export function RoadmapSidePanel({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {MILESTONE_CONFIGS.map(m => {
                 const DOT_COLORS: Record<string, string> = {
-                  req: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', des: 'var(--ds-background-discovery-bold, #5b21b6)', dev: 'var(--ds-background-success-bold, #1F845A)',
-                  uat: 'var(--ds-text-warning, #974F0C)', beta: 'var(--ds-chart-teal-bolder, #0f766e)', prod: 'var(--ds-text-success, #216E4E)',
+                  req: 'var(--ds-background-brand-bold-hovered)', des: 'var(--ds-background-discovery-bold)', dev: 'var(--ds-background-success-bold)',
+                  uat: 'var(--ds-text-warning)', beta: 'var(--ds-chart-teal-bolder)', prod: 'var(--ds-text-success)',
                 };
                 return (
                 <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -232,8 +232,8 @@ export function RoadmapSidePanel({
                       color: milestones[m.key] ? 'var(--fg-2)' : 'var(--fg-4)', outline: 'none',
                       transition: 'border-color 150ms',
                     }}
-                    onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))')}
-                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))')}
+                    onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))')}
+                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))')}
                   />
                   {milestones[m.key] && (
                     <button

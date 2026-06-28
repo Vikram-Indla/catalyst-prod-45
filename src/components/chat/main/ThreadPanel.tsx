@@ -35,8 +35,8 @@ export function ThreadPanel({
   return (
     <div
       style={{
-        borderLeft: '1px solid var(--ds-border, #DFE1E6)',
-        background: 'var(--ds-surface, #FFFFFF)',
+        borderLeft: '1px solid var(--ds-border)',
+        background: 'var(--ds-surface)',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -49,7 +49,7 @@ export function ThreadPanel({
           display: 'flex',
           alignItems: 'center',
           padding: '12px 16px',
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          borderBottom: '1px solid var(--ds-border)',
         }}
       >
         <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', display: 'flex', alignItems: 'baseline', gap: 6, minWidth: 0 }}>
@@ -59,7 +59,7 @@ export function ThreadPanel({
               style={{
                 fontWeight: 400,
                 fontSize: 'var(--ds-font-size-200)',
-                color: 'var(--ds-text-subtle, #44546F)',
+                color: 'var(--ds-text-subtle)',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -79,7 +79,7 @@ export function ThreadPanel({
             border: 'none',
             cursor: 'pointer',
             padding: 4,
-            color: 'var(--ds-text-subtle, #44546F)',
+            color: 'var(--ds-text-subtle)',
           }}
         >
           <CrossIcon label="" size="small" />
@@ -88,32 +88,32 @@ export function ThreadPanel({
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px' }}>
         {/* Parent message */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--ds-border)' }}>
           <Avatar name={parentMessage.authorName} seed={parentMessage.authorId} />
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 500, fontSize: 'var(--ds-font-size-300)' }}>{parentMessage.authorName || initialsOf(parentMessage.authorName)}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', marginTop: 2 }}>{parentMessage.bodyText}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', marginTop: 2 }}>{parentMessage.bodyText}</div>
           </div>
         </div>
 
         {/* Replies */}
-        {isLoading && <div style={{ color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>Loading…</div>}
+        {isLoading && <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>Loading…</div>}
         {!isLoading && messages.length === 0 && (
-          <div style={{ color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>No replies yet.</div>
+          <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>No replies yet.</div>
         )}
         {messages.map((m) => (
           <div key={m.id} style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <Avatar name={m.authorName} seed={m.authorId} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 500, fontSize: 'var(--ds-font-size-300)' }}>{m.authorName}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>{m.bodyText}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{m.bodyText}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Reply composer — canonical MessageComposer (same as main conversation) */}
-      <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+      <div style={{ borderTop: '1px solid var(--ds-border)' }}>
         {onAlsoSendToConversation && (
           <div style={{ padding: '6px 12px 0' }}>
             <Checkbox

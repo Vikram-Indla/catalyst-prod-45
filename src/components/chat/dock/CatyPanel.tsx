@@ -141,9 +141,9 @@ function HamburgerIcon() {
 function RainbowHamburgerIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <line x1="3" y1="6" x2="21" y2="6" stroke="var(--ds-background-accent-magenta-bolder, #BE185D)" strokeWidth="2.2" strokeLinecap="round" />
-      <line x1="3" y1="12" x2="21" y2="12" stroke="var(--ds-link, #0C66E4)" strokeWidth="2.2" strokeLinecap="round" />
-      <line x1="3" y1="18" x2="21" y2="18" stroke="var(--ds-background-success-bold, #1F845A)" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="3" y1="6" x2="21" y2="6" stroke="var(--ds-background-accent-magenta-bolder)" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="3" y1="12" x2="21" y2="12" stroke="var(--ds-link)" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="3" y1="18" x2="21" y2="18" stroke="var(--ds-background-success-bold)" strokeWidth="2.2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -273,8 +273,8 @@ function StoryCard({
           type="button"
           style={{
             padding: '4px 10px',
-            background: 'var(--ds-background-brand-bold, #0C66E4)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--ds-background-brand-bold)',
+            color: 'var(--ds-text-inverse)',
             border: 'none',
             borderRadius: 4,
             fontSize: 'var(--ds-font-size-200)',
@@ -290,8 +290,8 @@ function StoryCard({
           style={{
             padding: '4px 10px',
             background: 'transparent',
-            color: 'var(--ds-text-subtle, #44546F)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            color: 'var(--ds-text-subtle)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
             fontSize: 'var(--ds-font-size-200)',
             cursor: 'pointer',
@@ -618,8 +618,8 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
           type="button"
           style={{
             padding: '6px 16px',
-            background: 'var(--ds-background-brand-bold, #0C66E4)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--ds-background-brand-bold)',
+            color: 'var(--ds-text-inverse)',
             border: 'none',
             borderRadius: 4,
             fontSize: 'var(--ds-font-size-300)',
@@ -669,7 +669,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            color: 'var(--ds-text-subtle, #44546F)',
+            color: 'var(--ds-text-subtle)',
             borderRadius: 4,
             flex: '0 0 auto',
           }}
@@ -843,7 +843,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
                         {/* ads-scanner:ignore-next-line */}
                         <stop stopColor="#F79357"/>
                         {/* ads-scanner:ignore-next-line */}
-                        <stop offset="0.5" stopColor="var(--ds-background-danger-bold, #C9372C)"/>
+                        <stop offset="0.5" stopColor="var(--ds-background-danger-bold)"/>
                         {/* ads-scanner:ignore-next-line */}
                         <stop offset="0.75" stopColor="#B41572"/>
                         {/* ads-scanner:ignore-next-line */}

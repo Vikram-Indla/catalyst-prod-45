@@ -117,7 +117,7 @@ export const DateDropdown: React.FC<DateDropdownProps> = ({
             borderRadius: '8px',
             border: isToday && !isSelected ? `1px solid ${COLORS.accent}` : 'none',
             backgroundColor: isSelected ? COLORS.accent : 'transparent',
-            color: isSelected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : COLORS.textPrimary,
+            color: isSelected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : COLORS.textPrimary,
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: isSelected || isToday ? 600 : 400,
             cursor: 'pointer',

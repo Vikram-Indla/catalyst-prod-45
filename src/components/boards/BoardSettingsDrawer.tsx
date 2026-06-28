@@ -34,10 +34,10 @@ const QUERY_PRESETS = [
 ];
 
 // ads-scanner:ignore-next-line — data value for <input type="color">, not a CSS style
-const DEFAULT_CARD_COLOR = 'var(--ds-link, #0052CC)';
+const DEFAULT_CARD_COLOR = 'var(--ds-link)';
 
 const COLOR_SWATCHES = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-icon, #525252)', 'var(--ds-background-information-bold, #0284C7)',
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-text-success, var(--cp-success))', 'var(--cp-purple-60)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-warning, var(--cp-warning))', 'var(--cp-teal-60)', 'var(--ds-icon)', 'var(--ds-background-information-bold)',
 ];
 
 const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [
@@ -196,7 +196,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
+            <X size={16} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
           </button>
         </div>
 
@@ -243,7 +243,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
               </Section>
 
               <Section label="Linked filter">
-                <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', margin: '0 0 8px', lineHeight: 1.5 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', margin: '0 0 8px', lineHeight: 1.5 }}>
                   The board shows issues matching this saved filter. The filter owner is displayed as the board lead.
                 </p>
                 <select
@@ -251,9 +251,9 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   onChange={e => setSelectedFilterId(e.target.value)}
                   style={{
                     width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
-                    border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-                    fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)',
-                    background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+                    border: '2px solid var(--ds-border)', borderRadius: 3,
+                    fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)',
+                    background: 'var(--ds-background-neutral-subtle)',
                     outline: 'none', appearance: 'auto',
                   }}
                 >
@@ -277,7 +277,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>{opt.label}</span>
-                          {opt.warning && <AlertTriangle size={12} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />}
+                          {opt.warning && <AlertTriangle size={12} color="var(--ds-text-warning, var(--cp-warning))" />}
                         </div>
                         <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 0 }}>{opt.desc}</div>
                       </div>
@@ -290,14 +290,14 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                 {!showDelete ? (
                   <button onClick={() => setShowDelete(true)} style={{
                     display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '8px 12px',
-                    background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid var(--sem-danger)',
+                    background: 'var(--ds-background-danger)', border: '0.75px solid var(--sem-danger)',
                     borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
                     color: 'var(--sem-danger)', fontFamily: 'var(--cp-font-body)',
                   }}>
                     <Trash2 size={13} /> Delete Board
                   </button>
                 ) : (
-                  <div style={{ padding: 8, background: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
+                  <div style={{ padding: 8, background: 'var(--ds-background-danger)', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
                     <p style={{ fontSize: 11.5, color: 'var(--sem-danger)', margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
                       Type <strong>{board.name}</strong> to confirm:
                     </p>
@@ -307,7 +307,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                       disabled={deleteConfirm !== board.name || deleteBoard.isPending} style={{
                       height: 28, padding: '8px 12px', borderRadius: 6, border: 'none',
                       background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
-                      color: deleteConfirm === board.name ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
+                      color: deleteConfirm === board.name ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--fg-4)',
                       fontSize: 11.5, fontWeight: 600, cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                       fontFamily: 'var(--cp-font-body)',
                     }}>{deleteBoard.isPending ? 'Deleting…' : 'Delete'}</button>
@@ -330,7 +330,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   style={{
                     ...inputStyle, height: 'auto', padding: '8px 12px', resize: 'vertical',
                     fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 'var(--ds-font-size-200)',
-                    background: 'var(--ds-surface-sunken, #F7F8F9)',
+                    background: 'var(--ds-surface-sunken)',
                   }}
                 />
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
@@ -377,7 +377,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                         onClick={() => deleteQuickFilter.mutate({ filterId: f.id, boardId: board.id })}
                         style={{ width: 22, height: 22, borderRadius: 4, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
-                        <Trash2 size={12} color="var(--ds-text-subtlest, #6B778C)" />
+                        <Trash2 size={12} color="var(--ds-text-subtlest)" />
                       </button>
                     )}
                   </div>
@@ -395,7 +395,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                       onKeyDown={e => e.key === 'Enter' && handleAddFilter()}
                       style={{ ...inputStyle, height: 34, fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 'var(--ds-font-size-200)', marginBottom: 4 }} />
                     {newFilterJql.trim() && (
-                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', marginBottom: 8 }}>
                         {qfJqlPreview.isLoading ? 'Checking…' : `${qfJqlPreview.data?.totalCount ?? 0} issues match`}
                       </div>
                     )}
@@ -409,7 +409,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                         height: 28, padding: '0 12px', borderRadius: 4, border: 'none',
                         background: newFilterName.trim() && newFilterJql.trim() ? 'var(--cp-blue)' : 'var(--divider)',
                         fontSize: 11.5, fontWeight: 600,
-                        color: newFilterName.trim() && newFilterJql.trim() ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-4)',
+                        color: newFilterName.trim() && newFilterJql.trim() ? 'var(--ds-text-inverse)' : 'var(--fg-4)',
                         cursor: newFilterName.trim() && newFilterJql.trim() ? 'pointer' : 'not-allowed',
                         fontFamily: 'var(--cp-font-body)',
                       }}>Add filter</button>
@@ -439,20 +439,20 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     borderRadius: 6, background: 'var(--bg-app)',
                     borderLeftWidth: col.statusIds.length === 0 ? 3 : 0.75,
                   }}>
-                    <GripVertical size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" style={{ cursor: 'grab', flexShrink: 0 }} />
+                    <GripVertical size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" style={{ cursor: 'grab', flexShrink: 0 }} />
                     <span style={{
                       fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)',
                       fontFamily: 'var(--cp-font-body)', flex: 1, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{col.name}</span>
-                    {col.isBacklog && <Badge bg="var(--ds-background-brand-subtle, rgba(37,99,235,0.06))" color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))">Backlog</Badge>}
-                    {col.isDone && <Badge bg="var(--ds-background-success, #F0FDF4)" color="var(--sem-success)">Done</Badge>}
+                    {col.isBacklog && <Badge bg="var(--ds-background-brand-subtle, rgba(37,99,235,0.06))" color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))">Backlog</Badge>}
+                    {col.isDone && <Badge bg="var(--ds-background-success)" color="var(--sem-success)">Done</Badge>}
                     <button onClick={() => deleteCol.mutate({ columnId: col.id, boardId: board.id })} style={{
                       width: 22, height: 22, borderRadius: 4, border: 'none',
                       background: 'transparent', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Trash2 size={12} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
+                      <Trash2 size={12} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
                     </button>
                   </div>
                 ))}
@@ -466,23 +466,23 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   display: 'flex', alignItems: 'center', gap: 4, height: 48, padding: '0 8px',
                   border: '0.75px dashed var(--ds-border, rgba(15,23,42,0.12))',
                   borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
-                  fontSize: 11.5, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-body)',
+                  fontSize: 11.5, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontFamily: 'var(--cp-font-body)',
                 }}>
                   <Plus size={13} /> Add
                 </button>
               </div>
               {projectKey && (
-                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
-                  <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border)' }}>
+                  <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', lineHeight: 1.5 }}>
                     Map workflow statuses to columns to control which issues appear in each column.
                   </p>
                   <button
                     onClick={() => { onClose(); navigate(`/project-hub/${projectKey}/boards/${board.id}/map-statuses`); }}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-                      background: 'var(--ds-background-neutral, #F1F2F4)', border: '2px solid transparent',
+                      background: 'var(--ds-background-neutral)', border: '2px solid transparent',
                       borderRadius: 3, cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
-                      color: 'var(--ds-text, #172B4D)',
+                      color: 'var(--ds-text)',
                     }}
                   >
                     Configure status mapping →
@@ -512,68 +512,68 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                 ))}
               </div>
 
-              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border)' }}>
                 <FieldLabel>Card layout</FieldLabel>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {(['default', 'compact'] as const).map(layout => (
                     <button key={layout} onClick={() => setCardLayout(layout)} style={{
                       flex: 1, padding: '8px', borderRadius: 6, cursor: 'pointer', textAlign: 'center',
                       border: `0.75px solid ${cardLayout === layout ? 'var(--cp-blue)' : 'var(--ds-border, rgba(15,23,42,0.12))'}`,
-                      background: cardLayout === layout ? 'var(--ds-background-selected, rgba(37,99,235,0.04))' : 'var(--ds-surface, #FFFFFF)',
-                      fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                      background: cardLayout === layout ? 'var(--ds-background-selected, rgba(37,99,235,0.04))' : 'var(--ds-surface)',
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text)',
                     }}>
                       {layout === 'default' ? 'Default' : 'Compact'}
                     </button>
                   ))}
                 </div>
-                <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                   {cardLayout === 'compact' ? 'Show only the issue key and summary.' : 'Show assignee, priority, and labels on each card.'}
                 </p>
               </div>
 
-              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border)' }}>
                 <FieldLabel>Card colors</FieldLabel>
-                <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                   Highlight cards matching a JQL clause with a left-border color.
                 </p>
                 {cardColors.map(rule => (
                   <div key={rule.id} style={{
                     display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px',
-                    border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, marginBottom: 8,
+                    border: '1px solid var(--ds-border)', borderRadius: 4, marginBottom: 8,
                     borderLeft: `4px solid ${rule.color}`,
                   }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.label}</div>
-                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.jql}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.label}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.jql}</div>
                     </div>
                     <button onClick={() => setCardColors(prev => prev.filter(r => r.id !== rule.id))} style={{
                       width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Trash2 size={12} color="var(--ds-text-subtlest, #6B778C)" />
+                      <Trash2 size={12} color="var(--ds-text-subtlest)" />
                     </button>
                   </div>
                 ))}
                 {addingCardColor ? (
-                  <div style={{ padding: 8, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4 }}>
+                  <div style={{ padding: 8, border: '1px solid var(--ds-border)', borderRadius: 4 }}>
                     <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                       <input value={newCardColorLabel} onChange={e => setNewCardColorLabel(e.target.value)}
                         placeholder="Label (e.g. Blocked)"
-                        style={{ flex: 1, height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const }} />
+                        style={{ flex: 1, height: 32, padding: '0 8px', border: '2px solid var(--ds-border)', borderRadius: 3, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', background: 'var(--ds-background-neutral-subtle)', outline: 'none', boxSizing: 'border-box' as const }} />
                       <input type="color" value={newCardColorHex} onChange={e => setNewCardColorHex(e.target.value)}
-                        style={{ width: 32, height: 32, padding: 0, border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, cursor: 'pointer' }} />
+                        style={{ width: 32, height: 32, padding: 0, border: '2px solid var(--ds-border)', borderRadius: 3, cursor: 'pointer' }} />
                     </div>
                     <input value={newCardColorJql} onChange={e => setNewCardColorJql(e.target.value)}
                       placeholder="JQL: priority = Critical"
-                      style={{ width: '100%', height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 4 }} />
+                      style={{ width: '100%', height: 32, padding: '0 8px', border: '2px solid var(--ds-border)', borderRadius: 3, fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text)', background: 'var(--ds-background-neutral-subtle)', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 4 }} />
                     {newCardColorJql.trim() && (
-                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', marginBottom: 8 }}>
                         {ccJqlPreview.isLoading ? 'Checking…' : `${ccJqlPreview.data?.totalCount ?? 0} issues match`}
                       </div>
                     )}
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => { setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR); }} style={{
-                        height: 28, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)',
+                        height: 28, padding: '0 12px', border: '2px solid var(--ds-border)', borderRadius: 3, background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)',
                       }}>Cancel</button>
                       <button
                         disabled={!newCardColorLabel.trim() || !newCardColorJql.trim()}
@@ -584,7 +584,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                         }}
                         style={{
                           height: 28, padding: '0 12px', border: '2px solid transparent', borderRadius: 3, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
-                          background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                          background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)',
                         }}
                       >Add</button>
                     </div>
@@ -592,8 +592,8 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                 ) : (
                   <button onClick={() => setAddingCardColor(true)} style={{
                     display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px',
-                    border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 4, background: 'transparent',
-                    cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)',
+                    border: '1px dashed var(--ds-border)', borderRadius: 4, background: 'transparent',
+                    cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)',
                   }}>
                     <Plus size={13} /> Add color rule
                   </button>
@@ -610,7 +610,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
               <button style={{
                 display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px',
                 background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
-                cursor: 'pointer', fontSize: 11.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                cursor: 'pointer', fontSize: 11.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 <Plus size={13} /> Add Member
@@ -627,14 +627,14 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
           <button onClick={onClose} style={{
             height: 30, padding: '8px 12px', borderRadius: 6,
             border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))', background: 'var(--bg-app)',
-            fontSize: 11.5, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+            fontSize: 11.5, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
             fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleSave} disabled={!isDirty || updateBoard.isPending} style={{
             height: 32, padding: '0 16px', borderRadius: 6, border: 'none',
             background: isDirty ? 'var(--cp-blue)' : 'var(--divider)',
             fontSize: 11.5, fontWeight: 600,
-            color: isDirty ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
+            color: isDirty ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--fg-4)',
             fontFamily: 'var(--cp-font-body)',
             cursor: isDirty ? 'pointer' : 'not-allowed',
           }}>{updateBoard.isPending ? 'Saving…' : 'Save'}</button>
@@ -656,7 +656,7 @@ function Section({ label, children }: { label: string; children: React.ReactNode
     <div style={{ marginBottom: 16 }}>
       <div style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-        color: 'var(--ds-text-subtlest, var(--fg-4, #6B778C))',
+        color: 'var(--ds-text-subtlest, var(--fg-4))',
         fontFamily: 'var(--cp-font-body)', marginBottom: 8,
       }}>{label}</div>
       {children}
@@ -683,7 +683,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />}
+      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }} />}
     </div>
   );
 }

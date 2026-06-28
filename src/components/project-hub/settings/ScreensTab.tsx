@@ -22,9 +22,9 @@ interface ScreenRow {
 }
 
 const OP_BADGE: Record<string, { bg: string; text: string; label: string }> = {
-  create: { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #1F845A)', label: 'Create' },
-  edit:   { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1d4ed8)', label: 'Edit'   },
-  view:   { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #6d28d9)', label: 'View'   },
+  create: { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', label: 'Create' },
+  edit:   { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', label: 'Edit'   },
+  view:   { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)', label: 'View'   },
 };
 
 function OperationCell({ op, screen }: { op: 'create' | 'edit' | 'view'; screen: string | null }) {
@@ -40,7 +40,7 @@ function OperationCell({ op, screen }: { op: 'create' | 'edit' | 'view'; screen:
       >
         {label}
       </span>
-      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle,var(--cp-ink-3, var(--cp-text-secondary)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {screen ?? '—'}
       </span>
     </div>
@@ -85,7 +85,7 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
               style={{
                 padding: '12px 20px',
                 borderBottom: '1px solid var(--divider)',
-                background: 'var(--ds-surface-sunken,#F8FAFC)',
+                background: 'var(--ds-surface-sunken)',
                 display: 'flex', alignItems: 'center', gap: 10,
               }}
             >
@@ -104,7 +104,7 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
                 gridTemplateColumns: '200px 1fr 1fr 1fr',
                 padding: '0 20px',
                 borderBottom: '1px solid var(--divider)',
-                background: 'var(--ds-surface-sunken,#F8FAFC)',
+                background: 'var(--ds-surface-sunken)',
               }}
             >
               {['Work type', 'Create', 'Edit', 'View'].map(h => (
@@ -138,7 +138,7 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
                     borderBottom: i < schemeRows.length - 1 ? '1px solid var(--divider)' : 'none',
                     transition: 'background 80ms',
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-surface-sunken,#F8FAFC)'}
+                  onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-surface-sunken)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 8px 12px 0' }}>

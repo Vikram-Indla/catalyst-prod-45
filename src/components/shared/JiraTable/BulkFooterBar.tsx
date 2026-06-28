@@ -44,8 +44,8 @@ export function BulkFooterBar({
         gap: 16,
         paddingLeft: 16,
         paddingRight: 16,
-        backgroundColor: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        backgroundColor: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         zIndex: 100,
         boxShadow: token('elevation.shadow.raised', '0 1px 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))'),
       }}
@@ -55,7 +55,7 @@ export function BulkFooterBar({
         style={{
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
-          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
         }}
       >
         {selectedCount} selected
@@ -76,7 +76,7 @@ export function BulkFooterBar({
             style={{
               background: 'none',
               border: 'none',
-              color: token('color.link', 'var(--ds-link, #0C66E4)'),
+              color: token('color.link', 'var(--ds-link)'),
               cursor: 'pointer',
               fontSize: 'var(--ds-font-size-400)',
               padding: 0,
@@ -99,9 +99,9 @@ export function BulkFooterBar({
           style={{
             padding: '6px 12px',
             borderRadius: 3,
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-            background: token('color.background.neutral', 'var(--ds-surface, #FFFFFF)'),
-            color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
+            background: token('color.background.neutral', 'var(--ds-surface)'),
+            color: token('color.text.danger', 'var(--ds-text-danger)'),
             cursor: 'pointer',
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
@@ -118,9 +118,9 @@ export function BulkFooterBar({
           style={{
             padding: '6px 12px',
             borderRadius: 3,
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-            background: token('color.background.neutral', 'var(--ds-surface, #FFFFFF)'),
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
+            background: token('color.background.neutral', 'var(--ds-surface)'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
             cursor: 'pointer',
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
@@ -137,9 +137,9 @@ export function BulkFooterBar({
           style={{
             padding: '6px 12px',
             borderRadius: 3,
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-            background: token('color.background.neutral', 'var(--ds-surface, #FFFFFF)'),
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
+            background: token('color.background.neutral', 'var(--ds-surface)'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
             cursor: 'pointer',
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,

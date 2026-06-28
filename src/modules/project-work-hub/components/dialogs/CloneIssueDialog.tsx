@@ -236,7 +236,7 @@ export function CloneIssueDialog({ open, onClose, source }: CloneIssueDialogProp
           {({ formProps, getValues, setFieldValue }) => (
             <form {...formProps}>
               <ModalBody>
-                <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 16 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', marginBottom: 16 }}>
                   Required fields are marked with an asterisk *
                 </p>
 
@@ -307,7 +307,7 @@ export function CloneIssueDialog({ open, onClose, source }: CloneIssueDialogProp
                 </Field>
 
                 <fieldset style={{ border: 'none', padding: 0, marginTop: 12 }}>
-                  <legend style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 6 }}>
+                  <legend style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>
                     Include
                   </legend>
                   <CheckboxField name="includeAttachments" defaultIsChecked={false}>

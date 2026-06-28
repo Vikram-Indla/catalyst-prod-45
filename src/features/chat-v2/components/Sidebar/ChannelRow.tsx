@@ -37,7 +37,7 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
         fontSize: 'var(--ds-font-size-400)',
         fontWeight: hasUnread || isActive ? 700 : 400,
         lineHeight: '24px',
-        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success, #22A06B)' } : null),
+        ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success)' } : null),
       }}
       onMouseEnter={e => {
         if (!isActive) {
@@ -68,7 +68,7 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
         {title}
       </span>
       {hasHuddle && (
-        <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success, #22A06B)', display: 'inline-flex', flex: '0 0 auto' }}>
+        <span aria-label="Active huddle" title="Active huddle" style={{ marginLeft: 4, color: 'var(--ds-icon-success)', display: 'inline-flex', flex: '0 0 auto' }}>
           <HeadphonesIcon size={12} />
         </span>
       )}
@@ -81,7 +81,7 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
             padding: '0 5px',
             borderRadius: 9,
             background: 'var(--cv2-unread)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--ds-text-inverse)',
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             display: 'inline-flex',

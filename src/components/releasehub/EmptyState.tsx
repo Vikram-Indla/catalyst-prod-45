@@ -11,16 +11,16 @@ interface Props {
 }
 
 const VARIANT_CLASSES = {
-  primary: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]',
-  ghost: 'border border-[var(--ds-border, #C9D3E0)] text-[var(--ds-text, #172B4D)] hover:bg-[var(--ds-surface-sunken, #F4F7FA)]',
-  teal: 'border border-[var(--cp-teal-60, #0D9488)] text-[var(--cp-teal-60, #0D9488)] hover:bg-[var(--ds-background-success, #DFFCF0)]',
+  primary: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white hover:bg-[var(--ds-background-brand-bold-hovered)]',
+  ghost: 'border border-[var(--ds-border)] text-[var(--ds-text)] hover:bg-[var(--ds-surface-sunken)]',
+  teal: 'border border-[var(--cp-teal-60)] text-[var(--cp-teal-60)] hover:bg-[var(--ds-background-success)]',
 };
 
 export function EmptyState({ icon: Icon = Package, title, subtitle, actions, className = '' }: Props) {
   return (
     <div className={`flex flex-col items-center justify-center py-12 ${className}`} aria-live="polite">
-      <div className="w-12 h-12 rounded-xl bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] flex items-center justify-center mb-4">
-        <Icon size={24} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
+      <div className="w-12 h-12 rounded-xl bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] flex items-center justify-center mb-4">
+        <Icon size={24} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink2 }}>{title}</h3>
       {subtitle && <p className="text-[13px] text-[var(--fg-3)] max-w-sm text-center mb-4" style={{ fontFamily: RH.fontBody }}>{subtitle}</p>}
@@ -41,13 +41,13 @@ export function EmptyState({ icon: Icon = Package, title, subtitle, actions, cla
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-12" aria-live="assertive">
-      <div className="w-12 h-12 rounded-xl bg-[var(--ds-background-danger,#FEF2F2)] flex items-center justify-center mb-4">
-        <AlertCircle size={24} className="text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]" />
+      <div className="w-12 h-12 rounded-xl bg-[var(--ds-background-danger)] flex items-center justify-center mb-4">
+        <AlertCircle size={24} className="text-[var(--ds-text-danger,var(--cp-danger))]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: 'var(--sem-danger)' }}>Something went wrong</h3>
-      <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mb-4">{message}</p>
+      <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] mb-4">{message}</p>
       {onRetry && (
-        <button onClick={onRetry} className="h-8 px-3.5 rounded-md text-[13px] font-semibold bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]">
+        <button onClick={onRetry} className="h-8 px-3.5 rounded-md text-[13px] font-semibold bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white hover:bg-[var(--ds-background-brand-bold-hovered)]">
           Retry
         </button>
       )}

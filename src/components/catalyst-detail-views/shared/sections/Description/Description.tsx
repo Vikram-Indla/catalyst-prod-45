@@ -437,7 +437,7 @@ export function Description({
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             lineHeight: '20px',
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             fontFamily:
               '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
           }}
@@ -474,7 +474,7 @@ export function Description({
                       opacity: 0.5,
                       marginTop: 16,
                       paddingTop: 16,
-                      borderTop: '1px dashed var(--ds-border, #DFE1E6)',
+                      borderTop: '1px dashed var(--ds-border)',
                       pointerEvents: 'none',
                       userSelect: 'none',
                     }}
@@ -498,8 +498,8 @@ export function Description({
                 marginTop: 8,
                 padding: '8px 12px',
                 fontSize: 'var(--ds-font-size-300)',
-                color: 'var(--ds-text-danger, #AE2A19)',
-                background: 'var(--ds-background-danger, #FFECEB)',
+                color: 'var(--ds-text-danger)',
+                background: 'var(--ds-background-danger)',
                 borderRadius: 4,
               }}
             >
@@ -518,14 +518,14 @@ export function Description({
             if (issue) setEditing(true);
           }}
           onMouseEnter={(e) => {
-            if (issue && !disableEmptyHover && !disableHover) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
+            if (issue && !disableEmptyHover && !disableHover) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
           }}
           style={{
             fontSize: 'var(--ds-font-size-400)',
-            color: 'var(--ds-text-subtlest, #97A0AF)',
+            color: 'var(--ds-text-subtlest)',
             minHeight: 40,
             cursor: issue ? 'pointer' : 'default',
             borderRadius: 4,
@@ -554,7 +554,7 @@ export function Description({
             }
           }}
           onMouseEnter={(e) => {
-            if (issue && !disableHover) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #0B120E1F)';
+            if (issue && !disableHover) e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';

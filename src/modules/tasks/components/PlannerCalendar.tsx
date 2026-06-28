@@ -403,7 +403,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
             id: u.id, 
             name: u.name, 
             initials: u.initials,
-            avatarColor: 'var(--ds-text-brand, #3b82f6)',
+            avatarColor: 'var(--ds-text-brand)',
           }))}
           tasks={filteredTasks}
         />
@@ -497,7 +497,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
                   animate={{ opacity: 1, x: 0 }}
                   onClick={() => onTaskClick(task)}
                   className="p-3 bg-surface-0 rounded-lg border border-border cursor-pointer hover:border-blue-300 hover:shadow-sm transition-all"
-                  style={{ borderLeftWidth: 3, borderLeftColor: task.teamColor || 'var(--ds-background-discovery-bold, #6366f1)' }}
+                  style={{ borderLeftWidth: 3, borderLeftColor: task.teamColor || 'var(--ds-background-discovery-bold)' }}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-[10px] font-mono text-text-muted">{task.key}</span>

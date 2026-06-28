@@ -48,12 +48,12 @@ interface OpenMenu {
 }
 
 const CHEVRON_SIZE = 16;
-const IDLE_BG = 'var(--ds-background-neutral, #F1F2F4)';
-const IDLE_BORDER = 'var(--ds-border, #DFE1E6)';
-const IDLE_GLYPH = 'var(--ds-text-subtlest, #6B778C)';
-const ACTIVE_BG = 'var(--ds-background-information, #E9F2FF)';
-const ACTIVE_BORDER = 'var(--ds-link, #1868DB)';
-const ACTIVE_GLYPH = 'var(--ds-link, #1868DB)';
+const IDLE_BG = 'var(--ds-background-neutral)';
+const IDLE_BORDER = 'var(--ds-border)';
+const IDLE_GLYPH = 'var(--ds-text-subtlest)';
+const ACTIVE_BG = 'var(--ds-background-information)';
+const ACTIVE_BORDER = 'var(--ds-link)';
+const ACTIVE_GLYPH = 'var(--ds-link)';
 
 export function CellChevronHandles({ editor, containerRef }: Props) {
   const [hovered, setHovered] = useState<HoveredCell | null>(null);

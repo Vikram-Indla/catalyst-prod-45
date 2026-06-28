@@ -39,17 +39,17 @@ import { CatalystWorkflowBuilder } from './CatalystWorkflowBuilder';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  text: 'var(--ds-text, #172B4D)',
-  textSubtle: 'var(--ds-text-subtle, #44546F)',
-  textSubtlest: 'var(--ds-text-subtlest, #626F86)',
-  textBrand: 'var(--ds-link, #0C66E4)',
-  textDanger: 'var(--ds-text-danger, #AE2A19)',
-  border: 'var(--ds-border, #DCDFE4)',
-  bgHover: 'var(--ds-background-neutral-hovered, #F1F2F4)',
-  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
-  bgSelected: 'var(--ds-background-selected, #E9F2FE)',
-  iconBrand: 'var(--ds-icon-brand, #0C66E4)',
+  surface: 'var(--ds-surface)',
+  text: 'var(--ds-text)',
+  textSubtle: 'var(--ds-text-subtle)',
+  textSubtlest: 'var(--ds-text-subtlest)',
+  textBrand: 'var(--ds-link)',
+  textDanger: 'var(--ds-text-danger)',
+  border: 'var(--ds-border)',
+  bgHover: 'var(--ds-background-neutral-hovered)',
+  bgNeutral: 'var(--ds-background-neutral)',
+  bgSelected: 'var(--ds-background-selected)',
+  iconBrand: 'var(--ds-icon-brand)',
 };
 
 const CATS: StatusCategory[] = ['todo', 'in_progress', 'done'];
@@ -77,7 +77,7 @@ function CatPill({ cat, label, bold }: { cat: StatusCategory; label?: string; bo
 }
 
 function StatusPillInline({ name, category }: { name: string; category: string }) {
-  const bg = STATUS_CATEGORY_COLORS[category as StatusCategory] ?? 'var(--ds-border, #DFE1E6)';
+  const bg = STATUS_CATEGORY_COLORS[category as StatusCategory] ?? 'var(--ds-border)';
   return (
     <span
       style={{
@@ -208,7 +208,7 @@ function RowMenu({
         position: 'fixed',
         top: rect.bottom + 4,
         left: rect.left,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         border: `1px solid ${T.border}`,
         borderRadius: '6px',
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
@@ -259,7 +259,7 @@ function OverflowMenu({
         position: 'fixed',
         top: rect.bottom + 4,
         right: window.innerWidth - rect.right,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         border: `1px solid ${T.border}`,
         borderRadius: '6px',
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
@@ -361,7 +361,7 @@ function StatusRow({
             flex: 1,
             fontSize: 'var(--ds-font-size-300)',
             color: T.text,
-            border: `1px solid var(--ds-border-focused, #388BFF)`,
+            border: `1px solid var(--ds-border-focused)`,
             borderRadius: '3px',
             padding: '1px 4px',
             outline: 'none',
@@ -382,7 +382,7 @@ function StatusRow({
       {isInitial && (
         <span
           title="Initial status — new items start here"
-          style={{ color: 'var(--ds-background-warning-bold, #E2B203)', fontSize: 'var(--ds-font-size-100)', flexShrink: 0, lineHeight: 1 }}
+          style={{ color: 'var(--ds-background-warning-bold)', fontSize: 'var(--ds-font-size-100)', flexShrink: 0, lineHeight: 1 }}
         >
           ★
         </span>
@@ -760,7 +760,7 @@ function AssignmentBadge({
         fontWeight: 500,
         color: assignment.is_customized ? T.textSubtlest : T.textBrand,
         background: assignment.is_customized ? T.bgNeutral : T.bgSelected,
-        border: `1px solid ${assignment.is_customized ? T.border : 'var(--ds-border-brand, #0C66E4)'}`,
+        border: `1px solid ${assignment.is_customized ? T.border : 'var(--ds-border-brand)'}`,
         borderRadius: 3,
         padding: '2px 6px',
         flexShrink: 0,
@@ -820,7 +820,7 @@ function TemplateCard({
   return (
     <div
       style={{
-        border: `1px solid ${isActiveType ? 'var(--ds-border-brand, #0C66E4)' : T.border}`,
+        border: `1px solid ${isActiveType ? 'var(--ds-border-brand)' : T.border}`,
         borderRadius: 6,
         background: T.surface,
         overflow: 'hidden',
@@ -848,7 +848,7 @@ function TemplateCard({
               fontWeight: 600,
               color: T.textBrand,
               background: T.bgSelected,
-              border: `1px solid var(--ds-border-brand, #0C66E4)`,
+              border: `1px solid var(--ds-border-brand)`,
               borderRadius: 3,
               padding: '1px 5px',
             }}
@@ -892,7 +892,7 @@ function TemplateCard({
                         borderRadius: 3,
                         fontSize: 'var(--ds-font-size-100)',
                         fontWeight: 500,
-                        background: STATUS_CATEGORY_COLORS[s.category as StatusCategory] ?? 'var(--ds-border, #DFE1E6)',
+                        background: STATUS_CATEGORY_COLORS[s.category as StatusCategory] ?? 'var(--ds-border)',
                         color: STATUS_TEXT,
                       }}
                     >
@@ -928,8 +928,8 @@ function TemplateCard({
                     padding: '5px 12px',
                     borderRadius: 4,
                     border: 'none',
-                    background: 'var(--ds-background-brand-bold, #0C66E4)',
-                    color: 'var(--ds-text-inverse, #FFFFFF)',
+                    background: 'var(--ds-background-brand-bold)',
+                    color: 'var(--ds-text-inverse)',
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     cursor: applying ? 'not-allowed' : 'pointer',
@@ -1117,7 +1117,7 @@ export default function WorkflowAdminPage() {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
         }}
       >
         <div

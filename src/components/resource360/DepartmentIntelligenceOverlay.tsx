@@ -14,7 +14,7 @@ import ClaimDrillInPanel from './ClaimDrillInPanel';
 import '@/styles/dept-intelligence.css';
 
 /* ═══ Resource Avatar ═══ */
-const AVATAR_COLORS = ['var(--ds-chart-blue-bold, #6b7a8d)', 'var(--ds-chart-green-bold, #7a8b6b)', 'var(--ds-chart-orange-bold, #8b7a6b)', 'var(--ds-background-discovery-bold, #6b6b8b)', 'var(--ds-chart-teal-bold, #6b8b8b)', 'var(--ds-chart-magenta-bold, #8b6b7a)', 'var(--ds-chart-purple-bold, #7a6b8b)', 'var(--ds-background-discovery, #6b8b7a)'];
+const AVATAR_COLORS = ['var(--ds-chart-blue-bold)', 'var(--ds-chart-green-bold)', 'var(--ds-chart-orange-bold)', 'var(--ds-background-discovery-bold)', 'var(--ds-chart-teal-bold)', 'var(--ds-chart-magenta-bold)', 'var(--ds-chart-purple-bold)', 'var(--ds-background-discovery)'];
 function hashColor(name: string): string {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
@@ -32,7 +32,7 @@ function ResAvatar({ name, avatarMap, size = 28 }: { name: string; avatarMap: Ma
     return <img src={url} alt={name} style={{ width: px, height: px, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
   }
   return (
-    <div style={{ width: px, height: px, borderRadius: '50%', background: hashColor(name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface, #fff)', fontSize: size <= 24 ? '9px' : '10px', fontWeight: 600, flexShrink: 0, fontFamily: 'var(--di-font-body)' }}>
+    <div style={{ width: px, height: px, borderRadius: '50%', background: hashColor(name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface)', fontSize: size <= 24 ? '9px' : '10px', fontWeight: 600, flexShrink: 0, fontFamily: 'var(--di-font-body)' }}>
       {getInitials(name)}
     </div>
   );
@@ -366,7 +366,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
             <span className="di-prj-contribs-lbl">Contributors</span>
             {prj.contributors.map((c, ci) => (
               <span className="di-prj-contrib" key={ci}>
-                <span className="di-prj-avatar" style={{ background: c.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+                <span className="di-prj-avatar" style={{ background: c.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
                   {c.initials}
                 </span>
                 <span className="di-prj-contrib-name">{c.name}</span>
@@ -398,7 +398,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
   );
 }
 
-/** Parse inline CSS string like "background:var(--ds-background-discovery, #EDE9FE);color:var(--ds-background-discovery-bold, #5B21B6)" to React style */
+/** Parse inline CSS string like "background:var(--ds-background-discovery);color:var(--ds-background-discovery-bold)" to React style */
 function parseCssStyle(css: string): React.CSSProperties {
   const style: Record<string, string> = {};
   css.split(';').forEach(pair => {

@@ -70,8 +70,8 @@ export function T10AISuggestionsPanel({
                   padding: '2px 8px',
                   fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
-                  background: 'var(--ds-background-discovery, #F3F0FF)',
-                  color: 'var(--ds-background-discovery-bold, #7C3AED)',
+                  background: 'var(--ds-background-discovery)',
+                  color: 'var(--ds-background-discovery-bold)',
                   borderRadius: 4
                 }}>
                   <Sparkles size={12} /> Enhanced
@@ -116,8 +116,8 @@ export function T10AISuggestionsPanel({
             padding: '12px 16px',
             marginBottom: 12,
             fontSize: 'var(--ds-font-size-300)',
-            color: 'var(--ds-text-subtlest, #64748b)',
-            background: 'var(--ds-surface-sunken, #f1f5f9)',
+            color: 'var(--ds-text-subtlest)',
+            background: 'var(--ds-surface-sunken)',
             borderRadius: 8
           }}>
             <Info size={16} />
@@ -132,7 +132,7 @@ export function T10AISuggestionsPanel({
               justifyContent: 'center',
               gap: 12, 
               padding: 32,
-              color: 'var(--ds-text-subtlest, #64748b)'
+              color: 'var(--ds-text-subtlest)'
             }}>
               <Loader2 size={24} className="animate-spin" />
               <span>Analyzing backlog tasks...</span>
@@ -140,13 +140,13 @@ export function T10AISuggestionsPanel({
           )}
 
           {error && (
-            <div style={{ padding: '20px 16px', color: 'var(--ds-text-danger, #dc2626)', textAlign: 'center' }}>
+            <div style={{ padding: '20px 16px', color: 'var(--ds-text-danger)', textAlign: 'center' }}>
               Failed to load suggestions. Please try again later.
             </div>
           )}
 
           {!isLoading && !error && suggestions.length === 0 && (
-            <div style={{ padding: '20px 16px', color: 'var(--ds-text-subtlest, #64748b)', textAlign: 'center' }}>
+            <div style={{ padding: '20px 16px', color: 'var(--ds-text-subtlest)', textAlign: 'center' }}>
               No high-priority tasks found in your backlog that aren't already in this week's list.
             </div>
           )}
@@ -175,7 +175,7 @@ export function T10AISuggestionsPanel({
                       gap: 6, 
                       marginTop: 6,
                       fontSize: 'var(--ds-font-size-200)',
-                      color: 'var(--ds-background-discovery-bold, #7C3AED)'
+                      color: 'var(--ds-background-discovery-bold)'
                     }}>
                       <Sparkles size={12} />
                       {suggestion.reason}
@@ -191,9 +191,9 @@ export function T10AISuggestionsPanel({
                   padding: '8px 14px',
                   fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
-                  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-                  background: 'var(--ds-background-selected, #eff6ff)',
-                  border: '1px solid var(--ds-background-information, #E9F2FF)',
+                  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+                  background: 'var(--ds-background-selected)',
+                  border: '1px solid var(--ds-background-information)',
                   borderRadius: 6,
                   cursor: slotsAvailable <= 0 ? 'not-allowed' : 'pointer',
                   opacity: slotsAvailable <= 0 ? 0.5 : 1,

@@ -100,7 +100,7 @@ export function releaseToCanonicalIssue(row: ReleaseListRow): CanonicalBoardIssu
 }
 
 export function resolveReleaseIcon(_card: BoardIssue): ReactNode {
-  return <Rocket size={14} strokeWidth={2} style={{ color: 'var(--ds-icon-subtle, #626F86)' }} />;
+  return <Rocket size={14} strokeWidth={2} style={{ color: 'var(--ds-icon-subtle)' }} />;
 }
 
 export interface BuildReleaseBoardAdapterArgs {

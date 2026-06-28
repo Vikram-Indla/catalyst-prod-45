@@ -39,7 +39,7 @@ export interface ThemeChip {
 // ─────────────────────────────────────────────────────────────────────────────────
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="mb-4 text-[11px] font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] uppercase tracking-wider">
+  <h3 className="mb-4 text-[11px] font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] uppercase tracking-wider">
     {children}
   </h3>
 );
@@ -52,8 +52,8 @@ const TrendBadge = ({ trend, value }: { trend: TrendDirection; value: string }) 
     <span className={cn(
       "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium",
 isNeutral && "bg-muted/50 text-muted-foreground",
-      isPositive && "bg-[var(--ds-background-success, #DFFCF0)] dark:bg-[var(--ds-background-success-bold, rgba(74,222,128,0.10))] text-[var(--ds-text-success,#4a7c4a)] dark:text-[var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))]",
-      !isPositive && !isNeutral && "bg-amber-50 dark:bg-[var(--ds-background-warning-bold, rgba(251,191,36,0.10))] text-amber-600 dark:text-[var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))]"
+      isPositive && "bg-[var(--ds-background-success)] dark:bg-[var(--ds-background-success-bold, rgba(74,222,128,0.10))] text-[var(--ds-text-success)] dark:text-[var(--ds-background-success-bold, var(--ds-background-success-bold))]",
+      !isPositive && !isNeutral && "bg-amber-50 dark:bg-[var(--ds-background-warning-bold, rgba(251,191,36,0.10))] text-amber-600 dark:text-[var(--ds-background-warning-bold, var(--ds-background-warning-bold))]"
     )}>
       {isPositive && <TrendingUp className="h-3 w-3" />}
       {isNeutral && <Minus className="h-3 w-3" />}
@@ -65,7 +65,7 @@ isNeutral && "bg-muted/50 text-muted-foreground",
 
 const StatusDot = ({ status }: { status: string }) => {
   const colors: Record<string, string> = {
-ahead: 'bg-[var(--ds-text-success, #216E4E)]',
+ahead: 'bg-[var(--ds-text-success)]',
     'on-plan': 'bg-secondary-green',
     behind: 'bg-amber-500',
     'no-baseline': 'bg-muted-foreground',
@@ -84,11 +84,11 @@ const ThemeDot = ({ color }: { color: string }) => (
 const KPICard = ({ title, children, wide = false }: { title: string; children: React.ReactNode; wide?: boolean }) => (
   <div className={cn(
     "p-5 rounded-xl",
-    "bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)]",
-    "border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]",
+    "bg-white dark:bg-[var(--ds-surface-sunken)]",
+    "border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]",
     wide && "col-span-2"
   )}>
-    <div className="text-[11px] font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] uppercase tracking-wider mb-3">
+    <div className="text-[11px] font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] uppercase tracking-wider mb-3">
       {title}
     </div>
     {children}
@@ -122,8 +122,8 @@ const DrillDownDialog = ({ isOpen, onClose, title, items }: DrillDownDialogProps
 case 'on-track': return 'bg-secondary-green';
       case 'in-progress': return 'bg-brand-primary';
       case 'at-risk': return 'bg-amber-500';
-      case 'off-track': return 'bg-[var(--ds-text-danger,#b85c38)]';
-      case 'blocked': return 'bg-[var(--ds-text-danger,#b85c38)]';
+      case 'off-track': return 'bg-[var(--ds-text-danger)]';
+      case 'blocked': return 'bg-[var(--ds-text-danger)]';
       default: return 'bg-muted-foreground';
     }
   };
@@ -138,13 +138,13 @@ case 'on-track': return 'bg-secondary-green';
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-[95%] max-w-[600px] bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] rounded-xl shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
+      <div className="w-[95%] max-w-[600px] bg-white dark:bg-[var(--ds-surface-sunken)] rounded-xl shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
-          <h3 className="text-lg font-semibold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)]">{title}</h3>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]">
+          <h3 className="text-lg font-semibold text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)]">{title}</h3>
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)] text-[var(--ds-text-subtlest,#8B949E)] hover:text-[var(--ds-text,#24292F)] dark:hover:text-[var(--ds-text-inverse, #FFFFFF)] transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-sunken)] text-[var(--ds-text-subtlest)] hover:text-[var(--ds-text)] dark:hover:text-[var(--ds-text-inverse)] transition-colors"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
@@ -154,29 +154,29 @@ case 'on-track': return 'bg-secondary-green';
         {/* Content */}
         <ScrollArea className="max-h-[400px]">
           {items.length === 0 ? (
-            <div className="p-6 text-center text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)]">
+            <div className="p-6 text-center text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
               No items found
             </div>
           ) : (
-            <div className="divide-y divide-[var(--ds-border,#E1E4E8)] dark:divide-[var(--ds-background-neutral, #F1F2F4)]">
+            <div className="divide-y divide-[var(--ds-border)] dark:divide-[var(--ds-background-neutral)]">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center gap-3 px-6 py-3 hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)] transition-colors cursor-pointer"
+                  className="flex items-center gap-3 px-6 py-3 hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-sunken)] transition-colors cursor-pointer"
                 >
                   {getTypeIcon(item.type)}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)] truncate">
+                      <span className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)] truncate">
                         {item.name}
                       </span>
                       {item.progress !== undefined && (
-                        <span className="text-xs text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)]">
+                        <span className="text-xs text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
                           {item.progress}%
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)]">
+                    <div className="flex items-center gap-2 text-xs text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
                       {item.themeName && <span>{item.themeName}</span>}
                       {item.parentName && (
                         <>
@@ -196,10 +196,10 @@ case 'on-track': return 'bg-secondary-green';
         </ScrollArea>
         
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)] flex justify-end">
+        <div className="px-6 py-3 border-t border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)] flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)] hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)]"
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[var(--ds-surface-sunken)] border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)] text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)] hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-sunken)]"
           >
             Close
           </button>
@@ -229,20 +229,20 @@ const ClickableMetricRow = ({ label, value, highlight, accentColor, onClick, dis
     <div
       className={cn(
         "flex justify-between items-center py-0.5",
-        isClickable && "cursor-pointer hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)] -mx-2 px-2 rounded transition-colors"
+        isClickable && "cursor-pointer hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-sunken)] -mx-2 px-2 rounded transition-colors"
       )}
       onClick={isClickable ? onClick : undefined}
     >
       <span className={cn(
-        "text-xs text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)]",
-        isClickable && "hover:text-[var(--ds-text,#24292F)] dark:hover:text-[var(--ds-text-inverse, #FFFFFF)]"
+        "text-xs text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]",
+        isClickable && "hover:text-[var(--ds-text)] dark:hover:text-[var(--ds-text-inverse)]"
       )}>
         {label}
       </span>
       <span
         className={cn(
           "text-sm font-semibold",
-          highlight ? "" : "text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)]",
+          highlight ? "" : "text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)]",
           isClickable && "underline decoration-dotted underline-offset-2"
         )}
         style={highlight && accentColor ? { color: accentColor } : {}}
@@ -302,13 +302,13 @@ const StrategyPerformanceOverview = ({ metrics }: { metrics: PerformanceMetrics 
         {/* KPI 3: KR Progress Distribution */}
         <KPICard title="KR Progress Distribution">
           <div className="flex h-6 rounded-md overflow-hidden mb-3">
-            <div className="bg-[var(--ds-background-warning-bold, #E2B203)]" style={{ width: `${metrics.krDistribution.low}%` }} />
+            <div className="bg-[var(--ds-background-warning-bold)]" style={{ width: `${metrics.krDistribution.low}%` }} />
             <div className="bg-brand-primary" style={{ width: `${metrics.krDistribution.mid}%` }} />
             <div className="bg-secondary-green" style={{ width: `${metrics.krDistribution.high}%` }} />
           </div>
           <div className="flex justify-between text-[11px]">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-sm bg-[var(--ds-background-warning-bold, #E2B203)]" />
+              <span className="w-2 h-2 rounded-sm bg-[var(--ds-background-warning-bold)]" />
               <span className="text-muted-foreground">&lt;30% ({metrics.krDistribution.low}%)</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -335,17 +335,17 @@ const StrategyPerformanceOverview = ({ metrics }: { metrics: PerformanceMetrics 
                   "flex items-start gap-3 p-3 rounded-lg border",
                   item.count > 0 
                     ? "bg-[var(--ds-background-information, rgba(37,99,235,0.08))] dark:bg-[var(--ds-background-information, rgba(37,99,235,0.15))] border-[var(--ds-background-information, rgba(37,99,235,0.3))]"
-                    : "bg-[var(--ds-surface-sunken, #F7F8F9)] dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]"
+                    : "bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface-sunken)] border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]"
                 )}>
                   <span className={cn(
                     "text-3xl font-bold leading-none",
-                    item.count > 0 ? "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" : "text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)]"
+                    item.count > 0 ? "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" : "text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)]"
                   )}>
                     {item.count}
                   </span>
                   <div>
-                    <div className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)] mb-0.5">{item.label}</div>
-                    <div className="text-[11px] text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)]">{item.sublabel}</div>
+                    <div className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)] mb-0.5">{item.label}</div>
+                    <div className="text-[11px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">{item.sublabel}</div>
                   </div>
                 </div>
               ))}
@@ -366,12 +366,12 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
     <div className="mb-8">
       <SectionTitle>Theme-Level Snapshot</SectionTitle>
       
-      <div className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] rounded-xl border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)] overflow-hidden">
+      <div className="bg-white dark:bg-[var(--ds-surface-sunken)] rounded-xl border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)] overflow-hidden">
         {/* Header */}
-        <div className="grid grid-cols-[1.4fr_0.8fr_0.8fr_0.7fr_0.9fr_1fr] gap-3 px-5 py-3 bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-b border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
+        <div className="grid grid-cols-[1.4fr_0.8fr_0.8fr_0.7fr_0.9fr_1fr] gap-3 px-5 py-3 bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface-sunken)] border-b border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]">
           {['Theme', 'Progress', 'Baseline', 'Trend', 'Risk Density', 'Coverage'].map((col, i) => (
             <span key={i} className={cn(
-              "text-[10px] font-semibold text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)] uppercase tracking-wider",
+              "text-[10px] font-semibold text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] uppercase tracking-wider",
               i > 0 && "text-right"
             )}>
               {col}
@@ -385,14 +385,14 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
             key={theme.id}
             className={cn(
               "grid grid-cols-[1.4fr_0.8fr_0.8fr_0.7fr_0.9fr_1fr] gap-3 px-5 py-3.5",
-              index < themes.length - 1 && "border-b border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]",
+              index < themes.length - 1 && "border-b border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]",
               theme.isBehind && "bg-[var(--ds-background-information, rgba(37,99,235,0.08))] dark:bg-[var(--ds-background-information, rgba(37,99,235,0.1))]"
             )}
           >
             {/* Theme Name */}
             <div className="flex items-center gap-2.5">
               <ThemeDot color={theme.color} />
-              <span className="text-sm font-medium text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)]">{theme.name}</span>
+              <span className="text-sm font-medium text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)]">{theme.name}</span>
             </div>
 
             {/* Progress */}
@@ -401,7 +401,7 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
                 <div 
                   className={cn(
                     "h-full rounded-full",
-                    theme.progress >= 70 ? "bg-secondary-green" : theme.progress >= 40 ? "bg-brand-primary" : "bg-[var(--ds-background-warning-bold, #E2B203)]"
+                    theme.progress >= 70 ? "bg-secondary-green" : theme.progress >= 40 ? "bg-brand-primary" : "bg-[var(--ds-background-warning-bold)]"
                   )}
                   style={{ width: `${theme.progress}%` }}
                 />
@@ -426,7 +426,7 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
             {/* Risk Density */}
             <span className={cn(
               "text-xs text-right",
-              theme.highRisks > 0 ? "text-[var(--ds-text-danger,#b85c38)] font-medium" : "text-muted-foreground"
+              theme.highRisks > 0 ? "text-[var(--ds-text-danger)] font-medium" : "text-muted-foreground"
             )}>
               {theme.highRisks > 0 ? `${theme.highRisks} High` : '—'} / {theme.totalKRs} KRs
             </span>
@@ -468,12 +468,12 @@ interface RiskCardProps {
 
 const RiskCard = ({ icon, title, items, accentColor }: RiskCardProps) => (
   <div 
-    className="p-5 rounded-xl bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]"
+    className="p-5 rounded-xl bg-white dark:bg-[var(--ds-surface-sunken)] border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]"
     style={{ borderLeftWidth: 3, borderLeftColor: accentColor }}
   >
     <div className="flex items-center gap-2.5 mb-4">
       <span style={{ color: accentColor }}>{icon}</span>
-      <span className="text-sm font-semibold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)]">{title}</span>
+      <span className="text-sm font-semibold text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)]">{title}</span>
     </div>
     <div className="flex flex-col gap-2.5">
       {items.map((item, i) => (
@@ -584,14 +584,14 @@ const RisksBlockersSummary = ({ riskMetrics, onDrillDown }: RisksBlockersSummary
 
 const FocusAreaItem = ({ number, text, severity }: { number: number; text: string; severity: FocusSeverity }) => {
   const severityColors: Record<FocusSeverity, string> = {
-    high: 'var(--ds-text-danger, #ef4444)',
-    medium: 'var(--ds-text-warning, #f59e0b)',
-    low: 'var(--ds-text-subtlest, #6b7280)',
+    high: 'var(--ds-text-danger)',
+    medium: 'var(--ds-text-warning)',
+    low: 'var(--ds-text-subtlest)',
   };
   
   return (
     <div 
-      className="flex gap-3.5 p-3.5 rounded-lg bg-[var(--ds-surface-sunken, #F7F8F9)] dark:bg-[var(--ds-surface-sunken, #F7F8F9)]"
+      className="flex gap-3.5 p-3.5 rounded-lg bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface-sunken)]"
       style={{ borderLeft: `3px solid ${severityColors[severity]}` }}
     >
       <span 
@@ -600,7 +600,7 @@ const FocusAreaItem = ({ number, text, severity }: { number: number; text: strin
       >
         {number}
       </span>
-      <p className="m-0 text-sm text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)] leading-relaxed">{text}</p>
+      <p className="m-0 text-sm text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)] leading-relaxed">{text}</p>
     </div>
   );
 };
@@ -610,7 +610,7 @@ const TopFocusAreas = ({ focusAreas }: { focusAreas: FocusArea[] }) => {
     return (
       <div className="mb-6">
         <SectionTitle>Top 5 Focus Areas</SectionTitle>
-        <div className="p-5 rounded-xl text-center bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)]">
+        <div className="p-5 rounded-xl text-center bg-white dark:bg-[var(--ds-surface-sunken)] border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
           No critical focus areas detected. Keep up the good work!
         </div>
       </div>
@@ -621,7 +621,7 @@ const TopFocusAreas = ({ focusAreas }: { focusAreas: FocusArea[] }) => {
     <div className="mb-6">
       <SectionTitle>Top 5 Focus Areas</SectionTitle>
       
-      <div className="p-5 rounded-xl bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
+      <div className="p-5 rounded-xl bg-white dark:bg-[var(--ds-surface-sunken)] border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]">
         <div className="flex flex-col gap-3">
           {focusAreas.map((area, i) => (
             <FocusAreaItem
@@ -717,17 +717,17 @@ export function StrategyAnalyticsModal({
         {/* Modal Container */}
         <div className={cn(
           "w-[95%] max-w-[1100px] max-h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden",
-          "bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)]",
-          "border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]"
+          "bg-white dark:bg-[var(--ds-surface-sunken)]",
+          "border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]"
         )}>
 
           {/* Header */}
-          <div className="flex justify-between items-start px-7 py-6 border-b border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)] bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)]">
+          <div className="flex justify-between items-start px-7 py-6 border-b border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)] bg-white dark:bg-[var(--ds-surface-sunken)]">
             <div>
-              <h2 className="text-xl font-semibold text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)] tracking-tight mb-1">
+              <h2 className="text-xl font-semibold text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)] tracking-tight mb-1">
                 Strategy Analytics Overview
               </h2>
-              <p className="text-sm text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)]">
+              <p className="text-sm text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
                 Based on all active themes in current strategy
               </p>
             </div>
@@ -738,28 +738,28 @@ export function StrategyAnalyticsModal({
                 <DropdownMenuTrigger asChild>
                   <button className={cn(
                     "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs transition-colors",
-                    "bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)]",
-                    "border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]",
-                    "text-[var(--ds-text-subtle,#57606A)] dark:text-[var(--ds-text-subtle, #44546F)]",
-                    "hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)]"
+                    "bg-white dark:bg-[var(--ds-surface-sunken)]",
+                    "border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]",
+                    "text-[var(--ds-text-subtle)] dark:text-[var(--ds-text-subtle)]",
+                    "hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-sunken)]"
                   )}>
                     <BarChart3 className="h-3.5 w-3.5" />
                     <span>{filterLabel}</span>
                     {selectedThemeIds.length > 0 && (
-                      <span className="px-1.5 py-0.5 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] rounded-full text-[10px] font-semibold text-white">
+                      <span className="px-1.5 py-0.5 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] rounded-full text-[10px] font-semibold text-white">
                         {selectedThemeIds.length}/{themes.length}
                       </span>
                     )}
                     <ChevronDown className="h-3 w-3 ml-0.5" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 z-[1100] bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
+                <DropdownMenuContent align="end" className="w-56 z-[1100] bg-white dark:bg-[var(--ds-surface-sunken)] border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]">
                   <DropdownMenuItem 
                     onClick={() => handleThemeToggle(null)}
                     className="flex items-center justify-between"
                   >
                     <span className="font-medium">All Themes</span>
-                    {selectedThemeIds.length === 0 && <Check className="h-4 w-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />}
+                    {selectedThemeIds.length === 0 && <Check className="h-4 w-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {themes.map(theme => (
@@ -775,7 +775,7 @@ export function StrategyAnalyticsModal({
                         />
                         <span className="truncate">{theme.name}</span>
                       </div>
-                      {selectedThemeIds.includes(theme.id) && <Check className="h-4 w-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />}
+                      {selectedThemeIds.includes(theme.id) && <Check className="h-4 w-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -783,7 +783,7 @@ export function StrategyAnalyticsModal({
               
               <button
                 onClick={onClose}
-                className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)] text-[var(--ds-text-subtlest,#8B949E)] hover:text-[var(--ds-text,#24292F)] dark:hover:text-[var(--ds-text-inverse, #FFFFFF)] transition-colors"
+                className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-sunken)] text-[var(--ds-text-subtlest)] hover:text-[var(--ds-text)] dark:hover:text-[var(--ds-text-inverse)] transition-colors"
                 aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
@@ -795,7 +795,7 @@ export function StrategyAnalyticsModal({
           <div 
             ref={contentRef} 
             id="analytics-report-content"
-            className="flex-1 overflow-y-auto p-7 bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[var(--ds-surface-sunken, #F7F8F9)]"
+            className="flex-1 overflow-y-auto p-7 bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface-sunken)]"
           >
             {isLoading ? (
               <div className="space-y-8">
@@ -822,8 +822,8 @@ export function StrategyAnalyticsModal({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-between items-center px-7 py-4 border-t border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)] bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[var(--ds-surface-sunken, #F7F8F9)]">
-            <p className="text-xs text-[var(--ds-text-subtlest,#8B949E)] dark:text-[var(--ds-text-subtlest, #626F86)]">
+          <div className="flex justify-between items-center px-7 py-4 border-t border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)] bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface-sunken)]">
+            <p className="text-xs text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
               Analytics are read-only; metrics update automatically as OKRs change.
             </p>
             
@@ -831,10 +831,10 @@ export function StrategyAnalyticsModal({
               <button 
                 className={cn(
                   "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium",
-                  "bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)]",
-                  "border border-[var(--ds-border,#E1E4E8)] dark:border-[var(--ds-background-neutral, #F1F2F4)]",
-                  "text-[var(--ds-text,#24292F)] dark:text-[var(--ds-text-inverse, #FFFFFF)]",
-                  "hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]",
+                  "bg-white dark:bg-[var(--ds-surface-sunken)]",
+                  "border border-[var(--ds-border)] dark:border-[var(--ds-background-neutral)]",
+                  "text-[var(--ds-text)] dark:text-[var(--ds-text-inverse)]",
+                  "hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]",
                   "disabled:opacity-50"
                 )}
                 onClick={handleExportPDF}
@@ -845,7 +845,7 @@ export function StrategyAnalyticsModal({
               </button>
               <button 
                 onClick={onClose} 
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)] text-white"
               >
                 Close
               </button>

@@ -39,15 +39,15 @@ export default function TestCasesOverviewWidget({ collapsed, onToggleCollapse }:
       headerBadges={<Lozenge appearance="default">{String(total)}</Lozenge>}
     >
       {isLoading ? (
-        <div style={{ padding: 24, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading…</div>
+        <div style={{ padding: 24, color: 'var(--ds-text-subtlest)' }}>Loading…</div>
       ) : total === 0 ? (
         <EmptyState header="No test cases yet" description="Create test cases in the Repository tab to see them here." />
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-          <KpiTile label="Approved" value={counts.APPROVED} color="var(--ds-text-success, #216E4E)" />
-          <KpiTile label="In review" value={counts.REVIEW} color="var(--ds-text-information, #0055CC)" />
-          <KpiTile label="Draft" value={counts.DRAFT} color="var(--ds-text-subtle, #44546F)" />
-          <KpiTile label="Deprecated" value={counts.DEPRECATED} color="var(--ds-text-subtlest, #626F86)" />
+          <KpiTile label="Approved" value={counts.APPROVED} color="var(--ds-text-success)" />
+          <KpiTile label="In review" value={counts.REVIEW} color="var(--ds-text-information)" />
+          <KpiTile label="Draft" value={counts.DRAFT} color="var(--ds-text-subtle)" />
+          <KpiTile label="Deprecated" value={counts.DEPRECATED} color="var(--ds-text-subtlest)" />
         </div>
       )}
     </WidgetWrapper>
@@ -57,12 +57,12 @@ export default function TestCasesOverviewWidget({ collapsed, onToggleCollapse }:
 function KpiTile({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div style={{
-      background: 'var(--ds-surface-raised, #FFFFFF)',
-      border: '1px solid var(--ds-border, #DFE1E6)',
+      background: 'var(--ds-surface-raised)',
+      border: '1px solid var(--ds-border)',
       borderRadius: 6,
       padding: 12,
     }}>
-      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>{label}</div>
       <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color }}>{value}</div>
     </div>
   );

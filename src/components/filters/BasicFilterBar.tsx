@@ -97,16 +97,16 @@ function ChipButton({ label, count, isOpen, onClick, chipRef }: ChipButtonProps)
         padding: '0 8px',
         borderRadius: 3,
         border: `1px solid ${isOpen || active
-          ? token('color.border.selected', 'var(--ds-link, #0C66E4)')
-          : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          ? token('color.border.selected', 'var(--ds-link)')
+          : token('color.border', 'var(--ds-border)')}`,
         background: active
-          ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
+          ? token('color.background.selected', 'var(--ds-background-selected)')
           : isOpen
-            ? `var(--ds-background-neutral-subtle-hovered, #F4F5F7)`
-            : `var(--ds-surface, #FFFFFF)`,
+            ? `var(--ds-background-neutral-subtle-hovered)`
+            : `var(--ds-surface)`,
         color: active || isOpen
-          ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
-          : token('color.text', 'var(--ds-text, #172B4D)'),
+          ? token('color.text.selected', 'var(--ds-link)')
+          : token('color.text', 'var(--ds-text)'),
         fontSize: 'var(--ds-font-size-300)',
         fontWeight: 400,
         fontFamily: 'inherit',
@@ -126,8 +126,8 @@ function ChipButton({ label, count, isOpen, onClick, chipRef }: ChipButtonProps)
             height: 18,
             padding: '0 4px',
             borderRadius: 10,
-            background: token('color.background.accent.blue.bolder', 'var(--ds-link, #0C66E4)'),
-            color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+            background: token('color.background.accent.blue.bolder', 'var(--ds-link)'),
+            color: token('color.text.inverse', 'var(--ds-text-inverse)'),
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 653,
           }}
@@ -202,8 +202,8 @@ function DropdownShell({
         left: pos.left,
         width,
         zIndex: 9999,
-        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 4,
         boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
         maxHeight: 'calc(100vh - 200px)',
@@ -218,10 +218,10 @@ function DropdownShell({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '8px 12px',
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         }}>
           {label && (
-            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
               {label}
             </span>
           )}
@@ -266,12 +266,12 @@ function CheckRow({
         padding: '8px 12px',
         cursor: 'pointer',
         background: isChecked
-          ? `var(--ds-background-selected, #E9F2FF)`
+          ? `var(--ds-background-selected)`
           : 'transparent',
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
       }}
       onMouseEnter={e => {
-        if (!isChecked) (e.currentTarget as HTMLElement).style.background = `var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral-subtle, #F4F5F7))`;
+        if (!isChecked) (e.currentTarget as HTMLElement).style.background = `var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral-subtle))`;
       }}
       onMouseLeave={e => {
         if (!isChecked) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -295,7 +295,7 @@ function MoreSection({ label, children }: { label: string; children: React.React
         padding: '8px 12px 4px',
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 653,
-        color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+        color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
       }}>
         {label}
       </div>
@@ -380,7 +380,7 @@ export function BasicFilterBar({
             onClear={() => upd('assignees', [])}
           >
             {assignees.length === 0 ? (
-              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
+              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontStyle: 'italic' }}>
                 {isLoading ? 'Loading…' : 'No assignees found'}
               </div>
             ) : (
@@ -420,7 +420,7 @@ export function BasicFilterBar({
             onClear={() => upd('workType', [])}
           >
             {workTypes.length === 0 ? (
-              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
+              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontStyle: 'italic' }}>
                 {isLoading ? 'Loading…' : 'No work types found'}
               </div>
             ) : (
@@ -455,7 +455,7 @@ export function BasicFilterBar({
             onClear={() => upd('status', [])}
           >
             {statuses.length === 0 ? (
-              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
+              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontStyle: 'italic' }}>
                 {isLoading ? 'Loading…' : 'No statuses found'}
               </div>
             ) : (
@@ -528,7 +528,7 @@ export function BasicFilterBar({
             {/* Reporter */}
             <MoreSection label="Reporter">
               {reporters.length === 0 ? (
-                <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
+                <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontStyle: 'italic' }}>
                   {isLoading ? 'Loading…' : 'No reporters found'}
                 </div>
               ) : (
@@ -583,7 +583,7 @@ export function BasicFilterBar({
               <div style={{ padding: '4px 12px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 8, alignItems: 'end' }}>
                   <div>
-                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>From</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 4 }}>From</div>
                     <DatePicker
                       value={value.created.from || ''}
                       onChange={(v: string) => upd('created', { ...value.created, from: v || null })}
@@ -592,9 +592,9 @@ export function BasicFilterBar({
                       spacing="compact"
                     />
                   </div>
-                  <div style={{ paddingBottom: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 'var(--ds-font-size-200)' }}>→</div>
+                  <div style={{ paddingBottom: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-200)' }}>→</div>
                   <div>
-                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>To</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 4 }}>To</div>
                     <DatePicker
                       value={value.created.to || ''}
                       onChange={(v: string) => upd('created', { ...value.created, to: v || null })}
@@ -611,7 +611,7 @@ export function BasicFilterBar({
               <div style={{ padding: '4px 12px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 8, alignItems: 'end' }}>
                   <div>
-                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>From</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 4 }}>From</div>
                     <DatePicker
                       value={value.updated.from || ''}
                       onChange={(v: string) => upd('updated', { ...value.updated, from: v || null })}
@@ -620,9 +620,9 @@ export function BasicFilterBar({
                       spacing="compact"
                     />
                   </div>
-                  <div style={{ paddingBottom: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 'var(--ds-font-size-200)' }}>→</div>
+                  <div style={{ paddingBottom: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-200)' }}>→</div>
                   <div>
-                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>To</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 4 }}>To</div>
                     <DatePicker
                       value={value.updated.to || ''}
                       onChange={(v: string) => upd('updated', { ...value.updated, to: v || null })}

@@ -24,7 +24,7 @@ export function AutoSaveIndicator({ status, className }: AutoSaveIndicatorProps)
       )}
       {status === 'saved' && (
         <>
-          <Check className="w-3 h-3 text-[var(--ds-chart-teal-bold, #0d9488)]" />
+          <Check className="w-3 h-3 text-[var(--ds-chart-teal-bold)]" />
           <span className="text-gray-500 dark:text-gray-400">Draft saved</span>
         </>
       )}

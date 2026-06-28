@@ -23,11 +23,11 @@ interface PriorityIconProps {
 }
 
 const COLORS: Record<PriorityLevel, string> = {
-  Highest: 'var(--ds-icon-danger, #C9372C)',
-  High: 'var(--ds-icon-danger, #C9372C)',
-  Medium: 'var(--ds-icon-warning, #B65C02)',
-  Low: 'var(--ds-icon-information, #0055CC)',
-  Lowest: 'var(--ds-icon-subtle, #758195)',
+  Highest: 'var(--ds-icon-danger)',
+  High: 'var(--ds-icon-danger)',
+  Medium: 'var(--ds-icon-warning)',
+  Low: 'var(--ds-icon-information)',
+  Lowest: 'var(--ds-icon-subtle)',
 };
 
 function normalize(raw: string | null | undefined): PriorityLevel | null {

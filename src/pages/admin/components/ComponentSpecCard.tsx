@@ -31,14 +31,14 @@ const REPO_ROOT = '/Users/vikramindla/Documents/GitHub/catalyst-prod-45';
 // ─── Hub utilities (mirrored from ComponentsAdminPage for consumer badges) ────
 
 const SPEC_HUB_COLORS: Record<string, string> = {
-  Projects:  'var(--ds-link, #0C66E4)',
-  Products:  'var(--ds-background-discovery-bold, #6E5DC6)',
-  Home:      'var(--ds-background-success-bold, #1F845A)',
-  Incidents: 'var(--ds-text-danger, #AE2A19)',
-  Admin:     'var(--ds-icon-subtle, #626F86)',
-  Shared:    'var(--ds-text-subtle, #44546F)',
-  Other:     'var(--ds-text-disabled, #8590A2)',
-  Deferred:  'var(--ds-border, #DFE1E6)',
+  Projects:  'var(--ds-link)',
+  Products:  'var(--ds-background-discovery-bold)',
+  Home:      'var(--ds-background-success-bold)',
+  Incidents: 'var(--ds-text-danger)',
+  Admin:     'var(--ds-icon-subtle)',
+  Shared:    'var(--ds-text-subtle)',
+  Other:     'var(--ds-text-disabled)',
+  Deferred:  'var(--ds-border)',
 };
 
 function getHubForConsumer(filePath: string): string {
@@ -77,7 +77,7 @@ function CategoryBadge({ category }: { category: ComponentRegistryEntry['categor
         padding: '2px 8px',
         borderRadius: 3,
         background: token('color.background.neutral', '#091E420F'),
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
       }}
     >
       {label}
@@ -92,7 +92,7 @@ function VscodeLink({ path, label }: { path: string; label?: string }) {
     <a
       href={href}
       style={{
-        color: token('color.link', 'var(--ds-link, #0C66E4)'),
+        color: token('color.link', 'var(--ds-link)'),
         textDecoration: 'none',
         fontFamily: 'var(--ds-font-family-code)',
         fontSize: 'var(--ds-font-size-200)',
@@ -110,14 +110,14 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
       <div
         style={{
           marginTop: token('space.100', '8px'),
-          border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+          border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
           borderRadius: 6,
           overflow: 'hidden',
         }}
       >
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-300)' }}>
           <thead>
-            <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
+            <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)') }}>
               <th style={{ textAlign: 'left', padding: token('space.100', '8px'), fontWeight: 600 }}>Flag</th>
               <th style={{ textAlign: 'left', padding: token('space.100', '8px'), fontWeight: 600 }}>Default</th>
               <th style={{ textAlign: 'left', padding: token('space.100', '8px'), fontWeight: 600 }}>Description</th>
@@ -125,13 +125,13 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
           </thead>
           <tbody>
             {flags.map(flag => (
-              <tr key={flag.name} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}>
+              <tr key={flag.name} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}` }}>
                 <td
                   style={{
                     padding: token('space.100', '8px'),
                     fontFamily: 'var(--ds-font-family-code)',
                     fontSize: 'var(--ds-font-size-200)',
-                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                     verticalAlign: 'top',
                   }}
                 >
@@ -140,7 +140,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                 <td
                   style={{
                     padding: token('space.100', '8px'),
-                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                     verticalAlign: 'top',
                   }}
                 >
@@ -149,7 +149,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                 <td
                   style={{
                     padding: token('space.100', '8px'),
-                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                     verticalAlign: 'top',
                   }}
                 >
@@ -173,7 +173,7 @@ function ConsumerList({ name }: { name: string }) {
     return (
       <div
         style={{
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
           fontSize: 'var(--ds-font-size-300)',
           fontStyle: 'italic',
         }}
@@ -199,7 +199,7 @@ function ConsumerList({ name }: { name: string }) {
         <Heading size="xsmall">Consumers</Heading>
         <Badge>{consumers.length}</Badge>
         {variants.length > 1 && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))') }}>
             across {variants.length} import source{variants.length === 1 ? '' : 's'}
           </span>
         )}
@@ -216,7 +216,7 @@ function ConsumerList({ name }: { name: string }) {
       >
         {visible.map(path => {
           const hub = getHubForConsumer(path);
-          const hubColor = SPEC_HUB_COLORS[hub] ?? 'var(--ds-text-disabled, #8590A2)';
+          const hubColor = SPEC_HUB_COLORS[hub] ?? 'var(--ds-text-disabled)';
           return (
             <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span
@@ -271,7 +271,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
           <Heading size="large">{entry.name}</Heading>
           <StatusBadge status={entry.status} />
           <CategoryBadge category={entry.category} />
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))') }}>
             v{entry.version}
           </span>
         </div>
@@ -287,7 +287,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
             style={{
               marginTop: token('space.075', '6px'),
               fontSize: 'var(--ds-font-size-200)',
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             }}
           >
             Atlaskit package: <code>{entry.atlaskit_package}</code>
@@ -301,7 +301,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
               target="_blank"
               rel="noreferrer"
               style={{
-                color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                color: token('color.link', 'var(--ds-link)'),
                 fontSize: 'var(--ds-font-size-200)',
                 textDecoration: 'none',
               }}
@@ -317,7 +317,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
               marginTop: token('space.200', '16px'),
               fontSize: 'var(--ds-font-size-400)',
               lineHeight: '20px',
-              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
             }}
           >
             {entry.jsdoc_excerpt}
@@ -330,8 +330,8 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
           style={{
             padding: token('space.150', '12px'),
             borderRadius: 6,
-            background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
-            color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
+            background: token('color.background.warning', 'var(--ds-background-warning)'),
+            color: token('color.text.warning', 'var(--ds-text-warning)'),
             fontSize: 'var(--ds-font-size-300)',
           }}
         >
@@ -369,7 +369,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
                 padding: '2px 8px',
                 borderRadius: 12,
                 background: token('color.background.neutral', '#091E420F'),
-                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
               }}
             >
               {tag}

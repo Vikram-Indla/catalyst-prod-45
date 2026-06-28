@@ -129,7 +129,7 @@ function totalBg(ms: number, max: number): string {
   if (!ms || max <= 0) return 'transparent';
   const ratio = Math.min(1, ms / max);
   if (ratio < 0.5) return 'transparent';
-  return 'var(--ds-background-neutral, #F1F2F4)';
+  return 'var(--ds-background-neutral)';
 }
 
 const ROW_HEIGHT = 35;
@@ -230,7 +230,7 @@ export default function TimeInStatusFullscreenModal({
                 justifyContent: 'space-between',
                 gap: token('space.200', '16px'),
                 padding: '8px 0 16px 0',
-                borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               }}
             >
               <div style={{ display: 'flex', gap: 4, overflowX: 'auto', minWidth: 0 }}>
@@ -250,8 +250,8 @@ export default function TimeInStatusFullscreenModal({
                         ...(active ? SMALL_STRONG : SMALL),
                         borderRadius: 'var(--ds-border-radius, 3px)',
                         border: '1px solid transparent',
-                        background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
-                        color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
+                        background: active ? 'var(--ds-background-neutral)' : 'transparent',
+                        color: active ? 'var(--ds-text)' : 'var(--ds-text-subtle)',
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
                       }}
@@ -276,8 +276,8 @@ export default function TimeInStatusFullscreenModal({
                         ...(active ? SMALL_STRONG : SMALL),
                         borderRadius: 'var(--ds-border-radius, 3px)',
                         border: '1px solid transparent',
-                        background: active ? 'var(--ds-background-neutral, #F1F2F4)' : 'transparent',
-                        color: active ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtle, #505258)',
+                        background: active ? 'var(--ds-background-neutral)' : 'transparent',
+                        color: active ? 'var(--ds-text)' : 'var(--ds-text-subtle)',
                         cursor: 'pointer',
                       }}
                       title={WINDOW_LABELS[w]}
@@ -322,16 +322,16 @@ export default function TimeInStatusFullscreenModal({
                   }}
                 >
                   <thead>
-                    <tr style={{ background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), position: 'sticky', top: 0, zIndex: 2 }}>
+                    <tr style={{ background: token('elevation.surface', 'var(--ds-surface)'), position: 'sticky', top: 0, zIndex: 2 }}>
                       <th
                         style={{
                           position: 'sticky', left: 0, zIndex: 3,
-                          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                          background: token('elevation.surface', 'var(--ds-surface)'),
                           width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           textAlign: 'left',
                           padding: '4px',
                           borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
-                          borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                          borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                           ...STRONG,
                           fontWeight: 500,
                         }}
@@ -346,7 +346,7 @@ export default function TimeInStatusFullscreenModal({
                             textAlign: 'left',
                             padding: '4px',
                             borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
-                            borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                            borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                           }}
                         >
                           {/* 2026-06-10 — Jira-canonical StatusPill
@@ -364,7 +364,7 @@ export default function TimeInStatusFullscreenModal({
                           borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
                           ...STRONG,
                           fontWeight: 500,
-                          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                          background: token('elevation.surface', 'var(--ds-surface)'),
                           position: 'sticky', right: 0, zIndex: 2,
                         }}
                       >
@@ -377,17 +377,17 @@ export default function TimeInStatusFullscreenModal({
                       <tr
                         key={r.issue_key}
                         style={{ height: ROW_HEIGHT }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                       >
                         <td
                           style={{
                             position: 'sticky', left: 0,
-                            background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-                            boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--ds-border, #DFE1E6)'),
+                            background: token('elevation.surface', 'var(--ds-surface)'),
+                            boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--ds-border)'),
                             padding: '4px',
-                            borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-                            borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                            borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                            borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                             width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           }}
                         >
@@ -402,7 +402,7 @@ export default function TimeInStatusFullscreenModal({
                             <span
                               style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 8,
-                                color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                                color: token('color.link', 'var(--ds-link)'),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                                 ...BODY, whiteSpace: 'nowrap',
                                 flexShrink: 0,
@@ -418,7 +418,7 @@ export default function TimeInStatusFullscreenModal({
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
                                 ...BODY,
-                                color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                                color: token('color.link', 'var(--ds-link)'),
                               }}
                             >
                               {r.title}
@@ -439,8 +439,8 @@ export default function TimeInStatusFullscreenModal({
                               style={{
                                 minWidth: STATUS_COL_MIN,
                                 padding: '4px',
-                                borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-                                borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                                borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+                                borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                                 background: categoryBg(s.category, ms),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                                 ...SMALL,
@@ -478,10 +478,10 @@ export default function TimeInStatusFullscreenModal({
                                         <span
                                           style={{
                                             ...LABEL,
-                                            color: 'var(--ds-text-accent-red, #AE2A19)',
+                                            color: 'var(--ds-text-accent-red)',
                                             padding: '0 4px',
                                             borderRadius: 'var(--ds-border-radius, 4px)',
-                                            background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
+                                            background: 'var(--ds-background-accent-red-subtler)',
                                           }}
                                           aria-label={`${visits} visits`}
                                         >
@@ -501,7 +501,7 @@ export default function TimeInStatusFullscreenModal({
                           style={{
                             padding: '4px',
                             textAlign: 'right',
-                            borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                            borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                             ...STRONG,
                             background: totalBg(r.totalMs, totalMax),

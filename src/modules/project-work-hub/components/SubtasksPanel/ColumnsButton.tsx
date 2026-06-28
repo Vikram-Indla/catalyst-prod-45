@@ -76,8 +76,8 @@ export function ColumnsButton({ columns, onChange }: ColumnsButtonProps) {
           position: 'fixed',
           top: rect.bottom + 4,
           right: window.innerWidth - rect.right,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-surface-overlay)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 6,
           boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
           padding: '4px 0',
@@ -106,7 +106,7 @@ export function ColumnsButton({ columns, onChange }: ColumnsButtonProps) {
                 border: 'none',
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 fontSize: 'var(--ds-font-size-400)',
-                color: 'var(--ds-text, #172B4D)',
+                color: 'var(--ds-text)',
                 textAlign: 'left',
                 opacity: disabled ? 0.5 : 1,
               }}
@@ -129,12 +129,12 @@ export function ColumnsButton({ columns, onChange }: ColumnsButtonProps) {
                   height: 16,
                   borderRadius: 3,
                   border: checked
-                    ? '1px solid var(--cp-primary-60, #0052CC)'
-                    : '1px solid var(--ds-border, #C1C7D0)',
+                    ? '1px solid var(--cp-primary-60)'
+                    : '1px solid var(--ds-border)',
                   background: checked
-                    ? 'var(--cp-primary-60, #0052CC)'
+                    ? 'var(--cp-primary-60)'
                     : 'transparent',
-                  color: 'var(--ds-text-inverse, #FFFFFF)',
+                  color: 'var(--ds-text-inverse)',
                   flexShrink: 0,
                 }}
               >

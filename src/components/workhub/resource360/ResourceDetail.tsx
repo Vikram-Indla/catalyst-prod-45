@@ -123,20 +123,20 @@ function useResourceUtilById(id: string) {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  'To Do': 'var(--ds-text-subtlest, #94a3b8)',
-  'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'In Review': 'var(--ds-background-discovery-bold, #7C3AED)',
-  'Done': 'var(--ds-text-success, #16a34a)',
-  'Blocked': 'var(--ds-text-danger, #ef4444)',
-  'Cancelled': 'var(--ds-text-subtlest, #626F86)',
+  'To Do': 'var(--ds-text-subtlest)',
+  'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'In Review': 'var(--ds-background-discovery-bold)',
+  'Done': 'var(--ds-text-success)',
+  'Blocked': 'var(--ds-text-danger)',
+  'Cancelled': 'var(--ds-text-subtlest)',
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': 'var(--ds-link-pressed, #1e40af)',
-  'Story': 'var(--ds-text-success, #216E4E)',
-  'Sub-task': 'var(--ds-background-discovery, #312e81)',
-  'Bug': 'var(--ds-text-danger, #dc2626)',
-  'Task': 'var(--ds-chart-teal-bold, #0d9488)',
+  'Epic': 'var(--ds-link-pressed)',
+  'Story': 'var(--ds-text-success)',
+  'Sub-task': 'var(--ds-background-discovery)',
+  'Bug': 'var(--ds-text-danger)',
+  'Task': 'var(--ds-chart-teal-bold)',
 };
 
 export function ResourceDetail() {
@@ -333,7 +333,7 @@ export function ResourceDetail() {
                         style={{
                           height: 44,
                           borderBottom: '1px solid var(--bg-1)',
-                          background: overdue ? 'var(--ds-background-danger, #fef2f2)' : 'var(--cp-float)',
+                          background: overdue ? 'var(--ds-background-danger)' : 'var(--cp-float)',
                           transition: 'background 100ms',
                         }}
                         className="wh-detail-row"

@@ -78,7 +78,7 @@ export const AddLinkForm: React.FC<AddLinkFormProps> = ({ onAdd }) => {
         style={{
           padding: '12px 20px',
           backgroundColor: COLORS.accent,
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           border: 'none',
           borderRadius: '12px',
           fontSize: 'var(--ds-font-size-400)',

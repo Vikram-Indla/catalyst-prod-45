@@ -74,7 +74,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+          color: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
         }}
       >
         <svg

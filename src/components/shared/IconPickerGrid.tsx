@@ -106,11 +106,11 @@ export function IconPickerGrid({
               borderRadius: 8,
               cursor: 'pointer',
               background: selected
-                ? 'var(--ds-background-selected, #E9F2FE)'
-                : 'var(--ds-surface, #FFFFFF)',
+                ? 'var(--ds-background-selected)'
+                : 'var(--ds-surface)',
               border: selected
-                ? '2px solid var(--ds-border-selected, #0C66E4)'
-                : '1px solid var(--ds-border, #DFE1E6)',
+                ? '2px solid var(--ds-border-selected)'
+                : '1px solid var(--ds-border)',
               transition: 'background 100ms ease, border-color 100ms ease',
             }}
             onMouseEnter={(e) => {
@@ -120,7 +120,7 @@ export function IconPickerGrid({
             }}
             onMouseLeave={(e) => {
               if (selected) return;
-              e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
+              e.currentTarget.style.background = 'var(--ds-surface)';
             }}
           >
             <img

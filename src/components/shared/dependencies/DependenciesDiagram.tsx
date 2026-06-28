@@ -57,18 +57,18 @@ const HEADER_H = 48;
 const PAD_X = 32;
 const PAD_Y = 32;
 const LANE_GAP = 24;
-const LINK = 'var(--ds-link, #0C66E4)';
+const LINK = 'var(--ds-link)';
 // Edge colours (Vikram 2026-06-25):
 //  • IDLE  = neutral grey #505258 (ADS --ds-text-subtle).
 //  • ACTIVE = Atlassian link blue — applied on edge hover, on a clicked/selected
 //    edge (persists), and on every edge connected to a clicked card.
 //    Esc clears all selection → back to grey.
-const EDGE_GREY = 'var(--ds-text-subtle, #505258)';
-const EDGE_BLUE = 'var(--ds-link, #0C66E4)';
+const EDGE_GREY = 'var(--ds-text-subtle)';
+const EDGE_BLUE = 'var(--ds-link)';
 // ads-scanner:ignore-next-line — SVG marker fill needs a concrete color, not a CSS var()
-const EDGE_GREY_HEX = 'var(--ds-text-subtle, #505258)';
+const EDGE_GREY_HEX = 'var(--ds-text-subtle)';
 // ads-scanner:ignore-next-line — SVG marker fill needs a concrete color, not a CSS var()
-const EDGE_BLUE_HEX = 'var(--ds-link, #0C66E4)';
+const EDGE_BLUE_HEX = 'var(--ds-link)';
 const EDGE_WIDTH = 2;
 
 type GroupBy = 'none' | 'status' | 'type' | 'assignee';
@@ -126,14 +126,14 @@ function FrameNode({ data }: { data: any }) {
         height: '100%',
         borderRadius: 8,
         background: 'var(--ds-background-neutral, rgba(5,21,36,0.06))',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px' }}>
         {data.projectKey ? (
           <ProjectIcon projectKey={data.projectKey} name={data.label} color={data.color} size="small" />
         ) : null}
-        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 653, color: 'var(--ds-text, #292A2E)' }}>{data.label}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 653, color: 'var(--ds-text)' }}>{data.label}</span>
       </div>
     </div>
   );
@@ -190,7 +190,7 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
         fontSize: 'var(--ds-font-size-400)',
         whiteSpace: 'nowrap',
         cursor: opts.disabled ? 'not-allowed' : 'pointer',
-        color: opts.disabled ? 'var(--ds-text-disabled, #B3B9C4)' : 'var(--ds-text, #292A2E)',
+        color: opts.disabled ? 'var(--ds-text-disabled)' : 'var(--ds-text)',
       }}
     >
       {label}
@@ -217,7 +217,7 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
           borderRadius: 4,
           background: 'transparent',
           cursor: 'pointer',
-          color: 'var(--ds-text-subtle, #505258)',
+          color: 'var(--ds-text-subtle)',
         }}
       >
         <MoreHorizontal size={16} />
@@ -239,8 +239,8 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
                 left: rect.left - 240,
                 minWidth: 280,
                 zIndex: 9999,
-                background: 'var(--ds-surface-overlay, #FFFFFF)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface-overlay)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 8,
                 boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
                 padding: '8px 0',
@@ -269,14 +269,14 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
                     width: '100%',
                     padding: '12px 16px',
                     border: 'none',
-                    borderLeft: subOpen ? '2px solid var(--ds-border-selected, #1868DB)' : '2px solid transparent',
-                    background: subOpen ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                    borderLeft: subOpen ? '2px solid var(--ds-border-selected)' : '2px solid transparent',
+                    background: subOpen ? 'var(--ds-background-selected)' : 'transparent',
                     textAlign: 'left',
                     fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")',
                     fontSize: 'var(--ds-font-size-400)',
                     whiteSpace: 'nowrap',
                     cursor: 'pointer',
-                    color: subOpen ? 'var(--ds-text-selected, #1868DB)' : 'var(--ds-text, #292A2E)',
+                    color: subOpen ? 'var(--ds-text-selected)' : 'var(--ds-text)',
                   }}
                 >
                   Highlight related work item
@@ -293,8 +293,8 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
                       minWidth: 280,
                       maxWidth: 380,
                       zIndex: 10000,
-                      background: 'var(--ds-surface-overlay, #FFFFFF)',
-                      border: '1px solid var(--ds-border, #DFE1E6)',
+                      background: 'var(--ds-surface-overlay)',
+                      border: '1px solid var(--ds-border)',
                       borderRadius: 8,
                       boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
                       padding: '8px 0',
@@ -302,14 +302,14 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
                     }}
                   >
                     {relatedItems.length === 0 ? (
-                      <div style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>No related work items</div>
+                      <div style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>No related work items</div>
                     ) : (
                       (['outgoing', 'incoming'] as const).map((dir) => {
                         const list = relatedItems.filter((r) => r.direction === dir);
                         if (list.length === 0) return null;
                         return (
                           <div key={dir}>
-                            <div style={{ padding: '8px 16px 4px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtle, #505258)' }}>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtle)' }}>
                               {dir === 'outgoing' ? 'Outgoing dependencies' : 'Incoming dependencies'}
                             </div>
                             {list.map((r) => (
@@ -330,7 +330,7 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
                                   fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")',
                                   fontSize: 'var(--ds-font-size-400)',
                                   cursor: 'pointer',
-                                  color: 'var(--ds-text, #292A2E)',
+                                  color: 'var(--ds-text)',
                                   minWidth: 0,
                                 }}
                               >
@@ -359,7 +359,7 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
 function WorkItemNode({ data }: { data: any }) {
   const m = data.meta || {};
   const label = data.label as string;
-  const metaStyle = { fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' };
+  const metaStyle = { fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' };
   return (
     <div
       style={{
@@ -369,12 +369,12 @@ function WorkItemNode({ data }: { data: any }) {
         width: CARD_W,
         padding: '8px 16px',
         borderRadius: 4,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        background: 'var(--ds-surface-overlay)',
         // Selected (clicked) OR focus-linked card → primary-blue border, matching
         // the blue connected wires (Vikram 2026-06-25). Esc / pane click clears.
         border: (data.focused || data.selected || data.highlight)
-          ? '2px solid var(--ds-link, #0C66E4)'
-          : '1px solid var(--ds-border, #DFE1E6)',
+          ? '2px solid var(--ds-link)'
+          : '1px solid var(--ds-border)',
         boxShadow: (data.focused || data.selected || data.highlight)
           ? 'var(--ds-shadow-overlay, 0 0 0 2px rgba(12,102,228,0.3))'
           : 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.13))',
@@ -411,7 +411,7 @@ function WorkItemNode({ data }: { data: any }) {
         <span
           style={{
             fontSize: 'var(--ds-font-size-500)',
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -425,11 +425,11 @@ function WorkItemNode({ data }: { data: any }) {
         <span style={{ display: 'flex', gap: 12, minWidth: 0 }}>
           <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <span style={metaStyle}>Start date</span>
-            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>{fmtDate(m.start_date)}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>{fmtDate(m.start_date)}</span>
           </span>
           <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <span style={metaStyle}>End date</span>
-            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>{fmtDate(m.end_date)}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>{fmtDate(m.end_date)}</span>
           </span>
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
@@ -441,10 +441,10 @@ function WorkItemNode({ data }: { data: any }) {
             // Jira's "TO DO" / "IN PROGRESS" rendering. (2026-06-25)
             const cat = normalizeCategory(m.status_category);
             const c = cat === 'Done'
-              ? 'var(--ds-text-success, #216E4E)'
+              ? 'var(--ds-text-success)'
               : cat === 'In Progress'
-                ? 'var(--ds-text-information, #0055CC)'
-                : 'var(--ds-text-subtle, #44546F)';
+                ? 'var(--ds-text-information)'
+                : 'var(--ds-text-subtle)';
             return (
               <span
                 style={{
@@ -454,7 +454,7 @@ function WorkItemNode({ data }: { data: any }) {
                   padding: '0 8px',
                   border: `1px solid ${c}`,
                   borderRadius: 3,
-                  background: 'var(--ds-surface, #FFFFFF)',
+                  background: 'var(--ds-surface)',
                   fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 700,
                   letterSpacing: '0.5px',
@@ -508,8 +508,8 @@ function DependencyEdge({
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
             pointerEvents: 'all',
             fontSize: 'var(--ds-font-size-200)',
-            color: 'var(--ds-text, #292A2E)',
-            background: 'var(--ds-surface, #FFFFFF)',
+            color: 'var(--ds-text)',
+            background: 'var(--ds-surface)',
             border: 'none',
             borderRadius: 4,
             padding: '4px 8px',
@@ -541,7 +541,7 @@ function IssueRow({ k, meta }: { k: string; meta: any }) {
       <span
         style={{
           fontSize: 'var(--ds-font-size-400)',
-          color: 'var(--ds-text, #292A2E)',
+          color: 'var(--ds-text)',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -592,8 +592,8 @@ function RelationshipPopup({
         left,
         width,
         zIndex: 9999,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 8,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
         padding: 12,
@@ -601,13 +601,13 @@ function RelationshipPopup({
       }}
     >
       {/* Source band (grey, rounded) */}
-      <div style={{ background: 'var(--ds-background-neutral, #F1F2F4)', borderRadius: 6 }}>
+      <div style={{ background: 'var(--ds-background-neutral)', borderRadius: 6 }}>
         <IssueRow k={sel.sourceKey} meta={sel.sourceMeta} />
       </div>
       {/* Link row (white) — vertical connector line runs through the chain circle,
           aligned under the band type icons (Jira parity, 2026-06-25). */}
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px 8px 8px' }}>
-        <span aria-hidden style={{ position: 'absolute', left: 21, top: 0, bottom: 0, width: 2, background: 'var(--ds-text-subtle, #505258)' }} />
+        <span aria-hidden style={{ position: 'absolute', left: 21, top: 0, bottom: 0, width: 2, background: 'var(--ds-text-subtle)' }} />
         <span style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
           <span
             style={{
@@ -617,13 +617,13 @@ function RelationshipPopup({
               width: 28,
               height: 28,
               borderRadius: '50%',
-              background: 'var(--ds-background-neutral-bold, #44546F)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--ds-background-neutral-bold)',
+              color: 'var(--ds-text-inverse)',
             }}
           >
             <Link size={14} />
           </span>
-          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>{sel.label}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{sel.label}</span>
         </span>
         <button
           type="button"
@@ -641,14 +641,14 @@ function RelationshipPopup({
             borderRadius: 4,
             background: 'transparent',
             cursor: 'pointer',
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
           }}
         >
           <Unlink size={16} />
         </button>
       </div>
       {/* Target band (grey, rounded) */}
-      <div style={{ background: 'var(--ds-background-neutral, #F1F2F4)', borderRadius: 6 }}>
+      <div style={{ background: 'var(--ds-background-neutral)', borderRadius: 6 }}>
         <IssueRow k={sel.targetKey} meta={sel.targetMeta} />
       </div>
     </div>,
@@ -680,7 +680,7 @@ function ZoomBar({
     background: 'transparent',
     cursor: 'pointer',
     fontSize: 'var(--ds-font-size-300)',
-    color: 'var(--ds-text, #292A2E)',
+    color: 'var(--ds-text)',
     padding: '4px 8px',
     borderRadius: 3,
   };
@@ -695,27 +695,27 @@ function ZoomBar({
         alignItems: 'center',
         gap: 4,
         padding: '4px 8px',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 8,
         boxShadow: 'var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.16))',
       }}
     >
-      <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #505258)', cursor: 'pointer' }}>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', cursor: 'pointer' }}>
         <input type="checkbox" checked={zoomOnScroll} onChange={onToggleScroll} />
         Zoom on scroll
       </label>
-      <span style={{ width: 1, height: 20, background: 'var(--ds-border, #DFE1E6)' }} />
+      <span style={{ width: 1, height: 20, background: 'var(--ds-border)' }} />
       <button type="button" aria-label="Zoom out" style={btn} onClick={() => zoomOut()}>
         <Minus size={16} />
       </button>
-      <span style={{ fontSize: 'var(--ds-font-size-300)', minWidth: 40, textAlign: 'center', color: 'var(--ds-text, #292A2E)' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', minWidth: 40, textAlign: 'center', color: 'var(--ds-text)' }}>
         {Math.round(zoom * 100)}%
       </span>
       <button type="button" aria-label="Zoom in" style={btn} onClick={() => zoomIn()}>
         <Plus size={16} />
       </button>
-      <span style={{ width: 1, height: 20, background: 'var(--ds-border, #DFE1E6)' }} />
+      <span style={{ width: 1, height: 20, background: 'var(--ds-border)' }} />
       {/* ads-scanner:ignore-next-line — React Flow fitView padding ratio, not CSS px */}
       <button type="button" style={btn} onClick={() => fitView({ padding: 0.2, duration: 200 })}>
         Fit
@@ -723,14 +723,14 @@ function ZoomBar({
       <button type="button" style={btn} onClick={() => setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 200 })}>
         Reset
       </button>
-      <span style={{ width: 1, height: 20, background: 'var(--ds-border, #DFE1E6)' }} />
+      <span style={{ width: 1, height: 20, background: 'var(--ds-border)' }} />
       <div style={{ position: 'relative', display: 'flex' }}>
         <button
           type="button"
           aria-label="Keyboard shortcuts"
           aria-haspopup="dialog"
           aria-expanded={shortcutsOpen}
-          style={{ ...btn, color: shortcutsOpen ? 'var(--ds-text-selected, #1868DB)' : 'var(--ds-text, #292A2E)' }}
+          style={{ ...btn, color: shortcutsOpen ? 'var(--ds-text-selected)' : 'var(--ds-text)' }}
           onClick={() => setShortcutsOpen((v) => !v)}
         >
           <User size={16} />
@@ -744,12 +744,12 @@ function ZoomBar({
               style={{
                 position: 'absolute', bottom: 'calc(100% + 8px)', right: 0, zIndex: 7,
                 width: 260, padding: 16, borderRadius: 8,
-                background: 'var(--ds-surface-overlay, #FFFFFF)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface-overlay)',
+                border: '1px solid var(--ds-border)',
                 boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
               }}
             >
-              <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 12 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 12 }}>
                 Keyboard shortcuts
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -758,10 +758,10 @@ function ZoomBar({
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       minWidth: 24, height: 24, padding: '0 4px', borderRadius: 4,
-                      border: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)',
-                      fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)',
+                      border: '1px solid var(--ds-border)', background: 'var(--ds-surface)',
+                      fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)',
                     }}>{s.keyLabel}</span>
-                    <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>{s.action}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>{s.action}</span>
                   </div>
                 ))}
               </div>
@@ -841,10 +841,10 @@ function ChipSelect<T extends string>({
           gap: 4,
           height: 32,
           padding: '0 8px 0 12px',
-          background: 'var(--ds-surface, #FFFFFF)',
-          border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
+          background: 'var(--ds-surface)',
+          border: `1px solid ${active ? 'var(--ds-border-selected)' : 'var(--ds-border)'}`,
           borderRadius: 6,
-          color: active ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #292A2E)',
+          color: active ? 'var(--ds-text-selected)' : 'var(--ds-text)',
           fontFamily: 'var(--ds-font-family-body, "Atlassian Sans")',
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
@@ -852,8 +852,8 @@ function ChipSelect<T extends string>({
           opacity: disabled ? 0.6 : 1,
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={(e) => { if (!disabled && !active) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
-        onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+        onMouseEnter={(e) => { if (!disabled && !active) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'; }}
+        onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'var(--ds-surface)'; }}
       >
         {text}
         <ChevronDown size={16} />
@@ -872,8 +872,8 @@ function ChipSelect<T extends string>({
                 maxHeight: 360,
                 overflowY: 'auto',
                 zIndex: 9999,
-                background: 'var(--ds-surface-overlay, #FFFFFF)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface-overlay)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.25))',
                 padding: '4px 0',
@@ -892,7 +892,7 @@ function ChipSelect<T extends string>({
                 </div>
               )}
               {visibleOptions.length === 0 && (
-                <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>No matches</div>
+                <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>No matches</div>
               )}
               {visibleOptions.map((o) => {
                 const selected = o.value === value;
@@ -910,11 +910,11 @@ function ChipSelect<T extends string>({
                       width: '100%',
                       padding: '8px 12px',
                       border: 'none',
-                      background: searchable && selected ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                      background: searchable && selected ? 'var(--ds-background-selected)' : 'transparent',
                       textAlign: 'left',
                       fontFamily: 'inherit',
                       fontSize: 'var(--ds-font-size-400)',
-                      color: 'var(--ds-text, #292A2E)',
+                      color: 'var(--ds-text)',
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                     }}
@@ -925,14 +925,14 @@ function ChipSelect<T extends string>({
                           width: 16,
                           height: 16,
                           borderRadius: '50%',
-                          border: `2px solid ${selected ? 'var(--ds-border-selected, #1868DB)' : 'var(--ds-border-bold, #8590A2)'}`,
+                          border: `2px solid ${selected ? 'var(--ds-border-selected)' : 'var(--ds-border-bold)'}`,
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           flexShrink: 0,
                         }}
                       >
-                        {selected ? <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-background-selected-bold, #1868DB)' }} /> : null}
+                        {selected ? <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-background-selected-bold)' }} /> : null}
                       </span>
                     )}
                     {o.icon ? <span style={{ display: 'inline-flex', flexShrink: 0 }}>{o.icon}</span> : null}
@@ -1353,8 +1353,8 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
           alignItems: 'center',
           gap: 8,
           padding: '12px 16px',
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-          background: 'var(--ds-surface, #FFFFFF)',
+          borderBottom: '1px solid var(--ds-border)',
+          background: 'var(--ds-surface)',
           flexWrap: 'wrap',
         }}
       >
@@ -1429,12 +1429,12 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
         <button
           type="button"
           onClick={() => { setGroupBy('none'); setLinkType('all'); setRollUp('none'); setProjectFilter('all'); setSprint('all'); setRelease('all'); setWorkItem('all'); }}
-          style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 'var(--ds-font-size-400)', cursor: 'pointer', padding: '0 8px', height: 32 }}
+          style={{ border: 'none', background: 'transparent', color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-400)', cursor: 'pointer', padding: '0 8px', height: 32 }}
         >
           Reset
         </button>
         <span style={{ flex: 1 }} />
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #505258)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
           {filteredDeps.length} {filteredDeps.length === 1 ? 'dependency' : 'dependencies'}
         </span>
         <button
@@ -1446,16 +1446,16 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
             gap: 4,
             height: 32,
             padding: '0 12px',
-            background: 'var(--ds-surface, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 8,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             cursor: 'pointer',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-surface)'; }}
         >
           <Plus size={16} />
           Add dependency
@@ -1463,7 +1463,7 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
       </div>
 
       {/* Canvas — grey tint spans the whole surface (Jira parity). */}
-      <div style={{ position: 'relative', flex: 1, minHeight: 0, background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
+      <div style={{ position: 'relative', flex: 1, minHeight: 0, background: 'var(--ds-surface-sunken)' }}>
         <ReactFlow
           nodes={flowNodes}
           edges={flowEdges}
@@ -1485,7 +1485,7 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
           zoomOnScroll={zoomOnScroll}
           panOnScroll
           proOptions={{ hideAttribution: true }}
-          style={{ background: 'var(--ds-surface-sunken, #F7F8F9)' }}
+          style={{ background: 'var(--ds-surface-sunken)' }}
         />
         <ZoomBar
           zoomOnScroll={zoomOnScroll}

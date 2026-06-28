@@ -195,14 +195,14 @@ export function OverviewTab({
           {/* SVG Ring */}
           <svg width={110} height={110} viewBox="0 0 110 110" style={{ flexShrink: 0 }}>
             <circle cx={55} cy={55} r={44} fill="none" stroke="var(--divider)" strokeWidth={9} />
-            <circle cx={55} cy={55} r={44} fill="none" stroke="var(--ds-text-disabled, #CBD5E1)" strokeWidth={2}
+            <circle cx={55} cy={55} r={44} fill="none" stroke="var(--ds-text-disabled)" strokeWidth={2}
               strokeDasharray="125 151" strokeDashoffset={-69} opacity={0.7} />
             <circle cx={55} cy={55} r={44} fill="none" stroke={loadColour} strokeWidth={9}
               strokeDasharray={`${Math.min((openCount / 11) * 276.5, 276.5)} ${276.5 - Math.min((openCount / 11) * 276.5, 276.5)}`}
               strokeDashoffset={-69} strokeLinecap="round" />
             <text x={55} y={52} textAnchor="middle" fontFamily='var(--cp-font-heading)' fontSize={'var(--ds-font-size-700)'} fontWeight={700} fill={loadColour}>{openCount}</text>
             <text x={55} y={67} textAnchor="middle" fontFamily='var(--cp-font-body)' fontSize={'var(--ds-font-size-100)'} fontWeight={700} fill={MUTED}>OPEN</text>
-            <text x={55} y={82} textAnchor="middle" fontFamily='var(--cp-font-body)' fontSize={'var(--ds-font-size-100)'} fill="var(--ds-text-disabled, #CBD5E1)">avg {roleAvg}</text>
+            <text x={55} y={82} textAnchor="middle" fontFamily='var(--cp-font-body)' fontSize={'var(--ds-font-size-100)'} fill="var(--ds-text-disabled)">avg {roleAvg}</text>
           </svg>
 
           {/* Stat rows — CLICKABLE */}
@@ -273,7 +273,7 @@ export function OverviewTab({
             borderRadius: 4, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
           }}>
             <AlertTriangle size={13} color={WARNING} />
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning, #974F0C)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning)' }}>
               {concurrent} items in progress simultaneously — may indicate context-switching
             </span>
           </div>
@@ -336,7 +336,7 @@ export function OverviewTab({
         <SectionTitle>WORK MIX</SectionTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workMix.map(row => {
-            const tc = TYPE_COLORS[row.type] || { color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', opacity: 0.6 };
+            const tc = TYPE_COLORS[row.type] || { color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', opacity: 0.6 };
             return (
               <div
                 key={row.type}
@@ -368,7 +368,7 @@ export function OverviewTab({
         </div>
         {showBugInsight && (
           <div style={{
-            marginTop: 10, background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 4,
+            marginTop: 10, background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information)', borderRadius: 4,
             padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 6,
           }}>
             <Info size={14} color={BRAND} />
@@ -391,7 +391,7 @@ export function OverviewTab({
           onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
         >
           <div style={{
-            width: 32, height: 32, flexShrink: 0, background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information, #E9F2FF)',
+            width: 32, height: 32, flexShrink: 0, background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information)',
             borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <BookOpen size={16} color={INK4} />
@@ -403,8 +403,8 @@ export function OverviewTab({
             </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--fg-3)' }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-disabled, #CBD5E1)' }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-disabled, #CBD5E1)' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-disabled)' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-disabled)' }} />
             </div>
           </div>
           <ChevronRight size={14} color={INK4} />

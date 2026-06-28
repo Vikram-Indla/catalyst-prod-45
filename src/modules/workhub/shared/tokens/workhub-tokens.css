@@ -1,33 +1,33 @@
 /* ═══ WORKHUB RING-FENCED DESIGN TOKENS ═══ */
 :root {
   /* Surfaces */
-  --wh-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --wh-sf: var(--ds-surface-sunken, #F8FAFC);
-  --wh-sf2: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
-  --wh-sf3: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
-  --wh-bdr: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
+  --wh-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --wh-sf: var(--ds-surface-sunken);
+  --wh-sf2: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
+  --wh-sf3: var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
+  --wh-bdr: var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
 
   /* Text */
-  --wh-tx: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
-  --wh-tx2: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --wh-tx3: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
-  --wh-tx4: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));
+  --wh-tx: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)));
+  --wh-tx2: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --wh-tx3: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)));
+  --wh-tx4: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)));
 
   /* Primary */
-  --wh-pri: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --wh-pri2: var(--ds-background-brand-bold-hovered, #1D4ED8);
-  --wh-pri-bg: var(--ds-background-selected, #EFF6FF);
-  --wh-pri-bdr: var(--ds-background-information, #E9F2FF);
+  --wh-pri: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --wh-pri2: var(--ds-background-brand-bold-hovered);
+  --wh-pri-bg: var(--ds-background-selected);
+  --wh-pri-bdr: var(--ds-background-information);
 
   /* Semantic */
-  --wh-suc: var(--ds-background-success-bold, #059669);
-  --wh-suc-bg: var(--ds-background-success, #DFFCF0);
-  --wh-warn: var(--ds-text-warning, var(--cp-amber, #F59E0B));
-  --wh-warn-bg: var(--ds-background-warning, #FFF7D6);
-  --wh-dng: var(--ds-text-danger, #EF4444);
-  --wh-dng-bg: var(--ds-background-danger, #FEF2F2);
-  --wh-pur: var(--ds-text-brand, #3B82F6);
-  --wh-pur-bg: var(--ds-background-selected, #EFF6FF);
+  --wh-suc: var(--ds-background-success-bold);
+  --wh-suc-bg: var(--ds-background-success);
+  --wh-warn: var(--ds-text-warning, var(--cp-amber));
+  --wh-warn-bg: var(--ds-background-warning);
+  --wh-dng: var(--ds-text-danger);
+  --wh-dng-bg: var(--ds-background-danger);
+  --wh-pur: var(--ds-text-brand);
+  --wh-pur-bg: var(--ds-background-selected);
 
   /* Typography */
   --wh-fh: var(--cp-font-heading);
@@ -48,33 +48,33 @@
 
 /* ═══ ECLIPSE DARK MODE — WORKHUB DARK MODE ═══ */
 .dark, [data-theme="dark"] {
-  /* Surfaces — ONE surface var(--ds-surface, #0A0A0A) DARK MODE */
-  --wh-bg: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
-  --wh-sf: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
-  --wh-sf2: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --wh-sf3: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --wh-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  /* Surfaces — ONE surface var(--ds-surface) DARK MODE */
+  --wh-bg: var(--cp-bg-page, var(--ds-surface));
+  --wh-sf: var(--cp-bg-page, var(--ds-surface));
+  --wh-sf2: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --wh-sf3: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --wh-bdr: var(--ds-border, var(--cp-ink-1));
 
   /* Text — warm white ladder */
-  --wh-tx: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --wh-tx2: var(--ds-text-subtlest, #A1A1A1);
-  --wh-tx3: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
-  --wh-tx4: var(--ds-text-subtlest, #626F86);
+  --wh-tx: var(--ds-text, var(--cp-bg-neutral));
+  --wh-tx2: var(--ds-text-subtlest);
+  --wh-tx3: var(--ds-text-subtlest, var(--cp-text-secondary));
+  --wh-tx4: var(--ds-text-subtlest);
 
   /* Primary */
-  --wh-pri: var(--ds-text-brand, #3B82F6);
-  --wh-pri2: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  --wh-pri: var(--ds-text-brand);
+  --wh-pri2: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   --wh-pri-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
   --wh-pri-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.20));
 
   /* Semantic */
-  --wh-suc: var(--ds-background-success, #DFFCF0);
+  --wh-suc: var(--ds-background-success);
   --wh-suc-bg: var(--ds-background-success-bold, rgba(74,222,128,0.10));
-  --wh-warn: var(--ds-background-warning, #FFF7D6);
+  --wh-warn: var(--ds-background-warning);
   --wh-warn-bg: var(--ds-background-warning, rgba(253,230,138,0.10));
-  --wh-dng: var(--ds-border-danger, #FCA5A5);
+  --wh-dng: var(--ds-border-danger);
   --wh-dng-bg: rgba(252,165,165,0.10);
-  --wh-pur: var(--ds-text-brand, #3B82F6);
+  --wh-pur: var(--ds-text-brand);
   --wh-pur-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
 
   /* Shadows — subtle in dark mode */
@@ -131,7 +131,7 @@
   height: 40px;
   padding: 0 20px;
   background: var(--wh-pri);
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
   border: none;
   border-radius: var(--wh-rad);
   font-size: 13px;

@@ -174,19 +174,19 @@ export function ReleaseDrawer({ release, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
-      <div className="absolute inset-0 bg-[var(--ds-surface, #080E1D)]/38 backdrop-blur-[1px]" />
-      <div className="relative w-[700px] h-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
+      <div className="absolute inset-0 bg-[var(--ds-surface)]/38 backdrop-blur-[1px]" />
+      <div className="relative w-[700px] h-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
         onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] z-10 border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-6 py-4">
+        <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] z-10 border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] dark:border-[var(--ds-border,var(--cp-ink-1))] px-6 py-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <SourceBadge source={release.source || 'catalyst'} />
             </div>
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><Download size={14} /></button>
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><RefreshCw size={14} /></button>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><XIcon size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"><Download size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"><RefreshCw size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"><XIcon size={14} /></button>
             </div>
           </div>
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
@@ -199,7 +199,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                   autoFocus
                   value={dateInput}
                   onChange={e => setDateInput(e.target.value)}
-                  className="text-[12px] border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] rounded px-1.5 py-0.5 outline-none bg-white text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]"
+                  className="text-[12px] border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] rounded px-1.5 py-0.5 outline-none bg-white text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))]"
                   style={{ fontFamily: 'inherit' }}
                 />
                 <button
@@ -218,14 +218,14 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                       setEditingDate(false);
                     }
                   }}
-                  className="w-6 h-6 flex items-center justify-center rounded bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] disabled:opacity-50"
+                  className="w-6 h-6 flex items-center justify-center rounded bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white hover:bg-[var(--ds-background-brand-bold-hovered)] disabled:opacity-50"
                   title="Save"
                 >
                   {savingDate ? <Loader2 size={11} className="animate-spin" /> : <Check size={11} />}
                 </button>
                 <button
                   onClick={() => setEditingDate(false)}
-                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
+                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"
                   title="Cancel"
                 >
                   <X size={11} />
@@ -237,15 +237,15 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                   setDateInput(release.target_date ? release.target_date.slice(0, 10) : '');
                   setEditingDate(true);
                 }}
-                className="group flex items-center gap-1 text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-colors"
+                className="group flex items-center gap-1 text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] transition-colors"
                 title="Edit release date"
               >
                 <span>{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                 <Pencil size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             )}
-            <span className="text-[11px] font-bold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
-            <span className="text-[11px] font-bold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] bg-[var(--ds-background-selected,#EFF6FF)] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
+            <span className="text-[11px] font-bold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
+            <span className="text-[11px] font-bold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] bg-[var(--ds-background-selected)] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
           </div>
         </div>
 
@@ -253,10 +253,10 @@ export function ReleaseDrawer({ release, onClose }: Props) {
         <div className="border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] px-6 flex gap-0">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
+              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] hover:text-[var(--ds-text-subtle)]'}`}>
               {tab}
-              {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{relChanges.length}</span>}
-              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-background-selected,#EFF6FF)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] px-1 rounded">{testCycles.length}</span>}
+              {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] text-[var(--ds-text-subtle)] px-1 rounded">{relChanges.length}</span>}
+              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-background-selected)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] px-1 rounded">{testCycles.length}</span>}
             </button>
           ))}
         </div>
@@ -378,16 +378,16 @@ Do not use jargon. Do not hallucinate features not listed above.`;
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mb-1">Status</p>
+        <div className="bg-[var(--ds-surface-sunken)] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] mb-1">Status</p>
           <StatusLozenge status={release.status === 'todo' ? 'planning' : release.status === 'done' ? 'released' : release.status} />
         </div>
-        <div className="bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mb-1">Changes</p>
+        <div className="bg-[var(--ds-surface-sunken)] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] mb-1">Changes</p>
           <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{changesCount}</p>
         </div>
-        <div className="bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mb-1">Quality Gates</p>
+        <div className="bg-[var(--ds-surface-sunken)] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] mb-1">Quality Gates</p>
           <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{gatesPassCount}/{gatesTotalCount}</p>
         </div>
       </div>
@@ -403,13 +403,13 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             let Icon: typeof CheckCircle2;
 
             if (isPass) {
-              bgColor = 'var(--ds-background-success, #E3FCEF)'; borderColor = 'var(--ds-text-success, #36B37E)'; labelColor = 'var(--ds-text-success, #006644)'; detailColor = 'var(--ds-text-success, #0F7B4D)';
+              bgColor = 'var(--ds-background-success)'; borderColor = 'var(--ds-text-success)'; labelColor = 'var(--ds-text-success)'; detailColor = 'var(--ds-text-success)';
               Icon = CheckCircle2;
             } else if (isFail) {
-              bgColor = 'var(--ds-background-danger, #FFEBE6)'; borderColor = 'var(--ds-text-danger, #FF5630)'; labelColor = 'var(--ds-text-danger, #BF2600)'; detailColor = 'var(--ds-text-danger, #7A2300)';
+              bgColor = 'var(--ds-background-danger)'; borderColor = 'var(--ds-text-danger)'; labelColor = 'var(--ds-text-danger)'; detailColor = 'var(--ds-text-danger)';
               Icon = XCircle;
             } else {
-              bgColor = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; borderColor = 'var(--ds-border-disabled, #C1C7D0)'; labelColor = 'var(--ds-text-subtle, #42526E)'; detailColor = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))';
+              bgColor = 'var(--ds-surface-sunken, var(--cp-bg-sunken))'; borderColor = 'var(--ds-border-disabled)'; labelColor = 'var(--ds-text-subtle)'; detailColor = 'var(--ds-text-subtlest, var(--cp-text-secondary))';
               Icon = Minus;
             }
 
@@ -439,15 +439,15 @@ Do not use jargon. Do not hallucinate features not listed above.`;
       </div>
 
       {/* ── AI Release Notes Panel ── */}
-      <div className="border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md p-4 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
+      <div className="border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))] dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-md p-4 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]">
         <div className="flex justify-between items-center mb-3">
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[var(--ds-background-discovery, #F3F0FF)] text-[var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))] border border-[var(--ds-background-discovery, #F3F0FF)]">
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[var(--ds-background-discovery)] text-[var(--cp-purple-60, var(--ds-background-discovery-bold))] border border-[var(--ds-background-discovery)]">
             ✦ Catalyst AI
           </span>
           <button
             onClick={generateReleaseNotes}
             disabled={notesState === 'loading'}
-            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))] hover:bg-[var(--ds-background-discovery-bold-hovered,#6D28D9)] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
+            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, var(--ds-background-discovery-bold))] hover:bg-[var(--ds-background-discovery-bold-hovered)] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus-visible:ring-offset-2 outline-none"
           >
             <Sparkles size={12} />
             {notesState === 'success' ? 'Regenerate' : 'Generate'}
@@ -455,14 +455,14 @@ Do not use jargon. Do not hallucinate features not listed above.`;
         </div>
 
         {notesState === 'idle' && (
-          <div className="flex items-center gap-2 py-6 justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-[13px]">
+          <div className="flex items-center gap-2 py-6 justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] text-[13px]">
             <FileText size={16} />
             <span>Click Generate to create AI release notes.</span>
           </div>
         )}
 
         {notesState === 'loading' && (
-          <div className="flex items-center gap-2 py-6 justify-center text-[var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))] text-[13px]">
+          <div className="flex items-center gap-2 py-6 justify-center text-[var(--cp-purple-60, var(--ds-background-discovery-bold))] text-[13px]">
             <Loader2 size={16} className="animate-spin" />
             <span>Generating release notes…</span>
           </div>
@@ -470,20 +470,20 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
         {notesState === 'success' && generatedNotes && (
           <div>
-            <div className="max-h-[300px] overflow-auto text-[13px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
+            <div className="max-h-[300px] overflow-auto text-[13px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
               {generatedNotes}
             </div>
-            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]">
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))] text-[12px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle,#475569))] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))] text-[12px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle))] hover:bg-[var(--ds-surface-sunken)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus-visible:ring-offset-2 outline-none"
               >
                 <Copy size={12} />
                 {copied ? 'Copied!' : 'Copy'}
               </button>
               <button
                 onClick={generateReleaseNotes}
-                className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-subtle,#475569)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none rounded"
+                className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] hover:text-[var(--ds-text-subtle)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus-visible:ring-offset-2 outline-none rounded"
               >
                 Regenerate
               </button>
@@ -493,11 +493,11 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
         {notesState === 'error' && (
           <div className="flex items-center gap-2 py-6 justify-center text-[13px]">
-            <AlertCircle size={16} className="text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]" />
-            <span className="text-[var(--ds-text-subtle,#475569)]">Could not generate notes.</span>
+            <AlertCircle size={16} className="text-[var(--ds-text-danger,var(--cp-danger))]" />
+            <span className="text-[var(--ds-text-subtle)]">Could not generate notes.</span>
             <button
               onClick={generateReleaseNotes}
-              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))] text-[12px] font-medium text-[var(--ds-text-subtle)] hover:bg-[var(--ds-surface-sunken)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus-visible:ring-offset-2 outline-none"
             >
               <RefreshCw size={12} /> Try again
             </button>
@@ -510,13 +510,13 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
 // ── Changes Tab ────────────────────────────────────────
 function ChangesTab({ changes }: { changes: any[] }) {
-  if (changes.length === 0) return <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-[13px]">No changes linked to this release</div>;
+  if (changes.length === 0) return <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] text-[13px]">No changes linked to this release</div>;
   return (
     <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
       <thead>
         <tr className="border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))]">
           {['KEY', 'TITLE', 'STATUS', 'RISK', 'DATE'].map(h => (
-            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{h}</th>
+            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))]">{h}</th>
           ))}
         </tr>
       </thead>
@@ -526,7 +526,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
             <td className="px-3 py-2"><span className="font-medium text-[var(--cp-blue)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span></td>
             <td className="px-3 py-2 truncate max-w-[200px]" title={c.title}>{c.title}</td>
             <td className="px-3 py-2"><StatusLozenge status={c.status} /></td>
-            <td className="px-3 py-2"><span className="text-[11px] font-bold uppercase text-[var(--ds-text-subtle,#475569)]">{c.risk_level}</span></td>
+            <td className="px-3 py-2"><span className="text-[11px] font-bold uppercase text-[var(--ds-text-subtle)]">{c.risk_level}</span></td>
             <td className="px-3 py-2 text-[var(--fg-3)]" style={{ fontFamily: RH.fontMono, fontSize: 'var(--ds-font-size-200)' }}>{c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</td>
           </tr>
         ))}
@@ -569,13 +569,13 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
     <div>
       {testCycles.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-[13px] mb-3">No test cycles linked</p>
-          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[13px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">Link Test Cycle</button>
+          <p className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] text-[13px] mb-3">No test cycles linked</p>
+          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-[13px] font-semibold hover:bg-[var(--ds-background-selected)]">Link Test Cycle</button>
         </div>
       ) : (
         <div className="space-y-3">
           <div className="flex justify-end mb-2">
-            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">Link Test Cycle</button>
+            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected)]">Link Test Cycle</button>
           </div>
           {testCycles.map((tc: any) => {
             const cycle = tc.tm_test_cycles;
@@ -588,22 +588,22 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
               <div key={tc.id} className="border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] rounded-lg p-4 group relative">
                 <button
                   onClick={() => handleUnlink(tc.test_cycle_id)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[var(--ds-background-danger,#FEF2F2)] transition-opacity"
+                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] hover:text-[var(--ds-text-danger,var(--cp-danger))] hover:bg-[var(--ds-background-danger)] transition-opacity"
                   title="Unlink test cycle"
                 >
                   <XIcon size={14} />
                 </button>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[13px] font-semibold" style={{ color: RH.ink1 }}>{cycle?.name || 'Cycle'}</span>
-                  <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] flex items-center gap-1 hover:underline mr-8">
+                  <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] flex items-center gap-1 hover:underline mr-8">
                     Open in TestHub <ExternalLink size={10} />
                   </a>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <StatusLozenge status={cycle?.status || 'not_started'} />
-                  <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{passCount}/{totalCases} cases</span>
+                  <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))]">{passCount}/{totalCases} cases</span>
                 </div>
-                <div className="w-full h-2 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] rounded-full overflow-hidden">
                   <div className="h-full bg-[var(--sem-success)] rounded-full" style={{ width: `${passRate}%` }} />
                 </div>
                 {atRisk && <CatalystAIChip label="test cycle at risk — recommend pause release" className="mt-2" />}
@@ -620,7 +620,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
           </DialogHeader>
           <div className="max-h-[320px] overflow-y-auto space-y-0">
             {availableCycles.length === 0 && (
-              <p className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-[13px]">No test cycles found for this project</p>
+              <p className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] text-[13px]">No test cycles found for this project</p>
             )}
             {availableCycles.map((cycle: any) => {
               const alreadyLinked = linkedCycleIds.has(cycle.id);
@@ -635,16 +635,16 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                 >
                   <div className="flex-1 min-w-0">
                     <span className="text-[13px] font-medium block truncate" style={{ color: RH.ink1 }}>{cycle.name}</span>
-                    <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{cycle.total_cases ?? 0} cases</span>
+                    <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))]">{cycle.total_cases ?? 0} cases</span>
                   </div>
                   <StatusLozenge status={cycle.status || 'not_started'} />
-                  {alreadyLinked && <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] font-medium">Linked</span>}
+                  {alreadyLinked && <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] font-medium">Linked</span>}
                 </button>
               );
             })}
           </div>
           <DialogFooter>
-            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">Close</button>
+            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]">Close</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -668,7 +668,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
   const approveSignoff = useApproveSignoff();
   const rejectSignoff = useRejectSignoff();
 
-  if (isLoading) return <div className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-[13px]">Loading...</div>;
+  if (isLoading) return <div className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] text-[13px]">Loading...</div>;
 
   const stages = [
     { stage: 'QA', key: 'in_qa' },
@@ -688,9 +688,9 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
         return (
           <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[var(--ds-shadow-overlay, rgba(15,23,42,0.06))] last:border-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
-              status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))] text-white' :
-              status === 'pending' ? 'bg-[var(--ds-link, #0C66E4)] text-white' :
-              'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'
+              status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold))] text-white' :
+              status === 'pending' ? 'bg-[var(--ds-link)] text-white' :
+              'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]'
             }`}>
               {status === 'approved' ? '✓' : status === 'pending' ? i + 1 : '🔒'}
             </div>
@@ -708,15 +708,15 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             {hasPending && stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => (
               <div key={so.id} className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => catalystToast.success('Approved') })}
-                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))] text-white text-[11px] font-bold hover:bg-[var(--ds-background-success-bold, #004D33)]">Approve</button>
+                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold))] text-white text-[11px] font-bold hover:bg-[var(--ds-background-success-bold)]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => catalystToast.success('Rejected') })}
-                  className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]">Reject</button>
+                  className="h-7 px-3 rounded border border-[var(--ds-border-danger)] text-[var(--ds-text-danger,var(--cp-danger))] text-[11px] font-bold hover:bg-[var(--ds-background-danger)]">Reject</button>
               </div>
             ))}
           </div>
         );
       })}
-      {signoffs.length === 0 && <div className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-[13px]">No sign-offs configured</div>}
+      {signoffs.length === 0 && <div className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] text-[13px]">No sign-offs configured</div>}
     </div>
   );
 }
@@ -728,10 +728,10 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
       <div className="space-y-4">
         {[1, 2, 3].map(i => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-7 h-7 rounded-full bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] flex-shrink-0" />
+            <div className="w-7 h-7 rounded-full bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] flex-shrink-0" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded w-3/4" />
-              <div className="h-2.5 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded w-1/2" />
+              <div className="h-3 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] rounded w-3/4" />
+              <div className="h-2.5 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] rounded w-1/2" />
             </div>
           </div>
         ))}
@@ -742,9 +742,9 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
   if (entries.length === 0) {
     return (
       <div className="text-center py-12">
-        <Activity size={32} style={{ color: 'var(--ds-border-disabled, #C1C7D0)', margin: '0 auto 12px' }} />
-        <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>No activity yet</p>
-        <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+        <Activity size={32} style={{ color: 'var(--ds-border-disabled)', margin: '0 auto 12px' }} />
+        <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>No activity yet</p>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
           Activity will appear here as changes progress through their lifecycle.
         </p>
       </div>
@@ -755,8 +755,8 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
     <div className="space-y-0">
       {entries.map((entry: any, idx: number) => {
         const isAI = !!entry.is_ai;
-        const avatarBg = isAI ? 'var(--ds-background-discovery, #F3F0FF)' : 'var(--ds-background-selected, #EFF6FF)';
-        const avatarColor = isAI ? 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+        const avatarBg = isAI ? 'var(--ds-background-discovery)' : 'var(--ds-background-selected)';
+        const avatarColor = isAI ? 'var(--cp-purple-60, var(--ds-background-discovery-bold))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
         const initials = isAI ? 'AI' : (entry.actor_initials || '??');
 
         return (
@@ -774,25 +774,25 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>
                     {entry.actor_name || (isAI ? 'Catalyst AI' : 'System')}
                   </span>
-                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: 'var(--ds-text-subtle)' }}>
                     {entry.action}
                   </span>
                 </div>
                 {entry.detail && (
-                  <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontStyle: 'italic', marginTop: 2 }}>
+                  <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', fontStyle: 'italic', marginTop: 2 }}>
                     {entry.detail}
                   </p>
                 )}
-                <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-disabled, #8590A2)', marginTop: 2 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-disabled)', marginTop: 2 }}>
                   {relativeTime(entry.created_at)}
                 </p>
               </div>
             </div>
             {idx < entries.length - 1 && (
-              <div style={{ height: 0.5, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', marginLeft: 40 }} />
+              <div style={{ height: 0.5, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))', marginLeft: 40 }} />
             )}
           </div>
         );

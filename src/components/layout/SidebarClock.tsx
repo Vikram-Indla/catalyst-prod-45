@@ -74,8 +74,8 @@ export default function SidebarClock({ expanded }: SidebarClockProps) {
   const homeWeather = useCityWeather(countryToGeo(homeCountry));
   const weatherForRow = (index: number) => (index === 0 ? riyadhWeather : homeWeather);
 
-  const muted = token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)');
-  const primary = token('color.text', 'var(--ds-text, #172B4D)');
+  const muted = token('color.text.subtlest', 'var(--ds-icon-subtle)');
+  const primary = token('color.text', 'var(--ds-text)');
 
   // Collapsed rail (56px): icon only, full read in the tooltip.
   if (!expanded) {
@@ -83,7 +83,7 @@ export default function SidebarClock({ expanded }: SidebarClockProps) {
     return (
       <Tooltip content={`${zones.dateLabel} — ${tip}`} position="right">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '32px' }}>
-          <ClockIcon label="" color="var(--ds-icon-subtle, #626F86)" />
+          <ClockIcon label="" color="var(--ds-icon-subtle)" />
         </div>
       </Tooltip>
     );

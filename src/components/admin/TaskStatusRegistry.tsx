@@ -41,7 +41,7 @@ type EditTarget = (PlannerStatus & { is_system?: boolean }) | null;
 const TH: React.CSSProperties = {
   fontSize: 12,
   fontWeight: 653,
-  color: 'var(--ds-text-subtle, #505258)',
+  color: 'var(--ds-text-subtle)',
   textAlign: 'left',
   padding: '4px 12px 4px 0',
   borderBottom: '1.67px solid var(--ds-text, rgba(11,18,14,0.14))',
@@ -50,9 +50,9 @@ const TH: React.CSSProperties = {
 const TD: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 400,
-  color: 'var(--ds-text, #292A2E)',
+  color: 'var(--ds-text)',
   padding: '8px 12px 8px 0',
-  borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+  borderBottom: '1px solid var(--ds-border)',
   verticalAlign: 'middle',
 };
 
@@ -67,14 +67,14 @@ export function TaskStatusRegistry() {
   const [modalOpen, setModalOpen] = useState(false);
   const [target, setTarget] = useState<EditTarget>(null);
   const [name, setName] = useState('');
-  const [color, setColor] = useState('var(--ds-text-subtlest, #6B778C)');
+  const [color, setColor] = useState('var(--ds-text-subtlest)');
   const [isDefault, setIsDefault] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
   function openCreate() {
     setTarget(null);
     setName('');
-    setColor('var(--ds-text-subtlest, #6B778C)');
+    setColor('var(--ds-text-subtlest)');
     setIsDefault(false);
     setIsCompleted(false);
     setModalOpen(true);
@@ -83,7 +83,7 @@ export function TaskStatusRegistry() {
   function openEdit(s: PlannerStatus) {
     setTarget(s);
     setName(s.name);
-    setColor(s.color || 'var(--ds-text-subtlest, #6B778C)');
+    setColor(s.color || 'var(--ds-text-subtlest)');
     setIsDefault(s.is_default);
     setIsCompleted(s.is_completed_status);
     setModalOpen(true);
@@ -131,15 +131,15 @@ export function TaskStatusRegistry() {
     <div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16, gap: 8, flexWrap: 'wrap' }}>
         <div>
-          <h2 style={{ fontSize: 16, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: 0, display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 653, color: 'var(--ds-text)', margin: 0, display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
             Tasks{' '}
             {statuses.length > 0 && (
-              <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)' }}>
+              <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--ds-text-subtle)' }}>
                 ({statuses.length} status{statuses.length !== 1 ? 'es' : ''} · Catalyst-native, project-less)
               </span>
             )}
           </h2>
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #505258)', margin: '4px 0 0', maxWidth: 680 }}>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtle)', margin: '4px 0 0', maxWidth: 680 }}>
             The Tasks module has a single work item type ("Tasks") and its own status workflow — independent of projects and products. Statuses defined here drive the Tasks board, list, timeline and widgets.
           </p>
         </div>
@@ -169,10 +169,10 @@ export function TaskStatusRegistry() {
               return (
                 <tr key={s.id}>
                   <td style={TD}>
-                    <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: 4, background: s.color || 'var(--ds-text-subtlest, #6B778C)', border: '1px solid var(--ds-border, #DFE1E6)' }} />
+                    <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: 4, background: s.color || 'var(--ds-text-subtlest)', border: '1px solid var(--ds-border)' }} />
                   </td>
                   <td style={{ ...TD, fontWeight: 500 }}>{s.name}</td>
-                  <td style={{ ...TD, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>{s.slug}</td>
+                  <td style={{ ...TD, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>{s.slug}</td>
                   <td style={TD}>{s.is_default ? <Lozenge appearance="inprogress">Default</Lozenge> : null}</td>
                   <td style={TD}>{s.is_completed_status ? <Lozenge appearance="success">Completed</Lozenge> : null}</td>
                   <td style={TD}>
@@ -218,22 +218,22 @@ export function TaskStatusRegistry() {
                 )}
               </Field>
               <div style={{ marginTop: 16 }}>
-                <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', display: 'block', marginBottom: 4 }}>Colour</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', display: 'block', marginBottom: 4 }}>Colour</label>
                 <input
                   type="color"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  style={{ width: 48, height: 32, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, background: 'none', cursor: 'pointer' }}
+                  style={{ width: 48, height: 32, border: '1px solid var(--ds-border)', borderRadius: 4, background: 'none', cursor: 'pointer' }}
                   aria-label="Status colour"
                 />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16 }}>
                 <Toggle id="task-status-default" isChecked={isDefault} onChange={() => setIsDefault((v) => !v)} />
-                <label htmlFor="task-status-default" style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Default status (new tasks start here)</label>
+                <label htmlFor="task-status-default" style={{ fontSize: 14, color: 'var(--ds-text)' }}>Default status (new tasks start here)</label>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
                 <Toggle id="task-status-completed" isChecked={isCompleted} onChange={() => setIsCompleted((v) => !v)} />
-                <label htmlFor="task-status-completed" style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Completed status (counts as done)</label>
+                <label htmlFor="task-status-completed" style={{ fontSize: 14, color: 'var(--ds-text)' }}>Completed status (counts as done)</label>
               </div>
             </ModalBody>
             <ModalFooter>

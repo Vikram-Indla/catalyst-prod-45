@@ -214,7 +214,7 @@ export function FilterSaveModal({
               alignItems: 'center',
               gap: 8,
               padding: '8px 12px',
-              background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
+              background: token('color.background.information', 'var(--ds-background-selected)'),
               borderRadius: 3,
               fontSize: 'var(--ds-font-size-300)',
               color: token('color.text'),

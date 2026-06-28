@@ -38,7 +38,7 @@ const ProfileSkeleton = () => (
 const CardsSkeleton = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
     {[1, 2, 3, 4].map(i => (
-      <div key={i} style={{ background: 'var(--ds-surface, #FFF)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8, padding: '14px 16px', height: 64 }}>
+      <div key={i} style={{ background: 'var(--ds-surface)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8, padding: '14px 16px', height: 64 }}>
         <div className="r3-skeleton" style={{ width: '60%', height: 12, marginBottom: 8 }} />
         <div className="r3-skeleton" style={{ width: '40%', height: 10 }} />
       </div>
@@ -53,7 +53,7 @@ const BoardSkeleton = () => (
       <div key={col}>
         <div className="r3-skeleton" style={{ width: '100%', height: 24, marginBottom: 12 }} />
         {[1, 2].map(card => (
-          <div key={card} style={{ background: 'var(--ds-surface, #FFF)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8, padding: 12, marginBottom: 8 }}>
+          <div key={card} style={{ background: 'var(--ds-surface)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8, padding: 12, marginBottom: 8 }}>
             <div className="r3-skeleton" style={{ width: '50%', height: 10, marginBottom: 8 }} />
             <div className="r3-skeleton" style={{ width: '80%', height: 12 }} />
           </div>
@@ -65,7 +65,7 @@ const BoardSkeleton = () => (
 
 /** Ring skeleton */
 const RingSkeleton = () => (
-  <div style={{ position: 'relative', minHeight: 640, background: 'radial-gradient(circle, var(--ds-surface, #FFF), var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))))', borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+  <div style={{ position: 'relative', minHeight: 640, background: 'radial-gradient(circle, var(--ds-surface), var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))))', borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <div className="r3-skeleton" style={{ width: 96, height: 96, borderRadius: '50%' }} />
   </div>
 );
@@ -152,8 +152,8 @@ const Resource360MemberDetail: React.FC = () => {
                 to={`/resource360/members/${m.id}`}
                 style={{
                   fontSize: 'var(--ds-font-size-100)', padding: '3px 10px', borderRadius: 6, textDecoration: 'none',
-                  background: m.id === memberId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
-                  color: m.id === memberId ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+                  background: m.id === memberId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
+                  color: m.id === memberId ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
                   fontWeight: m.id === memberId ? 600 : 400,
                 }}
                 aria-current={m.id === memberId ? 'page' : undefined}
@@ -166,12 +166,12 @@ const Resource360MemberDetail: React.FC = () => {
 
         {/* Error state — inline, not full-page */}
         {hasError && (
-          <div style={{ textAlign: 'center', padding: 40, background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid var(--ds-background-danger, #FFECEB)', borderRadius: 12, marginBottom: 12 }} role="alert">
-            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-danger, #991B1B)', marginBottom: 4 }}>Failed to load data</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
+          <div style={{ textAlign: 'center', padding: 40, background: 'var(--ds-background-danger)', border: '1px solid var(--ds-background-danger)', borderRadius: 12, marginBottom: 12 }} role="alert">
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-danger)', marginBottom: 4 }}>Failed to load data</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
             <button
               onClick={() => window.location.reload()}
-              style={{ fontSize: 'var(--ds-font-size-200)', padding: '6px 16px', borderRadius: 6, border: '1px solid var(--ds-background-danger, #FFECEB)', background: 'var(--ds-surface, #FFF)', color: 'var(--ds-text-danger, #991B1B)', cursor: 'pointer' }}
+              style={{ fontSize: 'var(--ds-font-size-200)', padding: '6px 16px', borderRadius: 6, border: '1px solid var(--ds-background-danger)', background: 'var(--ds-surface)', color: 'var(--ds-text-danger)', cursor: 'pointer' }}
             >
               Retry
             </button>

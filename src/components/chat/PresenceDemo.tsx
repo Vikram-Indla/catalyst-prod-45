@@ -70,7 +70,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
         height: 100vh;
         gap: 16px;
         padding: 16px;
-        background-color: var(--ds-surface, #FFFFFF);
+        background-color: var(--ds-surface);
       `}
     >
       {/* Main conversation area */}
@@ -105,14 +105,14 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
             flex-direction: column;
             gap: 12px;
             padding: 12px;
-            background-color: var(--ds-surface-sunken, #F7F8F9);
+            background-color: var(--ds-surface-sunken);
             border-radius: 4px;
           `}
         >
           {messages.length === 0 ? (
             <div
               css={css`
-                color: var(--ds-text-subtle, #42526E);
+                color: var(--ds-text-subtle);
                 font-size: 12px;
               `}
             >
@@ -126,14 +126,14 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
                   padding: 8px 12px;
                   background-color: white;
                   border-radius: 4px;
-                  border-left: 3px solid var(--ds-border, #DFE1E6);
+                  border-left: 3px solid var(--ds-border);
                 `}
               >
                 <div
                   css={css`
                     font-size: 11px;
                     font-weight: 600;
-                    color: var(--ds-text-subtle, #42526E);
+                    color: var(--ds-text-subtle);
                   `}
                 >
                   {msg.author}
@@ -141,7 +141,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
                 <div
                   css={css`
                     font-size: 13px;
-                    color: var(--ds-text, #172B4D);
+                    color: var(--ds-text);
                   `}
                 >
                   {msg.text}
@@ -174,7 +174,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
             placeholder="Type a message…"
             css={css`
               padding: 8px 12px;
-              border: 1px solid var(--ds-border, #DFE1E6);
+              border: 1px solid var(--ds-border);
               border-radius: 4px;
               font-family: var(--ds-font-family-body, inherit);
               font-size: 13px;
@@ -183,7 +183,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
 
               &:focus {
                 outline: none;
-                border-color: var(--ds-link, #0052CC);
+                border-color: var(--ds-link);
                 box-shadow: 0 0 0 2px var(--ds-background-information, rgba(222, 224, 255, 0.5));
               }
             `}
@@ -200,7 +200,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
               css={css`
                 flex: 1;
                 padding: 8px 12px;
-                background-color: var(--ds-link, #0052CC);
+                background-color: var(--ds-link);
                 color: white;
                 border: none;
                 border-radius: 4px;
@@ -209,7 +209,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
                 cursor: pointer;
 
                 &:hover {
-                  background-color: var(--ds-link-pressed, #0747A6);
+                  background-color: var(--ds-link-pressed);
                 }
               `}
             >
@@ -221,7 +221,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
             <div
               css={css`
                 font-size: 11px;
-                color: var(--ds-text-subtlest, #6B778C);
+                color: var(--ds-text-subtlest);
                 font-style: italic;
               `}
             >
@@ -238,8 +238,8 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
           display: flex;
           flex-direction: column;
           gap: 16px;
-          background-color: var(--ds-surface-overlay, #FFFFFF);
-          border-left: 1px solid var(--ds-border, #DFE1E6);
+          background-color: var(--ds-surface-overlay);
+          border-left: 1px solid var(--ds-border);
           padding: 16px;
           border-radius: 4px;
         `}
@@ -249,7 +249,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
             css={css`
               font-size: 13px;
               font-weight: 600;
-              color: var(--ds-text, #172B4D);
+              color: var(--ds-text);
               margin: 0 0 12px 0;
             `}
           >
@@ -260,7 +260,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
             <div
               css={css`
                 padding: 8px 0;
-                border-bottom: 1px solid var(--ds-border, #DFE1E6);
+                border-bottom: 1px solid var(--ds-border);
                 margin-bottom: 12px;
               `}
             >
@@ -268,7 +268,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
                 css={css`
                   font-size: 12px;
                   font-weight: 500;
-                  color: var(--ds-text, #172B4D);
+                  color: var(--ds-text);
                   margin-bottom: 4px;
                 `}
               >
@@ -277,7 +277,7 @@ export const PresenceDemo: React.FC<PresenceDemoProps> = ({ conversationId }) =>
               <div
                 css={css`
                   font-size: 11px;
-                  color: var(--ds-text-subtle, #42526E);
+                  color: var(--ds-text-subtle);
                 `}
               >
                 {currentUserPresence.isOnline ? 'Online' : 'Offline'} ·{' '}

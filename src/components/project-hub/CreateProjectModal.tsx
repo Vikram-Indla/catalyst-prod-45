@@ -25,7 +25,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const [step1Valid, setStep1Valid] = useState(false);
 
   const [details, setDetails] = useState<StepDetailsData>({
-    name: '', key: '', department: '', description: '', icon: DEFAULT_PROJECT_ICON_KEY, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+    name: '', key: '', department: '', description: '', icon: DEFAULT_PROJECT_ICON_KEY, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
     lead_id: '', linkJira: false, jiraKey: '', priority: '',
   });
   const [workflow, setWorkflow] = useState<StepWorkflowData>({
@@ -36,7 +36,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   useEffect(() => {
     if (open) {
       setStep(0);
-      setDetails({ name: '', key: '', department: '', description: '', icon: DEFAULT_PROJECT_ICON_KEY, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', lead_id: '', linkJira: false, jiraKey: '', priority: '' });
+      setDetails({ name: '', key: '', department: '', description: '', icon: DEFAULT_PROJECT_ICON_KEY, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', lead_id: '', linkJira: false, jiraKey: '', priority: '' });
       setWorkflow({ useDefault: true, copyFromProject: null, featureLayer: false });
       setMembers([]);
       setStep1Valid(false);
@@ -125,7 +125,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="relative flex flex-col animate-scale-in bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
+        className="relative flex flex-col animate-scale-in bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]"
         style={{
           width: 640,
           maxHeight: '90vh',
@@ -135,15 +135,15 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
-          <h2 className="text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>
+          <h2 className="text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral))]" style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>
             Create New Project
           </h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
+            className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] dark:hover:bg-[var(--ds-surface-overlay)]"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <X size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
+            <X size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" />
           </button>
         </div>
 
@@ -156,10 +156,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]">
           <button
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
-            className="rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,#F8FAFC)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
+            className="rounded-md transition-colors hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-overlay)] bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))] dark:text-[var(--ds-text-subtlest)]"
             style={{
               height: 50, padding: '0 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
@@ -174,7 +174,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             className="rounded-md transition-opacity hover:opacity-90 disabled:opacity-40 bg-[var(--cp-blue)]"
             style={{
               height: 50, padding: '0 20px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none',
               borderRadius: 6, cursor: canNext && !submitting ? 'pointer' : 'default',
             }}
           >

@@ -8,7 +8,7 @@
  *
  * 3 colours only (Jira subtask panel uses only these three status categories):
  *   todo        → near-transparent grey  rgba(5,21,36,0.06)
- *   in_progress → medium blue            var(--ds-chart-blue-bold, #669DF1)
+ *   in_progress → medium blue            var(--ds-chart-blue-bold)
  *   done        → lime green             #94C748
  */
 import React from 'react';
@@ -18,10 +18,10 @@ type AllowedAppearance = 'default' | 'inprogress' | 'success';
 
 /** Jira-exact background/foreground per status category — matches CatalystStatusPill.tsx */
 function statusBg(appearance: AllowedAppearance): { bg: string; fg: string } {
-  const fg = 'var(--ds-text, #172B4D)'; // universal dark text — same for all Jira status pills
+  const fg = 'var(--ds-text)'; // universal dark text — same for all Jira status pills
   switch (appearance) {
-    case 'success':    return { bg: 'var(--ds-background-success-bold, #6A9A23)',                fg }; // Done — lime green
-    case 'inprogress': return { bg: 'var(--ds-chart-blue-bold, #669DF1)',                fg }; // In Progress — medium blue
+    case 'success':    return { bg: 'var(--ds-background-success-bold)',                fg }; // Done — lime green
+    case 'inprogress': return { bg: 'var(--ds-chart-blue-bold)',                fg }; // In Progress — medium blue
     default:           return { bg: 'var(--ds-shadow-overlay, rgba(5, 21, 36, 0.06))', fg }; // To Do — near-transparent
   }
 }

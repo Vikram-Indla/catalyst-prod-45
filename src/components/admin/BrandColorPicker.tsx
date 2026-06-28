@@ -8,17 +8,17 @@ import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 
 // Catalyst Brand Color Palette
 export const BRAND_COLORS = [
-  { name: 'Blue', value: 'blue', hex: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bgClass: 'bg-blue-600' },
-  { name: 'Blue Dark', value: 'blue-dark', hex: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', bgClass: 'bg-blue-700' },
-  { name: 'Blue Light', value: 'blue-light', hex: 'var(--ds-text-brand, #3b82f6)', bgClass: 'bg-blue-500' },
-  { name: 'Teal', value: 'teal', hex: 'var(--ds-chart-teal-bold, #0d9488)', bgClass: 'bg-teal-600' },
-  { name: 'Teal Dark', value: 'teal-dark', hex: 'var(--ds-chart-teal-bolder, #0f766e)', bgClass: 'bg-teal-700' },
-  { name: 'Teal Light', value: 'teal-light', hex: 'var(--ds-background-accent-teal-bolder, #14b8a6)', bgClass: 'bg-teal-500' },
-  { name: 'Gray', value: 'gray', hex: 'var(--ds-text-subtlest, #626F86)', bgClass: 'bg-gray-500' },
-  { name: 'Gray Dark', value: 'gray-dark', hex: 'var(--ds-text-subtlest, #626F86)', bgClass: 'bg-gray-600' },
-  { name: 'Warning', value: 'warning', hex: 'var(--ds-text-warning, #f59e0b)', bgClass: 'bg-amber-500' },
-  { name: 'Danger', value: 'danger', hex: 'var(--ds-text-danger, #ef4444)', bgClass: 'bg-red-500' },
-  { name: 'Neutral', value: 'neutral', hex: 'var(--ds-text-subtlest, #626F86)', bgClass: 'bg-gray-500' },
+  { name: 'Blue', value: 'blue', hex: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bgClass: 'bg-blue-600' },
+  { name: 'Blue Dark', value: 'blue-dark', hex: 'var(--ds-background-brand-bold-hovered)', bgClass: 'bg-blue-700' },
+  { name: 'Blue Light', value: 'blue-light', hex: 'var(--ds-text-brand)', bgClass: 'bg-blue-500' },
+  { name: 'Teal', value: 'teal', hex: 'var(--ds-chart-teal-bold)', bgClass: 'bg-teal-600' },
+  { name: 'Teal Dark', value: 'teal-dark', hex: 'var(--ds-chart-teal-bolder)', bgClass: 'bg-teal-700' },
+  { name: 'Teal Light', value: 'teal-light', hex: 'var(--ds-background-accent-teal-bolder)', bgClass: 'bg-teal-500' },
+  { name: 'Gray', value: 'gray', hex: 'var(--ds-text-subtlest)', bgClass: 'bg-gray-500' },
+  { name: 'Gray Dark', value: 'gray-dark', hex: 'var(--ds-text-subtlest)', bgClass: 'bg-gray-600' },
+  { name: 'Warning', value: 'warning', hex: 'var(--ds-text-warning)', bgClass: 'bg-amber-500' },
+  { name: 'Danger', value: 'danger', hex: 'var(--ds-text-danger)', bgClass: 'bg-red-500' },
+  { name: 'Neutral', value: 'neutral', hex: 'var(--ds-text-subtlest)', bgClass: 'bg-gray-500' },
 ] as const;
 
 export type BrandColorValue = typeof BRAND_COLORS[number]['value'];
@@ -51,7 +51,7 @@ export function BrandColorPicker({ value, onChange, disabled }: BrandColorPicker
           style={{
             backgroundColor: selectedColor.hex,
             width: '32px', height: '32px', padding: 0,
-            border: '2px solid var(--ds-border, #DCDFE4)',
+            border: '2px solid var(--ds-border)',
             borderRadius: '4px', cursor: disabled ? 'not-allowed' : 'pointer',
             opacity: disabled ? 0.5 : 1,
           }}

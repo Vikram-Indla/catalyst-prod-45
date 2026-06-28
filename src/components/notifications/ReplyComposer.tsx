@@ -34,12 +34,12 @@ export default function ReplyComposer({
     [onSubmit, value],
   );
 
-  const borderTop = isDark ? 'var(--ds-border, #2C3E50)' : 'var(--ds-border, #DFE1E6)';
-  const inputBorderBottom = isDark ? 'var(--ds-border, #34495E)' : 'var(--ds-border, #DFE1E6)';
-  const textColor = isDark ? 'var(--ds-text, #E6EDFA)' : 'var(--ds-text, #172B4D)';
-  const placeholderColor = isDark ? 'var(--ds-text-subtlest, #5E6C84)' : 'var(--ds-text-subtlest, #6B778C)';
-  const btnBorder = isDark ? 'var(--ds-border, #34495E)' : 'var(--ds-border, #DFE1E6)';
-  const btnText = isDark ? 'var(--ds-text-subtle, #8C9CB5)' : 'var(--ds-text-subtle, #42526E)';
+  const borderTop = isDark ? 'var(--ds-border)' : 'var(--ds-border)';
+  const inputBorderBottom = isDark ? 'var(--ds-border)' : 'var(--ds-border)';
+  const textColor = isDark ? 'var(--ds-text)' : 'var(--ds-text)';
+  const placeholderColor = isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest)';
+  const btnBorder = isDark ? 'var(--ds-border)' : 'var(--ds-border)';
+  const btnText = isDark ? 'var(--ds-text-subtle)' : 'var(--ds-text-subtle)';
 
   return (
     <div
@@ -83,7 +83,7 @@ export default function ReplyComposer({
             }}
             onFocus={(e) => {
               setInputFocused(true);
-              e.currentTarget.style.borderBottomColor = 'var(--ds-border-focused, #4C9AFF)';
+              e.currentTarget.style.borderBottomColor = 'var(--ds-border-focused)';
             }}
             onBlur={(e) => {
               setInputFocused(false);

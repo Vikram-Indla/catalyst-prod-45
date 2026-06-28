@@ -15,13 +15,13 @@ interface Props {
 }
 
 const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
-  Highest: { bg: 'var(--ds-background-danger-bold, #C9372C)',    text: 'var(--ds-text-inverse, #FFFFFF)' },
-  High:    { bg: 'var(--ds-background-danger, #FFECEB)',         text: 'var(--ds-text-danger, #AE2A19)' },
-  Medium:  { bg: 'var(--ds-background-warning, #FFF7D6)',        text: 'var(--ds-text-warning, #974F0C)' },
-  Low:     { bg: 'var(--ds-background-information, #E9F2FF)',    text: 'var(--ds-link, #0C66E4)' },
-  Lowest:  { bg: 'var(--ds-background-neutral, #F1F2F4)',        text: 'var(--ds-text-subtlest, #626F86)' },
+  Highest: { bg: 'var(--ds-background-danger-bold)',    text: 'var(--ds-text-inverse)' },
+  High:    { bg: 'var(--ds-background-danger)',         text: 'var(--ds-text-danger)' },
+  Medium:  { bg: 'var(--ds-background-warning)',        text: 'var(--ds-text-warning)' },
+  Low:     { bg: 'var(--ds-background-information)',    text: 'var(--ds-link)' },
+  Lowest:  { bg: 'var(--ds-background-neutral)',        text: 'var(--ds-text-subtlest)' },
 };
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold)', 'var(--ds-chart-orange-bold)', 'var(--ds-chart-green-bold)', 'var(--ds-chart-magenta-bold)', 'var(--ds-background-discovery-bold)'];
 
 function formatDate(d: string | null): string {
   if (!d) return 'None';
@@ -42,7 +42,7 @@ function Avatar({ name }: { name: string | null }) {
       <div style={{
         width: 24, height: 24, borderRadius: '50%', background: bg,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface, #fff)', flexShrink: 0,
+        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface)', flexShrink: 0,
       }}>{initials}</div>
       <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--aw-text)' }}>{name}</span>
     </div>
@@ -84,7 +84,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
     return <div className="awEmpty" style={{ padding: 40 }}>No data available</div>;
   }
 
-  const pc = PRIORITY_COLORS[item.priority] ?? 'var(--ds-text-subtlest, #8C8F96)';
+  const pc = PRIORITY_COLORS[item.priority] ?? 'var(--ds-text-subtlest)';
 
   return (
     <div style={{ padding: '10px 0' }}>

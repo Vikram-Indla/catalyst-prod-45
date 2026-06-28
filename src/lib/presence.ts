@@ -16,10 +16,10 @@ export interface UserStatus {
 // Ring colors — presence model on_set/remote/away/on_leave (2026-06-11).
 // on_set=green (in office), remote=blue (offsite), away=amber, on_leave=dashed blue (planned).
 export const PRESENCE_RING: Record<PresenceState, string> = {
-  on_set:   'var(--ds-icon-success, #22A06B)',     // GREEN — in office / working
-  remote:   'var(--ds-icon-information, #1D7AFC)',  // BLUE  — remote / offsite
-  away:     'var(--ds-icon-warning, #E2B203)',      // AMBER — away / idle
-  on_leave: 'var(--ds-link, #1868DB)',             // BLUE  — planned / scheduled absence
+  on_set:   'var(--ds-icon-success)',     // GREEN — in office / working
+  remote:   'var(--ds-icon-information)',  // BLUE  — remote / offsite
+  away:     'var(--ds-icon-warning)',      // AMBER — away / idle
+  on_leave: 'var(--ds-link)',             // BLUE  — planned / scheduled absence
 };
 
 // on_leave: dashed blue — secondary cue on top of blue color (safe for colorblind users)

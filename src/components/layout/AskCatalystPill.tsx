@@ -32,9 +32,9 @@ function CatySparkle({ size = 18, monochromeColor }: SparkleProps) {
       {!monochromeColor && (
         <defs>
           <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--ds-text-brand, #60A5FA)" />
-            <stop offset="55%" stopColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
-            <stop offset="100%" stopColor="var(--cp-purple-60, #7C3AED)" />
+            <stop offset="0%" stopColor="var(--ds-text-brand)" />
+            <stop offset="55%" stopColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" />
+            <stop offset="100%" stopColor="var(--cp-purple-60)" />
           </linearGradient>
         </defs>
       )}
@@ -52,31 +52,31 @@ function CatySparkle({ size = 18, monochromeColor }: SparkleProps) {
 
 function AskCatalystIcon() {
   // Used by IconButton (iconOnly mode) — keep monochrome brand blue
-  return <CatySparkle size={16} monochromeColor={token('color.icon.brand', 'var(--ds-link, #2563eb)')} />;
+  return <CatySparkle size={16} monochromeColor={token('color.icon.brand', 'var(--ds-link)')} />;
 }
 
 // CLAUDE.md ENTERPRISE UI GUARDRAIL carve-out — static rainbow border on AI CTAs.
 // MUST be `animation: none` — no rotation, no shift, no shimmer. Pure colour treatment.
 const STATIC_RAINBOW = `conic-gradient(
   from 0deg,
-  var(--ds-background-accent-magenta-bolder, #BE185D) 0deg,
-  var(--ds-background-discovery-bold, #6E5DC6) 60deg,
-  var(--ds-link, #0C66E4) 120deg,
-  var(--ds-background-information-bold, #0C66E4) 180deg,
-  var(--ds-background-success, #DFFCF0) 240deg,
-  var(--ds-background-warning-bold, #E2B203) 300deg,
-  var(--ds-background-accent-magenta-bolder, #BE185D) 360deg
+  var(--ds-background-accent-magenta-bolder) 0deg,
+  var(--ds-background-discovery-bold) 60deg,
+  var(--ds-link) 120deg,
+  var(--ds-background-information-bold) 180deg,
+  var(--ds-background-success) 240deg,
+  var(--ds-background-warning-bold) 300deg,
+  var(--ds-background-accent-magenta-bolder) 360deg
 )`;
 
 const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
 
 const DEPT_COLORS: Record<string, string> = {
-  Delivery: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  Product: 'var(--cp-purple-60, #7C3AED)',
-  Governance: 'var(--cp-teal-60, #0D9488)',
-  Operations: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-  'Technical Support': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  'Strategy & Planning': 'var(--ds-link, #0C66E4)',
+  Delivery: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  Product: 'var(--cp-purple-60)',
+  Governance: 'var(--cp-teal-60)',
+  Operations: 'var(--ds-text-warning, var(--cp-warning))',
+  'Technical Support': 'var(--ds-text-danger, var(--cp-danger))',
+  'Strategy & Planning': 'var(--ds-link)',
 };
 
 interface AskCatalystPillProps {
@@ -165,7 +165,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 height: 32,
                 padding: '0 14px 0 12px',
                 borderRadius: 9999,
-                background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                background: token('elevation.surface', 'var(--ds-surface)'),
                 // Border removed — rainbow wrapper provides the AI signifier.
                 // Hover state: subtle raised shadow only (no extra ring; rainbow IS the focus marker).
                 boxShadow: hovered && isForYou
@@ -174,7 +174,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 transition: 'box-shadow 180ms ease, transform 180ms ease',
                 cursor: isForYou ? 'pointer' : 'not-allowed',
                 fontFamily: 'var(--cp-font-body)',
-                color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))'),
+                color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1))'),
               }}
             >
               <CatySparkle size={18} />
@@ -184,7 +184,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                   fontWeight: 650,
                   letterSpacing: '-0.1px',
                   lineHeight: 1,
-                  color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))'),
+                  color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1))'),
                 }}
               >
                 Ask Caty
@@ -201,8 +201,8 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
             top: '100%',
             right: 0,
             marginTop: 6,
-            background: 'var(--ds-surface-overlay, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))))',
-            border: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))',
+            background: 'var(--ds-surface-overlay, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))))',
+            border: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))))',
             borderRadius: 12,
             // ADS canonical overlay shadow — works in both modes via the token resolver
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 30px rgba(0,0,0,0.12))',
@@ -216,7 +216,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               padding: '8px 12px 6px',
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
-              color: 'var(--cp-t3, var(--cp-text-secondary, #6B778C))',
+              color: 'var(--cp-t3, var(--cp-text-secondary))',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
             }}
@@ -243,7 +243,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 cursor: 'pointer',
                 fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
-                color: 'var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                color: 'var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse)))',
                 transition: 'background 100ms',
                 textAlign: 'left',
               }}
@@ -259,7 +259,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                   width: 8,
                   height: 8,
                   borderRadius: '50%',
-                  background: DEPT_COLORS[dept] || 'var(--cp-t3, var(--cp-text-secondary, #6B778C))',
+                  background: DEPT_COLORS[dept] || 'var(--cp-t3, var(--cp-text-secondary))',
                   flexShrink: 0,
                 }}
               />

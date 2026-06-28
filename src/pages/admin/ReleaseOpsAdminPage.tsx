@@ -64,13 +64,13 @@ import {
 } from '@/hooks/releases/useReleaseConfig';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
 };
 
 const CATEGORY_TO_APPEARANCE: Record<ConfigColorCategory, string> = {
@@ -138,8 +138,8 @@ export default function ReleaseOpsAdminPage() {
         </div>
 
         {!canManage && (
-          <div style={{ background: 'var(--ds-background-information, #E9F2FE)', border: '1px solid var(--ds-border-information, #8FB8F6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
-            <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-information, #0055CC)', margin: 0 }}>
+          <div style={{ background: 'var(--ds-background-information)', border: '1px solid var(--ds-border-information)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-information)', margin: 0 }}>
               Read-only — you need a release/change manager role to edit this configuration.
             </p>
           </div>
@@ -148,7 +148,7 @@ export default function ReleaseOpsAdminPage() {
         {isLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner size="large" /></div>
         ) : isError ? (
-          <div style={{ color: 'var(--ds-text-danger, #AE2A19)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)' }}>
+          <div style={{ color: 'var(--ds-text-danger)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)' }}>
             Could not load configuration: {(error as Error)?.message}
           </div>
         ) : (
@@ -240,7 +240,7 @@ function SortableOptionRow({
         <span
           {...attributes}
           {...listeners}
-          style={{ color: 'var(--ds-text-disabled, #8590A2)', cursor: 'grab', fontSize: 'var(--ds-font-size-400)', width: 20, textAlign: 'center', flexShrink: 0, lineHeight: '1', userSelect: 'none' }}
+          style={{ color: 'var(--ds-text-disabled)', cursor: 'grab', fontSize: 'var(--ds-font-size-400)', width: 20, textAlign: 'center', flexShrink: 0, lineHeight: '1', userSelect: 'none' }}
           aria-label="Drag to reorder"
         >
           ⠿
@@ -269,7 +269,7 @@ function SortableOptionRow({
       <div style={{ width: 90, flexShrink: 0, display: 'flex', alignItems: 'center' }}>
         {canManage
           ? <Toggle isChecked={option.is_active} onChange={() => onToggleActive(option)} label="Active" />
-          : <span style={{ fontSize: 'var(--ds-font-size-300)', color: option.is_active ? 'var(--ds-text-success, #006644)' : T.subtlest }}>{option.is_active ? 'Active' : 'Inactive'}</span>
+          : <span style={{ fontSize: 'var(--ds-font-size-300)', color: option.is_active ? 'var(--ds-text-success)' : T.subtlest }}>{option.is_active ? 'Active' : 'Inactive'}</span>
         }
       </div>
 
@@ -382,13 +382,13 @@ function GroupSection({
         <div
           role="menu"
           onMouseDown={(e) => e.stopPropagation()}
-          style={{ position: 'fixed', top: menuState.top, right: menuState.right, background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))', zIndex: 9999, minWidth: 160, padding: '4px 0' }}
+          style={{ position: 'fixed', top: menuState.top, right: menuState.right, background: 'var(--ds-surface-overlay)', border: '1px solid var(--ds-border)', borderRadius: 4, boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))', zIndex: 9999, minWidth: 160, padding: '4px 0' }}
         >
           <button
             role="menuitem"
             onClick={() => { onEdit(menuOption); setMenuState(null); }}
             style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text, border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left' }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
           >
             Edit
@@ -398,8 +398,8 @@ function GroupSection({
             role="menuitem"
             disabled={menuOption.is_system}
             onClick={() => { if (!menuOption.is_system) { onDelete(menuOption); setMenuState(null); } }}
-            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 'var(--ds-font-size-400)', color: menuOption.is_system ? T.subtlest : 'var(--ds-text-danger, #AE2A19)', border: 'none', background: 'none', cursor: menuOption.is_system ? 'not-allowed' : 'pointer', textAlign: 'left', opacity: menuOption.is_system ? 0.5 : 1 }}
-            onMouseEnter={(e) => { if (!menuOption.is_system) (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-danger-hovered, #FFEBE6)'; }}
+            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 'var(--ds-font-size-400)', color: menuOption.is_system ? T.subtlest : 'var(--ds-text-danger)', border: 'none', background: 'none', cursor: menuOption.is_system ? 'not-allowed' : 'pointer', textAlign: 'left', opacity: menuOption.is_system ? 0.5 : 1 }}
+            onMouseEnter={(e) => { if (!menuOption.is_system) (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-danger-hovered)'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
           >
             Remove

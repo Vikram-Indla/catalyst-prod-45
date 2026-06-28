@@ -41,12 +41,12 @@ interface ReleaseGroup {
 // ─── Status chip ──────────────────────────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, var(--ds-link, #0C66E4))') },
-  'At Risk': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') },
-  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))') },
-  Upcoming:  { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))') },
-  Completed: { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
-  'On Track':{ bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
+  Active:    { bg: token('color.background.information', 'var(--ds-background-selected)'), color: token('color.text.information', 'var(--ds-link, var(--ds-link))') },
+  'At Risk': { bg: token('color.background.warning', 'var(--ds-background-warning)'), color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning))') },
+  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger)'), color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger))') },
+  Upcoming:  { bg: token('color.background.neutral', 'var(--ds-background-neutral)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest))') },
+  Completed: { bg: token('color.background.success', 'var(--ds-background-success)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold))') },
+  'On Track':{ bg: token('color.background.success', 'var(--ds-background-success)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold))') },
 };
 
 function StatusChip({ status }: { status: string }) {
@@ -88,14 +88,14 @@ function fmtShort(s: string | null): string {
 const BAR_BG: Record<SprintStatus, string> = {
   Active:    token('color.background.accent.blue.subtle', '#CCE0FF'),
   'At Risk': token('color.background.accent.orange.subtle', '#FFE2BD'),
-  Upcoming:  token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+  Upcoming:  token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
   Completed: token('color.background.accent.green.subtle', '#BAF3DB'),
 };
 const BAR_BORDER: Record<SprintStatus, string> = {
-  Active:    token('color.border.accent.blue', 'var(--ds-link, #0C66E4)'),
+  Active:    token('color.border.accent.blue', 'var(--ds-link)'),
   'At Risk': token('color.border.accent.orange', '#D97008'),
-  Upcoming:  token('color.border', 'var(--ds-border, #DFE1E6)'),
-  Completed: token('color.border.accent.green', 'var(--ds-background-success-bold, #1F845A)'),
+  Upcoming:  token('color.border', 'var(--ds-border)'),
+  Completed: token('color.border.accent.green', 'var(--ds-background-success-bold)'),
 };
 
 function GanttBar({
@@ -127,7 +127,7 @@ function GanttBar({
           top: 0,
           bottom: 0,
           width: 1.5,
-          background: 'var(--ds-border-accent-red, #C9372C)',
+          background: 'var(--ds-border-accent-red)',
           opacity: 0.45,
           zIndex: 1,
           pointerEvents: 'none',
@@ -172,16 +172,16 @@ function ReleaseBar({
       {/* Today line */}
       <div aria-hidden style={{
         position: 'absolute', left: `${todayPct}%`, top: 0, bottom: 0,
-        width: 1.5, background: 'var(--ds-border-accent-red, #C9372C)', opacity: 0.45, zIndex: 1, pointerEvents: 'none',
+        width: 1.5, background: 'var(--ds-border-accent-red)', opacity: 0.45, zIndex: 1, pointerEvents: 'none',
       }} />
       {/* Release bar: spans from left edge to target date */}
       <div style={{
         position: 'absolute', left: 0, width: `${Math.max(4, right)}%`,
         top: 6, height: 8, borderRadius: 2,
         background: isAtRisk
-          ? 'var(--ds-background-accent-red-subtlest, #FFECEB)'
-          : 'var(--ds-background-accent-blue-subtlest, #E9F2FF)',
-        borderBottom: `2px solid ${isAtRisk ? 'var(--ds-border-accent-red, #C9372C)' : 'var(--ds-border-accent-blue, #0C66E4)'}`,
+          ? 'var(--ds-background-accent-red-subtlest)'
+          : 'var(--ds-background-accent-blue-subtlest)',
+        borderBottom: `2px solid ${isAtRisk ? 'var(--ds-border-accent-red)' : 'var(--ds-border-accent-blue)'}`,
         zIndex: 2,
       }} />
     </div>
@@ -300,7 +300,7 @@ function SprintRow({ sprint, rangeStart, rangeEnd, todayPct }: {
       alignItems: 'center',
       gap: 8,
       padding: '5px 0',
-      borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}20`,
+      borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}20`,
     }}>
       <span style={{
         ...SMALL,
@@ -308,13 +308,13 @@ function SprintRow({ sprint, rangeStart, rangeEnd, todayPct }: {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
       }}>
         {sprint.name}
       </span>
       <GanttBar start={sprint.start} end={sprint.end} rangeStart={rangeStart} rangeEnd={rangeEnd} status={sprint.status} todayPct={todayPct} />
       <StatusChip status={sprint.status} />
-      <span style={{ ...LABEL, textAlign: 'right', whiteSpace: 'nowrap', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+      <span style={{ ...LABEL, textAlign: 'right', whiteSpace: 'nowrap', color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>
         {fmtShort(sprint.end)}
       </span>
     </div>
@@ -346,7 +346,7 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
           gap: 8,
           padding: '7px 0',
           cursor: hasSprints ? 'pointer' : 'default',
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}50`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}50`,
         }}
       >
         {/* Release name + toggle chevron */}
@@ -354,7 +354,7 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
           {hasSprints && (
             <span style={{
               fontSize: 'var(--ds-font-size-100)',
-              color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
+              color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
               flexShrink: 0,
               display: 'inline-block',
               transition: 'transform 120ms',
@@ -366,7 +366,7 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
             letterSpacing: '-0.003em',
           }} title={release.name}>
             {release.name}
@@ -380,7 +380,7 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
         <StatusChip status={release.status} />
 
         {/* Target date */}
-        <span style={{ ...LABEL, textAlign: 'right', whiteSpace: 'nowrap', color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+        <span style={{ ...LABEL, textAlign: 'right', whiteSpace: 'nowrap', color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>
           {fmtShort(release.targetDate)}
         </span>
       </div>
@@ -391,7 +391,7 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
           ...LABEL,
           paddingLeft: hasSprints ? 16 : 0,
           paddingBottom: 3,
-          color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+          color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
           display: 'flex',
           gap: 6,
         }}>
@@ -462,9 +462,9 @@ export default function ActiveSprintsWidget({
           height: 28,
           padding: '0 10px',
           borderRadius: 4,
-          border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
           background: 'transparent',
-          color: token('color.link', 'var(--ds-link, #0C66E4)'),
+          color: token('color.link', 'var(--ds-link)'),
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           cursor: 'pointer',
@@ -480,16 +480,16 @@ export default function ActiveSprintsWidget({
 
   const footer = count > 0 ? (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
+      <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>
         {count} active release{count !== 1 ? 's' : ''}
       </span>
       {totalSprints > 0 && (
-        <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
+        <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>
           · {totalSprints} sprint{totalSprints !== 1 ? 's' : ''}
         </span>
       )}
       {atRiskCount > 0 && (
-        <span style={{ ...LABEL, color: 'var(--ds-text-accent-red-bolder, #AE2A19)', fontWeight: 600 }}>
+        <span style={{ ...LABEL, color: 'var(--ds-text-accent-red-bolder)', fontWeight: 600 }}>
           · {atRiskCount} at risk
         </span>
       )}
@@ -508,7 +508,7 @@ export default function ActiveSprintsWidget({
       {isLoading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[0, 1, 2].map(i => (
-            <div key={i} className="animate-pulse" style={{ height: 46, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)') }} />
+            <div key={i} className="animate-pulse" style={{ height: 46, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)') }} />
           ))}
         </div>
       ) : count === 0 ? (
@@ -521,19 +521,19 @@ export default function ActiveSprintsWidget({
             gridTemplateColumns: '196px 1fr 80px 64px',
             gap: 8,
             paddingBottom: 8,
-            borderBottom: `2px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            borderBottom: `2px solid ${token('color.border', 'var(--ds-border)')}`,
             marginBottom: 4,
           }}>
-            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>Release / Sprint</span>
+            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>Release / Sprint</span>
             <div style={{ position: 'relative' }}>
               {/* Axis labels */}
-              <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), position: 'absolute', left: 0 }}>
+              <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)'), position: 'absolute', left: 0 }}>
                 {rangeStart.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
               </span>
               {/* Today label pinned at todayPct */}
               <span style={{
                 ...LABEL,
-                color: 'var(--ds-text-accent-red-bolder, #AE2A19)',
+                color: 'var(--ds-text-accent-red-bolder)',
                 fontWeight: 700,
                 position: 'absolute',
                 left: `${todayPct}%`,
@@ -543,12 +543,12 @@ export default function ActiveSprintsWidget({
               }}>
                 ▼ Today
               </span>
-              <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), position: 'absolute', right: 0 }}>
+              <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)'), position: 'absolute', right: 0 }}>
                 {rangeEnd.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
               </span>
             </div>
-            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>Status</span>
-            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), textAlign: 'right' }}>Target</span>
+            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>Status</span>
+            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)'), textAlign: 'right' }}>Target</span>
           </div>
 
           {/* ── Release groups ──────────────────────────────────────────── */}
@@ -566,7 +566,7 @@ export default function ActiveSprintsWidget({
                 {expandedIds.has(rel.id) && (
                   <div style={{ paddingBottom: 6 }}>
                     {rel.sprints.length === 0 ? (
-                      <div style={{ ...LABEL, paddingLeft: 20, paddingTop: 4, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
+                      <div style={{ ...LABEL, paddingLeft: 20, paddingTop: 4, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>
                         No sprints linked to this release
                       </div>
                     ) : (

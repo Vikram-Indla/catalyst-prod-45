@@ -31,16 +31,16 @@ const CATEGORY_OPTIONS: { value: Category; label: string }[] = [
   { value: 'suggest_improvement', label: 'Suggest an improvement' },
 ];
 
-const BLUE = 'var(--ds-border-selected, #1868DB)';
-const RED = 'var(--ds-text-danger, #AE2A19)';
-const RED_BORDER = 'var(--ds-border-danger, #AE2A19)';
-const GRAY_BORDER = 'var(--ds-border, #DFE1E6)';
+const BLUE = 'var(--ds-border-selected)';
+const RED = 'var(--ds-text-danger)';
+const RED_BORDER = 'var(--ds-border-danger)';
+const GRAY_BORDER = 'var(--ds-border)';
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
   fontWeight: 600,
   fontSize: 'var(--ds-font-size-200)',
-  color: 'var(--ds-text, #172B4D)',
+  color: 'var(--ds-text)',
   marginBottom: 6,
 };
 
@@ -132,8 +132,8 @@ function CategoryDropdown({
           padding: '0 12px',
           borderRadius: 3,
           border: `1px solid ${borderColor}`,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          color: selected ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
+          background: 'var(--ds-surface-overlay)',
+          color: selected ? 'var(--ds-text)' : 'var(--ds-text-subtlest)',
           fontSize: 'var(--ds-font-size-400)',
           fontFamily: 'inherit',
           cursor: 'pointer',
@@ -147,7 +147,7 @@ function CategoryDropdown({
           style={{
             display: 'inline-flex',
             marginLeft: 8,
-            color: 'var(--ds-text-subtle, #6B778C)',
+            color: 'var(--ds-text-subtle)',
             transition: 'transform 120ms ease',
             transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
           }}
@@ -165,7 +165,7 @@ function CategoryDropdown({
             left: pos.left,
             width: pos.width,
             zIndex: 10001,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${GRAY_BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
@@ -215,12 +215,12 @@ function CategoryRow({
         padding: '8px 12px 8px 16px',
         cursor: 'pointer',
         background: checked
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : hover
-          ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'
+          ? 'var(--ds-background-neutral-subtle-hovered)'
           : 'transparent',
         fontSize: 'var(--ds-font-size-400)',
-        color: checked ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #292A2E)',
+        color: checked ? 'var(--ds-text-selected)' : 'var(--ds-text)',
         fontWeight: checked ? 500 : 400,
       }}
     >
@@ -306,7 +306,7 @@ export function ShareFeedbackModal({ isOpen, onClose }: ShareFeedbackModalProps)
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #505258)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                 Required fields are marked with an asterisk
                 <span style={{ color: RED, marginLeft: 2 }}>*</span>
               </div>
@@ -360,10 +360,10 @@ export function ShareFeedbackModal({ isOpen, onClose }: ShareFeedbackModalProps)
               {/* Opt-in checkboxes — only shown after category picked */}
               {category && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
-                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>
                   Catalyst opt-in options
                 </div>
-                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)' }}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
                   <Checkbox
                     isChecked={contactOptIn}
                     onChange={(e) => setContactOptIn((e.target as HTMLInputElement).checked)}
@@ -374,14 +374,14 @@ export function ShareFeedbackModal({ isOpen, onClose }: ShareFeedbackModalProps)
                       href="https://www.atlassian.com/legal/privacy-policy"
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: 'var(--ds-link, #0052CC)' }}
+                      style={{ color: 'var(--ds-link)' }}
                     >
                       Catalyst Privacy Policy
                     </a>
                     .
                   </span>
                 </label>
-                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)' }}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
                   <Checkbox
                     isChecked={researchOptIn}
                     onChange={(e) => setResearchOptIn((e.target as HTMLInputElement).checked)}

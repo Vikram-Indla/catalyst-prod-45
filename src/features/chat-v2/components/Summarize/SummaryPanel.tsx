@@ -531,7 +531,7 @@ function ReferenceMarker({ index, onClick }: { index: number; onClick: () => voi
         height: 18,
         padding: '0 5px',
         background: 'rgba(29, 155, 209, 0.18)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        color: 'var(--ds-link, #0C66E4)',
+        color: 'var(--ds-link)',
         border: 'none',
         borderRadius: 4,
         fontSize: 'var(--ds-font-size-100)',

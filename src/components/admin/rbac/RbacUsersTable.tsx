@@ -15,9 +15,9 @@ interface RbacUsersTableProps {
 }
 
 const T = {
-  text:     'var(--ds-text, #172B4D)',
-  subtle:   'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  text:     'var(--ds-text)',
+  subtle:   'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
 };
 
 function formatDate(iso: string | undefined | null): string {

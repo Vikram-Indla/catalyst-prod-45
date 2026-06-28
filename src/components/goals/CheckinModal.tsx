@@ -14,7 +14,7 @@ interface CheckinModalProps {
 }
 
 function progressBar(pct: number) {
-  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
   return (
     <div style={{ width: '100%', height: 6, background: 'var(--cp-bd-zone)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms' }} />
@@ -162,8 +162,8 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
             onClick={handleSubmit}
             disabled={createCheckin.isPending}
             style={{
-              padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              background: createCheckin.isPending ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--cp-blue)',
+              padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+              background: createCheckin.isPending ? 'var(--ds-background-information-bold)' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createCheckin.isPending ? 'not-allowed' : 'pointer',
             }}
           >

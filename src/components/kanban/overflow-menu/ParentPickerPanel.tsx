@@ -141,7 +141,7 @@ export function ParentPickerPanel({
             display: 'flex', alignItems: 'center', gap: 8,
             width: '100%', padding: '8px 12px', border: 'none',
             background: 'transparent', cursor: 'pointer',
-            fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold, #C9372C)', fontWeight: 500,
+            fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold)', fontWeight: 500,
             fontFamily: 'var(--cp-font-body)', textAlign: 'left',
             borderBottom: `1px solid ${tk.borderSubtle}`,
           }}

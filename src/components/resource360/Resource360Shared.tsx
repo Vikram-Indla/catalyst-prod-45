@@ -9,7 +9,7 @@ export function HighlightText({ text, query }: { text: string; query: string }) 
   return (
     <>
       {text.slice(0, idx)}
-      <mark style={{ background: 'var(--ds-background-warning-bold, #FEF08A)', padding: '0 1px', borderRadius: 2 }}>
+      <mark style={{ background: 'var(--ds-background-warning-bold)', padding: '0 1px', borderRadius: 2 }}>
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}
@@ -33,7 +33,7 @@ export function StaleBadge({ ageDays, status, statusCategory }: { ageDays: numbe
 export function InlineExpansionPanel({ item, onOpenDetail }: { item: Resource360Item; onOpenDetail: () => void }) {
   return (
     <div style={{
-      padding: '10px 16px 10px 28px', background: 'var(--ds-surface-sunken, #FAF8F5)',
+      padding: '10px 16px 10px 28px', background: 'var(--ds-surface-sunken)',
       borderBottom: '1px solid var(--divider)', borderLeft: '4px solid var(--cp-blue)',
       animation: 'expandIn 200ms ease-out',
     }}>
@@ -73,7 +73,7 @@ export function InlineExpansionPanel({ item, onOpenDetail }: { item: Resource360
       <div style={{ marginTop: 8 }}>
         <button onClick={onOpenDetail} style={{
           fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '4px 12px', borderRadius: 6,
-          background: '#1A1A2E', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+          background: '#1A1A2E', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer',
         }}>Open Full Detail</button>
       </div>
     </div>

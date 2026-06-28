@@ -34,7 +34,7 @@ export const BRANCH_WIDTH = 28; // x=12 → x=40, aligns with reply paddingLeft
 export const BRANCH_HEIGHT = 24; // bottom at y=24 (avatar center)
 export const REPLY_INDENT = 40;
 export const REPLY_GAP = 12;
-export const LINE_COLOR = 'var(--ds-border, #DFE1E6)';
+export const LINE_COLOR = 'var(--ds-border)';
 export const LINE_WIDTH = 1.5;
 
 export interface CommentNodeProps {

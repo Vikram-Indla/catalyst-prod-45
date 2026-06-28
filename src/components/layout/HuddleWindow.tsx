@@ -69,7 +69,7 @@ export function HuddleWindow() {
         {list.map((p) => (
           <div key={p.userId} style={{
             ...tileSize, position: 'relative', overflow: 'hidden', borderRadius: 12,
-            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface)', border: '1px solid var(--ds-border)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             {p.avatarUrl
@@ -248,9 +248,9 @@ export function HuddleWindow() {
         ...frameStyle,
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         borderRadius: maximized ? 12 : 14,
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         boxShadow: '0 24px 64px rgba(9,30,66,.34)', /* ads-scanner:ignore-line — Jira-parity overlay shadow, no ADS token */
       }}
     >
@@ -263,12 +263,12 @@ export function HuddleWindow() {
         style={{
           flex: '0 0 auto', height: 44, display: 'flex', alignItems: 'center', gap: 10,
           padding: '0 12px', cursor: maximized ? 'default' : 'grab', touchAction: 'none',
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          borderBottom: '1px solid var(--ds-border)',
+          background: 'var(--ds-surface-overlay)',
         }}
       >
         <span aria-hidden>🎧</span>
-        <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ds-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           Huddle with {active.conversationName}
         </span>
         <span style={{ marginLeft: 'auto', display: 'inline-flex', gap: 6 }}>
@@ -281,7 +281,7 @@ export function HuddleWindow() {
 
       {/* body: stage (Task 7) | thread (Task 8) */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
-        <div data-huddle-stage style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
+        <div data-huddle-stage style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: 'var(--ds-surface-sunken)' }}>
           <div style={{ flex: 1, minHeight: 0, display: 'flex', gap: 12, padding: 12 }}>
             {/* sharing → screen takes the full left; nobody sharing → participant tiles centered */}
             {screenVisible ? (
@@ -305,33 +305,33 @@ export function HuddleWindow() {
         </div>
         {(screenVisible || chatPanelOpen) && (
           <div style={{ flex: '0 0 360px', minWidth: 0, display: 'flex', flexDirection: 'column',
-            borderLeft: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)' }}>
+            borderLeft: '1px solid var(--ds-border)', background: 'var(--ds-surface)' }}>
             {/* while sharing, participant tiles dock at the top of the rail */}
             {screenVisible && (
-              <div style={{ flex: '0 0 auto', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <div style={{ flex: '0 0 auto', borderBottom: '1px solid var(--ds-border)' }}>
                 {renderParticipantTiles('rail')}
               </div>
             )}
             {chatPanelOpen && (
             <>
-            <div style={{ flex: '0 0 auto', padding: '8px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-              fontWeight: 700, fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Thread</div>
+            <div style={{ flex: '0 0 auto', padding: '8px 16px', borderBottom: '1px solid var(--ds-border)',
+              fontWeight: 700, fontSize: 14, color: 'var(--ds-text)' }}>Thread</div>
             <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {sessionMessages.length === 0 ? (
-                <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, lineHeight: 1.5 }}>
-                  <strong style={{ color: 'var(--ds-text, #172B4D)' }}>Every huddle has a thread.</strong>
+                <div style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, lineHeight: 1.5 }}>
+                  <strong style={{ color: 'var(--ds-text)' }}>Every huddle has a thread.</strong>
                   {' '}Send messages, files, and links to everyone in the huddle. They are saved in this conversation, so you can read them after the huddle ends.
                 </div>
               ) : (
                 sessionMessages.map((m) => (
                   <div key={m.id} style={{ fontSize: 13 }}>
-                    <span style={{ fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>{m.authorName ?? ''}</span>
-                    <span style={{ marginLeft: 8, color: 'var(--ds-text, #172B4D)', whiteSpace: 'pre-wrap' }}>{m.bodyText}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--ds-text)' }}>{m.authorName ?? ''}</span>
+                    <span style={{ marginLeft: 8, color: 'var(--ds-text)', whiteSpace: 'pre-wrap' }}>{m.bodyText}</span>
                   </div>
                 ))
               )}
             </div>
-            <div style={{ flex: '0 0 auto', borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+            <div style={{ flex: '0 0 auto', borderTop: '1px solid var(--ds-border)' }}>
               <Composer
                 placeholder="Message"
                 conversationId={active.conversationId}
@@ -345,25 +345,25 @@ export function HuddleWindow() {
       </div>
 
       <div style={{ flex: '0 0 auto', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-        borderTop: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-overlay, #FFFFFF)' }}>
+        borderTop: '1px solid var(--ds-border)', background: 'var(--ds-surface-overlay)' }}>
         <button type="button" data-huddle-btn onClick={toggleMute} aria-pressed={muted} title={muted ? 'Unmute' : 'Mute'}
-          style={ctrlBtn(muted ? 'var(--ds-background-warning, #FFF7D6)' : 'var(--ds-surface-sunken, #F7F8F9)')}>
+          style={ctrlBtn(muted ? 'var(--ds-background-warning)' : 'var(--ds-surface-sunken)')}>
           {muted ? 'Unmute' : 'Mute'}
         </button>
         <button type="button" data-huddle-btn disabled={remoteSharing}
           onClick={() => { if (!remoteSharing) void (sharing ? stopScreen() : startScreen()); }}
           aria-pressed={sharing}
           title={remoteSharing ? 'Other participant is sharing' : sharing ? 'Stop sharing' : 'Share screen'}
-          style={{ ...ctrlBtn(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)'),
+          style={{ ...ctrlBtn(sharing ? 'var(--ds-background-selected)' : 'var(--ds-surface-sunken)'),
             opacity: remoteSharing ? 0.45 : 1, cursor: remoteSharing ? 'not-allowed' : 'pointer' }}>
           {sharing ? 'Stop share' : 'Share screen'}
         </button>
         <button type="button" data-huddle-btn onClick={toggleChatPanel} aria-pressed={chatPanelOpen} title="Toggle chat"
-          style={ctrlBtn(chatPanelOpen ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)')}>
+          style={ctrlBtn(chatPanelOpen ? 'var(--ds-background-selected)' : 'var(--ds-surface-sunken)')}>
           Chat
         </button>
         <button type="button" data-huddle-btn onClick={leave} title="Leave huddle"
-          style={{ ...ctrlBtn('var(--ds-background-danger-bold, #C9372C)'), color: '#FFFFFF' }}>
+          style={{ ...ctrlBtn('var(--ds-background-danger-bold)'), color: '#FFFFFF' }}>
           Leave
         </button>
       </div>
@@ -374,13 +374,13 @@ export function HuddleWindow() {
 const winBtn: React.CSSProperties = {
   width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer',
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-  background: 'var(--ds-surface-sunken, #F7F8F9)', color: 'var(--ds-text, #172B4D)', fontSize: 14,
+  background: 'var(--ds-surface-sunken)', color: 'var(--ds-text)', fontSize: 14,
 };
 
 function ctrlBtn(bg: string): React.CSSProperties {
   return {
     height: 40, padding: '0 16px', borderRadius: 999, border: 'none', cursor: 'pointer',
     display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600,
-    background: bg, color: 'var(--ds-text, #172B4D)',
+    background: bg, color: 'var(--ds-text)',
   };
 }

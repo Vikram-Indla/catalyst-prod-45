@@ -242,10 +242,10 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
         gap: 6,
         height: 32,
         padding: '0 16px',
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 999,
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
+        color: token('color.text', 'var(--ds-text)'),
         fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         cursor: isLoading ? 'default' : 'pointer',
@@ -268,37 +268,37 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
 
   const panel = !insight ? null : insight.totalItems === 0 ? (
     <CatyInsightCard title="Board health" onDismiss={() => setInsight(null)}>
-      <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>{insight.summary}</span>
+      <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>{insight.summary}</span>
     </CatyInsightCard>
   ) : (
     <CatyInsightCard title="Board health" onRefresh={() => generateInsight({ force: true })} onDismiss={() => setInsight(null)}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+            <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text)') }}>
               {insight.summary}
             </p>
 
             {insight.columns.map((col) => (
               <div key={col.column} style={{
                 padding: '8px 12px', borderRadius: 4,
-                background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
               }}>
                 {/* Column header row */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: col.topBlocker ? 4 : 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ font: `600 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+                    <span style={{ font: `600 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text)') }}>
                       {col.column}
                     </span>
-                    <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                    <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                       {col.count} {col.count === 1 ? 'item' : 'items'}
                     </span>
                   </div>
                   <span style={{
                     font: `600 12px/16px var(--ds-font-family-body, "Atlassian Sans")`,
                     color: col.avgDaysSinceUpdate > 30
-                      ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+                      ? token('color.text.danger', 'var(--ds-text-danger)')
                       : col.avgDaysSinceUpdate > 14
-                        ? token('color.text.warning', 'var(--ds-text-warning, #974F0C)')
-                        : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                        ? token('color.text.warning', 'var(--ds-text-warning)')
+                        : token('color.text.subtle', 'var(--ds-icon)'),
                   }}>
                     avg {col.avgDaysSinceUpdate} days since update
                   </span>
@@ -313,29 +313,29 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
                       onClick={() => useGlobalSearchStore.getState().openDetail({ id: col.topBlocker!.issueKey })}
                     >
                       <JiraIssueTypeIcon type={col.topBlocker.issueType} size={14} />
-                      <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', 'var(--ds-link, #0052CC)'), flexShrink: 0 }}>
+                      <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', 'var(--ds-link)'), flexShrink: 0 }}>
                         {col.topBlocker.issueKey}
                       </span>
-                      <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {col.topBlocker.summary}
                       </span>
                     </div>
                     {/* Line 2: project + reporter avatar + days */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingInlineStart: 22, paddingBlockStart: 2 }}>
-                      <span style={{ font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                      <span style={{ font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                         {col.topBlocker.project}
                       </span>
                       <CatalystAvatar size="xsmall" src={resolveAvatarUrl(col.topBlocker.reporter) || undefined} name={col.topBlocker.reporter} />
-                      <span style={{ font: `400 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                      <span style={{ font: `400 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                         {col.topBlocker.reporter}
                       </span>
                       <span style={{
                         font: `600 11px/14px var(--ds-font-family-body, "Atlassian Sans")`,
                         color: col.topBlocker.daysSinceUpdate > 60
-                          ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+                          ? token('color.text.danger', 'var(--ds-text-danger)')
                           : col.topBlocker.daysSinceUpdate > 21
-                            ? token('color.text.warning', 'var(--ds-text-warning, #974F0C)')
-                            : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                            ? token('color.text.warning', 'var(--ds-text-warning)')
+                            : token('color.text.subtle', 'var(--ds-icon)'),
                       }}>
                         {col.topBlocker.daysSinceUpdate} days
                       </span>
@@ -345,7 +345,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
 
                 {/* AI action */}
                 {col.action && (
-                  <p style={{ margin: '4px 0 0', font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
+                  <p style={{ margin: '4px 0 0', font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtle', 'var(--ds-icon)') }}>
                     {col.action}
                   </p>
                 )}

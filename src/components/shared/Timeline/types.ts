@@ -81,9 +81,9 @@ export const MIN_BAR_W = 18;
 export const ZOOM_PX_PER_DAY: Record<ZoomLevel, number> = { week: 28, month: 8, quarter: 3 };
 
 export const STATUS_CAT_OPTIONS = [
-  { value: 'done', label: 'Done', color: 'var(--ds-chart-success-bold, #94C748)' },
-  { value: 'progress', label: 'In Progress', color: 'var(--ds-chart-information-bold, #8FB8F6)' },
-  { value: 'default', label: 'To Do', color: 'var(--ds-background-neutral, #DDDEE1)' },
+  { value: 'done', label: 'Done', color: 'var(--ds-chart-success-bold)' },
+  { value: 'progress', label: 'In Progress', color: 'var(--ds-chart-information-bold)' },
+  { value: 'default', label: 'To Do', color: 'var(--ds-background-neutral)' },
 ];
 
 export const BUILT_IN_QUICK_FILTERS = [

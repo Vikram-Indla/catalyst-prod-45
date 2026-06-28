@@ -21,7 +21,7 @@ interface ConflictResolutionDrawerProps {
   onResolve: (conflictId: string, resolution: 'keep_catalyst' | 'keep_jira') => void;
 }
 
-const JIRA_DIAMOND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"><path fill="var(--ds-text-danger, #AE2A19)" d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.7c0 2.4 1.96 4.34 4.34 4.35V2.84a.84.84 0 0 0-.84-.84zM6.77 6.8a4.362 4.362 0 0 0 4.34 4.34h1.78v1.71a4.362 4.362 0 0 0 4.35 4.35V7.63a.839.839 0 0 0-.84-.83zM2 11.6c0 2.4 1.96 4.34 4.35 4.34h1.78v1.72c.01 2.39 1.97 4.34 4.35 4.34v-9.57a.84.84 0 0 0-.84-.83z"/></svg>`;
+const JIRA_DIAMOND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24"><path fill="var(--ds-text-danger)" d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.7c0 2.4 1.96 4.34 4.34 4.35V2.84a.84.84 0 0 0-.84-.84zM6.77 6.8a4.362 4.362 0 0 0 4.34 4.34h1.78v1.71a4.362 4.362 0 0 0 4.35 4.35V7.63a.839.839 0 0 0-.84-.83zM2 11.6c0 2.4 1.96 4.34 4.35 4.34h1.78v1.72c.01 2.39 1.97 4.34 4.35 4.34v-9.57a.84.84 0 0 0-.84-.83z"/></svg>`;
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -128,7 +128,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                     {/* Catalyst side */}
                     <div className="bg-[var(--cp-blue-wash)]" style={{ flex: 1, borderRight: '0.75px solid var(--cp-primary-20)', padding: 16 }}>
                       <div className="flex items-center gap-[5px]" style={{ marginBottom: 8 }}>
-                        <span className="bg-[var(--cp-blue)]" style={{ width: 10, height: 10, borderRadius: 4, color: 'var(--ds-surface, #FFF)', fontSize: 7, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>C</span>
+                        <span className="bg-[var(--cp-blue)]" style={{ width: 10, height: 10, borderRadius: 4, color: 'var(--ds-surface)', fontSize: 7, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>C</span>
                         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalyst Version</span>
                         <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', marginLeft: 4 }}>Your edit</span>
                       </div>

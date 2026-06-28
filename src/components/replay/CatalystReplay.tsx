@@ -60,7 +60,7 @@ export function CatalystReplay({
       role="dialog"
       aria-modal="true"
       aria-label="Catalyst Replay"
-      style={{ position: "fixed", inset: 0, zIndex: 9000, background: "var(--ds-surface, #FFFFFF)" }}
+      style={{ position: "fixed", inset: 0, zIndex: 9000, background: "var(--ds-surface)" }}
     >
       <iframe
         ref={iframeRef}

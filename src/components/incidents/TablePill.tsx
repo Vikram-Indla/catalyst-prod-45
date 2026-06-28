@@ -17,36 +17,36 @@ export interface TablePillProps {
 // Catalyst V5 tokens — reference CSS variables for theme consistency
 const catalyst = {
   // Status colors (using CSS variables)
-  success: 'var(--success-fg, #22c55e)',
+  success: 'var(--success-fg)',
   successBg: 'var(--success-bg, rgba(34, 197, 94, 0.12))',
   successBorder: 'var(--success-bd, rgba(34, 197, 94, 0.22))',
   
-  warning: 'var(--warning-fg, #f59e0b)',
+  warning: 'var(--warning-fg)',
   warningBg: 'var(--warning-bg, rgba(245, 158, 11, 0.12))',
   warningBorder: 'var(--warning-bd, rgba(245, 158, 11, 0.22))',
   
-  danger: 'var(--danger-fg, #ef4444)',
+  danger: 'var(--danger-fg)',
   dangerBg: 'var(--danger-bg, rgba(239, 68, 68, 0.12))',
   dangerBorder: 'var(--danger-bd, rgba(239, 68, 68, 0.22))',
   
-  info: 'var(--info-fg, #3b82f6)',
+  info: 'var(--info-fg)',
   infoBg: 'var(--info-bg, rgba(59, 130, 246, 0.12))',
   infoBorder: 'var(--info-bd, rgba(59, 130, 246, 0.22))',
   
   // Brand (teal accent - V5)
-  gold: 'var(--brand-teal, #0d9488)',
+  gold: 'var(--brand-teal)',
   goldBg: 'var(--accent-teal-soft, rgba(13, 148, 136, 0.14))',
   goldBorder: 'var(--accent-teal-border, rgba(13, 148, 136, 0.30))',
   
   // Neutral (using CSS variables)
-  muted: 'var(--fg-3, #8a8a8a)',
-  mutedBg: 'var(--neutral-bg, var(--cp-ink-1, #292929))',
-  mutedBorder: 'var(--neutral-bd, var(--cp-ink-1, #2E2E2E))',
+  muted: 'var(--fg-3)',
+  mutedBg: 'var(--neutral-bg, var(--cp-ink-1))',
+  mutedBorder: 'var(--neutral-bd, var(--cp-ink-1))',
   
   // Text (using CSS variables)
-  text1: 'var(--fg-1, #f5f5f5)',
-  text2: 'var(--fg-2, #d4d4d4)',
-  text4: 'var(--fg-4, #8a8a8a)',
+  text1: 'var(--fg-1)',
+  text2: 'var(--fg-2)',
+  text4: 'var(--fg-4)',
 } as const;
 
 export function TablePill({ children, className, style }: TablePillProps) {

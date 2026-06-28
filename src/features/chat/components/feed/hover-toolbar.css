@@ -221,7 +221,7 @@
   flex: none;
   font-size: 12px;
   line-height: 16px;
-  color: var(--ds-text-subtlest, #6B6E76);
+  color: var(--ds-text-subtlest);
   margin-left: 8px;
 }
 

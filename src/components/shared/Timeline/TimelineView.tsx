@@ -1163,9 +1163,9 @@ export default function TimelineView(props: TimelineViewProps) {
           display: "flex",
           flexDirection: "column",
           height: "calc(100vh - 124px)",
-          background: "var(--ds-surface, #FFFFFF)",
+          background: "var(--ds-surface)",
           overflow: "hidden",
-          border: "1px solid var(--ds-border, #DFE1E6)",
+          border: "1px solid var(--ds-border)",
           borderRadius: 3,
         }}
       >
@@ -1176,7 +1176,7 @@ export default function TimelineView(props: TimelineViewProps) {
             alignItems: "center",
             justifyContent: "space-between",
             padding: "8px 12px",
-            borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+            borderBottom: "1px solid var(--ds-border)",
             flexShrink: 0,
             gap: 8,
             flexWrap: isNarrow ? "wrap" : "nowrap",
@@ -1208,7 +1208,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   transform: "translateY(-50%)",
                   lineHeight: 0,
                   pointerEvents: "none",
-                  color: "var(--ds-text-subtlest, #626F86)",
+                  color: "var(--ds-text-subtlest)",
                 }}
               >
                 <SearchIcon label="" size="small" />
@@ -1224,23 +1224,23 @@ export default function TimelineView(props: TimelineViewProps) {
                   height: 32,
                   padding: "0 8px 0 32px",
                   boxSizing: "border-box",
-                  border: "1px solid var(--ds-border-input, #DFE1E6)",
+                  border: "1px solid var(--ds-border-input)",
                   borderRadius: 3,
                   fontSize: 'var(--ds-font-size-400)',
-                  color: "var(--ds-text, #172B4D)",
-                  background: "var(--ds-background-input, #FFFFFF)",
+                  color: "var(--ds-text)",
+                  background: "var(--ds-background-input)",
                   outline: "none",
                   fontFamily: "var(--ds-font-family-body)",
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor =
-                    "var(--ds-border-focused, #388BFF)";
+                    "var(--ds-border-focused)";
                   e.currentTarget.style.boxShadow =
-                    "0 0 0 2px var(--ds-border-focused, #388BFF)33";
+                    "0 0 0 2px var(--ds-border-focused)33";
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.borderColor =
-                    "var(--ds-border-input, #DFE1E6)";
+                    "var(--ds-border-input)";
                   e.currentTarget.style.boxShadow = "none";
                 }}
               />
@@ -1319,14 +1319,14 @@ export default function TimelineView(props: TimelineViewProps) {
                 alignItems: "center",
                 height: 32,
                 padding: "0 12px",
-                border: "1px solid var(--ds-border, #DFE1E6)",
+                border: "1px solid var(--ds-border)",
                 borderRadius: 3,
                 background: depMode
-                  ? "var(--ds-background-selected, #E9F2FF)"
-                  : "var(--ds-surface, #FFFFFF)",
+                  ? "var(--ds-background-selected)"
+                  : "var(--ds-surface)",
                 color: depMode
-                  ? "var(--ds-text-selected, #0C66E4)"
-                  : "var(--ds-text, #172B4D)",
+                  ? "var(--ds-text-selected)"
+                  : "var(--ds-text)",
                 fontWeight: depMode ? 600 : 400,
                 fontSize: 'var(--ds-font-size-400)',
                 cursor: "pointer",
@@ -1342,7 +1342,7 @@ export default function TimelineView(props: TimelineViewProps) {
               onMouseLeave={(e) => {
                 if (!depMode)
                   e.currentTarget.style.background =
-                    "var(--ds-surface, #FFFFFF)";
+                    "var(--ds-surface)";
               }}
             >
               Show dependencies
@@ -1366,17 +1366,17 @@ export default function TimelineView(props: TimelineViewProps) {
                       padding: "0 8px",
                       border: `1px solid ${
                         issueTypeFilter.length > 0
-                          ? "var(--ds-border-selected, #388BFF)"
-                          : "var(--ds-border, #DFE1E6)"
+                          ? "var(--ds-border-selected)"
+                          : "var(--ds-border)"
                       }`,
                       borderRadius: 3,
                       background:
                         issueTypeFilter.length > 0
-                          ? "var(--ds-background-selected, #E9F2FF)"
-                          : "var(--ds-surface, #FFFFFF)",
+                          ? "var(--ds-background-selected)"
+                          : "var(--ds-surface)",
                       cursor: "pointer",
                       fontSize: 'var(--ds-font-size-400)',
-                      color: "var(--ds-text, #172B4D)",
+                      color: "var(--ds-text)",
                       fontFamily: "var(--ds-font-family-body)",
                     }}
                   >
@@ -1386,8 +1386,8 @@ export default function TimelineView(props: TimelineViewProps) {
                         style={{
                           fontSize: 'var(--ds-font-size-100)',
                           background:
-                            "var(--ds-background-selected-bold, #0052CC)",
-                          color: "var(--ds-text-inverse, #FFFFFF)",
+                            "var(--ds-background-selected-bold)",
+                          color: "var(--ds-text-inverse)",
                           borderRadius: 2,
                           padding: "0 4px",
                           marginLeft: 4,
@@ -1422,7 +1422,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           padding: "6px 12px",
                           cursor: "pointer",
                           fontSize: 'var(--ds-font-size-400)',
-                          color: "var(--ds-text, #172B4D)",
+                          color: "var(--ds-text)",
                           fontFamily: "var(--ds-font-family-body)",
                         }}
                         onMouseEnter={(e) => {
@@ -1447,7 +1447,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         <div
                           style={{
                             height: 1,
-                            background: "var(--ds-border, #DFE1E6)",
+                            background: "var(--ds-border)",
                             margin: "4px 0",
                           }}
                         />
@@ -1475,17 +1475,17 @@ export default function TimelineView(props: TimelineViewProps) {
                       padding: "0 8px",
                       border: `1px solid ${
                         statusFilter.length > 0
-                          ? "var(--ds-border-selected, #388BFF)"
-                          : "var(--ds-border, #DFE1E6)"
+                          ? "var(--ds-border-selected)"
+                          : "var(--ds-border)"
                       }`,
                       borderRadius: 3,
                       background:
                         statusFilter.length > 0
-                          ? "var(--ds-background-selected, #E9F2FF)"
-                          : "var(--ds-surface, #FFFFFF)",
+                          ? "var(--ds-background-selected)"
+                          : "var(--ds-surface)",
                       cursor: "pointer",
                       fontSize: 'var(--ds-font-size-400)',
-                      color: "var(--ds-text, #172B4D)",
+                      color: "var(--ds-text)",
                       fontFamily: "var(--ds-font-family-body)",
                     }}
                   >
@@ -1495,8 +1495,8 @@ export default function TimelineView(props: TimelineViewProps) {
                         style={{
                           fontSize: 'var(--ds-font-size-100)',
                           background:
-                            "var(--ds-background-selected-bold, #0052CC)",
-                          color: "var(--ds-text-inverse, #FFFFFF)",
+                            "var(--ds-background-selected-bold)",
+                          color: "var(--ds-text-inverse)",
                           borderRadius: 2,
                           padding: "0 4px",
                           marginLeft: 4,
@@ -1525,7 +1525,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           padding: "8px 12px",
                           cursor: "pointer",
                           fontSize: 'var(--ds-font-size-400)',
-                          color: "var(--ds-text, #172B4D)",
+                          color: "var(--ds-text)",
                           fontFamily: "var(--ds-font-family-body)",
                         }}
                         onMouseEnter={(e) => {
@@ -1549,7 +1549,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         <div
                           style={{
                             height: 1,
-                            background: "var(--ds-border, #DFE1E6)",
+                            background: "var(--ds-border)",
                             margin: "4px 0",
                           }}
                         />
@@ -1577,16 +1577,16 @@ export default function TimelineView(props: TimelineViewProps) {
                       padding: "0 8px",
                       border: `1px solid ${
                         assigneeFilter
-                          ? "var(--ds-border-selected, #388BFF)"
-                          : "var(--ds-border, #DFE1E6)"
+                          ? "var(--ds-border-selected)"
+                          : "var(--ds-border)"
                       }`,
                       borderRadius: 3,
                       background: assigneeFilter
-                        ? "var(--ds-background-selected, #E9F2FF)"
-                        : "var(--ds-surface, #FFFFFF)",
+                        ? "var(--ds-background-selected)"
+                        : "var(--ds-surface)",
                       cursor: "pointer",
                       fontSize: 'var(--ds-font-size-400)',
-                      color: "var(--ds-text, #172B4D)",
+                      color: "var(--ds-text)",
                       fontFamily: "var(--ds-font-family-body)",
                     }}
                   >
@@ -1596,8 +1596,8 @@ export default function TimelineView(props: TimelineViewProps) {
                         style={{
                           fontSize: 'var(--ds-font-size-100)',
                           background:
-                            "var(--ds-background-selected-bold, #0052CC)",
-                          color: "var(--ds-text-inverse, #FFFFFF)",
+                            "var(--ds-background-selected-bold)",
+                          color: "var(--ds-text-inverse)",
                           borderRadius: 2,
                           padding: "0 4px",
                           marginLeft: 4,
@@ -1626,7 +1626,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       <div
                         style={{
                           height: 1,
-                          background: "var(--ds-border, #DFE1E6)",
+                          background: "var(--ds-border)",
                           margin: "4px 0",
                         }}
                       />
@@ -1648,23 +1648,23 @@ export default function TimelineView(props: TimelineViewProps) {
                           padding: "6px 12px",
                           cursor: "pointer",
                           fontSize: 'var(--ds-font-size-400)',
-                          color: "var(--ds-text, #172B4D)",
+                          color: "var(--ds-text)",
                           fontFamily: "var(--ds-font-family-body)",
                           background:
                             assigneeFilter === opt.name
-                              ? "var(--ds-background-selected, #E9F2FE)"
+                              ? "var(--ds-background-selected)"
                               : "transparent",
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background =
                             assigneeFilter === opt.name
-                              ? "var(--ds-background-selected, #E9F2FE)"
+                              ? "var(--ds-background-selected)"
                               : "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background =
                             assigneeFilter === opt.name
-                              ? "var(--ds-background-selected, #E9F2FE)"
+                              ? "var(--ds-background-selected)"
                               : "transparent";
                         }}
                       >
@@ -1674,7 +1674,7 @@ export default function TimelineView(props: TimelineViewProps) {
                             borderRadius: "50%",
                             outline:
                               assigneeFilter === opt.name
-                                ? "2px solid var(--ds-border-selected, #388BFF)"
+                                ? "2px solid var(--ds-border-selected)"
                                 : "2px solid transparent",
                             outlineOffset: 1,
                           }}
@@ -1693,7 +1693,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         style={{
                           padding: "8px 12px",
                           fontSize: 'var(--ds-font-size-300)',
-                          color: "var(--ds-text-subtlest, #626F86)",
+                          color: "var(--ds-text-subtlest)",
                         }}
                       >
                         No assignees in view
@@ -1743,17 +1743,17 @@ export default function TimelineView(props: TimelineViewProps) {
                       padding: "0 8px",
                       border: `1px solid ${
                         quickFilterActiveCount > 0
-                          ? "var(--ds-border-selected, #388BFF)"
-                          : "var(--ds-border, #DFE1E6)"
+                          ? "var(--ds-border-selected)"
+                          : "var(--ds-border)"
                       }`,
                       borderRadius: 3,
                       background:
                         quickFilterActiveCount > 0
-                          ? "var(--ds-background-selected, #E9F2FF)"
-                          : "var(--ds-surface, #FFFFFF)",
+                          ? "var(--ds-background-selected)"
+                          : "var(--ds-surface)",
                       cursor: "pointer",
                       fontSize: 'var(--ds-font-size-400)',
-                      color: "var(--ds-text, #172B4D)",
+                      color: "var(--ds-text)",
                       fontFamily: "var(--ds-font-family-body)",
                     }}
                   >
@@ -1763,8 +1763,8 @@ export default function TimelineView(props: TimelineViewProps) {
                         style={{
                           fontSize: 'var(--ds-font-size-100)',
                           background:
-                            "var(--ds-background-selected-bold, #0052CC)",
-                          color: "var(--ds-text-inverse, #FFFFFF)",
+                            "var(--ds-background-selected-bold)",
+                          color: "var(--ds-text-inverse)",
                           borderRadius: 2,
                           padding: "0 4px",
                           marginLeft: 4,
@@ -1786,7 +1786,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         padding: "4px 12px 2px",
                         fontSize: 'var(--ds-font-size-100)',
                         fontWeight: 700,
-                        color: "var(--ds-text-subtlest, #6B778C)",
+                        color: "var(--ds-text-subtlest)",
                         letterSpacing: "0.06em",
                         fontFamily: "var(--ds-font-family-body)",
                       }}
@@ -1812,7 +1812,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         <div
                           style={{
                             height: 1,
-                            background: "var(--ds-border, #DFE1E6)",
+                            background: "var(--ds-border)",
                             margin: "4px 0",
                           }}
                         />
@@ -1821,7 +1821,7 @@ export default function TimelineView(props: TimelineViewProps) {
                             padding: "4px 12px 2px",
                             fontSize: 'var(--ds-font-size-100)',
                             fontWeight: 700,
-                            color: "var(--ds-text-subtlest, #6B778C)",
+                            color: "var(--ds-text-subtlest)",
                             letterSpacing: "0.06em",
                             fontFamily: "var(--ds-font-family-body)",
                           }}
@@ -1849,7 +1849,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         <div
                           style={{
                             height: 1,
-                            background: "var(--ds-border, #DFE1E6)",
+                            background: "var(--ds-border)",
                             margin: "4px 0",
                           }}
                         />
@@ -1876,11 +1876,11 @@ export default function TimelineView(props: TimelineViewProps) {
                   gap: 4,
                   height: 28,
                   padding: "0 8px",
-                  border: "1px solid var(--ds-border-selected, #388BFF)",
+                  border: "1px solid var(--ds-border-selected)",
                   borderRadius: 3,
-                  background: "var(--ds-background-selected, #E9F2FF)",
+                  background: "var(--ds-background-selected)",
                   fontSize: 'var(--ds-font-size-200)',
-                  color: "var(--ds-link, #0052CC)",
+                  color: "var(--ds-link)",
                   fontFamily: "var(--ds-font-family-body)",
                 }}
               >
@@ -1894,7 +1894,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     border: "none",
                     background: "transparent",
                     cursor: "pointer",
-                    color: "var(--ds-link, #0052CC)",
+                    color: "var(--ds-link)",
                     lineHeight: 1,
                   }}
                   aria-label={`Remove filter: ${activeSavedFilter.name}`}
@@ -1911,11 +1911,11 @@ export default function TimelineView(props: TimelineViewProps) {
                   gap: 4,
                   height: 28,
                   padding: "0 8px",
-                  border: "1px solid var(--ds-border-selected, #388BFF)",
+                  border: "1px solid var(--ds-border-selected)",
                   borderRadius: 3,
-                  background: "var(--ds-background-selected, #E9F2FF)",
+                  background: "var(--ds-background-selected)",
                   fontSize: 'var(--ds-font-size-200)',
-                  color: "var(--ds-link, #0052CC)",
+                  color: "var(--ds-link)",
                   fontFamily: "var(--ds-font-family-body)",
                 }}
               >
@@ -1930,7 +1930,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     border: "none",
                     background: "transparent",
                     cursor: "pointer",
-                    color: "var(--ds-link, #0052CC)",
+                    color: "var(--ds-link)",
                     lineHeight: 1,
                   }}
                   aria-label={`Remove filter: ${quickFilter}`}
@@ -1947,11 +1947,11 @@ export default function TimelineView(props: TimelineViewProps) {
                   gap: 4,
                   height: 28,
                   padding: "0 8px",
-                  border: "1px solid var(--ds-border-selected, #388BFF)",
+                  border: "1px solid var(--ds-border-selected)",
                   borderRadius: 3,
-                  background: "var(--ds-background-selected, #E9F2FF)",
+                  background: "var(--ds-background-selected)",
                   fontSize: 'var(--ds-font-size-200)',
-                  color: "var(--ds-link, #0052CC)",
+                  color: "var(--ds-link)",
                   fontFamily: "var(--ds-font-family-body)",
                 }}
               >
@@ -1965,7 +1965,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     border: "none",
                     background: "transparent",
                     cursor: "pointer",
-                    color: "var(--ds-link, #0052CC)",
+                    color: "var(--ds-link)",
                     lineHeight: 1,
                   }}
                   aria-label={`Remove assignee filter: ${assigneeFilter}`}
@@ -1983,12 +1983,12 @@ export default function TimelineView(props: TimelineViewProps) {
                   gap: 4,
                   height: 28,
                   padding: "0 8px",
-                  border: "1px solid var(--ds-border, #DFE1E6)",
+                  border: "1px solid var(--ds-border)",
                   borderRadius: 3,
-                  background: "var(--ds-background-neutral, #F1F2F4)",
+                  background: "var(--ds-background-neutral)",
                   cursor: "pointer",
                   fontSize: 'var(--ds-font-size-200)',
-                  color: "var(--ds-text-subtle, #42526E)",
+                  color: "var(--ds-text-subtle)",
                   fontFamily: "var(--ds-font-family-body)",
                 }}
               >
@@ -2027,7 +2027,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   transform: "translate(-50%, -50%)",
                   width: 480,
                   maxHeight: "85vh",
-                  background: "var(--ds-surface-overlay, #FFFFFF)",
+                  background: "var(--ds-surface-overlay)",
                   borderRadius: 8,
                   boxShadow:
                     "var(--ds-shadow-overlay, 0 8px 24px rgba(9,30,66,0.25))",
@@ -2044,14 +2044,14 @@ export default function TimelineView(props: TimelineViewProps) {
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "20px 24px 16px",
-                    borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+                    borderBottom: "1px solid var(--ds-border)",
                   }}
                 >
                   <span
                     style={{
                       fontSize: 'var(--ds-font-size-700)',
                       fontWeight: 600,
-                      color: "var(--ds-text, #172B4D)",
+                      color: "var(--ds-text)",
                     }}
                   >
                     Create work item
@@ -2067,7 +2067,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       border: "none",
                       cursor: "pointer",
                       padding: 4,
-                      color: "var(--ds-text-subtle, #42526E)",
+                      color: "var(--ds-text-subtle)",
                       borderRadius: 3,
                       display: "flex",
                       alignItems: "center",
@@ -2081,11 +2081,11 @@ export default function TimelineView(props: TimelineViewProps) {
                   style={{
                     padding: "12px 24px 0",
                     fontSize: 'var(--ds-font-size-300)',
-                    color: "var(--ds-text-subtle, #42526E)",
+                    color: "var(--ds-text-subtle)",
                   }}
                 >
                   Required fields are marked with an asterisk{" "}
-                  <span style={{ color: "var(--ds-text-danger, #AE2A19)" }}>
+                  <span style={{ color: "var(--ds-text-danger)" }}>
                     *
                   </span>
                 </div>
@@ -2106,13 +2106,13 @@ export default function TimelineView(props: TimelineViewProps) {
                       style={{
                         fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
-                        color: "var(--ds-text-subtlest, #626F86)",
+                        color: "var(--ds-text-subtlest)",
                         marginBottom: 6,
                         fontFamily: "var(--ds-font-family-body)",
                       }}
                     >
                       Project{" "}
-                      <span style={{ color: "var(--ds-text-danger, #AE2A19)" }}>
+                      <span style={{ color: "var(--ds-text-danger)" }}>
                         *
                       </span>
                     </div>
@@ -2158,13 +2158,13 @@ export default function TimelineView(props: TimelineViewProps) {
                       style={{
                         fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
-                        color: "var(--ds-text-subtlest, #626F86)",
+                        color: "var(--ds-text-subtlest)",
                         marginBottom: 8,
                         fontFamily: "var(--ds-font-family-body)",
                       }}
                     >
                       Work type{" "}
-                      <span style={{ color: "var(--ds-text-danger, #AE2A19)" }}>
+                      <span style={{ color: "var(--ds-text-danger)" }}>
                         *
                       </span>
                     </div>
@@ -2203,13 +2203,13 @@ export default function TimelineView(props: TimelineViewProps) {
                       style={{
                         fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
-                        color: "var(--ds-text-subtlest, #626F86)",
+                        color: "var(--ds-text-subtlest)",
                         marginBottom: 6,
                         fontFamily: "var(--ds-font-family-body)",
                       }}
                     >
                       Summary{" "}
-                      <span style={{ color: "var(--ds-text-danger, #AE2A19)" }}>
+                      <span style={{ color: "var(--ds-text-danger)" }}>
                         *
                       </span>
                     </div>
@@ -2232,7 +2232,7 @@ export default function TimelineView(props: TimelineViewProps) {
                 {/* Footer */}
                 <div
                   style={{
-                    borderTop: "1px solid var(--ds-border, #DFE1E6)",
+                    borderTop: "1px solid var(--ds-border)",
                     padding: "12px 24px",
                     display: "flex",
                     alignItems: "center",
@@ -2284,8 +2284,8 @@ export default function TimelineView(props: TimelineViewProps) {
                 style={{
                   height: doubleHeaderH,
                   flexShrink: 0,
-                  borderBottom: "2px solid var(--ds-border, #DFE1E6)",
-                  background: "var(--ds-surface-sunken, #F7F8F9)",
+                  borderBottom: "2px solid var(--ds-border)",
+                  background: "var(--ds-surface-sunken)",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -2316,7 +2316,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       cursor: "pointer",
                       fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 500,
-                      color: "var(--ds-text-subtle, #505258)",
+                      color: "var(--ds-text-subtle)",
                       fontFamily: "var(--ds-font-family-body)",
                       userSelect: "none",
                     }}
@@ -2372,7 +2372,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         cursor: "pointer",
                         fontSize: 'var(--ds-font-size-400)',
                         fontWeight: 500,
-                        color: "var(--ds-text-subtle, #505258)",
+                        color: "var(--ds-text-subtle)",
                         fontFamily: "var(--ds-font-family-body)",
                         flexShrink: 0,
                       }}
@@ -2408,7 +2408,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         ? "none"
                         : "1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))",
                       background:
-                        "var(--ds-background-neutral-subtle, #F7F8F9)",
+                        "var(--ds-background-neutral-subtle)",
                       cursor: "pointer",
                     }}
                     onClick={() => setReleasesCollapsed((v) => !v)}
@@ -2419,7 +2419,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        color: "var(--ds-text-subtle, #44546F)",
+                        color: "var(--ds-text-subtle)",
                       }}
                       aria-label={
                         releasesCollapsed
@@ -2454,7 +2454,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       style={{
                         fontSize: 'var(--ds-font-size-400)',
                         fontWeight: 600,
-                        color: "var(--ds-text, #172B4D)",
+                        color: "var(--ds-text)",
                       }}
                     >
                       {hubLabel}
@@ -2477,7 +2477,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           border: "none",
                           background: "transparent",
                           cursor: "pointer",
-                          color: "var(--ds-text-subtle, #44546F)",
+                          color: "var(--ds-text-subtle)",
                           borderRadius: 3,
                         }}
                         onMouseEnter={(e) => {
@@ -2566,7 +2566,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       padding: "24px 16px",
                       textAlign: "center",
                       fontSize: 'var(--ds-font-size-300)',
-                      color: "var(--ds-text-subtlest, #626F86)",
+                      color: "var(--ds-text-subtlest)",
                     }}
                   >
                     No issues match your filters
@@ -2619,13 +2619,13 @@ export default function TimelineView(props: TimelineViewProps) {
                             height: 28,
                             padding: "0 8px",
                             border:
-                              "1px solid var(--ds-border-focused, #388BFF)",
+                              "1px solid var(--ds-border-focused)",
                             borderRadius: 3,
                             fontSize: 'var(--ds-font-size-300)',
-                            background: "var(--ds-background-input, #FFFFFF)",
+                            background: "var(--ds-background-input)",
                             outline: "none",
                             fontFamily: "var(--ds-font-family-body)",
-                            color: "var(--ds-text, #172B4D)",
+                            color: "var(--ds-text)",
                           }}
                         />
                         <button
@@ -2634,8 +2634,8 @@ export default function TimelineView(props: TimelineViewProps) {
                           style={{
                             ...iconBtnStyle,
                             color: !epicSummary.trim()
-                              ? "var(--ds-text-disabled, #A5ADBA)"
-                              : "var(--ds-text-success, #1F845A)",
+                              ? "var(--ds-text-disabled)"
+                              : "var(--ds-text-success)",
                           }}
                           title="Save epic"
                         >
@@ -2665,7 +2665,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           background: "transparent",
                           cursor: "pointer",
                           fontSize: 'var(--ds-font-size-300)',
-                          color: "var(--ds-text-subtle, #42526E)",
+                          color: "var(--ds-text-subtle)",
                           borderRadius: 3,
                           fontFamily: "var(--ds-font-family-body)",
                         }}
@@ -2695,7 +2695,7 @@ export default function TimelineView(props: TimelineViewProps) {
                 flexDirection: "column",
                 flexShrink: 0,
                 overflow: "hidden",
-                background: "var(--ds-surface, #FFFFFF)",
+                background: "var(--ds-surface)",
               }}
             >
               <DependencyColumnHeaders height={doubleHeaderH} />
@@ -2751,18 +2751,18 @@ export default function TimelineView(props: TimelineViewProps) {
                 position: "relative",
                 outline: "none",
                 background: sidebarResizing
-                  ? "var(--ds-background-selected-bold, #0052CC)"
-                  : "var(--ds-border, #DFE1E6)",
+                  ? "var(--ds-background-selected-bold)"
+                  : "var(--ds-border)",
                 transition: sidebarResizing ? "none" : "background 120ms ease",
               }}
               onFocus={(e) => {
                 e.currentTarget.style.background =
-                  "var(--ds-border-selected, #388BFF)";
+                  "var(--ds-border-selected)";
               }}
               onBlur={(e) => {
                 if (!sidebarResizing)
                   e.currentTarget.style.background =
-                    "var(--ds-border, #DFE1E6)";
+                    "var(--ds-border)";
               }}
             >
               <div
@@ -2777,12 +2777,12 @@ export default function TimelineView(props: TimelineViewProps) {
                 onMouseEnter={(e) => {
                   const p = e.currentTarget.parentElement;
                   if (p && !sidebarResizing)
-                    p.style.background = "var(--ds-border-selected, #388BFF)";
+                    p.style.background = "var(--ds-border-selected)";
                 }}
                 onMouseLeave={(e) => {
                   const p = e.currentTarget.parentElement;
                   if (p && !sidebarResizing)
-                    p.style.background = "var(--ds-border, #DFE1E6)";
+                    p.style.background = "var(--ds-border)";
                 }}
                 style={{
                   position: "absolute",
@@ -2816,7 +2816,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   bottom: 0,
                   left: todayLeft,
                   width: 1.5,
-                  background: "var(--ds-chart-danger-bold, #E34935)",
+                  background: "var(--ds-chart-danger-bold)",
                   zIndex: 8,
                   pointerEvents: "none",
                   display: todayLeft >= 0 ? "block" : "none",
@@ -2831,7 +2831,7 @@ export default function TimelineView(props: TimelineViewProps) {
                     height: 0,
                     borderLeft: "4.5px solid transparent",
                     borderRight: "4.5px solid transparent",
-                    borderTop: "7px solid var(--ds-chart-danger-bold, #E34935)",
+                    borderTop: "7px solid var(--ds-chart-danger-bold)",
                   }}
                 />
               </div>
@@ -2843,8 +2843,8 @@ export default function TimelineView(props: TimelineViewProps) {
               style={{
                 overflow: "hidden",
                 flexShrink: 0,
-                background: "var(--ds-surface-sunken, #F7F8F9)",
-                borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+                background: "var(--ds-surface-sunken)",
+                borderBottom: "1px solid var(--ds-border)",
               }}
             >
               <div style={{ width: gridWidth }}>
@@ -2853,7 +2853,7 @@ export default function TimelineView(props: TimelineViewProps) {
                   style={{
                     height: HEADER_H,
                     position: "relative",
-                    borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+                    borderBottom: "1px solid var(--ds-border)",
                   }}
                 >
                   {headerCols.map((col, i) => (
@@ -2868,7 +2868,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         display: "flex",
                         alignItems: "center",
                         paddingLeft: 8,
-                        borderRight: "1px solid var(--ds-border, #DFE1E6)",
+                        borderRight: "1px solid var(--ds-border)",
                         overflow: "hidden",
                       }}
                     >
@@ -2876,7 +2876,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         style={{
                           fontSize: 'var(--ds-font-size-200)',
                           fontWeight: 600,
-                          color: "var(--ds-text-subtle, #44546F)",
+                          color: "var(--ds-text-subtle)",
                           whiteSpace: "nowrap",
                         }}
                       >
@@ -2898,7 +2898,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         alignItems: "center",
                         justifyContent: "center",
                         paddingLeft: 0,
-                        borderRight: "1px solid var(--ds-border, #DFE1E6)",
+                        borderRight: "1px solid var(--ds-border)",
                         overflow: "hidden",
                       }}
                     >
@@ -2906,7 +2906,7 @@ export default function TimelineView(props: TimelineViewProps) {
                         style={{
                           fontSize: 'var(--ds-font-size-100)',
                           fontWeight: 500,
-                          color: "var(--ds-text-subtle, #44546F)",
+                          color: "var(--ds-text-subtle)",
                           whiteSpace: "nowrap",
                         }}
                       >
@@ -2941,7 +2941,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       right: 0,
                       height: ROW_H,
                       background:
-                        "var(--ds-background-neutral-subtle, #F7F8F9)",
+                        "var(--ds-background-neutral-subtle)",
                       borderBottom:
                         "1px solid var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))",
                       display: "flex",
@@ -2962,7 +2962,7 @@ export default function TimelineView(props: TimelineViewProps) {
                       left: 0,
                       right: 0,
                       height: ROW_H,
-                      background: "var(--cat-inline-create-bg, #dddee1)",
+                      background: "var(--cat-inline-create-bg)",
                     }}
                   />
                 )}
@@ -3171,7 +3171,7 @@ export default function TimelineView(props: TimelineViewProps) {
                           width: finalWidth,
                           height: BAR_H,
                           borderRadius: BAR_RADIUS,
-                          background: "var(--ds-surface, #FFFFFF)",
+                          background: "var(--ds-surface)",
                           border: `2px solid ${borderColor}`,
                           display: "flex",
                           alignItems: "center",
@@ -3230,7 +3230,7 @@ export default function TimelineView(props: TimelineViewProps) {
                             style={{
                               fontSize: 'var(--ds-font-size-100)',
                               fontWeight: 500,
-                              color: "var(--ds-text, #172B4D)",
+                              color: "var(--ds-text)",
                               whiteSpace: "nowrap",
                               overflow: "hidden",
                               textOverflow: "ellipsis",

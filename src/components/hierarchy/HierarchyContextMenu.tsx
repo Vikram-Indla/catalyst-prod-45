@@ -80,7 +80,7 @@ export function HierarchyContextMenu({
     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
   };
 
-  const sep = <div style={{ borderTop: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', margin: '4px 0' }} />;
+  const sep = <div style={{ borderTop: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))', margin: '4px 0' }} />;
 
   return createPortal(
     <div data-ctx-menu style={{ ...menuStyle, top: adjustedY, left: adjustedX }}
@@ -161,7 +161,7 @@ export function HierarchyContextMenu({
           <div data-ctx-menu style={{
             ...menuStyle, position: 'absolute', top: -4, left: 218, width: 200, maxHeight: 240, overflowY: 'auto',
           }}>
-            <button style={{ ...itemStyle, fontStyle: 'italic', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}
+            <button style={{ ...itemStyle, fontStyle: 'italic', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}
               onClick={() => { onChangeAssignee(null); onClose(); }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}>
@@ -175,7 +175,7 @@ export function HierarchyContextMenu({
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
                 <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
                     {a.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                   </span>
                 </div>
@@ -199,7 +199,7 @@ export function HierarchyContextMenu({
           <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-danger)' }}>Delete?</span>
           <button onClick={() => { onDelete(); onClose(); }} style={{
             fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 8px', borderRadius: 4,
-            background: 'var(--sem-danger)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer',
+            background: 'var(--sem-danger)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', cursor: 'pointer',
           }}>Yes</button>
           <button onClick={() => setConfirmDelete(false)} style={{
             fontSize: 'var(--ds-font-size-100)', padding: '2px 8px', color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer',
@@ -208,7 +208,7 @@ export function HierarchyContextMenu({
       ) : (
         <button style={{ ...itemStyle, color: 'var(--sem-danger)' }}
           onClick={() => setConfirmDelete(true)}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger, #FEF2F2)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
           <Trash2 size={13} /> Delete
         </button>

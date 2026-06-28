@@ -19,11 +19,11 @@
   z-index: -2;
   background: conic-gradient(
     from 0deg,
-    var(--ds-link, #0C66E4) 0deg,
-    var(--ds-background-discovery-bold, #6554C0) 90deg,
-    var(--ds-background-danger-bold, #C9372C) 180deg,
-    var(--ds-background-warning-bold, #E2B203) 270deg,
-    var(--ds-link, #0C66E4) 360deg
+    var(--ds-link) 0deg,
+    var(--ds-background-discovery-bold) 90deg,
+    var(--ds-background-danger-bold) 180deg,
+    var(--ds-background-warning-bold) 270deg,
+    var(--ds-link) 360deg
   );
   animation: ascp-rotate 3s linear infinite;
   pointer-events: none;
@@ -34,13 +34,13 @@
   position: absolute;
   inset: 1.5px;
   border-radius: 6.5px;
-  background: var(--ds-surface, #fff);
+  background: var(--ds-surface);
   z-index: -1;
   pointer-events: none;
 }
 
 .ascp-root.ascp-static {
-  border: 1px solid var(--ds-border, #dfe1e6);
+  border: 1px solid var(--ds-border);
   padding: 0;
 }
 
@@ -50,7 +50,7 @@
 }
 
 .ascp-surface {
-  background: var(--ds-surface, #fff);
+  background: var(--ds-surface);
   border-radius: 6.5px;
 }
 
@@ -64,10 +64,10 @@
   width: 100%;
   padding: 8px 12px;
   cursor: pointer;
-  border-bottom: 1px solid var(--ds-border, #dfe1e6);
+  border-bottom: 1px solid var(--ds-border);
 }
 .ascp-header:focus-visible {
-  outline: 2px solid var(--ds-border-focused, #4c9aff);
+  outline: 2px solid var(--ds-border-focused);
   outline-offset: -2px;
 }
 .ascp-header__left {
@@ -79,13 +79,13 @@
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text, #172b4d);
+  color: var(--ds-text);
 }
 .ascp-header__right {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--ds-text-subtle, #44546f);
+  color: var(--ds-text-subtle);
 }
 .ascp-refresh,
 .ascp-chevron {
@@ -96,12 +96,12 @@
   height: 24px;
   border-radius: 3px;
   cursor: pointer;
-  color: var(--ds-text-subtle, #44546f);
+  color: var(--ds-text-subtle);
 }
 .ascp-refresh:hover,
 .ascp-chevron:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
-  color: var(--ds-text, #172b4d);
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
 }
 
 /* ── List rows ────────────────────────────────────────────── */
@@ -120,19 +120,19 @@
   cursor: pointer;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
-  color: var(--ds-text, #172b4d);
-  border-top: 1px solid var(--ds-border, #ebecf0);
-  background: var(--ds-surface, #fff);
+  color: var(--ds-text);
+  border-top: 1px solid var(--ds-border);
+  background: var(--ds-surface);
   transition: background 100ms ease;
 }
 .ascp-row:first-child {
   border-top-color: transparent;
 }
 .ascp-row:hover:not(:disabled) {
-  background: var(--ds-background-neutral-subtle-hovered, #f7f8f9);
+  background: var(--ds-background-neutral-subtle-hovered);
 }
 .ascp-row:focus-visible {
-  outline: 2px solid var(--ds-border-focused, #4c9aff);
+  outline: 2px solid var(--ds-border-focused);
   outline-offset: -2px;
 }
 .ascp-row:disabled {
@@ -160,20 +160,20 @@
   cursor: default;
 }
 .ascp-row--skeleton:hover {
-  background: var(--ds-surface, #fff);
+  background: var(--ds-surface);
 }
 .ascp-skel-dot {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--ds-skeleton, #ebecf0);
+  background: var(--ds-skeleton);
   animation: ascp-pulse 1.4s ease-in-out infinite;
 }
 .ascp-skel-line {
   flex: 1;
   height: 12px;
   border-radius: 6px;
-  background: var(--ds-skeleton, #ebecf0);
+  background: var(--ds-skeleton);
   animation: ascp-pulse 1.4s ease-in-out infinite;
 }
 @keyframes ascp-pulse {
@@ -186,21 +186,21 @@
 .ascp-error {
   padding: 10px 12px;
   font-size: 13px;
-  color: var(--ds-text-subtle, #44546f);
+  color: var(--ds-text-subtle);
 }
 .ascp-error {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--ds-background-danger-subtle, #ffebe6);
-  color: var(--ds-text-danger, #ae2a19);
+  background: var(--ds-background-danger-subtle);
+  color: var(--ds-text-danger);
 }
 .ascp-error__retry {
   all: unset;
   margin-left: auto;
   cursor: pointer;
   font-weight: 500;
-  color: var(--ds-text-danger, #ae2a19);
+  color: var(--ds-text-danger);
 }
 .ascp-error__retry:hover {
   text-decoration: underline;
@@ -212,26 +212,26 @@
   align-items: center;
   gap: 6px;
   padding: 8px 8px 8px 12px;
-  border-top: 1px solid var(--ds-border, #ebecf0);
+  border-top: 1px solid var(--ds-border);
 }
 .ascp-hint__input {
   flex: 1;
   height: 32px;
   padding: 0 10px;
   border-radius: 3px;
-  border: 1px solid var(--ds-border, #dfe1e6);
+  border: 1px solid var(--ds-border);
   font-family: inherit;
   font-size: 14px;
-  color: var(--ds-text, #172b4d);
-  background: var(--ds-surface, #fff);
+  color: var(--ds-text);
+  background: var(--ds-surface);
   outline: none;
 }
 .ascp-hint__input:focus {
-  border-color: var(--ds-border-focused, #4c9aff);
-  box-shadow: 0 0 0 1px var(--ds-border-focused, #4c9aff);
+  border-color: var(--ds-border-focused);
+  box-shadow: 0 0 0 1px var(--ds-border-focused);
 }
 .ascp-hint__input:disabled {
-  background: var(--ds-background-disabled, #f4f5f7);
+  background: var(--ds-background-disabled);
   cursor: not-allowed;
 }
 .ascp-hint__send {
@@ -243,11 +243,11 @@
   height: 32px;
   border-radius: 3px;
   cursor: pointer;
-  color: var(--ds-text-subtle, #44546f);
+  color: var(--ds-text-subtle);
 }
 .ascp-hint__send:hover:not(:disabled) {
-  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
-  color: var(--ds-text, #172b4d);
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
 }
 .ascp-hint__send:disabled {
   opacity: 0.45;
@@ -260,9 +260,9 @@
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  border-top: 1px solid var(--ds-border, #ebecf0);
+  border-top: 1px solid var(--ds-border);
   font-size: 12px;
-  color: var(--ds-text-subtle, #44546f);
+  color: var(--ds-text-subtle);
 }
 .ascp-footer__note {
   display: inline-flex;
@@ -285,15 +285,15 @@
   height: 24px;
   border-radius: 3px;
   cursor: pointer;
-  color: var(--ds-text-subtle, #44546f);
+  color: var(--ds-text-subtle);
 }
 .ascp-feedback:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
-  color: var(--ds-text, #172b4d);
+  background: var(--ds-background-neutral-subtle-hovered);
+  color: var(--ds-text);
 }
 .ascp-feedback--on {
-  background: var(--ds-background-selected, #e9f2ff);
-  color: var(--ds-text-selected, #0c66e4);
+  background: var(--ds-background-selected);
+  color: var(--ds-text-selected);
 }
 .ascp-create-all {
   all: unset;
@@ -302,12 +302,12 @@
   border-radius: 3px;
   font-weight: 500;
   font-size: 13px;
-  color: var(--ds-text-inverse, #FFFFFF);
-  background: var(--ds-background-brand-bold, #0c66e4);
+  color: var(--ds-text-inverse);
+  background: var(--ds-background-brand-bold);
   transition: background 100ms ease;
 }
 .ascp-create-all:hover:not(:disabled) {
-  background: var(--ds-background-brand-bold-hovered, #0747a6);
+  background: var(--ds-background-brand-bold-hovered);
 }
 .ascp-create-all:disabled {
   opacity: 0.45;

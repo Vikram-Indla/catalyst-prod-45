@@ -47,10 +47,10 @@ describe('mapStatusesToColumns', () => {
   // Fixture color values intentionally use ADS tokens — the column mapper
   // doesn't transform color, but linting bans bare hex even in tests.
   const statuses: PlannerStatus[] = [
-    { id: 's-2', slug: 'in-progress', name: 'In Progress', color: 'var(--ds-text-subtle, #42526E)', order: 2 },
-    { id: 's-0', slug: 'backlog', name: 'Backlog', color: 'var(--ds-text-subtle, #42526E)', order: 0 },
-    { id: 's-3', slug: 'done', name: 'Done', color: 'var(--ds-text-subtle, #42526E)', order: 3 },
-    { id: 's-1', slug: 'planned', name: 'Planned', color: 'var(--ds-text-subtle, #42526E)', order: 1 },
+    { id: 's-2', slug: 'in-progress', name: 'In Progress', color: 'var(--ds-text-subtle)', order: 2 },
+    { id: 's-0', slug: 'backlog', name: 'Backlog', color: 'var(--ds-text-subtle)', order: 0 },
+    { id: 's-3', slug: 'done', name: 'Done', color: 'var(--ds-text-subtle)', order: 3 },
+    { id: 's-1', slug: 'planned', name: 'Planned', color: 'var(--ds-text-subtle)', order: 1 },
   ];
 
   it('returns one column per status', () => {
@@ -97,7 +97,7 @@ describe('mapPlannerTaskToBoardIssue', () => {
     assigneeName: 'Alex Doe',
     teamId: 'ws-1',
     teamName: 'Catalyst',
-    teamColor: 'var(--ds-text-brand, #0052CC)',
+    teamColor: 'var(--ds-text-brand)',
     dueDate: '2026-07-01',
     blocked: false,
     progress: 0,

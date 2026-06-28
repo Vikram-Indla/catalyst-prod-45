@@ -32,35 +32,35 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   const isFailed = ps === 'failed';
   const pct = epicCount > 0 ? 100 : (STAGE_PROGRESS[ps] ?? 0);
 
-  const barColor = isComplete ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : isFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+  const barColor = isComplete ? 'var(--ds-text-success, var(--cp-success))' : isFailed ? 'var(--ds-text-danger, var(--cp-danger))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
 
   let labelText = '';
-  let labelColor = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+  let labelColor = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
 
   if (isProcessing) {
     labelText = `~${etaMinutes ?? 4}m left`;
-    labelColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+    labelColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
   } else if (isComplete) {
     if (epicCount > 0) {
       labelText = 'Complete';
-      labelColor = 'var(--ds-text-success, var(--cp-success, #16A34A))';
+      labelColor = 'var(--ds-text-success, var(--cp-success))';
     } else {
       const parts: string[] = [];
       if (artifactCounts?.epics) parts.push(`E·${artifactCounts.epics}`);
       if (artifactCounts?.uat) parts.push(`U·${artifactCounts.uat}`);
       labelText = parts.length > 0 ? parts.join(' ') : 'Complete';
-      labelColor = 'var(--ds-text-success, var(--cp-success, #16A34A))';
+      labelColor = 'var(--ds-text-success, var(--cp-success))';
     }
   } else if (isFailed) {
     labelText = 'Failed';
-    labelColor = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
+    labelColor = 'var(--ds-text-danger, var(--cp-danger))';
   }
   // intake + epicCount=0 → empty bar, show em-dash
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 160 }}>
       {/* Progress bar — 80px fixed */}
-      <div style={{ width: 80, height: 4, borderRadius: 4, background: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', flexShrink: 0, overflow: 'hidden' }}>
+      <div style={{ width: 80, height: 4, borderRadius: 4, background: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', flexShrink: 0, overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', borderRadius: 4, background: barColor, transition: 'width 300ms ease' }} />
       </div>
       {/* Label */}
@@ -69,7 +69,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
           {labelText}
         </span>
       ) : (
-        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 'var(--ds-font-size-300)' }}>—</span>
+        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontSize: 'var(--ds-font-size-300)' }}>—</span>
       )}
     </div>
   );

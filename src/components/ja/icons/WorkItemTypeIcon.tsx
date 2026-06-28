@@ -8,11 +8,11 @@ interface WorkItemTypeIconProps {
 }
 
 const ICON_COLORS: Record<WorkItemType, string> = {
-  epic: 'var(--ds-background-discovery-bold, #904EE2)', // Purple - represents large scope
-  story: 'var(--ds-background-success-bold, #1F845A)', // Green
-  feature: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', // Amber (was purple - per design system governance)
-  task: 'var(--ds-link, #0065FF)', // Blue
-  defect: 'var(--ds-background-danger-bold, #C9372C)', // Red
+  epic: 'var(--ds-background-discovery-bold)', // Purple - represents large scope
+  story: 'var(--ds-background-success-bold)', // Green
+  feature: 'var(--ds-text-warning, var(--cp-amber))', // Amber (was purple - per design system governance)
+  task: 'var(--ds-link)', // Blue
+  defect: 'var(--ds-background-danger-bold)', // Red
 };
 
 export function WorkItemTypeIcon({ type, size = 16 }: WorkItemTypeIconProps) {

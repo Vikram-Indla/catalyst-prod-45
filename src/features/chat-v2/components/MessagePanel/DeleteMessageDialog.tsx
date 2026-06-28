@@ -138,7 +138,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
               height: 36,
               padding: '0 16px',
               background: 'var(--cv2-danger)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              color: 'var(--ds-text-inverse)',
               border: '1px solid var(--cv2-danger)',
               borderRadius: 'var(--cv2-radius-sm)',
               boxShadow: '0 0 0 3px rgba(224,30,90,0.30)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent

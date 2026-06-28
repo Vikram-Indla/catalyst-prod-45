@@ -389,9 +389,9 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             onClick={() => setEditing(true)}
             className={cn(
               'flex-1 min-w-0 text-left rounded-md border px-3 py-2.5',
-              'border-[var(--ds-border,#DFE1E6)] bg-[var(--ds-surface-sunken,#FAFBFC)]',
-              'text-[14px] text-[var(--ds-text-subtlest,#6B778C)]',
-              'hover:bg-[var(--ds-background-neutral-subtle-hovered,#F1F2F4)]',
+              'border-[var(--ds-border)] bg-[var(--ds-surface-sunken)]',
+              'text-[14px] text-[var(--ds-text-subtlest)]',
+              'hover:bg-[var(--ds-background-neutral-subtle-hovered)]',
               'transition-colors duration-100',
               'cursor-text',
             )}
@@ -453,7 +453,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                       marginTop: 16,
                       paddingTop: 16,
                       borderTop:
-                        '1px dashed var(--ds-border, #DFE1E6)',
+                        '1px dashed var(--ds-border)',
                       pointerEvents: 'none',
                       userSelect: 'none',
                     }}
@@ -475,8 +475,8 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                 marginTop: 8,
                 padding: '8px 12px',
                 fontSize: 'var(--ds-font-size-300)',
-                color: 'var(--ds-text-danger, #AE2A19)',
-                background: 'var(--ds-background-danger, #FFECEB)',
+                color: 'var(--ds-text-danger)',
+                background: 'var(--ds-background-danger)',
                 borderRadius: 4,
               }}
             >
@@ -487,15 +487,15 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             <p
               className={cn(
                 'text-[12px] mt-1.5',
-                'text-[var(--ds-text-subtlest,#6B778C)]',
-                'dark:text-[var(--ds-text-subtlest,#878787)]',
+                'text-[var(--ds-text-subtlest)]',
+                'dark:text-[var(--ds-text-subtlest)]',
               )}
             >
               {shortcutHint.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
                 part.startsWith('**') ? (
                   <span
                     key={i}
-                    className="font-semibold text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]"
+                    className="font-semibold text-[var(--ds-text)] dark:text-[var(--ds-text)]"
                   >
                     {part.replace(/\*\*/g, '')}
                   </span>

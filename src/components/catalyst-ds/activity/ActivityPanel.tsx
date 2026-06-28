@@ -289,7 +289,7 @@ function ActivityPanel({
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
-                  color: 'var(--ds-text-subtle, #44546F)',
+                  color: 'var(--ds-text-subtle)',
                   marginBottom: 6,
                 }}
               >
@@ -340,7 +340,7 @@ function ActivityPanel({
     <div className={cn('flex flex-col', className)}>
       <div className="flex items-center justify-between mb-4">
         <h2
-          className="text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)]"
+          className="text-[var(--ds-text)] dark:text-[var(--ds-text)]"
           style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', fontFamily: 'var(--cp-font-body)' }}
         >
           Activity
@@ -357,8 +357,8 @@ function ActivityPanel({
               className={cn(
                 'px-3 py-1.5 rounded text-[14px] font-normal transition-colors duration-150',
                 activeTab === tab.key
-                  ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[var(--ds-background-information, #1C3A5C)] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
-                  : 'text-[var(--ds-text-subtle,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
+                  ? 'bg-[var(--ds-background-selected)] text-[var(--ds-link)] dark:bg-[var(--ds-background-information)] dark:text-[var(--ds-background-information-bold)]'
+                  : 'text-[var(--ds-text-subtle)] hover:bg-[var(--ds-surface-sunken)] dark:text-[var(--ds-text-subtlest)] dark:hover:bg-[var(--ds-surface-overlay)]'
               )}
             >
               {tab.label}
@@ -370,7 +370,7 @@ function ActivityPanel({
           <button
             type="button"
             onClick={() => setSortOpen(!sortOpen)}
-            className="flex items-center gap-1 text-[14px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-[var(--ds-text,#172B4D)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
+            className="flex items-center gap-1 text-[14px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] hover:text-[var(--ds-text)] dark:hover:text-[var(--ds-text)] transition-colors"
           >
             {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
             <ChevronDown className="h-3.5 w-3.5" />
@@ -379,7 +379,7 @@ function ActivityPanel({
           {sortOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setSortOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--ds-border,#DFE1E6)] dark:border-[var(--ds-border,#2E2E2E)] rounded-md shadow-lg py-1 min-w-[140px]">
+              <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised)] border border-[var(--ds-border)] dark:border-[var(--ds-border)] rounded-md shadow-lg py-1 min-w-[140px]">
                 {(['newest', 'oldest'] as CdsSortOrder[]).map((order) => (
                   <button
                     key={order}
@@ -391,8 +391,8 @@ function ActivityPanel({
                     className={cn(
                       'w-full text-left px-3 py-1.5 text-[14px] transition-colors',
                       order === sortOrder
-                        ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[var(--ds-background-information, #1C3A5C)] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
-                        : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
+                        ? 'bg-[var(--ds-background-selected)] text-[var(--ds-link)] dark:bg-[var(--ds-background-information)] dark:text-[var(--ds-background-information-bold)]'
+                        : 'text-[var(--ds-text)] dark:text-[var(--ds-text)] hover:bg-[var(--ds-surface-sunken)] dark:hover:bg-[var(--ds-surface-overlay)]'
                     )}
                   >
                     {order === 'newest' ? 'Newest first' : 'Oldest first'}
@@ -459,7 +459,7 @@ function ActivityPanel({
                 type="button"
                 onClick={onLoadMoreHistory}
                 disabled={isLoadingMoreHistory}
-                className="text-[14px] font-medium text-[var(--ds-link, #1868DB)] dark:text-[var(--ds-background-information-bold, #0C66E4)] hover:underline disabled:opacity-50"
+                className="text-[14px] font-medium text-[var(--ds-link)] dark:text-[var(--ds-background-information-bold)] hover:underline disabled:opacity-50"
               >
                 {isLoadingMoreHistory ? 'Loading...' : 'Load more activity'}
               </button>
@@ -516,7 +516,7 @@ function AllTabFeed({
   if (isLoadingComments || isLoadingHistory) {
     return (
       <div className="mt-4 text-center py-8">
-        <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
+        <p className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
           Loading activity...
         </p>
       </div>
@@ -525,10 +525,10 @@ function AllTabFeed({
   if (mergedAll.length === 0) {
     return (
       <div className="mt-4 text-center py-10">
-        <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
+        <p className="text-[13px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
           No activity yet
         </p>
-        <p className="mt-1 text-[12px] text-[var(--ds-text-subtlest,#8590A2)] dark:text-[var(--ds-text-subtlest,#6B6E76)]">
+        <p className="mt-1 text-[12px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]">
           Comments and updates will show up here. Switch to the Comments tab to start the conversation.
         </p>
       </div>
@@ -536,7 +536,7 @@ function AllTabFeed({
   }
 
   return (
-    <div className="mt-4 divide-y divide-[var(--ds-border, #DFE1E6)] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+    <div className="mt-4 divide-y divide-[var(--ds-border)] dark:divide-[var(--ds-border,var(--cp-ink-1))]">
       {stream.map((s) => {
         if (s.kind === 'worklog') {
           const isAuthor = user?.id === s.entry.author_id;

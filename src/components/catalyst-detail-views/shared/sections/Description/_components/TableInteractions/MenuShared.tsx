@@ -55,8 +55,8 @@ export function MenuDropdown({
         top: pos.top,
         left: pos.left,
         minWidth,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
         padding: 4,
@@ -79,7 +79,7 @@ export function MenuDivider() {
       style={{
         height: 1,
         margin: '4px 0',
-        background: 'var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-border)',
       }}
     />
   );
@@ -130,8 +130,8 @@ export function MenuItem({
         borderRadius: 4,
         background: 'transparent',
         color: disabled
-          ? 'var(--ds-text-disabled, #B3B9C4)'
-          : 'var(--ds-text, #292A2E)',
+          ? 'var(--ds-text-disabled)'
+          : 'var(--ds-text)',
         fontSize: 'var(--ds-font-size-300)',
         fontWeight: 400,
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -156,7 +156,7 @@ export function MenuItem({
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'var(--ds-text-subtle, #44546F)',
+          color: 'var(--ds-text-subtle)',
           flexShrink: 0,
         }}
       >
@@ -177,8 +177,8 @@ export function ShortcutHint({ keys }: { keys: string[] }) {
     <span
       aria-hidden
       style={{
-        background: 'var(--ds-background-neutral, #F1F2F4)',
-        color: 'var(--ds-text-subtle, #44546F)',
+        background: 'var(--ds-background-neutral)',
+        color: 'var(--ds-text-subtle)',
         fontFamily:
           'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif',
         fontSize: 'var(--ds-font-size-50)',
@@ -199,7 +199,7 @@ export function ShortcutHint({ keys }: { keys: string[] }) {
             <span
               aria-hidden
               style={{
-                color: 'var(--ds-text-subtlest, #6B778C)',
+                color: 'var(--ds-text-subtlest)',
                 fontWeight: 400,
               }}
             >
@@ -289,8 +289,8 @@ export function MenuToggle({ on }: { on: boolean }) {
         height: 14,
         borderRadius: 999,
         background: on
-          ? 'var(--ds-background-success-bold, #22A06B)'
-          : 'var(--ds-text-subtle, #44546F)',
+          ? 'var(--ds-background-success-bold)'
+          : 'var(--ds-text-subtle)',
         position: 'relative',
         transition: 'background-color 120ms ease',
       }}
@@ -303,14 +303,14 @@ export function MenuToggle({ on }: { on: boolean }) {
           width: 10,
           height: 10,
           borderRadius: '50%',
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: 'var(--ds-font-size-100)',
           color: on
-            ? 'var(--ds-background-success-bold, #22A06B)'
-            : 'var(--ds-text-subtle, #44546F)',
+            ? 'var(--ds-background-success-bold)'
+            : 'var(--ds-text-subtle)',
           fontWeight: 700,
           transition: 'inset-inline-start 120ms ease',
         }}

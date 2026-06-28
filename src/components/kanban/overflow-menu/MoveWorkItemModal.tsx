@@ -246,8 +246,8 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
               {statusMismatch && (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
-                  background: 'var(--ds-background-warning, #FFF3CD)', borderRadius: 4, marginBottom: 8,
-                  fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning, #856404)',
+                  background: 'var(--ds-background-warning)', borderRadius: 4, marginBottom: 8,
+                  fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning)',
                 }}>
                   <AlertTriangle size={14} />
                   <span>"{issue.status}" not found in {selectedProject.key}. Mapped to "{selectedStatus}".</span>
@@ -273,8 +273,8 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
           {/* Error */}
           {error && (
             <div style={{
-              padding: '8px 12px', background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 4,
-              fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold, #C9372C)', marginBottom: 8,
+              padding: '8px 12px', background: 'var(--ds-background-danger)', borderRadius: 4,
+              fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold)', marginBottom: 8,
             }}>
               {error}
             </div>
@@ -301,9 +301,9 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
             disabled={!selectedProject || !selectedStatus || saving}
             style={{
               height: 32, padding: '0 16px', border: 'none',
-              borderRadius: 4, background: selectedProject ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : tk.chipBg,
+              borderRadius: 4, background: selectedProject ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : tk.chipBg,
               cursor: selectedProject ? 'pointer' : 'not-allowed',
-              fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
+              fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,

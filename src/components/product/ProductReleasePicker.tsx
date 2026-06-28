@@ -68,7 +68,7 @@ export function ProductReleasePicker({
   const formatOptionLabel = useCallback((opt: ReleaseOption) => {
     if (opt.isCreate) {
       return (
-        <span style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500 }}>
+        <span style={{ color: 'var(--ds-link)', fontWeight: 500 }}>
           {opt.label}
         </span>
       );

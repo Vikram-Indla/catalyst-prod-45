@@ -42,7 +42,7 @@ const CELL_BASE: React.CSSProperties = {
   padding: '0 8px',
   fontSize: 'var(--ds-font-size-300)',
   fontWeight: 400,
-  color: 'var(--ds-text, #172B4D)',
+  color: 'var(--ds-text)',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
@@ -81,7 +81,7 @@ function KeyLink({ keyText, onClick }: { keyText: string; onClick: () => void })
         color: 'var(--cp-blue)',
         fontFamily: 'var(--cp-font-mono)',
         textDecoration: hover ? 'underline' : 'none',
-        background: hover ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
+        background: hover ? 'var(--ds-background-selected)' : 'transparent',
         padding: '1px 4px',
         borderRadius: 3,
         whiteSpace: 'nowrap',
@@ -138,9 +138,9 @@ function renderCell(
               }}
             >
               {isExpanded ? (
-                <ChevronDown size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+                <ChevronDown size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
               ) : (
-                <ChevronRight size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+                <ChevronRight size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
               )}
             </button>
           ) : (
@@ -158,7 +158,7 @@ function renderCell(
         <span
           dir="auto"
           style={{
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             fontSize: 'var(--ds-font-size-300)',
             fontWeight: 400,
             overflow: 'hidden',
@@ -180,7 +180,7 @@ function renderCell(
       return (
         <span
           style={{
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             fontSize: 'var(--ds-font-size-300)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -225,7 +225,7 @@ function renderCell(
       return (
         <span
           style={{
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'var(--cp-font-mono)',
             overflow: 'hidden',
@@ -240,7 +240,7 @@ function renderCell(
       const display = item.assigneeName ?? null;
       if (!display) {
         return (
-          <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 'var(--ds-font-size-200)', fontStyle: 'italic' }}>
+          <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)', fontStyle: 'italic' }}>
             Unassigned
           </span>
         );
@@ -256,7 +256,7 @@ function renderCell(
           <span
             style={{
               fontSize: 'var(--ds-font-size-400)',
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -275,7 +275,7 @@ function renderCell(
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            color: 'var(--ds-text-subtlest, #6B6E76)',
+            color: 'var(--ds-text-subtlest)',
             fontSize: 'var(--ds-font-size-300)',
           }}
         >
@@ -296,7 +296,7 @@ function renderCell(
       return (
         <span
           style={{
-            color: overdue ? 'var(--sem-danger)' : 'var(--ds-text-subtle, #505258)',
+            color: overdue ? 'var(--sem-danger)' : 'var(--ds-text-subtle)',
             fontSize: 'var(--ds-font-size-300)',
           }}
         >
@@ -306,7 +306,7 @@ function renderCell(
     }
     case 'created':
       return (
-        <span style={{ color: 'var(--ds-text-subtle, #505258)', fontSize: 'var(--ds-font-size-300)' }}>
+        <span style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
           {formatDate(item.created)}
         </span>
       );
@@ -314,7 +314,7 @@ function renderCell(
       return (
         <span
           style={{
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--cp-font-mono)',
             maxWidth: 260,
@@ -327,7 +327,7 @@ function renderCell(
         </span>
       );
     default:
-      return <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>—</span>;
+      return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
   }
 }
 
@@ -342,8 +342,8 @@ export const UWVRow = React.memo(function UWVRow({
   onToggleExpand,
   onClick,
 }: UWVRowProps) {
-  const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 var(--ds-border, #E4E6EA)';
-  const restShadow = 'inset 0 -1px 0 0 var(--ds-border, #E4E6EA)';
+  const selectedShadow = 'inset 3px 0 0 var(--ds-link), inset 0 -1px 0 0 var(--ds-border)';
+  const restShadow = 'inset 0 -1px 0 0 var(--ds-border)';
 
   return (
     <div
@@ -354,18 +354,18 @@ export const UWVRow = React.memo(function UWVRow({
         gridTemplateColumns: gridTemplate,
         height: JIRA_ROW_HEIGHT,
         boxShadow: isSelected ? selectedShadow : restShadow,
-        backgroundColor: isSelected ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        backgroundColor: isSelected ? 'var(--ds-surface-sunken, var(--cp-bg-sunken))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         cursor: 'pointer',
         transition: 'background-color 80ms ease',
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))';
         }
       }}
       onMouseLeave={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
         }
       }}
     >

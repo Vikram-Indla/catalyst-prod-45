@@ -191,7 +191,7 @@ export function computeWorkItemAnalytics(
   // Alignment path
   const alignment: AlignmentPath = {
     themeName: theme.name,
-    themeColor: theme.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+    themeColor: theme.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
     objectiveName: objective.name,
     krName: kr.name,
   };

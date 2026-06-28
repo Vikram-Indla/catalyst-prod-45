@@ -150,8 +150,8 @@ export function ToolbarPopover({
               left: coords.left,
               zIndex: 2147483600,
               minWidth: panelWidth,
-              background: 'var(--ds-surface-overlay, #FFFFFF)',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface-overlay)',
+              border: '1px solid var(--ds-border)',
               borderRadius: 4,
               boxShadow:
                 '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
@@ -201,9 +201,9 @@ export function MenuItem({
         border: 'none',
         borderRadius: 3,
         background: active
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : 'transparent',
-        color: 'var(--ds-text, #292A2E)',
+        color: 'var(--ds-text)',
         fontSize: 'var(--ds-font-size-400)',
         textAlign: 'left',
         cursor: 'pointer',
@@ -228,7 +228,7 @@ export function MenuItem({
             justifyContent: 'center',
             width: 24,
             flexShrink: 0,
-            color: 'var(--ds-text-subtle, #44546F)',
+            color: 'var(--ds-text-subtle)',
           }}
         >
           {glyph}
@@ -239,7 +239,7 @@ export function MenuItem({
         <span
           style={{
             fontSize: 'var(--ds-font-size-100)',
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest)',
             flexShrink: 0,
           }}
         >

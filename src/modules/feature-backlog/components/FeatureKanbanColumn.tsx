@@ -98,7 +98,7 @@ function PragmaticFeatureCard({
               <div className="font-mono text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                 {item.key}
               </div>
-              <div className="text-[14px] font-medium line-clamp-2 text-gray-900 dark:text-gray-100 group-hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:group-hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors">
+              <div className="text-[14px] font-medium line-clamp-2 text-gray-900 dark:text-gray-100 group-hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] dark:group-hover:text-[var(--ds-text-brand)] transition-colors">
                 {item.summary}
               </div>
             </div>
@@ -108,12 +108,12 @@ function PragmaticFeatureCard({
           {(item.project_name || item.epic_name) && (
             <div className="flex flex-wrap gap-1.5 mb-2">
               {item.project_name && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[var(--ds-text-subtlest, #626F86)]/15 text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)] border-[var(--ds-text-subtlest, #626F86)]/25">
+                <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[var(--ds-text-subtlest)]/15 text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-disabled)] border-[var(--ds-text-subtlest)]/25">
                   {item.project_name}
                 </span>
               )}
               {item.epic_name && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[var(--ds-chart-teal-bold, #0d9488)]/15 text-[var(--ds-chart-teal-bold, #0d9488)] dark:text-[var(--ds-background-success, #DCFFF1)] border-[var(--ds-chart-teal-bold, #0d9488)]/25">
+                <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[var(--ds-chart-teal-bold)]/15 text-[var(--ds-chart-teal-bold)] dark:text-[var(--ds-background-success)] border-[var(--ds-chart-teal-bold)]/25">
                   {item.epic_name}
                 </span>
               )}
@@ -144,8 +144,8 @@ function PragmaticFeatureCard({
                 'text-[10px] px-1.5 py-0.5 rounded font-medium border',
                 item.priority === 'critical' && 'bg-red-500/15 text-red-500 border-red-500/30',
                 item.priority === 'high' && 'bg-amber-500/15 text-amber-500 border-amber-500/30',
-                item.priority === 'medium' && 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/15 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/30',
-                item.priority === 'low' && 'bg-[var(--ds-chart-teal-bold, #0d9488)]/15 text-[var(--ds-chart-teal-bold, #0d9488)] border-[var(--ds-chart-teal-bold, #0d9488)]/30',
+                item.priority === 'medium' && 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/15 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/30',
+                item.priority === 'low' && 'bg-[var(--ds-chart-teal-bold)]/15 text-[var(--ds-chart-teal-bold)] border-[var(--ds-chart-teal-bold)]/30',
               )}>
                 {item.priority}
               </span>

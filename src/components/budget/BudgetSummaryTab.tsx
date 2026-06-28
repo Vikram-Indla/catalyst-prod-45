@@ -830,7 +830,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                     <td className="px-3 py-2 font-medium text-foreground">{l.name}</td>
                     <td className="px-3 py-2 text-center text-muted-foreground">{l.userCount || '—'}</td>
                     <td className="px-3 py-2 text-right font-mono text-muted-foreground">{formatFull(l.monthlyCost)}</td>
-                    <td className="px-3 py-2 text-right font-mono font-semibold" style={{ color: 'var(--ds-text-discovery, #7c3aed)' }}>{formatFull(l.annualCost)}</td>
+                    <td className="px-3 py-2 text-right font-mono font-semibold" style={{ color: 'var(--ds-text-discovery)' }}>{formatFull(l.annualCost)}</td>
                     <td className={cn(
                       "px-3 py-2 text-center text-sm",
                       isRenewingSoon ? "text-amber-600 font-medium" : "text-muted-foreground"
@@ -843,10 +843,10 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
             </tbody>
             <tfoot className="bg-blue-50 dark:bg-blue-900/20 border-t-2 border-blue-200 dark:border-blue-800">
               <tr>
-                <td className="px-3 py-3 font-bold text-[var(--ds-background-discovery-bold, #7C3AED)]">Total</td>
+                <td className="px-3 py-3 font-bold text-[var(--ds-background-discovery-bold)]">Total</td>
                 <td></td>
-                <td className="px-3 py-3 text-right font-mono font-bold text-[var(--ds-background-discovery-bold, #7C3AED)]">{formatFull(data.monthlyLicenseCost)}</td>
-                <td className="px-3 py-3 text-right font-mono font-bold text-[var(--ds-background-discovery-bold, #7C3AED)]">{formatFull(budget.licenses)}</td>
+                <td className="px-3 py-3 text-right font-mono font-bold text-[var(--ds-background-discovery-bold)]">{formatFull(data.monthlyLicenseCost)}</td>
+                <td className="px-3 py-3 text-right font-mono font-bold text-[var(--ds-background-discovery-bold)]">{formatFull(budget.licenses)}</td>
                 <td></td>
               </tr>
             </tfoot>

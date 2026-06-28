@@ -16,8 +16,8 @@ interface DialData {
 }
 
 function getDialColor(v: number): string {
-  if (v < 40) return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
-  return 'var(--exec-blue-500, #3B82F6)';
+  if (v < 40) return 'var(--exec-signal-red, var(--cp-danger))';
+  return 'var(--exec-blue-500)';
 }
 
 export function ExecutionDials() {

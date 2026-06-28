@@ -54,7 +54,7 @@ export function useCapacityDepartments() {
         .from('capacity_departments')
         .insert({
           name: input.name,
-          color: input.color || 'var(--ds-chart-teal-bold, #0d9488)',
+          color: input.color || 'var(--ds-chart-teal-bold)',
           sort_order: maxOrder + 1,
         } as any)
         .select()

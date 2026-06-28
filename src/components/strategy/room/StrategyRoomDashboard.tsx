@@ -63,16 +63,16 @@ interface StrategyRoomDashboardProps {
 
 const TOKENS = `
 [data-srd] {
-  --srd-ink:var(--ds-text, #172B4D); --srd-ink-2:var(--ds-text, #172B4D); --srd-ink-3:var(--ds-text-subtle, #44546F);
-  --srd-ink-m:var(--ds-text-subtlest, #626F86);
-  --srd-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --srd-bg-2:var(--ds-surface-sunken, #FAFAFA); --srd-bg-3:var(--ds-surface-sunken, #F7F8F9);
-  --srd-bdr:var(--ds-border, #DFE1E6); --srd-bdr-s:var(--ds-border, #DFE1E6);
-  --srd-blue:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-blue-h:var(--ds-background-brand-bold-hovered, #1D4ED8); --srd-blue-bg:var(--ds-background-selected, #EFF6FF); --srd-blue-bdr:var(--ds-background-information, #E9F2FF);
-  --srd-teal:var(--cp-teal-60, #0D9488); --srd-teal-t:#0A8277; --srd-teal-bg:var(--ds-background-success, #DFFCF0);
-  --srd-green:var(--ds-text-success, var(--cp-success, #16A34A)); --srd-green-t:#11853D; --srd-green-bg:var(--ds-background-success, #DFFCF0);
-  --srd-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --srd-red-t:#D92525; --srd-red-bg:var(--ds-background-danger, #FEF2F2);
-  --srd-purple:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --srd-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-ai-d:var(--ds-link-pressed, #0747A6); --srd-ai-bg:var(--ds-background-selected, #EFF6FF); --srd-ai-bdr:var(--ds-background-information, #E9F2FF);
+  --srd-ink:var(--ds-text); --srd-ink-2:var(--ds-text); --srd-ink-3:var(--ds-text-subtle);
+  --srd-ink-m:var(--ds-text-subtlest);
+  --srd-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))); --srd-bg-2:var(--ds-surface-sunken); --srd-bg-3:var(--ds-surface-sunken);
+  --srd-bdr:var(--ds-border); --srd-bdr-s:var(--ds-border);
+  --srd-blue:var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); --srd-blue-h:var(--ds-background-brand-bold-hovered); --srd-blue-bg:var(--ds-background-selected); --srd-blue-bdr:var(--ds-background-information);
+  --srd-teal:var(--cp-teal-60); --srd-teal-t:#0A8277; --srd-teal-bg:var(--ds-background-success);
+  --srd-green:var(--ds-text-success, var(--cp-success)); --srd-green-t:#11853D; --srd-green-bg:var(--ds-background-success);
+  --srd-red:var(--ds-text-danger, var(--cp-danger)); --srd-red-t:#D92525; --srd-red-bg:var(--ds-background-danger);
+  --srd-purple:var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --srd-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); --srd-ai-d:var(--ds-link-pressed); --srd-ai-bg:var(--ds-background-selected); --srd-ai-bdr:var(--ds-background-information);
   --srd-r:4px; --srd-r2:6px; --srd-r3:8px; --srd-r4:12px; --srd-pill:9999px;
   font-family: var(--cp-font-body); color:var(--srd-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
@@ -84,27 +84,27 @@ const TOKENS = `
   --srd-ink-2: var(--ds-surface, rgba(255,255,255,0.72));
   --srd-ink-3: var(--ds-surface, rgba(255,255,255,0.72));
   --srd-ink-m: var(--ds-surface, rgba(255,255,255,0.60));
-  --srd-bg: var(--ds-surface, #0A0A0A);
-  --srd-bg-2: var(--ds-surface, #0A0A0A);
-  --srd-bg-3: var(--ds-border, var(--cp-ink-1, #292929));
-  --srd-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --srd-bdr-s: var(--ds-border-bold, #454545);
-  --srd-blue: var(--ds-text-brand, #3B82F6);
-  --srd-blue-h: var(--ds-text-brand, #60A5FA);
+  --srd-bg: var(--ds-surface);
+  --srd-bg-2: var(--ds-surface);
+  --srd-bg-3: var(--ds-border, var(--cp-ink-1));
+  --srd-bdr: var(--ds-border, var(--cp-ink-1));
+  --srd-bdr-s: var(--ds-border-bold);
+  --srd-blue: var(--ds-text-brand);
+  --srd-blue-h: var(--ds-text-brand);
   --srd-blue-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
   --srd-blue-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.16));
-  --srd-teal: var(--ds-background-success, #DCFFF1);
-  --srd-teal-t: var(--ds-background-success, #DCFFF1);
+  --srd-teal: var(--ds-background-success);
+  --srd-teal-t: var(--ds-background-success);
   --srd-teal-bg: rgba(94,234,212,0.08);
-  --srd-green: var(--ds-background-success, #DFFCF0);
-  --srd-green-t: var(--ds-background-success, #DFFCF0);
+  --srd-green: var(--ds-background-success);
+  --srd-green-t: var(--ds-background-success);
   --srd-green-bg: var(--ds-background-success-bold, rgba(74,222,128,0.08));
-  --srd-red: var(--ds-border-danger, #FCA5A5);
-  --srd-red-t: var(--ds-border-danger, #FCA5A5);
+  --srd-red: var(--ds-border-danger);
+  --srd-red-t: var(--ds-border-danger);
   --srd-red-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
-  --srd-purple: var(--ds-text-brand, #60A5FA);
-  --srd-ai: var(--ds-text-brand, #3B82F6);
-  --srd-ai-d: var(--ds-text-brand, #60A5FA);
+  --srd-purple: var(--ds-text-brand);
+  --srd-ai: var(--ds-text-brand);
+  --srd-ai-d: var(--ds-text-brand);
   --srd-ai-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
   --srd-ai-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.16));
 }
@@ -257,7 +257,7 @@ export default function StrategyRoomDashboard({
               <Ico d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />Download Brief
             </button>
           )}
-          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: 'var(--ds-surface, #fff)', transition: 'all .15s' }}>
+          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: 'var(--ds-surface)', transition: 'all .15s' }}>
             <Ico d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />AI Intelligence
           </button>
           <button className="srd-btn" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid transparent', borderRadius: 'var(--srd-r2)', cursor: 'pointer', background: 'none', color: 'var(--srd-ink-2)' }}>
@@ -279,7 +279,7 @@ export default function StrategyRoomDashboard({
                 onKeyDown={e => { if (e.key === 'Enter') saveVision(); if (e.key === 'Escape') cancelEditVision(); }}
                 style={{ flex: 1, fontWeight: 500, color: 'var(--srd-ink-2)', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)', background: 'var(--srd-bg)', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r)', padding: '4px 10px', outline: 'none' }}
               />
-              <button onClick={saveVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-blue)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={14} /></button>
+              <button onClick={saveVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-blue)', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={14} /></button>
               <button onClick={cancelEditVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-bg)', color: 'var(--srd-ink-m)', border: '1px solid var(--srd-bdr)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={14} /></button>
             </div>
           ) : (

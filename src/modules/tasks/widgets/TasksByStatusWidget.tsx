@@ -72,7 +72,7 @@ export default function TasksByStatusWidget({ collapsed, onToggleCollapse }: Wid
               style={{
                 height: 28,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -89,9 +89,9 @@ export default function TasksByStatusWidget({ collapsed, onToggleCollapse }: Wid
           <div
             style={{
               display: 'flex',
-              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
               borderRadius: token('border.radius', '4px'),
-              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               overflow: 'hidden',
             }}
           >
@@ -107,11 +107,11 @@ export default function TasksByStatusWidget({ collapsed, onToggleCollapse }: Wid
               const pct = total > 0 ? Math.round((count / total) * 100) : 0;
               return (
                 <div key={row.slug} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 60px', alignItems: 'center', gap: 12 }}>
-                  <span style={{ ...SMALL, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{row.name}</span>
+                  <span style={{ ...SMALL, color: token('color.text.subtle', 'var(--ds-text-subtle)') }}>{row.name}</span>
                   <div
                     style={{
                       height: 8,
-                      background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                      background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
                       borderRadius: 4,
                       overflow: 'hidden',
                     }}
@@ -120,12 +120,12 @@ export default function TasksByStatusWidget({ collapsed, onToggleCollapse }: Wid
                       style={{
                         width: `${pct}%`,
                         height: '100%',
-                        background: row.color || token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'),
+                        background: row.color || token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                         transition: 'width 200ms ease',
                       }}
                     />
                   </div>
-                  <span style={{ ...SMALL, color: token('color.text', 'var(--ds-text, #172B4D)'), fontVariantNumeric: 'tabular-nums', justifySelf: 'end' }}>
+                  <span style={{ ...SMALL, color: token('color.text', 'var(--ds-text)'), fontVariantNumeric: 'tabular-nums', justifySelf: 'end' }}>
                     {count}
                   </span>
                 </div>
@@ -147,11 +147,11 @@ function KpiCell({ label, value, last }: { label: string; value: number; last?: 
         flexDirection: 'column',
         gap: 2,
         padding: '8px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}
     >
       <span style={{ ...LABEL, textTransform: 'none', letterSpacing: '0.04em' }}>{label}</span>
-      <span style={{ ...H_NUM, lineHeight: 1.1, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{value}</span>
+      <span style={{ ...H_NUM, lineHeight: 1.1, color: token('color.text', 'var(--ds-text)') }}>{value}</span>
     </div>
   );
 }

@@ -12,15 +12,15 @@ import StarIcon from '@atlaskit/icon/core/star-starred';
 import FieldDropdownIcon from '@atlaskit/icon/core/field-dropdown';
 
 const T = {
-  text:          'var(--ds-text, #172B4D)',
-  textSubtle:    'var(--ds-text-subtle, #44546F)',
-  textSubtlest:  'var(--ds-text-subtlest, #626F86)',
-  textBrand:     'var(--ds-link, #0C66E4)',
-  bgHover:       'var(--ds-background-neutral-hovered, #F1F2F4)',
-  bgSelected:    'var(--ds-background-selected, #DFFCF0)',
-  border:        'var(--ds-border, #DCDFE4)',
-  icon:          'var(--ds-icon, #44546F)',
-  iconBrand:     'var(--ds-icon-brand, #0C66E4)',
+  text:          'var(--ds-text)',
+  textSubtle:    'var(--ds-text-subtle)',
+  textSubtlest:  'var(--ds-text-subtlest)',
+  textBrand:     'var(--ds-link)',
+  bgHover:       'var(--ds-background-neutral-hovered)',
+  bgSelected:    'var(--ds-background-selected)',
+  border:        'var(--ds-border)',
+  icon:          'var(--ds-icon)',
+  iconBrand:     'var(--ds-icon-brand)',
 };
 
 interface SidebarIconProps {

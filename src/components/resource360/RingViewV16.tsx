@@ -19,7 +19,7 @@ const T = {
   ink1: 'var(--fg-1)', ink2: 'var(--fg-2)', ink3: 'var(--fg-3)', ink4: 'var(--fg-4)',
   border: 'var(--divider)', borderLt: 'var(--bg-3)',
   accent: 'var(--cp-blue)',
-  todo: 'var(--ds-text, #172B4D)', progress: 'var(--cp-blue)', done: '#0E8A5F',
+  todo: 'var(--ds-text)', progress: 'var(--cp-blue)', done: '#0E8A5F',
   danger: 'var(--sem-danger)', warning: 'var(--sem-warning)', success: 'var(--sem-success)',
   mono: "var(--ds-font-family-code)",
   sora: "var(--ds-font-family-heading)",
@@ -30,15 +30,15 @@ type StatusCat = 'todo' | 'progress' | 'done';
 
 // ─── CG-05 STATUS COLORS (DEF-02 fix) ───
 const STATUS_CG05: Record<StatusCat, { dot: string; bg: string; text: string }> = {
-  todo:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
-  progress: { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text, #172B4D)' },
-  done:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' },
+  todo:     { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)' },
+  progress: { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', text: 'var(--ds-text)' },
+  done:     { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)' },
 };
 
 const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
-  todo:     { bg: 'var(--ds-text-warning, var(--cp-warning, #D97706))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
-  progress: { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
-  done:     { bg: 'var(--ds-text-success, var(--cp-success, #16A34A))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
+  todo:     { bg: 'var(--ds-text-warning, var(--cp-warning))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
+  progress: { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
+  done:     { bg: 'var(--ds-text-success, var(--cp-success))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
 };
 
 // ─── JIRA ICON HELPER — delegates to canonical guardrail ───
@@ -49,11 +49,11 @@ function getJiraIconForType(typeStr: string) {
 // ─── JIRA TYPE BADGE STYLES (DEF-05) ───
 function getTypeBadgeStyle(typeStr: string): { bg: string; color: string } {
   const lower = (typeStr || '').toLowerCase();
-  if (lower.includes('bug')) return { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' };
-  if (lower.includes('epic')) return { bg: 'var(--ds-background-discovery, #F3F0FF)', color: '#4C1D95' };
-  if (lower.includes('story')) return { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))' };
-  if (lower.includes('sub')) return { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))' };
-  return { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text, #172B4D)' };
+  if (lower.includes('bug')) return { bg: 'var(--ds-background-danger)', color: 'var(--ds-text-danger, var(--ds-text-danger))' };
+  if (lower.includes('epic')) return { bg: 'var(--ds-background-discovery)', color: '#4C1D95' };
+  if (lower.includes('story')) return { bg: 'var(--ds-background-success)', color: 'var(--ds-text-success, var(--ds-chart-green-bold))' };
+  if (lower.includes('sub')) return { bg: 'var(--ds-background-success)', color: 'var(--ds-text-success, var(--ds-chart-green-bold))' };
+  return { bg: 'var(--ds-background-selected)', color: 'var(--ds-text)' };
 }
 
 // ─── INTERNAL WORK ITEM ───
@@ -122,18 +122,18 @@ function mapItem(r: Resource360Item): WorkItem {
 
 // ─── PROJECT COLOR MAP (DEF-06 fallback) ───
 const PROJECT_COLOR_FALLBACK: Record<string, string> = {
-  BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-  FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
-  SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-  LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))',
+  BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  SEN: 'var(--ds-text-warning, var(--cp-warning))',
+  FAC: 'var(--ds-text-success, var(--cp-success))',
+  OPS: 'var(--cp-teal-60, var(--ds-chart-teal-bold))',
+  SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
+  LND: 'var(--cp-purple-60, var(--ds-background-discovery-bold))',
 };
 
 function getProjectColor(item: WorkItem): string {
   if (item.projectColor) return item.projectColor;
   if (item.projectKey && PROJECT_COLOR_FALLBACK[item.projectKey]) return PROJECT_COLOR_FALLBACK[item.projectKey];
-  return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+  return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
 }
 
 // ─── HELPERS ───
@@ -176,16 +176,16 @@ function smartDue(item: WorkItem): { date: string; source: 'ticket' | 'release' 
 
 function slaBadge(dueStr: string): { label: string; bg: string; color: string } {
   const diff = daysBetween(NOW, new Date(dueStr));
-  if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, bg: 'var(--ds-background-danger, #FEF2F2)', color: T.danger };
-  if (diff === 0) return { label: 'Due today', bg: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', color: T.warning };
-  if (diff <= 3) return { label: `${diff}d left`, bg: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', color: T.warning };
-  return { label: `${diff}d left`, bg: 'var(--ds-background-success, #DFFCF0)', color: T.success };
+  if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, bg: 'var(--ds-background-danger)', color: T.danger };
+  if (diff === 0) return { label: 'Due today', bg: 'var(--ds-background-warning, var(--ds-background-warning))', color: T.warning };
+  if (diff <= 3) return { label: `${diff}d left`, bg: 'var(--ds-background-warning, var(--ds-background-warning))', color: T.warning };
+  return { label: `${diff}d left`, bg: 'var(--ds-background-success)', color: T.success };
 }
 
 function ageHeatColor(age: number): string {
   if (age <= 7) return T.success;
   if (age <= 14) return T.warning;
-  if (age <= 21) return 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))';
+  if (age <= 21) return 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))';
   return T.danger;
 }
 
@@ -250,7 +250,7 @@ const HubBadge: React.FC<{ hub: string }> = ({ hub }) => {
     <span style={{
       display: 'inline-block', padding: '1px 5px', borderRadius: 4,
       fontSize: 8.5, fontWeight: 800, letterSpacing: '0.06em',
-      background: color, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', lineHeight: 1.5,
+      background: color, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', lineHeight: 1.5,
     }}>{hub}</span>
   );
 };
@@ -528,7 +528,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
           <ChevronLeft size={14} color={T.ink2} />
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Calendar size={16} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
+          <Calendar size={16} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" />
           <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1)', fontFamily: T.sora }}>
             {currentWeek ? weekLabel(currentWeek.weekStart, weekIdx) : 'No items'}
           </span>
@@ -556,11 +556,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
           <div ref={ringCanvasRef} style={{
             position: 'relative', height: 720, overflow: 'hidden',
             background: isDark
-              ? 'radial-gradient(circle at center, var(--ds-surface, #0A0A0A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 100%)'
-              : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%)',
+              ? 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--ds-surface) 55%, var(--ds-surface-raised, var(--cp-ink-1)) 100%)'
+              : 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--ds-surface-sunken) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 100%)',
             backgroundImage: isDark
-              ? 'radial-gradient(circle at center, var(--ds-surface, #0A0A0A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 100%), radial-gradient(circle, var(--ds-border, var(--cp-ink-1, #292929)) 1px, transparent 1px)'
-              : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%), radial-gradient(circle, var(--ds-text-disabled, #CBD5E1) 1px, transparent 1px)',
+              ? 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--ds-surface) 55%, var(--ds-surface-raised, var(--cp-ink-1)) 100%), radial-gradient(circle, var(--ds-border, var(--cp-ink-1)) 1px, transparent 1px)'
+              : 'radial-gradient(circle at center, var(--ds-surface) 0%, var(--ds-surface-sunken) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 100%), radial-gradient(circle, var(--ds-text-disabled) 1px, transparent 1px)',
             backgroundSize: 'cover, 24px 24px',
             boxSizing: 'border-box',
             padding: 20,
@@ -600,10 +600,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   transform: 'translate(-50%, -50%)',
                   zIndex: 2, pointerEvents: 'none',
                   background: isSelected ? T.accent : 'var(--bg-app)',
-                  border: `1px solid ${isSelected ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--divider)'}`,
+                  border: `1px solid ${isSelected ? 'var(--ds-background-brand-bold-hovered)' : 'var(--divider)'}`,
                   borderRadius: 12, padding: '2px 8px',
                   fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
-                  color: isSelected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : 'var(--fg-2)',
+                  color: isSelected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))' : 'var(--fg-2)',
                   opacity: hasSel && !isSelected ? 0.3 : 1,
                   whiteSpace: 'nowrap',
                 }}>
@@ -620,11 +620,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
             }}>
               <div ref={centerRef} style={{
                 width: 76, height: 76, borderRadius: '50%', margin: '0 auto',
-                background: 'linear-gradient(135deg, var(--cp-blue), var(--ds-background-brand-bold-hovered, #1D4ED8))',
+                background: 'linear-gradient(135deg, var(--cp-blue), var(--ds-background-brand-bold-hovered))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 0 0 4px var(--ds-surface, #fff), 0 0 0 6px var(--cp-blue), 0 0 20px var(--ds-background-information, rgba(37,99,235,.2))',
+                boxShadow: '0 0 0 4px var(--ds-surface), 0 0 0 6px var(--cp-blue), 0 0 20px var(--ds-background-information, rgba(37,99,235,.2))',
               }}>
-                <span style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>{initials}</span>
+                <span style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>{initials}</span>
               </div>
               <div style={{ fontFamily: T.sora, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--fg-1)', marginTop: 6 }}>{resourceName}</div>
               <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontWeight: 500 }}>{resourceRole}</div>
@@ -686,7 +686,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                       {item.projectKey && (
                         <span style={{
                           fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '1px 5px', borderRadius: 4,
-                          background: projColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', letterSpacing: '0.02em',
+                          background: projColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', letterSpacing: '0.02em',
                         }}>{item.projectKey}</span>
                       )}
                       <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto' }}>{age}d</span>
@@ -694,7 +694,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
                     {/* Title: 2-line clamp */}
                     <div style={{
-                      fontSize: 12.5, fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: 1.35,
+                      fontSize: 12.5, fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.35,
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                       overflow: 'hidden', marginBottom: 6, minHeight: 28,
                     }}>{item.title}</div>
@@ -725,13 +725,13 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 }}>
                 <div style={{
                   width: 48, height: 48, borderRadius: '50%',
-                  background: 'var(--sem-success)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+                  background: 'var(--sem-success)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: T.mono, fontSize: 'var(--ds-font-size-600)', fontWeight: 700,
                   boxShadow: '0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))',
                 }}>{doneCount}</div>
                 <span style={{
-                  fontSize: 9.5, fontWeight: 700, color: 'var(--ds-text-success, #216E4E)',
+                  fontSize: 9.5, fontWeight: 700, color: 'var(--ds-text-success)',
                   textTransform: 'uppercase', letterSpacing: '.05em',
                   writingMode: 'vertical-rl',
                 }}>COMPLETED</span>
@@ -757,7 +757,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   minWidth: 20, height: 18, borderRadius: 8, background: T.done,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))', fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '0 5px',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))', fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '0 5px',
                 }}>{doneCount}</span>
                 <div style={{ flex: 1 }} />
                 <button onClick={closePanel} style={{
@@ -830,7 +830,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   {selectedItem.projectKey && (
                     <span style={{
                       fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: 4,
-                      background: getProjectColor(selectedItem), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+                      background: getProjectColor(selectedItem), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
                     }}>
                       {selectedItem.projectKey}
                     </span>
@@ -839,7 +839,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
 
                 {/* Title */}
                 <div style={{
-                  fontFamily: T.inter, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)',
+                  fontFamily: T.inter, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)',
                   lineHeight: 1.4,
                 }}>{selectedItem.title}</div>
 
@@ -851,7 +851,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   return (
                     <div style={{
                       marginTop: 10, padding: '8px 12px', borderRadius: 8,
-                      background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid var(--ds-background-danger, #FFECEB)',
+                      background: 'var(--ds-background-danger)', border: '1px solid var(--ds-background-danger)',
                       fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--sem-danger)',
                     }}>
                       {s === 'critical' ? 'Critical' : 'Stale'} — {age} days without resolution
@@ -966,7 +966,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     }}>
                       {getJiraIconForType(selectedItem.type)}
                       <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)' }}>{selectedItem.key}</span>
-                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>Current</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)', fontWeight: 500 }}>Current</span>
                       <div style={{ marginLeft: 'auto' }}><StatusPill status={selectedItem.status} small /></div>
                     </div>
                   </div>

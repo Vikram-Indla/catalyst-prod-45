@@ -10,7 +10,7 @@ const T = {
   textSubtle: 'var(--ds-text-subtle)',
   bgPage: 'var(--ds-background-accent-gray-subtlest)',
   border: 'var(--ds-border)',
-  code: 'var(--ds-background-neutral-subtle, #F4F5F7)',
+  code: 'var(--ds-background-neutral-subtle)',
 };
 
 const CodeBlock = ({ code }: { code: string }) => (
@@ -174,7 +174,7 @@ const gap = DS_SPACING.sm;     // 8px`,
           'Use semantic token names (primary, danger, success)',
         ],
         donts: [
-          'Use hardcoded hex colors (var(--ds-text-danger, #FF0000))',
+          'Use hardcoded hex colors (var(--ds-text-danger))',
           'Use arbitrary spacing values (13px, 18px)',
           'Import tokens from @atlaskit/*',
           'Create custom color palettes outside token system',
@@ -494,7 +494,7 @@ const columns = [
           }))}
         />
 
-        <div style={{ marginTop: '32px', padding: '16px', background: 'var(--ds-background-neutral-subtle, #F4F5F7)', borderRadius: '3px', borderLeft: '4px solid var(--ds-link, #0052CC)' }}>
+        <div style={{ marginTop: '32px', padding: '16px', background: 'var(--ds-background-neutral-subtle)', borderRadius: '3px', borderLeft: '4px solid var(--ds-link)' }}>
           <p style={{ margin: '0', color: T.text, fontSize: 'var(--ds-font-size-300)', lineHeight: '1.5' }}>
             <strong>Integration Note:</strong> All @Catalyst/* packages are symlinked into node_modules during local development. They are published to npm under the @Catalyst scope and installed as external dependencies in production. For the latest source code and issues, see the respective GitHub repositories.
           </p>

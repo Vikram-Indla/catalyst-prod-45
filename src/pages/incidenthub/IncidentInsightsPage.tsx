@@ -15,10 +15,10 @@ export default function IncidentInsightsPage() {
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
 
   // DARK MODE tokens
-  const pageBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-  const surfaceBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-  const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';
-  const textBody = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))';
+  const pageBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
+  const surfaceBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))';
+  const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))';
+  const textBody = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))';
   const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
 
   return (
@@ -26,13 +26,13 @@ export default function IncidentInsightsPage() {
       <ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />
       <div className="px-6 pt-2 pb-4">
         {/* Featured AI Card */}
-        <div className="p-4 mb-6" style={{ border: `1px solid ${isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.25))' : 'var(--ds-background-discovery, #F3F0FF)'}`, borderRadius: 6, backgroundColor: surfaceBg }}>
+        <div className="p-4 mb-6" style={{ border: `1px solid ${isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.25))' : 'var(--ds-background-discovery)'}`, borderRadius: 6, backgroundColor: surfaceBg }}>
           <div className="flex items-start gap-3">
             <div className="shrink-0 rounded-full flex items-center justify-center" style={{
               width: 36, height: 50,
-              background: 'linear-gradient(135deg, var(--cp-purple-60, #7C3AED), var(--cp-teal-60, #0D9488))',
+              background: 'linear-gradient(135deg, var(--cp-purple-60), var(--cp-teal-60))',
             }}>
-              <Sparkles size={18} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
+              <Sparkles size={18} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }} />
             </div>
             <div>
               <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: textPrimary, marginBottom: 4 }}>
@@ -52,7 +52,7 @@ export default function IncidentInsightsPage() {
           {/* Risk Signals */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
             <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: textPrimary }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', display: 'inline-block' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, var(--cp-danger))', display: 'inline-block' }} />
               Risk Signals
             </h3>
             <div className="space-y-3">
@@ -61,12 +61,12 @@ export default function IncidentInsightsPage() {
                 { title: 'SLA breach pattern detected', desc: 'SEV-1 incidents averaging resolution above target threshold' },
               ].map((item, i) => (
                 <div key={i} className="p-2.5" style={{
-                  backgroundColor: 'var(--cp-danger-light, #FEF2F2)',
+                  backgroundColor: 'var(--cp-danger-light)',
                   borderRadius: 4,
-                  border: `1px solid ${'var(--cp-danger-light, #FECACA)'}`,
+                  border: `1px solid ${'var(--cp-danger-light)'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-danger-text, #B91C1C)' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-danger-text)', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-danger-text)' }}>{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -75,7 +75,7 @@ export default function IncidentInsightsPage() {
           {/* Improvements */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
             <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: textPrimary }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-success, var(--cp-success, #16A34A))', display: 'inline-block' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-success, var(--cp-success))', display: 'inline-block' }} />
               Improvements
             </h3>
             <div className="space-y-3">
@@ -84,12 +84,12 @@ export default function IncidentInsightsPage() {
                 { title: 'Pre-deployment health checks', desc: 'Add mandatory health check gates before production deployments' },
               ].map((item, i) => (
                 <div key={i} className="p-2.5" style={{
-                  backgroundColor: 'var(--cp-success-light, #F0FDF4)',
+                  backgroundColor: 'var(--cp-success-light)',
                   borderRadius: 4,
-                  border: `1px solid ${'var(--cp-success-light, #BBF7D0)'}`,
+                  border: `1px solid ${'var(--cp-success-light)'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-success-text, #166534)', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-success, #15803D)' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-success-text)', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-success)' }}>{item.desc}</p>
                 </div>
               ))}
             </div>

@@ -103,7 +103,7 @@ export function DialogDescription({ children }: AnyProps) {
         margin: '4px 0 0',
         fontSize: 14,
         lineHeight: '20px',
-        color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
+        color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
       }}
     >
       {children}

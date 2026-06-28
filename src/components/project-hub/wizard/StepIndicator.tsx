@@ -25,7 +25,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                   height: 28,
                   backgroundColor: isDone ? 'var(--sem-success)' : isActive ? 'var(--cp-blue)' : 'transparent',
                   border: isUpcoming ? '2px solid var(--divider)' : 'none',
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   fontFamily: 'var(--cp-font-body)',

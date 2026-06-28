@@ -55,13 +55,13 @@ interface Props {
 }
 
 const COLOR_TO_HEX: Record<SlashIconColor, string> = {
-  green: 'var(--ds-background-success-bold, #1F845A)',
-  blue: 'var(--ds-link, #1868DB)',
-  orange: 'var(--ds-text-warning, #E56910)',
-  purple: 'var(--ds-background-discovery-bold, #6E5DC6)',
-  red: 'var(--ds-background-danger-bold, #C9372C)',
-  gray: 'var(--ds-icon-subtle, #626F86)',
-  brand: 'var(--ds-link, #1868DB)',
+  green: 'var(--ds-background-success-bold)',
+  blue: 'var(--ds-link)',
+  orange: 'var(--ds-text-warning)',
+  purple: 'var(--ds-background-discovery-bold)',
+  red: 'var(--ds-background-danger-bold)',
+  gray: 'var(--ds-icon-subtle)',
+  brand: 'var(--ds-link)',
 };
 
 function renderIcon(iconId: SlashIconId, color: SlashIconColor) {
@@ -173,8 +173,8 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
         zIndex: 2147483600,
         width: 320,
         maxHeight: 400,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         boxShadow: '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         display: 'flex',
@@ -183,7 +183,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
       }}
     >
       {mode === 'panel' && (
-        <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+        <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border)' }}>
           <input
             ref={inputRef}
             type="text"
@@ -197,11 +197,11 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
               padding: '6px 10px',
               fontSize: 'var(--ds-font-size-400)',
               border: searchFocused
-                ? '2px solid var(--ds-border-focused, #2684FF)'
-                : '2px solid var(--ds-border, #DFE1E6)',
+                ? '2px solid var(--ds-border-focused)'
+                : '2px solid var(--ds-border)',
               borderRadius: 3,
-              background: 'var(--ds-surface, #FFFFFF)',
-              color: 'var(--ds-text, #292A2E)',
+              background: 'var(--ds-surface)',
+              color: 'var(--ds-text)',
               outline: 'none',
               boxSizing: 'border-box',
               transition: 'border-color 80ms ease',
@@ -215,7 +215,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
           <div
             style={{
               fontSize: 'var(--ds-font-size-200)',
-              color: 'var(--ds-text-subtlest, #6B778C)',
+              color: 'var(--ds-text-subtlest)',
               padding: 16,
               textAlign: 'center',
             }}
@@ -242,7 +242,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
               borderRadius: 3,
               background:
                 i === activeIdx
-                  ? 'var(--ds-background-selected, #E9F2FE)'
+                  ? 'var(--ds-background-selected)'
                   : 'transparent',
               cursor: 'pointer',
               textAlign: 'left',
@@ -261,19 +261,19 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 3,
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
               }}
             >
               {renderIcon(item.iconId, item.iconColor)}
             </span>
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
                 {item.label}
               </span>
               {item.description && (
-                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                   {item.description}
                 </span>
               )}
@@ -282,7 +282,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
               <span
                 style={{
                   fontSize: 'var(--ds-font-size-100)',
-                  color: 'var(--ds-text-subtlest, #6B778C)',
+                  color: 'var(--ds-text-subtlest)',
                   flexShrink: 0,
                 }}
               >
@@ -301,9 +301,9 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
           width: '100%',
           padding: '8px 10px',
           border: 'none',
-          borderTop: '1px solid var(--ds-border, #DFE1E6)',
-          background: 'var(--ds-surface-sunken, #F7F8F9)',
-          color: 'var(--ds-text-subtle, #44546F)',
+          borderTop: '1px solid var(--ds-border)',
+          background: 'var(--ds-surface-sunken)',
+          color: 'var(--ds-text-subtle)',
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           cursor: 'pointer',

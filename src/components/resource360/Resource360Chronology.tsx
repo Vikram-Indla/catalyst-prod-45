@@ -4,9 +4,9 @@ import { getStatusCategory, getStaleIndicator, WH_HUB_COLORS, WH_HUB_SHORT } fro
 import { HighlightText, InlineExpansionPanel, ExpandChevron, useExpandedRow, expandAnimationCSS } from './Resource360Shared';
 
 const T = {
-  bg: 'var(--ds-surface-sunken, #F5F0EB)', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', text1: 'var(--ds-text, #0A0A0A)', text2: 'var(--ds-text, #1A1A2E)',
-  text3: 'var(--ds-text-subtle, #3D3D56)', text4: 'var(--ds-text-subtlest, #6B6B80)', border: 'var(--ds-border, #D9D2C9)', borderStrong: 'var(--ds-border-bold, #C5BDB3)',
-  todo: 'var(--ds-text-danger, #E23636)', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, #0E8A5F)', pendHl: 'var(--ds-background-warning, #FFF7D6)',
+  bg: 'var(--ds-surface-sunken)', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', text1: 'var(--ds-text)', text2: 'var(--ds-text)',
+  text3: 'var(--ds-text-subtle)', text4: 'var(--ds-text-subtlest)', border: 'var(--ds-border)', borderStrong: 'var(--ds-border-bold)',
+  todo: 'var(--ds-text-danger)', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', done: 'var(--ds-text-success)', pendHl: 'var(--ds-background-warning)',
   mono: "'JetBrains Mono','SF Mono',monospace",
 };
 
@@ -71,12 +71,12 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
               <button key={h} onClick={() => setHubFilter(hubFilter === h ? 'all' : h)} style={{
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                 background: hubFilter === h ? (WH_HUB_COLORS[h] ?? T.text1) : T.surface,
-                color: hubFilter === h ? 'var(--ds-surface, #fff)' : T.text3,
+                color: hubFilter === h ? 'var(--ds-surface)' : T.text3,
                 border: hubFilter === h ? 'none' : `1px solid ${T.border}`,
               }}>{(h ?? '').replace('Hub', '')}</button>
             ))}
           </div>
-          <button onClick={() => setFiltersExpanded(!filtersExpanded)} style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '4px 10px', borderRadius: 6, cursor: 'pointer', background: filtersExpanded ? T.text1 : T.surface, color: filtersExpanded ? 'var(--ds-surface, #fff)' : T.text3, border: `1px solid ${T.borderStrong}` }}>
+          <button onClick={() => setFiltersExpanded(!filtersExpanded)} style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '4px 10px', borderRadius: 6, cursor: 'pointer', background: filtersExpanded ? T.text1 : T.surface, color: filtersExpanded ? 'var(--ds-surface)' : T.text3, border: `1px solid ${T.borderStrong}` }}>
             {filtersExpanded ? '▲ Less' : '▼ Filters'}
           </button>
           {hasFilters && <button onClick={clearAll} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.todo, background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Clear all</button>}
@@ -126,9 +126,9 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                 const isPending = cat !== 'done';
                 const sc = cat === 'todo' ? T.todo : cat === 'progress' ? T.progress : T.done;
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
-                const bg = showPendingOnly && isPending ? T.pendHl : idx % 2 === 0 ? T.surface : 'var(--ds-surface-sunken, #FAF8F5)';
+                const bg = showPendingOnly && isPending ? T.pendHl : idx % 2 === 0 ? T.surface : 'var(--ds-surface-sunken)';
                 const isExpanded = expandedId === item.work_item_id;
-                const hc = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+                const hc = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
                 const hs = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
 
                 return (
@@ -138,14 +138,14 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                       background: bg, borderBottom: `1px solid ${T.border}`, borderLeft: `4px solid ${sc}`,
                       cursor: 'pointer', transition: 'background .1s',
                     }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EDE7E0)'; }} onMouseLeave={e => { e.currentTarget.style.background = bg; }}>
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral)'; }} onMouseLeave={e => { e.currentTarget.style.background = bg; }}>
                       <ExpandChevron expanded={isExpanded} onClick={e => { e.stopPropagation(); toggleExpand(item.work_item_id); }} />
                       {/* Key + Hub */}
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, minWidth: 64 }}>
                         <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.text1 }}>
                           <HighlightText text={item.item_key} query={searchTerm} />
                         </span>
-                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface, #fff)', padding: '1px 5px', borderRadius: 4, background: hc }}>{hs}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '1px 5px', borderRadius: 4, background: hc }}>{hs}</span>
                       </div>
                       {/* Title + parent */}
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -161,11 +161,11 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                       {/* Assigner */}
                       <div style={{ fontSize: 'var(--ds-font-size-50)', color: T.progress, fontWeight: 500, minWidth: 80, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.assigner_name ?? '—'}</div>
                       {/* Status pill — SOLID */}
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface, #fff)', background: sc, padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)', background: sc, padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
                         {item.status.length > 16 ? item.status.slice(0, 14) + '…' : item.status}
                       </span>
                       {/* Age + stale */}
-                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, minWidth: 40, textAlign: 'right', color: item.age_days > 14 ? T.todo : item.age_days > 7 ? 'var(--ds-text-warning, #974F0C)' : T.text4 }}>
+                      <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, minWidth: 40, textAlign: 'right', color: item.age_days > 14 ? T.todo : item.age_days > 7 ? 'var(--ds-text-warning)' : T.text4 }}>
                         {item.age_days}d{stale && <span title={stale.label} style={{ fontSize: 'var(--ds-font-size-50)', marginLeft: 2 }}>{stale.icon}</span>}
                       </span>
                     </div>

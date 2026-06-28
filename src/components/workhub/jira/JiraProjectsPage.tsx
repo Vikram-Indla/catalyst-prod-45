@@ -92,10 +92,10 @@ export function JiraProjectsPage() {
   };
 
   const getSyncStatus = (lastSynced?: string): { color: string; dotBg: string } => {
-    if (!lastSynced) return { color: 'var(--ds-text-danger, #dc2626)', dotBg: 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))' };
+    if (!lastSynced) return { color: 'var(--ds-text-danger)', dotBg: 'var(--ds-background-danger, var(--ds-background-danger))' };
     const hours = (Date.now() - new Date(lastSynced).getTime()) / 3600000;
-    if (hours < 24) return { color: 'var(--ds-text-success, #16a34a)', dotBg: 'var(--ds-background-success, #dcfce7)' };
-    return { color: 'var(--ds-text-warning, #974F0C)', dotBg: 'var(--ds-background-warning, #FFF7D6)' };
+    if (hours < 24) return { color: 'var(--ds-text-success)', dotBg: 'var(--ds-background-success)' };
+    return { color: 'var(--ds-text-warning)', dotBg: 'var(--ds-background-warning)' };
   };
 
   return (

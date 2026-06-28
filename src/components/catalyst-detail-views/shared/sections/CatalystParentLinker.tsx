@@ -35,7 +35,7 @@ import {
    muted text placeholder (not a dashed button). Clicking anywhere on the
    field row opens the picker. Removed dashed border + AddIcon — replaced
    with an inline plain-text trigger matching Jira's DOM-probed style:
-   fontSize 14px, color var(--ds-text-subtle, #44546F), no border, subtle hover background.
+   fontSize 14px, color var(--ds-text-subtle), no border, subtle hover background.
    ═══════════════════════════════════════════════ */
 function SidebarAddTrigger({
   label,
@@ -60,7 +60,7 @@ function SidebarAddTrigger({
         borderRadius: 4,
         cursor: "pointer",
         fontSize: 'var(--ds-font-size-400)',
-        color: "var(--ds-text-subtle, #5E6C84)",
+        color: "var(--ds-text-subtle)",
         whiteSpace: "nowrap",
         fontFamily: "inherit",
         transition: "background 0.1s",
@@ -111,52 +111,52 @@ interface CandidateItem {
  */
 const PARENT_TOKENS: Record<string, { bg: string; text: string }> = {
   Epic: {
-    bg: "var(--ds-background-accent-purple-subtler, #DFD8FD)",
-    text: "var(--ds-text-accent-purple, #5E4DB2)",
+    bg: "var(--ds-background-accent-purple-subtler)",
+    text: "var(--ds-text-accent-purple)",
   },
   Story: {
-    bg: "var(--ds-background-accent-green-subtler, #BAF3DB)",
-    text: "var(--ds-text-accent-green, #216E4E)",
+    bg: "var(--ds-background-accent-green-subtler)",
+    text: "var(--ds-text-accent-green)",
   },
   Feature: {
-    bg: "var(--ds-background-accent-purple-subtler, #DFD8FD)",
-    text: "var(--ds-text-accent-purple, #5E4DB2)",
+    bg: "var(--ds-background-accent-purple-subtler)",
+    text: "var(--ds-text-accent-purple)",
   },
   Task: {
-    bg: "var(--ds-background-accent-blue-subtler, #CCE0FF)",
-    text: "var(--ds-text-accent-blue, #0055CC)",
+    bg: "var(--ds-background-accent-blue-subtler)",
+    text: "var(--ds-text-accent-blue)",
   },
   Subtask: {
-    bg: "var(--ds-background-accent-blue-subtler, #CCE0FF)",
-    text: "var(--ds-text-accent-blue, #0055CC)",
+    bg: "var(--ds-background-accent-blue-subtler)",
+    text: "var(--ds-text-accent-blue)",
   },
   Defect: {
-    bg: "var(--ds-background-accent-red-subtler, #FFD5D2)",
-    text: "var(--ds-text-accent-red, #AE2E24)",
+    bg: "var(--ds-background-accent-red-subtler)",
+    text: "var(--ds-text-accent-red)",
   },
   Bug: {
-    bg: "var(--ds-background-accent-red-subtler, #FFD5D2)",
-    text: "var(--ds-text-accent-red, #AE2E24)",
+    bg: "var(--ds-background-accent-red-subtler)",
+    text: "var(--ds-text-accent-red)",
   },
   "QA Bug": {
-    bg: "var(--ds-background-accent-red-subtler, #FFD5D2)",
-    text: "var(--ds-text-accent-red, #AE2E24)",
+    bg: "var(--ds-background-accent-red-subtler)",
+    text: "var(--ds-text-accent-red)",
   },
   "Production Incident": {
-    bg: "var(--ds-background-accent-red-subtler, #FFD5D2)",
-    text: "var(--ds-text-accent-red, #AE2E24)",
+    bg: "var(--ds-background-accent-red-subtler)",
+    text: "var(--ds-text-accent-red)",
   },
   "Change Request": {
-    bg: "var(--ds-background-accent-orange-subtler, #FEDEC8)",
-    text: "var(--ds-text-accent-orange, #A54800)",
+    bg: "var(--ds-background-accent-orange-subtler)",
+    text: "var(--ds-text-accent-orange)",
   },
   "Business Request": {
-    bg: "var(--ds-background-accent-gray-subtler, #DCDFE4)",
-    text: "var(--ds-text-accent-gray, #44546F)",
+    bg: "var(--ds-background-accent-gray-subtler)",
+    text: "var(--ds-text-accent-gray)",
   },
   default: {
-    bg: "var(--ds-background-accent-gray-subtler, #DCDFE4)",
-    text: "var(--ds-text-accent-gray, #44546F)",
+    bg: "var(--ds-background-accent-gray-subtler)",
+    text: "var(--ds-text-accent-gray)",
   },
 };
 /** Exported for unit tests only — do not use outside tests. */
@@ -452,7 +452,7 @@ function BusinessRequestParentPicker({
             style={{
               fontFamily: "var(--cp-font-mono)",
               fontSize: 'var(--ds-font-size-400)',
-              color: "var(--ds-link, var(--cp-primary-60, #0052CC))",
+              color: "var(--ds-link, var(--cp-primary-60))",
               flexShrink: 0,
             }}
           >
@@ -461,7 +461,7 @@ function BusinessRequestParentPicker({
           <span
             style={{
               fontSize: 'var(--ds-font-size-400)',
-              color: "var(--ds-text, #292A2E)",
+              color: "var(--ds-text)",
               flex: 1,
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -492,9 +492,9 @@ function BusinessRequestParentPicker({
               left: pickerPos.left,
               width: pickerPos.width,
               background:
-                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
+                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))",
               border:
-                "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))",
+                "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))",
               borderRadius: 6,
               boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
               zIndex: 1000,
@@ -508,7 +508,7 @@ function BusinessRequestParentPicker({
               style={{
                 padding: "8px 12px",
                 borderBottom:
-                  "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
+                  "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))",
               }}
             >
               <div
@@ -516,14 +516,14 @@ function BusinessRequestParentPicker({
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
-                  border: "2px solid var(--ds-border-focused, #4C9AFF)",
+                  border: "2px solid var(--ds-border-focused)",
                   borderRadius: 4,
                   padding: "4px 8px",
                 }}
               >
                 <SearchIcon
                   size="small"
-                  primaryColor="var(--ds-icon-subtle, #5E6C84)"
+                  primaryColor="var(--ds-icon-subtle)"
                 />
                 <input
                   autoFocus
@@ -534,7 +534,7 @@ function BusinessRequestParentPicker({
                     border: "none",
                     outline: "none",
                     fontSize: 'var(--ds-font-size-300)',
-                    color: "var(--ds-text, #292A2E)",
+                    color: "var(--ds-text)",
                     width: "100%",
                     fontFamily: "inherit",
                   }}
@@ -547,14 +547,14 @@ function BusinessRequestParentPicker({
                       border: "none",
                       cursor: "pointer",
                       color:
-                        "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                        "var(--ds-text-subtlest, var(--cp-text-secondary))",
                       display: "flex",
                       padding: 0,
                     }}
                   >
                     <CrossIcon
                       size="small"
-                      primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))"
+                      primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary))"
                     />
                   </button>
                 )}
@@ -573,7 +573,7 @@ function BusinessRequestParentPicker({
                     padding: "16px",
                     fontSize: 'var(--ds-font-size-300)',
                     color:
-                      "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                      "var(--ds-text-subtlest, var(--cp-text-secondary))",
                     textAlign: "center",
                   }}
                 >
@@ -585,7 +585,7 @@ function BusinessRequestParentPicker({
               <div
                 style={{
                   borderTop:
-                    "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
+                    "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))",
                   padding: "4px 0",
                 }}
               >
@@ -604,12 +604,12 @@ function BusinessRequestParentPicker({
                     border: "none",
                     cursor: "pointer",
                     fontSize: 'var(--ds-font-size-300)',
-                    color: "var(--ds-text-danger, #AE2E24)",
+                    color: "var(--ds-text-danger)",
                     fontFamily: "inherit",
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background =
-                      "var(--ds-background-danger-hovered, #FFECEB)";
+                      "var(--ds-background-danger-hovered)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background = "none";
@@ -641,7 +641,7 @@ function renderBrGroup(
         style={{
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
-          color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+          color: "var(--ds-text-subtlest, var(--cp-text-secondary))",
           textTransform: "uppercase",
           letterSpacing: "0.05em",
           padding: "8px 12px 4px",
@@ -669,18 +669,18 @@ function renderBrGroup(
               padding: "8px 12px",
               cursor: "pointer",
               background: isSelected
-                ? "var(--ds-background-information, #DEEBFF)"
+                ? "var(--ds-background-information)"
                 : "transparent",
               transition: "background 80ms",
             }}
             onMouseEnter={(e) => {
               if (!isSelected)
                 e.currentTarget.style.background =
-                  "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                  "var(--ds-surface-sunken, var(--cp-bg-sunken))";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = isSelected
-                ? "var(--ds-background-information, #DEEBFF)"
+                ? "var(--ds-background-information)"
                 : "transparent";
             }}
           >
@@ -689,7 +689,7 @@ function renderBrGroup(
               style={{
                 fontFamily: "var(--cp-font-mono)",
                 fontSize: 'var(--ds-font-size-200)',
-                color: "var(--ds-text-subtle, #5E6C84)",
+                color: "var(--ds-text-subtle)",
                 flexShrink: 0,
               }}
             >
@@ -698,7 +698,7 @@ function renderBrGroup(
             <span
               style={{
                 fontSize: 'var(--ds-font-size-300)',
-                color: "var(--ds-text, #292A2E)",
+                color: "var(--ds-text)",
                 flex: 1,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -711,7 +711,7 @@ function renderBrGroup(
             {isSelected && (
               <CheckIcon
                 size="small"
-                primaryColor="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))"
+                primaryColor="var(--ds-background-brand-bold, var(--cp-primary-60))"
               />
             )}
           </div>
@@ -847,17 +847,17 @@ function SingleParentPicker({
             display: "flex",
             alignItems: "center",
             gap: 6,
-            border: "2px solid var(--ds-border-focused, #388BFF)",
+            border: "2px solid var(--ds-border-focused)",
             borderRadius: 4,
             padding: "2px 6px",
-            background: "var(--ds-background-input, #fff)",
+            background: "var(--ds-background-input)",
           }}
         >
           <span
             style={{
               flex: 1,
               fontSize: 'var(--ds-font-size-400)',
-              color: "var(--ds-text, #292A2E)",
+              color: "var(--ds-text)",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
@@ -888,7 +888,7 @@ function SingleParentPicker({
               <CrossCircleIcon
                 label="Clear parent"
                 size="small"
-                primaryColor="var(--ds-text-subtle, #5E6C84)"
+                primaryColor="var(--ds-text-subtle)"
               />
             </button>
           )}
@@ -896,7 +896,7 @@ function SingleParentPicker({
             <ChevronDownIcon
               label=""
               size="large"
-              primaryColor="var(--ds-text-subtle, #5E6C84)"
+              primaryColor="var(--ds-text-subtle)"
             />
           </span>
         </div>
@@ -948,9 +948,9 @@ function SingleParentPicker({
               left: pickerPos.left,
               width: pickerPos.width,
               background:
-                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
+                "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))",
               border:
-                "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))",
+                "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))",
               borderRadius: 6,
               boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
               zIndex: 1000,
@@ -966,10 +966,10 @@ function SingleParentPicker({
                 alignItems: "center",
                 gap: 8,
                 padding: "10px 12px",
-                borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+                borderBottom: "1px solid var(--ds-border)",
                 cursor: "pointer",
                 fontSize: 'var(--ds-font-size-400)',
-                color: "var(--ds-text, #292A2E)",
+                color: "var(--ds-text)",
               }}
             >
               <input
@@ -994,7 +994,7 @@ function SingleParentPicker({
                     padding: "16px",
                     fontSize: 'var(--ds-font-size-300)',
                     color:
-                      "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                      "var(--ds-text-subtlest, var(--cp-text-secondary))",
                     textAlign: "center",
                   }}
                 >
@@ -1158,7 +1158,7 @@ function MultiLinkPicker({
                   style={{
                     fontFamily: "var(--cp-font-mono)",
                     fontSize: 'var(--ds-font-size-400)',
-                    color: "var(--ds-link, var(--cp-primary-60, #0052CC))",
+                    color: "var(--ds-link, var(--cp-primary-60))",
                     cursor: "pointer",
                     flexShrink: 0,
                   }}
@@ -1169,7 +1169,7 @@ function MultiLinkPicker({
                 <span
                   style={{
                     fontSize: 'var(--ds-font-size-400)',
-                    color: "var(--ds-text, #292A2E)",
+                    color: "var(--ds-text)",
                     flex: 1,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -1193,13 +1193,13 @@ function MultiLinkPicker({
                     cursor: "pointer",
                     padding: 2,
                     color:
-                      "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                      "var(--ds-text-subtlest, var(--cp-text-secondary))",
                     display: "flex",
                   }}
                 >
                   <CrossIcon
                     size="small"
-                    primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))"
+                    primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary))"
                   />
                 </button>
               </div>
@@ -1226,9 +1226,9 @@ function MultiLinkPicker({
                 left: pickerPos.left,
                 width: pickerPos.width,
                 background:
-                  "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
+                  "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))",
                 border:
-                  "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))",
+                  "1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))",
                 borderRadius: 6,
                 boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
                 zIndex: 1000,
@@ -1241,7 +1241,7 @@ function MultiLinkPicker({
                 style={{
                   padding: "8px 12px",
                   borderBottom:
-                    "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
+                    "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))",
                 }}
               >
                 <div
@@ -1249,14 +1249,14 @@ function MultiLinkPicker({
                     display: "flex",
                     alignItems: "center",
                     gap: 6,
-                    border: "2px solid var(--ds-border-focused, #4C9AFF)",
+                    border: "2px solid var(--ds-border-focused)",
                     borderRadius: 4,
                     padding: "4px 8px",
                   }}
                 >
                   <SearchIcon
                     size="small"
-                    primaryColor="var(--ds-icon-subtle, #5E6C84)"
+                    primaryColor="var(--ds-icon-subtle)"
                   />
                   <input
                     autoFocus
@@ -1267,7 +1267,7 @@ function MultiLinkPicker({
                       border: "none",
                       outline: "none",
                       fontSize: 'var(--ds-font-size-300)',
-                      color: "var(--ds-text, #292A2E)",
+                      color: "var(--ds-text)",
                       width: "100%",
                       fontFamily: "inherit",
                     }}
@@ -1280,14 +1280,14 @@ function MultiLinkPicker({
                         border: "none",
                         cursor: "pointer",
                         color:
-                          "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                          "var(--ds-text-subtlest, var(--cp-text-secondary))",
                         display: "flex",
                         padding: 0,
                       }}
                     >
                       <CrossIcon
                         size="small"
-                        primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))"
+                        primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary))"
                       />
                     </button>
                   )}
@@ -1302,7 +1302,7 @@ function MultiLinkPicker({
                       padding: "16px",
                       fontSize: 'var(--ds-font-size-300)',
                       color:
-                        "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                        "var(--ds-text-subtlest, var(--cp-text-secondary))",
                       textAlign: "center",
                     }}
                   >
@@ -1337,7 +1337,7 @@ function renderGroup(
           style={{
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
-            color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+            color: "var(--ds-text-subtlest, var(--cp-text-secondary))",
             textTransform: "uppercase",
             letterSpacing: "0.05em",
             padding: "8px 12px 4px",
@@ -1361,18 +1361,18 @@ function renderGroup(
               padding: "8px 12px",
               cursor: "pointer",
               background: isSelected
-                ? "var(--ds-background-information, #DEEBFF)"
+                ? "var(--ds-background-information)"
                 : "transparent",
               transition: "background 80ms",
             }}
             onMouseEnter={(e) => {
               if (!isSelected)
                 e.currentTarget.style.background =
-                  "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                  "var(--ds-surface-sunken, var(--cp-bg-sunken))";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = isSelected
-                ? "var(--ds-background-information, #DEEBFF)"
+                ? "var(--ds-background-information)"
                 : "transparent";
             }}
           >
@@ -1393,7 +1393,7 @@ function renderGroup(
                 style={{
                   fontFamily: "var(--cp-font-mono)",
                   fontSize: 'var(--ds-font-size-300)',
-                  color: "var(--ds-text-subtle, #5E6C84)",
+                  color: "var(--ds-text-subtle)",
                 }}
               >
                 {item.issue_key}
@@ -1401,14 +1401,14 @@ function renderGroup(
               {isSelected && (
                 <CheckIcon
                   size="small"
-                  primaryColor="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))"
+                  primaryColor="var(--ds-background-brand-bold, var(--cp-primary-60))"
                 />
               )}
             </div>
             <div
               style={{
                 fontSize: 'var(--ds-font-size-400)',
-                color: "var(--ds-text, #292A2E)",
+                color: "var(--ds-text)",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
@@ -1437,7 +1437,7 @@ function renderGroupMulti(
         style={{
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
-          color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+          color: "var(--ds-text-subtlest, var(--cp-text-secondary))",
           textTransform: "uppercase",
           letterSpacing: "0.05em",
           padding: "8px 12px 4px",
@@ -1458,18 +1458,18 @@ function renderGroupMulti(
               padding: "8px 12px",
               cursor: "pointer",
               background: isLinked
-                ? "var(--ds-background-information, #DEEBFF)"
+                ? "var(--ds-background-information)"
                 : "transparent",
               transition: "background 80ms",
             }}
             onMouseEnter={(e) => {
               if (!isLinked)
                 e.currentTarget.style.background =
-                  "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                  "var(--ds-surface-sunken, var(--cp-bg-sunken))";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = isLinked
-                ? "var(--ds-background-information, #DEEBFF)"
+                ? "var(--ds-background-information)"
                 : "transparent";
             }}
           >
@@ -1480,10 +1480,10 @@ function renderGroupMulti(
                 height: 16,
                 borderRadius: 3,
                 flexShrink: 0,
-                border: `1.5px solid ${isLinked ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" : "var(--ds-border-disabled, #C1C7D0)"}`,
+                border: `1.5px solid ${isLinked ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" : "var(--ds-border-disabled)"}`,
                 background: isLinked
-                  ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
-                  : "var(--ds-surface, #FFF)",
+                  ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"
+                  : "var(--ds-surface)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1493,7 +1493,7 @@ function renderGroupMulti(
               {isLinked && (
                 <CheckIcon
                   size="small"
-                  primaryColor="var(--ds-surface, #FFF)"
+                  primaryColor="var(--ds-surface)"
                 />
               )}
             </div>
@@ -1502,7 +1502,7 @@ function renderGroupMulti(
               style={{
                 fontFamily: "var(--cp-font-mono)",
                 fontSize: 'var(--ds-font-size-200)',
-                color: "var(--ds-text-subtle, #5E6C84)",
+                color: "var(--ds-text-subtle)",
                 flexShrink: 0,
               }}
             >
@@ -1511,7 +1511,7 @@ function renderGroupMulti(
             <span
               style={{
                 fontSize: 'var(--ds-font-size-300)',
-                color: "var(--ds-text, #292A2E)",
+                color: "var(--ds-text)",
                 flex: 1,
                 overflow: "hidden",
                 textOverflow: "ellipsis",

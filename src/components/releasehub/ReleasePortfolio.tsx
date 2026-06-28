@@ -19,26 +19,26 @@ import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { type StatusAppearance } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 const T = {
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  success: 'var(--ds-text-success, #216E4E)',
-  warning: 'var(--ds-text-warning, #A54800)',
-  danger: 'var(--ds-text-danger, #AE2A19)',
-  bgSuccess: 'var(--ds-background-success, #DCFFF1)',
-  bgWarning: 'var(--ds-background-warning, #FFF7D6)',
-  bgDanger: 'var(--ds-background-danger, #FFEDEB)',
-  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  success: 'var(--ds-text-success)',
+  warning: 'var(--ds-text-warning)',
+  danger: 'var(--ds-text-danger)',
+  bgSuccess: 'var(--ds-background-success)',
+  bgWarning: 'var(--ds-background-warning)',
+  bgDanger: 'var(--ds-background-danger)',
+  bgNeutral: 'var(--ds-background-neutral)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
 const CONF_STYLE: Record<ReleaseConfidence, { fg: string; bg: string; accent: string }> = {
-  high:     { fg: T.success,  bg: T.bgSuccess, accent: 'var(--ds-border-success, #4BCE97)' },
-  medium:   { fg: T.warning,  bg: T.bgWarning, accent: 'var(--ds-border-warning, #E2B203)' },
-  low:      { fg: T.danger,   bg: T.bgDanger,  accent: 'var(--ds-border-danger, #F87168)' },
+  high:     { fg: T.success,  bg: T.bgSuccess, accent: 'var(--ds-border-success)' },
+  medium:   { fg: T.warning,  bg: T.bgWarning, accent: 'var(--ds-border-warning)' },
+  low:      { fg: T.danger,   bg: T.bgDanger,  accent: 'var(--ds-border-danger)' },
   released: { fg: T.subtlest, bg: T.bgNeutral, accent: T.border },
   draft:    { fg: T.subtlest, bg: T.bgNeutral, accent: T.border },
 };

@@ -36,7 +36,7 @@ function ToggleGroup({
       onClick={e => e.stopPropagation()}
       style={{
         display: 'inline-flex',
-        background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+        background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
         borderRadius: 4,
         padding: 2,
       }}
@@ -50,11 +50,11 @@ function ToggleGroup({
           onClick={() => onChange(o.value)}
           style={{
             border: 'none',
-            background: o.value === active ? (isDark ? token('color.background.selected', 'var(--ds-text, #172B4D)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)')) : 'transparent',
+            background: o.value === active ? (isDark ? token('color.background.selected', 'var(--ds-text)') : token('elevation.surface', 'var(--ds-surface)')) : 'transparent',
             padding: '4px 10px',
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 500,
-            color: o.value === active ? token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            color: o.value === active ? token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             cursor: 'pointer',
             borderRadius: 3,
             boxShadow: o.value === active && !isDark ? '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.15))' : 'none',
@@ -76,7 +76,7 @@ function SectionHeading({ label, count, danger }: { label: string; count: number
       style={{
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
         textTransform: 'uppercase',
         letterSpacing: '0.04em',
         marginBottom: 8,
@@ -89,11 +89,11 @@ function SectionHeading({ label, count, danger }: { label: string; count: number
       <span
         style={{
           background: danger
-            ? token('color.background.danger', 'var(--ds-background-danger, #FFECEB)')
-            : token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
+            ? token('color.background.danger', 'var(--ds-background-danger)')
+            : token('color.background.warning', 'var(--ds-background-warning)'),
           color: danger
-            ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
-            : token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
+            ? token('color.text.danger', 'var(--ds-text-danger)')
+            : token('color.text.warning', 'var(--ds-text-warning)'),
           padding: '1px 8px',
           borderRadius: 10,
           fontSize: 'var(--ds-font-size-100)',
@@ -134,10 +134,10 @@ function AttentionRow({
         gap: 12,
         alignItems: 'center',
         padding: '10px 12px',
-        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         cursor: 'pointer',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral))'); }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
     >
       <span
@@ -145,17 +145,17 @@ function AttentionRow({
           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
-          color: token('color.link', 'var(--ds-link, #0C66E4)'),
+          color: token('color.link', 'var(--ds-link)'),
         }}
       >
         {brKey(id)}
       </span>
       <div>
-        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') }}>
           {title}
         </div>
         {assignee && (
-          <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'), marginTop: 2 }}>
             {assignee}
           </div>
         )}
@@ -167,8 +167,8 @@ function AttentionRow({
           borderRadius: 3,
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
-          background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
           whiteSpace: 'nowrap',
         }}
       >
@@ -179,8 +179,8 @@ function AttentionRow({
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 600,
           color: overdue
-            ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
-            : token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
+            ? token('color.text.danger', 'var(--ds-text-danger)')
+            : token('color.text.warning', 'var(--ds-text-warning)'),
           fontVariantNumeric: 'tabular-nums',
           whiteSpace: 'nowrap',
         }}
@@ -225,7 +225,7 @@ export function NeedsAttentionWidget() {
         style={{
           height: 180,
           borderRadius: 8,
-          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
           boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
@@ -280,7 +280,7 @@ export function NeedsAttentionWidget() {
             style={{
               padding: '24px',
               fontSize: 'var(--ds-font-size-300)',
-              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
               textAlign: 'center',
             }}
           >

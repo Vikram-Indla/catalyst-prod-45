@@ -375,7 +375,7 @@ export default function CapacityPlannerPage() {
   const projectAssignmentsMemo = useMemo(() => resourceAssignments.map(a => ({
     id: a.id,
     name: a.name,
-    color: 'var(--ds-text-brand, #3b82f6)',
+    color: 'var(--ds-text-brand)',
     required_fte: 1,
   })), [resourceAssignments]);
 
@@ -1253,7 +1253,7 @@ export default function CapacityPlannerPage() {
                   assignments={resourceAssignments.map(a => ({
                     id: a.id,
                     name: a.name,
-                    color: 'var(--ds-text-brand, #3b82f6)',
+                    color: 'var(--ds-text-brand)',
                     required_fte: 1
                   }))}
                   allocations={allocations.map(a => ({

@@ -84,7 +84,7 @@ export function HuddleIncoming() {
   }, []);
 
   if (!incoming) return null;
-  const green = 'var(--ds-icon-success, #22A06B)';
+  const green = 'var(--ds-icon-success)';
 
   return (
     <div
@@ -105,8 +105,8 @@ export function HuddleIncoming() {
         display: 'inline-flex', alignItems: 'center', gap: hovered ? 14 : 0,
         padding: hovered ? '12px 14px' : 10,
         borderRadius: hovered ? 16 : 999,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: `1.5px solid var(--ds-border-success, #4BCE97)`,
+        background: 'var(--ds-surface-overlay)',
+        border: `1.5px solid var(--ds-border-success)`,
         boxShadow: '0 8px 28px rgba(9,30,66,.20), 0 2px 6px rgba(9,30,66,.12)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         transition: 'gap .18s ease, padding .18s ease, border-radius .18s ease',
       }}
@@ -122,16 +122,16 @@ export function HuddleIncoming() {
       {hovered && (
         <>
           <span style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', whiteSpace: 'nowrap', maxWidth: 170, overflow: 'hidden' }}>
-            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {incoming.callerName}
             </span>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: green }} /> Incoming huddle…
             </span>
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
             <button type="button" data-huddle-btn onClick={decline} title="Decline"
-              style={roundBtn('var(--ds-background-danger-bold, #C9372C)')}>
+              style={roundBtn('var(--ds-background-danger-bold)')}>
               <PhoneDownIcon />
             </button>
             <button type="button" data-huddle-btn onClick={accept} title="Accept"
@@ -149,7 +149,7 @@ function roundBtn(bg: string): React.CSSProperties {
   return {
     width: 44, height: 44, borderRadius: '50%', border: 'none', cursor: 'pointer',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    background: bg, color: 'var(--ds-surface, #FFFFFF)', flex: '0 0 auto',
+    background: bg, color: 'var(--ds-surface)', flex: '0 0 auto',
   };
 }
 

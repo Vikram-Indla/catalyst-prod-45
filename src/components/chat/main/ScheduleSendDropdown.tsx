@@ -81,8 +81,8 @@ export function ScheduleSendDropdown({
               padding: '6px 8px',
               border: 'none',
               borderRadius: '3px',
-              background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-              color: 'var(--ds-text, #172B4D)',
+              background: 'var(--ds-background-neutral-subtle)',
+              color: 'var(--ds-text)',
               cursor: disabled ? 'not-allowed' : 'pointer',
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
@@ -126,7 +126,7 @@ export function ScheduleSendDropdown({
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   marginBottom: '4px',
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 Date
@@ -146,7 +146,7 @@ export function ScheduleSendDropdown({
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   marginBottom: '4px',
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 Time (24h format)
@@ -158,7 +158,7 @@ export function ScheduleSendDropdown({
                 style={{
                   padding: '8px',
                   fontSize: 'var(--ds-font-size-400)',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '3px',
                   width: '100%',
                   boxSizing: 'border-box',

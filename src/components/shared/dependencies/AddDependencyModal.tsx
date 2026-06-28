@@ -158,13 +158,13 @@ export default function AddDependencyModal({ isOpen, onClose, onSuccess, scopeKe
                 </div>
 
                 {error && (
-                  <div style={{ padding: 8, borderRadius: 4, background: 'var(--ds-background-danger, #FFECEB)', color: 'var(--ds-text-danger, #AE2A19)', fontSize: 'var(--ds-font-size-200)' }}>
+                  <div style={{ padding: 8, borderRadius: 4, background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-200)' }}>
                     {error}
                   </div>
                 )}
 
                 {sourceKey && targetKey && sourceKey.value !== targetKey.value && (
-                  <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #505258)', margin: 0 }}>
+                  <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', margin: 0 }}>
                     {sourceKey.value} <strong>{depType}</strong> {targetKey.value}
                   </p>
                 )}

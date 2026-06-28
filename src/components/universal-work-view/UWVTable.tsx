@@ -315,7 +315,7 @@ export function UWVTable({
         flex: 1,
         minHeight: 0,
         overflow: 'auto',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         padding: '4px 16px 16px',
       }}
     >

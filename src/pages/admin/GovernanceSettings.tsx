@@ -128,7 +128,7 @@ export default function GovernanceSettings() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div
             className="h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: 'var(--ds-background-selected, #EFF6FF)' }}
+            style={{ background: 'var(--ds-background-selected)' }}
           >
             <ShieldIcon label="" size="small" />
           </div>
@@ -174,14 +174,14 @@ export default function GovernanceSettings() {
               {localEnforceStrictly ? (
                 <div
                   className="w-8 h-8 rounded flex items-center justify-center"
-                  style={{ background: 'var(--ds-background-success-bold, #1F845A)' }}
+                  style={{ background: 'var(--ds-background-success-bold)' }}
                 >
                   <CheckMarkIcon label="" size="small" style={{ color: 'white' }} />
                 </div>
               ) : (
                 <div
                   className="w-8 h-8 rounded flex items-center justify-center"
-                  style={{ background: 'var(--ds-background-warning-bold, #974F0C)' }}
+                  style={{ background: 'var(--ds-background-warning-bold)' }}
                 >
                   <WarningIcon label="" size="small" style={{ color: 'white' }} />
                 </div>
@@ -245,7 +245,7 @@ export default function GovernanceSettings() {
             className="border rounded-lg p-4 text-xs"
             style={{
               borderColor: 'var(--cp-border-default)',
-              backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
+              backgroundColor: 'var(--ds-background-neutral)',
               color: 'var(--cp-text-muted)',
             }}
           >
@@ -281,7 +281,7 @@ export default function GovernanceSettings() {
         </div>
 
         {/* Help Text */}
-        <div className="mt-8 p-4 rounded-lg" style={{ backgroundColor: 'var(--ds-background-information, #DFFCF0)' }}>
+        <div className="mt-8 p-4 rounded-lg" style={{ backgroundColor: 'var(--ds-background-information)' }}>
           <p style={{ fontSize: 12, color: 'var(--cp-text-primary)' }}>
             <strong>💡 Use Cases:</strong>
           </p>

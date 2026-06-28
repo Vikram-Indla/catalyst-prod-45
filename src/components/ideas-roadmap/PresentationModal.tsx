@@ -7,7 +7,7 @@ interface Props {
 }
 
 const QUARTERS: RoadmapQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
-const Q_COLORS: Record<string, string> = { Q1: 'var(--cp-purple-60, #7C3AED)', Q2: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', Q3: 'var(--cp-teal-60, #0D9488)', Q4: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
+const Q_COLORS: Record<string, string> = { Q1: 'var(--cp-purple-60)', Q2: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', Q3: 'var(--cp-teal-60)', Q4: 'var(--ds-text-warning, var(--cp-warning))' };
 const Q_LABELS: Record<string, string> = { Q1: 'Jan – Mar', Q2: 'Apr – Jun', Q3: 'Jul – Sep', Q4: 'Oct – Dec' };
 const TOTAL_SLIDES = 5;
 
@@ -33,7 +33,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Top bar */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12,
-        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderBottom: '1px solid var(--ds-text, var(--ds-text, #172B4D))',
+        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderBottom: '1px solid var(--ds-text, var(--ds-text))',
         flexShrink: 0,
       }}>
         <div style={{
@@ -41,7 +41,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-100)', fontWeight: 800,
         }}>MIM</div>
-        <div style={{ width: 1, height: 20, background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border, var(--cp-ink-1))' }} />
         <span style={{ color: 'var(--divider)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, flex: 1 }}>
           {slide === 0 ? 'Ideas Roadmap — FY 2026' : `${QUARTERS[slide - 1]} 2026 — Delivery Plan`}
         </span>
@@ -51,7 +51,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 2, background: 'var(--ds-border, var(--cp-ink-1, #292929))', flexShrink: 0 }}>
+      <div style={{ height: 2, background: 'var(--ds-border, var(--cp-ink-1))', flexShrink: 0 }}>
         <div style={{
           height: '100%', background: 'var(--sem-success)', transition: 'width 300ms',
           width: `${((slide + 1) / TOTAL_SLIDES) * 100}%`,
@@ -70,12 +70,12 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Navigation */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexShrink: 0,
-        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderTop: '1px solid var(--ds-text, var(--ds-text, #172B4D))',
+        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderTop: '1px solid var(--ds-text, var(--ds-text))',
       }}>
         <button onClick={() => setSlide(s => Math.max(0, s - 1))} disabled={slide === 0}
           style={{
-            width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-            border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', opacity: slide === 0 ? 0.3 : 1,
+            width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, var(--cp-ink-1))',
+            border: 'none', color: 'var(--ds-surface)', cursor: 'pointer', opacity: slide === 0 ? 0.3 : 1,
             fontSize: 'var(--ds-font-size-400)',
           }}>←</button>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -90,8 +90,8 @@ export function PresentationModal({ ideas, onClose }: Props) {
         </div>
         <button onClick={() => setSlide(s => Math.min(TOTAL_SLIDES - 1, s + 1))} disabled={slide === TOTAL_SLIDES - 1}
           style={{
-            width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-            border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', opacity: slide === TOTAL_SLIDES - 1 ? 0.3 : 1,
+            width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, var(--cp-ink-1))',
+            border: 'none', color: 'var(--ds-surface)', cursor: 'pointer', opacity: slide === TOTAL_SLIDES - 1 ? 0.3 : 1,
             fontSize: 'var(--ds-font-size-400)',
           }}>→</button>
         <span style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-100)', marginLeft: 8, fontFamily: 'var(--cp-font-mono)' }}>
@@ -111,7 +111,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
 function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: RoadmapIdea[] }) {
   const qs: Record<string, number> = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
   committed.forEach(i => { if (i.quarter) qs[i.quarter]++; });
-  const qColors = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
+  const qColors = ['var(--cp-purple-60)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-warning, var(--cp-warning))'];
 
   return (
     <div style={{ display: 'flex', gap: 60, alignItems: 'center', maxWidth: 1200, width: '100%' }}>
@@ -133,7 +133,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
             { label: 'FISCAL YEAR', value: '2026', sub: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) },
           ].map(s => (
             <div key={s.label} style={{
-              background: 'var(--ds-border, var(--cp-ink-1, #292929))', border: '1px solid var(--ds-text, #172B4D)',
+              background: 'var(--ds-border, var(--cp-ink-1))', border: '1px solid var(--ds-text)',
               borderRadius: 8, padding: '16px 20px', minWidth: 140,
             }}>
               <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>
@@ -152,7 +152,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           {(['Q1', 'Q2', 'Q3', 'Q4'] as const).map((q, i) => (
             <div key={q} style={{
-              background: 'var(--ds-surface-overlay, #1F1F1F)', border: '1px solid var(--ds-text, #172B4D)',
+              background: 'var(--ds-surface-overlay)', border: '1px solid var(--ds-text)',
               borderRadius: 8, padding: '16px 20px', borderTop: `3px solid ${qColors[i]}`, minWidth: 140,
             }}>
               <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', marginBottom: 8 }}>{q} {Q_LABELS[q]}</div>
@@ -201,8 +201,8 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
         return (
           <div key={idea.id} style={{
             display: 'flex', alignItems: 'center', height: 40,
-            background: ri % 2 === 1 ? 'var(--ds-surface-overlay, #1F1F1F)' : 'transparent',
-            borderBottom: '1px solid var(--ds-text, #172B4D)',
+            background: ri % 2 === 1 ? 'var(--ds-surface-overlay)' : 'transparent',
+            borderBottom: '1px solid var(--ds-text)',
           }}>
             <div style={{ width: 240, paddingRight: 16 }}>
               <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>{idea.ideaKey}</div>
@@ -212,7 +212,7 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
               {months.map((m, mi) => (
                 <div key={m} style={{
                   flex: 1, height: '100%',
-                  borderLeft: mi > 0 ? '1px solid var(--ds-text, #172B4D)' : 'none',
+                  borderLeft: mi > 0 ? '1px solid var(--ds-text)' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {/* Show a diamond if PROD date falls in this month */}

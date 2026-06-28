@@ -19,17 +19,17 @@ interface Props {
   onToggleFav: () => void;
 }
 
-const CAT_DOT: Record<string, string> = { todo: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, var(--cp-success, #16A34A))' };
+const CAT_DOT: Record<string, string> = { todo: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', done: 'var(--ds-text-success, var(--cp-success))' };
 
 function getAvatarGradient(key: string) {
   const letter = (key[0] || '').toUpperCase();
   const map: Record<string, string> = {
-    A: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', B: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', C: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', D: 'var(--cp-purple-60, #7C3AED)', E: 'var(--cp-purple-60, #7C3AED)', F: 'var(--cp-purple-60, #7C3AED)',
-    G: 'var(--cp-teal-60, #0D9488)', H: 'var(--cp-teal-60, #0D9488)', I: 'var(--cp-teal-60, #0D9488)', J: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', K: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', L: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
-    M: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', N: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', O: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', P: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', Q: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', R: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-    S: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', T: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', U: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', V: 'var(--ds-text-success, var(--cp-success, #16A34A))', W: 'var(--ds-text-success, var(--cp-success, #16A34A))', X: 'var(--ds-text-success, var(--cp-success, #16A34A))', Y: 'var(--ds-text-success, var(--cp-success, #16A34A))', Z: 'var(--ds-text-success, var(--cp-success, #16A34A))',
+    A: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', B: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', C: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', D: 'var(--cp-purple-60)', E: 'var(--cp-purple-60)', F: 'var(--cp-purple-60)',
+    G: 'var(--cp-teal-60)', H: 'var(--cp-teal-60)', I: 'var(--cp-teal-60)', J: 'var(--ds-background-brand-bold-hovered)', K: 'var(--ds-background-brand-bold-hovered)', L: 'var(--ds-background-brand-bold-hovered)',
+    M: 'var(--ds-text-warning, var(--cp-amber))', N: 'var(--ds-text-warning, var(--cp-amber))', O: 'var(--ds-text-warning, var(--cp-amber))', P: 'var(--ds-text-danger, var(--cp-danger))', Q: 'var(--ds-text-danger, var(--cp-danger))', R: 'var(--ds-text-danger, var(--cp-danger))',
+    S: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', T: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', U: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', V: 'var(--ds-text-success, var(--cp-success))', W: 'var(--ds-text-success, var(--cp-success))', X: 'var(--ds-text-success, var(--cp-success))', Y: 'var(--ds-text-success, var(--cp-success))', Z: 'var(--ds-text-success, var(--cp-success))',
   };
-  return map[letter] || 'var(--ds-link, #0284c7)';
+  return map[letter] || 'var(--ds-link)';
 }
 
 export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav }: Props) {
@@ -49,7 +49,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
               <ArrowLeft size={18} color="var(--fg-3)" />
             </button>
-            <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 50, background: bg, color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, fontFamily: 'var(--cp-font-mono)', borderRadius: 8 }}>
+            <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 50, background: bg, color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, fontFamily: 'var(--cp-font-mono)', borderRadius: 8 }}>
               {project.project_key}
             </div>
             <div className="flex-1 min-w-0">
@@ -57,7 +57,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
               <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>{project.department || 'No department'} · {project.project_key}</div>
             </div>
             <button onClick={onToggleFav} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-              <Star size={18} fill={isFav ? 'var(--ds-background-warning-bold, #E2B203)' : 'none'} color={isFav ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-text-disabled, #CBD5E1)'} />
+              <Star size={18} fill={isFav ? 'var(--ds-background-warning-bold)' : 'none'} color={isFav ? 'var(--ds-background-warning-bold)' : 'var(--ds-text-disabled)'} />
             </button>
           </div>
 
@@ -97,8 +97,8 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
                   padding: '8px 16px',
                   fontSize: 'var(--ds-font-size-300)',
                   fontWeight: tab === t ? 600 : 400,
-                  color: tab === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-3)',
-                  borderBottom: tab === t ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
+                  color: tab === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--fg-3)',
+                  borderBottom: tab === t ? '2px solid var(--ds-link)' : '2px solid transparent',
                   background: 'none',
                   border: 'none',
                   borderBottomWidth: 2,
@@ -126,13 +126,13 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
 
         {/* Footer */}
         <div className="flex items-center gap-3 p-4" style={{ borderTop: '1px solid var(--divider)' }}>
-          <button onClick={onClose} className="flex-1 rounded-md transition-colors" style={{ height: 50, background: 'var(--ds-surface, #FFF)', border: '1px solid var(--divider)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
+          <button onClick={onClose} className="flex-1 rounded-md transition-colors" style={{ height: 50, background: 'var(--ds-surface)', border: '1px solid var(--divider)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
             Close
           </button>
           <button
             onClick={() => window.open(`/project-hub/${project.project_key}/dashboard`, '_blank')}
             className="flex items-center justify-center gap-2 flex-1 rounded-md transition-colors"
-            style={{ height: 50, background: 'var(--cp-blue)', border: 'none', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}
+            style={{ height: 50, background: 'var(--cp-blue)', border: 'none', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-surface)', cursor: 'pointer' }}
           >
             <ExternalLink size={14} /> Open Project
           </button>

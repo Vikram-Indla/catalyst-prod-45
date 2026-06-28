@@ -58,7 +58,7 @@ export function CatalystQuickActions({
     return () => document.removeEventListener('mousedown', h);
   }, [showMenu]);
 
-  const textColor = 'var(--ds-text, #292A2E)';
+  const textColor = 'var(--ds-text)';
   const hoverBg = 'var(--ds-text, rgba(11, 18, 14, 0.06))';
   const borderColor = 'var(--ds-text, rgba(11, 18, 14, 0.14))';
 
@@ -120,21 +120,21 @@ export function CatalystQuickActions({
   //                        is already open)
   const isActiveHovered = showMenu && isHovered;
   const btnBackground = isActiveHovered
-    ? 'var(--ds-background-selected-hovered, #CCE0FF)'
+    ? 'var(--ds-background-selected-hovered)'
     : showMenu
-      ? 'var(--ds-background-selected, #E9F2FE)'
+      ? 'var(--ds-background-selected)'
       : isHovered
-        ? 'var(--ds-background-neutral-hovered, #F1F2F4)'
+        ? 'var(--ds-background-neutral-hovered)'
         : 'transparent';
   const btnBorderColor = showMenu
-    ? 'var(--ds-border-selected, #0C66E4)'
-    : 'var(--ds-border, #DFE1E6)';
+    ? 'var(--ds-border-selected)'
+    : 'var(--ds-border)';
   const btnBorderWidth = showMenu ? 2 : 1;
   const addIconColor = isActiveHovered
-    ? 'var(--ds-link-pressed, #0747A6)'
+    ? 'var(--ds-link-pressed)'
     : showMenu
-      ? 'var(--ds-text-selected, #0C66E4)'
-      : 'var(--ds-text, #292A2E)';
+      ? 'var(--ds-text-selected)'
+      : 'var(--ds-text)';
   const btnStyle: React.CSSProperties = {
     width: 32, height: 32,
     border: `${btnBorderWidth}px solid ${btnBorderColor}`,
@@ -142,10 +142,10 @@ export function CatalystQuickActions({
     borderRadius: 3, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
     boxSizing: 'border-box',
     color: isActiveHovered
-      ? 'var(--ds-link-pressed, #0747A6)'
+      ? 'var(--ds-link-pressed)'
       : showMenu
-        ? 'var(--ds-text-selected, #0C66E4)'
-        : 'var(--ds-text-subtle, #505258)',
+        ? 'var(--ds-text-selected)'
+        : 'var(--ds-text-subtle)',
     transition: 'background 0.15s, color 0.15s, border-color 0.15s, border-width 0.15s',
   };
 
@@ -153,8 +153,8 @@ export function CatalystQuickActions({
   // matching the trigger's active-state language. 2px when focused to
   // match the trigger's active-state border width.
   const searchBorderColor = isSearchFocused
-    ? 'var(--ds-border-focused, #388BFF)'
-    : 'var(--ds-border, #DFE1E6)';
+    ? 'var(--ds-border-focused)'
+    : 'var(--ds-border)';
   const searchBorderWidth = isSearchFocused ? 2 : 1;
 
   const itemStyle: React.CSSProperties = {
@@ -186,7 +186,7 @@ export function CatalystQuickActions({
             role="menu"
             aria-label="Add options"
             style={{
-            position: 'absolute', left: 0, top: 34, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4,
+            position: 'absolute', left: 0, top: 34, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 4,
             boxShadow: 'var(--ds-text, rgba(30,31,33,0.15)) 0px 8px 12px, var(--ds-text, rgba(30,31,33,0.31)) 0px 0px 1px',
             width: 266, zIndex: 400, padding: 0,
             animation: 'cv-slide-down 0.15s ease-out',
@@ -248,7 +248,7 @@ export function CatalystQuickActions({
             ))}
 
             {filtered.length === 0 && (
-              <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No items match</div>
+              <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textAlign: 'center' }}>No items match</div>
             )}
           </div>
         )}

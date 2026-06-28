@@ -47,29 +47,29 @@ export const ideas: Idea[] = [];
 // ─── V12 STATUS LOZENGE — 3-COLOR GUARDRAIL — NO DOTS ──────────
 // UPDATED: Approved = BLUE (active/in-progress), Submitted = GREY
 export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label: string }> = {
-  draft:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)', label: 'Draft' },
-  submitted:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)', label: 'Submitted' },
-  under_review: { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', label: 'Under Review' },
-  approved:     { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', label: 'Approved' },
-  rejected:     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)', label: 'Rejected' },
-  converted:    { bg: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', label: 'Converted' },
+  draft:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)', label: 'Draft' },
+  submitted:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)', label: 'Submitted' },
+  under_review: { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', label: 'Under Review' },
+  approved:     { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', label: 'Approved' },
+  rejected:     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)', label: 'Rejected' },
+  converted:    { bg: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', label: 'Converted' },
 };
 
 // ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
 export const TYPE_CONFIG: Record<IdeaType, { bg: string; text: string; label: string }> = {
-  opportunity:  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', label: 'Opportunity' },
-  solution:     { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', label: 'Solution' },
-  feature:      { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', label: 'Feature' },
-  improvement:  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', label: 'Improvement' },
-  problem:      { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', label: 'Problem' },
+  opportunity:  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', label: 'Opportunity' },
+  solution:     { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', label: 'Solution' },
+  feature:      { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', label: 'Feature' },
+  improvement:  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', label: 'Improvement' },
+  problem:      { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', label: 'Problem' },
 };
 
 // ─── V12 PRIORITY BADGES — ALL NEUTRAL GREY ─────────────────────
 export const PRIORITY_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
-  P1: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))' },
-  P2: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))' },
-  P3: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))' },
-  P4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))' },
+  P1: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))' },
+  P2: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))' },
+  P3: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))' },
+  P4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))' },
 };
 
 export const VIEW_TITLES: Record<IdeationView, string> = {
@@ -94,18 +94,18 @@ export const FILTER_PILLS: { key: StatusFilter; label: string }[] = [
 
 // ─── Quarter badge — HIGH CONTRAST (AAA) ────────────────────────
 export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
-  Q1: { bg: 'var(--ds-text-danger, #991B1B)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
-  Q2: { bg: 'var(--ds-link-pressed, #1e40af)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
-  Q3: { bg: 'var(--ds-text-success, #216E4E)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
-  Q4: { bg: 'var(--ds-text-warning, #974F0C)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
+  Q1: { bg: 'var(--ds-text-danger)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
+  Q2: { bg: 'var(--ds-link-pressed)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
+  Q3: { bg: 'var(--ds-text-success)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
+  Q4: { bg: 'var(--ds-text-warning)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
 };
 
 // ─── Helpers ────────────────────────────────────────────────────
 export function getImpactColor(score: number) {
-  if (score >= 4.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-success, var(--cp-success, #16A34A)), var(--ds-text-success, #22C55E))', text: 'var(--ds-text-success, var(--cp-success, #16A34A))' };
-  if (score >= 3.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-text-brand, #3B82F6))', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' };
-  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))), var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' };
-  return { gradient: 'linear-gradient(90deg, var(--ds-text-disabled, #CBD5E1), var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' };
+  if (score >= 4.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-success, var(--cp-success)), var(--ds-text-success))', text: 'var(--ds-text-success, var(--cp-success))' };
+  if (score >= 3.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), var(--ds-text-brand))', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' };
+  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary))), var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light))))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' };
+  return { gradient: 'linear-gradient(90deg, var(--ds-text-disabled), var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' };
 }
 
 export const AI_INSIGHTS: Record<string, string> = {};
@@ -122,11 +122,11 @@ export const STATUS_DB_TO_UI: Record<string, IdeaStatus> = {
 };
 
 export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }> = {
-  'Draft':                    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  'Submitted':                { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  'Under Review':             { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
-  'Approved':                 { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
-  'Rejected':                 { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  'Converted':                { bg: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
-  'Converted to Request':  { bg: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' },
+  'Draft':                    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  'Submitted':                { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  'Under Review':             { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
+  'Approved':                 { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
+  'Rejected':                 { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  'Converted':                { bg: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
+  'Converted to Request':  { bg: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' },
 };

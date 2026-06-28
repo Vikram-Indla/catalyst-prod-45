@@ -108,7 +108,7 @@ function CategoryAccordion({
   );
 
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', overflow: 'hidden' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: '1px solid var(--ds-border)', borderRadius: '3px', overflow: 'hidden' }}>
       {/* ── Category Header ──────────────────────────────────────── */}
       <button
         onClick={onToggle}
@@ -121,7 +121,7 @@ function CategoryAccordion({
             <ChevronRightIcon label="" size="small" />
           )}
 
-          <span className="text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">
+          <span className="text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))]">
             {group.label}
           </span>
 
@@ -132,7 +132,7 @@ function CategoryAccordion({
 
           {/* Mandatory indicator */}
           {mandatoryCount > 0 && (
-            <div className="flex items-center gap-1 text-[10px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">
+            <div className="flex items-center gap-1 text-[10px] text-[var(--ds-text-danger,var(--cp-danger))]">
               <ShieldIcon label="" size="small" />
               <span>{mandatoryCount} mandatory</span>
             </div>
@@ -140,7 +140,7 @@ function CategoryAccordion({
 
           {/* Silent indicator */}
           {silentCount > 0 && (
-            <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">
+            <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]">
               {silentCount} silent
             </span>
           )}
@@ -148,13 +148,13 @@ function CategoryAccordion({
 
         {/* Right side — progress bar */}
         <div className="flex items-center gap-3">
-          <div className="w-24 h-1.5 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded-full overflow-hidden">
+          <div className="w-24 h-1.5 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] rounded-full transition-all duration-300"
+              className="h-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] rounded-full transition-all duration-300"
               style={{ width: `${group.totalCount > 0 ? (group.enabledCount / group.totalCount) * 100 : 0}%` }}
             />
           </div>
-          <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] w-8 text-right font-['JetBrains_Mono']">
+          <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] w-8 text-right font-['JetBrains_Mono']">
             {group.totalCount > 0 ? Math.round((group.enabledCount / group.totalCount) * 100) : 0}%
           </span>
         </div>
@@ -162,39 +162,39 @@ function CategoryAccordion({
 
       {/* ── Expanded Content ─────────────────────────────────────── */}
       {isExpanded && (
-        <div className="border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
+        <div className="border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))]">
           {/* Column Headers */}
-          <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
+          <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[var(--ds-surface-sunken)] border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))]">
             <div className="flex items-center justify-center">
               <input
                 type="checkbox"
                 onChange={handleSelectAll}
-                className="h-3 w-3 rounded border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+                className="h-3 w-3 rounded border-[var(--ds-text-disabled)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
                 title="Select all in group"
               />
             </div>
-            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle,#475569)]">
+            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle)]">
               Trigger
             </div>
-            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle,#475569)]">
+            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle)]">
               Hub
             </div>
-            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle,#475569)]">
+            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle)]">
               Priority
             </div>
-            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle,#475569)] text-center">
+            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle)] text-center">
               App
             </div>
-            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle,#475569)] text-center">
+            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle)] text-center">
               Email
             </div>
-            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle,#475569)] text-center">
+            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle)] text-center">
               Toast
             </div>
-            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle,#475569)] text-center">
+            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle)] text-center">
               Slack
             </div>
-            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle,#475569)] text-center">
+            <div className="text-[10px] uppercase tracking-[0.03em] font-semibold text-[var(--ds-text-subtle)] text-center">
               On
             </div>
           </div>

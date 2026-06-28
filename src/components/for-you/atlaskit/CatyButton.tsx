@@ -65,12 +65,12 @@ export function CatyButton({
           gap: size === 'compact' ? 4 : 6,
           height: heightPx,
           padding: paddingPx,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-surface-overlay)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 99,
           fontSize: fontSizePx,
           fontWeight: 500,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text)',
           cursor: 'pointer',
           transition: 'background-color 150ms, border-color 150ms',
         }}
@@ -78,7 +78,7 @@ export function CatyButton({
           e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--ds-surface-overlay, #FFFFFF)';
+          e.currentTarget.style.backgroundColor = 'var(--ds-surface-overlay)';
         }}
         data-loading={loading || undefined}
         aria-busy={loading || undefined}
@@ -102,8 +102,8 @@ export function CatyButton({
             position: 'absolute',
             top: '-6px',
             right: '-6px',
-            background: 'var(--ds-background-danger-bold, #AE2A19)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--ds-background-danger-bold)',
+            color: 'var(--ds-text-inverse)',
             borderRadius: '50%',
             width: '20px',
             height: '20px',

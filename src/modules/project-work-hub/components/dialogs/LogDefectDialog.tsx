@@ -92,8 +92,8 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="summary" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Summary <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="summary" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Summary <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Textfield
               id="summary"
@@ -104,8 +104,8 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="story" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Story <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="story" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Story <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Select
               inputId="story"
@@ -114,15 +114,15 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
               onChange={(opt: any) => setStory(opt ? opt.value : '')}
               placeholder="Select related story (required)"
             />
-            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 4 }}>
               Defects must be linked to a Story
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label htmlFor="quarter" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                Quarter <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+              <label htmlFor="quarter" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+                Quarter <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
               </label>
               <Select
                 inputId="quarter"
@@ -133,8 +133,8 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
               />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label htmlFor="release" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                Release Version <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+              <label htmlFor="release" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+                Release Version <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
               </label>
               <Select
                 inputId="release"
@@ -147,8 +147,8 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="priority" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Priority <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="priority" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Priority <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Select
               inputId="priority"
@@ -160,7 +160,7 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Description
             </label>
             <TextArea

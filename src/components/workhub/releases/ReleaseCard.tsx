@@ -18,14 +18,14 @@ function formatDate(dateStr: string): string {
 
 /** Derive a status from the data */
 function deriveStatus(r: JiraRelease): { label: string; bg: string; fg: string; dot: string } {
-  if (r.totalItems > 0 && r.doneItems === r.totalItems) return { label: 'Completed', bg: 'var(--ds-background-success, #DFFCF0)', fg: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', dot: 'var(--ds-text-success, #16a34a)' };
-  if (r.blockedItems > 0) return { label: 'At Risk', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))', fg: 'var(--ds-text-danger, #991b1b)', dot: 'var(--ds-text-danger, #ef4444)' };
-  if (r.inProgressItems > 0 || r.inReviewItems > 0) return { label: 'Active', bg: 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))', fg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' };
-  return { label: 'Planned', bg: 'var(--ds-surface-sunken, #f1f5f9)', fg: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, #94a3b8)' };
+  if (r.totalItems > 0 && r.doneItems === r.totalItems) return { label: 'Completed', bg: 'var(--ds-background-success)', fg: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', dot: 'var(--ds-text-success)' };
+  if (r.blockedItems > 0) return { label: 'At Risk', bg: 'var(--ds-background-danger, var(--ds-background-danger))', fg: 'var(--ds-text-danger)', dot: 'var(--ds-text-danger)' };
+  if (r.inProgressItems > 0 || r.inReviewItems > 0) return { label: 'Active', bg: 'var(--ds-background-information, var(--ds-background-information))', fg: 'var(--ds-background-brand-bold-hovered)', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' };
+  return { label: 'Planned', bg: 'var(--ds-surface-sunken)', fg: 'var(--ds-text-subtle)', dot: 'var(--ds-text-subtlest)' };
 }
 
 // Assign colors to project keys
-const PROJECT_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-link, #0C66E4)', 'var(--ds-text-success, #16a34a)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text-subtle, #475569)'];
+const PROJECT_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-background-discovery-bold)', 'var(--ds-icon-information)', 'var(--ds-text-warning)', 'var(--ds-text-danger)', 'var(--ds-link)', 'var(--ds-text-success)', 'var(--ds-background-discovery-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-text-subtle)'];
 function getProjectColor(index: number): string {
   return PROJECT_COLORS[index % PROJECT_COLORS.length];
 }
@@ -39,7 +39,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
   const segments = [
     { label: 'Done', value: release.doneItems, color: 'var(--sem-success)' },
     { label: 'In Progress', value: release.inProgressItems, color: 'var(--cp-blue)' },
-    { label: 'In Review', value: release.inReviewItems, color: 'var(--ds-background-discovery-bold, #7C3AED)' },
+    { label: 'In Review', value: release.inReviewItems, color: 'var(--ds-background-discovery-bold)' },
     { label: 'Blocked', value: release.blockedItems, color: 'var(--sem-danger)' },
     { label: 'To Do', value: release.todoItems, color: 'var(--fg-4)' },
   ];
@@ -193,7 +193,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
 function AvatarChip({ assignee, index }: { assignee: { displayName: string; avatarUrl: string | null; roleName?: string | null }; index: number }) {
   const [imgError, setImgError] = useState(false);
   const initials = assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  const colors = ['var(--ds-background-discovery-bold, #6366f1)', 'var(--ds-chart-teal-bold, #0d9488)', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-background-discovery-bold, #7C3AED)', 'var(--ds-text-success, #16a34a)', 'var(--ds-link, #0C66E4)'];
+  const colors = ['var(--ds-background-discovery-bold)', 'var(--ds-chart-teal-bold)', 'var(--ds-text-warning)', 'var(--ds-text-danger)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-background-discovery-bold)', 'var(--ds-text-success)', 'var(--ds-link)'];
   const bg = colors[index % colors.length];
   const tooltip = assignee.roleName ? `${assignee.displayName} · ${assignee.roleName}` : assignee.displayName;
 

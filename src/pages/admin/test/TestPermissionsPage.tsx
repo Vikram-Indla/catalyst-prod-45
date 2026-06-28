@@ -110,24 +110,24 @@ export default function TestPermissionsPage() {
         }
       />
 
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 24px' }}>
+      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle)', margin: '4px 0 24px' }}>
         Control which actions each test role can perform. Check = allowed, unchecked = denied.
       </p>
 
       {roles.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--ds-text-subtlest)' }}>
           No test roles configured. Roles are created from the test management settings.
         </div>
       ) : (
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '2px solid var(--ds-border, #DFE1E6)' }}>
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', minWidth: 200 }}>
+              <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '2px solid var(--ds-border)' }}>
+                <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', minWidth: 200 }}>
                   Permission
                 </th>
                 {roles.map(r => (
-                  <th key={r.id} style={{ padding: '10px 12px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', minWidth: 100 }}>
+                  <th key={r.id} style={{ padding: '10px 12px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', minWidth: 100 }}>
                     {r.name}
                   </th>
                 ))}
@@ -145,9 +145,9 @@ export default function TestPermissionsPage() {
                         style={{
                           padding: '8px 16px',
                           fontSize: 11, fontWeight: 600,
-                          color: 'var(--ds-text-subtlest, #6B778C)',
-                          background: 'var(--ds-surface-sunken, #F7F8F9)',
-                          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+                          color: 'var(--ds-text-subtlest)',
+                          background: 'var(--ds-surface-sunken)',
+                          borderBottom: '1px solid var(--ds-border)',
                           letterSpacing: '0.06em',
                         }}
                       >
@@ -157,10 +157,10 @@ export default function TestPermissionsPage() {
                     {groupPerms.map(permKey => {
                       const meta = PERMISSION_LABELS[permKey];
                       return (
-                        <tr key={permKey} style={{ borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
+                        <tr key={permKey} style={{ borderBottom: '1px solid var(--ds-border-subtle)' }}>
                           <td style={{ padding: '10px 16px' }}>
-                            <div style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontSize: 13 }}>{meta.label}</div>
-                            <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{meta.description}</div>
+                            <div style={{ fontWeight: 500, color: 'var(--ds-text)', fontSize: 13 }}>{meta.label}</div>
+                            <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', marginTop: 2 }}>{meta.description}</div>
                           </td>
                           {roles.map(r => {
                             const granted = isGranted(r.id, permKey);
@@ -173,9 +173,9 @@ export default function TestPermissionsPage() {
                                   style={{
                                     width: 20, height: 20, borderRadius: 4,
                                     border: granted
-                                      ? '2px solid var(--ds-border-brand, #0052CC)'
-                                      : '2px solid var(--ds-border, #DFE1E6)',
-                                    background: granted ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-surface, #FFFFFF)',
+                                      ? '2px solid var(--ds-border-brand)'
+                                      : '2px solid var(--ds-border)',
+                                    background: granted ? 'var(--ds-background-brand-bold)' : 'var(--ds-surface)',
                                     cursor: 'pointer',
                                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                                     transition: 'background 150ms, border-color 150ms',
@@ -184,7 +184,7 @@ export default function TestPermissionsPage() {
                                 >
                                   {granted && (
                                     <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                                      <path d="M1 4L3.5 6.5L9 1" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                      <path d="M1 4L3.5 6.5L9 1" stroke="var(--ds-surface)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                   )}
                                 </button>

@@ -17,39 +17,39 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 
 /* ── Constants ── */
-const PROJECT_COLORS: Record<string, string> = { SEN: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', MDT: 'var(--ds-text, #3F3F46)' };
-const getAvatarColor = (key: string) => PROJECT_COLORS[key] || 'var(--ds-text-subtle, var(--ds-icon, #44546F))';
+const PROJECT_COLORS: Record<string, string> = { SEN: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', MDT: 'var(--ds-text)' };
+const getAvatarColor = (key: string) => PROJECT_COLORS[key] || 'var(--ds-text-subtle, var(--ds-icon))';
 
 /* ── Small component for live ticket count badge ── */
 function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
   const { data: count } = useProjectTicketCount(projectKey);
   return (
-    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #374151)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
+    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
       {count ?? '…'}
     </span>
   );
 }
 
 const PRIORITY_STYLES: Record<string, { bg: string; color: string }> = {
-  HIGH:     { bg: 'var(--ds-surface, #FEF3C7)', color: 'var(--ds-text, #92400E)' },
-  CRITICAL: { bg: 'var(--ds-surface, #FEF3C7)', color: 'var(--ds-text, #92400E)' },
-  MEDIUM:   { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #374151)' },
-  LOW:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #374151)' },
+  HIGH:     { bg: 'var(--ds-surface)', color: 'var(--ds-text)' },
+  CRITICAL: { bg: 'var(--ds-surface)', color: 'var(--ds-text)' },
+  MEDIUM:   { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
+  LOW:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  'Open':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
-  'To Do':       { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
-  'Backlog':     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
-  'In Progress': { bg: 'var(--ds-text, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'In Review':   { bg: 'var(--ds-text, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Done':        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Resolved':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Closed':      { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Open':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
+  'To Do':       { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
+  'Backlog':     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
+  'In Progress': { bg: 'var(--ds-text)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'In Review':   { bg: 'var(--ds-text)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Done':        { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Resolved':    { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Closed':      { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
 };
 
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {
-  const s = styles[label] || { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' };
+  const s = styles[label] || { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' };
   return (
     <span title={label} style={{
       display: 'inline-block', padding: '2px 6px', borderRadius: 4,
@@ -213,7 +213,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               padding: 0,
               display: 'flex',
               flexDirection: 'column',
-              borderLeft: '0.75px solid var(--ds-border, #E5E7EB)',
+              borderLeft: '0.75px solid var(--ds-border)',
               boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
               background: 'var(--bg-app)',
               outline: 'none',
@@ -222,9 +222,9 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         <SheetTitle className="sr-only">Import from Jira</SheetTitle>
         <SheetDescription className="sr-only">Import Jira tickets into Req Assist</SheetDescription>
         {/* HEADER */}
-        <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid var(--ds-border, #E5E7EB)', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid var(--ds-border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 650, color: 'var(--ds-text, #111827)', fontFamily: 'var(--cp-font-heading)' }}>Import from Jira</span>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 650, color: 'var(--ds-text)', fontFamily: 'var(--cp-font-heading)' }}>Import from Jira</span>
             <span style={{ flex: 1 }} />
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 4, padding: '2px 8px' }}>AI-Assisted Import</span>
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Step {step} of 2</span>
@@ -272,7 +272,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         </div>
 
         {/* FOOTER */}
-        <div style={{ height: 64, borderTop: '0.75px solid var(--ds-border, #E5E7EB)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ height: 64, borderTop: '0.75px solid var(--ds-border)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           {step === 1 ? (
             <>
               <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Cancel</button>
@@ -280,7 +280,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                 onClick={() => { if (selectedProject) { setStep(2); setSelectedTickets([]); } }}
                 disabled={!selectedProject}
                 style={{
-                  background: selectedProject ? 'var(--cp-blue)' : 'var(--ds-border, #93C5FD)', color: 'var(--bg-app)',
+                  background: selectedProject ? 'var(--cp-blue)' : 'var(--ds-border)', color: 'var(--bg-app)',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
                   fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: selectedProject ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--cp-font-body)', opacity: selectedProject ? 1 : 0.6,
@@ -294,7 +294,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                 onClick={handleImport}
                 disabled={selectedTickets.length === 0 || importMutation.isPending}
                 style={{
-                  background: selectedTickets.length > 0 ? 'var(--cp-blue)' : 'var(--ds-border, #93C5FD)', color: 'var(--bg-app)',
+                  background: selectedTickets.length > 0 ? 'var(--cp-blue)' : 'var(--ds-border)', color: 'var(--bg-app)',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
                   fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                   cursor: selectedTickets.length > 0 ? 'pointer' : 'not-allowed',
@@ -358,7 +358,7 @@ function Step1({
       ) : projects.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
           <Inbox size={32} style={{ color: 'var(--fg-4)' }} />
-          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-subtle, #374151)', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No projects connected yet</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No projects connected yet</span>
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Add your first Jira project below</span>
         </div>
       ) : (
@@ -370,14 +370,14 @@ function Step1({
                 key={p.project_key}
                 onClick={() => onSelect(p.project_key)}
                 style={{
-                  height: 48, border: selected ? '1.5px solid var(--cp-blue)' : '0.75px solid var(--ds-border, #E5E7EB)',
+                  height: 48, border: selected ? '1.5px solid var(--cp-blue)' : '0.75px solid var(--ds-border)',
                   borderRadius: 6, background: selected ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'var(--bg-app)',
                   padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 12,
                   cursor: 'pointer', width: '100%', textAlign: 'left',
                   transition: 'background 0.1s',
                 }}
                 onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.02))'; }}
-                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
+                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'; }}
               >
                 {/* Avatar */}
                 <div style={{
@@ -386,7 +386,7 @@ function Step1({
                 }}>
                   {p.project_key}
                 </div>
-                <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #111827)', fontFamily: 'var(--cp-font-body)', flex: 1 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', fontFamily: 'var(--cp-font-body)', flex: 1 }}>
                   {p.project_name} <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontWeight: 400 }}>({p.project_key})</span>
                 </span>
                 <ProjectTicketCountBadge projectKey={p.project_key} />
@@ -405,9 +405,9 @@ function Step1({
       {/* ADD PROJECT SECTION */}
       <div style={{ marginTop: 24, position: 'relative' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <div style={{ flex: 1, height: '0.75px', background: 'var(--ds-background-neutral, #F3F4F6)' }} />
+          <div style={{ flex: 1, height: '0.75px', background: 'var(--ds-background-neutral)' }} />
           <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-4)', textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app)', padding: '0 8px' }}>ADD PROJECT</span>
-          <div style={{ flex: 1, height: '0.75px', background: 'var(--ds-background-neutral, #F3F4F6)' }} />
+          <div style={{ flex: 1, height: '0.75px', background: 'var(--ds-background-neutral)' }} />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input
@@ -415,9 +415,9 @@ function Step1({
             onChange={e => onAddInput(e.target.value.toUpperCase())}
             placeholder="Project key (e.g. SEN, MDT)"
             style={{
-              flex: 1, height: 50, border: '0.75px solid var(--ds-border, #E5E7EB)', borderRadius: 4,
+              flex: 1, height: 50, border: '0.75px solid var(--ds-border)', borderRadius: 4,
               padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-mono)',
-              outline: 'none', color: 'var(--ds-text, #111827)',
+              outline: 'none', color: 'var(--ds-text)',
             }}
             onKeyDown={e => { if (e.key === 'Enter') onVerify(); }}
           />
@@ -425,7 +425,7 @@ function Step1({
             onClick={onVerify}
             disabled={!addInput.trim() || verifyState === 'loading'}
             style={{
-              background: addInput.trim() ? 'var(--cp-blue)' : 'var(--ds-border, #93C5FD)', color: 'var(--bg-app)',
+              background: addInput.trim() ? 'var(--cp-blue)' : 'var(--ds-border)', color: 'var(--bg-app)',
               border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
               fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'not-allowed',
               fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 6,
@@ -457,10 +457,10 @@ function Step1({
             </div>
           )}
           {verifyState === 'not_configured' && (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'var(--ds-surface, #FEF3C7)', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'var(--ds-surface)', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
               <AlertTriangle size={14} style={{ color: 'var(--sem-warning)', flexShrink: 0, marginTop: 2 }} />
               <div>
-                <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #92400E)', fontFamily: 'var(--cp-font-body)' }}>Jira integration not configured. Go to Settings → Integrations. </span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', fontFamily: 'var(--cp-font-body)' }}>Jira integration not configured. Go to Settings → Integrations. </span>
                 <a href="/settings/integrations" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-blue)', textDecoration: 'underline', fontFamily: 'var(--cp-font-body)' }}>Go to Settings →</a>
               </div>
             </div>
@@ -523,9 +523,9 @@ function Step2({
             onChange={e => onSearch(e.target.value)}
             placeholder="Search tickets..."
             style={{
-              width: '100%', height: 50, border: '0.75px solid var(--ds-border, #E5E7EB)', borderRadius: 4,
+              width: '100%', height: 50, border: '0.75px solid var(--ds-border)', borderRadius: 4,
               padding: '0 12px 0 32px', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)',
-              outline: 'none', color: 'var(--ds-text, #111827)',
+              outline: 'none', color: 'var(--ds-text)',
             }}
           />
         </div>
@@ -534,9 +534,9 @@ function Step2({
           style={{
             height: 50, borderRadius: 6, padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
             cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
-            background: pdfOnly ? 'var(--ds-text, #0C66E4)' : 'var(--ds-background-neutral, #F3F4F6)',
-            color: pdfOnly ? 'var(--bg-app)' : 'var(--ds-text-subtle, #374151)',
-            border: `0.75px solid ${pdfOnly ? 'var(--ds-border, #BFDBFE)' : 'var(--ds-border, #E5E7EB)'}`,
+            background: pdfOnly ? 'var(--ds-text)' : 'var(--ds-background-neutral)',
+            color: pdfOnly ? 'var(--bg-app)' : 'var(--ds-text-subtle)',
+            border: `0.75px solid ${pdfOnly ? 'var(--ds-border)' : 'var(--ds-border)'}`,
           }}
         >PDF Only</button>
         <button onClick={onSync} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}>
@@ -548,13 +548,13 @@ function Step2({
       {loading || syncing ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {[1, 2, 3].map(i => (
-            <div key={i} className="animate-pulse" style={{ height: 50, background: 'var(--ds-background-neutral, #F3F4F6)', borderRadius: 4 }} />
+            <div key={i} className="animate-pulse" style={{ height: 50, background: 'var(--ds-background-neutral)', borderRadius: 4 }} />
           ))}
         </div>
       ) : tickets.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
           <RefreshCw size={32} style={{ color: 'var(--fg-3)' }} />
-          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #111827)', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No tickets found</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No tickets found</span>
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', textAlign: 'center', maxWidth: 280, marginTop: 4 }}>
             No Jira tickets with attachments were found for this project. Tickets must have at least one attachment to appear here.
           </span>
@@ -575,7 +575,7 @@ function Step2({
       ) : (
         <>
           {/* Table header */}
-          <div style={{ display: 'flex', alignItems: 'center', height: 50, background: 'var(--ds-surface-sunken, #F9FAFB)', borderBottom: '0.75px solid var(--ds-border, #E5E7EB)', position: 'sticky', top: 0, zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', height: 50, background: 'var(--ds-surface-sunken)', borderBottom: '0.75px solid var(--ds-border)', position: 'sticky', top: 0, zIndex: 1 }}>
             <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <input
                 type="checkbox"
@@ -612,7 +612,7 @@ function Step2({
                 className="group"
                 style={{
                   display: 'flex', alignItems: 'center', height: 50,
-                  borderBottom: '0.75px solid var(--ds-background-neutral, #F3F4F6)',
+                  borderBottom: '0.75px solid var(--ds-background-neutral)',
                   cursor: 'pointer',
                   background: checked ? 'var(--ds-background-information, rgba(37,99,235,0.04))' : 'transparent',
                   transition: 'background 0.1s',
@@ -628,8 +628,8 @@ function Step2({
                     style={{ width: 16, height: 16, cursor: 'pointer', accentColor: 'var(--cp-blue)', opacity: 1 }}
                   />
                 </div>
-                <div style={{ width: 96, padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: muted ? 'var(--fg-4)' : 'var(--ds-text-subtle, #374151)', fontFamily: 'var(--cp-font-mono)' }}>{t.ticket_key}</div>
-                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: muted ? 'var(--fg-4)' : 'var(--ds-text, #111827)', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
+                <div style={{ width: 96, padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: muted ? 'var(--fg-4)' : 'var(--ds-text-subtle)', fontFamily: 'var(--cp-font-mono)' }}>{t.ticket_key}</div>
+                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: muted ? 'var(--fg-4)' : 'var(--ds-text)', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
                 <div style={{ width: 88, padding: '8px 12px', opacity: muted ? 0.4 : 1 }}>
                   <Lozenge label={t.priority || 'MEDIUM'} styles={PRIORITY_STYLES} />
                 </div>
@@ -641,10 +641,10 @@ function Step2({
                 </div>
                 <div style={{ width: 100, padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   {reActivated ? (
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4, background: 'var(--ds-text, #0C66E4)', color: 'var(--bg-app)', fontFamily: 'var(--cp-font-body)' }}>Re-import</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4, background: 'var(--ds-text)', color: 'var(--bg-app)', fontFamily: 'var(--cp-font-body)' }}>Re-import</span>
                   ) : imported ? (
                     <>
-                      <span className="group-hover:hidden" style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4, background: 'var(--ds-background-neutral, #F3F4F6)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Imported</span>
+                      <span className="group-hover:hidden" style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4, background: 'var(--ds-background-neutral)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Imported</span>
                       <button
                         className="hidden group-hover:inline-flex"
                         onClick={(e) => { e.stopPropagation(); onReImport(t.ticket_key); }}

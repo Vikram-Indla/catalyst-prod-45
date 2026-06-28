@@ -101,7 +101,7 @@ function UnreadsToggle({ value, onChange }: { value: boolean; onChange: (v: bool
             width: 12,
             height: 12,
             borderRadius: '50%',
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--ds-surface)',
             transform: `translateX(${value ? 12 : 0}px)`,
             transition: 'transform var(--cv2-transition-fast)',
             display: 'block',

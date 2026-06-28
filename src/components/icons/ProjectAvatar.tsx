@@ -107,8 +107,8 @@ export function ProjectAvatar({
         className={className}
         style={{
           ...sharedStyle,
-          background: 'var(--ds-border-disabled, #DCDFE4)',
-          color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+          background: 'var(--ds-border-disabled)',
+          color: 'var(--cp-text-primary, var(--cp-text-inverse))',
           fontFamily: 'inherit',
           fontWeight: 600,
           fontSize: Math.round(sizePx * 0.42),

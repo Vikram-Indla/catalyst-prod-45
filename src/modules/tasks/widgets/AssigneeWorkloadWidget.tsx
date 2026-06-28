@@ -79,10 +79,10 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
               alignItems: 'center',
               gap: 12,
               padding: '4px 0 8px 0',
-              borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               ...SMALL,
               fontWeight: 600,
-              color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+              color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
             }}
           >
             <span />
@@ -112,8 +112,8 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
                       width: 24,
                       height: 24,
                       borderRadius: '50%',
-                      background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
-                      border: `1px dashed ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                      background: token('color.background.neutral', 'var(--ds-background-neutral)'),
+                      border: `1px dashed ${token('color.border', 'var(--ds-border)')}`,
                     }}
                   />
                 ) : (
@@ -125,7 +125,7 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    color: isUnassigned ? token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+                    color: isUnassigned ? token('color.text.subtle', 'var(--ds-text-subtle)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
                     fontStyle: isUnassigned ? 'italic' : 'normal',
                   }}
                 >
@@ -134,7 +134,7 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
                 <div
                   style={{
                     height: 8,
-                    background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                    background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
                     borderRadius: 4,
                     overflow: 'hidden',
                   }}
@@ -143,7 +143,7 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
                     style={{
                       width: `${pct}%`,
                       height: '100%',
-                      background: token('color.background.brand.bold', 'var(--ds-link, #0052CC)'),
+                      background: token('color.background.brand.bold', 'var(--ds-link)'),
                       transition: 'width 200ms ease',
                     }}
                   />
@@ -153,7 +153,7 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
                     ...BODY,
                     fontVariantNumeric: 'tabular-nums',
                     justifySelf: 'end',
-                    color: token('color.text', 'var(--ds-text, #172B4D)'),
+                    color: token('color.text', 'var(--ds-text)'),
                   }}
                 >
                   {b.count}
@@ -162,11 +162,11 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
             );
           })}
           {buckets.length > 10 && (
-            <div style={{ ...SMALL, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), paddingTop: 4 }}>
+            <div style={{ ...SMALL, color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), paddingTop: 4 }}>
               +{buckets.length - 10} more assignees
             </div>
           )}
-          <div style={{ ...LABEL, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), paddingTop: 8 }}>
+          <div style={{ ...LABEL, color: token('color.text.subtle', 'var(--ds-text-subtlest)'), paddingTop: 8 }}>
             {total} open tasks across {buckets.length} assignees
           </div>
         </div>
@@ -185,7 +185,7 @@ function SkeletonRows({ count }: { count: number }) {
           style={{
             height: 28,
             borderRadius: token('border.radius', '4px'),
-            background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+            background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
           }}
         />
       ))}

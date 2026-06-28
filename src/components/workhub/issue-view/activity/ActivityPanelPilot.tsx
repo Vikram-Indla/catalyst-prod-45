@@ -37,7 +37,7 @@ interface ActivityPanelPilotProps {
 // ════════════════════════════════════════
 // Helpers
 // ════════════════════════════════════════
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold)', 'var(--ds-chart-orange-bold)', 'var(--ds-chart-green-bold)', 'var(--ds-chart-magenta-bold)', 'var(--ds-background-discovery-bold)'];
 function avatarBg(name: string) {
   return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length];
 }
@@ -141,9 +141,9 @@ function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?
                 display: 'inline-block',
                 padding: '2px 8px',
                 borderRadius: 3,
-                border: '1px solid var(--ds-border, #DFE1E6)',
-                background: 'var(--ds-background-neutral-subtle, #F4F5F7)',
-                color: 'var(--ds-text-subtle, #42526E)',
+                border: '1px solid var(--ds-border)',
+                background: 'var(--ds-background-neutral-subtle)',
+                color: 'var(--ds-text-subtle)',
                 fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 letterSpacing: 0.5,
@@ -160,7 +160,7 @@ function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?
             {isStatus ? (
               <>
                 {oldVal && <span className="ap-status-loz">{oldVal}</span>}
-                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }} />
+                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', flexShrink: 0 }} />
                 {newVal && <span className="ap-status-loz">{newVal}</span>}
               </>
             ) : isAssignee ? (
@@ -171,7 +171,7 @@ function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?
                     {oldVal}
                   </span>
                 )}
-                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }} />
+                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', flexShrink: 0 }} />
                 {newVal && (
                   <span className="ap-assignee-chip">
                     <span className="ap-assignee-mini" style={{ background: avatarBg(newVal) }}>{initials(newVal)}</span>
@@ -182,7 +182,7 @@ function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?
             ) : (
               <>
                 <span className="ap-change-old">{oldVal ?? 'None'}</span>
-                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }} />
+                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', flexShrink: 0 }} />
                 <span className="ap-change-new">{newVal}</span>
               </>
             )}

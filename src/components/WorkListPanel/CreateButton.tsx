@@ -17,8 +17,8 @@ export const CreateButton = memo(function CreateButton({
       onClick={onClick}
       style={{
         padding: '8px 12px',
-        backgroundColor: 'var(--ds-link, #0C66E4)',
-        color: 'var(--ds-text-inverse, #FFFFFF)',
+        backgroundColor: 'var(--ds-link)',
+        color: 'var(--ds-text-inverse)',
         border: 'none',
         borderRadius: '3px',
         fontSize: 'var(--ds-font-size-400)',
@@ -27,10 +27,10 @@ export const CreateButton = memo(function CreateButton({
         transition: 'background-color 150ms',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold, #0044A3)';
+        e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = 'var(--ds-link, #0C66E4)';
+        e.currentTarget.style.backgroundColor = 'var(--ds-link)';
       }}
     >
       Create issue

@@ -47,12 +47,12 @@ function pixelSizeToAtlaskitSize(px: number): 'xsmall' | 'small' | 'medium' | 'l
 function getColorForSeed(seed: string): string {
   // Use a stable color palette
   const colors = [
-    'var(--ds-link, #0C66E4)', // blue (brand)
-    'var(--ds-text-success, #216E4E)', // green
-    'var(--ds-text-danger, #AE2A19)', // red
-    'var(--ds-text-warning, #974F0C)', // orange/amber
-    'var(--ds-background-discovery-bold, #6E5DC6)', // purple
-    'var(--ds-icon-subtle, #626F86)', // grey
+    'var(--ds-link)', // blue (brand)
+    'var(--ds-text-success)', // green
+    'var(--ds-text-danger)', // red
+    'var(--ds-text-warning)', // orange/amber
+    'var(--ds-background-discovery-bold)', // purple
+    'var(--ds-icon-subtle)', // grey
   ];
 
   let hash = 0;
@@ -159,11 +159,11 @@ export function AtlaskitAvatar({
 
   // Presence dot colors
   const presenceColorMap: Record<AvatarPresenceColor, string> = {
-    green: 'var(--ds-background-success, #216E4E)',
-    red: 'var(--ds-background-danger, #AE2A19)',
-    amber: 'var(--ds-background-warning, #974F0C)',
-    grey: 'var(--ds-background-neutral, #626F86)',
-    blue: 'var(--ds-background-brand-bold, #0C66E4)',
+    green: 'var(--ds-background-success)',
+    red: 'var(--ds-background-danger)',
+    amber: 'var(--ds-background-warning)',
+    grey: 'var(--ds-background-neutral)',
+    blue: 'var(--ds-background-brand-bold)',
   };
 
   const avatarElement = (
@@ -204,7 +204,7 @@ export function AtlaskitAvatar({
             height: `${Math.max(6, Math.round(effectivePixelSize * 0.25))}px`,
             borderRadius: '50%',
             backgroundColor: presenceColorMap[presence],
-            border: `2px solid var(--ds-surface, #FFFFFF)`,
+            border: `2px solid var(--ds-surface)`,
             boxSizing: 'border-box',
           }}
           aria-label={`Status: ${presence}`}
@@ -233,7 +233,7 @@ export function AtlaskitAvatar({
             style={{
               fontSize: 'var(--ds-font-size-200)',
               lineHeight: '16px',
-              color: 'var(--ds-text-subtlest, #6B778C)',
+              color: 'var(--ds-text-subtlest)',
             }}
           >
             {status}

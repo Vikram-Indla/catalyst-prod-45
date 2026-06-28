@@ -25,14 +25,14 @@ function getAvatarColor(name: string): string {
   // CLAUDE.md §L38 — hex literals only (no HSL).
   // Atlaskit avatar palette (bold, visually distinct).
   const colors = [
-    'var(--ds-link, #2A6DF4)',  // Blue
-    'var(--ds-background-discovery-bold, #7C3BED)',  // Purple
+    'var(--ds-link)',  // Blue
+    'var(--ds-background-discovery-bold)',  // Purple
     '#EC4699',  // Pink // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     '#E54D2E',  // Red-Orange // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     '#F2960D',  // Orange // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    'var(--ds-background-success-bold, #25A777)',  // Teal
-    'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky Blue
-    'var(--ds-chart-green-bold, #21C45D)',  // Green
+    'var(--ds-background-success-bold)',  // Teal
+    'var(--ds-chart-blue-bold)',  // Sky Blue
+    'var(--ds-chart-green-bold)',  // Green
   ];
   
   let hash = 0;
@@ -260,7 +260,7 @@ export function MentionTextarea({
                     isSelected && "bg-primary text-primary-foreground"
                   )}
                   style={{
-                    backgroundColor: isSelected ? 'var(--ds-link, #2A6DF4)' : undefined,
+                    backgroundColor: isSelected ? 'var(--ds-link)' : undefined,
                     color: isSelected ? 'white' : undefined,
                   }}
                 >
@@ -323,7 +323,7 @@ export function MentionText({ text, className }: MentionTextProps) {
               key={i}
               className="font-medium rounded px-1"
               style={{
-                color: 'var(--ds-link, #2A6DF4)',
+                color: 'var(--ds-link)',
                 backgroundColor: 'var(--ds-background-information, rgba(42, 109, 244, 0.1))',
               }}
             >

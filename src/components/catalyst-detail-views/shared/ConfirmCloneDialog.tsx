@@ -39,14 +39,14 @@ export function ConfirmCloneDialog({
         <ModalTitle>Clone issue</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>
+        <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
           {issueKey ? (
             <>Clone <strong>{issueKey}</strong>{truncated ? ` — ${truncated}` : ''}?</>
           ) : (
             'Clone this issue?'
           )}
         </p>
-        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
           A copy will be created with the same fields. You can open it immediately after.
         </p>
       </ModalBody>

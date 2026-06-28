@@ -25,27 +25,27 @@ interface AddColumnModalProps {
 }
 
 // task_statuses.color is varchar(7) — these are persisted DATA values (plain
-// hex), not UI style tokens. Existing seed statuses store plain hex (var(--ds-text-disabled, #9ca3af)).
+// hex), not UI style tokens. Existing seed statuses store plain hex (var(--ds-text-disabled)).
 // Do NOT use var(--ds-*) token strings here: they exceed 7 chars and overflow
 // the column. The swatch renders identically via backgroundColor.
 const STATUS_COLORS = [
-  { name: 'Slate', value: 'var(--ds-text-disabled, #8590A2)' },
-  { name: 'Blue', value: 'var(--ds-background-information-bold, #3b82f6)' },
-  { name: 'Teal', value: 'var(--ds-icon-information, #1D7AFC)' },
-  { name: 'Green', value: 'var(--ds-background-success-bold, #1F845A)' },
-  { name: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { name: 'Red', value: 'var(--ds-background-danger-bold, #ef4444)' },
-  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #BE185D)' },
-  { name: 'Cyan', value: 'var(--ds-icon-information, #1D7AFC)' },
-  { name: 'Amber', value: 'var(--ds-background-warning-bold, #f59e0b)' },
-  { name: 'Emerald', value: 'var(--ds-background-success-bold, #1F845A)' },
+  { name: 'Slate', value: 'var(--ds-text-disabled)' },
+  { name: 'Blue', value: 'var(--ds-background-information-bold)' },
+  { name: 'Teal', value: 'var(--ds-icon-information)' },
+  { name: 'Green', value: 'var(--ds-background-success-bold)' },
+  { name: 'Yellow', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Orange', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Red', value: 'var(--ds-background-danger-bold)' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder)' },
+  { name: 'Cyan', value: 'var(--ds-icon-information)' },
+  { name: 'Amber', value: 'var(--ds-background-warning-bold)' },
+  { name: 'Emerald', value: 'var(--ds-background-success-bold)' },
 ];
 
 export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
   const [name, setName] = useState('');
-  const [color, setColor] = useState('var(--ds-text-disabled, #8590A2)');
+  const [color, setColor] = useState('var(--ds-text-disabled)');
   
   const createColumn = useCreateColumn();
 
@@ -57,7 +57,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
     try {
       await createColumn.mutateAsync({ name: name.trim(), color });
       setName('');
-      setColor('var(--ds-text-disabled, #8590A2)');
+      setColor('var(--ds-text-disabled)');
       onOpenChange(false);
     } catch {
       // Error handled in hook
@@ -66,7 +66,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
 
   const handleClose = () => {
     setName('');
-    setColor('var(--ds-text-disabled, #8590A2)');
+    setColor('var(--ds-text-disabled)');
     onOpenChange(false);
   };
 
@@ -123,15 +123,15 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
             {/* Preview */}
             <div className="grid gap-2">
               <Label>Preview</Label>
-              <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg">
+              <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-lg">
                 <span
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-sm font-medium text-slate-700 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
+                <span className="text-sm font-medium text-slate-700 dark:text-[var(--ds-text,var(--cp-bg-neutral))]">
                   {name || 'Column Name'}
                 </span>
-                <span className="text-xs text-slate-500 bg-slate-200 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] px-2 py-0.5 rounded-full ml-auto">
+                <span className="text-xs text-slate-500 bg-slate-200 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] dark:text-[var(--ds-text-subtlest)] px-2 py-0.5 rounded-full ml-auto">
                   0
                 </span>
               </div>

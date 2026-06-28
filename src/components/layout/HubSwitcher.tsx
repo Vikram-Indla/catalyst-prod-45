@@ -110,12 +110,12 @@ function HubRowLabel({ hub }: { hub: HubEntry }) {
       {/* Explicit readable color: Atlaskit LinkItem was rendering the label at
           ~7% alpha (rgba(206,206,217,0.07)) in dark mode → invisible. Force the
           theme-aware text token so labels are readable in light AND dark. */}
-      <span data-hub-label={hub.key} style={{ color: 'var(--ds-text, #172B4D)' }}>{hub.label}</span>
+      <span data-hub-label={hub.key} style={{ color: 'var(--ds-text)' }}>{hub.label}</span>
       <span
         data-hub-shortcut={hub.key}
         style={{
           fontSize: 'var(--ds-font-size-100)',
-          color: 'var(--ds-text-subtlest, #626F86)',
+          color: 'var(--ds-text-subtlest)',
           fontFamily: 'var(--ds-font-family-code, ui-monospace, SFMono-Regular, monospace)',
           fontWeight: 500,
           letterSpacing: '0.02em',
@@ -220,7 +220,7 @@ export function HubSwitcher() {
                   ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
                   : 'transparent',
                 cursor: 'pointer',
-                color: 'var(--ds-icon, #44546F)',
+                color: 'var(--ds-icon)',
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => {
@@ -249,7 +249,7 @@ export function HubSwitcher() {
         className="z-[1000]"
         style={{
           width: 343,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          background: 'var(--ds-surface-overlay)',
           border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
           borderRadius: 8,
@@ -260,7 +260,7 @@ export function HubSwitcher() {
       >
         <style>{`
           [data-hub-switcher-section] [class*="SectionTitle"] {
-            color: var(--ds-text-subtle, #44546F) !important;
+            color: var(--ds-text-subtle) !important;
           }
         `}</style>
         <div
@@ -269,10 +269,10 @@ export function HubSwitcher() {
             alignItems: 'center',
             gap: 8,
             padding: '8px 12px',
-            borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+            borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
           }}
         >
-          <span style={{ color: 'var(--ds-text-subtlest, #626F86)', display: 'inline-flex' }}>
+          <span style={{ color: 'var(--ds-text-subtlest)', display: 'inline-flex' }}>
             <SearchIcon label="" size="small" />
           </span>
           <input
@@ -288,7 +288,7 @@ export function HubSwitcher() {
               outline: 'none',
               background: 'transparent',
               fontSize: 'var(--ds-font-size-400)',
-              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #f0f0f0)))',
+              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
             }}
           />
         </div>
@@ -323,7 +323,7 @@ export function HubSwitcher() {
                           style={{ width: 32, height: 32, display: 'block' }}
                         />
                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
-                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{hub.label}</span>
+                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest)' }}>{hub.label}</span>
                         </span>
                       </div>
                     );
@@ -346,8 +346,8 @@ export function HubSwitcher() {
                           opacity: 0.55,
                           userSelect: 'none',
                           borderRadius: 4,
-                          background: 'var(--ds-surface, #FFFFFF)',
-                          border: '1px solid var(--ds-border, #DFE1E6)',
+                          background: 'var(--ds-surface)',
+                          border: '1px solid var(--ds-border)',
                           boxShadow: '0 1px 3px rgba(9, 30, 66, 0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
                           marginBottom: 4,
                           outline: 'none',
@@ -359,8 +359,8 @@ export function HubSwitcher() {
                           style={{ width: 32, height: 32, display: 'block', filter: 'grayscale(1)' }}
                         />
                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flex: 1 }}>
-                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{hub.label}</span>
-                          <span data-hub-locked-icon={hub.key} style={{ color: 'var(--ds-text-subtlest, #626F86)', display: 'inline-flex' }}>
+                          <span data-hub-label={hub.key} style={{ color: 'var(--ds-text-subtlest)' }}>{hub.label}</span>
+                          <span data-hub-locked-icon={hub.key} style={{ color: 'var(--ds-text-subtlest)', display: 'inline-flex' }}>
                             <LockGlyph />
                           </span>
                         </span>

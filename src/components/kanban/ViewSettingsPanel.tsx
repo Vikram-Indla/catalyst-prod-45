@@ -35,7 +35,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
       onClick={() => onChange(!checked)}
       style={{
         width: 36, height: 20, borderRadius: 10, border: 'none',
-        background: checked ? 'var(--ds-background-success-bold, #1F845A)' : tk.chipBg,
+        background: checked ? 'var(--ds-background-success-bold)' : tk.chipBg,
         position: 'relative', cursor: 'pointer', flexShrink: 0,
         transition: 'background 150ms',
         display: 'flex', alignItems: 'center',
@@ -43,7 +43,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
     >
       <span style={{
         width: 16, height: 16, borderRadius: '50%',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         position: 'absolute',
         left: checked ? 18 : 2,
         transition: 'left 150ms',
@@ -192,7 +192,7 @@ export function ViewSettingsPanel({
                     padding: '0 8px',
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: selected ? 600 : 500,
-                    color: selected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textSecondary,
+                    color: selected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : tk.textSecondary,
                     background: selected ? tk.selectedAccent : tk.chipBg,
                     border: `1px solid ${selected ? tk.selectedAccent : tk.border}`,
                     borderRadius: 4,
@@ -249,7 +249,7 @@ export function ViewSettingsPanel({
               style={{
                 flex: 1, height: 28, padding: '0 8px',
                 fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 500,
-                color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textSecondary,
+                color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : tk.textSecondary,
                 background: active ? tk.selectedAccent : tk.chipBg,
                 border: `1px solid ${active ? tk.selectedAccent : tk.border}`,
                 borderRadius: 4, cursor: 'pointer',

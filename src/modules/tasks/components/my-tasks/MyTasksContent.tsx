@@ -27,12 +27,12 @@ interface MyTasksContentProps {
 const SECTION_ORDER: TimeSection[] = ['overdue', 'today', 'this_week', 'upcoming'];
 
 const SECTION_CONFIG: Record<TimeSection, { label: string; color: string }> = {
-  overdue: { label: 'Overdue', color: 'var(--ds-text-danger, #ef4444)' },
-  today: { label: 'Today', color: 'var(--ds-text-warning, #f59e0b)' },
-  this_week: { label: 'This Week', color: 'var(--ds-text-brand, #3b82f6)' },
-  upcoming: { label: 'Later', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  someday: { label: 'Later', color: 'var(--ds-text-subtlest, #94a3b8)' },
-  completed: { label: 'Completed', color: 'var(--ds-background-success-bold, #1F845A)' },
+  overdue: { label: 'Overdue', color: 'var(--ds-text-danger)' },
+  today: { label: 'Today', color: 'var(--ds-text-warning)' },
+  this_week: { label: 'This Week', color: 'var(--ds-text-brand)' },
+  upcoming: { label: 'Later', color: 'var(--ds-background-discovery-bold)' },
+  someday: { label: 'Later', color: 'var(--ds-text-subtlest)' },
+  completed: { label: 'Completed', color: 'var(--ds-background-success-bold)' },
 };
 
 // Check if task was completed today

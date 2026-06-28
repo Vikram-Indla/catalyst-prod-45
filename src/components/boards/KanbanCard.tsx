@@ -11,10 +11,10 @@ interface Props {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'var(--ds-background-danger-bold, #C9372C)',
-  high: 'var(--ds-background-danger-bold, #FF7452)',
-  medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-  low: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+  critical: 'var(--ds-background-danger-bold)',
+  high: 'var(--ds-background-danger-bold)',
+  medium: 'var(--ds-text-warning, var(--cp-warning))',
+  low: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
 };
 
 function getOverdueDays(dueDate: string | null): number | null {
@@ -83,7 +83,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <span style={{
           fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '1px 5px', borderRadius: 4,
           background: source === 'JIRA' ? '#E3F0FF' : 'var(--cp-bd-zone)',
-          color: source === 'JIRA' ? 'var(--cp-primary-60, #0052CC)' : 'var(--fg-3)',
+          color: source === 'JIRA' ? 'var(--cp-primary-60)' : 'var(--fg-3)',
           fontFamily: 'var(--cp-font-body)',
           lineHeight: 1.4,
         }}>{source}</span>
@@ -101,7 +101,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: hover ? 1 : 0, transition: 'opacity 100ms',
         }} onClick={e => e.stopPropagation()}>
-          <MoreHorizontal size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
+          <MoreHorizontal size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
         </button>
       </div>
 
@@ -120,15 +120,15 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 18, padding: '0 7px', borderRadius: 4,
-          background: 'var(--ds-background-selected, #EFF6FF)', border: '0.75px solid var(--ds-background-information, #E9F2FF)',
+          background: 'var(--ds-background-selected)', border: '0.75px solid var(--ds-background-information)',
           maxWidth: '100%', overflow: 'hidden',
         }}>
           <span style={{
             width: 5, height: 5, borderRadius: '50%',
-            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0,
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', flexShrink: 0,
           }} />
           <span style={{
-            fontSize: 10.5, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+            fontSize: 10.5, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
             fontFamily: 'var(--cp-font-body)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>{card.epic.title}</span>
@@ -145,7 +145,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           {card.priority && (
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: PRIORITY_COLORS[card.priority.name] ?? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+              background: PRIORITY_COLORS[card.priority.name] ?? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
               flexShrink: 0,
             }} title={card.priority.name} />
           )}
@@ -154,7 +154,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
             <span style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               height: 18, minWidth: 22, padding: '0 5px', borderRadius: 4,
-              background: 'var(--ds-background-success, #DFFCF0)', border: '0.75px solid var(--ds-background-success, #DFFCF0)',
+              background: 'var(--ds-background-success)', border: '0.75px solid var(--ds-background-success)',
               fontSize: 10.5, fontWeight: 650, color: 'var(--sem-success)',
               fontFamily: 'var(--cp-font-mono)',
             }}>{card.storyPoints}</span>
@@ -178,7 +178,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
               width: 22, height: 22, borderRadius: '50%',
               background: hashColor(card.assignee.id),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               fontFamily: 'var(--cp-font-heading)',
             }} title={card.assignee.displayName}>
               {card.assignee.initials}
@@ -191,7 +191,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
 }
 
 function hashColor(id: string): string {
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-link, #0C66E4)', 'var(--ds-text-subtle, #44546F)'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-text-success, var(--cp-success))', 'var(--cp-purple-60)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-warning, var(--cp-warning))', 'var(--cp-teal-60)', 'var(--ds-link)', 'var(--ds-text-subtle)'];
   let hash = 0;
   for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

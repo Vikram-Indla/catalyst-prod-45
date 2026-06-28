@@ -92,10 +92,10 @@ function PriorityBars({ label }: { label: string }) {
 
 function Avatar({ name, size = 24 }: { name: string; size?: number }) {
   const ini = (name || '?').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const clr = [T.primary, T.teal, T.warning, T.danger, 'var(--cp-purple-60, #7C3AED)'][ini.charCodeAt(0) % 5];
+  const clr = [T.primary, T.teal, T.warning, T.danger, 'var(--cp-purple-60)'][ini.charCodeAt(0) % 5];
   return (
     <div style={{
-      width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--ds-surface, #fff)',
+      width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--ds-surface)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: size * 0.4, fontWeight: 700, flexShrink: 0,
     }}>{ini}</div>

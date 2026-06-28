@@ -40,10 +40,10 @@ export function saveWarningSettings(s: WarningSettings) {
   window.dispatchEvent(new CustomEvent('catalyst:warning-settings', { detail: s }));
 }
 
-const GREEN_BG = 'var(--ds-background-success-bold, #22A06B)';
-const OFF_BG = 'var(--ds-text, #292A2E)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #505258)';
+const GREEN_BG = 'var(--ds-background-success-bold)';
+const OFF_BG = 'var(--ds-text)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
 
 function Toggle({
   checked,
@@ -82,7 +82,7 @@ function Toggle({
           width: 18,
           height: 18,
           borderRadius: '50%',
-          background: 'var(--ds-text-inverse, #FFFFFF)',
+          background: 'var(--ds-text-inverse)',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -123,7 +123,7 @@ export function ManageWarningsDialog({ isOpen, onClose }: Props) {
     desc: string,
     key: keyof WarningSettings,
   ) => (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--ds-border)' }}>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: TEXT, marginBottom: 4 }}>{title}</div>
         <div style={{ fontSize: 'var(--ds-font-size-300)', color: SUBTLE }}>{desc}</div>
@@ -154,15 +154,15 @@ export function ManageWarningsDialog({ isOpen, onClose }: Props) {
                 gap: 10,
                 padding: '12px 14px',
                 marginTop: 12,
-                background: 'var(--ds-background-warning, #FFF7D6)',
-                border: '1px solid var(--ds-border-warning, #F5CD47)',
+                background: 'var(--ds-background-warning)',
+                border: '1px solid var(--ds-border-warning)',
                 borderRadius: 4,
                 color: TEXT,
                 fontSize: 'var(--ds-font-size-300)',
               }}
             >
-              <span style={{ color: 'var(--ds-icon-warning, #E2B203)', display: 'inline-flex' }}>
-                <WarningIcon label="" primaryColor="var(--ds-icon-warning, #E2B203)" />
+              <span style={{ color: 'var(--ds-icon-warning)', display: 'inline-flex' }}>
+                <WarningIcon label="" primaryColor="var(--ds-icon-warning)" />
               </span>
               <span>These warning settings affect all existing and future versions in this space.</span>
             </div>

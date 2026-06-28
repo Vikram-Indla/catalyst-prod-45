@@ -53,20 +53,20 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
         {/* Toolbar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px', borderBottom: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))', flexShrink: 0, background: 'var(--bg-app)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}><ChevronLeft size={14} color={page <= 1 ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--fg-2)'} /></button>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}><ChevronLeft size={14} color={page <= 1 ? 'var(--ds-text-disabled)' : 'var(--fg-2)'} /></button>
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)' }}>Page {page} of {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}><ChevronRight size={14} color={page >= totalPages ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--fg-2)'} /></button>
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}><ChevronRight size={14} color={page >= totalPages ? 'var(--ds-text-disabled)' : 'var(--fg-2)'} /></button>
             <div style={{ width: 1, height: 20, background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))', margin: '0 4px' }} />
             <button onClick={() => setZoom(z => Math.max(50, z - 25))} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: 'pointer' }}><ZoomOut size={14} color="var(--fg-2)" /></button>
             <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)', minWidth: 36, textAlign: 'center' }}>{zoom}%</span>
             <button onClick={() => setZoom(z => Math.min(200, z + 25))} style={{ border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: 'pointer' }}><ZoomIn size={14} color="var(--fg-2)" /></button>
           </div>
-          <button onClick={onGenerateEpics} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
+          <button onClick={onGenerateEpics} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
             <Zap size={13} /> Generate Epics from this PDF
           </button>
         </div>
         {/* Body — DA-010: shadow on white page, grey bg */}
-        <div style={{ flex: 1, overflowY: 'auto', background: 'var(--ds-border, #E5E7EB)', display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
+        <div style={{ flex: 1, overflowY: 'auto', background: 'var(--ds-border)', display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
           <div style={{
             width: 680, maxWidth: '90%', background: 'var(--bg-app)', borderRadius: 4,
             padding: '48px 56px',
@@ -74,9 +74,9 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
             transform: `scale(${zoom / 100})`, transformOrigin: 'top center',
           }}>
             {doc.language === 'ar' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, padding: '6px 10px', background: 'var(--ds-link, #0C66E4)', borderRadius: 4, border: '1px solid var(--ds-background-information, #E9F2FF)' }}>
-                <Globe size={13} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />
-                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)' }}>Original Arabic document — English translation shown</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, padding: '6px 10px', background: 'var(--ds-link)', borderRadius: 4, border: '1px solid var(--ds-background-information)' }}>
+                <Globe size={13} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" />
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontFamily: 'var(--cp-font-body)' }}>Original Arabic document — English translation shown</span>
               </div>
             )}
             <h2 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 4px', textAlign: 'center', fontFamily: 'var(--cp-font-heading)' }}>{doc.title}</h2>
@@ -88,11 +88,11 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
                 {doc.content_processed.length > 800 ? '...' : ''}
               </p>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', background: 'var(--cp-primary-5)', borderRadius: 'var(--ra-radius-card)', border: '1px solid var(--ds-background-information, #E9F2FF)' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', background: 'var(--cp-primary-5)', borderRadius: 'var(--ra-radius-card)', border: '1px solid var(--ds-background-information)' }}>
                 <Info size={16} color="var(--cp-blue)" style={{ marginTop: 1, flexShrink: 0 }} />
                 <div>
-                  <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-link-pressed, #1e40af)', fontFamily: 'var(--cp-font-body)' }}>Content is being extracted</div>
-                  <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand, #3B82F6)', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-link-pressed)', fontFamily: 'var(--cp-font-body)' }}>Content is being extracted</div>
+                  <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand)', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>
                     The document will be available shortly. Processing is underway.
                   </p>
                 </div>

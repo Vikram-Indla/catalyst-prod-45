@@ -230,7 +230,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
             style={{
               display: 'inline-flex', alignItems: 'stretch',
               background: canForward ? 'var(--cv2-success)' : 'transparent',
-              color: canForward ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
+              color: canForward ? 'var(--ds-text-inverse)' : 'var(--cv2-text-muted)',
               border: canForward
                 ? '1px solid var(--cv2-success)'
                 : '1px solid var(--cv2-border-strong)',
@@ -313,7 +313,7 @@ function RecipientField({
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 22, height: 22, fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
-            background: 'var(--cv2-accent)', color: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cv2-accent)', color: 'var(--ds-surface)',
             borderRadius: 11,
           }}
         >

@@ -38,12 +38,12 @@ export function CalendarDayCell({
     <div
       onClick={onClick}
       className={cn(
-        'min-h-[120px] p-1.5 border-r border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] cursor-pointer',
-        'transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]',
-        isOutsideMonth && 'bg-[var(--ds-surface-sunken,#f1f5f9)]',
-        !isOutsideMonth && isWeekendDay && 'bg-[var(--ds-surface-sunken,#f8fafc)]',
-        !isOutsideMonth && !isWeekendDay && isInCycleRange && 'bg-[var(--ds-background-selected,#eff6ff)]',
-        isCurrentDay && 'ring-2 ring-inset ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]'
+        'min-h-[120px] p-1.5 border-r border-b border-[var(--ds-border,var(--cp-bg-sunken))] cursor-pointer',
+        'transition-colors hover:bg-[var(--ds-surface-sunken)]',
+        isOutsideMonth && 'bg-[var(--ds-surface-sunken)]',
+        !isOutsideMonth && isWeekendDay && 'bg-[var(--ds-surface-sunken)]',
+        !isOutsideMonth && !isWeekendDay && isInCycleRange && 'bg-[var(--ds-background-selected)]',
+        isCurrentDay && 'ring-2 ring-inset ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]'
       )}
     >
       {/* Day header */}
@@ -51,9 +51,9 @@ export function CalendarDayCell({
         <span
           className={cn(
             'h-7 w-7 flex items-center justify-center rounded-full text-sm font-medium',
-            isCurrentDay && 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white',
-            !isCurrentDay && isOutsideMonth && 'text-[var(--ds-text-subtlest,#94a3b8)]',
-            !isCurrentDay && !isOutsideMonth && 'text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]'
+            isCurrentDay && 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] text-white',
+            !isCurrentDay && isOutsideMonth && 'text-[var(--ds-text-subtlest)]',
+            !isCurrentDay && !isOutsideMonth && 'text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))]'
           )}
         >
           {format(date, 'd')}
@@ -76,7 +76,7 @@ export function CalendarDayCell({
         ))}
         {overflowCount > 0 && (
           <button
-            className="w-full text-left px-2 py-1 text-xs font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-information, #E9F2FF)] rounded"
+            className="w-full text-left px-2 py-1 text-xs font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-information)] rounded"
             onClick={(e) => {
               e.stopPropagation();
               onClick();

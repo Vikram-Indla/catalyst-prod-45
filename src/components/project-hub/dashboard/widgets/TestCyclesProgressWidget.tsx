@@ -26,7 +26,7 @@ export default function TestCyclesProgressWidget({ collapsed, onToggleCollapse }
       headerBadges={<Lozenge appearance="default">{String(active.length)}</Lozenge>}
     >
       {isLoading ? (
-        <div style={{ padding: 24, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading…</div>
+        <div style={{ padding: 24, color: 'var(--ds-text-subtlest)' }}>Loading…</div>
       ) : active.length === 0 ? (
         <EmptyState header="No active cycles" description="Plan a test cycle in the Cycles tab to track execution here." />
       ) : (
@@ -43,29 +43,29 @@ export default function TestCyclesProgressWidget({ collapsed, onToggleCollapse }
               <div
                 key={c.id}
                 style={{
-                  background: 'var(--ds-surface-raised, #FFFFFF)',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  background: 'var(--ds-surface-raised)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: 6,
                   padding: 12,
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <div>
-                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginRight: 8 }}>{c.key}</span>
-                    <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{c.name}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginRight: 8 }}>{c.key}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)' }}>{c.name}</span>
                   </div>
-                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                     {passRate}% pass · {executed}/{total}
                   </div>
                 </div>
-                <div style={{ height: 6, background: 'var(--ds-background-neutral, #F1F2F4)', borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: 'var(--ds-background-brand-bold, #0052CC)', borderRadius: 3 }} />
+                <div style={{ height: 6, background: 'var(--ds-background-neutral)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: 'var(--ds-background-brand-bold)', borderRadius: 3 }} />
                 </div>
                 <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 'var(--ds-font-size-200)' }}>
-                  <span style={{ color: 'var(--ds-text-success, #216E4E)' }}>{passed} passed</span>
-                  <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{failed} failed</span>
-                  <span style={{ color: 'var(--ds-text-warning, #974F0C)' }}>{blocked} blocked</span>
-                  <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>{c.not_run_count ?? 0} not run</span>
+                  <span style={{ color: 'var(--ds-text-success)' }}>{passed} passed</span>
+                  <span style={{ color: 'var(--ds-text-danger)' }}>{failed} failed</span>
+                  <span style={{ color: 'var(--ds-text-warning)' }}>{blocked} blocked</span>
+                  <span style={{ color: 'var(--ds-text-subtlest)' }}>{c.not_run_count ?? 0} not run</span>
                 </div>
               </div>
             );

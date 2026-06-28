@@ -237,7 +237,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <div style={{
-                width: 64, height: 64, borderRadius: '50%', background: 'var(--ds-background-success, #DFFCF0)',
+                width: 64, height: 64, borderRadius: '50%', background: 'var(--ds-background-success)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <CheckCircle2 size={40} color="var(--sem-success)" />
@@ -255,7 +255,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               {STEPS.map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 0' }}>
                   <div style={{
-                    width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-background-success, #DCFCE7)',
+                    width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-background-success)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                   }}>
                     <Check size={14} color="var(--sem-success)" strokeWidth={2.5} />
@@ -266,7 +266,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             {/* Progress full green */}
-            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle, #F7F8F9)', marginBottom: 20, overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 20, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: '100%', borderRadius: 999, background: 'var(--sem-success)', transition: 'width 0.4s ease' }} />
             </div>
 
@@ -276,7 +276,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -292,7 +292,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 }}
                 style={{
                   padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer',
                 }}
               >
                 View Epics →
@@ -306,7 +306,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
               <div style={{
-                width: 56, height: 56, borderRadius: '50%', background: 'var(--ds-background-danger, #FEF2F2)',
+                width: 56, height: 56, borderRadius: '50%', background: 'var(--ds-background-danger)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <XCircle size={32} color="var(--sem-danger)" />
@@ -317,11 +317,11 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             <div style={{
-              background: 'var(--ds-background-danger, #FEF2F2)', border: '1.5px solid var(--cp-danger, #DC2626)', borderRadius: 6,
+              background: 'var(--ds-background-danger)', border: '1.5px solid var(--cp-danger)', borderRadius: 6,
               padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
-                fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, #991B1B)', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
+                fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger)', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
                 fontFamily: 'monospace', display: 'block',
               }}>
                 {errorMsg || 'Unknown error — check browser console'}
@@ -333,7 +333,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </p>
 
             {/* Progress bar red */}
-            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle, #F7F8F9)', marginBottom: 20, overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 20, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${Math.max(progress, 10)}%`, borderRadius: 999, background: 'var(--sem-danger)', transition: 'width 0.4s ease' }} />
             </div>
 
@@ -342,7 +342,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -351,7 +351,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={handleRetry}
                 style={{
                   padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer',
                 }}
               >
                 Retry
@@ -390,7 +390,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)', fontWeight: 600 }}>{progress}%</span>
             </div>
-            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle, #F7F8F9)', marginBottom: 20, overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 20, overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 999, background: 'var(--cp-blue)',
                 width: `${Math.max(progress, 8)}%`,
@@ -408,7 +408,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                       <div style={{
                         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: state === 'done' ? 'var(--ds-background-success, #DCFCE7)' : state === 'active' ? 'var(--cp-primary-5)' : 'var(--ds-background-neutral-subtle, #F7F8F9)',
+                        background: state === 'done' ? 'var(--ds-background-success)' : state === 'active' ? 'var(--cp-primary-5)' : 'var(--ds-background-neutral-subtle)',
                       }}>
                         {state === 'done' ? (
                           <Check size={14} color="var(--sem-success)" strokeWidth={2.5} />
@@ -429,7 +429,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                     {i < STEPS.length - 1 && (
                       <div style={{
                         width: 2, height: 10, marginLeft: 13,
-                        background: state === 'done' ? 'var(--ds-background-success, #DCFCE7)' : 'var(--divider)',
+                        background: state === 'done' ? 'var(--ds-background-success)' : 'var(--divider)',
                       }} />
                     )}
                   </div>
@@ -441,7 +441,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             <div style={{
               background: 'var(--cp-primary-5)', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
             }}>
-              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-brand-bold-hovered)' }}>
                 ⏱ Estimated: ~2 minutes · You'll be notified when done
               </span>
             </div>
@@ -452,7 +452,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Stay on this page
@@ -461,7 +461,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Leave & Notify Me When Done
@@ -477,7 +477,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           width: 18px !important;
           height: 18px !important;
           border-radius: 50% !important;
-          border: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
+          border: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
           border-top-color: transparent !important;
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;
@@ -486,7 +486,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           width: 28px !important;
           height: 28px !important;
           border-radius: 50% !important;
-          border: 2.5px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
+          border: 2.5px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
           border-top-color: transparent !important;
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;
@@ -494,7 +494,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
         /* Rule 3 paired .dark — brand blue spinner uses lighter ADS blue in dark mode. */
         .dark .ra-epic-spinner,
         .dark .ra-epic-spinner-lg {
-          border-color: var(--ds-background-information-bold, #0C66E4) !important;
+          border-color: var(--ds-background-information-bold) !important;
           border-top-color: transparent !important;
         }
       `}</style>

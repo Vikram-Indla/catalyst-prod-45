@@ -64,8 +64,8 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
         onClick={() => setIsOpen(!isOpen)}
         style={{
           padding: '8px 12px',
-          backgroundColor: 'var(--ds-surface, #FFFFFF)',
-          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          backgroundColor: 'var(--ds-surface)',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
           borderRadius: '3px',
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
@@ -78,10 +78,10 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
           transition: 'border-color 150ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = 'var(--ds-border, #B6C2CF)';
+          e.currentTarget.style.borderColor = 'var(--ds-border)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))';
+          e.currentTarget.style.borderColor = 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))';
         }}
       >
         {value ? (
@@ -105,8 +105,8 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
               top: triggerRect.bottom + 4,
               left: triggerRect.left,
               width: triggerRect.width,
-              backgroundColor: 'var(--ds-surface, #FFFFFF)',
-              border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+              backgroundColor: 'var(--ds-surface)',
+              border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
               borderRadius: '3px',
               boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
               zIndex: 10000,
@@ -129,11 +129,11 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
                   alignItems: 'center',
                   gap: '8px',
                   fontSize: 'var(--ds-font-size-400)',
-                  color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+                  color: 'var(--cp-text-primary, var(--cp-text-inverse))',
                   transition: 'background-color 150ms',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #F1F2F4)';
+                  e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent';

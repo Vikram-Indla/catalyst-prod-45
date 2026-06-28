@@ -29,13 +29,13 @@ import { JiraForYouLozenge } from './ForYouRow';
 import type { StarredItemType } from '@/hooks/home/useStarredItems';
 import type { StarredHubRow } from '@/hooks/home/useStarredHub';
 
-const TEXT = 'var(--ds-text, #172B4D)';
-const TEXT_SUBTLE = 'var(--ds-text-subtle, #44546F)';
-const TEXT_SUBTLEST = 'var(--ds-text-subtlest, #626F86)';
+const TEXT = 'var(--ds-text)';
+const TEXT_SUBTLE = 'var(--ds-text-subtle)';
+const TEXT_SUBTLEST = 'var(--ds-text-subtlest)';
 const HOVER = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
-const GOLD = 'var(--ds-icon-accent-yellow, #FFAB00)';
-const SURFACE_TILE_BG = 'var(--ds-background-neutral, #F1F2F4)';
-const SURFACE_TILE_FG = 'var(--ds-icon-subtle, #626F86)';
+const GOLD = 'var(--ds-icon-accent-yellow)';
+const SURFACE_TILE_BG = 'var(--ds-background-neutral)';
+const SURFACE_TILE_FG = 'var(--ds-icon-subtle)';
 const BODY_FONT = 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif';
 const MONO_FONT = 'var(--ds-font-family-code, "Atlassian Mono"), ui-monospace, monospace';
 

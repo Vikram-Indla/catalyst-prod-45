@@ -41,13 +41,13 @@ import { X, Plus } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
@@ -418,10 +418,10 @@ export function NotifyList({ itemType, itemId }: { itemType: 'release' | 'change
 
 function ReadinessPill({ status }: { status: string }) {
   const map: Record<string, { label: string; fg: string; bg: string }> = {
-    pass: { label: 'Pass', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
-    fail: { label: 'Fail', fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    pending: { label: 'Pending', fg: 'var(--ds-text-subtle, #44546F)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
-    na: { label: 'N/A', fg: 'var(--ds-text-subtlest, #626F86)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
+    pass: { label: 'Pass', fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
+    fail: { label: 'Fail', fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
+    pending: { label: 'Pending', fg: 'var(--ds-text-subtle)', bg: 'var(--ds-surface-sunken)' },
+    na: { label: 'N/A', fg: 'var(--ds-text-subtlest)', bg: 'var(--ds-surface-sunken)' },
   };
   const m = map[status] ?? { label: status, fg: T.subtle, bg: T.sunken };
   return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', minWidth: 56, textAlign: 'center' }}>{m.label}</span>;
@@ -466,8 +466,8 @@ export function ReleaseNotesTab({ releaseId }: { releaseId: string }) {
   });
 
   const aiBtn = (label: string) => (
-    <button onClick={handleGenerate} disabled={generate.isPending} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid var(--ds-border-discovery, #B8ACF6)`, background: 'var(--ds-background-discovery, #F3F0FF)', color: 'var(--ds-text-discovery, #5E4DB2)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: generate.isPending ? 0.6 : 1 }}>
-      <Sparkles size={14} style={{ color: 'var(--ds-text-discovery, #5E4DB2)' }} /> {generate.isPending ? 'Generating…' : label}
+    <button onClick={handleGenerate} disabled={generate.isPending} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid var(--ds-border-discovery)`, background: 'var(--ds-background-discovery)', color: 'var(--ds-text-discovery)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: generate.isPending ? 0.6 : 1 }}>
+      <Sparkles size={14} style={{ color: 'var(--ds-text-discovery)' }} /> {generate.isPending ? 'Generating…' : label}
     </button>
   );
 
@@ -477,7 +477,7 @@ export function ReleaseNotesTab({ releaseId }: { releaseId: string }) {
         <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '0 0 8px' }}>AI-assisted draft from linked changes + work items — edit before saving.</p>
         <TextArea value={draft ?? ''} onChange={(e) => setDraft((e.target as HTMLTextAreaElement).value)} minimumRows={12} />
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <button onClick={handleSave} disabled={save.isPending} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>{save.isPending ? 'Saving…' : 'Save'}</button>
+          <button onClick={handleSave} disabled={save.isPending} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>{save.isPending ? 'Saving…' : 'Save'}</button>
           <button onClick={() => setDraft(null)} style={{ height: 32, padding: '0 12px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.subtle, cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}>Cancel</button>
         </div>
       </div>
@@ -497,7 +497,7 @@ export function ReleaseNotesTab({ releaseId }: { releaseId: string }) {
       ) : (
         <>
           {note.generatedByAi && (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', padding: '0 8px', borderRadius: 3 }}>AI drafted</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-discovery)', background: 'var(--ds-background-discovery)', padding: '0 8px', borderRadius: 3 }}>AI drafted</span>
           )}
           <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text, margin: '8px 0 0', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.contentMd}</p>
         </>
@@ -510,10 +510,10 @@ function ResultBadge({ result }: { result: string | null }) {
   if (!result) return null;
   const norm = result.toLowerCase();
   const map: Record<string, { fg: string; bg: string }> = {
-    success: { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
-    partial: { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' },
-    failed: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    rolled_back: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    success: { fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
+    partial: { fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' },
+    failed: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
+    rolled_back: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
   };
   const m = map[norm] ?? { fg: T.subtle, bg: T.sunken };
   return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{result.replace(/_/g, ' ')}</span>;

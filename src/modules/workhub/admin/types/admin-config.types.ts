@@ -21,11 +21,11 @@ export interface StatusMapping {
 }
 
 export const CATALYST_CATEGORY_COLORS: Record<CatalystCategory, { bg: string; text: string }> = {
-  'To Do':       { bg: 'var(--ds-background-neutral, rgba(148,163,184,0.12))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
-  'In Progress': { bg: 'var(--ds-background-information, rgba(37,99,235,0.1))',     text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  'Blocked':     { bg: 'var(--ds-background-danger, rgba(239,68,68,0.1))',     text: 'var(--ds-text-danger, #EF4444)' },
-  'In Review':   { bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.1))',    text: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  'Done':        { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.1))',    text: 'var(--quality-high, #059669)' },
+  'To Do':       { bg: 'var(--ds-background-neutral, rgba(148,163,184,0.12))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' },
+  'In Progress': { bg: 'var(--ds-background-information, rgba(37,99,235,0.1))',     text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  'Blocked':     { bg: 'var(--ds-background-danger, rgba(239,68,68,0.1))',     text: 'var(--ds-text-danger)' },
+  'In Review':   { bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.1))',    text: 'var(--ds-background-discovery-bold)' },
+  'Done':        { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.1))',    text: 'var(--quality-high)' },
 }
 
 // User mapping
@@ -52,13 +52,13 @@ export interface ProjectScope {
 
 // Workstream colors (locked)
 export const WORKSTREAM_COLORS: Record<string, string> = {
-  CAT: 'var(--ds-background-discovery-bold, #6E5DC6)',
-  SEN: 'var(--ds-icon-information, #1D7AFC)',
-  TAH: 'var(--ds-background-discovery-bold, #6E5DC6)',
-  MIM: 'var(--ds-background-accent-magenta-bolder, #BE185D)',
-  DEL: 'var(--ds-background-warning-bold, #E2B203)',
-  DAI: 'var(--ds-icon-information, #1D7AFC)',
-  STA: 'var(--ds-background-success-bold, #1F845A)',
+  CAT: 'var(--ds-background-discovery-bold)',
+  SEN: 'var(--ds-icon-information)',
+  TAH: 'var(--ds-background-discovery-bold)',
+  MIM: 'var(--ds-background-accent-magenta-bolder)',
+  DEL: 'var(--ds-background-warning-bold)',
+  DAI: 'var(--ds-icon-information)',
+  STA: 'var(--ds-background-success-bold)',
 }
 
 // Config keys

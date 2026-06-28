@@ -159,7 +159,7 @@ export function AddPeopleModal({
                 width: '100%',
                 padding: '8px 12px',
                 fontSize: 'var(--ds-font-size-400)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 marginBottom: 12,
               }}
@@ -168,8 +168,8 @@ export function AddPeopleModal({
               <div
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
-                  color: 'var(--ds-text-danger, #AE2A19)',
-                  background: 'var(--ds-background-danger, #FFEDEB)',
+                  color: 'var(--ds-text-danger)',
+                  background: 'var(--ds-background-danger)',
                   padding: '6px 10px',
                   borderRadius: 4,
                   marginBottom: 8,
@@ -181,7 +181,7 @@ export function AddPeopleModal({
             )}
             <div style={{ maxHeight: 360, overflowY: 'auto' }}>
               {candidates.length === 0 && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
                   No matches.
                 </div>
               )}
@@ -201,7 +201,7 @@ export function AddPeopleModal({
                       width: '100%',
                       padding: '8px 8px',
                       background: checked
-                        ? 'var(--ds-background-selected, #E9F2FE)'
+                        ? 'var(--ds-background-selected)'
                         : 'transparent',
                       border: 'none',
                       borderRadius: 4,
@@ -215,11 +215,11 @@ export function AddPeopleModal({
                       checked={checked || isAdded}
                       readOnly
                       disabled={isAdded}
-                      style={{ accentColor: 'var(--ds-icon-brand, #0C66E4)' }}
+                      style={{ accentColor: 'var(--ds-icon-brand)' }}
                     />
                     <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {c.name}
                         </span>
@@ -230,8 +230,8 @@ export function AddPeopleModal({
                               fontWeight: 600,
                               padding: '1px 6px',
                               borderRadius: 3,
-                              background: 'var(--ds-background-success, #DCFFF1)',
-                              color: 'var(--ds-text-success, #216E4E)',
+                              background: 'var(--ds-background-success)',
+                              color: 'var(--ds-text-success)',
                             }}
                           >
                             Added
@@ -239,7 +239,7 @@ export function AddPeopleModal({
                         )}
                       </div>
                       {c.subtitle && (
-                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>{c.subtitle}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{c.subtitle}</div>
                       )}
                     </div>
                   </button>

@@ -7,72 +7,72 @@
    Usage:  className={styles['pri-root']}
    
    Catalyst V5 Compliant:
-   ✅ Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))
-   ✅ Teal: var(--ds-chart-teal-bold, #0d9488)
-   ✅ Warning: var(--ds-text-warning, #d97706) / var(--ds-text-warning, #f59e0b)
-   ✅ Danger: var(--ds-text-danger, #ef4444)
-   ❌ BANNED: Golden Hour (var(--ds-text-subtle, #C69C6D), var(--ds-text-subtle, #5C7C5C), var(--ds-text-subtle, #8B7355), var(--ds-background-neutral-subtle, #D4B896))
+   ✅ Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary))
+   ✅ Teal: var(--ds-chart-teal-bold)
+   ✅ Warning: var(--ds-text-warning) / var(--ds-text-warning)
+   ✅ Danger: var(--ds-text-danger)
+   ❌ BANNED: Golden Hour (var(--ds-text-subtle), var(--ds-text-subtle), var(--ds-text-subtle), var(--ds-background-neutral-subtle))
    ============================================================ */
 
 /* ======================== TOKENS ======================== */
 
 .pri-root {
   /* Brand — Catalyst V5 */
-  --pri-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --pri-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --pri-primary-light: var(--ds-background-selected, #eff6ff);
-  --pri-primary-100: var(--ds-background-information, #E9F2FF);
-  --pri-primary-200: var(--ds-background-information, #E9F2FF);
+  --pri-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --pri-primary-hover: var(--ds-background-brand-bold-hovered);
+  --pri-primary-light: var(--ds-background-selected);
+  --pri-primary-100: var(--ds-background-information);
+  --pri-primary-200: var(--ds-background-information);
 
-  --pri-success: var(--ds-background-success-bold, #059669);
-  --pri-success-light: var(--ds-background-success, #dcfce7);
-  --pri-success-dark: var(--ds-text-success, #16a34a);
+  --pri-success: var(--ds-background-success-bold);
+  --pri-success-light: var(--ds-background-success);
+  --pri-success-dark: var(--ds-text-success);
 
-  --pri-warning: var(--ds-text-warning, #f59e0b);
-  --pri-warning-light: var(--ds-background-warning, #FFF7D6);
-  --pri-warning-dark: var(--ds-text-warning, #d97706);
+  --pri-warning: var(--ds-text-warning);
+  --pri-warning-light: var(--ds-background-warning);
+  --pri-warning-dark: var(--ds-text-warning);
 
-  --pri-danger: var(--ds-text-danger, #ef4444);
-  --pri-danger-light: var(--ds-background-danger, #fef2f2);
-  --pri-danger-dark: var(--ds-text-danger, #dc2626);
+  --pri-danger: var(--ds-text-danger);
+  --pri-danger-light: var(--ds-background-danger);
+  --pri-danger-dark: var(--ds-text-danger);
 
-  --pri-teal: var(--ds-chart-teal-bold, #0d9488);
+  --pri-teal: var(--ds-chart-teal-bold);
 
   /* Gray Scale */
-  --pri-gray-50:  var(--ds-surface-sunken, #F7F8F9);
-  --pri-gray-100: var(--ds-background-neutral-subtle, #F7F8F9);
-  --pri-gray-200: var(--ds-border, #e5e7eb);
-  --pri-gray-300: var(--ds-border, #DFE1E6);
-  --pri-gray-400: var(--ds-text-disabled, #8590A2);
-  --pri-gray-500: var(--ds-text-subtlest, #626F86);
-  --pri-gray-600: var(--ds-text-subtlest, #626F86);
-  --pri-gray-700: var(--ds-text-subtle, #44546F);
-  --pri-gray-800: var(--ds-text, #172B4D);
-  --pri-gray-900: var(--ds-text, #172B4D);
+  --pri-gray-50:  var(--ds-surface-sunken);
+  --pri-gray-100: var(--ds-background-neutral-subtle);
+  --pri-gray-200: var(--ds-border);
+  --pri-gray-300: var(--ds-border);
+  --pri-gray-400: var(--ds-text-disabled);
+  --pri-gray-500: var(--ds-text-subtlest);
+  --pri-gray-600: var(--ds-text-subtlest);
+  --pri-gray-700: var(--ds-text-subtle);
+  --pri-gray-800: var(--ds-text);
+  --pri-gray-900: var(--ds-text);
 
   /* Workstream Colors */
-  --pri-ws-senaie: var(--ds-icon-information, #1D7AFC);
-  --pri-ws-catalyst: var(--ds-background-discovery-bold, #8b5cf6);
-  --pri-ws-tahommona: var(--ds-background-discovery-bold, #6366f1);
-  --pri-ws-delivery: var(--ds-background-warning-bold, #f97316);
-  --pri-ws-mim: var(--ds-background-accent-magenta-bolder, #ec4899);
-  --pri-ws-standalone: var(--ds-background-success-bold, #1F845A);
-  --pri-ws-dataai: var(--ds-background-accent-teal-bolder, #14b8a6);
+  --pri-ws-senaie: var(--ds-icon-information);
+  --pri-ws-catalyst: var(--ds-background-discovery-bold);
+  --pri-ws-tahommona: var(--ds-background-discovery-bold);
+  --pri-ws-delivery: var(--ds-background-warning-bold);
+  --pri-ws-mim: var(--ds-background-accent-magenta-bolder);
+  --pri-ws-standalone: var(--ds-background-success-bold);
+  --pri-ws-dataai: var(--ds-background-accent-teal-bolder);
 
   /* Label Colors (Outline Style) */
-  --pri-label-finance: var(--ds-text-brand, #3b82f6);
-  --pri-label-urgent: var(--ds-text-danger, #ef4444);
-  --pri-label-tech: var(--ds-background-discovery-bold, #8b5cf6);
-  --pri-label-sales: var(--ds-background-warning-bold, #f97316);
-  --pri-label-hr: var(--ds-background-accent-magenta-bolder, #ec4899);
-  --pri-label-q1: var(--ds-text-success, #22c55e);
+  --pri-label-finance: var(--ds-text-brand);
+  --pri-label-urgent: var(--ds-text-danger);
+  --pri-label-tech: var(--ds-background-discovery-bold);
+  --pri-label-sales: var(--ds-background-warning-bold);
+  --pri-label-hr: var(--ds-background-accent-magenta-bolder);
+  --pri-label-q1: var(--ds-text-success);
 
   /* Surfaces */
-  --pri-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --pri-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --pri-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --pri-border: var(--ds-border, #e5e7eb);
-  --pri-border-light: var(--ds-background-neutral-subtle, #F7F8F9);
+  --pri-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --pri-bg-page: var(--ds-surface-sunken);
+  --pri-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --pri-border: var(--ds-border);
+  --pri-border-light: var(--ds-background-neutral-subtle);
 
   /* Shadows */
   --pri-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
@@ -151,7 +151,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -213,7 +213,7 @@
 
 .pri-btn-primary {
   background: var(--pri-primary);
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
 }
 
 .pri-btn-primary:hover:not(:disabled) {
@@ -234,7 +234,7 @@
 
 .pri-btn-danger {
   background: var(--pri-danger);
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
 }
 
 .pri-btn-danger:hover:not(:disabled) {
@@ -243,7 +243,7 @@
 
 .pri-btn-checkout {
   background: var(--pri-warning);
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
   font-weight: 600;
 }
 
@@ -361,7 +361,7 @@
   font-size: 10px;
   font-weight: 600;
   background: var(--pri-primary);
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
   padding: 0 5px;
   border-radius: var(--pri-radius-pill);
   line-height: 1.5;
@@ -843,7 +843,7 @@
 .pri-status-completed {
   border-color: var(--pri-success);
   background: var(--pri-success);
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
 }
 
 .pri-status-completed:hover {
@@ -859,7 +859,7 @@
   left: 50%;
   transform: translateX(-50%) scale(0.95);
   background: var(--pri-gray-800);
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
   font-size: 11px;
   font-weight: 500;
   padding: 4px 8px;
@@ -1069,7 +1069,7 @@
   gap: 12px;
   padding: 12px 16px;
   background: var(--pri-warning-light);
-  border: 1px solid var(--ds-background-warning, #FFF7D6);
+  border: 1px solid var(--ds-background-warning);
   border-radius: var(--pri-radius-md);
   margin-bottom: 16px;
 }
@@ -1318,7 +1318,7 @@
   gap: 10px;
   padding: 12px 16px;
   background: var(--pri-gray-800);
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
   border-radius: var(--pri-radius-md);
   box-shadow: var(--pri-shadow-lg);
   font-size: 13px;
@@ -1359,7 +1359,7 @@
 }
 
 .pri-toast-dismiss:hover {
-  color: var(--ds-surface, #fff);
+  color: var(--ds-surface);
 }
 
 /* ======================== EMPTY STATE ======================== */
@@ -1534,5 +1534,5 @@
 }
 
 /* DARK MODE OVERRIDES — added 2026-04-30 sweep */
-:global(.dark) .priorityRow { background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)); color: var(--cp-text-primary, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4))); }
-:global(.dark) .priorityRow:hover { background: var(--cp-interact-hover, var(--cp-ink-1, var(--ds-background-neutral, #F1F2F4))); }
+:global(.dark) .priorityRow { background: var(--cp-bg-elevated, var(--ds-surface)); color: var(--cp-text-primary, var(--cp-bg-neutral, var(--ds-background-neutral))); }
+:global(.dark) .priorityRow:hover { background: var(--cp-interact-hover, var(--cp-ink-1, var(--ds-background-neutral))); }

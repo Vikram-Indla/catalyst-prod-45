@@ -34,10 +34,10 @@ interface Props {
   onSuccess?: () => void;
 }
 
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const BLUE = 'var(--ds-border-selected, #1868DB)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #6B778C)';
+const BORDER = 'var(--ds-border)';
+const BLUE = 'var(--ds-border-selected)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
 
 export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props) {
   const [picked, setPicked] = useState<WorkItem[]>([]);
@@ -229,7 +229,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                 padding: 6,
                 border: `1px solid ${open ? BLUE : BORDER}`,
                 borderRadius: 3,
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
                 cursor: 'text',
                 boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
               }}
@@ -252,7 +252,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                       alignItems: 'center',
                       gap: 6,
                       padding: '2px 8px',
-                      background: 'var(--ds-background-neutral, #F1F2F4)',
+                      background: 'var(--ds-background-neutral)',
                       border: `1px solid ${BORDER}`,
                       borderRadius: 3,
                       fontSize: 'var(--ds-font-size-200)',
@@ -320,7 +320,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
             left: pos.left,
             width: pos.width,
             zIndex: 10010,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
@@ -363,7 +363,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 <span style={{ flex: '0 0 16px', display: 'inline-flex' }}>
@@ -373,7 +373,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                   flex: '0 0 80px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
-                  color: 'var(--ds-link, #0C66E4)',
+                  color: 'var(--ds-link)',
                   textDecoration: 'underline',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
@@ -386,7 +386,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                   minWidth: 0,
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
-                  color: 'var(--ds-text, #292A2E)',
+                  color: 'var(--ds-text)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',

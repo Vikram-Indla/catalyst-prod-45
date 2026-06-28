@@ -255,7 +255,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             style={{
               background: 'transparent',
               border: 'none',
-              color: !start && !end ? 'var(--cv2-text-muted)' : 'var(--ds-link, #0C66E4)',
+              color: !start && !end ? 'var(--cv2-text-muted)' : 'var(--ds-link)',
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               cursor: !start && !end ? 'default' : 'pointer',
@@ -288,7 +288,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
               }}
               style={{
                 background: canSubmit ? '#007A5A' : 'var(--ds-surface, rgba(255,255,255,0.08))',
-                color: canSubmit ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
+                color: canSubmit ? 'var(--ds-text-inverse)' : 'var(--cv2-text-muted)',
                 border: 'none',
                 borderRadius: 6,
                 padding: '8px 18px',
@@ -332,7 +332,7 @@ function DateInput({
         gap: 8,
         height: 40,
         padding: '0 12px',
-        border: `1px solid ${showRing ? 'var(--ds-link, #0C66E4)' : 'var(--cv2-border-strong)'}`,
+        border: `1px solid ${showRing ? 'var(--ds-link)' : 'var(--cv2-border-strong)'}`,
         borderRadius: 6,
         background: 'transparent',
       }}
@@ -542,13 +542,13 @@ function DayCell({
   let buttonRadius: string | number = 6;
 
   if (isEndpoint) {
-    buttonBackground = 'var(--ds-link, #0065FF)';
-    buttonColor = 'var(--ds-surface, #FFFFFF)';
-    buttonBorder = '2px solid var(--ds-link, #0C66E4)';
+    buttonBackground = 'var(--ds-link)';
+    buttonColor = 'var(--ds-surface)';
+    buttonBorder = '2px solid var(--ds-link)';
     buttonRadius = 6;
   } else if (isToday) {
-    buttonBorder = '2px solid var(--ds-link, #0C66E4)';
-    buttonColor = 'var(--ds-link, #0C66E4)';
+    buttonBorder = '2px solid var(--ds-link)';
+    buttonColor = 'var(--ds-link)';
     buttonRadius = '50%';
   } else if (isInRange) {
     buttonColor = 'var(--cv2-text-strong)';

@@ -55,21 +55,21 @@ const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) =
               // so clicking away always dismisses an empty input — no mode trap.
               onBlur={() => { name.trim() ? submit() : cancel(); }}
               placeholder="Column name"
-              style={{ flex: 1, minWidth: 0, height: 36, padding: '0 8px', borderRadius: 6, border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold, #0C66E4)')}`, outline: 'none', fontSize: 'var(--ds-font-size-300)', fontFamily: 'inherit' }}
+              style={{ flex: 1, minWidth: 0, height: 36, padding: '0 8px', borderRadius: 6, border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold)')}`, outline: 'none', fontSize: 'var(--ds-font-size-300)', fontFamily: 'inherit' }}
             />
             {/* onMouseDown fires before the input's blur, so cancel wins even with text typed */}
             <button
               type="button" aria-label="Cancel" title="Cancel"
               onMouseDown={(e) => { e.preventDefault(); cancel(); }}
-              style={{ width: 28, height: 28, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer', color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1 }}
+              style={{ width: 28, height: 28, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', borderRadius: 4, cursor: 'pointer', color: token('color.icon.subtle', 'var(--ds-icon-subtle)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1 }}
             >✕</button>
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), padding: '4px 2px 0' }}>Enter to add · Esc to cancel</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), padding: '4px 2px 0' }}>Enter to add · Esc to cancel</div>
         </div>
       ) : (
         <button
           aria-label="Create column" onClick={() => setAdding(true)}
-          style={{ width: 40, height: 40, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token('color.background.neutral', 'rgba(5,21,36,0.06)'), color: token('color.icon.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))'), fontSize: 'var(--ds-font-size-700)', lineHeight: 1 }}
+          style={{ width: 40, height: 40, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token('color.background.neutral', 'rgba(5,21,36,0.06)'), color: token('color.icon.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest))'), fontSize: 'var(--ds-font-size-700)', lineHeight: 1 }}
           onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(5,21,36,0.10)'); }}
           onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'rgba(5,21,36,0.06)'); }}
         >+</button>
@@ -213,7 +213,7 @@ export const Board: React.FC<BoardProps> = ({
     <div ref={scrollWrapRef} className="kb-board-scroll" style={{
       flex: 1, minHeight: 0, minWidth: 0, overflowX: 'auto', overflowY: 'auto',
       height: boardHeight, maxHeight: boardHeight,
-      background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), display: 'flex', flexDirection: 'column',
+      background: token('elevation.surface', 'var(--ds-surface)'), display: 'flex', flexDirection: 'column',
     }}>
       {/* Defer columns until the board height is measured, so each ColumnBody's
           card virtualizer mounts into an already-bounded scroll container (its
@@ -289,7 +289,7 @@ export const Board: React.FC<BoardProps> = ({
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                             gap: 6, height: '100%', width: '100%', border: 'none', background: 'transparent',
                             cursor: 'pointer', padding: '12px 4px',
-                            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                            color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                           }}
                         >
                           <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, writingMode: 'vertical-rl', transform: 'rotate(180deg)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'inherit' }}>
@@ -307,14 +307,14 @@ export const Board: React.FC<BoardProps> = ({
                       ) : (
                         <>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px 6px' }}>
-                            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle)'), textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                               Archived ({doneCount})
                             </span>
                             <button
                               onClick={onToggleHideDone}
                               title="Collapse archived column"
                               aria-label="Collapse archived column"
-                              style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', lineHeight: 1, padding: 2, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}
+                              style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', lineHeight: 1, padding: 2, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}
                             >✕</button>
                           </div>
                           {doneColumns.map((column) => {

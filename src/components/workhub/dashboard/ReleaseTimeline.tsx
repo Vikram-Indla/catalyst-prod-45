@@ -224,7 +224,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                       height: 20,
                       borderRadius: 4,
                       background: isCancelled
-                        ? 'var(--ds-text-subtlest, #94a3b8)'
+                        ? 'var(--ds-text-subtlest)'
                         : isAtRisk
                           ? `repeating-linear-gradient(135deg, ${release.color}, ${release.color} 4px, transparent 4px, transparent 8px)`
                           : release.color,
@@ -283,7 +283,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           left: tooltip.x,
           top: tooltip.y - 10,
           transform: 'translate(-50%, -100%)',
-          background: 'var(--ds-text, #172B4D)',
+          background: 'var(--ds-text)',
           color: 'var(--bg-app)',
           borderRadius: 8,
           padding: '8px 12px',

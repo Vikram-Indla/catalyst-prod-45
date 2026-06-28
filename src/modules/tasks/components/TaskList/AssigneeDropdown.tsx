@@ -24,14 +24,14 @@ export interface AssigneeDropdownProps {
 // Generate a color based on user name for consistent avatar colors
 const getAvatarColor = (name: string) => {
   const colors = [
-    'var(--ds-background-discovery-bold, #6E5DC6)', // purple
-    'var(--ds-icon-information, #1D7AFC)', // cyan
-    'var(--ds-background-success-bold, #1F845A)', // emerald
-    'var(--ds-text-warning, #f59e0b)', // amber
-    'var(--ds-text-danger, #ef4444)', // red
-    'var(--ds-background-accent-magenta-bolder, #BE185D)', // pink
-    'var(--ds-background-discovery-bold, #6E5DC6)', // indigo
-    'var(--ds-icon-information, #1D7AFC)', // teal
+    'var(--ds-background-discovery-bold)', // purple
+    'var(--ds-icon-information)', // cyan
+    'var(--ds-background-success-bold)', // emerald
+    'var(--ds-text-warning)', // amber
+    'var(--ds-text-danger)', // red
+    'var(--ds-background-accent-magenta-bolder)', // pink
+    'var(--ds-background-discovery-bold)', // indigo
+    'var(--ds-icon-information)', // teal
   ];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {

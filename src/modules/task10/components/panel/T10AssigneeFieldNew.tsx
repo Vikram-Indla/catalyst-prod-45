@@ -14,8 +14,8 @@ import { getT10Initials } from '../../utils';
 // CLAUDE.md §L38 — hex literals only (no HSL).
 // Fixed 10-colour Catalyst avatar palette (shared with MentionTextarea / SidebarFields).
 const AVATAR_PALETTE = [
-  'var(--ds-link, #2A6DF4)', 'var(--ds-background-discovery-bold, #7C3BED)', 'var(--ds-background-success-bold, #25A777)', 'var(--ds-background-danger-bold, #E92063)', 'var(--ds-background-warning-bold, #F97015)',
-  'var(--ds-chart-green-bold, #21C45D)', 'var(--ds-chart-blue-bold, #0DA2E7)', 'var(--ds-chart-yellow-bold, #FAC814)', 'var(--ds-chart-purple-bold, #BB36D3)', 'var(--ds-chart-teal-bold, #1DAFA1)',
+  'var(--ds-link)', 'var(--ds-background-discovery-bold)', 'var(--ds-background-success-bold)', 'var(--ds-background-danger-bold)', 'var(--ds-background-warning-bold)',
+  'var(--ds-chart-green-bold)', 'var(--ds-chart-blue-bold)', 'var(--ds-chart-yellow-bold)', 'var(--ds-chart-purple-bold)', 'var(--ds-chart-teal-bold)',
 ];
 function getAvatarColor(name: string | null): string {
   if (!name) return AVATAR_PALETTE[0];
@@ -113,8 +113,8 @@ export function T10AssigneeFieldNew({
         top: position.top,
         left: position.left,
         width: Math.max(position.width, 320),
-        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: '1px solid var(--ds-border, #e5e7eb)',
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+        border: '1px solid var(--ds-border)',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px var(--ds-shadow-raised, rgba(0,0,0,0.15)), 0 4px 6px -2px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
         // Must be above the side panel overlay (z=100000) and panel (z=100001)
@@ -124,19 +124,19 @@ export function T10AssigneeFieldNew({
       }}
     >
       {/* Search */}
-      <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border, #f3f4f6)' }}>
+      <div style={{ padding: '8px', borderBottom: '1px solid var(--ds-border)' }}>
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 12px',
-            backgroundColor: 'var(--ds-surface-sunken, #f9fafb)',
+            backgroundColor: 'var(--ds-surface-sunken)',
             borderRadius: '6px',
-            border: '1px solid var(--ds-border, #e5e7eb)',
+            border: '1px solid var(--ds-border)',
           }}
         >
-          <Search size={14} style={{ color: 'var(--ds-text-subtlest, #9ca3af)', flexShrink: 0 }} />
+          <Search size={14} style={{ color: 'var(--ds-text-subtlest)', flexShrink: 0 }} />
           <input
             ref={searchInputRef}
             type="text"
@@ -174,12 +174,12 @@ export function T10AssigneeFieldNew({
               width: '100%',
               padding: '10px 12px',
               marginTop: '4px',
-              backgroundColor: 'var(--ds-background-danger, #fef2f2)',
-              border: '1px solid var(--ds-border-danger, #fecaca)',
+              backgroundColor: 'var(--ds-background-danger)',
+              border: '1px solid var(--ds-border-danger)',
               borderRadius: '6px',
               cursor: 'pointer',
               fontSize: 'var(--ds-font-size-400)',
-              color: 'var(--ds-text-danger, #dc2626)',
+              color: 'var(--ds-text-danger)',
             }}
           >
             <X size={14} />
@@ -192,7 +192,7 @@ export function T10AssigneeFieldNew({
             style={{
               padding: '20px',
               textAlign: 'center',
-              color: 'var(--ds-text-subtlest, #9ca3af)',
+              color: 'var(--ds-text-subtlest)',
               fontSize: 'var(--ds-font-size-400)',
             }}
           >
@@ -205,7 +205,7 @@ export function T10AssigneeFieldNew({
             style={{
               padding: '20px',
               textAlign: 'center',
-              color: 'var(--ds-text-subtlest, #9ca3af)',
+              color: 'var(--ds-text-subtlest)',
               fontSize: 'var(--ds-font-size-400)',
             }}
           >
@@ -229,12 +229,12 @@ export function T10AssigneeFieldNew({
                   width: '100%',
                   padding: '10px 12px',
                   marginTop: '4px',
-                  backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : 'transparent',
-                  border: isSelected ? '1px solid var(--ds-border-selected, #bfdbfe)' : '1px solid transparent',
+                  backgroundColor: isSelected ? 'var(--ds-background-selected)' : 'transparent',
+                  border: isSelected ? '1px solid var(--ds-border-selected)' : '1px solid transparent',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: 'var(--ds-font-size-400)',
-                  color: 'var(--ds-text, #111827)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 <div
@@ -242,13 +242,13 @@ export function T10AssigneeFieldNew({
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-                    backgroundColor: user.avatar_url ? 'var(--ds-border, #e5e7eb)' : getAvatarColor(user.full_name),
+                    backgroundColor: user.avatar_url ? 'var(--ds-border)' : getAvatarColor(user.full_name),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
-                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                     flexShrink: 0,
                     overflow: 'hidden',
                     boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
@@ -269,17 +269,17 @@ export function T10AssigneeFieldNew({
                   )}
                 </div>
                 <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-                  <div style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                  <div style={{ fontWeight: 500, color: 'var(--ds-text)' }}>
                     {user.full_name || 'Unknown User'}
                   </div>
                   {user.email && (
-                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6b7280)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                       {user.email}
                     </div>
                   )}
                 </div>
                 {isSelected && (
-                  <Check size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', flexShrink: 0 }} />
+                  <Check size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', flexShrink: 0 }} />
                 )}
               </button>
             );
@@ -299,11 +299,11 @@ export function T10AssigneeFieldNew({
           justifyContent: 'space-between',
           width: '100%',
           padding: '10px 14px',
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: isOpen ? '1px solid var(--ds-link, #2563eb)' : '1px solid var(--ds-border, #d1d5db)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          border: isOpen ? '1px solid var(--ds-link)' : '1px solid var(--ds-border)',
           borderRadius: '8px',
           cursor: 'pointer',
-          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-selected, #eff6ff)' : 'none',
+          boxShadow: isOpen ? '0 0 0 3px var(--ds-background-selected)' : 'none',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
@@ -314,13 +314,13 @@ export function T10AssigneeFieldNew({
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: assigneeAvatar ? 'var(--ds-border, #e5e7eb)' : getAvatarColor(assigneeName),
+                  backgroundColor: assigneeAvatar ? 'var(--ds-border)' : getAvatarColor(assigneeName),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   overflow: 'hidden',
                   boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
                 }}
@@ -339,10 +339,10 @@ export function T10AssigneeFieldNew({
                   getT10Initials(assigneeName)
                 )}
               </div>
-              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #111827)', fontWeight: 500 }}>{assigneeName}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', fontWeight: 500 }}>{assigneeName}</span>
             </>
           ) : (
-            <span style={{ color: 'var(--ds-text-subtlest, #9ca3af)', fontSize: 'var(--ds-font-size-400)' }}>Select assignee</span>
+            <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>Select assignee</span>
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -356,10 +356,10 @@ export function T10AssigneeFieldNew({
                 justifyContent: 'center',
                 width: '20px',
                 height: '20px',
-                backgroundColor: 'var(--ds-background-neutral, #f3f4f6)',
+                backgroundColor: 'var(--ds-background-neutral)',
                 border: 'none',
                 borderRadius: '50%',
-                color: 'var(--ds-text-subtle, #6b7280)',
+                color: 'var(--ds-text-subtle)',
                 cursor: 'pointer',
               }}
             >
@@ -369,7 +369,7 @@ export function T10AssigneeFieldNew({
           <ChevronDown
             size={16}
             style={{
-              color: 'var(--ds-text-subtlest, #9ca3af)',
+              color: 'var(--ds-text-subtlest)',
               transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
               transition: 'transform 0.15s ease',
             }}

@@ -118,7 +118,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         {/* Card 2: BRDs Processed */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ ...iconContainerStyle, background: 'var(--ds-background-success, #DFFCF0)' }}>
+            <div style={{ ...iconContainerStyle, background: 'var(--ds-background-success)' }}>
               <CheckCircle size={16} color="var(--sem-success)" />
             </div>
           </div>
@@ -129,8 +129,8 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             </div>
           )}
           <span style={labelStyle}>BRDS PROCESSED</span>
-          <div style={{ width: '100%', height: 4, background: 'var(--ds-border, #E5E7EB)', borderRadius: 4, marginTop: 8 }}>
-            <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 4, background: 'linear-gradient(90deg, var(--ds-text-success, var(--cp-success, #16A34A)), var(--ds-text-success, #22C55E))', transition: 'width 400ms ease' }} />
+          <div style={{ width: '100%', height: 4, background: 'var(--ds-border)', borderRadius: 4, marginTop: 8 }}>
+            <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 4, background: 'linear-gradient(90deg, var(--ds-text-success, var(--cp-success)), var(--ds-text-success))', transition: 'width 400ms ease' }} />
           </div>
           <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-success)', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>Pipeline stage: Complete</span>
         </div>
@@ -154,8 +154,8 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         {/* Card 4: Published to Projects */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ ...iconContainerStyle, background: 'var(--ds-background-information, #F0F9FF)' }}>
-              <Send size={16} color="var(--ds-link, #0284c7)" />
+            <div style={{ ...iconContainerStyle, background: 'var(--ds-background-information)' }}>
+              <Send size={16} color="var(--ds-link)" />
             </div>
           </div>
           {isLoading ? <Skeleton /> : (
@@ -181,7 +181,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             </div>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
+              background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
               borderRadius: 12, padding: '2px 10px',
               fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)',
               fontFamily: 'var(--cp-font-body)',
@@ -273,11 +273,11 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
 }
 
 function activityDotColor(eventType: string): string {
-  if (eventType === 'index_start' || eventType === 'index_complete') return 'var(--cp-teal-60, #0D9488)';
-  if (eventType === 'import') return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
-  if (eventType === 'epic_generated' || eventType === 'published') return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  if (eventType === 'uat_generated') return 'var(--cp-teal-60, #0D9488)';
-  return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+  if (eventType === 'index_start' || eventType === 'index_complete') return 'var(--cp-teal-60)';
+  if (eventType === 'import') return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
+  if (eventType === 'epic_generated' || eventType === 'published') return 'var(--ds-text-success, var(--cp-success))';
+  if (eventType === 'uat_generated') return 'var(--cp-teal-60)';
+  return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
 }
 
 const cardStyle: React.CSSProperties = {

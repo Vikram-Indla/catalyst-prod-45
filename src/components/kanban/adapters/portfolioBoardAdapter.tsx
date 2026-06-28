@@ -136,7 +136,7 @@ export function epicToCanonicalIssue(
    Icon resolver — canonical Epic purple.
    ═══════════════════════════════════════════════════════════════════════ */
 
-const EPIC_ICON_COLOR = 'var(--ds-background-discovery-bold, #904EE2)';
+const EPIC_ICON_COLOR = 'var(--ds-background-discovery-bold)';
 
 export function resolvePortfolioIcon(_card: BoardIssue): ReactNode | null {
   return <Zap size={14} strokeWidth={2} style={{ color: EPIC_ICON_COLOR }} />;

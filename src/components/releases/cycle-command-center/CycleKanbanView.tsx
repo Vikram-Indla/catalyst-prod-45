@@ -83,7 +83,7 @@ export function CycleKanbanView({ cycleId }: CycleKanbanViewProps) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400 }}>
         <div style={{
           width: 32, height: 32,
-          border: '2px solid var(--ds-link, #2563eb)', borderTopColor: 'transparent',
+          border: '2px solid var(--ds-link)', borderTopColor: 'transparent',
           borderRadius: '50%', animation: 'spin 1s linear infinite',
         }} />
       </div>

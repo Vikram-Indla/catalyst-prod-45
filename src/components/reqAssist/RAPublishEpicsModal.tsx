@@ -22,9 +22,9 @@ interface Props {
 
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    active:    { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-    completed: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-    planning:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' },
+    active:    { bg: 'var(--ds-link)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+    completed: { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+    planning:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' },
   };
   const m = map[status] ?? map.planning;
   return (
@@ -176,7 +176,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={onClose} style={{
                 padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                border: '0.75px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Cancel</button>
             </div>
           </>
@@ -197,7 +197,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
                   <span style={{
                     fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)',
-                    color: 'var(--fg-2)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '1px 6px', borderRadius: 4,
+                    color: 'var(--fg-2)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', padding: '1px 6px', borderRadius: 4,
                   }}>{e.ra_tag || '—'}</span>
                   <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {e.title}
@@ -213,14 +213,14 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setStep(1)} style={{
                 padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                border: '0.75px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Back</button>
               <button
                 onClick={handlePublish}
                 disabled={publishing}
                 style={{
                   padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer',
                   opacity: publishing ? 0.7 : 1,
                 }}
               >

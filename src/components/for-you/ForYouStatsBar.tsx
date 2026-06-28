@@ -6,14 +6,14 @@
 import React from 'react';
 
 const HUB_DOT_COLORS: Record<string, string> = {
-  Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  Product: 'var(--cp-purple-60, #7C3AED)',
-  Task: 'var(--ds-background-warning-bold, #E2B203)',
-  Incident: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  Release: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  Test: 'var(--ds-link, #0C66E4)',
-  Strategy: 'var(--ds-link, #0C66E4)',
-  Plan: 'var(--ds-background-discovery-bold, #6366f1)',
+  Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  Product: 'var(--cp-purple-60)',
+  Task: 'var(--ds-background-warning-bold)',
+  Incident: 'var(--ds-text-danger, var(--cp-danger))',
+  Release: 'var(--ds-text-success, var(--cp-success))',
+  Test: 'var(--ds-link)',
+  Strategy: 'var(--ds-link)',
+  Plan: 'var(--ds-background-discovery-bold)',
 };
 
 interface ForYouStatsBarProps {
@@ -39,7 +39,7 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
         <div key={hub} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
           <span style={{
             width: 6, height: 6, borderRadius: '50%',
-            background: HUB_DOT_COLORS[hub] || 'var(--ds-text-subtlest, #626F86)',
+            background: HUB_DOT_COLORS[hub] || 'var(--ds-text-subtlest)',
             flexShrink: 0, alignSelf: 'center',
           }} />
           <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--fg-1)' }}>{count}</span>

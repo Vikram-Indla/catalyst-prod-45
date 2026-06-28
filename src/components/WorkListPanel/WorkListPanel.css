@@ -3,13 +3,13 @@
 [data-testid='work-list-panel'] {
   display: grid;
   grid-template-rows: auto 1fr;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  border-right: 1px solid var(--ds-border, #dfe1e6);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  border-right: 1px solid var(--ds-border);
 }
 
 [data-testid='work-list-toolbar'] {
   flex: 0 0 auto;
-  border-bottom: 1px solid var(--ds-border, #dfe1e6);
+  border-bottom: 1px solid var(--ds-border);
 }
 
 [data-testid='work-list-items'] {
@@ -28,10 +28,10 @@
 }
 
 [data-testid='work-list-items']::-webkit-scrollbar-thumb {
-  background: var(--ds-border-subtle, #ebecf0);
+  background: var(--ds-border-subtle);
   border-radius: 4px;
 }
 
 [data-testid='work-list-items']::-webkit-scrollbar-thumb:hover {
-  background: var(--ds-border, #dfe1e6);
+  background: var(--ds-border);
 }

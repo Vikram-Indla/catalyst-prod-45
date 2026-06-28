@@ -48,7 +48,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
+      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]"
       style={{
         width: 280,
         borderRadius: 8,
@@ -57,14 +57,14 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       }}
     >
       {/* Search */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-        <Search size={13} className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" />
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]">
+        <Search size={13} className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] dark:text-[var(--ds-text-subtlest)]" />
         <input
           autoFocus
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search projects..."
-          className="flex-1 bg-transparent outline-none border-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
+          className="flex-1 bg-transparent outline-none border-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))] dark:text-[var(--ds-text,var(--cp-bg-neutral))]"
           style={{ fontSize: 'var(--ds-font-size-200)' }}
         />
       </div>
@@ -72,7 +72,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       <div className="max-h-[320px] overflow-y-auto py-1">
         {pinned.length > 0 && (
           <>
-            <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               <Star size={10} className="inline mr-1" /> Pinned
             </div>
             {pinned.map(p => (
@@ -81,11 +81,11 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
           </>
         )}
 
-        <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
           {pinned.length > 0 ? 'Recent' : 'All Projects'}
         </div>
         {recent.length === 0 ? (
-          <div className="px-3 py-3 text-center text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-200)' }}>
+          <div className="px-3 py-3 text-center text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-200)' }}>
             No projects found
           </div>
         ) : (
@@ -115,7 +115,7 @@ function ProjectRow({
       className={`flex items-center gap-2.5 w-full px-3 py-1.5 transition-colors ${
         isCurrent
           ? 'bg-[var(--cp-blue-wash)] dark:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.10))]'
-          : 'hover:bg-[var(--cp-blue-wash)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
+          : 'hover:bg-[var(--cp-blue-wash)] dark:hover:bg-[var(--ds-surface-overlay)]'
       }`}
       style={{
         border: 'none',
@@ -124,15 +124,15 @@ function ProjectRow({
     >
       <div
         className="flex items-center justify-center rounded flex-shrink-0"
-        style={{ width: 24, height: 24, backgroundColor: project.color, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, borderRadius: 4 }}
+        style={{ width: 24, height: 24, backgroundColor: project.color, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, borderRadius: 4 }}
       >
         {project.key}
       </div>
       <div className="flex flex-col items-start min-w-0">
-        <span className="truncate w-full text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500 }}>
+        <span className="truncate w-full text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral))]" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500 }}>
           {project.name}
         </span>
-        <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-50)' }}>{project.key}</span>
+        <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-50)' }}>{project.key}</span>
       </div>
     </button>
   );

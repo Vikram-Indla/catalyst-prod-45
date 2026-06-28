@@ -24,11 +24,11 @@ export default function IncidentReportsPage() {
     : 0;
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}><Skeleton className="h-8 w-48 mb-6" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}><Skeleton className="h-8 w-48 mb-6" /></div>;
   }
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
       <ProjectPageHeader projectKey="INCIDENTS" hubType="incident" />
       <div className="px-6 pt-2 pb-4">
         {/* Tab Bar */}
@@ -43,8 +43,8 @@ export default function IncidentReportsPage() {
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 'var(--ds-font-size-200)',
                 fontWeight: activeTab === i ? 650 : 400,
-                color: activeTab === i ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-                borderBottom: activeTab === i ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
+                color: activeTab === i ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
+                borderBottom: activeTab === i ? '2px solid var(--ds-link)' : '2px solid transparent',
               }}
             >
               {tab}
@@ -57,29 +57,29 @@ export default function IncidentReportsPage() {
           <div>
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="p-3" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4 }}>Total Breaches</div>
-                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{breachedCount}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 4 }}>Total Breaches</div>
+                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger))' }}>{breachedCount}</div>
               </div>
               <div className="p-3" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4 }}>Breach Rate</div>
-                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 4 }}>Breach Rate</div>
+                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning))' }}>
                   {incidents?.length ? `${Math.round((breachedCount / incidents.length) * 100)}%` : '0%'}
                 </div>
               </div>
               <div className="p-3" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4 }}>Avg Age (days)</div>
-                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{avgAge}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 4 }}>Avg Age (days)</div>
+                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))' }}>{avgAge}</div>
               </div>
             </div>
-            <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>[Chart] SLA Breach trend over time</p>
+            <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))' }}>
+              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>[Chart] SLA Breach trend over time</p>
             </div>
           </div>
         )}
 
         {activeTab === 1 && (
-          <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>[Chart] Incident aging distribution by severity</p>
+          <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))' }}>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>[Chart] Incident aging distribution by severity</p>
           </div>
         )}
 
@@ -87,14 +87,14 @@ export default function IncidentReportsPage() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               {[
-                { label: 'Open', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', count: incidents?.filter(i => i.status === 'open').length || 0 },
-                { label: 'Triage', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', count: incidents?.filter(i => i.status === 'triage').length || 0 },
-                { label: 'In Progress', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', count: incidents?.filter(i => i.status === 'in_progress').length || 0 },
-                { label: 'Resolved', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', count: incidents?.filter(i => i.status === 'resolved').length || 0 },
+                { label: 'Open', color: 'var(--ds-text-danger, var(--cp-danger))', count: incidents?.filter(i => i.status === 'open').length || 0 },
+                { label: 'Triage', color: 'var(--ds-text-warning, var(--cp-warning))', count: incidents?.filter(i => i.status === 'triage').length || 0 },
+                { label: 'In Progress', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', count: incidents?.filter(i => i.status === 'in_progress').length || 0 },
+                { label: 'Resolved', color: 'var(--ds-text-success, var(--cp-success))', count: incidents?.filter(i => i.status === 'resolved').length || 0 },
               ].map(s => (
                 <div key={s.label} className="flex items-center gap-2 p-3 flex-1" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: s.color }} />
-                  <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{s.label}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{s.label}</span>
                   <span className="ml-auto" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: s.color }}>{s.count}</span>
                 </div>
               ))}
@@ -103,8 +103,8 @@ export default function IncidentReportsPage() {
         )}
 
         {activeTab === 3 && (
-          <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>[Chart] Severity vs Priority heatmap</p>
+          <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))' }}>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>[Chart] Severity vs Priority heatmap</p>
           </div>
         )}
       </div>

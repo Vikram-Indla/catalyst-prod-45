@@ -38,11 +38,11 @@ const CATEGORY_ICON: Record<FilterTemplate['category'], React.ReactNode> = {
 
 /** Accent color swatch per category (ADS tokens) */
 const CATEGORY_COLOR: Record<FilterTemplate['category'], string> = {
-  'my-work':  token('color.icon.brand',    'var(--ds-link, #0C66E4)'),
-  'team':     token('color.icon.success',  'var(--ds-background-success-bold, #1F845A)'),
-  'priority': token('color.icon.danger',   'var(--ds-text-danger, #AE2A19)'),
-  'dates':    token('color.icon.warning',  'var(--ds-text-warning, #974F0C)'),
-  'quality':  token('color.icon.accent.purple', 'var(--ds-background-discovery-bold, #6E5DC6)'),
+  'my-work':  token('color.icon.brand',    'var(--ds-link)'),
+  'team':     token('color.icon.success',  'var(--ds-background-success-bold)'),
+  'priority': token('color.icon.danger',   'var(--ds-text-danger)'),
+  'dates':    token('color.icon.warning',  'var(--ds-text-warning)'),
+  'quality':  token('color.icon.accent.purple', 'var(--ds-background-discovery-bold)'),
 };
 
 type Cat = FilterTemplate['category'] | 'all';
@@ -114,7 +114,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
             <div
               key={t.id}
               style={{
-                background: `var(--ds-surface, #FFFFFF)`,
+                background: `var(--ds-surface)`,
                 border: `1px solid ${token('color.border')}`,
                 borderRadius: 4,
                 padding: 16,
@@ -135,7 +135,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
                   width: 28,
                   height: 28,
                   borderRadius: 4,
-                  background: `var(--ds-background-neutral, #F1F2F4)`,
+                  background: `var(--ds-background-neutral)`,
                   color: CATEGORY_COLOR[t.category],
                   flexShrink: 0,
                 }}>
@@ -165,7 +165,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
                 fontSize: 'var(--ds-font-size-100)',
                 fontFamily: 'var(--ds-font-family-monospace, monospace)',
                 color: token('color.text.subtlest'),
-                background: `var(--ds-surface-sunken, #F7F8F9)`,
+                background: `var(--ds-surface-sunken)`,
                 borderRadius: 3,
                 padding: '4px 8px',
                 overflow: 'hidden',

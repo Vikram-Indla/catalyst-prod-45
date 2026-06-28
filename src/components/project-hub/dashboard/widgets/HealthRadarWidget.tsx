@@ -13,20 +13,20 @@ import { LABEL, BODY, STRONG, SMALL } from '../dashboardTypography';
 
 const HEALTH_BADGE: Record<string, { bg: string; text: string }> = {
   Overdue: {
-    bg: 'var(--ds-background-accent-red-bolder, #C9372C)',
-    text: 'var(--ds-surface, #FFFFFF)',
+    bg: 'var(--ds-background-accent-red-bolder)',
+    text: 'var(--ds-surface)',
   },
   'At Risk': {
-    bg: 'var(--ds-background-accent-orange-bolder, #C25100)',
-    text: 'var(--ds-surface, #FFFFFF)',
+    bg: 'var(--ds-background-accent-orange-bolder)',
+    text: 'var(--ds-surface)',
   },
   Healthy: {
-    bg: 'var(--ds-background-accent-green-bolder, #1F845A)',
-    text: 'var(--ds-surface, #FFFFFF)',
+    bg: 'var(--ds-background-accent-green-bolder)',
+    text: 'var(--ds-surface)',
   },
   Uncommitted: {
-    bg: 'var(--ds-background-neutral, #F1F2F4)',
-    text: 'var(--ds-text-subtle, #626F86)',
+    bg: 'var(--ds-background-neutral)',
+    text: 'var(--ds-text-subtle)',
   },
 };
 
@@ -90,7 +90,7 @@ export default function HealthRadarWidget({
               style={{
                 height: 48,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -110,19 +110,19 @@ export default function HealthRadarWidget({
               gap: 8,
               padding: '10px 12px',
               background: overdueCount > 0
-                ? 'var(--ds-background-accent-red-subtler, #FFECEB)'
-                : 'var(--ds-background-accent-orange-subtler, #FFF3D9)',
+                ? 'var(--ds-background-accent-red-subtler)'
+                : 'var(--ds-background-accent-orange-subtler)',
               borderRadius: token('border.radius', '4px'),
               border: overdueCount > 0
-                ? '1px solid var(--ds-border-accent-red, #C9372C)'
-                : '1px solid var(--ds-border-accent-orange, #C25100)',
+                ? '1px solid var(--ds-border-accent-red)'
+                : '1px solid var(--ds-border-accent-orange)',
             }}
           >
             {overdueCount > 0 && (
               <span
                 style={{
                   ...SMALL,
-                  color: 'var(--ds-text-accent-red-bolder, #AE2A19)',
+                  color: 'var(--ds-text-accent-red-bolder)',
                   fontWeight: 600,
                 }}
               >
@@ -133,7 +133,7 @@ export default function HealthRadarWidget({
               <span
                 style={{
                   ...SMALL,
-                  color: 'var(--ds-text-accent-orange-bolder, #974F0C)',
+                  color: 'var(--ds-text-accent-orange-bolder)',
                   fontWeight: 600,
                 }}
               >
@@ -155,8 +155,8 @@ export default function HealthRadarWidget({
                     gap: 10,
                     padding: '8px 10px',
                     borderRadius: token('border.radius', '4px'),
-                    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-                    border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                    background: token('elevation.surface', 'var(--ds-surface)'),
+                    border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                   }}
                 >
                   {/* Health badge */}
@@ -194,8 +194,8 @@ export default function HealthRadarWidget({
                     style={{
                       ...LABEL,
                       color: r.healthStatus === 'Overdue'
-                        ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
-                        : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+                        ? 'var(--ds-text-accent-red-bolder)'
+                        : token('color.text.subtlest', 'var(--ds-text-disabled)'),
                       whiteSpace: 'nowrap',
                       flexShrink: 0,
                     }}

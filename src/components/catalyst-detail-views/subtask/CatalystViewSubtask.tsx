@@ -76,11 +76,11 @@ export default function CatalystViewSubtask({
       {/* SUBTASK-UNIQUE: Parent story context banner */}
       {parentIssue && (
         <div onClick={() => onOpenItem?.(parentIssue.issue_key)}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', borderRadius: 6, marginBottom: 16, cursor: 'pointer', transition: 'background 0.12s' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}>
+          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))', borderRadius: 6, marginBottom: 16, cursor: 'pointer', transition: 'background 0.12s' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-border)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))')}>
           <IssueIcon type={parentIssue.issue_type} size={14} />
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #5E6C84)' }}>{parentIssue.issue_key}</span>
-          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentIssue.summary}</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{parentIssue.issue_key}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentIssue.summary}</span>
           <StatusLozenge status={parentIssue.status} category={parentIssue.status_category} />
         </div>
       )}

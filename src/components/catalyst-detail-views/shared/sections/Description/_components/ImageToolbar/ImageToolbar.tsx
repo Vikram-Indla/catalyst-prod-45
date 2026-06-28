@@ -248,8 +248,8 @@ export function ImageToolbar({
           alignItems: 'center',
           gap: 2,
           padding: 4,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-surface-overlay)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 4,
           boxShadow:
             '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
@@ -393,11 +393,11 @@ const ToolBtn = forwardRef<
         border: 'none',
         borderRadius: 3,
         background: active
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : 'transparent',
         color: active
-          ? 'var(--ds-text-selected, #0C66E4)'
-          : 'var(--ds-text-subtle, #44546F)',
+          ? 'var(--ds-text-selected)'
+          : 'var(--ds-text-subtle)',
         cursor: 'pointer',
       }}
       onMouseEnter={(e) => {
@@ -423,7 +423,7 @@ function Separator() {
         display: 'inline-block',
         width: 1,
         height: 16,
-        background: 'var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-border)',
         margin: '0 4px',
       }}
     />
@@ -490,8 +490,8 @@ function EllipsisMenu({
         zIndex: 2147483600,
         minWidth: 180,
         padding: '4px 0',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         boxShadow:
           '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
@@ -531,12 +531,12 @@ function MenuRow({
         border: 'none',
         background: hovered
           ? danger
-            ? 'var(--ds-background-danger, #FFEDEB)'
+            ? 'var(--ds-background-danger)'
             : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
           : 'transparent',
         color: danger
-          ? 'var(--ds-text-danger, #AE2A19)'
-          : 'var(--ds-text, #172B4D)',
+          ? 'var(--ds-text-danger)'
+          : 'var(--ds-text)',
         cursor: 'pointer',
         fontSize: 'var(--ds-font-size-400)',
         textAlign: 'left',
@@ -546,8 +546,8 @@ function MenuRow({
         style={{
           display: 'inline-flex',
           color: danger
-            ? 'var(--ds-text-danger, #AE2A19)'
-            : 'var(--ds-text-subtle, #44546F)',
+            ? 'var(--ds-text-danger)'
+            : 'var(--ds-text-subtle)',
         }}
       >
         {icon}
@@ -564,7 +564,7 @@ function Divider() {
       style={{
         height: 1,
         margin: '4px 0',
-        background: 'var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-border)',
       }}
     />
   );
@@ -613,14 +613,14 @@ function BorderMenu({
         left: pos.left,
         zIndex: 2147483600,
         padding: 10,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         boxShadow:
           '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
       }}
     >
-      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 6 }}>Color</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>Color</div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
         {COLORS.map((c) => (
           <button
@@ -631,7 +631,7 @@ function BorderMenu({
             style={{
               width: 24, height: 24,
               border: color === c
-                ? '2px solid var(--ds-border-selected, #0C66E4)'
+                ? '2px solid var(--ds-border-selected)'
                 : '1px solid var(--ds-shadow-raised, rgba(0,0,0,0.1))',
               borderRadius: 3,
               background: BORDER_COLOR_HEX[c],
@@ -642,7 +642,7 @@ function BorderMenu({
           />
         ))}
       </div>
-      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 6 }}>Size</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>Size</div>
       <div style={{ display: 'flex', gap: 6 }}>
         {SIZES.map(([s, icon]) => (
           <button
@@ -653,11 +653,11 @@ function BorderMenu({
             style={{
               width: 28, height: 28,
               border: size === s
-                ? '1.5px solid var(--ds-border-selected, #0C66E4)'
-                : '1px solid var(--ds-border, #DFE1E6)',
+                ? '1.5px solid var(--ds-border-selected)'
+                : '1px solid var(--ds-border)',
               borderRadius: 3,
-              background: 'var(--ds-surface, #FFFFFF)',
-              color: 'var(--ds-text, #172B4D)',
+              background: 'var(--ds-surface)',
+              color: 'var(--ds-text)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',

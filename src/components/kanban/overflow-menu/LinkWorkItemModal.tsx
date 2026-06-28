@@ -310,8 +310,8 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
           {/* Error */}
           {error && (
             <div style={{
-              padding: '8px 12px', background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 4,
-              fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold, #C9372C)',
+              padding: '8px 12px', background: 'var(--ds-background-danger)', borderRadius: 4,
+              fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold)',
             }}>
               {error}
             </div>
@@ -338,9 +338,9 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
             disabled={selected.length === 0 || saving}
             style={{
               height: 32, padding: '0 16px', border: 'none',
-              borderRadius: 4, background: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : tk.chipBg,
+              borderRadius: 4, background: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : tk.chipBg,
               cursor: selected.length > 0 ? 'pointer' : 'not-allowed',
-              fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
+              fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 6,

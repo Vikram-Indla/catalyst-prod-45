@@ -228,8 +228,8 @@ export function SlashCommandPalette({
         bottom: '100%',
         left: 8,
         marginBottom: 6,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         width: 280,
@@ -263,7 +263,7 @@ export function SlashCommandPalette({
           <span style={{
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 400,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             lineHeight: 1.3,
           }}>
             {cmd.label}
@@ -271,7 +271,7 @@ export function SlashCommandPalette({
           <span style={{
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 400,
-            color: 'var(--ds-text-subtle, #44546F)',
+            color: 'var(--ds-text-subtle)',
             lineHeight: 1.2,
           }}>
             {cmd.description}

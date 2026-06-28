@@ -110,7 +110,7 @@ export function ProfileMenu() {
             outline: 'none',
             transition: 'box-shadow 120ms ease',
             boxShadow: open
-              ? `0 0 0 2px ${token('color.border.focused', 'var(--cp-primary-60, #0052CC)')}`
+              ? `0 0 0 2px ${token('color.border.focused', 'var(--cp-primary-60)')}`
               : '0 0 0 0 transparent',
           }}
         >
@@ -146,8 +146,8 @@ export function ProfileMenu() {
             alignItems: 'center',
             gap: 8,
             padding: '12px 16px',
-            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-            background: token('elevation.surface.sunken', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
+            background: token('elevation.surface.sunken', 'var(--ds-background-neutral-subtle)'),
           }}
         >
           <PresenceRing
@@ -162,7 +162,7 @@ export function ProfileMenu() {
               style={{
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
-                color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -173,7 +173,7 @@ export function ProfileMenu() {
             <div
               style={{
                 fontSize: 'var(--ds-font-size-200)',
-                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -191,7 +191,7 @@ export function ProfileMenu() {
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               letterSpacing: '0.06em',
-              color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+              color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
             }}
           >
             Account
@@ -236,7 +236,7 @@ export function ProfileMenu() {
                 <Sun style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Light
                 {theme === 'light' && (
-                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60)') }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -249,7 +249,7 @@ export function ProfileMenu() {
                 <Moon style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Dark
                 {theme === 'dark' && (
-                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60)') }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -262,7 +262,7 @@ export function ProfileMenu() {
                 <Monitor style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Match system
                 {theme === 'system' && (
-                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
+                  <span style={{ marginLeft: 'auto', color: token('color.text.brand', 'var(--cp-primary-60)') }}>✓</span>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>

@@ -83,7 +83,7 @@ export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
               height: 34,
               padding: '0 16px',
               background: count === 0 ? 'var(--cv2-bg-row-hover)' : '#C7242E',
-              color: count === 0 ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
+              color: count === 0 ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
               border: 'none',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',

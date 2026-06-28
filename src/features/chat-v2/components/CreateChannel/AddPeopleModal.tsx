@@ -324,8 +324,8 @@ function PrimaryBtn({ onClick, disabled, children }: { onClick: () => void; disa
       style={{
         height: 36,
         padding: '0 18px',
-        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
-        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
+        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success)',
+        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',

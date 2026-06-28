@@ -9,8 +9,8 @@ vi.mock('@/lib/auth', () => ({ useAuth: () => ({ user: { id: 'u1' }, loading: fa
 import { CatyWorkloadRisk } from '../CatyWorkloadRisk';
 
 const mockMember = {
-  userId: 'u1', name: 'Syed H.', allocationPct: 80, allocationColor: 'var(--ds-background-danger-bold, #C9372C)',
-  isYou: false, projectBreakdown: [{ label: 'BAU', pct: 60, color: 'var(--ds-link, #0052CC)' }],
+  userId: 'u1', name: 'Syed H.', allocationPct: 80, allocationColor: 'var(--ds-background-danger-bold)',
+  isYou: false, projectBreakdown: [{ label: 'BAU', pct: 60, color: 'var(--ds-link)' }],
 };
 
 describe('CatyWorkloadRisk', () => {

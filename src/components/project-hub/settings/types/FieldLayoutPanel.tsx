@@ -24,14 +24,14 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
   });
 
   const getTagStyle = (isRequired: boolean, isTypeSpecific: boolean) => {
-    if (isRequired) return { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Required' };
-    if (isTypeSpecific) return { bg: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Type-specific' };
-    return { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', label: 'Optional' };
+    if (isRequired) return { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger, var(--cp-danger))', label: 'Required' };
+    if (isTypeSpecific) return { bg: 'var(--ds-background-warning, var(--ds-background-warning))', text: 'var(--ds-text-warning, var(--cp-warning))', label: 'Type-specific' };
+    return { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', label: 'Optional' };
   };
 
   return (
     <div
-      className="rounded-xl mt-4 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
+      className="rounded-xl mt-4 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]"
       style={{
         border: '1px solid var(--divider)', borderRadius: 12,
         padding: '16px 20px', boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.05))',
@@ -43,7 +43,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
         </h4>
         <button
           onClick={onClose}
-          className="flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
+          className="flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] transition-colors"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <X size={14} color="var(--fg-3)" />
@@ -68,7 +68,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
             return (
               <div
                 key={field.id}
-                className="flex items-center gap-4 px-2 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
+                className="flex items-center gap-4 px-2 hover:bg-[var(--ds-surface-sunken)] transition-colors"
                 style={{ height: 40, borderBottom: '1px solid var(--bg-1)' }}
               >
                 <span className="flex-1 truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--fg-1)' }}>

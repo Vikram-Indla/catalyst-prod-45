@@ -15,17 +15,17 @@ interface LabelsManagerProps {
 }
 
 const COLORS = {
-  textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
-  textMuted: 'var(--ds-text-subtlest, #64748b)',
-  textLight: 'var(--ds-text-subtlest, #94a3b8)',
-  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
-  surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
-  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
-  borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
-  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  accentLight: 'var(--ds-background-information, #E9F2FF)'
+  textPrimary: 'var(--ds-text)',
+  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
+  textMuted: 'var(--ds-text-subtlest)',
+  textLight: 'var(--ds-text-subtlest)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  surfacePage: 'var(--ds-surface-sunken)',
+  surfaceHover: 'var(--ds-surface-sunken)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken))',
+  borderDefault: 'var(--ds-text-disabled)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  accentLight: 'var(--ds-background-information)'
 };
 
 export const LabelsManager: React.FC<LabelsManagerProps> = ({
@@ -245,7 +245,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                         borderRadius: '6px',
                         backgroundColor: color.value,
                         border: newLabelColor === color.value 
-                          ? '2px solid var(--ds-text, #172B4D)' 
+                          ? '2px solid var(--ds-text)' 
                           : '2px solid transparent',
                         cursor: 'pointer',
                         padding: 0
@@ -285,7 +285,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                       borderRadius: '8px',
                       fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 500,
-                      color: newLabelName.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : COLORS.textMuted,
+                      color: newLabelName.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : COLORS.textMuted,
                       cursor: newLabelName.trim() ? 'pointer' : 'not-allowed',
                       fontFamily: 'inherit'
                     }}

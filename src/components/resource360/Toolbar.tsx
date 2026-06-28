@@ -60,8 +60,8 @@ function FilterDropdown({ label, value, options, onChange }: {
         onClick={() => setOpen(!open)}
         style={{
           padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
-          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
+          color: 'var(--r360-text-3)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          border: '1px solid var(--r360-border)', borderRadius: 6, cursor: 'pointer',
           whiteSpace: 'nowrap',
         }}
         aria-label={`${label} filter`}
@@ -84,7 +84,7 @@ function FilterDropdown({ label, value, options, onChange }: {
                 display: 'block', width: '100%', textAlign: 'left',
                 padding: '6px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: value === o.key ? 600 : 400,
                 color: value === o.key ? 'var(--cp-blue)' : 'var(--fg-2)',
-                background: value === o.key ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
+                background: value === o.key ? ('var(--cp-primary-light)') : 'transparent',
                 border: 'none', borderRadius: 4, cursor: 'pointer',
               }}
             >
@@ -106,8 +106,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   const tabStyle = (active: boolean): React.CSSProperties => ({
     padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 700 : 600,
-    color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--r360-text-3, #3D3D56)',
-    background: active ? 'var(--ds-surface-overlay, #1A1A2E)' : 'transparent',
+    color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--r360-text-3)',
+    background: active ? 'var(--ds-surface-overlay)' : 'transparent',
     border: 'none', borderRadius: 6, cursor: 'pointer',
     boxShadow: active ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.15))' : 'none',
     transition: 'all 150ms',
@@ -129,8 +129,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
       aria-label="Resource 360 toolbar"
       style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        padding: '8px 20px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        borderBottom: '1px solid var(--r360-border, #C5BDB3)',
+        padding: '8px 20px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+        borderBottom: '1px solid var(--r360-border)',
         position: 'sticky', top: 48, zIndex: 80,
         fontFamily: 'var(--cp-font-body)',
       }}
@@ -171,8 +171,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <button
         style={{
           padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
-          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
+          color: 'var(--r360-text-3)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          border: '1px solid var(--r360-border)', borderRadius: 6, cursor: 'pointer',
         }}
         aria-label="Hub filter"
       >
@@ -181,8 +181,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <button
         style={{
           padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
-          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
+          color: 'var(--r360-text-3)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          border: '1px solid var(--r360-border)', borderRadius: 6, cursor: 'pointer',
         }}
         aria-label="Group by toggle"
         onClick={() => onGroupByChange(groupBy === 'status' ? 'hub' : 'status')}
@@ -218,7 +218,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         aria-label="Ask Caty"
         style={{
           background: 'var(--cp-blue)',
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 20,
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', borderRadius: 20,
           padding: '0 16px', height: 32, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           letterSpacing: '0.3px', cursor: 'pointer',
           display: 'inline-flex', alignItems: 'center', gap: 6,

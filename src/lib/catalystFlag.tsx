@@ -105,8 +105,8 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
 
   const isSuccess = item.type === 'success';
   const iconBg = isSuccess
-    ? 'var(--ds-background-success-bold, #22A06B)'
-    : 'var(--ds-background-danger-bold, #C9372C)';
+    ? 'var(--ds-background-success-bold)'
+    : 'var(--ds-background-danger-bold)';
 
   return (
     <div
@@ -120,11 +120,11 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
         minWidth: 280,
         maxWidth: 420,
         padding: '12px 14px',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        color: 'var(--ds-text, #292A2E)',
+        background: 'var(--ds-surface-overlay)',
+        color: 'var(--ds-text)',
         borderRadius: 6,
         boxShadow: '0 8px 24px rgba(9,30,66,0.18), 0 2px 6px rgba(9,30,66,0.10)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         opacity: entered ? 1 : 0,
         transform: entered ? 'translateX(0)' : 'translateX(-16px)',
         transition: 'opacity 160ms ease, transform 160ms ease',
@@ -147,15 +147,15 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
       >
         {isSuccess ? (
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12.5l4.5 4.5L19 7.5" stroke="var(--ds-text-inverse, #FFFFFF)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M5 12.5l4.5 4.5L19 7.5" stroke="var(--ds-text-inverse)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         ) : (
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6L6 18" stroke="var(--ds-text-inverse, #FFFFFF)" strokeWidth="2.6" strokeLinecap="round" />
+            <path d="M6 6l12 12M18 6L6 18" stroke="var(--ds-text-inverse)" strokeWidth="2.6" strokeLinecap="round" />
           </svg>
         )}
       </span>
-      <span style={{ flex: 1, lineHeight: 1.35, color: 'var(--ds-text, #292A2E)', fontWeight: 500 }}>
+      <span style={{ flex: 1, lineHeight: 1.35, color: 'var(--ds-text)', fontWeight: 500 }}>
         {item.message}
       </span>
       <button
@@ -171,10 +171,10 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
           width: 24,
           height: 24,
           borderRadius: 3,
-          color: 'var(--ds-text-subtle, #6B778C)',
+          color: 'var(--ds-text-subtle)',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
+          (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'transparent';

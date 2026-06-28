@@ -35,7 +35,7 @@ export function TransitionGroup({
   return (
     <div
       style={{
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         overflow: 'hidden',
         marginBottom: 8,
@@ -48,23 +48,23 @@ export function TransitionGroup({
           alignItems: 'center',
           gap: 8,
           padding: '8px 12px',
-          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-          borderBottom: transitions.length > 0 ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
+          background: 'var(--ds-background-neutral-subtle)',
+          borderBottom: transitions.length > 0 ? '1px solid var(--ds-border)' : 'none',
         }}
       >
         {isGlobal ? (
           <>
             <Lozenge appearance="moved">Global · all types</Lozenge>
-            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)' }}>
               From any status
             </span>
           </>
         ) : fromStatus ? (
-          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text)' }}>
             From <strong>{fromStatus.name}</strong>
           </span>
         ) : (
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>From any status</span>
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)' }}>From any status</span>
         )}
       </div>
 
@@ -80,12 +80,12 @@ export function TransitionGroup({
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '6px 12px',
-              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              borderBottom: '1px solid var(--ds-border)',
               gap: 8,
             }}
           >
-            <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>→</span>
+            <span style={{ fontSize: 13, color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: 'var(--ds-text-subtlest)' }}>→</span>
               {toStatus?.name ?? t.to_status_id}
             </span>
             <Tooltip
@@ -113,7 +113,7 @@ export function TransitionGroup({
         {showPicker ? (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {available.length === 0 ? (
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
                 All available statuses already have transitions from here.
               </span>
             ) : (

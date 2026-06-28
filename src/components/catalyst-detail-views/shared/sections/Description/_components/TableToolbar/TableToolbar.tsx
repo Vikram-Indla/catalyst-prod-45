@@ -79,8 +79,8 @@ interface ActiveTable {
 }
 
 const TOOLBAR_GAP = 8;
-const ICON_COLOR = 'var(--ds-text, #292A2E)';
-const ICON_COLOR_ACTIVE = 'var(--ds-text-information, #0C66E4)';
+const ICON_COLOR = 'var(--ds-text)';
+const ICON_COLOR_ACTIVE = 'var(--ds-text-information)';
 
 function findTableAt(state: EditorState) {
   const { $from } = state.selection;
@@ -217,8 +217,8 @@ export function TableToolbar({ editor, containerRef }: Props) {
         alignItems: 'center',
         gap: 2,
         padding: 4,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
         zIndex: 2147483600,
@@ -244,7 +244,7 @@ function Divider() {
       style={{
         width: 1,
         alignSelf: 'stretch',
-        background: 'var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-border)',
         margin: '4px 4px',
       }}
     />
@@ -287,7 +287,7 @@ function IconBtn({
         border: 'none',
         borderRadius: 4,
         background: active
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : 'transparent',
         color: active ? ICON_COLOR_ACTIVE : ICON_COLOR,
         cursor: 'pointer',
@@ -362,8 +362,8 @@ function Dropdown({
         top: coords.top,
         left: coords.left,
         minWidth,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: '0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
         padding: 4,
@@ -411,13 +411,13 @@ function MenuItem({
         border: 'none',
         borderRadius: 4,
         background: active
-          ? 'var(--ds-background-selected, #E9F2FE)'
+          ? 'var(--ds-background-selected)'
           : 'transparent',
         color: danger
-          ? 'var(--ds-text-danger, #AE2A19)'
+          ? 'var(--ds-text-danger)'
           : active
             ? ICON_COLOR_ACTIVE
-            : 'var(--ds-text, #292A2E)',
+            : 'var(--ds-text)',
         fontSize: 'var(--ds-font-size-300)',
         fontWeight: active ? 500 : 400,
         cursor: 'pointer',

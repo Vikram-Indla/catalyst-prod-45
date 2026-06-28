@@ -19,15 +19,15 @@ interface AddColumnModalProps {
 }
 
 const PRESET_COLORS = [
-  'var(--ds-text-disabled, #8590A2)', // Slate
-  'var(--ds-background-information-bold, #3b82f6)', // Blue
-  'var(--ds-chart-teal-bold, #0d9488)', // Teal
-  'var(--ds-background-success-bold, #059669)', // Green
-  'var(--ds-background-warning-bold, #d97706)', // Amber
-  'var(--ds-background-warning-bold, #f97316)', // Orange
-  'var(--ds-background-danger-bold, #ef4444)', // Red
-  'var(--ds-background-discovery-bold, #7C3AED)', // Violet
-  'var(--ds-background-accent-magenta-bolder, #ec4899)', // Pink
+  'var(--ds-text-disabled)', // Slate
+  'var(--ds-background-information-bold)', // Blue
+  'var(--ds-chart-teal-bold)', // Teal
+  'var(--ds-background-success-bold)', // Green
+  'var(--ds-background-warning-bold)', // Amber
+  'var(--ds-background-warning-bold)', // Orange
+  'var(--ds-background-danger-bold)', // Red
+  'var(--ds-background-discovery-bold)', // Violet
+  'var(--ds-background-accent-magenta-bolder)', // Pink
 ];
 
 export function AddColumnModal({ isOpen, onClose, onAdd, existingColumns }: AddColumnModalProps) {

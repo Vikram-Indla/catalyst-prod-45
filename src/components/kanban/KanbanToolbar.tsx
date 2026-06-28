@@ -235,7 +235,7 @@ export function QuickFilterDropdown({ selected, onChange, tk }: {
           transition: 'all 120ms ease', outline: 'none',
         }}>
         <Filter size={14} />
-        Quick{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 20, height: 20, borderRadius: 10, background: tk.selectedAccent, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>{selected.size}</span>}
+        Quick{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 20, height: 20, borderRadius: 10, background: tk.selectedAccent, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>{selected.size}</span>}
       </button>
       {open && (
         <DropdownPanel width={240} tk={tk}>
@@ -271,7 +271,7 @@ export function DensityToggle({ value, onChange, tk }: {
         <button key={o.key} onClick={() => onChange(o.key)} style={{
           padding: '0 12px', height: 30, fontSize: 'var(--ds-font-size-200)', fontWeight: value === o.key ? 600 : 450,
           background: value === o.key ? tk.selectedAccent : tk.surfaceBg,
-          color: value === o.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textSecondary,
+          color: value === o.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : tk.textSecondary,
           border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           transition: 'all 100ms ease',
         }}>{o.label}</button>
@@ -379,7 +379,7 @@ function FilterTrigger({ label, count, active, onClick, tk }: {
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           minWidth: 20, height: 20, borderRadius: 10,
-          background: tk.selectedAccent, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
+          background: tk.selectedAccent, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
         }}>{count}</span>
       )}
       <ChevronDown size={13} />
@@ -413,7 +413,7 @@ function CheckRow({ checked, onClick, children, tk }: {
         flexShrink: 0,
         transition: 'all 100ms ease',
       }}>
-        {checked && <Check size={12} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={3} />}
+        {checked && <Check size={12} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" strokeWidth={3} />}
       </div>
       {children}
     </button>

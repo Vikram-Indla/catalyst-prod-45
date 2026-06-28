@@ -205,9 +205,9 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
     if (!resource.contractStatus) return 'ring-muted-foreground/30';
     
     const colors: Record<string, string> = {
-      healthy: 'ring-[var(--ds-chart-teal-bold, #0d9488)]',
-      warning: 'ring-[var(--ds-text-warning, #974F0C)]',
-      critical: 'ring-[var(--ds-text-danger, #be123c)] animate-pulse',
+      healthy: 'ring-[var(--ds-chart-teal-bold)]',
+      warning: 'ring-[var(--ds-text-warning)]',
+      critical: 'ring-[var(--ds-text-danger)] animate-pulse',
       expired: 'ring-muted-foreground/40',
       permanent: 'ring-muted-foreground/30'
     };

@@ -90,7 +90,7 @@ export function BrMoveProductDialog({
       <ModalBody>
         <p style={{
           fontSize: 'var(--ds-font-size-400)',
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
+          color: token('color.text', 'var(--ds-text)'),
           marginBottom: 12,
           fontFamily: 'var(--cp-font-body)',
         }}>

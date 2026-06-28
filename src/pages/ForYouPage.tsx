@@ -141,15 +141,15 @@ export default function ForYouPage() {
   // Build filter categories for JiraBasicFilter panel
   const filterCategories = React.useMemo<FilterCategory[]>(() => {
     const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-    const PALETTE = ['var(--ds-link, #1868DB)', 'var(--ds-text-warning, #E2631E)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text, #1B3459)', 'var(--ds-icon-success, #0D7C66)', 'var(--ds-text-warning, #B34D00)', 'var(--ds-background-discovery-bold, #943A79)', 'var(--ds-link, #0C66E4)'];
+    const PALETTE = ['var(--ds-link)', 'var(--ds-text-warning)', 'var(--ds-background-discovery-bold)', 'var(--ds-text)', 'var(--ds-icon-success)', 'var(--ds-text-warning)', 'var(--ds-background-discovery-bold)', 'var(--ds-link)'];
     const pickColor = (name: string) => { let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h); return PALETTE[Math.abs(h) % PALETTE.length]; };
     const HUB_ICONS: Record<string, React.ReactNode> = {
-      Incident: <AlertTriangleIcon size={14} color="var(--ds-background-danger-bold, #C9372C)" strokeWidth={2} />,
-      Product: <LayoutGrid size={14} color="var(--ds-background-discovery-bold, #6554C0)" strokeWidth={2} />,
-      Project: <Folder size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" strokeWidth={2} />,
-      Task: <CheckSquare size={14} color="var(--ds-background-information-bold, #1D7AFC)" strokeWidth={2} />,
-      Plan: <BookOpen size={14} color="var(--cp-teal-60, #0D9488)" strokeWidth={2} />,
-      Strategy: <Zap size={14} color="var(--ds-text-warning, var(--cp-warning, #D97706))" strokeWidth={2} />,
+      Incident: <AlertTriangleIcon size={14} color="var(--ds-background-danger-bold)" strokeWidth={2} />,
+      Product: <LayoutGrid size={14} color="var(--ds-background-discovery-bold)" strokeWidth={2} />,
+      Project: <Folder size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" strokeWidth={2} />,
+      Task: <CheckSquare size={14} color="var(--ds-background-information-bold)" strokeWidth={2} />,
+      Plan: <BookOpen size={14} color="var(--cp-teal-60)" strokeWidth={2} />,
+      Strategy: <Zap size={14} color="var(--ds-text-warning, var(--cp-warning))" strokeWidth={2} />,
     };
     const PRIORITY_ICONS: Record<string, React.ReactNode> = {
       Critical: <PriorityBars priority="critical" />,
@@ -164,14 +164,14 @@ export default function ForYouPage() {
         id: 'project', label: 'Project', searchPlaceholder: 'Search project',
         options: projectOptions.map(p => ({
           id: p, label: p,
-          iconNode: <Folder size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth={1.5} />,
+          iconNode: <Folder size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" strokeWidth={1.5} />,
         })),
       },
       {
         id: 'hub', label: 'Hub', searchPlaceholder: 'Search hub',
         options: hubOptions.map(h => ({
           id: h, label: h + ' Hub',
-          iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth={2} />,
+          iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" strokeWidth={2} />,
         })),
       },
       {

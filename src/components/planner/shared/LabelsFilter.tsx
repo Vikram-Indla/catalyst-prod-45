@@ -13,14 +13,14 @@ interface LabelsFilterProps {
 }
 
 const COLORS = {
-  textPrimary: 'var(--ds-text, #0f172a)',
-  textMuted: 'var(--ds-text-subtlest, #64748b)',
-  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
-  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
-  borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
-  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  accentLight: 'var(--ds-background-information, #E9F2FF)'
+  textPrimary: 'var(--ds-text)',
+  textMuted: 'var(--ds-text-subtlest)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  surfaceHover: 'var(--ds-surface-sunken)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken))',
+  borderDefault: 'var(--ds-text-disabled)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  accentLight: 'var(--ds-background-information)'
 };
 
 export const LabelsFilter: React.FC<LabelsFilterProps> = ({
@@ -89,7 +89,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: COLORS.accent,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               borderRadius: '9px',
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600

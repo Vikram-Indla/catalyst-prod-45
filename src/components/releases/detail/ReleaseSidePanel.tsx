@@ -31,15 +31,15 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 import type { Release, ReleaseStatus } from '@/types/phase3-releases';
 import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const BLUE = 'var(--ds-border-selected, #1868DB)';
-const BLUE_BG = 'var(--ds-background-selected, #E9F2FE)';
-const BLUE_TEXT = 'var(--ds-text-selected, #0C66E4)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #505258)';
-const SUBTLEST = 'var(--ds-text-subtlest, #6B778C)';
-const LINK = 'var(--ds-link, #0C66E4)';
-const HOVER_BG = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+const BORDER = 'var(--ds-border)';
+const BLUE = 'var(--ds-border-selected)';
+const BLUE_BG = 'var(--ds-background-selected)';
+const BLUE_TEXT = 'var(--ds-text-selected)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
+const SUBTLEST = 'var(--ds-text-subtlest)';
+const LINK = 'var(--ds-link)';
+const HOVER_BG = 'var(--ds-background-neutral-subtle-hovered)';
 
 type DBStatus = 'planning' | 'in_progress' | 'released' | 'archived';
 const fromDBStatus = (s: string | null | undefined): ReleaseStatus => {
@@ -133,7 +133,7 @@ export function ReleaseSidePanel(props: Props) {
           border: `1px solid ${BORDER}`,
           borderRadius: 6,
           padding: 16,
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
           display: 'flex',
           flexDirection: 'column',
           gap: 16,
@@ -234,9 +234,9 @@ interface Approver {
 }
 
 const STATUS_BORDER: Record<ApproverStatus, string> = {
-  pending: 'var(--ds-border, #DFE1E6)',
-  approved: 'var(--ds-border-success, #22A06B)',
-  rejected: 'var(--ds-border-danger, #C9372C)',
+  pending: 'var(--ds-border)',
+  approved: 'var(--ds-border-success)',
+  rejected: 'var(--ds-border-danger)',
 };
 
 interface ApproverRow {
@@ -404,7 +404,7 @@ function ApproversCard({ releaseId, config = RELEASE_CONFIG }: { releaseId: stri
         border: `1px solid ${BORDER}`,
         borderRadius: 6,
         padding: 16,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
@@ -550,7 +550,7 @@ function StatusPill({ status }: { status: ApproverStatus }) {
         border: `1px solid ${STATUS_BORDER[status]}`,
         borderRadius: 3,
         letterSpacing: 0.3,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
       }}
     >
       {label}
@@ -621,7 +621,7 @@ function ApproverExpandPanel({
                   justifyContent: 'center',
                   border: `1px solid ${BORDER}`,
                   borderRadius: 3,
-                  background: 'var(--ds-surface, #FFFFFF)',
+                  background: 'var(--ds-surface)',
                   color: canSave ? TEXT : SUBTLEST,
                   opacity: canSave ? 1 : 0.5,
                 }}
@@ -642,7 +642,7 @@ function ApproverExpandPanel({
                   justifyContent: 'center',
                   border: `1px solid ${BORDER}`,
                   borderRadius: 3,
-                  background: 'var(--ds-surface, #FFFFFF)',
+                  background: 'var(--ds-surface)',
                   color: TEXT,
                 }}
               >
@@ -748,7 +748,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
         left: pos.left,
         width: pos.width,
         zIndex: 10010,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        background: 'var(--ds-surface-overlay)',
         border: `1px solid ${BORDER}`,
         borderRadius: 6,
         boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
@@ -767,7 +767,7 @@ const UserPickerDropdown = React.forwardRef<HTMLDivElement, {
           padding: '6px 10px',
           border: `2px solid ${focused ? BLUE : BORDER}`,
           borderRadius: 3,
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
         }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={SUBTLE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -947,7 +947,7 @@ function StatusDropdown({
           padding: '8px 12px',
           border: `1px solid ${open ? BLUE : BORDER}`,
           borderRadius: 3,
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
           color: open ? BLUE_TEXT : TEXT,
           display: 'flex',
           alignItems: 'center',
@@ -972,7 +972,7 @@ function StatusDropdown({
             left: pos.left,
             width: pos.width,
             zIndex: 10010,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
@@ -1194,7 +1194,7 @@ function ProjectField({
             left: pos.left,
             width: pos.width,
             zIndex: 10010,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
@@ -1284,7 +1284,7 @@ function ContributorsField({
               key={`${c.accountId || c.name || i}`}
               style={{
                 marginLeft: i === 0 ? 0 : -6,
-                border: '2px solid var(--ds-surface, #FFFFFF)',
+                border: '2px solid var(--ds-surface)',
                 borderRadius: '50%',
                 display: 'inline-flex',
               }}
@@ -1300,7 +1300,7 @@ function ContributorsField({
                 fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
                 color: TEXT,
-                background: 'var(--ds-background-neutral, #F1F2F4)',
+                background: 'var(--ds-background-neutral)',
                 padding: '1px 8px',
                 borderRadius: 3,
                 minWidth: 18,
@@ -1397,7 +1397,7 @@ function DescriptionField({
                 justifyContent: 'center',
                 border: `1px solid ${BORDER}`,
                 borderRadius: 3,
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
                 color: canSave ? TEXT : SUBTLEST,
                 opacity: canSave ? 1 : 0.5,
               }}
@@ -1418,7 +1418,7 @@ function DescriptionField({
                 justifyContent: 'center',
                 border: `1px solid ${BORDER}`,
                 borderRadius: 3,
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
                 color: TEXT,
               }}
             >

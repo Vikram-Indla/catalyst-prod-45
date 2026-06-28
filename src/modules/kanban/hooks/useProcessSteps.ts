@@ -18,9 +18,9 @@ export interface ProcessStep {
 
 // Category → ADS-token column color
 const CATEGORY_COLOR: Record<string, string> = {
-  todo:        'var(--ds-text-subtlest, #6B778C)',
-  in_progress: 'var(--ds-text-information, #0052CC)',
-  done:        'var(--ds-text-success, #006644)',
+  todo:        'var(--ds-text-subtlest)',
+  in_progress: 'var(--ds-text-information)',
+  done:        'var(--ds-text-success)',
 };
 
 export function useProcessSteps() {

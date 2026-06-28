@@ -188,7 +188,7 @@ export function AddAssignmentModal({
           </div>
 
           {/* Divider */}
-          <div className="h-1 bg-gradient-to-r from-primary via-[var(--ds-chart-teal-bold, #0d9488)] to-[var(--ds-background-discovery-bold, #7C3AED)]" />
+          <div className="h-1 bg-gradient-to-r from-primary via-[var(--ds-chart-teal-bold)] to-[var(--ds-background-discovery-bold)]" />
 
           {/* Content */}
           <div className="px-6 py-5 space-y-6">
@@ -375,7 +375,7 @@ export function AddAssignmentModal({
                         : "text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    <div className="w-2.5 h-2.5 rounded-full border-2 border-dashed border-[var(--ds-text-warning,#d97706)]" />
+                    <div className="w-2.5 h-2.5 rounded-full border-2 border-dashed border-[var(--ds-text-warning)]" />
                     Forecast
                   </button>
                 </div>
@@ -395,7 +395,7 @@ export function AddAssignmentModal({
             <Button
               onClick={handleSubmit}
               disabled={!selectedAssignmentId || !startPeriod || !endPeriod || isSubmitting}
-              className="flex-1 h-11 rounded-xl text-[13px] font-semibold bg-[var(--ds-chart-teal-bold, #0d9488)] hover:bg-[var(--ds-background-accent-teal-bolder, #14b8a6)] text-white"
+              className="flex-1 h-11 rounded-xl text-[13px] font-semibold bg-[var(--ds-chart-teal-bold)] hover:bg-[var(--ds-background-accent-teal-bolder)] text-white"
             >
               {isSubmitting ? 'Adding...' : '+ Add Assignment'}
             </Button>

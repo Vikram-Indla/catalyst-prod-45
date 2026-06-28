@@ -7,7 +7,7 @@ const T = {
   bg: '#F5F0EB', surface: 'var(--bg-app)', text1: 'var(--fg-1)', text2: '#1A1A2E',
   text3: '#3D3D56', text4: 'var(--fg-3)', border: 'var(--divider)', borderStrong: 'var(--divider)',
   todo: '#E23636', progress: 'var(--cp-blue)', done: '#0E8A5F',
-  pendingHighlight: 'var(--ds-background-warning, #FFF7D6)',
+  pendingHighlight: 'var(--ds-background-warning)',
   shadow: '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,.12))',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
@@ -110,7 +110,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
             style={{
               fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
               background: filtersExpanded ? T.text1 : T.surface,
-              color: filtersExpanded ? 'var(--ds-surface, #fff)' : T.text3,
+              color: filtersExpanded ? 'var(--ds-surface)' : T.text3,
               border: `1px solid ${T.borderStrong}`,
               padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
             }}>
@@ -192,9 +192,9 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                 const cat = getStatusCategory(item.status_category || item.status);
                 const isPending = cat !== 'done';
                 const statusColor = cat === 'todo' ? T.todo : cat === 'progress' ? T.progress : T.done;
-                const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+                const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
                 const hub = item.hub || item.source_hub || 'ProjectHub';
-                const baseBg = idx % 2 === 0 ? T.surface : 'var(--ds-surface-sunken, #FAF8F5)';
+                const baseBg = idx % 2 === 0 ? T.surface : 'var(--ds-surface-sunken)';
                 const highlightBg = showPendingOnly && isPending ? T.pendingHighlight : baseBg;
                 const key = item.item_key || item.key || '—';
                 const title = item.title || '';
@@ -215,7 +215,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                       cursor: 'pointer', transition: 'background .1s',
                       borderRadius: 0,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EDE7E0)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = highlightBg; }}>
 
                     {/* Key + Hub badge */}
@@ -224,7 +224,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                         {key}
                       </span>
                       <span style={{
-                        fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface, #fff)', padding: '1px 5px',
+                        fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '1px 5px',
                         borderRadius: 4, background: hubColor, width: 'fit-content',
                         textTransform: 'uppercase' as const,
                       }}>
@@ -257,7 +257,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
 
                     {/* Status pill — SOLID */}
                     <span style={{
-                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface, #fff)', padding: '2px 8px',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)', padding: '2px 8px',
                       borderRadius: 4, background: statusColor, whiteSpace: 'nowrap' as const,
                       flexShrink: 0,
                     }}>
@@ -268,7 +268,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                     <span style={{
                       fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 800, minWidth: 28, textAlign: 'right',
                       flexShrink: 0,
-                      color: ageDays > 14 ? T.todo : ageDays > 7 ? 'var(--ds-text-warning, #974F0C)' : T.text4,
+                      color: ageDays > 14 ? T.todo : ageDays > 7 ? 'var(--ds-text-warning)' : T.text4,
                     }}>
                       {ageDays}d
                     </span>
@@ -296,7 +296,7 @@ function FilterPill({ label, active, onClick, dotColor }: {
       fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '3px 9px', borderRadius: 4,
       cursor: 'pointer', transition: 'all .12s',
       background: active ? 'var(--cp-blue)' : T.surface,
-      color: active ? 'var(--ds-surface, #fff)' : T.text3,
+      color: active ? 'var(--ds-surface)' : T.text3,
       border: active ? 'none' : `1px solid ${T.borderStrong}`,
     }}>
       {dotColor && <span style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />}

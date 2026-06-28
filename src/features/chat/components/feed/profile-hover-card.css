@@ -46,7 +46,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--ds-icon-success, #22A06B);
+  background: var(--ds-icon-success);
 }
 
 .c-profile-card__presence-label {

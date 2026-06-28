@@ -97,7 +97,7 @@ function VscodeLink({ path }: { path: string }) {
     <a
       href={href}
       style={{
-        color: token('color.link', 'var(--ds-link, #0C66E4)'),
+        color: token('color.link', 'var(--ds-link)'),
         textDecoration: 'none',
         fontFamily: 'var(--ds-font-family-code)',
         fontSize: 12,
@@ -202,7 +202,7 @@ export default function CascadeImpactPanel() {
             marginTop: token('space.075', '6px'),
             marginBottom: 0,
             fontSize: 13,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             maxWidth: 760,
           }}
         >
@@ -228,7 +228,7 @@ export default function CascadeImpactPanel() {
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
               display: 'block',
               marginBottom: token('space.075', '6px'),
             }}
@@ -249,7 +249,7 @@ export default function CascadeImpactPanel() {
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
               display: 'block',
               marginBottom: token('space.075', '6px'),
             }}
@@ -266,7 +266,7 @@ export default function CascadeImpactPanel() {
             style={{
               marginTop: token('space.075', '6px'),
               fontSize: 12,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             }}
           >
             {changeOption.description}
@@ -278,9 +278,9 @@ export default function CascadeImpactPanel() {
         <div
           style={{
             padding: token('space.200', '16px'),
-            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
             borderRadius: 6,
-            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -290,12 +290,12 @@ export default function CascadeImpactPanel() {
         >
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
             <strong style={{ fontSize: 16 }}>{entry.name}</strong>
-            <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+            <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))') }}>
               v{entry.version} → v{nextVersion}
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
-            <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+            <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))') }}>
               {reviewed.size} of {consumers.length} reviewed
             </span>
             {allReviewed ? (
@@ -323,10 +323,10 @@ export default function CascadeImpactPanel() {
         <div
           style={{
             padding: token('space.300', '24px'),
-            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
             borderRadius: 6,
-            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             fontSize: 13,
           }}
         >
@@ -337,7 +337,7 @@ export default function CascadeImpactPanel() {
       ) : (
         <div
           style={{
-            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
             borderRadius: 6,
             overflow: 'hidden',
             display: 'flex',
@@ -352,11 +352,11 @@ export default function CascadeImpactPanel() {
                 <div
                   style={{
                     padding: '8px 12px',
-                    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-                    borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                    background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+                    borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                     fontSize: 12,
                     fontWeight: 600,
-                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -372,7 +372,7 @@ export default function CascadeImpactPanel() {
                     key={path}
                     style={{
                       padding: '6px 12px',
-                      borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+                      borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                       display: 'flex',
                       alignItems: 'center',
                       gap: token('space.100', '8px'),

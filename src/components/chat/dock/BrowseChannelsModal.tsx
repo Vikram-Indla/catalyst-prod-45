@@ -107,19 +107,19 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
                 width: '100%',
                 padding: '8px 12px',
                 fontSize: 'var(--ds-font-size-400)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 marginBottom: 12,
               }}
             />
             <div style={{ maxHeight: 360, overflowY: 'auto' }}>
               {isLoading && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
                   Loading…
                 </div>
               )}
               {!isLoading && filtered.length === 0 && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
                   No channels match.
                 </div>
               )}
@@ -144,11 +144,11 @@ export function BrowseChannelsModal({ isOpen, onClose, onOpenChannel }: BrowseCh
                 >
                   <ProjectIcon projectKey={r.project_key ?? ''} size="medium" />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
                       #{(r.title ?? r.project_key ?? '').replace(/^#\s*/, '')}
                     </div>
                     {r.project_key && (
-                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                         {r.project_key}
                       </div>
                     )}

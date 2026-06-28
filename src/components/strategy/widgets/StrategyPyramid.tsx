@@ -27,11 +27,11 @@ interface LayerDisplay {
 
 /* Monochromatic blue gradient — darkest at top */
 const LAYER_COLORS: Record<string, string> = {
-  mission: 'var(--ds-text, #172B4D)',
-  vision: 'var(--ds-link-pressed, #1e40af)',
-  themes: 'var(--ds-text-brand, #3B82F6)',
-  goals: 'var(--ds-background-information-bold, #0C66E4)',
-  krs: 'var(--ds-background-information, #E9F2FF)',
+  mission: 'var(--ds-text)',
+  vision: 'var(--ds-link-pressed)',
+  themes: 'var(--ds-text-brand)',
+  goals: 'var(--ds-background-information-bold)',
+  krs: 'var(--ds-background-information)',
 };
 
 const LETTER_COLORS: Record<string, string> = {
@@ -168,11 +168,11 @@ export function StrategyPyramid() {
                 ? Math.round(themeGoals.reduce((s, g) => s + (Number(g.progress_pct) || 0), 0) / themeGoals.length)
                 : 0;
               return (
-                <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))' }}>
+                <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken))))' }}>
                   <div className="flex items-center gap-2 mb-1">
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-link-pressed, #1e40af)', flexShrink: 0 }} />
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-link-pressed)', flexShrink: 0 }} />
                     <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--exec-text-primary)' }}>{t.title}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: avgProgress >= 70 ? 'var(--ds-link-pressed, #1e40af)' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{avgProgress}%</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: avgProgress >= 70 ? 'var(--ds-link-pressed)' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger, var(--cp-danger))' }}>{avgProgress}%</span>
                   </div>
                   <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
                     {themeGoals.length} Goals · {themeKrs.length} KRs
@@ -301,7 +301,7 @@ export function StrategyPyramid() {
                 padding: '8px 12px',
                 borderRadius: 6,
                 cursor: 'pointer',
-                background: hoveredLayer === layer.key ? 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' : 'transparent',
+                background: hoveredLayer === layer.key ? 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken)))' : 'transparent',
                 transition: 'background 120ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
@@ -314,7 +314,7 @@ export function StrategyPyramid() {
               </div>
               {layer.count !== undefined && layer.count > 0 && (
                 <span style={{
-                  fontSize: 'var(--ds-font-size-50)', fontWeight: 600, background: 'var(--exec-blue-50, #EFF6FF)', color: 'var(--exec-blue-700, #1E40AF)',
+                  fontSize: 'var(--ds-font-size-50)', fontWeight: 600, background: 'var(--exec-blue-50)', color: 'var(--exec-blue-700)',
                   padding: '1px 8px', borderRadius: 9999, flexShrink: 0,
                 }}>
                   {layer.count}

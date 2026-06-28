@@ -3,9 +3,9 @@ import type { TypeStatus, Transition } from '@/hooks/useTypeWorkflow';
 import { STATUS_CATEGORY_BG, STATUS_TEXT } from '@/components/catalyst-detail-views/shared/sections/statusPalette';
 
 const CAT_COLOR: Record<string, string> = {
-  todo:        STATUS_CATEGORY_BG.todo,        // var(--ds-border, #DFE1E6) grey
-  in_progress: STATUS_CATEGORY_BG.in_progress, // var(--ds-background-information, #E9F2FF) periwinkle blue
-  done:        STATUS_CATEGORY_BG.done,         // var(--ds-background-success-bold, #6A9A23) lime green
+  todo:        STATUS_CATEGORY_BG.todo,        // var(--ds-border) grey
+  in_progress: STATUS_CATEGORY_BG.in_progress, // var(--ds-background-information) periwinkle blue
+  done:        STATUS_CATEGORY_BG.done,         // var(--ds-background-success-bold) lime green
 };
 
 const NODE_W = 155;
@@ -130,17 +130,17 @@ export function CatalystWorkflowDiagram({
       >
         <defs>
           <marker id={markerId} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="var(--ds-border, #DFE1E6)" />
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--ds-border)" />
           </marker>
           <marker id={markerHlId} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="var(--ds-link, #0C66E4)" />
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--ds-link)" />
           </marker>
         </defs>
 
         {/* START node */}
-        <rect x={startX} y={startY} width={START_W} height={START_H} rx={START_H / 2} fill="var(--ds-text, #172B4D)" />
+        <rect x={startX} y={startY} width={START_W} height={START_H} rx={START_H / 2} fill="var(--ds-text)" />
         <text x={startX + START_W / 2} y={startY + START_H / 2 + 1} textAnchor="middle" dominantBaseline="middle"
-          fontSize={'var(--ds-font-size-50)'} fontWeight={600} fill="var(--ds-surface, #FFFFFF)">START</text>
+          fontSize={'var(--ds-font-size-50)'} fontWeight={600} fill="var(--ds-surface)">START</text>
 
         {/* Arrow from START to initial */}
         {initialStatusId && (() => {
@@ -153,7 +153,7 @@ export function CatalystWorkflowDiagram({
           const cy = (fy + ty) / 2;
           return (
             <path d={`M ${fx} ${fy} C ${fx} ${cy}, ${tx} ${cy}, ${tx} ${ty}`}
-              fill="none" stroke="var(--ds-border, #DFE1E6)" strokeWidth={1.5}
+              fill="none" stroke="var(--ds-border)" strokeWidth={1.5}
               markerEnd={`url(#${markerId})`} />
           );
         })()}
@@ -189,8 +189,8 @@ export function CatalystWorkflowDiagram({
           const isHighlighted = highlightedTransitionIds?.has(e.id);
           const isHovered = hoveredEdgeId === e.id;
           const strokeColor = isHighlighted
-            ? 'var(--ds-link, #0C66E4)'
-            : 'var(--ds-border, #DFE1E6)';
+            ? 'var(--ds-link)'
+            : 'var(--ds-border)';
           const strokeW = isHighlighted ? 2 : 1.5;
           const arrowRef = isHighlighted ? `url(#${markerHlId})` : `url(#${markerId})`;
 
@@ -210,9 +210,9 @@ export function CatalystWorkflowDiagram({
               {/* Delete badge — shown on hover when onEdgeDelete wired */}
               {onEdgeDelete && isHovered && (
                 <>
-                  <circle cx={midX} cy={midY} r={8} fill="var(--ds-background-danger-bold, #C9372C)" />
+                  <circle cx={midX} cy={midY} r={8} fill="var(--ds-background-danger-bold)" />
                   <text x={midX} y={midY + 1} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={'var(--ds-font-size-100)'} fontWeight={600} fill="var(--ds-surface, #FFFFFF)" style={{ pointerEvents: 'none' }}>
+                    fontSize={'var(--ds-font-size-100)'} fontWeight={600} fill="var(--ds-surface)" style={{ pointerEvents: 'none' }}>
                     ×
                   </text>
                 </>
@@ -238,12 +238,12 @@ export function CatalystWorkflowDiagram({
               {/* Connect-source ring — solid amber, thicker */}
               {isConnectSource && (
                 <rect x={node.pos.x - 4} y={node.pos.y - 4} width={NODE_W + 8} height={NODE_H + 8}
-                  rx={8} fill="none" stroke="var(--ds-background-warning-bold, #E2B203)" strokeWidth={3} />
+                  rx={8} fill="none" stroke="var(--ds-background-warning-bold)" strokeWidth={3} />
               )}
               {/* Selection ring — dashed blue (non-connect-mode) */}
               {isSelected && !isConnectSource && (
                 <rect x={node.pos.x - 3} y={node.pos.y - 3} width={NODE_W + 6} height={NODE_H + 6}
-                  rx={7} fill="none" stroke="var(--ds-border-brand, #0C66E4)" strokeWidth={2}
+                  rx={7} fill="none" stroke="var(--ds-border-brand)" strokeWidth={2}
                   strokeDasharray="4 2" />
               )}
               {/* Connect-target hint — faint highlight on non-source nodes */}
@@ -254,7 +254,7 @@ export function CatalystWorkflowDiagram({
               <rect
                 x={node.pos.x} y={node.pos.y} width={NODE_W} height={NODE_H} rx={4}
                 fill={bgColor}
-                stroke={isCurrent ? 'var(--ds-border-brand, #0052CC)' : 'var(--ds-border, #DFE1E6)'}
+                stroke={isCurrent ? 'var(--ds-border-brand)' : 'var(--ds-border)'}
                 strokeWidth={isCurrent ? 2 : 1}
               />
               <text

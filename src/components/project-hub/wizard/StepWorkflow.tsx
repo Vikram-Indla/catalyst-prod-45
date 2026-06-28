@@ -4,11 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { ArrowRight } from '@/lib/atlaskit-icons';
 
 const DEFAULT_WORKFLOW = [
-  { name: 'To Do', color: 'var(--ds-text-disabled, #8590A2)' },
+  { name: 'To Do', color: 'var(--ds-text-disabled)' },
   { name: 'In Progress', color: 'var(--cp-blue)' },
   { name: 'In Review', color: 'var(--sem-warning)' },
   { name: 'Done', color: 'var(--sem-success)' },
-  { name: 'Cancelled', color: 'var(--ds-background-neutral-hovered, #D4D4D4)' },
+  { name: 'Cancelled', color: 'var(--ds-background-neutral-hovered)' },
 ];
 
 export interface StepWorkflowData {

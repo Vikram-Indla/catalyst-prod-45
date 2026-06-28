@@ -62,32 +62,32 @@ interface Props {
 const STATUS_GROUPS = [
   {
     label: 'To do',
-    dot: 'var(--ds-text-subtlest, #7A869A)',
+    dot: 'var(--ds-text-subtlest)',
     statuses: ['BACKLOG', 'TO DO', 'IN REQUIREMENTS', 'IN DESIGN', 'READY FOR DEV', 'TECH VALIDATION', 'PORTFOLIO REVIEW'],
   },
   {
     label: 'In progress',
-    dot: token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
+    dot: token('color.background.brand.bold', 'var(--ds-link)'),
     statuses: ['IN DEVELOPMENT', 'IN PROGRESS', 'IN REVIEW', 'IN QA', 'IN ENTITY INT.', 'IN UAT', 'IN BETA', 'INTERNAL QA', 'END TO END'],
   },
   {
     label: 'Paused',
-    dot: 'var(--ds-text-warning, #FFAB00)',
+    dot: 'var(--ds-text-warning)',
     statuses: ['ON HOLD', 'BLOCKED', 'AWAITING INFO', 'HOLD'],
   },
   {
     label: 'Done',
-    dot: 'var(--ds-text-success, #36B37E)',
+    dot: 'var(--ds-text-success)',
     statuses: ['PRODUCTION READY', 'BETA READY', 'IN PRODUCTION', 'DONE', 'CLOSED'],
   },
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: 'Highest', label: 'Highest', icon: '↑↑', color: 'var(--ds-text-danger, #DE350B)' },
-  { value: 'High', label: 'High', icon: '↑', color: 'var(--ds-text-warning, #FF8B00)' },
-  { value: 'Medium', label: 'Medium', icon: '—', color: 'var(--ds-text-warning, #FFAB00)' },
-  { value: 'Low', label: 'Low', icon: '↓', color: 'var(--ds-link, #0065FF)' },
-  { value: 'Lowest', label: 'Lowest', icon: '↓↓', color: 'var(--ds-text-subtlest, #7A869A)' },
+  { value: 'Highest', label: 'Highest', icon: '↑↑', color: 'var(--ds-text-danger)' },
+  { value: 'High', label: 'High', icon: '↑', color: 'var(--ds-text-warning)' },
+  { value: 'Medium', label: 'Medium', icon: '—', color: 'var(--ds-text-warning)' },
+  { value: 'Low', label: 'Low', icon: '↓', color: 'var(--ds-link)' },
+  { value: 'Lowest', label: 'Lowest', icon: '↓↓', color: 'var(--ds-text-subtlest)' },
 ];
 
 // ITEM_TYPES are fetched dynamically from ph_issues per project (see useQuery
@@ -206,7 +206,7 @@ export default function GadgetSettingsPanel({
   };
 
   return (
-    <div ref={wrapperRef} style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>
+    <div ref={wrapperRef} style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
       {/* HEADER */}
       <div
         style={{
@@ -214,12 +214,12 @@ export default function GadgetSettingsPanel({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '12px 14px 8px',
-          borderBottom: '1px solid var(--ds-background-neutral, #F1F2F4)',
+          borderBottom: '1px solid var(--ds-background-neutral)',
         }}
       >
         <div>
-          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 653, color: 'var(--ds-text, #172B4D)' }}>Gadget settings</div>
-          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 653, color: 'var(--ds-text)' }}>Gadget settings</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 4 }}>
             Showing {filter.label}
           </div>
         </div>
@@ -231,7 +231,7 @@ export default function GadgetSettingsPanel({
             background: 'transparent',
             border: 0,
             cursor: 'pointer',
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest)',
             padding: 4,
             borderRadius: 3,
           }}
@@ -244,11 +244,11 @@ export default function GadgetSettingsPanel({
       <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 480, overflowY: 'auto' }}>
         {/* ── DATE RANGE — first field ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)',
+          <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)',
                           display: 'flex', alignItems: 'center', gap: 6 }}>
             Date range
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, background: token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)'),
-                           color: token('color.text.selected', 'var(--ds-link, #0C66E4)'), padding: '0 4px', borderRadius: 2 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, background: token('color.background.selected', 'var(--ds-background-selected)'),
+                           color: token('color.text.selected', 'var(--ds-link)'), padding: '0 4px', borderRadius: 2 }}>
               NEW
             </span>
           </label>
@@ -257,36 +257,36 @@ export default function GadgetSettingsPanel({
             onClick={() => toggleField('date')}
             style={{
               display: 'flex', alignItems: 'center', minHeight: 36,
-              border: openField === 'date' ? '2px solid var(--ds-border-focused, #4C9AFF)' : '2px solid var(--ds-border, #DFE1E6)',
+              border: openField === 'date' ? '2px solid var(--ds-border-focused)' : '2px solid var(--ds-border)',
               boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-              borderRadius: 3, background: openField === 'date' ? 'var(--ds-surface, #fff)' : 'var(--ds-surface-sunken, #FAFBFC)',
+              borderRadius: 3, background: openField === 'date' ? 'var(--ds-surface)' : 'var(--ds-surface-sunken)',
               padding: '0 8px', cursor: 'pointer', width: '100%', gap: 8,
             }}
           >
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
               <rect x="1" y="2" width="14" height="13" rx="2"
-                stroke={openField === 'date' ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtlest, #7A869A)'} strokeWidth="1.5"/>
+                stroke={openField === 'date' ? 'var(--ds-link)' : 'var(--ds-text-subtlest)'} strokeWidth="1.5"/>
               <path d="M1 6h14M5 1v2M11 1v2"
-                stroke={openField === 'date' ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtlest, #7A869A)'}
+                stroke={openField === 'date' ? 'var(--ds-link)' : 'var(--ds-text-subtlest)'}
                 strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <span style={{ flex: 1, textAlign: 'left', fontSize: 'var(--ds-font-size-400)',
-                           color: draft.datePreset === 'all' ? 'var(--ds-text-subtlest, #7A869A)' : 'var(--ds-text, #172B4D)',
+                           color: draft.datePreset === 'all' ? 'var(--ds-text-subtlest)' : 'var(--ds-text)',
                            fontWeight: draft.datePreset === 'all' ? 400 : 500 }}>
               {draft.dateLabel || 'Select period'}
             </span>
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
               <path d={openField === 'date' ? 'M2 8l4-4 4 4' : 'M2 4l4 4 4-4'}
-                stroke="var(--ds-text-subtlest, #7A869A)" strokeWidth="1.5" strokeLinecap="round"/>
+                stroke="var(--ds-text-subtlest)" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </button>
 
           {openField === 'date' && (
-            <div style={{ background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, #DFE1E6)',
+            <div style={{ background: 'var(--ds-surface)', border: '1px solid var(--ds-border)',
                           borderRadius: 3, boxShadow: '0 6px 16px var(--ds-shadow-raised, rgba(9,30,66,.15))',
                           overflow: 'hidden' }}>
               {/* This period group */}
-              <div style={{ borderBottom: '1px solid var(--ds-border, #EBECF0)' }}>
+              <div style={{ borderBottom: '1px solid var(--ds-border)' }}>
                 {(['thisQuarter', 'thisYear'] as DatePreset[]).map((p) => {
                   const r = resolvePreset(p);
                   const active = draft.datePreset === p;
@@ -298,30 +298,30 @@ export default function GadgetSettingsPanel({
                     }}
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                padding: '8px 12px', width: '100%', border: 0, textAlign: 'left',
-                               background: active ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent', cursor: 'pointer',
-                               borderLeft: active ? '3px solid var(--ds-link, #0052CC)' : '3px solid transparent' }}>
+                               background: active ? 'var(--ds-background-selected)' : 'transparent', cursor: 'pointer',
+                               borderLeft: active ? '3px solid var(--ds-link)' : '3px solid transparent' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <span style={{ fontSize: 'var(--ds-font-size-400)', color: active ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)',
+                        <span style={{ fontSize: 'var(--ds-font-size-400)', color: active ? 'var(--ds-link)' : 'var(--ds-text)',
                                        fontWeight: active ? 500 : 400 }}>
                           {p === 'thisQuarter' ? 'This quarter' : 'This year'}
                         </span>
-                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)' }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                           {r.dateLabel.split('·')[1]?.trim()}
                         </span>
                       </div>
-                      {active && <span style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 653 }}>✓</span>}
+                      {active && <span style={{ color: 'var(--ds-link)', fontWeight: 653 }}>✓</span>}
                     </button>
                   );
                 })}
               </div>
 
               {/* Quarters group */}
-              <div style={{ borderBottom: '1px solid var(--ds-border, #EBECF0)' }}>
+              <div style={{ borderBottom: '1px solid var(--ds-border)' }}>
                 <div style={{ padding: '7px 12px 3px', fontSize: 'var(--ds-font-size-50)', fontWeight: 653,
-                              color: 'var(--ds-text-subtlest, #7A869A)', textTransform: 'none', letterSpacing: '.05em',
+                              color: 'var(--ds-text-subtlest)', textTransform: 'none', letterSpacing: '.05em',
                               display: 'flex', alignItems: 'center', gap: 6 }}>
                   Quarters
-                  <span style={{ background: 'var(--ds-background-selected, #EAF0FB)', color: 'var(--ds-link, #0052CC)', fontSize: 'var(--ds-font-size-50)',
+                  <span style={{ background: 'var(--ds-background-selected)', color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-50)',
                                  fontWeight: 600, padding: '0 6px', borderRadius: 10 }}>2026</span>
                 </div>
                 {(['Q1', 'Q2', 'Q3', 'Q4'] as DatePreset[]).map((q) => {
@@ -335,11 +335,11 @@ export default function GadgetSettingsPanel({
                     }}
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
-                               background: active ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent', cursor: 'pointer',
-                               borderLeft: active ? '3px solid var(--ds-link, #0052CC)' : '3px solid transparent' }}>
-                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: active ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)',
+                               background: active ? 'var(--ds-background-selected)' : 'transparent', cursor: 'pointer',
+                               borderLeft: active ? '3px solid var(--ds-link)' : '3px solid transparent' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: active ? 'var(--ds-link)' : 'var(--ds-text)',
                                      fontWeight: active ? 500 : 400 }}>{q} 2026</span>
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: active ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtlest, #7A869A)' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: active ? 'var(--ds-link)' : 'var(--ds-text-subtlest)' }}>
                         {range?.trim()}
                       </span>
                     </button>
@@ -355,35 +355,35 @@ export default function GadgetSettingsPanel({
                 }}
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                            padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
-                           background: draft.datePreset === 'all' ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent',
+                           background: draft.datePreset === 'all' ? 'var(--ds-background-selected)' : 'transparent',
                            cursor: 'pointer',
-                           borderLeft: draft.datePreset === 'all' ? '3px solid var(--ds-link, #0052CC)' : '3px solid transparent' }}>
-                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: draft.datePreset === 'all' ? 'var(--ds-link, #0052CC)' : 'var(--ds-text, #172B4D)' }}>
+                           borderLeft: draft.datePreset === 'all' ? '3px solid var(--ds-link)' : '3px solid transparent' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: draft.datePreset === 'all' ? 'var(--ds-link)' : 'var(--ds-text)' }}>
                     All active
                   </span>
-                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)' }}>No date filter</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>No date filter</span>
                 </button>
               </div>
             </div>
           )}
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 8px',
-                          background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 3, cursor: 'pointer' }}>
+                          background: 'var(--ds-surface-sunken)', borderRadius: 3, cursor: 'pointer' }}>
             <input type="checkbox" checked={applyToAll}
               onChange={(e) => setApplyToAll(e.target.checked)}
-              style={{ width: 13, height: 13, accentColor: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}/>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)' }}>
-              Apply this date to <strong style={{ color: 'var(--ds-text, #172B4D)' }}>all gadgets</strong> on this dashboard
+              style={{ width: 13, height: 13, accentColor: 'var(--ds-link)', cursor: 'pointer' }}/>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
+              Apply this date to <strong style={{ color: 'var(--ds-text)' }}>all gadgets</strong> on this dashboard
             </span>
           </label>
 
-          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, #7A869A)', fontFamily: 'monospace',
-                         background: 'var(--ds-surface-sunken, #F4F5F7)', padding: '4px 8px', borderRadius: 3 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest)', fontFamily: 'monospace',
+                         background: 'var(--ds-surface-sunken)', padding: '4px 8px', borderRadius: 3 }}>
             filters on: {GADGET_DATE_FIELD[gadgetType]}
           </span>
         </div>
 
-        <div style={{ height: '0.5px', background: 'var(--ds-border, #EBECF0)' }} />
+        <div style={{ height: '0.5px', background: 'var(--ds-border)' }} />
 
         <Field label="Status">
           {gadgetType === 'items' ? (
@@ -391,10 +391,10 @@ export default function GadgetSettingsPanel({
               title="Not applicable — this gadget displays all statuses by design"
               style={{
                 display: 'flex', alignItems: 'center', minHeight: 36,
-                border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-                background: 'var(--ds-surface-sunken, #F4F5F7)', padding: '0 8px',
+                border: '2px solid var(--ds-border)', borderRadius: 3,
+                background: 'var(--ds-surface-sunken)', padding: '0 8px',
                 cursor: 'not-allowed', opacity: 0.6,
-                fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, #7A869A)', fontStyle: 'italic',
+                fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic',
               }}
             >
               All statuses (by design)
@@ -465,7 +465,7 @@ export default function GadgetSettingsPanel({
         {gadgetType === 'items' && (
           <div
             style={{
-              borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               paddingTop: 14, marginTop: 14,
             }}
           >
@@ -473,7 +473,7 @@ export default function GadgetSettingsPanel({
               style={{
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'none',
                 letterSpacing: '.5px',
-                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 marginBottom: 8,
               }}
             >
@@ -506,9 +506,9 @@ export default function GadgetSettingsPanel({
                       fontSize: 'var(--ds-font-size-200)',
                       borderRadius: 3,
                       cursor: 'pointer',
-                      border: active ? '1px solid var(--ds-link, #0052CC)' : '1px solid var(--ds-border, #DFE1E6)',
-                      background: active ? 'var(--ds-background-selected, #DEEBFF)' : 'var(--ds-surface-sunken, #F4F5F7)',
-                      color: active ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+                      border: active ? '1px solid var(--ds-link)' : '1px solid var(--ds-border)',
+                      background: active ? 'var(--ds-background-selected)' : 'var(--ds-surface-sunken)',
+                      color: active ? 'var(--ds-link)' : 'var(--ds-text-subtle)',
                       fontWeight: active ? 500 : 400,
                       textAlign: 'left',
                     }}
@@ -523,7 +523,7 @@ export default function GadgetSettingsPanel({
               style={{
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'none',
                 letterSpacing: '.5px',
-                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 marginBottom: 6,
               }}
             >
@@ -531,7 +531,7 @@ export default function GadgetSettingsPanel({
             </div>
             <div
               style={{
-                fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+                fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 marginBottom: 8, lineHeight: 1.5,
               }}
             >
@@ -565,15 +565,15 @@ export default function GadgetSettingsPanel({
               style={{
                 width: 64,
                 height: 32,
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 3,
                 padding: '0 8px',
                 fontSize: 'var(--ds-font-size-400)',
-                background: 'var(--ds-surface-sunken, #FAFBFC)',
-                color: 'var(--ds-text, #172B4D)',
+                background: 'var(--ds-surface-sunken)',
+                color: 'var(--ds-text)',
               }}
             />
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)' }}>max 50</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>max 50</span>
           </div>
         </Field>
 
@@ -585,7 +585,7 @@ export default function GadgetSettingsPanel({
           onChange={(cols) => setField('columns', cols)}
         />
 
-        <div style={{ height: '0.5px', background: 'var(--ds-border, #EBECF0)' }} />
+        <div style={{ height: '0.5px', background: 'var(--ds-border)' }} />
 
         {/* ── AUTO REFRESH ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -594,26 +594,26 @@ export default function GadgetSettingsPanel({
               type="checkbox"
               checked={draft.autoRefresh ?? false}
               onChange={(e) => setField('autoRefresh', e.currentTarget.checked)}
-              style={{ width: 14, height: 14, accentColor: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}
+              style={{ width: 14, height: 14, accentColor: 'var(--ds-link)', cursor: 'pointer' }}
             />
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>
               Auto refresh
             </span>
           </label>
           {draft.autoRefresh && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 22 }}>
-              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)' }}>Update every</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>Update every</span>
               <select
                 value={draft.autoRefreshMinutes ?? 15}
                 onChange={(e) => setField('autoRefreshMinutes', Number(e.currentTarget.value))}
                 style={{
                   height: 28,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: 3,
                   padding: '0 8px',
                   fontSize: 'var(--ds-font-size-200)',
-                  background: 'var(--ds-surface, #FFFFFF)',
-                  color: 'var(--ds-text, #172B4D)',
+                  background: 'var(--ds-surface)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 <option value={15}>15 minutes</option>
@@ -640,8 +640,8 @@ export default function GadgetSettingsPanel({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '10px 14px',
-          borderTop: '1px solid var(--ds-background-neutral, #F1F2F4)',
-          background: 'var(--ds-surface-sunken, #FAFBFC)',
+          borderTop: '1px solid var(--ds-background-neutral)',
+          background: 'var(--ds-surface-sunken)',
         }}
       >
         <button
@@ -653,7 +653,7 @@ export default function GadgetSettingsPanel({
           style={{
             background: 'transparent',
             border: 0,
-            color: 'var(--ds-link, #0052CC)',
+            color: 'var(--ds-link)',
             cursor: 'pointer',
             fontSize: 'var(--ds-font-size-200)',
             padding: 4,
@@ -668,12 +668,12 @@ export default function GadgetSettingsPanel({
             style={{
               height: 28,
               padding: '0 8px',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              border: '1px solid var(--ds-border)',
               borderRadius: 3,
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--ds-surface)',
               fontSize: 'var(--ds-font-size-200)',
               cursor: 'pointer',
-              color: 'var(--ds-text-subtle, #42526E)',
+              color: 'var(--ds-text-subtle)',
             }}
           >
             Cancel
@@ -698,8 +698,8 @@ export default function GadgetSettingsPanel({
               padding: '0 12px',
               border: 0,
               borderRadius: 3,
-              background: 'var(--ds-link, #0052CC)',
-              color: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--ds-link)',
+              color: 'var(--ds-surface)',
               fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               cursor: 'pointer',
@@ -723,7 +723,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
           fontSize: 'var(--ds-font-size-50)',
           fontWeight: 653,
           textTransform: 'none',
-          color: 'var(--ds-text-subtlest, #7A869A)',
+          color: 'var(--ds-text-subtlest)',
           letterSpacing: '0.04em',
         }}
       >
@@ -773,8 +773,8 @@ function MultiSelectGeneric({
           minHeight: 32,
           width: '100%',
           padding: '4px 6px',
-          border: open ? '2px solid var(--ds-border-focused, #4C9AFF)' : '1px solid var(--ds-border, #DFE1E6)',
-          background: 'var(--ds-surface-sunken, #FAFBFC)',
+          border: open ? '2px solid var(--ds-border-focused)' : '1px solid var(--ds-border)',
+          background: 'var(--ds-surface-sunken)',
           borderRadius: 3,
           textAlign: 'left',
           cursor: 'pointer',
@@ -785,14 +785,14 @@ function MultiSelectGeneric({
         }}
       >
         {value.length === 0 ? (
-          <span style={{ color: 'var(--ds-text-subtlest, #7A869A)', fontSize: 'var(--ds-font-size-200)' }}>{placeholder}</span>
+          <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>{placeholder}</span>
         ) : (
           value.map((v) => (
             <span
               key={v}
               style={{
-                background: 'var(--ds-border, #EBECF0)',
-                color: 'var(--ds-text-subtle, #42526E)',
+                background: 'var(--ds-border)',
+                color: 'var(--ds-text-subtle)',
                 fontSize: 'var(--ds-font-size-100)',
                 padding: '0 6px',
                 height: 20,
@@ -809,14 +809,14 @@ function MultiSelectGeneric({
                   e.stopPropagation();
                   onChange(value.filter((x) => x !== v));
                 }}
-                style={{ cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)' }}
+                style={{ cursor: 'pointer', color: 'var(--ds-text-subtlest)' }}
               >
                 ×
               </span>
             </span>
           ))
         )}
-        <ChevronDown size={12} style={{ marginLeft: 'auto', color: 'var(--ds-text-subtlest, #7A869A)' }} />
+        <ChevronDown size={12} style={{ marginLeft: 'auto', color: 'var(--ds-text-subtlest)' }} />
       </button>
       {open && (
         <div
@@ -826,8 +826,8 @@ function MultiSelectGeneric({
             left: 0,
             right: 0,
             zIndex: 50,
-            background: 'var(--ds-surface, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
             boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
             maxHeight: 224,
@@ -835,7 +835,7 @@ function MultiSelectGeneric({
           }}
         >
           {options.length === 0 && (
-            <div style={{ padding: 10, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #7A869A)' }}>No options</div>
+            <div style={{ padding: 10, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>No options</div>
           )}
           {options.map((opt) => {
             const sel = selected.has(opt.value);
@@ -850,15 +850,15 @@ function MultiSelectGeneric({
                   gap: 8,
                   width: '100%',
                   padding: '6px 10px',
-                  background: sel ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent',
+                  background: sel ? 'var(--ds-background-selected)' : 'transparent',
                   border: 0,
                   cursor: 'pointer',
                   fontSize: 'var(--ds-font-size-200)',
                   textAlign: 'left',
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
                 onMouseEnter={(e) => {
-                  if (!sel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F4F5F7))';
+                  if (!sel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))';
                 }}
                 onMouseLeave={(e) => {
                   if (!sel) e.currentTarget.style.background = 'transparent';
@@ -869,15 +869,15 @@ function MultiSelectGeneric({
                     width: 14,
                     height: 14,
                     borderRadius: 3,
-                    border: '1px solid var(--ds-border, #B3BAC5)',
-                    background: sel ? 'var(--ds-link, #0052CC)' : 'var(--ds-surface, #FFFFFF)',
+                    border: '1px solid var(--ds-border)',
+                    background: sel ? 'var(--ds-link)' : 'var(--ds-surface)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                   }}
                 >
-                  {sel && <Check size={10} color="var(--ds-surface, #FFFFFF)" />}
+                  {sel && <Check size={10} color="var(--ds-surface)" />}
                 </span>
                 {opt.icon}
                 <span style={{ flex: 1 }}>{opt.label}</span>
@@ -923,8 +923,8 @@ function MultiSelectStatus({
           minHeight: 32,
           width: '100%',
           padding: '4px 6px',
-          border: open ? '2px solid var(--ds-border-focused, #4C9AFF)' : '1px solid var(--ds-border, #DFE1E6)',
-          background: 'var(--ds-surface-sunken, #FAFBFC)',
+          border: open ? '2px solid var(--ds-border-focused)' : '1px solid var(--ds-border)',
+          background: 'var(--ds-surface-sunken)',
           borderRadius: 3,
           textAlign: 'left',
           cursor: 'pointer',
@@ -935,18 +935,18 @@ function MultiSelectStatus({
         }}
       >
         {value.length === 0 ? (
-          <span style={{ color: 'var(--ds-text-subtlest, #7A869A)', fontSize: 'var(--ds-font-size-200)' }}>All statuses</span>
+          <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>All statuses</span>
         ) : (
           value.map((v) => {
             const grp = STATUS_GROUPS.find((g) => g.statuses.includes(v));
             const palette =
               grp?.label === 'Done'
-                ? { bg: 'var(--ds-background-success, #E3FCEF)', fg: 'var(--ds-text-success, #006644)' }
+                ? { bg: 'var(--ds-background-success)', fg: 'var(--ds-text-success)' }
                 : grp?.label === 'In progress'
-                ? { bg: 'var(--ds-background-selected, #DEEBFF)', fg: 'var(--ds-background-information-bold, #0747A6)' }
+                ? { bg: 'var(--ds-background-selected)', fg: 'var(--ds-background-information-bold)' }
                 : grp?.label === 'Paused'
-                ? { bg: 'var(--ds-background-warning, #FFF0B3)', fg: 'var(--ds-text-warning, #974F0C)' }
-                : { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', fg: 'var(--ds-text-subtle, #42526E)' };
+                ? { bg: 'var(--ds-background-warning)', fg: 'var(--ds-text-warning)' }
+                : { bg: 'var(--ds-border, var(--ds-border))', fg: 'var(--ds-text-subtle)' };
             return (
               <span
                 key={v}
@@ -980,7 +980,7 @@ function MultiSelectStatus({
             );
           })
         )}
-        <ChevronDown size={12} style={{ marginLeft: 'auto', color: 'var(--ds-text-subtlest, #7A869A)' }} />
+        <ChevronDown size={12} style={{ marginLeft: 'auto', color: 'var(--ds-text-subtlest)' }} />
       </button>
       {open && (
         <div
@@ -990,8 +990,8 @@ function MultiSelectStatus({
             left: 0,
             right: 0,
             zIndex: 50,
-            background: 'var(--ds-surface, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
             boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
             maxHeight: 280,
@@ -1010,8 +1010,8 @@ function MultiSelectStatus({
                   fontWeight: 653,
                   textTransform: 'none',
                   letterSpacing: '0.04em',
-                  color: 'var(--ds-text-subtlest, #7A869A)',
-                  background: 'var(--ds-surface-sunken, #FAFBFC)',
+                  color: 'var(--ds-text-subtlest)',
+                  background: 'var(--ds-surface-sunken)',
                 }}
               >
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -1027,7 +1027,7 @@ function MultiSelectStatus({
                   style={{
                     background: 'transparent',
                     border: 0,
-                    color: 'var(--ds-link, #0052CC)',
+                    color: 'var(--ds-link)',
                     cursor: 'pointer',
                     fontSize: 'var(--ds-font-size-50)',
                     fontWeight: 600,
@@ -1049,12 +1049,12 @@ function MultiSelectStatus({
                       gap: 8,
                       width: '100%',
                       padding: '6px 10px',
-                      background: sel ? 'var(--ds-background-selected, #EAF0FB)' : 'transparent',
+                      background: sel ? 'var(--ds-background-selected)' : 'transparent',
                       border: 0,
                       cursor: 'pointer',
                       fontSize: 'var(--ds-font-size-200)',
                       textAlign: 'left',
-                      color: 'var(--ds-text, #172B4D)',
+                      color: 'var(--ds-text)',
                     }}
                   >
                     <span
@@ -1062,15 +1062,15 @@ function MultiSelectStatus({
                         width: 14,
                         height: 14,
                         borderRadius: 3,
-                        border: '1px solid var(--ds-border, #B3BAC5)',
-                        background: sel ? 'var(--ds-link, #0052CC)' : 'var(--ds-surface, #FFFFFF)',
+                        border: '1px solid var(--ds-border)',
+                        background: sel ? 'var(--ds-link)' : 'var(--ds-surface)',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
                       }}
                     >
-                      {sel && <Check size={10} color="var(--ds-surface, #FFFFFF)" />}
+                      {sel && <Check size={10} color="var(--ds-surface)" />}
                     </span>
                     <span style={{ flex: 1 }}>{s}</span>
                   </button>
@@ -1098,7 +1098,7 @@ function GadgetSpecific({
   if (gadgetType === 'workload' || gadgetType === 'activity') return null;
 
   const wrapper: React.CSSProperties = {
-    background: 'var(--ds-surface-sunken, #F4F5F7)',
+    background: 'var(--ds-surface-sunken)',
     borderRadius: 4,
     padding: 10,
     display: 'flex',
@@ -1109,7 +1109,7 @@ function GadgetSpecific({
     fontSize: 'var(--ds-font-size-50)',
     fontWeight: 653,
     textTransform: 'none',
-    color: 'var(--ds-text-subtlest, #7A869A)',
+    color: 'var(--ds-text-subtlest)',
     letterSpacing: '0.04em',
   };
 
@@ -1126,7 +1126,7 @@ function GadgetSpecific({
           value={v}
           onChange={(e) => onChange('atRiskDays', Number(e.currentTarget.value))}
         />
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #5E6C84)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
           Flag items with {v} day{v === 1 ? '' : 's'} or fewer remaining
         </span>
       </div>
@@ -1146,7 +1146,7 @@ function GadgetSpecific({
           value={v}
           onChange={(e) => onChange('maxRows', Number(e.currentTarget.value))}
         />
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #5E6C84)' }}>Show {v} releases</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>Show {v} releases</span>
       </div>
     );
   }
@@ -1174,9 +1174,9 @@ function GadgetSpecific({
                   padding: '2px 8px',
                   fontSize: 'var(--ds-font-size-100)',
                   borderRadius: 3,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  background: on ? 'var(--ds-link, #0052CC)' : 'var(--ds-surface, #FFFFFF)',
-                  color: on ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-text-subtle, #42526E)',
+                  border: '1px solid var(--ds-border)',
+                  background: on ? 'var(--ds-link)' : 'var(--ds-surface)',
+                  color: on ? 'var(--ds-surface)' : 'var(--ds-text-subtle)',
                   cursor: 'pointer',
                 }}
               >
@@ -1212,9 +1212,9 @@ function GadgetSpecific({
                   padding: '2px 8px',
                   fontSize: 'var(--ds-font-size-100)',
                   borderRadius: 3,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  background: on ? 'var(--ds-link, #0052CC)' : 'var(--ds-surface, #FFFFFF)',
-                  color: on ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-text-subtle, #42526E)',
+                  border: '1px solid var(--ds-border)',
+                  background: on ? 'var(--ds-link)' : 'var(--ds-surface)',
+                  color: on ? 'var(--ds-surface)' : 'var(--ds-text-subtle)',
                   cursor: 'pointer',
                 }}
               >
@@ -1238,12 +1238,12 @@ function GadgetSpecific({
           onChange={(e) => onChange('groupBy', e.currentTarget.value)}
           style={{
             height: 28,
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 3,
             padding: '0 8px',
             fontSize: 'var(--ds-font-size-200)',
-            background: 'var(--ds-surface, #FFFFFF)',
-            color: 'var(--ds-text, #172B4D)',
+            background: 'var(--ds-surface)',
+            color: 'var(--ds-text)',
           }}
         >
           {opts.map((o) => (
@@ -1263,8 +1263,8 @@ function GadgetSpecific({
     const showOnlyActive  = settings.showOnlyActive  ?? true;
 
     const numInput: React.CSSProperties = {
-      height: 28, width: '100%', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-      padding: '0 8px', fontSize: 'var(--ds-font-size-200)', background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text, #172B4D)',
+      height: 28, width: '100%', border: '1px solid var(--ds-border)', borderRadius: 3,
+      padding: '0 8px', fontSize: 'var(--ds-font-size-200)', background: 'var(--ds-surface)', color: 'var(--ds-text)',
     };
 
     return (
@@ -1284,7 +1284,7 @@ function GadgetSpecific({
             onChange={(e) => onChange('thresholdHigh',
               Math.max(1, Math.min(100, Number(e.currentTarget.value) || 1)))}
           />
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #5E6C84)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
             Above {thresholdHigh}% added → "High creep"
           </span>
         </div>
@@ -1295,7 +1295,7 @@ function GadgetSpecific({
             onChange={(e) => onChange('thresholdModerate',
               Math.max(0, Math.min(100, Number(e.currentTarget.value) || 0)))}
           />
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #5E6C84)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
             Above {thresholdMod}% added → "Moderate creep"
           </span>
         </div>
@@ -1303,9 +1303,9 @@ function GadgetSpecific({
           <input
             type="checkbox" checked={showOnlyActive}
             onChange={(e) => onChange('showOnlyActive', e.currentTarget.checked)}
-            style={{ width: 13, height: 13, accentColor: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}
+            style={{ width: 13, height: 13, accentColor: 'var(--ds-link)', cursor: 'pointer' }}
           />
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)' }}>Active releases only</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>Active releases only</span>
         </label>
       </div>
     );
@@ -1393,17 +1393,17 @@ function ColumnsSection({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 653, textTransform: 'none', color: 'var(--ds-text-subtlest, #7A869A)', letterSpacing: '0.04em' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 653, textTransform: 'none', color: 'var(--ds-text-subtlest)', letterSpacing: '0.04em' }}>
           Columns to display
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button type="button" onClick={savePresetPrompt}
-            style={{ background: 'transparent', border: 0, color: 'var(--ds-link, #0052CC)', cursor: 'pointer', fontSize: 'var(--ds-font-size-50)', fontWeight: 600 }}>
+            style={{ background: 'transparent', border: 0, color: 'var(--ds-link)', cursor: 'pointer', fontSize: 'var(--ds-font-size-50)', fontWeight: 600 }}>
             Save as preset
           </button>
           {columns != null && (
             <button type="button" onClick={resetToDefault}
-              style={{ background: 'transparent', border: 0, color: 'var(--ds-link, #0052CC)', cursor: 'pointer', fontSize: 'var(--ds-font-size-50)', fontWeight: 600 }}>
+              style={{ background: 'transparent', border: 0, color: 'var(--ds-link)', cursor: 'pointer', fontSize: 'var(--ds-font-size-50)', fontWeight: 600 }}>
               Default columns
             </button>
           )}
@@ -1419,18 +1419,18 @@ function ColumnsSection({
                 alignItems: 'center',
                 gap: 4,
                 padding: '2px 6px',
-                background: 'var(--ds-background-neutral, #F1F2F4)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-background-neutral)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 12,
                 fontSize: 'var(--ds-font-size-100)',
-                color: 'var(--ds-text, #172B4D)',
+                color: 'var(--ds-text)',
               }}>
               <button type="button" onClick={() => loadPreset(name)}
                 style={{ background: 'transparent', border: 0, padding: 0, color: 'inherit', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)' }}>
                 {name}
               </button>
               <button type="button" onClick={() => deletePreset(name)} aria-label={`Delete preset ${name}`}
-                style={{ background: 'transparent', border: 0, padding: 0, color: 'var(--ds-text-subtlest, #7A869A)', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', lineHeight: 1 }}>
+                style={{ background: 'transparent', border: 0, padding: 0, color: 'var(--ds-text-subtlest)', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', lineHeight: 1 }}>
                 ×
               </button>
             </span>
@@ -1438,7 +1438,7 @@ function ColumnsSection({
         </div>
       )}
 
-      <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, background: 'var(--ds-surface, #FFFFFF)', overflow: 'hidden' }}>
+      <div style={{ border: '1px solid var(--ds-border)', borderRadius: 4, background: 'var(--ds-surface)', overflow: 'hidden' }}>
         {active.map((colId, idx) => {
           const def = defMap.get(colId);
           if (!def) return null;
@@ -1463,23 +1463,23 @@ function ColumnsSection({
                 alignItems: 'center',
                 gap: 8,
                 padding: '6px 8px',
-                borderBottom: idx < active.length - 1 ? '1px solid var(--ds-border, #EBECF0)' : 'none',
+                borderBottom: idx < active.length - 1 ? '1px solid var(--ds-border)' : 'none',
                 background: dragIdx === idx
-                  ? 'var(--ds-background-selected, #E9F2FF)'
+                  ? 'var(--ds-background-selected)'
                   : 'transparent',
                 boxShadow: dragIdx != null && dragOverIdx === idx && dragIdx !== idx
-                  ? 'inset 0 2px 0 0 var(--ds-border-selected, #0C66E4)'
+                  ? 'inset 0 2px 0 0 var(--ds-border-selected)'
                   : 'none',
                 cursor: 'grab',
                 fontSize: 'var(--ds-font-size-300)',
-                color: 'var(--ds-text, #172B4D)',
+                color: 'var(--ds-text)',
               }}
             >
-              <GripVertical size={12} style={{ color: 'var(--ds-text-subtlest, #7A869A)', flexShrink: 0 }} />
+              <GripVertical size={12} style={{ color: 'var(--ds-text-subtlest)', flexShrink: 0 }} />
               <span style={{ flex: 1 }}>{def.label}</span>
               {active.length > 1 && (
                 <button type="button" onClick={() => remove(colId)}
-                  style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #7A869A)', display: 'inline-flex' }}
+                  style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest)', display: 'inline-flex' }}
                   aria-label={`Remove ${def.label} column`}>
                   <Trash2 size={12} />
                 </button>
@@ -1489,7 +1489,7 @@ function ColumnsSection({
         })}
       </div>
 
-      <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, #7A869A)', fontStyle: 'italic' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic' }}>
         Drag-drop to reorder the fields.
       </span>
 
@@ -1499,11 +1499,11 @@ function ColumnsSection({
             style={{
               width: '100%',
               height: 32,
-              border: '1px dashed var(--ds-border, #DFE1E6)',
+              border: '1px dashed var(--ds-border)',
               borderRadius: 3,
-              background: 'var(--ds-surface-sunken, #FAFBFC)',
+              background: 'var(--ds-surface-sunken)',
               fontSize: 'var(--ds-font-size-200)',
-              color: 'var(--ds-link, #0052CC)',
+              color: 'var(--ds-link)',
               cursor: 'pointer',
               fontWeight: 500,
             }}>
@@ -1522,8 +1522,8 @@ function ColumnsSection({
                 left: 0,
                 right: 0,
                 zIndex: 50,
-                background: 'var(--ds-surface, #FFFFFF)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-surface)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 4,
                 boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.18))',
                 maxHeight: 220,
@@ -1542,17 +1542,17 @@ function ColumnsSection({
                       padding: '4px 8px',
                       height: 28,
                       fontSize: 'var(--ds-font-size-200)',
-                      border: '1px solid var(--ds-border, #DFE1E6)',
+                      border: '1px solid var(--ds-border)',
                       borderRadius: 3,
-                      background: 'var(--ds-surface, #FFFFFF)',
-                      color: 'var(--ds-text, #172B4D)',
+                      background: 'var(--ds-surface)',
+                      color: 'var(--ds-text)',
                       outline: 'none',
                     }}
                   />
                 )}
                 <div style={{ overflowY: 'auto', flex: 1 }}>
                   {filtered.length === 0 ? (
-                    <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #7A869A)' }}>
+                    <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
                       No matches
                     </div>
                   ) : filtered.map((col) => (
@@ -1566,10 +1566,10 @@ function ColumnsSection({
                         background: 'transparent',
                         textAlign: 'left',
                         fontSize: 'var(--ds-font-size-200)',
-                        color: 'var(--ds-text, #172B4D)',
+                        color: 'var(--ds-text)',
                         cursor: 'pointer',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F4F5F7))'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                     >
                       {col.label}

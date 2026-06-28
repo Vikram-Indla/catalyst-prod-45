@@ -196,7 +196,7 @@ export function ImageResizeHandles({ editor, imagePos }: Props) {
         left,
         width: HANDLE_WIDTH,
         height: clippedHeight,
-        background: 'var(--ds-border-selected, #0C66E4)',
+        background: 'var(--ds-border-selected)',
         borderRadius: HANDLE_WIDTH,
         cursor: 'col-resize',
         zIndex: 2147483600,

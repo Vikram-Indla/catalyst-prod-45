@@ -26,7 +26,7 @@ export function makeReleaseNameCell(
             onOpenDetail(row.id);
           }}
           style={{
-            color: 'var(--ds-link, #0052CC)',
+            color: 'var(--ds-link)',
             fontWeight: 500,
             textDecoration: 'none',
             fontSize: 'var(--ds-font-size-100, 14px)',
@@ -84,7 +84,7 @@ export function makeProgressCell(
       // No linked work items — match Jira's "No work items" empty state (no fabricated %).
       if (!progress || !progress.total) {
         return (
-          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest)' }}>
             No work items
           </span>
         );
@@ -103,7 +103,7 @@ export function makeProgressCell(
               height: '8px',
               borderRadius: '4px',
               overflow: 'hidden',
-              backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
+              backgroundColor: 'var(--ds-background-neutral)',
             }}
             title={`Done: ${progress.done}, In Progress: ${progress.inProgress}, To Do: ${progress.toDo}`}
           >
@@ -111,7 +111,7 @@ export function makeProgressCell(
               <div
                 style={{
                   width: `${donePercent}%`,
-                  backgroundColor: 'var(--ds-background-success-bold, #1F845A)', // done green
+                  backgroundColor: 'var(--ds-background-success-bold)', // done green
                 }}
               />
             )}
@@ -119,12 +119,12 @@ export function makeProgressCell(
               <div
                 style={{
                   width: `${inProgressPercent}%`,
-                  backgroundColor: 'var(--ds-background-information-bold, #1868DB)', // in-progress blue
+                  backgroundColor: 'var(--ds-background-information-bold)', // in-progress blue
                 }}
               />
             )}
           </div>
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
             {donePercent}%
           </span>
         </div>
@@ -172,7 +172,7 @@ export function makeReleaseDateCell(): Column<Release> {
       });
 
       return (
-        <span style={{ color: isOverdue ? 'var(--ds-text-danger, #C9372C)' : 'inherit' }}>
+        <span style={{ color: isOverdue ? 'var(--ds-text-danger)' : 'inherit' }}>
           {dateStr}
           {isOverdue && ' — Overdue'}
         </span>

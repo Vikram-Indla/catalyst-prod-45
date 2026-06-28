@@ -23,7 +23,7 @@ export function CatyHiddenEye({ size = 24 }: CatyHiddenEyeProps) {
           {/* ads-scanner:ignore-next-line */}
           <stop stopColor="#F79357" />
           {/* ads-scanner:ignore-next-line */}
-          <stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
+          <stop offset=".5" stopColor="var(--ds-background-danger-bold)" />
           {/* ads-scanner:ignore-next-line */}
           <stop offset=".78" stopColor="#B41572" />
           {/* ads-scanner:ignore-next-line */}

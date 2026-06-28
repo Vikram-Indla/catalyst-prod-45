@@ -23,21 +23,21 @@ export interface LozengeConfig {
 }
 
 const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> = {
-  default:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
-  inprogress: { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #0747A6)' },
-  success:    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)' },
-  removed:    { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)' },
-  moved:      { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
-  new:        { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #6E5DC6)' },
+  default:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text)' },
+  inprogress: { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)' },
+  success:    { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)' },
+  removed:    { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)' },
+  moved:      { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)' },
+  new:        { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)' },
 };
 
 const LOZENGE_STYLES_DARK: Record<LozengeColor, { bg: string; text: string }> = {
-  default:    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',            text: 'var(--ds-text-subtlest, #A1A1A1)' },
-  inprogress: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))',  text: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
-  success:    { bg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))',  text: 'var(--ds-background-success, #DFFCF0)' },
-  removed:    { bg: 'rgba(248,113,113,0.10)', text: 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))' },
+  default:    { bg: 'var(--ds-border, var(--cp-ink-1))',            text: 'var(--ds-text-subtlest)' },
+  inprogress: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))',  text: 'var(--ds-background-information-bold, var(--ds-link))' },
+  success:    { bg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))',  text: 'var(--ds-background-success)' },
+  removed:    { bg: 'rgba(248,113,113,0.10)', text: 'var(--ds-background-danger, var(--ds-background-danger))' },
   moved:      { bg: 'rgba(234,179,8,0.10)',   text: '#FACC15' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  new:        { bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.10))', text: 'var(--ds-background-discovery, #F3F0FF)' },
+  new:        { bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.10))', text: 'var(--ds-background-discovery)' },
 };
 
 export function getLozengeStyle(color: LozengeColor) {
@@ -270,12 +270,12 @@ export function flattenTree<T extends { id: string }>(
 export function getPriorityColor(priority: string | null): string {
   switch (priority?.toLowerCase()) {
     case 'critical':
-    case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-    case 'high':    return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+    case 'highest': return 'var(--ds-text-danger, var(--cp-danger))';
+    case 'high':    return 'var(--ds-text-warning, var(--cp-warning))';
     case 'medium':  return '#CF7B00'; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     case 'low':
-    case 'lowest':  return 'var(--ds-text-subtlest, #626F86)';
-    default:        return 'var(--ds-text-disabled, #8590A2)';
+    case 'lowest':  return 'var(--ds-text-subtlest)';
+    default:        return 'var(--ds-text-disabled)';
   }
 }
 
@@ -318,14 +318,14 @@ export function groupByStatus<T extends { status: string | null }>(
 
 // ─── PARENT EPIC CHIP COLOR (deterministic) ──────
 const EPIC_CHIP_PALETTE = [
-  { bg: 'var(--ds-background-warning, #FFF7D6)', text: '#7A4F00', border: 'var(--ds-background-warning-bold, #E2B203)' },
-  { bg: '#FFBDAD', text: 'var(--ds-text-danger, #AE2A19)', border: 'var(--ds-background-danger-bold, #FF7452)' },
+  { bg: 'var(--ds-background-warning)', text: '#7A4F00', border: 'var(--ds-background-warning-bold)' },
+  { bg: '#FFBDAD', text: 'var(--ds-text-danger)', border: 'var(--ds-background-danger-bold)' },
   { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'var(--ds-background-information-bold, #0C66E4)' },
-  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'var(--ds-background-success-bold, #57D9A3)' },
+  { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'var(--ds-background-information-bold)' },
+  { bg: 'var(--cp-lozenge-green-bg)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'var(--ds-background-success-bold)' },
   { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #6E5DC6)', border: '#8777D9' },
-  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'var(--ds-text-disabled, #CBD5E1)' },
+  { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)', border: '#8777D9' },
+  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', border: 'var(--ds-text-disabled)' },
 ];
 
 export function getEpicChipColor(epicId: string) {

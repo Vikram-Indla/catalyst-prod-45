@@ -47,14 +47,14 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
 
   const getStatusColor = (slug: string, name?: string) => {
     const slugColors: Record<string, string> = {
-      backlog: 'var(--ds-text-subtlest, #94a3b8)',
-      planned: 'var(--ds-text-brand, #3b82f6)',
-      'in-progress': 'var(--ds-text-warning, #f59e0b)',
-      'in progress': 'var(--ds-text-warning, #f59e0b)',
-      review: 'var(--ds-background-discovery-bold, #6E5DC6)',
-      done: 'var(--ds-text-success, #16a34a)',
+      backlog: 'var(--ds-text-subtlest)',
+      planned: 'var(--ds-text-brand)',
+      'in-progress': 'var(--ds-text-warning)',
+      'in progress': 'var(--ds-text-warning)',
+      review: 'var(--ds-background-discovery-bold)',
+      done: 'var(--ds-text-success)',
     };
-    return slugColors[slug] || STATUS_COLORS[name || ''] || 'var(--ds-text-subtlest, #94a3b8)';
+    return slugColors[slug] || STATUS_COLORS[name || ''] || 'var(--ds-text-subtlest)';
   };
 
   const displayName = currentStatus?.name || 'Select status';

@@ -175,7 +175,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
       <span style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em',
         padding: '1px 4px', borderRadius: 4,
-        background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bolder, #0f766e)',
+        background: 'var(--ds-background-success)', color: 'var(--ds-chart-teal-bolder)',
         textTransform: 'uppercase', flexShrink: 0,
       }}>CATALYST</span>
     );
@@ -184,14 +184,14 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
     <span style={{
       fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em',
       padding: '1px 4px', borderRadius: 4,
-      background: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+      background: 'var(--ds-link)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
       textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
   );
 }
 
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','var(--ds-link, #0C66E4)','var(--quality-high, #059669)','var(--ds-text-danger, #BE123C)','var(--ds-background-brand-bold-hovered, #1D4ED8)','var(--ds-chart-teal-bolder, #0f766e)'];
+const AVATAR_COLORS = ['var(--cp-teal-60)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary))','var(--ds-text-danger, var(--cp-danger))','var(--ds-text-success, var(--cp-success))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))','var(--ds-link)','var(--quality-high)','var(--ds-text-danger)','var(--ds-background-brand-bold-hovered)','var(--ds-chart-teal-bolder)'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -217,7 +217,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
         <img src={avatarUrl} alt={assignee.displayName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
       ) : (
         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>{initials}</span>
         </div>
       )}
       <span className="hi-assignee-name" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
@@ -272,8 +272,8 @@ function DueDateCell({ date }: { date?: string }) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let color = 'var(--fg-1)';
-  if (dDate < today) color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-  else if (dDate.getTime() === today.getTime()) color = 'var(--ds-link, var(--ds-link, #0284c7))';
+  if (dDate < today) color = 'var(--ds-text-danger, var(--cp-danger))';
+  else if (dDate.getTime() === today.getTime()) color = 'var(--ds-link, var(--ds-link))';
   return (
     <span style={{ fontSize: 'var(--ds-font-size-200)', color }}>
       {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -283,8 +283,8 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'Feature': 'var(--cp-teal-60, #0D9488)', 'Story': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Sub-task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-  'Task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'Bug': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  'Epic': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'Feature': 'var(--cp-teal-60)', 'Story': 'var(--ds-text-success, var(--cp-success))', 'Sub-task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
+  'Task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', 'Bug': 'var(--ds-text-danger, var(--cp-danger))',
 };
 
 /* ── Parent cell (chip style matching ParentEpicChip) ── */
@@ -603,9 +603,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                   letterSpacing: '0.06em',
                   padding: '1px 6px',
                   borderRadius: 4,
-                  background: 'var(--ds-background-success, #DFFCF0)',
-                  color: 'var(--quality-high, #059669)',
-                  border: '1px solid var(--ds-background-success, #DFFCF0)',
+                  background: 'var(--ds-background-success)',
+                  color: 'var(--quality-high)',
+                  border: '1px solid var(--ds-background-success)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   textTransform: 'uppercase',
@@ -709,7 +709,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'type':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
               {item.issueType || '—'}
             </span>
           </div>
@@ -744,8 +744,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             alignItems: 'center',
             height: 36,
             minWidth: 1100,
-                background: 'var(--cp-bg-page, #F8FAFC)',
-                borderBottom: isDark ? '2px solid var(--ds-background-neutral, #F1F2F4)' : '2px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                background: 'var(--cp-bg-page)',
+                borderBottom: isDark ? '2px solid var(--ds-background-neutral)' : '2px solid var(--cp-border, var(--cp-bg-sunken))',
           }}
         >
           <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -791,7 +791,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 display: 'grid',
                 gridTemplateColumns,
                 alignItems: 'center',
-                borderBottom: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                borderBottom: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border, var(--cp-bg-sunken))',
                 cursor: 'pointer',
                 background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'var(--ds-background-information, rgba(37, 99, 235, 0.08))' : 'transparent',
               }}
@@ -877,8 +877,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
-        .hi-table-row.checked { background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
+        .hi-table-row:hover { background: ${'var(--cp-bg-page)'} !important; border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
+        .hi-table-row.checked { background: ${'var(--cp-primary-light)'} !important; }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }
@@ -887,7 +887,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         .hi-work-column { overflow: hidden; min-width: 0; }
         /* Rule 3 paired .dark — surfaces already branched via isDark above;
            this selector adds ADS-token border-left for left-bar visibility on dark. */
-        .dark .hi-table-row:hover { border-left-color: var(--ds-background-information-bold, #0C66E4); }
+        .dark .hi-table-row:hover { border-left-color: var(--ds-background-information-bold); }
       `}</style>
     </div>
   );

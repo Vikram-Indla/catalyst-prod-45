@@ -53,13 +53,13 @@ export const HEALTH_FROM_PROGRESS = {
 
 // Status colors for UI (aligned with Catalyst brand)
 export const STATUS_COLORS: Record<string, string> = {
-  'on-track': 'var(--ds-icon-information, #1D7AFC)', // teal
-  'completed': 'var(--ds-icon-information, #1D7AFC)', // teal
-  'in-progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // brand-primary blue
-  'pending': 'var(--ds-border, #DFE1E6)', // secondary-grey
-  'at-risk': 'var(--ds-text-warning, #f59e0b)', // amber warning
-  'off-track': 'var(--ds-text-danger, #ef4444)', // red danger
-  'blocked': 'var(--ds-text-danger, #dc2626)', // dark danger
+  'on-track': 'var(--ds-icon-information)', // teal
+  'completed': 'var(--ds-icon-information)', // teal
+  'in-progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', // brand-primary blue
+  'pending': 'var(--ds-border)', // secondary-grey
+  'at-risk': 'var(--ds-text-warning)', // amber warning
+  'off-track': 'var(--ds-text-danger)', // red danger
+  'blocked': 'var(--ds-text-danger)', // dark danger
 } as const;
 
 // Status labels for display
@@ -75,11 +75,11 @@ export const STATUS_LABELS: Record<string, string> = {
 
 // Theme default colors (used when no color specified)
 export const DEFAULT_THEME_COLORS = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // brand-primary blue
-  'var(--ds-icon-information, #1D7AFC)', // teal
-  'var(--ds-text-brand, #60a5fa)', // blue light
-  'var(--ds-text-subtlest, #626F86)', // gray
-  'var(--ds-background-brand-bold-hovered, #1d4ed8)', // dark blue
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', // brand-primary blue
+  'var(--ds-icon-information)', // teal
+  'var(--ds-text-brand)', // blue light
+  'var(--ds-text-subtlest)', // gray
+  'var(--ds-background-brand-bold-hovered)', // dark blue
 ] as const;
 
 // Maximum progress for over-achievement display

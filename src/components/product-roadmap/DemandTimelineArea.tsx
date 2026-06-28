@@ -263,17 +263,17 @@ interface DemandTimelineRowProps {
 }
 
 const HEALTH_COLORS: Record<string, string> = {
-  'Overdue': 'var(--ds-background-accent-red-bolder, #C9372C)',
-  'At Risk': 'var(--ds-background-accent-orange-bolder, #C25100)',
-  'Healthy': 'var(--ds-background-accent-green-bolder, #1F845A)',
-  'Uncommitted': 'var(--ds-background-neutral-hovered, #DCDFE4)',
+  'Overdue': 'var(--ds-background-accent-red-bolder)',
+  'At Risk': 'var(--ds-background-accent-orange-bolder)',
+  'Healthy': 'var(--ds-background-accent-green-bolder)',
+  'Uncommitted': 'var(--ds-background-neutral-hovered)',
 };
 
 // Status-based color mapping for progress bars - CATALYST BRAND COLORS ONLY
-// Blue: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1d4ed8)
-// Teal: var(--ds-chart-teal-bold, #0d9488), var(--ds-chart-teal-bolder, #0f766e)
-// Gray: var(--ds-text-subtlest, #6b7280), var(--ds-text-disabled, #9ca3af)
-// Amber: var(--ds-text-warning, #f59e0b)
+// Blue: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), var(--ds-background-brand-bold-hovered)
+// Teal: var(--ds-chart-teal-bold), var(--ds-chart-teal-bolder)
+// Gray: var(--ds-text-subtlest), var(--ds-text-disabled)
+// Amber: var(--ds-text-warning)
 const STATUS_COLORS: Record<string, string> = {
   new: 'var(--process-new-demand)',
   new_request: 'var(--process-new-demand)',

@@ -48,7 +48,7 @@ function GeneratingOverlay({ message }: { message: string }) {
       <Spinner size="large" />
       <div style={{
         marginTop: 16, fontSize: 'var(--ds-font-size-500)', fontWeight: 500,
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
       }}>
         {message}
       </div>

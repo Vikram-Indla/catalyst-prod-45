@@ -82,7 +82,7 @@ export const CommentComposer: React.FC<CommentComposerProps> = ({
               backgroundColor: COLORS.accent,
               border: 'none',
               borderRadius: '50%',
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',

@@ -25,8 +25,8 @@ interface WorkItemTreeProps {
 /* ── Skeleton rows ── */
 export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
   const { isDark } = useTheme();
-  const shimmerBg = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
-  const headerBg = 'var(--cp-bg-page, #FAFAFA)';
+  const shimmerBg = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))';
+  const headerBg = 'var(--cp-bg-page)';
   return (
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
       <div style={{ height: 32, background: headerBg, borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '8px 12px' }}>
@@ -75,7 +75,7 @@ function priorityToLevel(name?: string): number {
 
 /* ── Assignee avatar ── */
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','var(--ds-link, #0C66E4)','var(--quality-high, #059669)','var(--ds-text-danger, #BE123C)','var(--ds-background-brand-bold-hovered, #1D4ED8)','var(--ds-chart-teal-bolder, #0f766e)'];
+const AVATAR_COLORS = ['var(--cp-teal-60)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary))','var(--ds-text-danger, var(--cp-danger))','var(--ds-text-success, var(--cp-success))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))','var(--ds-link)','var(--quality-high)','var(--ds-text-danger)','var(--ds-background-brand-bold-hovered)','var(--ds-chart-teal-bolder)'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -85,7 +85,7 @@ function getAvatarColor(name: string): string {
 function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   const { isDark } = useTheme();
   if (!assignee) {
-    return <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '1px solid var(--divider)', flexShrink: 0 }} />;
+    return <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '1px solid var(--divider)', flexShrink: 0 }} />;
   }
   const avatarUrl = (assignee as any).avatar;
   if (avatarUrl) {
@@ -95,7 +95,7 @@ function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   const bgColor = getAvatarColor(assignee.displayName);
   return (
     <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
     </div>
   );
 }
@@ -107,10 +107,10 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   const pct = Math.round((stats.completedCount / stats.totalDescendants) * 100);
   const isComplete = pct === 100;
   const fillColor = isComplete ? 'var(--sem-success)' : 'var(--cp-blue)';
-  const textColor = isComplete ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--cp-blue)';
+  const textColor = isComplete ? 'var(--ds-background-success-bold)' : 'var(--cp-blue)';
   return (
     <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
-      <div style={{ height: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
+      <div style={{ height: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 4, transition: 'width 300ms ease' }} />
       </div>
       <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: textColor, fontFamily: 'var(--cp-font-body)', fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
@@ -280,7 +280,7 @@ function TreeRow({
       <ProgressBar stats={item.stats} />
 
       {item.fixVersion && (
-        <span style={{ height: 20, padding: '0 8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-chart-teal-bolder, #0f766e)', background: 'var(--ds-background-success, #DCFFF1)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+        <span style={{ height: 20, padding: '0 8px', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-chart-teal-bolder)', background: 'var(--ds-background-success)', border: '1px solid var(--ds-background-success, rgba(13,148,136,0.2))', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
           {item.fixVersion.name}
         </span>
       )}
@@ -518,7 +518,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
       {/* Column header row */}
       <div style={{
-        height: 50, background: 'var(--cp-bg-page, #FAFAFA)', borderBottom: '1px solid var(--divider)',
+        height: 50, background: 'var(--cp-bg-page)', borderBottom: '1px solid var(--divider)',
         display: 'flex', alignItems: 'center', padding: '8px 12px',
         fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
         textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em',

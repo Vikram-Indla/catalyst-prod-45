@@ -171,7 +171,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 <circle cx="22" cy="78" r="10" fill="white" opacity="0.9"/>
                 <circle cx="78" cy="78" r="10" fill="white" opacity="0.9"/>
                 <circle cx="50" cy="50" r="16" fill="white"/>
-                <circle cx="50" cy="50" r="8" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"/>
+                <circle cx="50" cy="50" r="8" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"/>
               </svg>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -190,14 +190,14 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
-              <RefreshCw size={15} strokeWidth={2} color="var(--ds-icon-subtle, #8B8FA3)" />
+              <RefreshCw size={15} strokeWidth={2} color="var(--ds-icon-subtle)" />
             </button>
             <button onClick={onClose} aria-label="Close" className="ka-icon-btn"
               style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--divider)', background: 'var(--bg-app)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
-              <X size={15} strokeWidth={2} color="var(--ds-icon-subtle, #8B8FA3)" />
+              <X size={15} strokeWidth={2} color="var(--ds-icon-subtle)" />
             </button>
           </div>
         </div>
@@ -207,7 +207,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           {/* ═══ LOADING ═══ */}
           {userLoading && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, padding: 40 }}>
-              <Loader2 size={24} color="var(--ds-background-discovery-bold, #6E5DC6)" style={{ animation: 'spin 1s linear infinite' }} />
+              <Loader2 size={24} color="var(--ds-background-discovery-bold)" style={{ animation: 'spin 1s linear infinite' }} />
             </div>
           )}
 
@@ -229,7 +229,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                       <div style={{
                         maxWidth: '85%', padding: '10px 16px',
                         borderRadius: '8px 8px 3px 8px', background: 'var(--cp-blue)',
-                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, lineHeight: 1.5,
+                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, lineHeight: 1.5,
                         fontFamily: 'var(--ds-font-family-body)',
                       }}>{msg.text}</div>
                     </div>
@@ -246,7 +246,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
 
               {isProcessing && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', animation: 'ka-msg-in 200ms ease' }}>
-                  <Loader2 size={16} color="var(--ds-background-discovery-bold, #6E5DC6)" style={{ animation: 'spin 1s linear infinite' }} />
+                  <Loader2 size={16} color="var(--ds-background-discovery-bold)" style={{ animation: 'spin 1s linear infinite' }} />
                   <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>Searching your projects...</span>
                 </div>
               )}
@@ -284,7 +284,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             >
-              <Mic size={18} strokeWidth={2} color={isListening ? '#CF1322' : 'var(--ds-icon-subtle, #8B8FA3)'} />
+              <Mic size={18} strokeWidth={2} color={isListening ? '#CF1322' : 'var(--ds-icon-subtle)'} />
             </button>
             <textarea
               ref={textareaRef}
@@ -315,7 +315,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 transition: 'background 80ms',
               }}
             >
-              <Send size={18} strokeWidth={2} color={input.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-icon-subtle, #8B8FA3)'} />
+              <Send size={18} strokeWidth={2} color={input.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-icon-subtle)'} />
             </button>
           </div>
         </div>
@@ -336,7 +336,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             50% { opacity: 0.4; }
           }
           @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
-          .ka-icon-btn:focus-visible { outline: 2px solid var(--ds-background-discovery-bold, #6E5DC6); outline-offset: 2px; }
+          .ka-icon-btn:focus-visible { outline: 2px solid var(--ds-background-discovery-bold); outline-offset: 2px; }
           .ka-scroll-area::-webkit-scrollbar { width: 4px; }
           .ka-scroll-area::-webkit-scrollbar-track { background: transparent; }
           .ka-scroll-area::-webkit-scrollbar-thumb { background: var(--ds-shadow-overlay, rgba(15,23,42,0.18)); border-radius: 4px; }

@@ -30,24 +30,24 @@ import {
 } from '@/hooks/useReleaseHub';
 
 const T = {
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  success: 'var(--ds-text-success, #216E4E)',
-  warning: 'var(--ds-text-warning, #A54800)',
-  danger: 'var(--ds-text-danger, #AE2A19)',
-  information: 'var(--ds-text-information, #0055CC)',
-  bgSuccess: 'var(--ds-background-success, #DCFFF1)',
-  bgWarning: 'var(--ds-background-warning, #FFF7D6)',
-  bgDanger: 'var(--ds-background-danger, #FFEDEB)',
-  bgInformation: 'var(--ds-background-information, #E9F2FE)',
-  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
-  caty: 'var(--ds-icon-accent-magenta, #CD519D)', // signature CATY magenta (ADS magenta accent token)
-  catyBg: 'var(--ds-background-accent-magenta-subtlest, #FFECF8)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  success: 'var(--ds-text-success)',
+  warning: 'var(--ds-text-warning)',
+  danger: 'var(--ds-text-danger)',
+  information: 'var(--ds-text-information)',
+  bgSuccess: 'var(--ds-background-success)',
+  bgWarning: 'var(--ds-background-warning)',
+  bgDanger: 'var(--ds-background-danger)',
+  bgInformation: 'var(--ds-background-information)',
+  bgNeutral: 'var(--ds-background-neutral)',
+  caty: 'var(--ds-icon-accent-magenta)', // signature CATY magenta (ADS magenta accent token)
+  catyBg: 'var(--ds-background-accent-magenta-subtlest)',
 };
 
 export interface CatyRiskMetrics {

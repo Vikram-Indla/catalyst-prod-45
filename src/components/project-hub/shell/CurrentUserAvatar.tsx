@@ -52,7 +52,7 @@ export function CurrentUserAvatar() {
       <button
         type="button"
         title="Profile"
-        className="rounded-full flex-shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary,#2563EB))] focus-visible:ring-offset-2 outline-none p-0 border-0 bg-transparent cursor-pointer"
+        className="rounded-full flex-shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus-visible:ring-offset-2 outline-none p-0 border-0 bg-transparent cursor-pointer"
       >
         <UserAvatar name={name} src={profile?.avatarUrl} size="medium" />
       </button>

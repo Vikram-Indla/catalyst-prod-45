@@ -152,15 +152,15 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
             ...(align === 'end' ? { right: anchor.right } : { left: anchor.left }),
             zIndex: 1000,
             minWidth: width,
-            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
             padding: 4,
             maxHeight: 360,
             overflowY: 'auto',
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
           }}
         >
           {children(close)}
@@ -186,8 +186,8 @@ function MenuItemBtn({
         width: '100%',
         padding: '8px 8px',
         border: 'none',
-        background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
-        color: 'var(--ds-text, #172B4D)',
+        background: active ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent',
+        color: 'var(--ds-text)',
         fontSize: 'var(--ds-font-size-400)',
         textAlign: 'left',
         cursor: 'pointer',
@@ -195,7 +195,7 @@ function MenuItemBtn({
         borderRadius: 3,
         outline: 'none',
       }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
+      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'); }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {children}
@@ -211,7 +211,7 @@ function MenuLabel({ children }: { children: React.ReactNode }) {
       fontWeight: 700,
       letterSpacing: '0.08em',
       textTransform: 'uppercase',
-      color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+      color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
     }}>{children}</div>
   );
 }
@@ -264,7 +264,7 @@ export function makeStatusEditCell<T>({
     const editable = callerEditable && !frozen;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
+    if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest))') }}>—</span>;
 
     // 2026-06-28: chevron lives INSIDE the pill (trailingIcon) so it inherits
      // the pill's bg/colour. CatalystStatusPill suppresses trailingIcon when
@@ -389,7 +389,7 @@ function StatusPopupCell<T>({
 }: StatusPopupCellProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
+  if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest))') }}>—</span>;
   if (!editable && lozenge) return <>{lozenge}</>;
 
   return (
@@ -406,7 +406,7 @@ function StatusPopupCell<T>({
             padding: 4,
             maxHeight: 360,
             overflowY: 'auto',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -591,7 +591,7 @@ export function makeSummaryInlineEditCell<T>({
             // discoverable on hover (not just via tooltip delay).
             cursor: readOnlyTooltip ? 'not-allowed' : undefined,
             // Jira-parity: summary text color = --ds-text-subtle (rgb 80,82,88)
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
           }}
         >
           {summary}
@@ -676,7 +676,7 @@ export function makeSummaryInlineEditCell<T>({
                   width: '100%',
                   // 2026-05-08 DOM probe: Jira summary = rgb(80,82,88) = --ds-text-subtle.
                   // Inheriting --ds-text (rgb 41,42,46) from tbody td baseline was wrong.
-                  color: 'var(--ds-text-subtle, #505258)',
+                  color: 'var(--ds-text-subtle)',
                   // 2026-06-11: lineHeight 1.4 (was 1) so the descenders of g/y/p/q/j
                   // are not clipped by the overflow:hidden parent. Combined with
                   // the .cv-cell-inline-edit-no-label override that zeros the
@@ -728,11 +728,11 @@ export function makeSummaryInlineEditCell<T>({
                     background: 'transparent',
                     borderRadius: 3,
                     cursor: 'pointer',
-                    color: 'var(--ds-text-subtle, #505258)',
+                    color: 'var(--ds-text-subtle)',
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))';
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -781,11 +781,11 @@ export function makeSummaryInlineEditCell<T>({
                     background: 'transparent',
                     borderRadius: 3,
                     cursor: 'pointer',
-                    color: 'var(--ds-text-subtle, #505258)',
+                    color: 'var(--ds-text-subtle)',
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))';
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -861,7 +861,7 @@ export function makeAssigneeEditCell<T>({
             <Avatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
             <span
               style={{
-                color: token('color.text', 'var(--ds-text, #172B4D)'),
+                color: token('color.text', 'var(--ds-text)'),
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -943,15 +943,15 @@ export function makeAssigneeEditCell<T>({
 // Jira-parity priority display: icon + text label.
 // Measured from digital-transformation.atlassian.net BAU list 2026-05-04:
 //   Priority cell shows icon (16px) + label text at 14px, inline-flex, gap 4px.
-//   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=var(--cp-warning, #D97706),
+//   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=var(--cp-warning),
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: 'var(--ds-text-danger, #E5484D)', label: 'Critical'  },
-  highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: 'var(--ds-text-danger, #E5484D)', label: 'Highest'   },
-  high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: 'var(--ds-text-warning, #E2730D)', label: 'High'      },
-  medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: 'var(--cp-warning, #D97706)', label: 'Medium'    },
-  low:       { icon: <AkPriorityLowIcon      label="" size="small" />, color: 'var(--ds-link, #0065FF)', label: 'Low'       },
-  lowest:    { icon: <AkPriorityLowestIcon   label="" size="small" />, color: 'var(--ds-text-subtlest, #626F86)', label: 'Lowest'    },
+  critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: 'var(--ds-text-danger)', label: 'Critical'  },
+  highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: 'var(--ds-text-danger)', label: 'Highest'   },
+  high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: 'var(--ds-text-warning)', label: 'High'      },
+  medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: 'var(--cp-warning)', label: 'Medium'    },
+  low:       { icon: <AkPriorityLowIcon      label="" size="small" />, color: 'var(--ds-link)', label: 'Low'       },
+  lowest:    { icon: <AkPriorityLowestIcon   label="" size="small" />, color: 'var(--ds-text-subtlest)', label: 'Lowest'    },
 };
 
 function PriorityBars({ priority }: { priority: string | null }) {
@@ -959,7 +959,7 @@ function PriorityBars({ priority }: { priority: string | null }) {
   const cfg = PRIORITY_CONFIG[p];
   if (!cfg) {
     return (
-      <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>—</span>
+      <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-400)' }}>—</span>
     );
   }
   return (
@@ -968,7 +968,7 @@ function PriorityBars({ priority }: { priority: string | null }) {
       style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 'var(--ds-font-size-400)', whiteSpace: 'nowrap' }}
     >
       {cfg.icon}
-      <span style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{cfg.label}</span>
+      <span style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') }}>{cfg.label}</span>
     </span>
   );
 }
@@ -1062,7 +1062,7 @@ export interface ParentChoice {
 // Measured directly from Jira's production list view on
 // digital-transformation.atlassian.net on 2026-04-18:
 //   background: rgb(34, 125, 155)  // #227D9B — Jira's "epic parent" teal
-//   color:      var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))
+//   color:      var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))
 //   padding:    2px 4px
 //   border-radius: 3px
 //   font-size:  14px (we use 13 to match our compact row density)
@@ -1084,12 +1084,12 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         gap: 6,
         maxWidth: 260,
         padding: '2px 8px',
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         fontWeight: 400,
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
       }}
@@ -1102,7 +1102,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
       {choice.key && (
         <strong style={{
           fontWeight: 500,
-          color: token('color.link', 'var(--ds-link, #0C66E4)'),
+          color: token('color.link', 'var(--ds-link)'),
           flexShrink: 0,
         }}>
           {choice.key}
@@ -1141,7 +1141,7 @@ export function makeParentEditCell<T>({
     const filledDisplay = current ? <ParentChip choice={current} /> : null;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
+    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest))') }}>—</span>;
     if (!editable && filledDisplay) return filledDisplay;
 
     return (
@@ -1170,7 +1170,7 @@ export function makeParentEditCell<T>({
           >
             {/* Jira renders "None" when there's no parent — plain muted text. */}
             {filledDisplay ?? (
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>None</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-400)' }}>None</span>
             )}
           </button>
         )}
@@ -1185,14 +1185,14 @@ export function makeParentEditCell<T>({
                 value={search}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                 elemBeforeInput={
-                  <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), display: 'flex', alignItems: 'center' }}>
+                  <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), display: 'flex', alignItems: 'center' }}>
                     <AkSearchIcon label="" size="small" />
                   </span>
                 }
               />
             </div>
             <MenuItemBtn onClick={() => { onChange(row, null); close(); }}>
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No parent</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>No parent</span>
             </MenuItemBtn>
             {filtered.slice(0, 20).map((opt) => (
               <MenuItemBtn
@@ -1204,7 +1204,7 @@ export function makeParentEditCell<T>({
               </MenuItemBtn>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>No matches</div>
             )}
           </>
         )}
@@ -1244,12 +1244,12 @@ function WorkstreamChip({ choice }: { choice: WorkstreamChoice }) {
         gap: 6,
         maxWidth: 260,
         padding: '2px 8px',
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         fontWeight: 400,
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
       }}
@@ -1303,7 +1303,7 @@ export function makeWorkstreamEditCell<T>({
     const filledDisplay = current ? <WorkstreamChip choice={current} /> : null;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
+    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest))') }}>—</span>;
     if (!editable && filledDisplay) return filledDisplay;
 
     return (
@@ -1332,7 +1332,7 @@ export function makeWorkstreamEditCell<T>({
             }}
           >
             {filledDisplay ?? (
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>None</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-400)' }}>None</span>
             )}
           </button>
         )}
@@ -1347,14 +1347,14 @@ export function makeWorkstreamEditCell<T>({
                 value={search}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                 elemBeforeInput={
-                  <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), display: 'flex', alignItems: 'center' }}>
+                  <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), display: 'flex', alignItems: 'center' }}>
                     <AkSearchIcon label="" size="small" />
                   </span>
                 }
               />
             </div>
             <MenuItemBtn onClick={() => { onChange(row, null); close(); }}>
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No workstream</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>No workstream</span>
             </MenuItemBtn>
             {filtered.slice(0, 20).map((opt) => (
               <MenuItemBtn
@@ -1366,7 +1366,7 @@ export function makeWorkstreamEditCell<T>({
               </MenuItemBtn>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>No matches</div>
             )}
           </>
         )}
@@ -1425,14 +1425,14 @@ export function makeRowActionsCell<T>({
               borderRadius: 4,
               border: 'none',
               background: 'transparent',
-              color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+              color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
               cursor: 'pointer',
               // Always visible per 2026-06-09 spec (Jira parity — the row
               // actions trigger no longer requires hover to appear).
               opacity: 1,
               transition: 'background 100ms',
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
           >
             <AkMoreIcon label="" size="small" />
@@ -1456,7 +1456,7 @@ export function makeRowActionsCell<T>({
             ))}
             {danger.length > 0 && (
               <>
-                <div style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '4px 0' }} />
+                <div style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))'), margin: '4px 0' }} />
                 {danger.map((a) => (
                   <button
                     key={a.id}
@@ -1471,14 +1471,14 @@ export function makeRowActionsCell<T>({
                       padding: '8px 10px',
                       border: 'none',
                       background: 'transparent',
-                      color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+                      color: token('color.text.danger', 'var(--ds-text-danger)'),
                       fontSize: 'var(--ds-font-size-400)',
                       textAlign: 'left',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       borderRadius: 3,
                     }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))'))}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger))'))}
                     onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                   >
                     {a.icon}
@@ -1520,7 +1520,7 @@ export function makeDateEditCell<T>({
       : null;
 
     const display = formatted
-      ? <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{formatted}</span>
+      ? <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') }}>{formatted}</span>
       : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />;
 
     if (!editable) {
@@ -1585,13 +1585,13 @@ export function makeDateEditCell<T>({
                   padding: '6px 10px',
                   border: 'none',
                   background: 'transparent',
-                  color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+                  color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                   fontSize: 'var(--ds-font-size-300)',
                   cursor: 'pointer',
                   textAlign: 'left',
                   borderRadius: 3,
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'); }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 Clear date
@@ -1630,8 +1630,8 @@ export function makeLabelsEditCell<T>({
                   alignItems: 'center',
                   padding: '1px 6px',
                   borderRadius: 3,
-                  background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
-                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                  background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
+                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                   fontSize: 'var(--ds-font-size-200)',
                   whiteSpace: 'nowrap',
                 }}
@@ -1730,8 +1730,8 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
               gap: 4,
               padding: '2px 6px',
               borderRadius: 3,
-              background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
-              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+              background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
               fontSize: 'var(--ds-font-size-200)',
             }}
           >
@@ -1739,7 +1739,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
             <button
               type="button"
               onClick={() => removeLabel(l)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}
             >
               <AkCloseIcon label="" size="small" />
             </button>
@@ -1762,7 +1762,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
         <button
           type="button"
           onClick={close}
-          style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}
+          style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') }}
         >
           Done
         </button>
@@ -1862,7 +1862,7 @@ if (typeof document !== 'undefined') {
     }
     /* Add a soft divider above the post-body sidebar group. */
     [data-cv-stacked-panel="true"] .cv-drawer-sidebar > *:not([data-cv-sidebar-status-header="true"]):first-of-type {
-      border-top: 1px solid var(--ds-border, #DFE1E6);
+      border-top: 1px solid var(--ds-border);
       padding-top: 16px;
       margin-top: 16px;
     }

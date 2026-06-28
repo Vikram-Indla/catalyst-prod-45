@@ -50,9 +50,9 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
         <div className="flex items-center gap-3" style={{ marginBottom: 16 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
-            background: 'var(--ds-background-danger, #FFEBEE)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--ds-background-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Trash2 size={18} color="var(--ds-icon-danger, #D32F2F)" />
+            <Trash2 size={18} color="var(--ds-icon-danger)" />
           </div>
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary }}>Delete work item?</div>
@@ -75,7 +75,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
               border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
               color: tk.textPrimary, outline: 'none', fontFamily: 'var(--cp-font-mono)',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-danger, #D32F2F)'; }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-danger)'; }}
             onBlur={e => { e.currentTarget.style.borderColor = tk.inputBorder; }}
           />
         </div>
@@ -90,8 +90,8 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             disabled={!canDelete}
             style={{
               padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
-              border: 'none', background: canDelete ? '#D32F2F' : 'var(--ds-border, #DFE1E6)',
-              color: canDelete ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-disabled, #9E9E9E)', cursor: canDelete ? 'pointer' : 'not-allowed',
+              border: 'none', background: canDelete ? '#D32F2F' : 'var(--ds-border)',
+              color: canDelete ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-text-disabled)', cursor: canDelete ? 'pointer' : 'not-allowed',
               opacity: canDelete ? 1 : 0.6,
             }}
           >Delete</button>

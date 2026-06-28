@@ -41,7 +41,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
         border: '1px solid var(--divider)',
         borderRadius: 8,
         overflow: 'hidden',
-        background: 'var(--ds-surface, #fff)',
+        background: 'var(--ds-surface)',
       }}
     >
       {/* Config header */}
@@ -49,7 +49,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
         style={{
           padding: '12px 16px',
           borderBottom: '1px solid var(--divider)',
-          background: 'var(--ds-surface-sunken,#F8FAFC)',
+          background: 'var(--ds-surface-sunken)',
           display: 'flex', alignItems: 'center', gap: 8,
         }}
       >
@@ -60,7 +60,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
           <span
             style={{
               fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 8px', borderRadius: 10,
-              background: 'var(--ds-background-success, #DCFCE7)', color: 'var(--ds-text-success, #15803D)',
+              background: 'var(--ds-background-success)', color: 'var(--ds-text-success)',
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}
           >
@@ -75,7 +75,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
           padding: '8px 16px',
           borderBottom: '1px solid var(--divider)',
           display: 'flex', gap: 20,
-          background: 'var(--ds-surface, #fff)',
+          background: 'var(--ds-surface)',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -107,7 +107,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
                 padding: '4px 10px',
                 border: '1px solid var(--divider)',
                 borderRadius: 20,
-                background: 'var(--ds-surface-sunken,#F8FAFC)',
+                background: 'var(--ds-surface-sunken)',
               }}
             >
               <WorkItemTypeIcon type={TYPE_ICON[typeName] ?? 'story'} size={13} />
@@ -161,7 +161,7 @@ export function FieldsTab({ projectId }: FieldsTabProps) {
               style={{
                 padding: '14px 20px',
                 borderBottom: '1px solid var(--divider)',
-                background: 'var(--ds-surface-sunken,#F8FAFC)',
+                background: 'var(--ds-surface-sunken)',
                 display: 'flex', alignItems: 'center', gap: 10,
               }}
             >

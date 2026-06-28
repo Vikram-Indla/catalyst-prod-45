@@ -450,7 +450,7 @@ export function FilterResultsPanel({
               fontWeight: 500,
               padding: '2px 6px',
               borderRadius: 3,
-              background: `var(--ds-background-neutral, #F1F2F4)`,
+              background: `var(--ds-background-neutral)`,
               color: token('color.text.subtle'),
               border: `1px solid ${token('color.border')}`,
             }}>
@@ -474,7 +474,7 @@ export function FilterResultsPanel({
         <div style={{
           padding: '32px 24px',
           textAlign: 'center',
-          background: `var(--ds-surface-sunken, #F7F8F9)`,
+          background: `var(--ds-surface-sunken)`,
           border: `1px dashed ${token('color.border')}`,
           borderRadius: 4,
           color: token('color.text.subtle'),

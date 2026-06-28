@@ -97,7 +97,7 @@ export function AddPeopleModal() {
         style={{
           width: 480,
           maxWidth: 'calc(100vw - 48px)',
-          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          background: token('elevation.surface', 'var(--ds-surface)'),
           borderRadius: 8,
           boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9, 30, 66, 0.25))',
           display: 'flex',
@@ -114,7 +114,7 @@ export function AddPeopleModal() {
               fontSize: 'var(--ds-font-size-700)',
               fontWeight: 653,
               letterSpacing: '-0.003em',
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
             }}
           >
             Add people to {projectName}
@@ -128,7 +128,7 @@ export function AddPeopleModal() {
               height: 32,
               border: 'none',
               background: 'transparent',
-              color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
+              color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
               cursor: 'pointer',
               borderRadius: 3,
               display: 'inline-flex',
@@ -148,11 +148,11 @@ export function AddPeopleModal() {
                 display: 'block',
                 fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
-                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 marginBottom: 4,
               }}
             >
-              Names or emails <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span>
+              Names or emails <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)') }}>*</span>
             </label>
             <Textfield
               id="add-people-emails"
@@ -167,11 +167,11 @@ export function AddPeopleModal() {
                 display: 'block',
                 fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
-                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 marginBottom: 4,
               }}
             >
-              Role <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>*</span>
+              Role <span style={{ color: token('color.text.danger', 'var(--ds-text-danger)') }}>*</span>
             </label>
             <button
               type="button"
@@ -184,10 +184,10 @@ export function AddPeopleModal() {
                 width: '100%',
                 height: 36,
                 padding: '0 12px',
-                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
                 borderRadius: 3,
-                background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-                color: token('color.text', 'var(--ds-text, #172B4D)'),
+                background: token('elevation.surface', 'var(--ds-surface)'),
+                color: token('color.text', 'var(--ds-text)'),
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 400,
                 fontFamily: 'inherit',
@@ -198,7 +198,7 @@ export function AddPeopleModal() {
               <ChevronDown size={14} />
             </button>
           </div>
-          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
             Each person you add will get access to this project.
           </p>
         </div>
@@ -209,7 +209,7 @@ export function AddPeopleModal() {
             justifyContent: 'flex-end',
             gap: 8,
             padding: '12px 24px 20px',
-            borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+            borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
           }}
         >
           <Button appearance="subtle" onClick={handleClose} isDisabled={submitting}>

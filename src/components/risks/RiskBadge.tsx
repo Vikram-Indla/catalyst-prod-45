@@ -63,9 +63,9 @@ function NoRisksBadge({ size = 'md' }: { size?: 'sm' | 'md' }) {
         size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-3 py-1 text-[11px]'
       )}
       style={{
-        backgroundColor: 'var(--ds-background-success, #DFFCF0)',
+        backgroundColor: 'var(--ds-background-success)',
         border: '1px solid #c8e6c9', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        color: 'var(--ds-text-success, #216E4E)',
+        color: 'var(--ds-text-success)',
       }}
     >
       <Check className={cn(size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5')} />

@@ -60,7 +60,7 @@ function MenuItemRow({
           padding: '8px 16px 4px',
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 653,
-          color: 'var(--ds-text-subtle, #505258)',
+          color: 'var(--ds-text-subtle)',
           userSelect: 'none',
           cursor: 'default',
         }}
@@ -191,15 +191,15 @@ export function ColumnHeaderMenu({ isOpen, onClose, triggerRef, items }: ColumnH
         position: 'fixed',
         top: menuTop,
         left: menuLeft,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
         padding: '4px 0',
         minWidth: 220,
         zIndex: 9999,
         fontSize: 'var(--ds-font-size-400)',
-        color: 'var(--ds-text, #292A2E)',
+        color: 'var(--ds-text)',
       }}
     >
       {items.map((item) => (
@@ -218,7 +218,7 @@ export function ColumnHeaderMenu({ isOpen, onClose, triggerRef, items }: ColumnH
 
 const dividerStyle: React.CSSProperties = {
   height: 1,
-  background: 'var(--ds-border, #DFE1E6)',
+  background: 'var(--ds-border)',
   margin: '4px 0',
 };
 
@@ -229,8 +229,8 @@ function menuItemStyle(active: boolean): React.CSSProperties {
     gap: 8,
     padding: '8px 16px',
     cursor: 'pointer',
-    background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-    color: active ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #292A2E)',
+    background: active ? 'var(--ds-background-selected)' : 'transparent',
+    color: active ? 'var(--ds-text-selected)' : 'var(--ds-text)',
     fontWeight: active ? 500 : 400,
     userSelect: 'none',
   };
@@ -241,15 +241,15 @@ function submenuStyle(triggerRect: DOMRect): React.CSSProperties {
     position: 'fixed',
     top: triggerRect.top,
     left: triggerRect.right + 4,
-    background: 'var(--ds-surface-overlay, #FFFFFF)',
-    border: '1px solid var(--ds-border, #DFE1E6)',
+    background: 'var(--ds-surface-overlay)',
+    border: '1px solid var(--ds-border)',
     borderRadius: 6,
     boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
     padding: '4px 0',
     minWidth: 180,
     zIndex: 10000,
     fontSize: 'var(--ds-font-size-400)',
-    color: 'var(--ds-text, #292A2E)',
+    color: 'var(--ds-text)',
   };
 }
 

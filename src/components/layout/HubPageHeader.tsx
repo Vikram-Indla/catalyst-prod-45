@@ -17,12 +17,12 @@
  *   container padding:   16px 16px 4px
  *   h1 font-size:        20px
  *   h1 font-weight:      600
- *   h1 color:            var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))   (Atlaskit 'color.text', light mode)
+ *   h1 color:            var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))   (Atlaskit 'color.text', light mode)
  *   h1 letter-spacing:  -0.003em
  *   h1 margin:           0
  *
  * Dark mode:
- *   Swaps to Catalyst's DARK MODE text token so contrast on var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) surface holds.
+ *   Swaps to Catalyst's DARK MODE text token so contrast on var(--ds-surface-raised, var(--cp-ink-1)) surface holds.
  *
  * Rollback:
  *   1. Restore the original breadcrumb/h1 JSX per page.
@@ -81,7 +81,7 @@ export function HubPageHeader({
           margin: 0,
           fontSize: 'var(--ds-font-size-700)',
           fontWeight: 600,
-          color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+          color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse)))',
           letterSpacing: '-0.003em',
           fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
           lineHeight: 1.2,

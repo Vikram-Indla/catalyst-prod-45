@@ -71,7 +71,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
       {/* Scenario Panel */}
       <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[var(--ds-chart-teal-bold, #0d9488)]/10 text-[var(--ds-chart-teal-bold, #0d9488)] uppercase">Active</span>
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[var(--ds-chart-teal-bold)]/10 text-[var(--ds-chart-teal-bold)] uppercase">Active</span>
           <span className="text-sm font-semibold text-foreground">Current Plan - Q1 2025</span>
         </div>
         <div className="flex gap-2">
@@ -100,7 +100,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
         </div>
         <Button
           size="sm"
-          className="gap-2 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+          className="gap-2 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)]"
           onClick={() => setAddModalOpen(true)}
         >
           <Plus className="h-3.5 w-3.5" />
@@ -120,7 +120,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
               <div key={week} className="min-w-36 flex-1 border-r border-border last:border-r-0">
                 <div className={cn(
                   'px-2 py-2 text-center text-[11px] font-semibold text-muted-foreground border-b border-border',
-                  i === 0 && 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]'
+                  i === 0 && 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]'
                 )}>
                   {week}
                 </div>
@@ -160,8 +160,8 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
                     <p className="text-[11px] text-muted-foreground">{resource.role}</p>
                     <span className={cn(
                       'text-[10px] font-semibold mt-1 inline-block',
-                      resource.allocation > 100 ? 'text-[var(--ds-text-danger,#dc2626)]' :
-                      resource.allocation > 80 ? 'text-[var(--ds-text-warning,#d97706)]' : 'text-[var(--ds-icon-information, #1D7AFC)]'
+                      resource.allocation > 100 ? 'text-[var(--ds-text-danger)]' :
+                      resource.allocation > 80 ? 'text-[var(--ds-text-warning)]' : 'text-[var(--ds-icon-information)]'
                     )}>
                       {resource.allocation}%
                     </span>
@@ -190,8 +190,8 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
                     <div
                       className={cn(
                         'h-full',
-                        resource.allocation > 100 ? 'bg-[var(--ds-text-danger,#dc2626)]' :
-                        resource.allocation > 80 ? 'bg-[var(--ds-text-warning,#d97706)]' : 'bg-[var(--ds-icon-information, #1D7AFC)]'
+                        resource.allocation > 100 ? 'bg-[var(--ds-text-danger)]' :
+                        resource.allocation > 80 ? 'bg-[var(--ds-text-warning)]' : 'bg-[var(--ds-icon-information)]'
                       )}
                       style={{ width: `${Math.min(resource.allocation, 100)}%` }}
                     />
@@ -300,7 +300,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
             <Button
               onClick={handleAddAssignment}
               disabled={createAssignment.isPending}
-              className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+              className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)]"
             >
               {createAssignment.isPending ? 'Adding...' : 'Add Assignment'}
             </Button>

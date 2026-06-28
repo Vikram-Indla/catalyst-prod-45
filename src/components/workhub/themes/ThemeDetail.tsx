@@ -115,7 +115,7 @@ export function ThemeDetail() {
           </button>
           <button onClick={() => setDeleteOpen(true)} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            padding: '6px 14px', borderRadius: 8, border: '1px solid var(--ds-background-danger, #FFECEB)',
+            padding: '6px 14px', borderRadius: 8, border: '1px solid var(--ds-background-danger)',
             background: 'var(--cp-float)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer', color: 'var(--sem-danger)',
           }}>
             <Trash2 size={13} /> Delete

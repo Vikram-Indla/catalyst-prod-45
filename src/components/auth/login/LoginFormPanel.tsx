@@ -182,7 +182,7 @@ export function LoginFormPanel({
       <div className="clmp-card-mark">
         {/* ads-scanner:ignore-next-line */}
         <svg width="40" height="40" viewBox="0 0 512 512" aria-hidden="true" focusable="false" style={{ flexShrink: 0, borderRadius: 10 }}>
-          <rect width="512" height="512" rx="129.62" fill="var(--ds-link, #1868DB)"/>
+          <rect width="512" height="512" rx="129.62" fill="var(--ds-link)"/>
           <path d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z" fill="white"/>
         </svg>
         <div>
@@ -198,9 +198,9 @@ export function LoginFormPanel({
           style={{
             display: 'flex', alignItems: 'flex-start', gap: 10,
             padding: '11px 14px', borderRadius: 8, marginBottom: 4,
-            background: 'var(--ds-background-danger, #FFECEB)',
-            border: '1.5px solid var(--ds-border-danger, #FF8F73)',
-            color: 'var(--ds-text-danger, #AE2A19)',
+            background: 'var(--ds-background-danger)',
+            border: '1.5px solid var(--ds-border-danger)',
+            color: 'var(--ds-text-danger)',
             fontSize: 'var(--ds-font-size-300)', fontWeight: 500, lineHeight: '1.45',
           }}
         >

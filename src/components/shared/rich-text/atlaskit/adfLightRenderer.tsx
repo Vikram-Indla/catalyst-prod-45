@@ -87,7 +87,7 @@ function renderMark(
       return (
         <a key={key} href={href}
           target="_blank" rel="noopener noreferrer"
-          style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'), textDecoration: 'none' }}
+          style={{ color: token('color.text.brand', 'var(--cp-primary-60)'), textDecoration: 'none' }}
         >
           {children}
         </a>
@@ -177,7 +177,7 @@ function renderInline(node: AdfNode, index: number): React.ReactNode {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: token('color.link', 'var(--ds-link, #0052CC)') }}
+          style={{ color: token('color.link', 'var(--ds-link)') }}
         >
           {url}
         </a>
@@ -399,7 +399,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
             borderInlineStart: `2px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
             padding: '8px 12px',
             margin: '8px 0',
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
           }}
         >
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
@@ -448,7 +448,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: token('color.link', 'var(--ds-link, #0052CC)') }}
+              style={{ color: token('color.link', 'var(--ds-link)') }}
             >
               {url}
             </a>
@@ -462,12 +462,12 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
     case 'panel': {
       const panelType = String(node.attrs?.panelType ?? 'info');
       const panelStyles: Record<string, { bg: string; border: string; icon: string }> = {
-        info:    { bg: token('color.background.information.subtle', 'var(--ds-background-selected, #E9F2FF)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: 'ℹ' },
-        note:    { bg: token('color.background.information.subtle', 'var(--ds-background-selected, #E9F2FF)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '📝' },
-        tip:     { bg: token('color.background.success.subtle', 'var(--ds-background-success, #DFFCF0)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '💡' },
-        success: { bg: token('color.background.success.subtle', 'var(--ds-background-success, #DFFCF0)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '✓' },
-        warning: { bg: token('color.background.warning.subtle', 'var(--ds-background-warning, #FFF7D6)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '⚠' },
-        error:   { bg: token('color.background.danger.subtle', 'var(--ds-background-danger, #FFECEB)'),  border: token('color.border.danger', 'var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))'), icon: '✕' },
+        info:    { bg: token('color.background.information.subtle', 'var(--ds-background-selected)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: 'ℹ' },
+        note:    { bg: token('color.background.information.subtle', 'var(--ds-background-selected)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '📝' },
+        tip:     { bg: token('color.background.success.subtle', 'var(--ds-background-success)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '💡' },
+        success: { bg: token('color.background.success.subtle', 'var(--ds-background-success)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '✓' },
+        warning: { bg: token('color.background.warning.subtle', 'var(--ds-background-warning)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '⚠' },
+        error:   { bg: token('color.background.danger.subtle', 'var(--ds-background-danger)'),  border: token('color.border.danger', 'var(--ds-background-danger-bold, var(--ds-background-danger-bold))'), icon: '✕' },
       };
       const style = panelStyles[panelType] ?? panelStyles.info;
       return (
@@ -523,7 +523,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
             border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
             padding: '6px 10px',
             textAlign: 'start',
-            background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+            background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
             fontWeight: 600,
             fontSize: 'var(--ds-font-size-200)',
             color: token('color.text', 'rgb(41,42,46)'),
@@ -644,7 +644,7 @@ const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
         display: 'grid',
         gridTemplateColumns: 'auto 1fr',
         alignItems: 'stretch',
-        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
         margin: '4px 0 8px',
         fontFamily: monoFamily,
         fontSize: 'var(--ds-font-size-300)',
@@ -657,7 +657,7 @@ const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
         className="catalyst-code-block-gutter"
         style={{
           background: token('color.background.neutral', '#E4E6EA'),
-          color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+          color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
           padding: '8px 10px',
           margin: 0,
           textAlign: 'right',

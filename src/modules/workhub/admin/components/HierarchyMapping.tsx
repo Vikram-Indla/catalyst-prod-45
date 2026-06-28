@@ -17,12 +17,12 @@ const ALL_TYPES: string[] = [
 
 // ADS-compliant badge colors — no yellow/amber
 const BADGE_COLORS = [
-  'var(--ds-background-brand-bold, #0052CC)',
-  'var(--ds-background-accent-purple-bolder, #5243AA)',
-  'var(--ds-background-accent-teal-bolder, #008DA6)',
-  'var(--ds-background-accent-green-bolder, #006644)',
-  'var(--ds-background-accent-red-bolder, #BF2600)',
-  'var(--ds-background-accent-gray-bolder, #626F86)',
+  'var(--ds-background-brand-bold)',
+  'var(--ds-background-accent-purple-bolder)',
+  'var(--ds-background-accent-teal-bolder)',
+  'var(--ds-background-accent-green-bolder)',
+  'var(--ds-background-accent-red-bolder)',
+  'var(--ds-background-accent-gray-bolder)',
 ]
 const badgeColor = (level: number) => BADGE_COLORS[(level - 1) % BADGE_COLORS.length]
 
@@ -58,7 +58,7 @@ function LevelConfigPanel({
 
   const sectionLabel: React.CSSProperties = {
     display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 653, letterSpacing: '.4px',
-    textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)',
+    textTransform: 'uppercase', color: 'var(--ds-text-subtlest)',
     marginBottom: 8,
   }
   const chipBase: React.CSSProperties = {
@@ -71,21 +71,21 @@ function LevelConfigPanel({
   return (
     <div style={{
       display: 'flex', gap: 0, flexWrap: 'nowrap',
-      background: 'var(--ds-surface-sunken, #F7F8F9)',
-      borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+      background: 'var(--ds-surface-sunken)',
+      borderBottom: '1px solid var(--ds-border)',
     }}>
 
       {/* Column 1: Mapped types */}
-      <div style={{ flex: '2 1 260px', padding: '14px 16px 16px 52px', borderRight: '1px solid var(--ds-border, #DFE1E6)' }}>
+      <div style={{ flex: '2 1 260px', padding: '14px 16px 16px 52px', borderRight: '1px solid var(--ds-border)' }}>
 
         <label style={sectionLabel}>Assigned to this level</label>
         {l.jiraTypes.length === 0
-          ? <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', margin: '0 0 12px', fontStyle: 'italic' }}>None — add below</p>
+          ? <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', margin: '0 0 12px', fontStyle: 'italic' }}>None — add below</p>
           : <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
               {l.jiraTypes.map(type => (
                 <button key={type} onClick={() => onToggleType(l.level, type)}
                   title="Remove from this level"
-                  style={{ ...chipBase, background: 'var(--ds-background-selected, #DEEBFF)', borderColor: 'var(--ds-border-selected, #0052CC)', color: 'var(--ds-text-selected, #0052CC)', fontWeight: 600 }}>
+                  style={{ ...chipBase, background: 'var(--ds-background-selected)', borderColor: 'var(--ds-border-selected)', color: 'var(--ds-text-selected)', fontWeight: 600 }}>
                   <JiraIssueTypeIcon type={type} size={12} />
                   {type}
                   <span style={{ opacity: 0.6, marginLeft: 2, fontSize: 'var(--ds-font-size-50)' }}>✕</span>
@@ -99,7 +99,7 @@ function LevelConfigPanel({
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {addable.map(type => (
               <button key={type} onClick={() => onToggleType(l.level, type)}
-                style={{ ...chipBase, background: 'var(--ds-surface, #FFFFFF)', borderColor: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                style={{ ...chipBase, background: 'var(--ds-surface)', borderColor: 'var(--ds-border)', color: 'var(--ds-text-subtle)' }}>
                 <JiraIssueTypeIcon type={type} size={12} />
                 {type}
                 <span style={{ opacity: 0.4, marginLeft: 2, fontSize: 'var(--ds-font-size-50)' }}>+</span>
@@ -116,7 +116,7 @@ function LevelConfigPanel({
               return (
                 <button key={type} onClick={() => onToggleType(l.level, type)}
                   title={`In "${owner?.name}" — click to move here`}
-                  style={{ ...chipBase, background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderColor: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text-subtlest, #6B778C)', opacity: 0.7 }}>
+                  style={{ ...chipBase, background: 'var(--ds-background-neutral-subtle)', borderColor: 'var(--ds-border)', color: 'var(--ds-text-subtlest)', opacity: 0.7 }}>
                   <JiraIssueTypeIcon type={type} size={12} />
                   {type}
                   <span style={{ fontSize: 'var(--ds-font-size-100)', opacity: 0.6 }}>({owner?.name})</span>
@@ -131,13 +131,13 @@ function LevelConfigPanel({
       <div style={{ flex: '1 1 156px', padding: '14px 16px 16px' }}>
         <label style={sectionLabel}>Valid parents</label>
         {currentParents.length === 0 &&
-          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', fontStyle: 'italic', marginBottom: 8 }}>Root level</div>}
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic', marginBottom: 8 }}>Root level</div>}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {otherLevels.map(p => {
             const on = currentParents.includes(p.level)
             return (
-              <label key={p.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: on ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #42526E)' }}>
-                <input type="checkbox" checked={on} onChange={() => onToggleParent(l.level, p.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link, #0C66E4))' }} />
+              <label key={p.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: on ? 'var(--ds-text)' : 'var(--ds-text-subtle)' }}>
+                <input type="checkbox" checked={on} onChange={() => onToggleParent(l.level, p.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link))' }} />
                 <JiraIssueTypeIcon type={p.jiraTypes[0] ?? p.name} size={12} />
                 <span style={{ fontWeight: on ? 600 : 400 }}>{p.level}. {p.name}</span>
               </label>
@@ -147,21 +147,21 @@ function LevelConfigPanel({
       </div>
 
       {/* Column 3: Valid children */}
-      <div style={{ flex: '1 1 156px', padding: '14px 16px 16px', borderLeft: '1px solid var(--ds-border, #DFE1E6)' }}>
+      <div style={{ flex: '1 1 156px', padding: '14px 16px 16px', borderLeft: '1px solid var(--ds-border)' }}>
         <label style={sectionLabel}>Valid children</label>
         {currentChildren.length === 0 && potentialChildren.length === 0 &&
-          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', fontStyle: 'italic', marginBottom: 8 }}>No child levels</div>}
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', fontStyle: 'italic', marginBottom: 8 }}>No child levels</div>}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {currentChildren.map(c => (
-            <label key={c.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)' }}>
-              <input type="checkbox" checked={true} onChange={() => onToggleChild(l.level, c.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link, #0C66E4))' }} />
+            <label key={c.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>
+              <input type="checkbox" checked={true} onChange={() => onToggleChild(l.level, c.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link))' }} />
               <JiraIssueTypeIcon type={c.jiraTypes[0] ?? c.name} size={12} />
               <span style={{ fontWeight: 600 }}>{c.level}. {c.name}</span>
             </label>
           ))}
           {potentialChildren.map(c => (
-            <label key={c.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
-              <input type="checkbox" checked={false} onChange={() => onToggleChild(l.level, c.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link, #0C66E4))' }} />
+            <label key={c.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
+              <input type="checkbox" checked={false} onChange={() => onToggleChild(l.level, c.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link))' }} />
               <JiraIssueTypeIcon type={c.jiraTypes[0] ?? c.name} size={12} />
               <span style={{ fontWeight: 400 }}>{c.level}. {c.name}</span>
             </label>
@@ -301,7 +301,7 @@ export function HierarchyMapping() {
   const unmappedCount = ALL_TYPES.filter(t => !allMappedTypes.has(t)).length
 
   if (isLoading) return (
-    <div style={{ padding: 40, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-body, inherit)' }}>
+    <div style={{ padding: 40, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-body, inherit)' }}>
       Loading hierarchy config…
     </div>
   )
@@ -311,10 +311,10 @@ export function HierarchyMapping() {
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0, lineHeight: '28px' }}>
+        <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text)', margin: 0, lineHeight: '28px' }}>
           Hierarchy mapping
         </h1>
-        <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0 0' }}>
+        <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', margin: '4px 0 0' }}>
           Define work item hierarchy. Changes propagate to Work Item Tree, Detail Panel, and parent/child rules.
         </p>
       </div>
@@ -324,9 +324,9 @@ export function HierarchyMapping() {
         {['Work Item Tree', 'Detail Panel', 'Parent/child rules', 'Jira sync'].map(name => (
           <span key={name} style={{
             fontSize: 'var(--ds-font-size-100)', padding: '3px 8px', borderRadius: 4, fontWeight: 600,
-            background: 'var(--ds-background-information, #DEEBFF)',
-            color: 'var(--ds-text-information, #0747A6)',
-            border: '1px solid var(--ds-border-information, #B3D4FF)',
+            background: 'var(--ds-background-information)',
+            color: 'var(--ds-text-information)',
+            border: '1px solid var(--ds-border-information)',
           }}>↗ {name}</span>
         ))}
       </div>
@@ -334,30 +334,30 @@ export function HierarchyMapping() {
       {/* Unsaved banner */}
       {isDirty && (
         <div style={{
-          background: 'var(--ds-background-information, #DEEBFF)',
-          border: '1px solid var(--ds-border-information, #B3D4FF)',
+          background: 'var(--ds-background-information)',
+          border: '1px solid var(--ds-border-information)',
           borderRadius: 6, padding: '8px 14px', marginBottom: 12,
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-icon-information, #0052CC)', flexShrink: 0 }} />
-          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-information, #0747A6)' }}>Unsaved changes</span>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-icon-information)', flexShrink: 0 }} />
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-information)' }}>Unsaved changes</span>
         </div>
       )}
 
       {/* Broken hierarchy warning */}
       {broken && (
         <div style={{
-          background: 'var(--ds-background-warning, #FFF7D6)',
-          border: '1px solid var(--ds-border-warning, #E2B203)',
+          background: 'var(--ds-background-warning)',
+          border: '1px solid var(--ds-border-warning)',
           borderRadius: 6, padding: '8px 14px', marginBottom: 12,
           display: 'flex', alignItems: 'flex-start', gap: 8,
         }}>
-          <span style={{ fontSize: 'var(--ds-font-size-400)', flexShrink: 0, color: 'var(--ds-text-warning, #7F5F01)' }}>⚠</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', flexShrink: 0, color: 'var(--ds-text-warning)' }}>⚠</span>
           <div>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-warning, #7F5F01)', display: 'block' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-warning)', display: 'block' }}>
               Hierarchy deviates from canonical order
             </span>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning, #7F5F01)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning)' }}>
               Review parent/child rules before applying.
             </span>
           </div>
@@ -367,10 +367,10 @@ export function HierarchyMapping() {
       {/* Unmapped types notice */}
       {unmappedCount > 0 && (
         <div style={{
-          background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-background-neutral-subtle)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 6, padding: '8px 14px', marginBottom: 12,
-          fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)',
+          fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)',
         }}>
           {unmappedCount} type{unmappedCount > 1 ? 's' : ''} not assigned to any level — expand a level to assign them.
         </div>
@@ -379,15 +379,15 @@ export function HierarchyMapping() {
       {/* Delete modal */}
       {deletingLevel !== null && (
         <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, padding: 24, maxWidth: 400, width: '90%', boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))' }}>
-            <h3 style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          <div style={{ background: 'var(--ds-surface-overlay)', border: '1px solid var(--ds-border)', borderRadius: 8, padding: 24, maxWidth: 400, width: '90%', boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))' }}>
+            <h3 style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>
               Delete "{levels.find(l => l.level === deletingLevel)?.name}"?
             </h3>
-            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #42526E)', margin: '0 0 16px' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', margin: '0 0 16px' }}>
               Mapped types: <strong>{levels.find(l => l.level === deletingLevel)?.jiraTypes.join(', ') || 'none'}</strong>. Reassign or drop them.
             </p>
             <select value={reassignTarget ?? ''} onChange={e => setReassignTarget(e.target.value ? Number(e.target.value) : null)}
-              style={{ width: '100%', padding: '6px 8px', borderRadius: 4, marginBottom: 16, border: '1px solid var(--ds-border, #DFE1E6)', fontSize: 'var(--ds-font-size-300)', background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text, #172B4D)' }}>
+              style={{ width: '100%', padding: '6px 8px', borderRadius: 4, marginBottom: 16, border: '1px solid var(--ds-border)', fontSize: 'var(--ds-font-size-300)', background: 'var(--ds-surface)', color: 'var(--ds-text)' }}>
               <option value="">— Drop types (unassign) —</option>
               {levels.filter(l => l.level !== deletingLevel).map(l => (
                 <option key={l.level} value={l.level}>{l.level}. {l.name}</option>
@@ -395,11 +395,11 @@ export function HierarchyMapping() {
             </select>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setDeletingLevel(null); setReassignTarget(null) }}
-                style={{ padding: '6px 16px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
+                style={{ padding: '6px 16px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--ds-border)', background: 'var(--ds-surface)', cursor: 'pointer', color: 'var(--ds-text)' }}>
                 Cancel
               </button>
               <button onClick={() => doDelete(deletingLevel, reassignTarget)}
-                style={{ padding: '6px 16px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', border: 'none', background: 'var(--ds-background-danger-bold, #DE350B)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', fontWeight: 600 }}>
+                style={{ padding: '6px 16px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', border: 'none', background: 'var(--ds-background-danger-bold)', color: 'var(--ds-surface)', cursor: 'pointer', fontWeight: 600 }}>
                 Delete level
               </button>
             </div>
@@ -408,15 +408,15 @@ export function HierarchyMapping() {
       )}
 
       {/* Levels card */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, marginBottom: 16, overflow: 'hidden' }}>
+      <div style={{ background: 'var(--ds-surface)', border: '1px solid var(--ds-border)', borderRadius: 8, marginBottom: 16, overflow: 'hidden' }}>
 
         {/* Card header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
-          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)', letterSpacing: '.3px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '1px solid var(--ds-border)', background: 'var(--ds-surface-sunken)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle)', letterSpacing: '.3px' }}>
             Hierarchy levels — drag to reorder · click row to configure
           </span>
           <button onClick={() => { setAddingNew(true); setExpandedLevel(null) }}
-            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '4px 12px', borderRadius: 4, background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer' }}>
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '4px 12px', borderRadius: 4, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer' }}>
             + Add level
           </button>
         </div>
@@ -439,16 +439,16 @@ export function HierarchyMapping() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '9px 16px', cursor: 'pointer',
-                  borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-                  background: isExpanded ? 'var(--ds-background-neutral-subtle, #F7F8F9)' : 'var(--ds-surface, #FFFFFF)',
+                  borderBottom: '1px solid var(--ds-border)',
+                  background: isExpanded ? 'var(--ds-background-neutral-subtle)' : 'var(--ds-surface)',
                   transition: 'background .1s', userSelect: 'none',
                 }}>
-                <span style={{ color: 'var(--ds-icon-subtle, #97A0AF)', fontSize: 'var(--ds-font-size-400)', cursor: 'grab', flexShrink: 0 }}
+                <span style={{ color: 'var(--ds-icon-subtle)', fontSize: 'var(--ds-font-size-400)', cursor: 'grab', flexShrink: 0 }}
                   onClick={e => e.stopPropagation()}>⠿</span>
 
                 <span style={{
                   width: 20, height: 20, borderRadius: '50%',
-                  background: badgeColor(l.level), color: 'var(--ds-surface, #FFFFFF)',
+                  background: badgeColor(l.level), color: 'var(--ds-surface)',
                   fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>{l.level}</span>
@@ -456,7 +456,7 @@ export function HierarchyMapping() {
                 <span style={{ flexShrink: 0 }}>
                   {primaryType
                     ? <JiraIssueTypeIcon type={primaryType} size={18} />
-                    : <span style={{ width: 18, height: 18, borderRadius: 3, background: 'var(--ds-background-neutral, #F1F2F4)', display: 'inline-block' }} />}
+                    : <span style={{ width: 18, height: 18, borderRadius: 3, background: 'var(--ds-background-neutral)', display: 'inline-block' }} />}
                 </span>
 
                 {isRenaming
@@ -464,25 +464,25 @@ export function HierarchyMapping() {
                       onBlur={() => commitRename(l.level)}
                       onClick={e => e.stopPropagation()}
                       onKeyDown={e => { if (e.key === 'Enter') commitRename(l.level); if (e.key === 'Escape') setRenamingLevel(null) }}
-                      style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, padding: '2px 6px', borderRadius: 4, border: '1px solid var(--ds-border-focused, #0052CC)', background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text, #172B4D)' }} />
-                  : <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{l.name}</span>
+                      style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, padding: '2px 6px', borderRadius: 4, border: '1px solid var(--ds-border-focused)', background: 'var(--ds-surface)', color: 'var(--ds-text)' }} />
+                  : <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>{l.name}</span>
                 }
 
-                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', flexShrink: 0 }}>
                   {l.jiraTypes.length > 0 ? l.jiraTypes.join(', ') : <em>no types</em>}
                 </span>
 
-                <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0, width: 12 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)', flexShrink: 0, width: 12 }}>
                   {isExpanded ? '▲' : '▼'}
                 </span>
 
                 <button onClick={e => { e.stopPropagation(); setRenamingLevel(l.level); setRenameValue(l.name) }}
                   title="Rename"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0 }}>✎</button>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', flexShrink: 0 }}>✎</button>
 
                 <button onClick={e => { e.stopPropagation(); confirmDelete(l.level) }}
                   title="Delete level"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)', flexShrink: 0 }}>✕</button>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)', flexShrink: 0 }}>✕</button>
               </div>
 
               {isExpanded && (
@@ -499,22 +499,22 @@ export function HierarchyMapping() {
 
         {/* Add new inline */}
         {addingNew && (
-          <div style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8, background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-            <span style={{ color: 'var(--ds-icon-subtle, #97A0AF)', fontSize: 'var(--ds-font-size-400)' }}>⠿</span>
-            <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-neutral, #F1F2F4)', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8, background: 'var(--ds-background-neutral-subtle)', borderBottom: '1px solid var(--ds-border)' }}>
+            <span style={{ color: 'var(--ds-icon-subtle)', fontSize: 'var(--ds-font-size-400)' }}>⠿</span>
+            <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {levels.length + 1}
             </span>
             <input ref={newNameRef} value={newName} onChange={e => setNewName(e.target.value)}
               onBlur={commitAdd}
               onKeyDown={e => { if (e.key === 'Enter') commitAdd(); if (e.key === 'Escape') { setAddingNew(false); setNewName('') } }}
               placeholder="Level name (e.g. Initiative)"
-              style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, padding: '4px 8px', borderRadius: 4, border: '1px solid var(--ds-border-focused, #0052CC)', background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text, #172B4D)' }} />
+              style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, padding: '4px 8px', borderRadius: 4, border: '1px solid var(--ds-border-focused)', background: 'var(--ds-surface)', color: 'var(--ds-text)' }} />
             <button onClick={commitAdd}
-              style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '4px 12px', borderRadius: 4, background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer' }}>
+              style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '4px 12px', borderRadius: 4, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer' }}>
               Add
             </button>
             <button onClick={() => { setAddingNew(false); setNewName('') }}
-              style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>✕</button>
+              style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', borderRadius: 4, border: '1px solid var(--ds-border)', background: 'var(--ds-surface)', cursor: 'pointer', color: 'var(--ds-text)' }}>✕</button>
           </div>
         )}
       </div>
@@ -522,14 +522,14 @@ export function HierarchyMapping() {
       {/* Actions + stats */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <button onClick={handleSave} disabled={batchUpdate.isPending || !isDirty}
-          style={{ padding: '8px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, background: isDirty ? 'var(--ds-background-brand-bold, #0052CC)' : 'var(--ds-background-disabled, #97A0AF)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: isDirty ? 'pointer' : 'not-allowed', opacity: batchUpdate.isPending ? 0.6 : 1 }}>
+          style={{ padding: '8px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, background: isDirty ? 'var(--ds-background-brand-bold)' : 'var(--ds-background-disabled)', color: 'var(--ds-surface)', border: 'none', cursor: isDirty ? 'pointer' : 'not-allowed', opacity: batchUpdate.isPending ? 0.6 : 1 }}>
           {batchUpdate.isPending ? 'Saving…' : 'Apply & propagate'}
         </button>
         <button onClick={handleReset}
-          style={{ padding: '8px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, background: 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-subtle, #42526E)', border: '1px solid var(--ds-border, #DFE1E6)', cursor: 'pointer' }}>
+          style={{ padding: '8px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, background: 'var(--ds-surface)', color: 'var(--ds-text-subtle)', border: '1px solid var(--ds-border)', cursor: 'pointer' }}>
           Reset to default
         </button>
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 4 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginLeft: 4 }}>
           {levels.length} levels · {allMappedTypes.size} types mapped · {unmappedCount} unmapped
         </span>
       </div>

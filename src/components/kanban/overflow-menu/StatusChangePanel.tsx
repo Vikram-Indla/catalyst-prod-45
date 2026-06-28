@@ -59,7 +59,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
         {KANBAN_COLUMNS.map(col => {
           const statuses = col.statuses.filter(s => !q || s.toLowerCase().includes(q));
           if (statuses.length === 0) return null;
-          const categoryDot = col.category === 'done' ? 'var(--ds-text-success, #006644)' : col.category === 'in_progress' ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text-subtle, #44546F)';
+          const categoryDot = col.category === 'done' ? 'var(--ds-text-success)' : col.category === 'in_progress' ? 'var(--ds-link-pressed)' : 'var(--ds-text-subtle)';
           return (
             <div key={col.id}>
               <div style={{

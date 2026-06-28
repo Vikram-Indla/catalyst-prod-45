@@ -22,21 +22,21 @@ import { EmptyState } from '@/components/ads';
 import { LABEL, SMALL, STRONG, H_NUM } from '../dashboardTypography';
 
 function confidenceColor(score: number): string {
-  if (score >= 80) return 'var(--ds-text-accent-green-bolder, var(--ds-chart-green-bold, #216E4E))';
-  if (score >= 50) return 'var(--ds-text-accent-orange-bolder, var(--ds-text-warning, #974F0C))';
-  return 'var(--ds-text-accent-red-bolder, #AE2A19)';
+  if (score >= 80) return 'var(--ds-text-accent-green-bolder, var(--ds-chart-green-bold))';
+  if (score >= 50) return 'var(--ds-text-accent-orange-bolder, var(--ds-text-warning))';
+  return 'var(--ds-text-accent-red-bolder)';
 }
 
 function confidenceBg(score: number): string {
-  if (score >= 80) return 'var(--ds-background-accent-green-subtler, #DCFFF1)';
-  if (score >= 50) return 'var(--ds-background-accent-orange-subtler, #FFF3D9)';
-  return 'var(--ds-background-accent-red-subtler, #FFECEB)';
+  if (score >= 80) return 'var(--ds-background-accent-green-subtler)';
+  if (score >= 50) return 'var(--ds-background-accent-orange-subtler)';
+  return 'var(--ds-background-accent-red-subtler)';
 }
 
 function confidenceBar(score: number): string {
-  if (score >= 80) return 'var(--ds-background-accent-green-bolder, var(--ds-background-success-bold, #1F845A))';
-  if (score >= 50) return 'var(--ds-background-accent-orange-bolder, #C25100)';
-  return 'var(--ds-background-accent-red-bolder, #C9372C)';
+  if (score >= 80) return 'var(--ds-background-accent-green-bolder, var(--ds-background-success-bold))';
+  if (score >= 50) return 'var(--ds-background-accent-orange-bolder)';
+  return 'var(--ds-background-accent-red-bolder)';
 }
 
 function fmtDays(days: number): string {
@@ -96,7 +96,7 @@ export default function ReleaseConfidenceWidget({
               style={{
                 height: 72,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -143,7 +143,7 @@ export default function ReleaseConfidenceWidget({
                 flex: 1,
                 height: 12,
                 borderRadius: 6,
-                background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral', 'var(--ds-background-neutral)'),
                 overflow: 'hidden',
               }}
             >
@@ -163,9 +163,9 @@ export default function ReleaseConfidenceWidget({
           <div
             style={{
               display: 'flex',
-              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
               borderRadius: token('border.radius', '4px'),
-              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               overflow: 'hidden',
             }}
           >
@@ -173,22 +173,22 @@ export default function ReleaseConfidenceWidget({
               {
                 label: 'Healthy',
                 value: stats.healthy,
-                accent: stats.healthy > 0 ? 'var(--ds-text-accent-green-bolder, #216E4E)' : undefined,
+                accent: stats.healthy > 0 ? 'var(--ds-text-accent-green-bolder)' : undefined,
               },
               {
                 label: 'At risk',
                 value: stats.atRisk,
-                accent: stats.atRisk > 0 ? 'var(--ds-text-accent-orange-bolder, #974F0C)' : undefined,
+                accent: stats.atRisk > 0 ? 'var(--ds-text-accent-orange-bolder)' : undefined,
               },
               {
                 label: 'Overdue',
                 value: stats.overdueCount,
-                accent: stats.overdueCount > 0 ? 'var(--ds-text-accent-red-bolder, #AE2A19)' : undefined,
+                accent: stats.overdueCount > 0 ? 'var(--ds-text-accent-red-bolder)' : undefined,
               },
               {
                 label: 'Avg overdue',
                 value: fmtDays(stats.avgDaysOverdue),
-                accent: stats.avgDaysOverdue > 0 ? 'var(--ds-text-accent-red-bolder, #AE2A19)' : undefined,
+                accent: stats.avgDaysOverdue > 0 ? 'var(--ds-text-accent-red-bolder)' : undefined,
               },
             ].map((cell, i, arr) => (
               <div
@@ -199,7 +199,7 @@ export default function ReleaseConfidenceWidget({
                   flexDirection: 'column',
                   gap: 2,
                   padding: '10px 10px',
-                  borderRight: i < arr.length - 1 ? `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` : 'none',
+                  borderRight: i < arr.length - 1 ? `1px solid ${token('color.border', 'var(--ds-border)')}` : 'none',
                   minWidth: 0,
                 }}
               >

@@ -375,11 +375,11 @@ function CalendarPopover({
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background: isSel ? 'var(--ds-link, #0065FF)' : 'transparent',
+                  background: isSel ? 'var(--ds-link)' : 'transparent',
                   color: !allowed
                     ? 'var(--cv2-text-muted)'
                     : isSel
-                      ? 'var(--ds-surface, #FFFFFF)'
+                      ? 'var(--ds-surface)'
                       : isToday
                         ? 'var(--cv2-accent)'
                         : 'var(--cv2-text)',
@@ -501,7 +501,7 @@ function TimeDropdown({
               textAlign: 'left',
               padding: '6px 16px',
               background: sel ? 'var(--cv2-accent)' : 'transparent',
-              color: sel ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text)',
+              color: sel ? 'var(--ds-text-inverse)' : 'var(--cv2-text)',
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
@@ -525,7 +525,7 @@ function PrimaryBtn({ onClick, children }: { onClick: () => void; children: Reac
         height: 36,
         padding: '0 18px',
         background: 'var(--cv2-success)',
-        color: 'var(--ds-text-inverse, #FFFFFF)',
+        color: 'var(--ds-text-inverse)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',

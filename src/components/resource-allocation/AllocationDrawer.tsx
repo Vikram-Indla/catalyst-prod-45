@@ -102,7 +102,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
               {showContractWarning && (
                 <>
                   <span className="w-[3px] h-[3px] rounded-full bg-muted-foreground flex-shrink-0" />
-                  <span className="px-1.5 py-0.5 rounded bg-[var(--ds-background-danger,#fef2f2)] border border-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-text-danger,#dc2626)] text-[10px] font-semibold">
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--ds-background-danger)] border border-[var(--ds-background-danger)] text-[var(--ds-text-danger)] text-[10px] font-semibold">
                     Ends {format(contractEnd, 'MMM d')}
                   </span>
                 </>
@@ -151,9 +151,9 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
           
           <button 
             onClick={goToToday}
-            className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded bg-[var(--ds-background-danger,#fef2f2)] border border-[var(--ds-background-danger, #FFECEB)] text-[10px] font-semibold text-[var(--ds-text-danger,#dc2626)]"
+            className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded bg-[var(--ds-background-danger)] border border-[var(--ds-background-danger)] text-[10px] font-semibold text-[var(--ds-text-danger)]"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ds-text-danger,#dc2626)] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ds-text-danger)] animate-pulse" />
             Today: {format(today, 'MMM d')} (W{getISOWeek(today)})
           </button>
         </div>
@@ -210,7 +210,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
               ))}
 
               {/* Available Row */}
-              <div className="flex bg-[var(--ds-background-success, #DFFCF0)] dark:bg-emerald-950/20 border-t border-border" role="row">
+              <div className="flex bg-[var(--ds-background-success)] dark:bg-emerald-950/20 border-t border-border" role="row">
                 <div className="w-[140px] flex-shrink-0 p-2 flex items-center gap-2" role="rowheader">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                   <span className="text-[12px] font-semibold text-emerald-700 dark:text-emerald-400">Available</span>
@@ -223,7 +223,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
                       <div className={cn(
                         "h-8 rounded-[6px] flex items-center justify-center text-[11px] font-bold",
                         available > 0 
-                          ? "bg-[repeating-linear-gradient(45deg,var(--ds-background-success, #DFFCF0),var(--ds-background-success, #DFFCF0)_3px,var(--ds-background-success, #DFFCF0)_3px,var(--ds-background-success, #DFFCF0)_6px)] border border-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))]"
+                          ? "bg-[repeating-linear-gradient(45deg,var(--ds-background-success),var(--ds-background-success)_3px,var(--ds-background-success)_3px,var(--ds-background-success)_6px)] border border-[var(--ds-background-success)] text-[var(--ds-background-success-bold, var(--ds-background-success-bold))]"
                           : "bg-muted/50 border border-border text-muted-foreground"
                       )}>
                         {available}%
@@ -246,12 +246,12 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
                     <div key={week.weekStart} className="w-14 flex-shrink-0 p-2 text-center border-l border-border" role="gridcell">
                       <div className={cn(
                         "text-[12px] font-extrabold",
-                        isOver ? "text-[var(--ds-text-danger,#dc2626)]" : isOverForecast ? "text-[var(--ds-text-warning,#d97706)]" : "text-primary"
+                        isOver ? "text-[var(--ds-text-danger)]" : isOverForecast ? "text-[var(--ds-text-warning)]" : "text-primary"
                       )}>
                         {totals.total}%
                       </div>
                       {isOverForecast && (
-                        <div className="text-[8px] text-[var(--ds-text-warning,#d97706)] font-semibold">
+                        <div className="text-[8px] text-[var(--ds-text-warning)] font-semibold">
                           +{totals.forecast}% fcst
                         </div>
                       )}
@@ -267,10 +267,10 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
         <div className="h-14 px-5 flex items-center gap-3 border-t border-border bg-muted/30 flex-shrink-0">
           <div className="flex-1 text-[11px] text-muted-foreground">
             {!validation.isValid && (
-              <span className="text-[var(--ds-text-danger,#dc2626)]">⚠️ {validation.errors[0]}</span>
+              <span className="text-[var(--ds-text-danger)]">⚠️ {validation.errors[0]}</span>
             )}
             {validation.isValid && validation.warnings.length > 0 && (
-              <span className="text-[var(--ds-text-warning,#d97706)]">Note: {validation.warnings[0]}</span>
+              <span className="text-[var(--ds-text-warning)]">Note: {validation.warnings[0]}</span>
             )}
             {validation.isValid && validation.warnings.length === 0 && !isDirty && (
               <span>No changes to save</span>
@@ -308,7 +308,7 @@ function LegendItem({ label, type }: { label: string; type: 'actual' | 'committe
     actual: 'bg-primary/50',
     committed: 'bg-primary shadow-[inset_0_0_0_2px_var(--ds-surface, rgba(255,255,255,0.25))]',
     forecast: 'bg-[repeating-linear-gradient(-45deg,var(--ds-background-information, rgba(37,99,235,0.2)),var(--ds-background-information, rgba(37,99,235,0.2))_2px,var(--ds-background-information, rgba(37,99,235,0.35))_2px,var(--ds-background-information, rgba(37,99,235,0.35))_4px)] border-2 border-dashed border-primary',
-    available: 'bg-[repeating-linear-gradient(45deg,var(--ds-background-success, #DFFCF0),var(--ds-background-success, #DFFCF0)_2px,var(--ds-background-success, #DFFCF0)_2px,var(--ds-background-success, #DFFCF0)_4px)] border border-[var(--ds-background-success, #DFFCF0)]',
+    available: 'bg-[repeating-linear-gradient(45deg,var(--ds-background-success),var(--ds-background-success)_2px,var(--ds-background-success)_2px,var(--ds-background-success)_4px)] border border-[var(--ds-background-success)]',
   };
 
   return (
@@ -335,7 +335,7 @@ function AllocationRow({
   colorIndex: number;
   onCellClick: (weekStart: string) => void;
 }) {
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-discovery-bold, #7C3AED)'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-icon-information)', 'var(--ds-background-warning-bold)', 'var(--ds-background-discovery-bold)'];
   const color = assignment.color || colors[colorIndex % colors.length];
 
   return (

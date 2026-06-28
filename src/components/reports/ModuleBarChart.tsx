@@ -15,10 +15,10 @@ export function ModuleBarChart({ data, isLoading }: ModuleBarChartProps) {
   }));
 
   const getBarColor = (passRate: number) => {
-    if (passRate >= 90) return 'var(--ds-background-success-bold, #059669)';
-    if (passRate >= 75) return 'var(--ds-text-success, #22c55e)';
-    if (passRate >= 60) return 'var(--ds-text-warning, #f59e0b)';
-    return 'var(--ds-text-danger, #ef4444)';
+    if (passRate >= 90) return 'var(--ds-background-success-bold)';
+    if (passRate >= 75) return 'var(--ds-text-success)';
+    if (passRate >= 60) return 'var(--ds-text-warning)';
+    return 'var(--ds-text-danger)';
   };
 
   return (

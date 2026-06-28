@@ -34,12 +34,12 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
         alignItems: 'center',
         gap: 16,
         padding: '8px 16px',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-        background: 'var(--ds-surface-sunken, #F7F8F9)',
-        borderLeft: '3px solid var(--ds-border-success, #4BCE97)',
+        borderBottom: '1px solid var(--ds-border)',
+        background: 'var(--ds-surface-sunken)',
+        borderLeft: '3px solid var(--ds-border-success)',
       }}
     >
-      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>
         Huddle
       </span>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -57,8 +57,8 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
           title="View shared screen"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            border: '1px solid var(--ds-border-success, #4BCE97)', cursor: 'pointer',
-            background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-text, #172B4D)',
+            border: '1px solid var(--ds-border-success)', cursor: 'pointer',
+            background: 'var(--ds-background-success)', color: 'var(--ds-text)',
             borderRadius: 999, padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           }}
         >
@@ -73,7 +73,7 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
               {active?.micMuted ? 'Unmute' : 'Mute'}
             </button>
             <button type="button" onClick={leave}
-              style={btnStyle('var(--ds-text-danger, #AE2A19)')}>
+              style={btnStyle('var(--ds-text-danger)')}>
               Leave
             </button>
           </>
@@ -93,15 +93,15 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
 }
 
 const ScreenGlyph = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-success, #22A06B)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" />
   </svg>
 );
 
-function btnStyle(color = 'var(--ds-text, #172B4D)'): React.CSSProperties {
+function btnStyle(color = 'var(--ds-text)'): React.CSSProperties {
   return {
-    border: '1px solid var(--ds-border, #DFE1E6)',
-    background: 'var(--ds-surface, #FFFFFF)',
+    border: '1px solid var(--ds-border)',
+    background: 'var(--ds-surface)',
     borderRadius: 4,
     padding: '4px 8px',
     fontSize: 'var(--ds-font-size-300)',

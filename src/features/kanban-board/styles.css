@@ -4,7 +4,7 @@
 
 .kb-board-scroll { scrollbar-width: thin; }
 .kb-board-scroll::-webkit-scrollbar { height: 8px; }
-.kb-board-scroll::-webkit-scrollbar-thumb { background-color: var(--ds-border, #C1C7D0); border-radius: 4px; }
+.kb-board-scroll::-webkit-scrollbar-thumb { background-color: var(--ds-border); border-radius: 4px; }
 .kb-board-scroll::-webkit-scrollbar-track { background: transparent; }
 
 .kb-toolbar { scrollbar-width: none; }

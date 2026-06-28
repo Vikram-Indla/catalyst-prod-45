@@ -88,11 +88,11 @@ export function MoveIssueDialog({
         <ModalTitle>Move issue</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+        <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
           Moving <strong>{issueKey}</strong>
           {issueSummary ? ` — ${issueSummary.slice(0, 60)}${issueSummary.length > 60 ? '…' : ''}` : ''}
         </p>
-        <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginBottom: 4 }}>
+        <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))', marginBottom: 4 }}>
           Destination project
         </label>
         <Select<ProjectOption>

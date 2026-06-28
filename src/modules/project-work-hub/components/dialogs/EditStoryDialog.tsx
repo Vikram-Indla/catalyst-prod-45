@@ -141,8 +141,8 @@ export const EditStoryDialog: React.FC<EditStoryDialogProps> = ({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="title" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-              Title <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+            <label htmlFor="title" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
+              Title <span style={{ color: 'var(--ds-text-danger)' }}>*</span>
             </label>
             <Textfield
               id="title"
@@ -154,7 +154,7 @@ export const EditStoryDialog: React.FC<EditStoryDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="feature" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="feature" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Feature
             </label>
             <Select
@@ -168,7 +168,7 @@ export const EditStoryDialog: React.FC<EditStoryDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="status" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="status" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Status
             </label>
             <Select
@@ -181,7 +181,7 @@ export const EditStoryDialog: React.FC<EditStoryDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Description
             </label>
             <TextArea
@@ -195,7 +195,7 @@ export const EditStoryDialog: React.FC<EditStoryDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="acceptance" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="acceptance" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest)' }}>
               Acceptance Criteria
             </label>
             <TextArea

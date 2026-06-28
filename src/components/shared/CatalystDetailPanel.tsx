@@ -63,9 +63,9 @@ const ReleaseDetailContent = lazy(
   () => import('@/pages/releasehub/ReleaseDetailPage').then(m => ({ default: m.ReleaseDetailContent }))
 );
 
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #505258)';
+const BORDER = 'var(--ds-border)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
 
 export interface CatalystDetailPanelProps {
   isOpen: boolean;
@@ -137,11 +137,11 @@ export function CatalystDetailPanel(props: CatalystDetailPanelProps) {
   const containerStyle: React.CSSProperties = inline
     ? {
         width, flexShrink: 0, display: 'flex', flexDirection: 'column',
-        minHeight: 0, background: 'var(--ds-surface, #FFFFFF)',
+        minHeight: 0, background: 'var(--ds-surface)',
       }
     : {
         position: 'fixed', top: topOffset, right: 0, bottom: 0, width,
-        zIndex: 50, borderLeft: `1px solid ${BORDER}`, background: 'var(--ds-surface, #FFFFFF)',
+        zIndex: 50, borderLeft: `1px solid ${BORDER}`, background: 'var(--ds-surface)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         transition: resizing ? 'none' : 'width 180ms ease',
       };
@@ -173,12 +173,12 @@ export function CatalystDetailPanel(props: CatalystDetailPanelProps) {
               onResizeCommit?.(next);
             }
           }}
-          onMouseEnter={(e) => { if (!resizing) e.currentTarget.style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link, #1868DB))'; }}
+          onMouseEnter={(e) => { if (!resizing) e.currentTarget.style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link))'; }}
           onMouseLeave={(e) => { if (!resizing) e.currentTarget.style.boxShadow = 'none'; }}
           style={{
             position: 'absolute', top: 0, left: -2, bottom: 0, width: 6,
             cursor: 'col-resize', background: 'transparent',
-            boxShadow: resizing ? 'inset 1px 0 0 0 var(--ds-link, #1868DB)' : 'none',
+            boxShadow: resizing ? 'inset 1px 0 0 0 var(--ds-link)' : 'none',
             zIndex: 51, transition: 'box-shadow 120ms ease',
           }}
         />
@@ -313,7 +313,7 @@ function PhIssuePanelBody({
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', minHeight: 36, flexShrink: 0, borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-300)', color: SUBTLE }}>
           {effectiveType && <JiraIssueTypeIcon type={effectiveType as any} size={14} />}
-          <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link, #0C66E4))', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+          <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link))', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             {projectName}
           </a>
           <span>/</span>
@@ -333,12 +333,12 @@ function PhIssuePanelBody({
             />
           )}
           {issue?.parent_key && (
-            <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link, #0C66E4))', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link))', textDecoration: 'none', whiteSpace: 'nowrap' }}>
               {issue.parent_key}
             </a>
           )}
           <span>/</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--ds-link, #0C66E4)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--ds-link)', fontWeight: 500, whiteSpace: 'nowrap' }}>
             {effectiveType && <JiraIssueTypeIcon type={effectiveType as any} size={14} />}
             {issueKeyShown}
           </span>
@@ -355,12 +355,12 @@ function PhIssuePanelBody({
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 28, height: 28,
-            border: `1px solid ${moreOpen ? 'var(--ds-border-selected, #1868DB)' : 'transparent'}`,
+            border: `1px solid ${moreOpen ? 'var(--ds-border-selected)' : 'transparent'}`,
             borderRadius: 3,
-            background: moreOpen ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+            background: moreOpen ? 'var(--ds-background-selected)' : 'transparent',
             cursor: 'pointer', padding: 0, flexShrink: 0, color: SUBTLE,
           }}
-          onMouseEnter={(e) => { if (!moreOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
+          onMouseEnter={(e) => { if (!moreOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
           onMouseLeave={(e) => { if (!moreOpen) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
         >
           <MoreIcon label="" size="small" primaryColor="currentColor" />
@@ -460,7 +460,7 @@ function PhIssuePanelBody({
           role="menu"
           style={{
             position: 'fixed', top: morePos.top, right: morePos.right, zIndex: 10010,
-            minWidth: 200, background: 'var(--ds-surface-overlay, #FFFFFF)',
+            minWidth: 200, background: 'var(--ds-surface-overlay)',
             border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '6px 0',
@@ -667,7 +667,7 @@ function ChromeRow({
           background: 'transparent', cursor: 'pointer', padding: 0, flexShrink: 0,
           color: SUBTLE, transition: 'background-color 100ms ease',
         }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       >
         <CloseIcon label="Close" color="currentColor" />
@@ -687,13 +687,13 @@ function IconButton({
       style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         width: 28, height: 28,
-        border: `1px solid ${active ? 'var(--ds-border-selected, #1868DB)' : 'transparent'}`,
+        border: `1px solid ${active ? 'var(--ds-border-selected)' : 'transparent'}`,
         borderRadius: 3,
-        background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+        background: active ? 'var(--ds-background-selected)' : 'transparent',
         cursor: 'pointer', padding: 0, flexShrink: 0, color: SUBTLE,
         transition: 'background-color 100ms ease',
       }}
-      onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
+      onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
       onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {children}
@@ -737,7 +737,7 @@ function MenuItem({
       style={{
         all: 'unset', cursor: 'pointer', display: 'block', width: '100%',
         boxSizing: 'border-box', padding: '8px 14px', fontSize: 'var(--ds-font-size-400)',
-        color: danger ? 'var(--ds-text-danger, #C9372C)' : TEXT,
+        color: danger ? 'var(--ds-text-danger)' : TEXT,
       }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}

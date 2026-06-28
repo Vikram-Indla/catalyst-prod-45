@@ -77,7 +77,7 @@ export const TriggerRow = memo(function TriggerRow({
 
   return (
     <div
-      className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 items-center border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors duration-150 group ${
+      className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 items-center border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] transition-colors duration-150 group ${
         isSelected
           ? 'bg-[var(--ds-background-information, rgba(37,99,235,0.04))]'
           : 'hover:bg-[var(--ds-shadow-raised, rgba(0,0,0,0.02))]'
@@ -91,7 +91,7 @@ export const TriggerRow = memo(function TriggerRow({
           checked={isSelected}
           onChange={onSelect}
           disabled={isMandatory}
-          className="h-3.5 w-3.5 rounded border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus:ring-offset-0 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+          className="h-3.5 w-3.5 rounded border-[var(--ds-text-disabled)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-offset-0 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
         />
       </div>
 
@@ -119,7 +119,7 @@ export const TriggerRow = memo(function TriggerRow({
             className="flex items-center gap-1.5 min-w-0 text-left"
             onClick={onOpenRecipients}
           >
-            <span className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] truncate leading-none">
+            <span className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))] truncate leading-none">
               {displayName}
             </span>
           </button>
@@ -142,7 +142,7 @@ export const TriggerRow = memo(function TriggerRow({
         {/* Override indicator dot */}
         {isOverridden && !isMandatory && !isSilent && (
           <Tooltip delay={200} content="Overridden from defaults">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] flex-shrink-0" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] flex-shrink-0" />
           </Tooltip>
         )}
 

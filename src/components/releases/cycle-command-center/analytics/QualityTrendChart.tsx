@@ -48,22 +48,22 @@ export function QualityTrendChart({ cycleId, days = 14 }: QualityTrendChartProps
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e5e7eb)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
               <XAxis 
                 dataKey="dateLabel" 
                 tick={{ fontSize: 'var(--ds-font-size-100)' }} 
-                stroke="var(--ds-text-subtlest, #626F86)"
+                stroke="var(--ds-text-subtlest)"
               />
               <YAxis 
                 domain={[0, 100]} 
                 tick={{ fontSize: 'var(--ds-font-size-100)' }} 
-                stroke="var(--ds-text-subtlest, #626F86)"
+                stroke="var(--ds-text-subtlest)"
                 tickFormatter={(v) => `${v}%`}
               />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: 'white', 
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '8px',
                   fontSize: 'var(--ds-font-size-200)'
                 }}

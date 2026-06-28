@@ -23,7 +23,7 @@ export default function BoardQuickFilters() {
               height: 26, padding: '8px 12px', borderRadius: 13,
               border: 'none',
               background: active ? 'var(--cp-blue)' : 'var(--cp-bd-zone)',
-              color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-2)',
+              color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--fg-2)',
               fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 500,
               fontFamily: 'var(--cp-font-body)',
               cursor: 'pointer',

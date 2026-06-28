@@ -38,7 +38,7 @@ export default function WikiSubscriptionsPage() {
   const [newTag, setNewTag] = useState('');
   const { isDark } = useTheme();
 
-  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))';
 
   // Fetch subscriptions
   const { data: subs = [], isLoading } = useQuery({
@@ -99,19 +99,19 @@ export default function WikiSubscriptionsPage() {
   };
 
   return (
-    <div style={{ fontFamily: F.inter, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%', padding: '24px 40px 60px' }}>
+    <div style={{ fontFamily: F.inter, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', background: isDark ? 'var(--cp-bg-page)' : 'var(--ds-surface-sunken)', minHeight: '100%', padding: '24px 40px 60px' }}>
       {/* Breadcrumb */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
-        <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-        <span style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>Subscriptions</span>
+        <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Wiki</span>
+        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontWeight: 600 }}>Subscriptions</span>
       </nav>
 
       <h1 style={{ fontFamily: F.sora, fontSize: 'var(--ds-font-size-600)', fontWeight: 700, marginBottom: 4 }}>Subscriptions</h1>
-      <p style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 32 }}>Get notified when content you follow is updated.</p>
+      <p style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 32 }}>Get notified when content you follow is updated.</p>
 
       {/* ═══ DOMAIN SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<Layers size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />} label="Domain Subscriptions" isDark={isDark} />
+      <SectionLabel icon={<Layers size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />} label="Domain Subscriptions" isDark={isDark} />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 8, marginBottom: 32 }}>
         {DOMAINS.map(d => {
           const active = domainSubs.has(d.code);
@@ -121,19 +121,19 @@ export default function WikiSubscriptionsPage() {
               onClick={() => toggleSub.mutate({ entityType: 'domain', entityId: d.code })}
               style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
-                borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : border}`,
+                borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `0.75px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : border}`,
                 cursor: 'pointer', transition: 'all 120ms', textAlign: 'left',
               }}
             >
-              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.15))' : 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'), color: active ? (isDark ? 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))' : 'var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))') : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))') }}>{d.code}</span>
-              <span style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', flex: 1 }}>{d.name}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.15))' : 'var(--ds-background-information, var(--ds-background-information))') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'), color: active ? (isDark ? 'var(--ds-background-information, var(--ds-background-information))' : 'var(--ds-link-pressed, var(--ds-link-pressed))') : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))') }}>{d.code}</span>
+              <span style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', flex: 1 }}>{d.name}</span>
               <div style={{
                 width: 36, height: 20, borderRadius: 12,
-                background: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'),
+                background: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : (isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))'),
                 position: 'relative', transition: 'background 150ms',
               }}>
                 <div style={{
-                  width: 16, height: 16, borderRadius: '50%', background: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  width: 16, height: 16, borderRadius: '50%', background: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   position: 'absolute', top: 2,
                   left: active ? 18 : 2, transition: 'left 150ms',
                   boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
@@ -145,19 +145,19 @@ export default function WikiSubscriptionsPage() {
       </div>
 
       {/* ═══ TAG SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<Tag size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />} label="Tag Subscriptions" isDark={isDark} />
+      <SectionLabel icon={<Tag size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />} label="Tag Subscriptions" isDark={isDark} />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
         {tagSubs.map((tag: string) => (
           <span key={tag} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px',
-            borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: `0.75px solid ${border}`,
-            fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+            borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: `0.75px solid ${border}`,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: isDark ? 'var(--ds-text-subtlest)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
           }}>
             {tag}
-            <X size={11} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', cursor: 'pointer' }} onClick={() => toggleSub.mutate({ entityType: 'tag', entityId: tag })} />
+            <X size={11} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', cursor: 'pointer' }} onClick={() => toggleSub.mutate({ entityType: 'tag', entityId: tag })} />
           </span>
         ))}
-        {tagSubs.length === 0 && <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No tag subscriptions yet.</span>}
+        {tagSubs.length === 0 && <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>No tag subscriptions yet.</span>}
       </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
         <input
@@ -167,13 +167,13 @@ export default function WikiSubscriptionsPage() {
           placeholder="Add a tag..."
           style={{
             height: 32, padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', borderRadius: 6,
-            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.1))'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            outline: 'none', width: 180, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined,
+            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.1))'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+            outline: 'none', width: 180, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : undefined,
           }}
         />
         <button onClick={addTag} style={{
-          height: 32, padding: '0 14px', borderRadius: 6, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+          height: 32, padding: '0 14px', borderRadius: 6, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
         }}>
           <Plus size={12} /> Add
@@ -181,8 +181,8 @@ export default function WikiSubscriptionsPage() {
       </div>
 
       {/* ═══ ARTICLE SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<FileText size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />} label="Article Subscriptions" isDark={isDark} />
-      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
+      <SectionLabel icon={<FileText size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />} label="Article Subscriptions" isDark={isDark} />
+      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', overflow: 'hidden' }}>
         {subArticles.length > 0 ? subArticles.map((a: any) => (
           <div key={a.id} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px',
@@ -191,18 +191,18 @@ export default function WikiSubscriptionsPage() {
             onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.04))'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', flexShrink: 0 }} />
-            <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', cursor: 'pointer', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{a.domain_code}</span>
+            <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', flexShrink: 0 }} />
+            <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, var(--ds-background-neutral)))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', cursor: 'pointer', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{a.domain_code}</span>
             <button
               onClick={() => toggleSub.mutate({ entityType: 'article', entityId: a.id })}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontWeight: 500 }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, var(--cp-danger))', fontWeight: 500 }}
             >
               Unsubscribe
             </button>
           </div>
         )) : (
-          <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 'var(--ds-font-size-200)' }}>
+          <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontSize: 'var(--ds-font-size-200)' }}>
             No article subscriptions. Subscribe to articles from their detail pages.
           </div>
         )}
@@ -215,7 +215,7 @@ function SectionLabel({ icon, label, isDark }: { icon: React.ReactNode; label: s
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
       {icon}
-      <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>{label}</span>
     </div>
   );
 }

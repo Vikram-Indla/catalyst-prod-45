@@ -167,31 +167,31 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))' }} onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ds-surface, #fff)', borderRadius: 8, width: 720, maxWidth: '95vw', maxHeight: '85vh', overflow: 'hidden', display: 'flex', boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(9,30,66,.35))' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ds-surface)', borderRadius: 8, width: 720, maxWidth: '95vw', maxHeight: '85vh', overflow: 'hidden', display: 'flex', boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(9,30,66,.35))' }}>
         {/* Left stepper rail */}
-        <div style={{ width: 220, background: 'var(--ds-surface-sunken, #FAFBFC)', borderRight: `1px solid var(--ds-border, #EBECF0)`, padding: '24px 16px', flexShrink: 0 }}>
+        <div style={{ width: 220, background: 'var(--ds-surface-sunken)', borderRight: `1px solid var(--ds-border)`, padding: '24px 16px', flexShrink: 0 }}>
           {STEPS.map((label, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
               <div style={{
                 width: 10, height: 10, borderRadius: '50%', marginTop: 4, flexShrink: 0,
-                background: i < step ? 'var(--ds-background-information, #B3D4FF)' : i === step ? 'var(--ds-link, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+                background: i < step ? 'var(--ds-background-information)' : i === step ? 'var(--ds-link)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
               }} />
               <div>
                 <div style={{
                   fontSize: 'var(--ds-font-size-300)', fontWeight: i === step ? 700 : i < step ? 500 : 400,
-                  color: i === step ? 'var(--ds-link, #0C66E4)' : i < step ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+                  color: i === step ? 'var(--ds-link)' : i < step ? 'var(--ds-link)' : 'var(--ds-text-subtlest, var(--cp-text-secondary))',
                   cursor: i < step ? 'pointer' : 'default',
                 }} onClick={() => { if (i < step) setStep(i); }}>
                   {label}
                 </div>
                 {i === 0 && selectedParentIssue && (
-                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginTop: 4 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', marginTop: 4 }}>
                     Parent Issue: <strong>{selectedParentIssue.issue_key}</strong><br />
                     Sub-task Type: <strong>{subtaskType}</strong>
                   </div>
                 )}
                 {i === 1 && step > 1 && (
-                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginTop: 4 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', marginTop: 4 }}>
                     Status: <strong>{newStatus}</strong>
                   </div>
                 )}
@@ -203,15 +203,15 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
         {/* Right content */}
         <div style={{ flex: 1, padding: '28px 36px', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0 }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', margin: 0 }}>
               Convert Issue to Sub-task: {issueKey}
             </h2>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-              <X size={18} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+              <X size={18} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
             </button>
           </div>
 
-          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 20 }}>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', marginBottom: 20 }}>
             <strong>Step {step + 1} of {STEPS.length}</strong>: {
               step === 0 ? 'Select the parent issue and sub-task type ...' :
               step === 1 ? 'Select the status of the issue ...' :
@@ -225,20 +225,20 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
             <div style={{ flex: 1 }}>
               {/* Parent search */}
               <div style={{ marginBottom: 20 }}>
-                <label style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', display: 'block', marginBottom: 6 }}>Parent Issue</label>
+                <label style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', display: 'block', marginBottom: 6 }}>Parent Issue</label>
                 {selectedParentIssue ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))' }}>
                     <JiraIssueTypeIcon type={selectedParentIssue.issue_type} size={16} />
-                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-link, #0C66E4)' }}>{selectedParentIssue.issue_key}</span>
-                    <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', flex: 1 }}>{selectedParentIssue.summary}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-link)' }}>{selectedParentIssue.issue_key}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', flex: 1 }}>{selectedParentIssue.summary}</span>
                     <button onClick={() => { setSelectedParentId(null); setSelectedParentIssue(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                      <X size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+                      <X size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
                     </button>
                   </div>
                 ) : (
                   <div style={{ position: 'relative' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px', height: 36, border: '2px solid var(--ds-link, #4C9AFF)', borderRadius: 4 }}>
-                      <Search size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px', height: 36, border: '2px solid var(--ds-link)', borderRadius: 4 }}>
+                      <Search size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary))" />
                       <input
                         autoFocus
                         value={parentSearch}
@@ -248,31 +248,31 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                         placeholder="Search by key or summary..."
                         style={{ flex: 1, border: 'none', outline: 'none', boxShadow: 'none', fontSize: 'var(--ds-font-size-300)', background: 'transparent' }}
                       />
-                      {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }} />}
+                      {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }} />}
                     </div>
                     {showDropdown && (
-                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: 'var(--ds-surface, #fff)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', borderRadius: 4, boxShadow: '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,.15)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,.31))', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
+                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: 'var(--ds-surface)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', borderRadius: 4, boxShadow: '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,.15)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,.31))', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
                         {/* Section label */}
                         {parentSearch.trim().length === 0 && parentCandidates.length > 0 && (
-                          <div style={{ padding: '8px 12px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>
+                          <div style={{ padding: '8px 12px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>
                         )}
                         {parentCandidates.length > 0 ? parentCandidates.map((p: any) => {
                           const cat = (p.status_category ?? '').toLowerCase();
-                          const lozBg = cat.includes('done') ? 'var(--ds-background-success, #E3FCEF)' : cat.includes('progress') ? 'var(--ds-background-information, #DEEBFF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
-                          const lozColor = cat.includes('done') ? 'var(--ds-text-success, var(--ds-text-success, #006644))' : cat.includes('progress') ? 'var(--ds-background-information-bold, var(--ds-link-pressed, #0747A6))' : 'var(--ds-text, var(--ds-text, #253858))';
+                          const lozBg = cat.includes('done') ? 'var(--ds-background-success)' : cat.includes('progress') ? 'var(--ds-background-information)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))';
+                          const lozColor = cat.includes('done') ? 'var(--ds-text-success, var(--ds-text-success))' : cat.includes('progress') ? 'var(--ds-background-information-bold, var(--ds-link-pressed))' : 'var(--ds-text, var(--ds-text))';
                           return (
-                            <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', borderBottom: `1px solid var(--ds-background-neutral, var(--ds-background-neutral-subtle, #F4F5F7))` }}
-                              onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
+                            <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', borderBottom: `1px solid var(--ds-background-neutral, var(--ds-background-neutral-subtle))` }}
+                              onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))')}
                               onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                             >
                               <JiraIssueTypeIcon type={p.issue_type} size={16} />
-                              <span style={{ fontWeight: 600, color: 'var(--ds-link, #0C66E4)', flexShrink: 0 }}>{p.issue_key}</span>
-                              <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.summary}</span>
+                              <span style={{ fontWeight: 600, color: 'var(--ds-link)', flexShrink: 0 }}>{p.issue_key}</span>
+                              <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.summary}</span>
                               <span style={{ display: 'inline-block', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 3, background: lozBg, color: lozColor, flexShrink: 0, whiteSpace: 'nowrap' }}>{p.status}</span>
                             </button>
                           );
                         }) : (
-                          <div style={{ padding: '16px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
+                          <div style={{ padding: '16px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textAlign: 'center' }}>
                             {searchingParents ? 'Searching...' : 'No matching issues found'}
                           </div>
                         )}
@@ -284,16 +284,16 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
 
               {/* Sub-task type */}
               <div>
-                <label style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', display: 'block', marginBottom: 6 }}>Sub-task Type</label>
+                <label style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', display: 'block', marginBottom: 6 }}>Sub-task Type</label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {getAvailableSubtaskTypes(issueType).map(t => (
-                    <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 4, cursor: 'pointer', background: subtaskType === t ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent' }}
-                      onMouseOver={e => { if (subtaskType !== t) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+                    <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 4, cursor: 'pointer', background: subtaskType === t ? 'var(--ds-background-selected)' : 'transparent' }}
+                      onMouseOver={e => { if (subtaskType !== t) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))'; }}
                       onMouseOut={e => { if (subtaskType !== t) e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <input type="radio" name="subtask-type" checked={subtaskType === t} onChange={() => setSubtaskType(t)} style={{ accentColor: 'var(--ds-link, var(--ds-link, #0C66E4))' }} />
+                      <input type="radio" name="subtask-type" checked={subtaskType === t} onChange={() => setSubtaskType(t)} style={{ accentColor: 'var(--ds-link, var(--ds-link))' }} />
                       <JiraIssueTypeIcon type={t} size={16} />
-                      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{t}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{t}</span>
                     </label>
                   ))}
                 </div>
@@ -305,9 +305,9 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {step === 1 && (
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', flexShrink: 0 }}>Select New Status:</div>
-                <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
-                <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 'var(--ds-font-size-500)' }}>→</span>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', flexShrink: 0 }}>Select New Status:</div>
+                <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
+                <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', fontSize: 'var(--ds-font-size-500)' }}>→</span>
                 <Select value={newStatus} onValueChange={setNewStatus}>
                   <SelectTrigger className="w-[200px] bg-white" style={{ fontSize: 'var(--ds-font-size-300)' }}>
                     <SelectValue placeholder="Select status" />
@@ -328,45 +328,45 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {/* Step 2: Review fields */}
           {step === 2 && (
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 16 }}>All fields will be updated automatically.</p>
+              <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', marginBottom: 16 }}>All fields will be updated automatically.</p>
             </div>
           )}
 
           {/* Step 3: Confirmation */}
           {step === 3 && (
             <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', marginBottom: 8 }}>
                 Original Value (before conversion)
               </div>
-              <div style={{ borderTop: `1px solid var(--ds-border, #EBECF0)` }}>
-                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border, #EBECF0)` }}>
-                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Type</span>
-                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, #DE350B)' }}>{issueType}</span>
+              <div style={{ borderTop: `1px solid var(--ds-border)` }}>
+                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border)` }}>
+                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Type</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger)' }}>{issueType}</span>
                 </div>
-                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border, #EBECF0)` }}>
-                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Status (Workflow)</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-surface, #FFFAE6)', border: `1px solid var(--ds-text-warning, #FFE380)`, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase' as const }}>{currentStatus}</span>
+                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border)` }}>
+                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Status (Workflow)</span>
+                  <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-surface)', border: `1px solid var(--ds-text-warning)`, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase' as const }}>{currentStatus}</span>
                 </div>
-                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border, #EBECF0)` }}>
-                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>New Type</span>
-                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-link, #0C66E4)' }}>{subtaskType}</span>
+                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border)` }}>
+                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>New Type</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-link)' }}>{subtaskType}</span>
                 </div>
-                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border, #EBECF0)` }}>
-                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>New Parent</span>
-                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-link, #0C66E4)' }}>{selectedParentIssue?.issue_key}</span>
+                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border)` }}>
+                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>New Parent</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-link)' }}>{selectedParentIssue?.issue_key}</span>
                 </div>
-                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border, #EBECF0)` }}>
-                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>New Status</span>
-                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{newStatus}</span>
+                <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid var(--ds-border)` }}>
+                  <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>New Status</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{newStatus}</span>
                 </div>
               </div>
             </div>
           )}
 
           {/* Navigation buttons */}
-          <div style={{ display: 'flex', gap: 8, marginTop: 20, borderTop: `1px solid var(--ds-border, #EBECF0)`, paddingTop: 16 }}>
+          <div style={{ display: 'flex', gap: 8, marginTop: 20, borderTop: `1px solid var(--ds-border)`, paddingTop: 16 }}>
             {step > 0 && (
-              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>
                 Back
               </button>
             )}
@@ -376,8 +376,8 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                 disabled={step === 0 ? !canProceedStep0 : step === 1 ? !canProceedStep1 : false}
                 style={{
                   padding: '7px 16px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', border: 'none',
-                  background: (step === 0 ? canProceedStep0 : true) ? 'var(--ds-link, var(--ds-link, #0C66E4))' : 'var(--ds-border, #A5ADBA)',
-                  color: 'var(--ds-surface, #fff)', opacity: (step === 0 && !canProceedStep0) ? 0.6 : 1,
+                  background: (step === 0 ? canProceedStep0 : true) ? 'var(--ds-link, var(--ds-link))' : 'var(--ds-border)',
+                  color: 'var(--ds-surface)', opacity: (step === 0 && !canProceedStep0) ? 0.6 : 1,
                 }}
               >
                 Next &gt;&gt;
@@ -386,12 +386,12 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               <button
                 onClick={() => convertMutation.mutate()}
                 disabled={convertMutation.isPending}
-                style={{ padding: '7px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', border: 'none', background: 'var(--ds-link, #0C66E4)', color: 'var(--ds-surface, #fff)' }}
+                style={{ padding: '7px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', border: 'none', background: 'var(--ds-link)', color: 'var(--ds-surface)' }}
               >
                 {convertMutation.isPending ? 'Converting...' : 'Finish'}
               </button>
             )}
-            <button onClick={onClose} style={{ padding: '7px 16px', borderRadius: 4, background: 'transparent', border: 'none', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)' }}>
+            <button onClick={onClose} style={{ padding: '7px 16px', borderRadius: 4, background: 'transparent', border: 'none', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer', color: 'var(--ds-link)' }}>
               Cancel
             </button>
           </div>

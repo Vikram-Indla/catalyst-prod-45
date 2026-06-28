@@ -71,7 +71,7 @@ function ConversationMenuItem({
         borderRadius: 4,
         cursor: 'pointer',
         fontSize: 'var(--ds-font-size-300)',
-        color: danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #172B4D)',
+        color: danger ? 'var(--ds-text-danger)' : 'var(--ds-text)',
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLButtonElement).style.background =
@@ -295,7 +295,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
         aria-label={currentUserMuted ? 'Unmute notifications' : 'Mute notifications'}
         title={currentUserMuted ? 'Unmute notifications' : 'Mute notifications'}
         onClick={() => conversation && mute.mutate({ convId: conversation.id, muted: !currentUserMuted })}
-        style={{ color: currentUserMuted ? 'var(--ds-text-subtlest, #6B778C)' : 'var(--ds-text, #172B4D)', position: 'relative' }}
+        style={{ color: currentUserMuted ? 'var(--ds-text-subtlest)' : 'var(--ds-text)', position: 'relative' }}
       >
         {currentUserMuted ? (
           /* Crossed-out bell = muted */
@@ -342,8 +342,8 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
               right: 0,
               marginTop: 4,
               minWidth: 200,
-              background: 'var(--ds-surface-overlay, #FFFFFF)',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface-overlay)',
+              border: '1px solid var(--ds-border)',
               borderRadius: 6,
               boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
               padding: 4,
@@ -388,8 +388,8 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             {/* Notify sub-group: channels/tickets only; not for DMs (finding 25) */}
             {!isDm && (
               <>
-                <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
-                <div style={{ padding: '4px 10px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)' }}>
+                <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
+                <div style={{ padding: '4px 10px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                   Notifications
                 </div>
                 <ConversationMenuItem
@@ -407,7 +407,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
               </>
             )}
             {/* Archive — own section with divider (finding 28) */}
-            <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+            <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
             {!conversation.isArchived ? (
               <ConversationMenuItem
                 label="Archive conversation"
@@ -424,7 +424,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             )}
             {!isDm && (
               <>
-                <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+                <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
                 <ConversationMenuItem
                   label="Leave conversation"
                   danger

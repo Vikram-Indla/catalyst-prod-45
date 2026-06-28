@@ -64,7 +64,7 @@ function VersionRow({ v }: { v: FilterVersion }) {
             fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--ds-font-family-monospace, monospace)',
             color: token('color.text.subtle'),
-            background: `var(--ds-surface-sunken, #F7F8F9)`,
+            background: `var(--ds-surface-sunken)`,
             borderRadius: 3,
             padding: '4px 8px',
             overflow: 'hidden',

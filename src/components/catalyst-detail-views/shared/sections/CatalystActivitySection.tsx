@@ -568,7 +568,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   return (
     <div
       ref={sectionRef}
-      style={{ borderTop: '1px solid var(--ds-border-subtle, #EBECF0)', paddingTop: 20, marginTop: 8 }}
+      style={{ borderTop: '1px solid var(--ds-border-subtle)', paddingTop: 20, marginTop: 8 }}
     >
       {showSummaryCard && (
         <CommentsSummaryCard

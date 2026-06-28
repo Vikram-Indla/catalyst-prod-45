@@ -38,7 +38,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         transition: 'all 0.15s ease'
       }}
     >
-      {checked && <Check size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
+      {checked && <Check size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" />}
     </div>
   );
 };

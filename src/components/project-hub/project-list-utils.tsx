@@ -62,13 +62,13 @@ export function StatusBadge({ status }: { status: string }) {
  * Uses dot + label with muted backgrounds
  */
 const HEALTH_STYLES: Record<string, { bg: string; color: string; dot: string }> = {
-  on_track:  { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #006644)', dot: 'var(--ds-text-success, #006644)' },
-  at_risk:   { bg: '#FFF7E6', color: 'var(--ds-text-warning, #974F0C)', dot: 'var(--ds-text-warning, #974F0C)' },
-  off_track: { bg: 'var(--ds-background-danger, #FFECEB)', color: 'var(--ds-text-danger, #AE2A19)', dot: 'var(--ds-text-danger, #AE2A19)' },
+  on_track:  { bg: 'var(--ds-background-success)', color: 'var(--ds-text-success)', dot: 'var(--ds-text-success)' },
+  at_risk:   { bg: '#FFF7E6', color: 'var(--ds-text-warning)', dot: 'var(--ds-text-warning)' },
+  off_track: { bg: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', dot: 'var(--ds-text-danger)' },
 };
 
 export function HealthBadge({ health }: { health: string | null }) {
-  if (!health) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
+  if (!health) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>—</span>;
   const s = HEALTH_STYLES[health] || HEALTH_STYLES.on_track;
   const label = health.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
   return (
@@ -95,7 +95,7 @@ export function HealthBadge({ health }: { health: string | null }) {
     </span>
   );
 }
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--quality-high, #059669)', '#0369A1', 'var(--ds-background-accent-magenta-bolder, #be185d)'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--cp-purple-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--quality-high)', '#0369A1', 'var(--ds-background-accent-magenta-bolder)'];
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -110,7 +110,7 @@ function hashName(name: string): number {
 }
 
 export function AvatarStack({ names }: { names: string[] }) {
-  if (names.length === 0) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
+  if (names.length === 0) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>—</span>;
 
   const show = Math.min(names.length, 4);
   const overflow = names.length - show;
@@ -127,10 +127,10 @@ export function AvatarStack({ names }: { names: string[] }) {
             height: 28,
             marginLeft: i > 0 ? -6 : 0,
             backgroundColor: AVATAR_COLORS[hashName(name) % AVATAR_COLORS.length],
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             fontSize: 'var(--ds-font-size-50)',
             fontWeight: 600,
-            border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             fontFamily: 'var(--cp-font-body)',
             zIndex: show - i,
             position: 'relative',
@@ -148,11 +148,11 @@ export function AvatarStack({ names }: { names: string[] }) {
             width: 28,
             height: 28,
             marginLeft: -6,
-            backgroundColor: 'var(--ds-background-neutral, #EBECF0)',
-            color: 'var(--ds-text-subtle, #42526E)',
+            backgroundColor: 'var(--ds-background-neutral)',
+            color: 'var(--ds-text-subtle)',
             fontSize: 'var(--ds-font-size-50)',
             fontWeight: 700,
-            border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             fontFamily: 'var(--cp-font-body)',
             boxShadow: '0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
           }}

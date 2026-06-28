@@ -60,7 +60,7 @@ function TooltipBody({ health }: Props) {
           {health.violation_count} violation
           {health.violation_count !== 1 ? 's' : ''}
           {health.critical_violation_count > 0 && (
-            <span style={{ marginLeft: 4, color: 'var(--ds-background-danger-bold, #C9372C)' }}>
+            <span style={{ marginLeft: 4, color: 'var(--ds-background-danger-bold)' }}>
               · {health.critical_violation_count} critical
             </span>
           )}
@@ -87,7 +87,7 @@ export function BrHealthStatusIndicator({ health }: Props) {
         style={{
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
-          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
           whiteSpace: 'nowrap',
         }}
       >

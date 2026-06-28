@@ -206,12 +206,12 @@ export function EditResourceForm({
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             {isSaving ? (
               <>
-                <div className="w-2 h-2 rounded-full bg-[var(--ds-text-warning,#d97706)] animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-[var(--ds-text-warning)] animate-pulse" />
                 <span>Saving...</span>
               </>
             ) : lastSaved ? (
               <>
-                <CheckCircle2 className="w-3 h-3 text-[var(--ds-chart-teal-bold, #0d9488)]" />
+                <CheckCircle2 className="w-3 h-3 text-[var(--ds-chart-teal-bold)]" />
                 <span>Saved</span>
               </>
             ) : null}
@@ -223,7 +223,7 @@ export function EditResourceForm({
         <Button
           onClick={onSave}
           disabled={isSaving}
-          className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+          className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)]"
         >
           Save
         </Button>

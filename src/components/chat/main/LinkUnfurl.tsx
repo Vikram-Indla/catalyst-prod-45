@@ -30,12 +30,12 @@ export function LinkUnfurl({ bodyText }: LinkUnfurlProps) {
             display: 'flex',
             gap: 10,
             padding: 10,
-            border: '1px solid var(--ds-border, #DFE1E6)',
-            borderLeft: '4px solid var(--ds-border-brand, #0C66E4)',
+            border: '1px solid var(--ds-border)',
+            borderLeft: '4px solid var(--ds-border-brand)',
             borderRadius: 4,
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--ds-surface)',
             textDecoration: 'none',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             maxWidth: 480,
           }}
         >
@@ -54,14 +54,14 @@ export function LinkUnfurl({ bodyText }: LinkUnfurlProps) {
             />
           )}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
               {p.domain}
             </div>
             <div
               style={{
                 fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
-                color: 'var(--ds-text, #172B4D)',
+                color: 'var(--ds-text)',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -73,7 +73,7 @@ export function LinkUnfurl({ bodyText }: LinkUnfurlProps) {
               <div
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
-                  color: 'var(--ds-text-subtle, #44546F)',
+                  color: 'var(--ds-text-subtle)',
                   marginTop: 2,
                   display: '-webkit-box',
                   WebkitLineClamp: 2,

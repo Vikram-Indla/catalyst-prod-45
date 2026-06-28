@@ -75,7 +75,7 @@ function findOpt<T extends string>(
 function PhaseIndicator({ phase, errorMessage }: { phase: string; errorMessage: string | null }) {
   if (phase === 'building_context' || phase === 'generating') {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', color: token('color.text.subtle', 'var(--ds-text-subtle)') }}>
         <Spinner size="small" />
         <span style={{ fontSize: 'var(--ds-font-size-300)' }}>
           {phase === 'building_context' ? 'Building context…' : 'Generating with Gemini…'}
@@ -85,9 +85,9 @@ function PhaseIndicator({ phase, errorMessage }: { phase: string; errorMessage: 
   }
   if (phase === 'fallback') {
     return (
-      <div style={{ background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
-        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>AI generation failed</div>
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginTop: 2 }}>
+      <div style={{ background: token('color.background.warning', 'var(--ds-background-warning)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: token('color.text.warning', 'var(--ds-text-warning)') }}>AI generation failed</div>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginTop: 2 }}>
           Showing a count-based fallback. Edit below or retry.
           {errorMessage && <span style={{ display: 'block', marginTop: 2, fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)' }}>{errorMessage}</span>}
         </div>
@@ -96,8 +96,8 @@ function PhaseIndicator({ phase, errorMessage }: { phase: string; errorMessage: 
   }
   if (phase === 'error') {
     return (
-      <div style={{ background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), border: `1px solid ${token('color.border.danger', '#E34935')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
-        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
+      <div style={{ background: token('color.background.danger', 'var(--ds-background-danger)'), border: `1px solid ${token('color.border.danger', '#E34935')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: token('color.text.danger', 'var(--ds-text-danger)') }}>
           {errorMessage ?? 'Something went wrong'}
         </div>
       </div>
@@ -150,7 +150,7 @@ export function WhatsAppSummaryModal({
   const labelStyle: React.CSSProperties = {
     fontSize: 'var(--ds-font-size-200)',
     fontWeight: 600,
-    color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+    color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
     marginBottom: 4,
     display: 'block',
   };
@@ -245,13 +245,13 @@ export function WhatsAppSummaryModal({
                 </div>
 
                 {isLoadingRows && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 'var(--ds-font-size-300)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-300)' }}>
                     <Spinner size="small" />
                     Loading filter results…
                   </div>
                 )}
                 {!isLoadingRows && rows.length === 0 && (
-                  <div style={{ padding: '12px 0', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 'var(--ds-font-size-300)' }}>
+                  <div style={{ padding: '12px 0', color: token('color.text.subtlest', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-300)' }}>
                     No items in this filter. Load the filter results first.
                   </div>
                 )}
@@ -265,12 +265,12 @@ export function WhatsAppSummaryModal({
             {hasOutput && (
               <>
                 {state.isTruncated && (
-                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), marginBottom: 8 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.warning', 'var(--ds-text-warning)'), marginBottom: 8 }}>
                     Showing {state.itemCountUsed} of {rows.length} items — summary may be incomplete.
                   </div>
                 )}
                 {state.warnings.map((w, i) => (
-                  <div key={i} style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>{w}</div>
+                  <div key={i} style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), marginBottom: 4 }}>{w}</div>
                 ))}
                 <textarea
                   value={state.editableText}
@@ -282,16 +282,16 @@ export function WhatsAppSummaryModal({
                     fontFamily: 'var(--ds-font-family-body)',
                     fontSize: 'var(--ds-font-size-400)',
                     lineHeight: 1.5,
-                    color: token('color.text', 'var(--ds-text, #172B4D)'),
-                    background: token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
-                    border: `2px solid ${token('color.border.input', 'var(--ds-border, #DFE1E6)')}`,
+                    color: token('color.text', 'var(--ds-text)'),
+                    background: token('color.background.input', 'var(--ds-surface-sunken)'),
+                    border: `2px solid ${token('color.border.input', 'var(--ds-border)')}`,
                     borderRadius: 3,
                     padding: '8px 12px',
                     resize: 'vertical',
                     outline: 'none',
                   }}
-                  onFocus={e => { e.target.style.borderColor = token('color.border.focused', 'var(--ds-border-focused, #388BFF)'); }}
-                  onBlur={e => { e.target.style.borderColor = token('color.border.input', 'var(--ds-border, #DFE1E6)'); }}
+                  onFocus={e => { e.target.style.borderColor = token('color.border.focused', 'var(--ds-border-focused)'); }}
+                  onBlur={e => { e.target.style.borderColor = token('color.border.input', 'var(--ds-border)'); }}
                   aria-label="WhatsApp summary — edit before copying"
                 />
               </>

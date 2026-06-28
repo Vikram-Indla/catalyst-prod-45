@@ -116,7 +116,7 @@ export function plannerTaskToCanonicalIssue(task: KanbanTask): CanonicalBoardIss
    Uses Atlaskit blue to match the "Task" canonical SVG palette.
    ═══════════════════════════════════════════════════════════════════════ */
 
-const PLANNER_ICON_COLOR = 'var(--ds-background-information-bold, #1D7AFC)';
+const PLANNER_ICON_COLOR = 'var(--ds-background-information-bold)';
 
 export function resolvePlannerIcon(_card: BoardIssue): ReactNode | null {
   return <CheckCircle2 size={14} strokeWidth={2} style={{ color: PLANNER_ICON_COLOR }} />;

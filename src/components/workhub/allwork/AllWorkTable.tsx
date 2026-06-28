@@ -56,11 +56,11 @@ function flattenTree(nodes: TreeNode[], expanded: Set<string>): TreeNode[] {
 
 const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> = {
   project: { border: 'var(--cp-blue)', text: 'var(--cp-blue)', bg: 'var(--cp-primary-5)' },
-  product: { border: 'var(--fg-2)', text: 'var(--fg-2)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
-  task: { border: 'var(--ds-border, #DFE1E6)', text: 'var(--fg-3)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
-  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  product: { border: 'var(--fg-2)', text: 'var(--fg-2)', bg: 'var(--ds-surface-sunken)' },
+  task: { border: 'var(--ds-border)', text: 'var(--fg-3)', bg: 'var(--ds-surface-sunken)' },
+  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: 'var(--ds-background-danger)' },
 };
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-teal-bold, #206B74)', 'var(--ds-chart-red-bold, #AE2A19)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold)', 'var(--ds-chart-orange-bold)', 'var(--ds-chart-green-bold)', 'var(--ds-chart-magenta-bold)', 'var(--ds-background-discovery-bold)', 'var(--ds-chart-teal-bold)', 'var(--ds-chart-red-bold)'];
 
 function getHubType(issueType: string): string {
   const t = issueType.toLowerCase();
@@ -167,7 +167,7 @@ export function AllWorkTable({
             height: 44,
             maxHeight: 44,
             backgroundColor: 'var(--bg-app)',
-            borderBottom: '1px solid var(--bd-default, var(--cp-ink-1, #2E2E2E))',
+            borderBottom: '1px solid var(--bd-default, var(--cp-ink-1))',
           }}
         >
           <div className="flex justify-center" role="columnheader">
@@ -176,7 +176,7 @@ export function AllWorkTable({
               checked={selectAllState === 'all'}
               ref={el => { if (el) el.indeterminate = selectAllState === 'some'; }}
               onChange={onSelectAll}
-              className="w-4 h-4 rounded cursor-pointer accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+              className="w-4 h-4 rounded cursor-pointer accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
               aria-label="Select all items"
             />
           </div>
@@ -186,7 +186,7 @@ export function AllWorkTable({
               onClick={() => col.sortable && onSort(col.key)}
               role="columnheader"
               aria-sort={col.sortable && sortField === col.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined}
-              className="flex items-center gap-1 text-left focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:outline-offset-2 rounded"
+              className="flex items-center gap-1 text-left focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus-visible:outline-offset-2 rounded"
               style={{
                 fontSize: '10.5px',
                 fontWeight: 650,
@@ -304,11 +304,11 @@ const TableRow = memo(function TableRow({
         gridTemplateColumns: GRID_TEMPLATE,
         height: 44,
         maxHeight: 44,
-        borderBottom: '0.75px solid var(--bd-subtle, var(--cp-ink-1, #292929))',
+        borderBottom: '0.75px solid var(--bd-subtle, var(--cp-ink-1))',
         backgroundColor: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
         transition: 'background-color 80ms ease',
       }}
-      onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--hover, #1F1F1F)'); }}
+      onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--hover)'); }}
       onMouseLeave={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)'); }}
       onClick={() => onOpenItem(item.issue_key)}
       onContextMenu={(e) => { e.preventDefault(); onContextMenu({ x: e.clientX, y: e.clientY, item }); }}
@@ -319,7 +319,7 @@ const TableRow = memo(function TableRow({
           type="checkbox"
           checked={isSelected}
           onChange={() => onToggleSelect(item.issue_key)}
-          className="w-4 h-4 rounded cursor-pointer accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+          className="w-4 h-4 rounded cursor-pointer accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
           aria-label={`Select ${item.issue_key}`}
         />
       </div>
@@ -330,7 +330,7 @@ const TableRow = memo(function TableRow({
         {hasChildren ? (
           <button
             onClick={(e) => { e.stopPropagation(); onToggleExpand(item.issue_key); }}
-            className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-[rgba(128,128,128,0.12)] transition-all duration-150 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+            className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-[rgba(128,128,128,0.12)] transition-all duration-150 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
             aria-label={isExpanded ? 'Collapse' : 'Expand'}
             aria-expanded={isExpanded}
           >
@@ -357,10 +357,10 @@ const TableRow = memo(function TableRow({
           {item.summary}
         </span>
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-auto transition-opacity duration-80">
-          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" title="Open in new tab" aria-label="Open in new tab" onClick={e => e.stopPropagation()}>
+          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" title="Open in new tab" aria-label="Open in new tab" onClick={e => e.stopPropagation()}>
             <ExternalLink className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
           </button>
-          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" title="Add child" aria-label="Add child item" onClick={e => e.stopPropagation()}>
+          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" title="Add child" aria-label="Add child item" onClick={e => e.stopPropagation()}>
             <Plus className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
@@ -421,7 +421,7 @@ const TableRow = memo(function TableRow({
           <span className="text-[12px] italic" style={{ color: 'var(--fg-3)' }}>Unassigned</span>
         )}
         <button
-          className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[rgba(128,128,128,0.12)] shrink-0 transition-opacity duration-80 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+          className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[rgba(128,128,128,0.12)] shrink-0 transition-opacity duration-80 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
           aria-label={`More actions for ${item.issue_key}`}
           onClick={(e) => { e.stopPropagation(); onContextMenu({ x: e.clientX, y: e.clientY, item }); }}
         >

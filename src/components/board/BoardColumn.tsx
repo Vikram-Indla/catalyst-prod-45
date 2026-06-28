@@ -26,16 +26,16 @@ interface BoardColumnProps {
 
 // Column header colors from spec
 const COLUMN_HEADER_COLORS: Record<WorkflowStatus, string> = {
-  backlog: 'var(--ds-border, #DFE1E6)',
-  design: 'var(--ds-chart-teal-bold, #0d9488)',
-  ready_for_dev: 'var(--ds-text-brand, #3b82f6)',
-  in_development: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  qa_testing: 'var(--ds-text-warning, #f59e0b)',
-  uat_testing: 'var(--ds-text-disabled, #8590A2)',
-  in_beta: 'var(--ds-chart-teal-bold, #0d9488)',
-  ready_for_prod: 'var(--ds-chart-teal-bold, #0d9488)',
-  in_production: 'var(--ds-chart-teal-bolder, #0f766e)',
-  on_hold: 'var(--ds-text-subtlest, #626F86)'
+  backlog: 'var(--ds-border)',
+  design: 'var(--ds-chart-teal-bold)',
+  ready_for_dev: 'var(--ds-text-brand)',
+  in_development: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  qa_testing: 'var(--ds-text-warning)',
+  uat_testing: 'var(--ds-text-disabled)',
+  in_beta: 'var(--ds-chart-teal-bold)',
+  ready_for_prod: 'var(--ds-chart-teal-bold)',
+  in_production: 'var(--ds-chart-teal-bolder)',
+  on_hold: 'var(--ds-text-subtlest)'
 };
 
 export function BoardColumn({

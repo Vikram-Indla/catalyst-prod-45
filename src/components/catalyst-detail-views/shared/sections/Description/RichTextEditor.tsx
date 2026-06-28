@@ -437,8 +437,8 @@ export function RichTextEditor({
               gap: 8,
               padding: '6px 14px',
               borderRadius: 999,
-              background: 'var(--ds-surface-overlay, #FFFFFF)',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-surface-overlay)',
+              border: '1px solid var(--ds-border)',
               boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
               animation: 'caty-pill-enter 220ms ease forwards',
               maxWidth: 420,
@@ -448,11 +448,11 @@ export function RichTextEditor({
               aria-hidden
               style={{
                 width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-                background: 'var(--ds-background-brand-bold, #0C66E4)',
+                background: 'var(--ds-background-brand-bold)',
                 animation: 'catalyst-voice-pulse 1s ease-in-out infinite',
               }}
             />
-            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-information, #0C66E4)', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-information)', whiteSpace: 'nowrap' }}>
               Caty is listening
               <span aria-hidden style={{ display: 'inline-flex', gap: 2, marginLeft: 3, verticalAlign: 'middle' }}>
                 {[0,1,2].map((i) => (
@@ -461,7 +461,7 @@ export function RichTextEditor({
               </span>
             </span>
             {voice.interimText && (
-              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }} title={voice.interimText}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }} title={voice.interimText}>
                 {voice.interimText}
               </span>
             )}
@@ -494,8 +494,8 @@ export function RichTextEditor({
               fontWeight: 500,
               border: 'none',
               borderRadius: 3,
-              background: 'var(--ds-background-brand-bold, #0C66E4)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--ds-background-brand-bold)',
+              color: 'var(--ds-text-inverse)',
               cursor: saveDisabled ? 'not-allowed' : 'pointer',
               opacity: saveDisabled ? 0.5 : 1,
             }}
@@ -512,7 +512,7 @@ export function RichTextEditor({
               border: 'none',
               borderRadius: 3,
               background: 'transparent',
-              color: 'var(--ds-text, #292A2E)',
+              color: 'var(--ds-text)',
               cursor: 'pointer',
             }}
           >

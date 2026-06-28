@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, Search, X, Check, User } from '@/lib/atlaskit-icons';
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', '#0369a1', 'var(--ds-text-warning, #d97706)', 'var(--ds-link, #0C66E4)', 'var(--ds-link-pressed, #0747A6)', 'var(--ds-background-warning-bold, #b45309)', 'var(--ds-chart-teal-bolder, #0f766e)', 'var(--ds-text-subtle, #475569)', 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-icon-information)', '#0369a1', 'var(--ds-text-warning)', 'var(--ds-link)', 'var(--ds-link-pressed)', 'var(--ds-background-warning-bold)', 'var(--ds-chart-teal-bolder)', 'var(--ds-text-subtle)', 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))'];
 
 function hashColor(name: string): string {
   let h = 0;
@@ -57,7 +57,7 @@ export function PeopleSelect({ value, onChange, profiles, placeholder = 'Select 
         type="button"
         onClick={() => { if (!disabled) { setOpen(!open); setSearch(''); } }}
         disabled={disabled}
-        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-zinc-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg text-sm text-zinc-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:border-zinc-300 dark:hover:border-[var(--ds-border-bold,#454545)] focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-zinc-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-lg text-sm text-zinc-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] hover:border-zinc-300 dark:hover:border-[var(--ds-border-bold)] focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="flex items-center gap-2 min-w-0">
           {selected ? (
@@ -79,9 +79,9 @@ export function PeopleSelect({ value, onChange, profiles, placeholder = 'Select 
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-zinc-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg shadow-lg overflow-hidden">
+        <div className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-zinc-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-lg shadow-lg overflow-hidden">
           {/* Search */}
-          <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-b border-zinc-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-3 py-2.5 flex items-center gap-2">
+          <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border-b border-zinc-100 dark:border-[var(--ds-border,var(--cp-ink-1))] px-3 py-2.5 flex items-center gap-2">
             <Search className="w-4 h-4 text-zinc-400 shrink-0" />
             <input
               ref={searchRef}

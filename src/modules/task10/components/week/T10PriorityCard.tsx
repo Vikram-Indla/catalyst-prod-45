@@ -111,8 +111,8 @@ export function T10PriorityCard({
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             borderRadius: 4,
-            background: rankDiff > 0 ? 'var(--ds-background-success, #dcfce7)' : 'var(--ds-background-danger, #FFECEB)',
-            color: rankDiff > 0 ? 'var(--ds-text-success, #16a34a)' : 'var(--ds-text-danger, #dc2626)',
+            background: rankDiff > 0 ? 'var(--ds-background-success)' : 'var(--ds-background-danger)',
+            color: rankDiff > 0 ? 'var(--ds-text-success)' : 'var(--ds-text-danger)',
             opacity: fadeOut ? 0 : 1,
             transition: 'opacity 0.3s ease',
           }}
@@ -163,7 +163,7 @@ export function T10PriorityCard({
           {item.carryover_count > 0 && (
             <span 
               className="t10-detail-priority-label"
-              style={{ color: 'var(--ds-text-warning, #f59e0b)', background: 'var(--ds-background-warning, #FFF7D6)' }}
+              style={{ color: 'var(--ds-text-warning)', background: 'var(--ds-background-warning)' }}
               title={`Carried over ${item.carryover_count} time${item.carryover_count > 1 ? 's' : ''}`}
             >
               ×{item.carryover_count}

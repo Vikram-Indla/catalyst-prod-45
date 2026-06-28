@@ -63,7 +63,7 @@ function WorkItemIcon({ type }: { type: string }) {
     return (
       <svg width="16" height="16" viewBox="0 0 16 16">
         <path
-          fill="var(--ds-background-danger-bold, #C9372C)"
+          fill="var(--ds-background-danger-bold)"
           fillRule="evenodd"
           d="M2,0 L14,0 C15.1045695,0 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 0,15.1045695 0,14 L0,2 C0,0.8954305 0.8954305,0 2,0 Z M8,12 C10.209139,12 12,10.209139 12,8 C12,5.790861 10.209139,4 8,4 C5.790861,4 4,5.790861 4,8 C4,10.209139 5.790861,12 8,12 Z"
         />
@@ -77,7 +77,7 @@ function WorkItemIcon({ type }: { type: string }) {
           width="16"
           height="16"
           rx="2"
-          fill="var(--ds-background-success-bold, #1F845A)"
+          fill="var(--ds-background-success-bold)"
         />
         <path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white" />
       </svg>
@@ -103,7 +103,7 @@ function WorkItemIcon({ type }: { type: string }) {
           width="16"
           height="16"
           rx="2"
-          fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
+          fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"
         />
         <path
           d="M4 8.5l2.5 2.5 5.5-5.5"
@@ -122,7 +122,7 @@ function WorkItemIcon({ type }: { type: string }) {
           width="16"
           height="16"
           rx="2"
-          fill="var(--cp-purple-60, #7C3AED)"
+          fill="var(--cp-purple-60)"
         />
         <path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white" />
       </svg>
@@ -135,7 +135,7 @@ function WorkItemIcon({ type }: { type: string }) {
           width="16"
           height="16"
           rx="2"
-          fill="var(--ds-background-success-bold, #1F845A)"
+          fill="var(--ds-background-success-bold)"
         />
         <path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white" />
       </svg>
@@ -144,7 +144,7 @@ function WorkItemIcon({ type }: { type: string }) {
   if (t === "test_case" || t === "tm_test_case")
     return (
       <svg width="16" height="16" viewBox="0 0 16 16">
-        <rect width="16" height="16" rx="2" fill="var(--cp-teal-60, #0D9488)" />
+        <rect width="16" height="16" rx="2" fill="var(--cp-teal-60)" />
         <path
           d="M4 5h8M4 8h5M4 11h3"
           stroke="white"
@@ -157,7 +157,7 @@ function WorkItemIcon({ type }: { type: string }) {
   if (t === "test_plan")
     return (
       <svg width="16" height="16" viewBox="0 0 16 16">
-        <rect width="16" height="16" rx="2" fill="var(--cp-teal-60, #0D9488)" />
+        <rect width="16" height="16" rx="2" fill="var(--cp-teal-60)" />
         <path d="M4 4h8v8H4z" fill="none" stroke="white" strokeWidth="1.2" />
         <path
           d="M6 7l1.5 1.5 3-3"
@@ -176,7 +176,7 @@ function WorkItemIcon({ type }: { type: string }) {
           width="16"
           height="16"
           rx="2"
-          fill="var(--ds-text-danger, var(--cp-danger, #DC2626))"
+          fill="var(--ds-text-danger, var(--cp-danger))"
         />
         <path
           d="M8 4v5M8 10.5v1.5"
@@ -193,7 +193,7 @@ function WorkItemIcon({ type }: { type: string }) {
         width="16"
         height="16"
         rx="2"
-        fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
+        fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"
       />
       <path
         d="M4 8.5l2.5 2.5 5.5-5.5"
@@ -281,18 +281,18 @@ function NotificationItemInner({
   const isDeleted = notification.entity_deleted;
 
   const T = {
-    text1: "var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))",
+    text1: "var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))",
     text2:
-      "var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))",
+      "var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))",
     text3:
-      "var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))",
+      "var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))",
     hover: "var(--cp-interact-hover, rgba(15,23,42,0.04))",
     press: "var(--cp-border-subtle, rgba(15,23,42,0.08))",
     borderStrong: isDark
-      ? "var(--ds-border-bold, #454545)"
+      ? "var(--ds-border-bold)"
       : "var(--ds-shadow-overlay, rgba(15,23,42,0.2))",
     checkStroke:
-      "var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))",
+      "var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))",
   };
 
   /* ═══ C-03: Actor avatar logic ═══ */
@@ -323,7 +323,7 @@ function NotificationItemInner({
             height: 36,
             borderRadius: "50%",
             background:
-              "var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))",
+              "var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken)))",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -333,7 +333,7 @@ function NotificationItemInner({
           <UserCheck
             size={16}
             color={
-              "var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))"
+              "var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))"
             }
           />
         </div>
@@ -363,11 +363,11 @@ function NotificationItemInner({
       .slice(0, 2)
       .toUpperCase();
     const colours = [
-      "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))",
-      "var(--cp-teal-60, #0D9488)",
-      "var(--cp-purple-60, #7C3AED)",
-      "var(--ds-text-danger, var(--cp-danger, #DC2626))",
-      "var(--ds-text-warning, var(--cp-warning, #D97706))",
+      "var(--ds-text-brand, var(--cp-workstream-catalyst-primary))",
+      "var(--cp-teal-60)",
+      "var(--cp-purple-60)",
+      "var(--ds-text-danger, var(--cp-danger))",
+      "var(--ds-text-warning, var(--cp-warning))",
     ];
     const bg =
       colours[
@@ -386,7 +386,7 @@ function NotificationItemInner({
           fontSize: 'var(--ds-font-size-300)',
           fontWeight: 650,
           color:
-            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
           fontFamily: "var(--cp-font-body)",
           flexShrink: 0,
         }}
@@ -443,12 +443,12 @@ function NotificationItemInner({
         background: isPressed
           ? T.press
           : isHovered
-          ? "var(--ds-surface-overlay, #FFFFFF)"
-          : "var(--ds-surface, #FFFFFF)",
+          ? "var(--ds-surface-overlay)"
+          : "var(--ds-surface)",
         border: `1px solid ${
           isHovered
-            ? "var(--ds-border-focused, #0052CC)"
-            : "var(--ds-border, #DFE1E6)"
+            ? "var(--ds-border-focused)"
+            : "var(--ds-border)"
         }`,
         boxShadow: isHovered
           ? "var(--ds-shadow-raised, 0 2px 8px rgba(0, 0, 0, 0.16))"
@@ -504,7 +504,7 @@ function NotificationItemInner({
                 style={{
                   fontSize: 'var(--ds-font-size-100)',
                   color:
-                    "var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))",
+                    "var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))",
                   fontWeight: 400,
                   whiteSpace: "nowrap",
                   fontFamily: "var(--cp-font-body)",
@@ -520,7 +520,7 @@ function NotificationItemInner({
                     height: 6,
                     borderRadius: "50%",
                     backgroundColor:
-                      "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))",
+                      "var(--ds-text-brand, var(--cp-workstream-catalyst-primary))",
                     flexShrink: 0,
                   }}
                 />
@@ -607,7 +607,7 @@ function NotificationItemInner({
                 fontFamily: "var(--cp-font-body)",
                 fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 500,
-                color: isDeleted ? T.text3 : "var(--ds-text-brand, #3B82F6)",
+                color: isDeleted ? T.text3 : "var(--ds-text-brand)",
                 textDecoration: isDeleted ? "line-through" : "none",
                 cursor: "pointer",
               }}
@@ -659,13 +659,13 @@ function NotificationItemInner({
             >
               <Clock
                 size={14}
-                color="var(--ds-text-warning, var(--cp-warning, #D97706))"
+                color="var(--ds-text-warning, var(--cp-warning))"
               />
               <span
                 style={{
                   fontFamily: "var(--cp-font-body)",
                   fontSize: 'var(--ds-font-size-200)',
-                  color: "var(--cp-warning-text, #92400E)",
+                  color: "var(--cp-warning-text)",
                 }}
               >
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? "s" : ""} —{" "}

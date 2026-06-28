@@ -49,7 +49,7 @@ export function ReleaseArchiveDialog({ isOpen, release, onClose, onSuccess, conf
             <ModalTitle>Archive {config.label.lowerSingular}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
               Archive <strong>{release.name}</strong>? It will be hidden from active views but kept for reference.
             </p>
           </ModalBody>

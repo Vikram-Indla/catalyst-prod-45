@@ -46,27 +46,27 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
     const iconMap: Record<string, { icon: React.ReactNode; bg: string }> = {
       theme: { 
         icon: <Layers className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-background-success-bold, #4d8b4d)]' 
+        bg: 'bg-[var(--ds-background-success-bold)]' 
       },
       epic: { 
         icon: <Zap className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' 
+        bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' 
       },
       feature: { 
         icon: <Target className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-chart-teal-bold, #0d9488)]' 
+        bg: 'bg-[var(--ds-chart-teal-bold)]' 
       },
       story: { 
         icon: <FileText className="w-3.5 h-3.5 text-white" />, 
-        bg: 'bg-[var(--ds-background-success-bold, #059669)]' 
+        bg: 'bg-[var(--ds-background-success-bold)]' 
       },
       defect: { 
         icon: <Bug className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-text-danger,#dc2626)]' 
+        bg: 'bg-[var(--ds-text-danger)]' 
       },
       business_request: { 
         icon: <Briefcase className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-text-success,#22c55e)]' 
+        bg: 'bg-[var(--ds-text-success)]' 
       },
     };
     return iconMap[type] || iconMap.story;
@@ -74,8 +74,8 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { bg: string; text: string; label: string }> = {
-      current: { bg: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/10', text: 'text-[var(--ds-chart-teal-bold, #0d9488)]', label: 'CURRENT' },
-      future: { bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/10', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', label: 'FUTURE' },
+      current: { bg: 'bg-[var(--ds-chart-teal-bold)]/10', text: 'text-[var(--ds-chart-teal-bold)]', label: 'CURRENT' },
+      future: { bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/10', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]', label: 'FUTURE' },
       completed: { bg: 'bg-muted', text: 'text-muted-foreground', label: 'COMPLETED' },
     };
     const config = statusMap[status] || statusMap.current;
@@ -143,7 +143,7 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
             {/* Right side - Story points & Version */}
             <div className="flex items-center gap-2 text-right flex-shrink-0">
               {item.story_points && (
-                <span className="px-2 py-0.5 text-xs font-medium bg-[var(--ds-background-success-bold, #059669)]/10 text-[var(--ds-background-success-bold, #059669)] rounded">
+                <span className="px-2 py-0.5 text-xs font-medium bg-[var(--ds-background-success-bold)]/10 text-[var(--ds-background-success-bold)] rounded">
                   {item.story_points} SP
                 </span>
               )}

@@ -217,10 +217,10 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           {PRIORITY_OPTIONS.map(opt => {
             const selected = data.priority === opt.value;
             const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-              critical: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #BE123C)', border: '#FECDD3' },
-              high:     { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-danger, #AE2A19)', border: 'var(--ds-background-warning, #FFF7D6)' },
-              medium:   { bg: '#FEFCE8', text: 'var(--ds-text-warning, #974F0C)', border: '#FEF08A' },
-              low:      { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #1F845A)', border: 'var(--ds-background-success, #DFFCF0)' },
+              critical: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', border: '#FECDD3' },
+              high:     { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-danger)', border: 'var(--ds-background-warning)' },
+              medium:   { bg: '#FEFCE8', text: 'var(--ds-text-warning)', border: '#FEF08A' },
+              low:      { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', border: 'var(--ds-background-success)' },
             };
             const c = colorMap[opt.value];
             return (
@@ -268,7 +268,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               {selectedLead.avatar_url ? (
                 <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
               ) : (
-                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]" style={{ width: 22, height: 22, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:bg-[var(--ds-border,var(--cp-ink-1))]" style={{ width: 22, height: 22, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle)' }}>
                   {getInitials(selectedLead.display_name)}
                 </div>
               )}
@@ -282,18 +282,18 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
         {showLeadPicker && (
           <div
-            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg shadow-lg"
+            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-lg shadow-lg"
             style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
           >
-            <div className="p-2 border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+            <div className="p-2 border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]">
               <div className="relative">
-                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
+                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]" />
                 <input
                   autoFocus
                   value={leadFilter}
                   onChange={e => setLeadFilter(e.target.value)}
                   placeholder="Search people..."
-                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-transparent outline-none"
+                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] bg-transparent outline-none"
                   style={{ height: 32, color: 'var(--fg-1)' }}
                 />
               </div>
@@ -307,12 +307,12 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     key={p.id}
                     type="button"
                     onClick={() => { onChange({ ...data, lead_id: p.id }); setShowLeadPicker(false); setLeadFilter(''); }}
-                    className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] w-full text-left"
+                    className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] dark:hover:bg-[var(--ds-surface-overlay)] w-full text-left"
                   >
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
                     ) : (
-                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]" style={{ width: 24, height: 24, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:bg-[var(--ds-border,var(--cp-ink-1))]" style={{ width: 24, height: 24, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle)' }}>
                         {getInitials(p.display_name)}
                       </div>
                     )}
@@ -320,7 +320,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                       <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>{p.display_name}</div>
                       <div className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{p.role || 'Team Member'}</div>
                     </div>
-                    {p.id === data.lead_id && <Check size={14} className="ml-auto text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
+                    {p.id === data.lead_id && <Check size={14} className="ml-auto text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]" />}
                   </button>
                 ))
               )}
@@ -350,7 +350,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
       </div>
 
       {/* Jira Link Toggle */}
-      <div className="rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] p-4">
+      <div className="rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] p-4">
         <div className="flex items-center justify-between">
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>

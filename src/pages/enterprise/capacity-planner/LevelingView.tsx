@@ -139,13 +139,13 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                   className={cn(
                     'w-full flex items-center gap-3 px-5 py-4 text-left transition-colors relative',
                     isCurrentSelected
-                      ? 'bg-[var(--ds-background-neutral-subtle, #F7F8F9)]'
+                      ? 'bg-[var(--ds-background-neutral-subtle)]'
                       : 'hover:bg-muted/30'
                   )}
                 >
                   {/* Selection indicator */}
                   {isCurrentSelected && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] rounded-r" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] rounded-r" />
                   )}
                   <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', deptColor.bg, deptColor.text)}>
                     {initials}
@@ -156,8 +156,8 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                   </div>
                   <span className={cn(
                     'text-xs font-semibold',
-                    freeCapacity >= 40 ? 'text-[var(--ds-chart-teal-bold, #0d9488)]' :
-                    freeCapacity >= 20 ? 'text-[var(--ds-text-warning,#d97706)]' : 'text-[var(--ds-text-danger,#dc2626)]'
+                    freeCapacity >= 40 ? 'text-[var(--ds-chart-teal-bold)]' :
+                    freeCapacity >= 20 ? 'text-[var(--ds-text-warning)]' : 'text-[var(--ds-text-danger)]'
                   )}>
                     {freeCapacity}% free
                   </span>
@@ -191,11 +191,11 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                 </div>
                 <div className="flex gap-6 text-center">
                   <div>
-                    <p className="text-2xl font-bold text-[var(--ds-text-warning,#d97706)]">{selectedResource.allocation}%</p>
+                    <p className="text-2xl font-bold text-[var(--ds-text-warning)]">{selectedResource.allocation}%</p>
                     <p className="text-xs text-muted-foreground">Current</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-[var(--ds-chart-teal-bold, #0d9488)]">{availableCapacity}%</p>
+                    <p className="text-2xl font-bold text-[var(--ds-chart-teal-bold)]">{availableCapacity}%</p>
                     <p className="text-xs text-muted-foreground">Available</p>
                   </div>
                 </div>
@@ -248,17 +248,17 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                           type="checkbox"
                           checked={selected}
                           onChange={() => handleWorkItemToggle(item.id, item.allocation)}
-                          className="w-5 h-5 rounded border-border text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
+                          className="w-5 h-5 rounded border-border text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
                         />
 
                         {/* Icon */}
-                        <div className="w-10 h-10 rounded-lg bg-[var(--ds-background-neutral-subtle, #d4b896)]/20 flex items-center justify-center shrink-0">
-                          <FileStack className="h-5 w-5 text-[var(--ds-text-subtle, #8B7355)]" />
+                        <div className="w-10 h-10 rounded-lg bg-[var(--ds-background-neutral-subtle)]/20 flex items-center justify-center shrink-0">
+                          <FileStack className="h-5 w-5 text-[var(--ds-text-subtle)]" />
                         </div>
 
                         {/* Content */}
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">{item.itemId}</p>
+                          <p className="text-xs font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]">{item.itemId}</p>
                           <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
                           <p className="text-xs text-muted-foreground truncate">{item.project} · {item.epic}</p>
                         </div>
@@ -294,7 +294,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                 <Button
                   onClick={handleAssign}
                   disabled={selectedWorkItems.length === 0}
-                  className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] gap-2"
+                  className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-brand-bold-hovered)] gap-2"
                 >
                   {selectedWorkItems.length > 0 ? (
                     <>

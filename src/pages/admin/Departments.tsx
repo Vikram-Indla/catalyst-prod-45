@@ -103,8 +103,8 @@ export default function Departments() {
       <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0, lineHeight: "28px" }}>Departments</h1>
-            <p style={{ marginTop: 8, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', margin: 0, lineHeight: "28px" }}>Departments</h1>
+            <p style={{ marginTop: 8, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
               Manage department list for Business Requests
             </p>
           </div>
@@ -114,41 +114,41 @@ export default function Departments() {
         </div>
 
         <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
-          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: '1px solid var(--ds-border)', borderRadius: '3px', padding: '16px' }}>
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
-              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Departments</p>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Total Departments</p>
             </div>
-            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{departments.length}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{departments.length}</div>
           </div>
-          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: '1px solid var(--ds-border)', borderRadius: '3px', padding: '16px' }}>
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
-              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Departments</p>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Active Departments</p>
             </div>
-            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>
               {departments.filter(d => d.is_active).length}
             </div>
           </div>
-          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: '1px solid var(--ds-border)', borderRadius: '3px', padding: '16px' }}>
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
-              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Inactive Departments</p>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Inactive Departments</p>
             </div>
-            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>
               {departments.filter(d => !d.is_active).length}
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: '1px solid var(--ds-border)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Department Configuration</h2>
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Department Configuration</h2>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
               Configure departments for Business Requests. Each department maps to a Business Owner.
             </p>
           </div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
               <div style={{ position: "relative", flex: 1 }}>
-                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><SearchIcon label="" size="small" /></span>
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search departments..."
                   value={searchTerm}
@@ -157,27 +157,27 @@ export default function Departments() {
               </div>
             </div>
 
-            <div style={{ border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+            <div style={{ border: '1px solid var(--ds-border)', borderRadius: '3px' }}>
               <table className="w-full">
-                <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+                <thead style={{ background: 'var(--ds-background-neutral)' }}>
                   <tr>
-                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: "var(--ds-text-subtle, #505258)", width: 40 }}></th>
-                    <th className="text-left p-3 text-sm font-medium w-[80px]" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>D-ID</th>
-                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Department Name</th>
-                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Status</th>
-                    <th style={{ textAlign: "right", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: "var(--ds-text-subtle)", width: 40 }}></th>
+                    <th className="text-left p-3 text-sm font-medium w-[80px]" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>D-ID</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Department Name</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Status</th>
+                    <th style={{ textAlign: "right", padding: 12, fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={5} style={{ padding: 12, textAlign: "center", color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                      <td colSpan={5} style={{ padding: 12, textAlign: "center", color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                         Loading...
                       </td>
                     </tr>
                   ) : filteredDepartments.length === 0 ? (
                     <tr>
-                      <td colSpan={5} style={{ padding: 12, textAlign: "center", color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                      <td colSpan={5} style={{ padding: 12, textAlign: "center", color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                         No departments found
                       </td>
                     </tr>
@@ -185,17 +185,17 @@ export default function Departments() {
                     filteredDepartments.map((dept) => (
                       <tr
                         key={dept.id}
-                        style={{ borderTop: '1px solid var(--ds-border, #DCDFE4)', background: hoveredRow === dept.id ? 'var(--ds-background-neutral-hovered, #F1F2F4)' : 'transparent' }}
+                        style={{ borderTop: '1px solid var(--ds-border)', background: hoveredRow === dept.id ? 'var(--ds-background-neutral-hovered)' : 'transparent' }}
                         onMouseEnter={() => setHoveredRow(dept.id)}
                         onMouseLeave={() => setHoveredRow(null)}
                       >
                         <td style={{ padding: 12 }}>
-                          <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><DragHandlerIcon label="" size="small" /></span>
+                          <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}><DragHandlerIcon label="" size="small" /></span>
                         </td>
                         <td style={{ padding: 12 }}>
-                          <span className="text-sm font-mono font-medium" style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_code || '—'}</span>
+                          <span className="text-sm font-mono font-medium" style={{ color: 'var(--ds-text-brand)' }}>{dept.department_code || '—'}</span>
                         </td>
-                        <td style={{ padding: 12, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{dept.name}</td>
+                        <td style={{ padding: 12, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{dept.name}</td>
                         <td style={{ padding: 12, fontSize: 'var(--ds-font-size-400)' }}>
                           <Toggle
                             isChecked={dept.is_active ?? true}
@@ -225,7 +225,7 @@ export default function Departments() {
             </DialogHeader>
             <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 16, paddingBottom: 16 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label htmlFor="name" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Department Name</label>
+                <label htmlFor="name" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Department Name</label>
                 <Textfield
                   id="name"
                   value={newDepartmentName}

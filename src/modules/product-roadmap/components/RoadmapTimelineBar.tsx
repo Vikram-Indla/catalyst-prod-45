@@ -12,15 +12,15 @@ import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
 const TYPE_COLORS: Record<string, string> = {
-  project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  enhancement: 'var(--cp-teal-60, #0D9488)',
-  improvement: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  enhancement: 'var(--cp-teal-60)',
+  improvement: 'var(--ds-text-warning, var(--cp-warning))',
 };
 
 const TYPE_HOVER_GRADIENTS: Record<string, string> = {
-  project: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-text-brand, #3B82F6) 100%)',
-  enhancement: 'linear-gradient(135deg, var(--cp-teal-60, #0D9488) 0%, var(--ds-icon-information, #1D7AFC) 100%)',
-  improvement: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-warning, #D97706)) 0%, var(--ds-text-warning, var(--cp-amber, #F59E0B)) 100%)',
+  project: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-text-brand) 100%)',
+  enhancement: 'linear-gradient(135deg, var(--cp-teal-60) 0%, var(--ds-icon-information) 100%)',
+  improvement: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-warning)) 0%, var(--ds-text-warning, var(--cp-amber)) 100%)',
 };
 
 interface RoadmapTimelineBarProps {
@@ -39,7 +39,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const typeKey = (item as any).initiative_type_key || 'project';
-  const barColor = TYPE_COLORS[typeKey] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+  const barColor = TYPE_COLORS[typeKey] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
 
   // Check overdue
   const isOverdue = (() => {
@@ -49,8 +49,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
     return new Date(item.end_date) < new Date();
   })();
 
-  const finalColor = isOverdue ? 'var(--ds-text-danger, #EF4444)' : barColor;
-  const hoverGradient = isOverdue ? 'linear-gradient(135deg, var(--ds-text-danger, #EF4444) 0%, var(--ds-background-danger, #FFECEB) 100%)' : (TYPE_HOVER_GRADIENTS[typeKey] || TYPE_HOVER_GRADIENTS.project);
+  const finalColor = isOverdue ? 'var(--ds-text-danger)' : barColor;
+  const hoverGradient = isOverdue ? 'linear-gradient(135deg, var(--ds-text-danger) 0%, var(--ds-background-danger) 100%)' : (TYPE_HOVER_GRADIENTS[typeKey] || TYPE_HOVER_GRADIENTS.project);
 
   const formatDate = (d: string | null) => {
     if (!d) return 'Not set';
@@ -133,7 +133,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
               zIndex: 1,
               fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               paddingLeft: 10,
               paddingRight: 10,
               lineHeight: '32px',
@@ -153,7 +153,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
             style={{
               fontSize: 'var(--ds-font-size-50)',
               fontWeight: 700,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               background: 'var(--ds-surface, rgba(255,255,255,0.2))',
               borderRadius: 4,
               padding: '1px 6px',
@@ -182,29 +182,29 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
       {showTooltip && createPortal(
         <div style={{
           position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 12,
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 12,
           boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.12))', pointerEvents: 'none',
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>
-          <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 6 }}>
             {item.request_key}: {item.title}
           </div>
-          <div className="flex items-center gap-1.5" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4 }}>
+          <div className="flex items-center gap-1.5" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {formatDate(item.start_date)} → {formatDate(item.end_date)}
-            {endDateIsEstimated && <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontStyle: 'italic' }}>(est.)</span>}
+            {endDateIsEstimated && <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' }}>
               {(item as any).initiative_type_label || typeKey}
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
-                <div style={{ width: 60, height: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{ width: 60, height: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: finalColor, borderRadius: 999 }} />
                 </div>
-                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{item.progress}%</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))' }}>{item.progress}%</span>
               </div>
             )}
           </div>

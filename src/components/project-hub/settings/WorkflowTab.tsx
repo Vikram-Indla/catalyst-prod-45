@@ -25,14 +25,14 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
   return (
     <div
       style={{
-        background: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 8,
         overflow: 'hidden',
       }}
     >
       <Tabs value={activeType} onValueChange={(v) => setActiveType(v as WorkItemType)} className="w-full">
-        <div style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)', paddingLeft: 16 }}>
+        <div style={{ borderBottom: '1px solid var(--ds-border)', paddingLeft: 16 }}>
           <TabsList className="bg-transparent h-10 gap-0 p-0">
             {ISSUE_TYPES.map(t => (
               <TabsTrigger
@@ -40,8 +40,8 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
                 value={t.key}
                 className={cn(
                   'relative px-4 py-2 text-xs font-medium rounded-none border-b-2 transition-colors data-[state=active]:shadow-none',
-                  'data-[state=active]:border-[var(--ds-text-brand,#2563EB)] data-[state=active]:text-[var(--ds-text,#0F172A)]',
-                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,#64748B)] data-[state=inactive]:hover:text-[var(--ds-text,#0F172A)]',
+                  'data-[state=active]:border-[var(--ds-text-brand)] data-[state=active]:text-[var(--ds-text)]',
+                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest)] data-[state=inactive]:hover:text-[var(--ds-text)]',
                   'bg-transparent'
                 )}
               >

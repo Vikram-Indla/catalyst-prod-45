@@ -17,11 +17,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Fallback colors in case DB color is missing
 const STATUS_COLOR_FALLBACKS: Record<string, string> = {
-  'backlog': 'var(--ds-text-subtlest, #626F86)',
-  'planned': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'in-progress': 'var(--ds-text-warning, #d97706)',
-  'review': 'var(--ds-background-discovery-bold, #6E5DC6)',
-  'done': 'var(--ds-background-success-bold, #1F845A)',
+  'backlog': 'var(--ds-text-subtlest)',
+  'planned': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'in-progress': 'var(--ds-text-warning)',
+  'review': 'var(--ds-background-discovery-bold)',
+  'done': 'var(--ds-background-success-bold)',
 };
 
 interface KanbanColumnProps {
@@ -68,7 +68,7 @@ export function KanbanColumn({
   const taskIds = tasks.map((t) => t.id);
   
   // Get status color with fallback
-  const statusColor = status.color || STATUS_COLOR_FALLBACKS[status.slug] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))';
+  const statusColor = status.color || STATUS_COLOR_FALLBACKS[status.slug] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
 
   return (
     <div

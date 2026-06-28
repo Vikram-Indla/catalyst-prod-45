@@ -6,7 +6,7 @@
  * rail is monochrome; color is reserved for the ACTIVE hub (brand-blue pill +
  * left bar). The hub outline SVGs feed the rail via <img>, so the accent color
  * is baked into the asset — neutralising the rail means the outline glyphs must
- * carry only the neutral ink (var(--ds-text-subtle, #44546F)), never a per-hub accent.
+ * carry only the neutral ink (var(--ds-text-subtle)), never a per-hub accent.
  *
  * This test pins that: every hub *-outline.svg may contain only the neutral
  * ink + white/none. Any per-hub accent reappearing = rail rainbow regression.
@@ -16,11 +16,11 @@ import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 
 const HUBS_DIR = resolve(__dirname, '../../../assets/icons/hubs');
-const NEUTRAL = 'var(--ds-icon, #44546F)';
+const NEUTRAL = 'var(--ds-icon)';
 const HUBS = ['home', 'strategy', 'ideation', 'product', 'project', 'release', 'test', 'incident', 'tasks', 'plan', 'wiki'];
 
 // Allowed: the neutral ink + white + shorthand white. Everything else is an accent.
-const ALLOWED = new Set([NEUTRAL.toLowerCase(), 'var(--ds-surface, #FFFFFF)', 'var(--ds-surface, #FFFFFF)']);
+const ALLOWED = new Set([NEUTRAL.toLowerCase(), 'var(--ds-surface)', 'var(--ds-surface)']);
 
 describe('collapsed Home rail is monochrome (neutral ink only)', () => {
   it.each(HUBS)('%s-outline.svg uses only the neutral ink, no accent', (hub) => {

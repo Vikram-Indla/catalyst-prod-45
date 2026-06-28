@@ -31,7 +31,7 @@ function makeWs(overrides: Partial<Workstream>): Workstream {
     name: 'Catalyst',
     slug: 'catalyst',
     description: null,
-    color: 'var(--ds-link, #1868DB)',
+    color: 'var(--ds-link)',
     icon: null,
     sort_order: 0,
     is_active: true,

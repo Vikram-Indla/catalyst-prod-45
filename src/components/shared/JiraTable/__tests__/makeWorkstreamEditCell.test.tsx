@@ -22,8 +22,8 @@ interface TaskRow {
 const row: TaskRow = { id: 't1', workstream_id: 'ws1' };
 
 const options: WorkstreamChoice[] = [
-  { id: 'ws1', name: 'Platform', color: 'var(--cp-workstream-catalyst-primary, #2563eb)' },
-  { id: 'ws2', name: 'Mobile', color: 'var(--ds-text-accent-orange, #FF7452)' },
+  { id: 'ws1', name: 'Platform', color: 'var(--cp-workstream-catalyst-primary)' },
+  { id: 'ws2', name: 'Mobile', color: 'var(--ds-text-accent-orange)' },
 ];
 
 function renderCell({

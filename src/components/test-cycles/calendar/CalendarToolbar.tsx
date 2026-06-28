@@ -60,12 +60,12 @@ export function CalendarToolbar({
   };
 
   return (
-    <div className="flex items-center justify-between px-6 py-3 bg-[var(--ds-surface-sunken,#f8fafc)] border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
+    <div className="flex items-center justify-between px-6 py-3 bg-[var(--ds-surface-sunken)] border-b border-[var(--ds-border,var(--cp-bg-sunken))]">
       <div className="flex items-center gap-2">
         {/* Status Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
+            <Button variant="outline" size="sm" className="h-8 gap-2 border-[var(--ds-border,var(--cp-bg-sunken))]">
               <Filter className="h-3.5 w-3.5" />
               Status
               {filters.statuses.length > 0 && (
@@ -93,7 +93,7 @@ export function CalendarToolbar({
         {/* Assignee Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
+            <Button variant="outline" size="sm" className="h-8 gap-2 border-[var(--ds-border,var(--cp-bg-sunken))]">
               Assignee
               {filters.assignees.length > 0 && (
                 <Lozenge appearance="inprogress">
@@ -120,7 +120,7 @@ export function CalendarToolbar({
         {/* Module Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
+            <Button variant="outline" size="sm" className="h-8 gap-2 border-[var(--ds-border,var(--cp-bg-sunken))]">
               Module
               {filters.modules.length > 0 && (
                 <Lozenge appearance="inprogress">
@@ -150,7 +150,7 @@ export function CalendarToolbar({
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="h-8 text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text,#0f172a)]"
+            className="h-8 text-[var(--ds-text-subtlest)] hover:text-[var(--ds-text)]"
           >
             <X className="h-3.5 w-3.5 mr-1" />
             Clear ({activeFilterCount})
@@ -162,7 +162,7 @@ export function CalendarToolbar({
         variant="outline"
         size="sm"
         onClick={onOpenReschedule}
-        className="h-8 gap-2 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]"
+        className="h-8 gap-2 border-[var(--ds-border,var(--cp-bg-sunken))]"
       >
         <CalendarIcon className="h-3.5 w-3.5" />
         Reschedule Tests

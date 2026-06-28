@@ -22,7 +22,7 @@ export function ScheduledBadge({ scheduledFor, onCancel }: ScheduledBadgeProps) 
         fontWeight: 600,
       }}
     >
-      <span style={{ display: 'inline-flex', color: 'var(--cv2-warning, #ECB22E)' }}>
+      <span style={{ display: 'inline-flex', color: 'var(--cv2-warning)' }}>
         <ClockIcon size={12} />
       </span>
       <span>Scheduled for {formatScheduled(scheduledFor)}</span>

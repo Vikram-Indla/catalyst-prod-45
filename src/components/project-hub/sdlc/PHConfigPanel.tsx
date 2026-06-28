@@ -141,7 +141,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                     className="flex items-center gap-2 p-3 rounded-lg border bg-[var(--bg-1)]"
                     style={{ borderColor: 'var(--divider)' }}
                   >
-                    <GripVertical size={14} color="var(--ds-border, #DFE1E6)" className="cursor-grab flex-shrink-0" />
+                    <GripVertical size={14} color="var(--ds-border)" className="cursor-grab flex-shrink-0" />
                     <span className="rounded-full flex-shrink-0" style={{ width: 8, height: 8, background: col.color }} />
                     <span className="flex-1" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>{col.name}</span>
                     <div className="flex gap-1 flex-wrap">
@@ -214,7 +214,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               <div className="rounded-xl border p-3 bg-[var(--bg-1)]" style={{ borderColor: 'var(--divider)' }}>
                 <div className="rounded-lg bg-white border p-3" style={{ borderColor: 'var(--divider)', borderLeft: '3px solid var(--cp-blue)' }}>
                   <div className="flex items-center gap-1 mb-1">
-                    {cardFields.type && <span className="rounded inline-flex items-center justify-center bg-[var(--cp-blue)]" style={{ width: 14, height: 14, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-surface, #fff)' }}>✓</span>}
+                    {cardFields.type && <span className="rounded inline-flex items-center justify-center bg-[var(--cp-blue)]" style={{ width: 14, height: 14, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-surface)' }}>✓</span>}
                     {cardFields.key && <span style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>PROJ-123</span>}
                     {cardFields.source && <span className="bg-[var(--cp-blue-wash)]" style={{ fontSize: 7, padding: '0 3px', borderRadius: 4, color: 'var(--cp-blue)', fontWeight: 700 }}>JIRA</span>}
                   </div>
@@ -317,7 +317,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               onClose();
             }}
             className="px-4 py-1.5 rounded-md transition-colors bg-[var(--cp-blue)]"
-            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', borderRadius: 6 }}
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, border: 'none', color: 'var(--ds-surface)', cursor: 'pointer', borderRadius: 6 }}
           >
             Save
           </button>

@@ -304,8 +304,8 @@ export default function ForYouPageAtlaskit() {
         minHeight: '100%',
         flex: 1,
         width: '100%',
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
+        color: token('color.text', 'var(--ds-text)'),
         // Squeeze when the side panel is open so the panel sits next to
         // the feed instead of overlapping it. Same affordance the
         // project-hub backlog uses on its table column.
@@ -318,7 +318,7 @@ export default function ForYouPageAtlaskit() {
       <h1
         style={{
           font: `653 24px/28px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
+          color: token('color.text', 'var(--ds-text)'),
           margin: 0,
           marginBlockStart: 24,
           letterSpacing: 0,
@@ -333,7 +333,7 @@ export default function ForYouPageAtlaskit() {
           position: 'sticky',
           top: 0,
           zIndex: 10,
-          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          background: token('elevation.surface', 'var(--ds-surface)'),
           paddingBlock: 8,
           marginBlockEnd: 16,
           display: 'flex',
@@ -373,7 +373,7 @@ export default function ForYouPageAtlaskit() {
           overflowY: isR360Active ? 'auto' : 'visible',
           position: 'relative',
           zIndex: 0,
-          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          background: token('elevation.surface', 'var(--ds-surface)'),
         }}
       >
         {panel}
@@ -408,8 +408,8 @@ export default function ForYouPageAtlaskit() {
             onClick={loadMore}
             style={{
               padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
-              background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              background: token('color.background.neutral', 'var(--ds-background-neutral)'),
+              color: token('color.text', 'var(--ds-text)'),
               border: 'none',
               borderRadius: 3,
               cursor: 'pointer',
@@ -435,8 +435,8 @@ export default function ForYouPageAtlaskit() {
             bottom: 0,
             width: SIDE_PANEL_WIDTH,
             zIndex: 50,
-            borderLeft: '1px solid var(--ds-border, #DFE1E6)',
-            background: 'var(--ds-surface, #FFFFFF)',
+            borderLeft: '1px solid var(--ds-border)',
+            background: 'var(--ds-surface)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -453,8 +453,8 @@ export default function ForYouPageAtlaskit() {
               padding: '8px 12px',
               minHeight: 44,
               flexShrink: 0,
-              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-              background: 'var(--ds-surface, #FFFFFF)',
+              borderBottom: '1px solid var(--ds-border)',
+              background: 'var(--ds-surface)',
             }}
           >
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
@@ -465,7 +465,7 @@ export default function ForYouPageAtlaskit() {
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
-                  color: 'var(--ds-text-subtle, #505258)',
+                  color: 'var(--ds-text-subtle)',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -488,16 +488,16 @@ export default function ForYouPageAtlaskit() {
                   justifyContent: 'center',
                   width: 28,
                   height: 28,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: 3,
                   background: 'transparent',
                   cursor: 'pointer',
                   padding: 0,
                   flexShrink: 0,
-                  color: 'var(--ds-text-subtle, #505258)',
+                  color: 'var(--ds-text-subtle)',
                   transition: 'background-color 100ms ease',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -517,16 +517,16 @@ export default function ForYouPageAtlaskit() {
                 justifyContent: 'center',
                 width: 28,
                 height: 28,
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border)',
                 borderRadius: 3,
                 background: 'transparent',
                 cursor: 'pointer',
                 padding: 0,
                 flexShrink: 0,
-                color: 'var(--ds-text-subtle, #505258)',
+                color: 'var(--ds-text-subtle)',
                 transition: 'background-color 100ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">
@@ -537,7 +537,7 @@ export default function ForYouPageAtlaskit() {
 
           {/* Detail content — the router handles its own internal scroll. */}
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)', fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>}>
+            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>}>
               <CatalystDetailRouter
                 isOpen={true}
                 onClose={clearDetail}

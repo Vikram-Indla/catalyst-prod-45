@@ -94,7 +94,7 @@ export function CatalystWorkflowModal({
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
               {currentStatus && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle)' }}>
                     Current
                   </span>
                   <JiraStatusLozenge
@@ -106,7 +106,7 @@ export function CatalystWorkflowModal({
               )}
               {moveToStatuses.length > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle)' }}>
                     Can move to
                   </span>
                   {moveToStatuses.map((s) => (

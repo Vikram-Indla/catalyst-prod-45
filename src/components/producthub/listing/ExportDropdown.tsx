@@ -101,7 +101,7 @@ export function ExportDropdown({ data, anchorRef, isOpen, onClose }: ExportDropd
         top: anchorRect.bottom + 4,
         left: anchorRect.right - 160,
         width: 160,
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border)',
         boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.18))',
         zIndex: 500,
         background: 'var(--bg-app)',
@@ -111,7 +111,7 @@ export function ExportDropdown({ data, anchorRef, isOpen, onClose }: ExportDropd
         type="button"
         onClick={() => { exportCSV(data); onClose(); }}
         className="w-full h-8 px-3 flex items-center gap-2 text-[13px] rounded-md hover:bg-zinc-50 transition-colors"
-        style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+        style={{ color: 'var(--ds-text-subtle)' }}
       >
         <FileText size={14} className="text-zinc-400" />
         Export as CSV
@@ -120,7 +120,7 @@ export function ExportDropdown({ data, anchorRef, isOpen, onClose }: ExportDropd
         type="button"
         onClick={() => { exportExcel(data); onClose(); }}
         className="w-full h-8 px-3 flex items-center gap-2 text-[13px] rounded-md hover:bg-zinc-50 transition-colors"
-        style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+        style={{ color: 'var(--ds-text-subtle)' }}
       >
         <FileSpreadsheet size={14} className="text-zinc-400" />
         Export as Excel

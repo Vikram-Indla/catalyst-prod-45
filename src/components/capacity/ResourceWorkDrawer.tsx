@@ -21,25 +21,25 @@ interface ResourceWorkDrawerProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  'Done': 'var(--ds-text-success, #0d9488)',
-  'done': 'var(--ds-text-success, #0d9488)',
-  'IN PROGRESS': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'in progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  'To Do': 'var(--ds-text-subtlest, #64748b)',
-  'ToDo': 'var(--ds-text-subtlest, #64748b)',
-  'todo': 'var(--ds-text-subtlest, #64748b)',
-  'BACKLOG': 'var(--ds-text-subtlest, #64748b)',
-  'Backlog': 'var(--ds-text-subtlest, #64748b)',
-  'In Review': 'var(--ds-text-discovery, #8b5cf6)',
-  'Blocked': 'var(--ds-text-danger, #dc2626)',
-  'ready for production': 'var(--ds-text-discovery, #7c3aed)',
-  'Ready for Production': 'var(--ds-text-discovery, #7c3aed)',
-  'READY FOR PRODUCTION': 'var(--ds-text-discovery, #7c3aed)',
+  'Done': 'var(--ds-text-success)',
+  'done': 'var(--ds-text-success)',
+  'IN PROGRESS': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'in progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'To Do': 'var(--ds-text-subtlest)',
+  'ToDo': 'var(--ds-text-subtlest)',
+  'todo': 'var(--ds-text-subtlest)',
+  'BACKLOG': 'var(--ds-text-subtlest)',
+  'Backlog': 'var(--ds-text-subtlest)',
+  'In Review': 'var(--ds-text-discovery)',
+  'Blocked': 'var(--ds-text-danger)',
+  'ready for production': 'var(--ds-text-discovery)',
+  'Ready for Production': 'var(--ds-text-discovery)',
+  'READY FOR PRODUCTION': 'var(--ds-text-discovery)',
 };
 
 function getStatusColor(status: string) {
-  return STATUS_COLORS[status] || STATUS_COLORS[status?.toLowerCase()] || 'var(--ds-text-subtlest, #64748b)';
+  return STATUS_COLORS[status] || STATUS_COLORS[status?.toLowerCase()] || 'var(--ds-text-subtlest)';
 }
 
 /** Jira-native type icons — outline style matching Jira's UI */
@@ -49,21 +49,21 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Epic — purple lightning bolt
   if (t === 'epic') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <path d="M9.41 1.59a.55.55 0 0 1 .47.84L7.17 7.45h3.38a.55.55 0 0 1 .43.89l-4.95 6.2a.55.55 0 0 1-.97-.53l2.04-4.46H3.98a.55.55 0 0 1-.48-.82L8.85 1.8a.55.55 0 0 1 .56-.21z" fill="var(--ds-text-discovery, #904ee2)"/>
+      <path d="M9.41 1.59a.55.55 0 0 1 .47.84L7.17 7.45h3.38a.55.55 0 0 1 .43.89l-4.95 6.2a.55.55 0 0 1-.97-.53l2.04-4.46H3.98a.55.55 0 0 1-.48-.82L8.85 1.8a.55.55 0 0 1 .56-.21z" fill="var(--ds-text-discovery)"/>
     </svg>
   );
 
   // Story — green bookmark
   if (t === 'story') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <path d="M4 2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5v12a.5.5 0 0 1-.77.42L8 12.6l-3.23 2.32A.5.5 0 0 1 4 14.5v-12z" fill="var(--ds-text-success, #36b37e)"/>
+      <path d="M4 2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5v12a.5.5 0 0 1-.77.42L8 12.6l-3.23 2.32A.5.5 0 0 1 4 14.5v-12z" fill="var(--ds-text-success)"/>
     </svg>
   );
 
   // Task — blue square with checkmark
   if (t === 'task') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text-brand, #4bade8)"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text-brand)"/>
       <path d="M4.5 8.5L7 11l4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
@@ -71,7 +71,7 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Sub-task — blue square with nested icon
   if (t === 'sub-task' || t === 'subtask') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text-brand, #4bade8)"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text-brand)"/>
       <rect x="4.5" y="4.5" width="7" height="7" rx="1" stroke="white" strokeWidth="1" fill="none"/>
       <path d="M6.5 8h3M8 6.5v3" stroke="white" strokeWidth="1" strokeLinecap="round"/>
     </svg>
@@ -80,24 +80,24 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Bug / QA Bug — red bug icon
   if (t === 'bug' || t === 'defect' || t === 'qa bug') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="9" r="5" fill="var(--ds-text-danger, #e5493a)"/>
+      <circle cx="8" cy="9" r="5" fill="var(--ds-text-danger)"/>
       <path d="M6 7.5h4M6 9.5h4M6 11.5h4" stroke="white" strokeWidth=".8"/>
-      <path d="M3 7l2 1M13 7l-2 1M3 11l2-1M13 11l-2-1M5.5 4L6.5 6M10.5 4L9.5 6" stroke="var(--ds-text-danger, #e5493a)" strokeWidth="1.2" strokeLinecap="round"/>
+      <path d="M3 7l2 1M13 7l-2 1M3 11l2-1M13 11l-2-1M5.5 4L6.5 6M10.5 4L9.5 6" stroke="var(--ds-text-danger)" strokeWidth="1.2" strokeLinecap="round"/>
     </svg>
   );
 
   // Production Incident — orange circle with question mark
   if (t.includes('production incident') || t.includes('incident')) return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="7" stroke="var(--ds-text-warning, #ff8b00)" strokeWidth="1.5" fill="none"/>
-      <text x="8" y="11.5" textAnchor="middle" fontSize="10" fontWeight="bold" fill="var(--ds-text-warning, #ff8b00)">?</text>
+      <circle cx="8" cy="8" r="7" stroke="var(--ds-text-warning)" strokeWidth="1.5" fill="none"/>
+      <text x="8" y="11.5" textAnchor="middle" fontSize="10" fontWeight="bold" fill="var(--ds-text-warning)">?</text>
     </svg>
   );
 
   // Feature — blue square with checkmark (same as Task style)
   if (t === 'feature') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-link, #2684ff)"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-link)"/>
       <path d="M4.5 8.5L7 11l4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
@@ -105,7 +105,7 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Change Request — blue square with checkmark
   if (t.includes('change request')) return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-link, #2684ff)"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-link)"/>
       <path d="M4.5 8.5L7 11l4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
@@ -113,7 +113,7 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Business Gap — orange/red rounded square with exclamation
   if (t.includes('business gap')) return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="3" fill="var(--ds-text-danger, #ff5630)"/>
+      <rect x="1" y="1" width="14" height="14" rx="3" fill="var(--ds-text-danger)"/>
       <rect x="7.25" y="4" width="1.5" height="5" rx=".75" fill="white"/>
       <circle cx="8" cy="11.5" r="1" fill="white"/>
     </svg>
@@ -122,15 +122,15 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // API Requirement — orange gear
   if (t.includes('api requirement') || t.includes('api')) return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="3" stroke="var(--ds-text-warning, #ff8b00)" strokeWidth="1.5" fill="none"/>
-      <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="var(--ds-text-warning, #ff8b00)" strokeWidth="1.2" strokeLinecap="round"/>
+      <circle cx="8" cy="8" r="3" stroke="var(--ds-text-warning)" strokeWidth="1.5" fill="none"/>
+      <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="var(--ds-text-warning)" strokeWidth="1.2" strokeLinecap="round"/>
     </svg>
   );
 
   // Frontend — blue code brackets
   if (t === 'frontend') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-link, #2684ff)"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-link)"/>
       <path d="M5 6l-2 2 2 2M11 6l2 2-2 2M9 5l-2 6" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
@@ -138,7 +138,7 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Backend — purple server
   if (t === 'backend') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text-discovery, #8777d9)"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text-discovery)"/>
       <rect x="4" y="4.5" width="8" height="2.5" rx=".5" fill="white"/>
       <rect x="4" y="9" width="8" height="2.5" rx=".5" fill="white"/>
     </svg>
@@ -147,7 +147,7 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Integration — teal link
   if (t === 'integration') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text, #00b8d9)"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text)"/>
       <path d="M5 8h6M8 5v6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   );
@@ -155,7 +155,7 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Figma
   if (t === 'figma' || t === 'entity figma') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text-danger, #f24e1e)"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-text-danger)"/>
       <circle cx="8" cy="8" r="2.5" fill="white"/>
     </svg>
   );
@@ -163,8 +163,8 @@ function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   // Default — gray circle
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="6" stroke="var(--ds-text-subtlest, #97a0af)" strokeWidth="1.5" fill="none"/>
-      <circle cx="8" cy="8" r="2" fill="var(--ds-text-subtlest, #97a0af)"/>
+      <circle cx="8" cy="8" r="6" stroke="var(--ds-text-subtlest)" strokeWidth="1.5" fill="none"/>
+      <circle cx="8" cy="8" r="2" fill="var(--ds-text-subtlest)"/>
     </svg>
   );
 }

@@ -35,7 +35,7 @@ export function TypeDistributionChart({ data }: Props) {
           <Tooltip content={<ChartTooltip />} />
           <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={48}>
             {data.map((entry, i) => (
-              <Cell key={i} fill={TYPE_CHART_COLORS[entry.name] || 'var(--ds-text-subtle, #475569)'} />
+              <Cell key={i} fill={TYPE_CHART_COLORS[entry.name] || 'var(--ds-text-subtle)'} />
             ))}
             <LabelList dataKey="value" position="top" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-body)', fill: 'var(--fg-3)' }} />
           </Bar>

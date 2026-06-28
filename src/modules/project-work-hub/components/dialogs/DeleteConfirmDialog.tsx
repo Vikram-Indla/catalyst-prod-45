@@ -45,7 +45,7 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isPending}
-            style={{ backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'white' }}
+            style={{ backgroundColor: 'var(--ds-text-danger, var(--cp-danger))', color: 'white' }}
           >
             {isPending ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>

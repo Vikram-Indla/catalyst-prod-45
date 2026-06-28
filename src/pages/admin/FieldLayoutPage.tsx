@@ -14,19 +14,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
 const T = {
-  surface:       'var(--ds-surface, #FFFFFF)',
-  surfaceSunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  surfaceOverlay:'var(--ds-surface-overlay, #FFFFFF)',
-  text:          'var(--ds-text, #172B4D)',
-  textSubtle:    'var(--ds-text-subtle, #44546F)',
-  textSubtlest:  'var(--ds-text-subtlest, #626F86)',
-  brand:         'var(--ds-link, #0C66E4)',
-  border:        'var(--ds-border, #DCDFE4)',
-  borderSubtle:  'var(--ds-border-subtle, #EBECF0)',
-  bgNeutral:     'var(--ds-background-neutral, #F1F2F4)',
-  bgHover:       'var(--ds-background-neutral-hovered, #E2E4E9)',
-  bgSelected:    'var(--ds-background-selected, #E9F2FE)',
-  danger:        'var(--ds-text-danger, #AE2A19)',
+  surface:       'var(--ds-surface)',
+  surfaceSunken: 'var(--ds-surface-sunken)',
+  surfaceOverlay:'var(--ds-surface-overlay)',
+  text:          'var(--ds-text)',
+  textSubtle:    'var(--ds-text-subtle)',
+  textSubtlest:  'var(--ds-text-subtlest)',
+  brand:         'var(--ds-link)',
+  border:        'var(--ds-border)',
+  borderSubtle:  'var(--ds-border-subtle)',
+  bgNeutral:     'var(--ds-background-neutral)',
+  bgHover:       'var(--ds-background-neutral-hovered)',
+  bgSelected:    'var(--ds-background-selected)',
+  danger:        'var(--ds-text-danger)',
 };
 
 const ISSUE_TYPES = [
@@ -196,7 +196,7 @@ function FieldMenu({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection
               cursor: (field.is_pinned || field.is_required) ? 'default' : 'pointer',
               fontSize: 'var(--ds-font-size-400)', color: (field.is_pinned || field.is_required) ? T.textSubtlest : T.danger,
             }}
-            onMouseEnter={e => { if (!field.is_pinned && !field.is_required) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-danger-hovered, var(--ds-background-danger, #FFECEB))'; }}
+            onMouseEnter={e => { if (!field.is_pinned && !field.is_required) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-danger-hovered, var(--ds-background-danger))'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             Remove field
@@ -267,7 +267,7 @@ function FieldRow({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection,
           {!field.is_system_field && (
             <span style={{
               marginLeft: 6, fontSize: 'var(--ds-font-size-50)', padding: '1px 5px',
-              background: 'var(--ds-background-information, #E9F2FE)',
+              background: 'var(--ds-background-information)',
               borderRadius: 3, color: T.brand,
             }}>
               custom
@@ -440,7 +440,7 @@ function AvailableFieldsPanel({ allLayoutFields, customFields = [], issueType, o
               <div>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.text }}>
                   {cf.name}
-                  <span style={{ marginLeft: 6, fontSize: 'var(--ds-font-size-50)', padding: '1px 5px', background: 'var(--ds-background-information, #E9F2FE)', borderRadius: 3, color: T.brand }}>custom</span>
+                  <span style={{ marginLeft: 6, fontSize: 'var(--ds-font-size-50)', padding: '1px 5px', background: 'var(--ds-background-information)', borderRadius: 3, color: T.brand }}>custom</span>
                 </div>
                 <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>{cf.field_type}</div>
               </div>
@@ -633,7 +633,7 @@ export default function FieldLayoutPage() {
                 style={{
                   padding: '7px 16px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4, fontWeight: 500,
                   border: 'none', background: dirty ? T.brand : T.bgNeutral,
-                  color: dirty ? 'var(--ds-text-inverse, #FFFFFF)' : T.textSubtle,
+                  color: dirty ? 'var(--ds-text-inverse)' : T.textSubtle,
                   cursor: (!dirty || saving) ? 'not-allowed' : 'pointer',
                   opacity: saving ? 0.7 : 1,
                 }}
@@ -698,8 +698,8 @@ export default function FieldLayoutPage() {
             {selectedProject && (
               <span style={{
                 fontSize: 'var(--ds-font-size-200)', padding: '2px 8px',
-                background: 'var(--ds-background-information, #E9F2FE)',
-                border: `1px solid var(--ds-border-information, #CCE0FF)`,
+                background: 'var(--ds-background-information)',
+                border: `1px solid var(--ds-border-information)`,
                 borderRadius: 12, color: T.brand,
               }}>
                 Project override — inherits from master for any unset fields
@@ -710,7 +710,7 @@ export default function FieldLayoutPage() {
           {saveError && (
             <div style={{
               marginBottom: 16, padding: '10px 14px',
-              background: 'var(--ds-background-danger, #FFECEB)',
+              background: 'var(--ds-background-danger)',
               borderRadius: 4, color: T.danger, fontSize: 'var(--ds-font-size-400)',
             }}>
               {saveError}

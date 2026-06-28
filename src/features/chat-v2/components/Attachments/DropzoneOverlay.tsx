@@ -28,7 +28,7 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
     >
       <DropzoneArt />
       <div style={{ textAlign: 'center', padding: '0 24px' }}>
-        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, marginBottom: 8, color: 'var(--ds-surface, #FFFFFF)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, marginBottom: 8, color: 'var(--ds-surface)' }}>
           Upload to {workspaceTitle}
         </div>
         {recipientName && (
@@ -45,7 +45,7 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
                 fontFamily: 'var(--cv2-font)',
                 fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
-                color: 'var(--ds-text-inverse, #FFFFFF)',
+                color: 'var(--ds-text-inverse)',
               }}
             >
               Shift
@@ -76,7 +76,7 @@ function DropzoneArt() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'var(--ds-text-inverse, #FFFFFF)',
+          color: 'var(--ds-text-inverse)',
         }}
       >
         <svg width={28} height={28} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -106,7 +106,7 @@ function DropzoneArt() {
           transform: 'translateX(-50%) rotate(-2deg)',
           width: 110,
           height: 84,
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
           borderRadius: 10,
           boxShadow: '0 10px 28px var(--ds-shadow-raised, rgba(0,0,0,0.45))',
           overflow: 'hidden',

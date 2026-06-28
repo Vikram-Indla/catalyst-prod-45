@@ -386,22 +386,22 @@ export function CatalystViewBase({
     /* position:relative (2026-06-22 Vikram) anchors the absolute-positioned
        resizable splitter that spans topbar + body. */
     position: 'relative',
-    width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
   } : panelMode ? {
     /* position:relative same reason as fullPageMode (2026-06-22 Vikram). */
     position: 'relative',
-    width: '100%', minWidth: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    width: '100%', minWidth: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     // 2026-05-24 — anti-dance fix: cv-panel-in slide-in intentionally absent here.
     // The panel is already on-screen; replaying the entrance animation on every
     // cross-type ticket remount (QA Bug → Story etc.) made the panel jump 20px
     // sideways. Modal mode keeps its cv-card-in entrance; panel mode has no
     // entrance animation because it never "enters" mid-session.
-    borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+    borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
   } : {
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8,
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 8,
     display: 'flex', flexDirection: 'column',
     boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9,30,66,.25))', overflow: 'hidden',
     animation: 'cv-card-in 250ms ease-out',
@@ -448,7 +448,7 @@ export function CatalystViewBase({
             position: 'sticky',
             top: 0,
             zIndex: 10,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           }),
         }}>
           {/* Canonical breadcrumb — shown in every mode. When the current
@@ -488,7 +488,7 @@ export function CatalystViewBase({
 
             {/* Inline Prev/Next chevrons — Jira parity. Up = previous,
                 Down = next (Atlassian convention). Canonical component
-                IssueNavChevrons owns the 28×28 / 1px var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) / 4px-radius
+                IssueNavChevrons owns the 28×28 / 1px var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))) / 4px-radius
                 styling (verified against Jira Cloud, 2026-04-19). */}
             {navigationItems && navigationItems.length > 1 && (() => {
               const prevKey = canNavPrev ? (navigationItems[currentNavIndex - 1].issue_key ?? '') : '';
@@ -546,7 +546,7 @@ export function CatalystViewBase({
                     background: 'none', border: 'none', cursor: 'pointer',
                     padding: 4, borderRadius: 4, width: 32, height: 32,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'var(--ds-text-subtle, #42526E)',
+                    color: 'var(--ds-text-subtle)',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -565,12 +565,12 @@ export function CatalystViewBase({
                       top: moreAnchor.bottom + 4,
                       right: window.innerWidth - moreAnchor.right,
                       zIndex: 10000,
-                      background: 'var(--ds-surface-overlay, #FFFFFF)',
+                      background: 'var(--ds-surface-overlay)',
                       borderRadius: 4,
                       boxShadow: 'var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,.25))',
                       minWidth: 180,
                       padding: '4px 0',
-                      border: '1px solid var(--ds-border, #DFE1E6)',
+                      border: '1px solid var(--ds-border)',
                     }}
                   >
                     {effectiveMoreMenuItems.filter(item => !item.danger).map((item, i) => (
@@ -578,7 +578,7 @@ export function CatalystViewBase({
                         style={{
                           display: 'block', width: '100%', textAlign: 'left',
                           padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
-                          fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit',
+                          fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', fontFamily: 'inherit',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -586,13 +586,13 @@ export function CatalystViewBase({
                     ))}
                     {effectiveMoreMenuItems.some(item => item.danger) && (
                       <>
-                        <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+                        <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
                         {effectiveMoreMenuItems.filter(item => item.danger).map((item, i) => (
                           <button key={i} onClick={() => { item.onClick(); setMoreOpen(false); }}
                             style={{
                               display: 'block', width: '100%', textAlign: 'left',
                               padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
-                              fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-danger, #AE2A19)', fontFamily: 'inherit',
+                              fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-danger)', fontFamily: 'inherit',
                             }}
                             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
                             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -678,7 +678,7 @@ export function CatalystViewBase({
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
             flex: 1, padding: '8px 16px 32px 16px',
-            borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', minWidth: 0, minHeight: 0,
+            borderRight: '1px solid var(--ds-border-subtle)', minWidth: 0, minHeight: 0,
             // fullPageMode: cap field rows at ~1200px (Jira parity). Without this, fields like
             // Priority and Severity stretch to fill the full viewport width.
             ...(fullPageMode ? { maxWidth: 1200 } : { overflowY: 'auto' }),
@@ -689,9 +689,9 @@ export function CatalystViewBase({
                 <div style={{ height: 20 }} /><Skel w="100%" h={200} />
               </div>
             ) : isNotFound ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textAlign: 'center' }}>
                 <span style={{ fontSize: 32 }}>⚠️</span>
-                <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Issue not found</div>
+                <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Issue not found</div>
                 <div style={{ fontSize: 'var(--ds-font-size-400)' }}>This issue may have been deleted or the key is invalid.</div>
               </div>
             ) : (
@@ -713,7 +713,7 @@ export function CatalystViewBase({
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-sidebar" style={{
             width: rightPanelWidth, minWidth: hideSidebar ? 0 : 220, maxWidth: 600,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflowX: 'hidden',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', overflowX: 'hidden',
             display: hideSidebar ? 'none' : 'flex', flexDirection: 'column', padding: '16px 4px 32px 16px',
             minHeight: 0,
             ...(fullPageMode
@@ -788,9 +788,9 @@ export function CatalystViewBase({
                 isDraggingRef.current = true;
                 document.body.style.cursor = 'col-resize';
                 document.body.style.userSelect = 'none';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link, #1868DB))';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link))';
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link, #1868DB))'; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link))'; }}
               onMouseLeave={e => { if (!isDraggingRef.current) (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
               style={{
                 position: 'absolute',

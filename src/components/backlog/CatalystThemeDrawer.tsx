@@ -159,8 +159,8 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
 // Epic states for breakdown
 const EPIC_STATES: Record<string, { label: string; color: string }> = {
   funnel: { label: 'Funnel', color: 'var(--fg-3)' },
-  candidate: { label: 'Candidate', color: 'var(--ds-text-brand, #3B82F6)' },
-  analysis: { label: 'Analysis', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
+  candidate: { label: 'Candidate', color: 'var(--ds-text-brand)' },
+  analysis: { label: 'Analysis', color: 'var(--ds-text-warning, var(--cp-amber))' },
   backlog: { label: 'Backlog', color: 'var(--cp-blue)' },
   implementing: { label: 'Implementing', color: 'var(--sem-success)' },
   done: { label: 'Done', color: 'var(--fg-3)' },
@@ -245,7 +245,7 @@ function PremiumProgressBar({ progress }: { progress: number }) {
         <div 
           className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, var(--ds-surface-overlay, #1F1F1F) 10px, var(--ds-surface-overlay, #1F1F1F) 20px)'
+            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, var(--ds-surface-overlay) 10px, var(--ds-surface-overlay) 20px)'
           }}
         />
         
@@ -314,24 +314,24 @@ function KPICard({
 }) {
   const variantStyles = {
     default: {
-      iconBg: 'var(--ds-background-neutral, #EBEBEB)',
-      iconColor: 'var(--ds-text-subtlest, #737373)',
+      iconBg: 'var(--ds-background-neutral)',
+      iconColor: 'var(--ds-text-subtlest)',
       valueColor: 'var(--fg-1)',
     },
     warning: {
       iconBg: 'var(--ds-background-warning-bold, rgba(245,158,11,0.15))',
-      iconColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-      valueColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+      iconColor: 'var(--ds-text-warning, var(--cp-warning))',
+      valueColor: 'var(--ds-text-warning, var(--cp-warning))',
     },
     success: {
       iconBg: 'var(--ds-background-success-bold, rgba(38,166,154,0.15))',
-      iconColor: 'var(--ds-text-success, #26A69A)',
-      valueColor: 'var(--ds-text-success, #26A69A)',
+      iconColor: 'var(--ds-text-success)',
+      valueColor: 'var(--ds-text-success)',
     },
     info: {
       iconBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))',
-      iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-      valueColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+      iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+      valueColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
     },
   };
 
@@ -379,7 +379,7 @@ function KPICard({
           </span>
           {overflow && (
             <Tooltip content={<p className="text-xs">Rollup exceeds 100%</p>}>
-              <AlertTriangle size={12} style={{ color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
+              <AlertTriangle size={12} style={{ color: 'var(--ds-text-warning, var(--cp-amber))' }} />
             </Tooltip>
           )}
         </div>

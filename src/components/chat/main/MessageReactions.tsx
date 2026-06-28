@@ -112,30 +112,30 @@ function ReactionChip({
           gap: 4,
           padding: '4px 8px',
           background: reactedByMe
-            ? 'var(--ds-background-information-subtle, #E9F2FE)'
-            : 'var(--ds-background-neutral-subtle, #F7F8F9)',
+            ? 'var(--ds-background-information-subtle)'
+            : 'var(--ds-background-neutral-subtle)',
           border: reactedByMe
-            ? '1px solid var(--ds-border-information, #0C66E4)'
-            : '1px solid var(--ds-border, #DFE1E6)',
+            ? '1px solid var(--ds-border-information)'
+            : '1px solid var(--ds-border)',
           borderRadius: 12,
           cursor: 'pointer',
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text)',
           transition: 'all 100ms',
           userSelect: 'none',
         }}
         onMouseEnter={(e) => {
           const el = e.currentTarget;
           el.style.background = reactedByMe
-            ? 'var(--ds-background-information, #E9F2FE)'
+            ? 'var(--ds-background-information)'
             : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
         }}
         onMouseLeave={(e) => {
           const el = e.currentTarget;
           el.style.background = reactedByMe
-            ? 'var(--ds-background-information-subtle, #E9F2FE)'
-            : 'var(--ds-background-neutral-subtle, #F7F8F9)';
+            ? 'var(--ds-background-information-subtle)'
+            : 'var(--ds-background-neutral-subtle)';
         }}
       >
         <span style={{ fontSize: 'var(--ds-font-size-500)' }}>{emoji}</span>
@@ -154,12 +154,12 @@ function ReactionChip({
             left: tooltipLeft,
             right: tooltipRight,
             zIndex: 1001,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: `1px solid var(--ds-border, #DFE1E6)`,
+            background: 'var(--ds-surface-overlay)',
+            border: `1px solid var(--ds-border)`,
             borderRadius: 6,
             padding: '8px 12px',
             fontSize: 'var(--ds-font-size-200)',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             whiteSpace: 'nowrap',
             boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))',
           }}

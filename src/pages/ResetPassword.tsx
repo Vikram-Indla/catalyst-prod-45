@@ -142,7 +142,7 @@ export default function ResetPassword() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}
+      style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))' }}
     >
       {/* Catalyst branding header */}
       <div className="flex flex-col items-center mb-8">
@@ -155,7 +155,7 @@ export default function ResetPassword() {
           aria-label="Catalyst"
           style={{ borderRadius: 12, marginBottom: 12 }}
         >
-          <rect width="512" height="512" rx="129.62" fill="var(--ds-link, #1868DB)" />
+          <rect width="512" height="512" rx="129.62" fill="var(--ds-link)" />
           <g transform="translate(256 256) scale(0.95) translate(-256 -256)">
             <path
               d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z"
@@ -167,7 +167,7 @@ export default function ResetPassword() {
           style={{
             fontSize: 'var(--ds-font-size-700)',
             fontWeight: 700,
-            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
             letterSpacing: '-0.3px',
             fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
           }}
@@ -178,7 +178,7 @@ export default function ResetPassword() {
           style={{
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
-            color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+            color: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
             marginTop: 2,
             fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
           }}
@@ -338,7 +338,7 @@ export default function ResetPassword() {
         style={{
           marginTop: 24,
           fontSize: 'var(--ds-font-size-200)',
-          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+          color: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
           fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
         }}
       >

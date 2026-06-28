@@ -419,8 +419,8 @@ function MoreActionsButton() {
             position: 'fixed',
             top: pos.top,
             right: pos.right,
-            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 6,
             boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
             padding: '4px 0',
@@ -443,7 +443,7 @@ function MoreActionsButton() {
               border: 'none',
               background: 'none',
               cursor: 'pointer',
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
               fontSize: 'var(--ds-font-size-400)',
               transition: 'background 120ms',
             }}
@@ -471,7 +471,7 @@ function MoreActionsButton() {
               border: 'none',
               background: 'none',
               cursor: 'pointer',
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
               fontSize: 'var(--ds-font-size-400)',
               transition: 'background 120ms',
             }}
@@ -524,31 +524,31 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         style={{
-          border: `2px dashed ${dragOver ? token('color.border.brand', 'var(--ds-link, #1868DB)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          border: `2px dashed ${dragOver ? token('color.border.brand', 'var(--ds-link)') : token('color.border', 'var(--ds-border)')}`,
           borderRadius: 4, padding: '24px 16px', textAlign: 'center', cursor: 'pointer',
-          background: dragOver ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.input', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'),
+          background: dragOver ? token('color.background.selected', 'var(--ds-background-selected)') : token('color.background.input', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'),
           transition: 'border-color 120ms, background 120ms',
         }}
       >
         <input ref={inputRef} type="file" multiple accept=".pdf,.doc,.docx,.xlsx,.xls" style={{ display: 'none' }} onChange={handleInput} />
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 8px', display: 'block', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 8px', display: 'block', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
           <path d="M12 4v12m-4-4l4-4 4 4M4 20h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
-        <p style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
       </div>
       {files.length > 0 && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {files.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'), borderRadius: 3, fontSize: 'var(--ds-font-size-200)' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'), borderRadius: 3, fontSize: 'var(--ds-font-size-200)' }}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', 'var(--ds-link, #1868DB)')} strokeWidth="1.2" fill="none"/>
-                <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', 'var(--ds-link, #1868DB)')} strokeWidth="1.2" fill="none"/>
+                <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', 'var(--ds-link)')} strokeWidth="1.2" fill="none"/>
+                <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', 'var(--ds-link)')} strokeWidth="1.2" fill="none"/>
               </svg>
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', 'var(--ds-text, #172B4D)') }}>{f.name}</span>
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), whiteSpace: 'nowrap' }}>{fmt(f.size)}</span>
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', 'var(--ds-text)') }}>{f.name}</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), whiteSpace: 'nowrap' }}>{fmt(f.size)}</span>
               <button type="button" onClick={() => remove(i)} aria-label={`Remove ${f.name}`}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), padding: 4, display: 'flex', flexShrink: 0 }}>
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), padding: 4, display: 'flex', flexShrink: 0 }}>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
@@ -575,7 +575,7 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
       onClick={onClick}
       icon={() => (
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill={token('color.icon.brand', 'var(--ds-background-discovery-bold, #7C3AED)')}/>
+          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill={token('color.icon.brand', 'var(--ds-background-discovery-bold)')}/>
         </svg>
       )}
     />
@@ -821,7 +821,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                     </TitleTranslateWrapper>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                       {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'), marginLeft: 'auto' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.disabled', 'var(--ds-text-disabled)'), marginLeft: 'auto' }}>
                         {form.title.length} / {TITLE_MAX}
                       </span>
                     </div>

@@ -219,7 +219,7 @@ export function CycleCardEnhanced({
               className="h-full rounded-full transition-all"
               style={{ 
                 width: `${progress}%`,
-                backgroundColor: progress === 100 ? 'var(--ds-background-success-bold, #059669)' : 'var(--ds-text-brand, #3b82f6)'
+                backgroundColor: progress === 100 ? 'var(--ds-background-success-bold)' : 'var(--ds-text-brand)'
               }}
             />
           </div>

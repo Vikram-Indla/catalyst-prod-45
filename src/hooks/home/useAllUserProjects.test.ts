@@ -3,7 +3,7 @@ import { buildAllUserProjects } from './useAllUserProjects';
 
 describe('buildAllUserProjects', () => {
   const catalystProjects = [
-    { id: 'u1', key: 'BAU', name: 'Senaei BAU', avatar_url: null, color: 'var(--ds-text, #172B4D)' },
+    { id: 'u1', key: 'BAU', name: 'Senaei BAU', avatar_url: null, color: 'var(--ds-text)' },
     { id: 'u2', key: 'IP', name: 'IP Implementation', avatar_url: '/ip.png', color: null },
   ];
   const phIcons = [{ key: 'BAU', icon: 'rocket', color: '#222' }]; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent

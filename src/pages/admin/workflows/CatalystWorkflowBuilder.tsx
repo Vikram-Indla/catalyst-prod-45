@@ -42,26 +42,26 @@ import {
 
 // ── Dark palette matching Jira Workflow Builder ─────────────────────────────
 const DARK = {
-  canvas: 'var(--ds-surface-sunken, #1A1C1E)',
-  surface: 'var(--ds-surface, #FFFFFF)',
-  surfaceHover: 'var(--ds-background-neutral, #F1F2F4)',
-  border: 'var(--ds-border, #3B4349)',
-  borderHover: 'var(--ds-background-information-bold, #0C66E4)',
-  text: 'var(--ds-border, #DFE1E6)',
-  textSubtle: 'var(--ds-text-subtle, #8696A7)',
-  textBrand: 'var(--ds-background-information-bold, #0C66E4)',
-  textDanger: 'var(--ds-text-danger, #F87168)',
-  nodeTodo: 'var(--ds-background-neutral, #F1F2F4)',
-  nodeInProgress: 'var(--ds-background-information, #1D3557)',
-  nodeDone: 'var(--ds-background-success, #1B3A2D)',
-  nodeBorderTodo: 'var(--ds-border, #3B4349)',
-  nodeBorderInProgress: 'var(--ds-border-focused, #2D6A9F)',
-  nodeBorderDone: 'var(--ds-border, #2D7A4F)',
-  textTodo: 'var(--ds-border, #DFE1E6)',
-  textInProgress: 'var(--ds-text-brand, #85B8FF)',
-  textDone: 'var(--ds-background-success, #DCFFF1)',
-  edge: 'var(--ds-border-bold, #8590A2)',
-  edgeHover: 'var(--ds-background-information-bold, #0C66E4)',
+  canvas: 'var(--ds-surface-sunken)',
+  surface: 'var(--ds-surface)',
+  surfaceHover: 'var(--ds-background-neutral)',
+  border: 'var(--ds-border)',
+  borderHover: 'var(--ds-background-information-bold)',
+  text: 'var(--ds-border)',
+  textSubtle: 'var(--ds-text-subtle)',
+  textBrand: 'var(--ds-background-information-bold)',
+  textDanger: 'var(--ds-text-danger)',
+  nodeTodo: 'var(--ds-background-neutral)',
+  nodeInProgress: 'var(--ds-background-information)',
+  nodeDone: 'var(--ds-background-success)',
+  nodeBorderTodo: 'var(--ds-border)',
+  nodeBorderInProgress: 'var(--ds-border-focused)',
+  nodeBorderDone: 'var(--ds-border)',
+  textTodo: 'var(--ds-border)',
+  textInProgress: 'var(--ds-text-brand)',
+  textDone: 'var(--ds-background-success)',
+  edge: 'var(--ds-border-bold)',
+  edgeHover: 'var(--ds-background-information-bold)',
 };
 
 const NODE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
@@ -76,7 +76,7 @@ function StatusNode({ data, selected }: NodeProps) {
   const colors = NODE_COLORS[d.category] ?? NODE_COLORS.todo;
 
   const borderColor = d.isCurrent
-    ? 'var(--ds-link, #0C66E4)'
+    ? 'var(--ds-link)'
     : selected
     ? DARK.borderHover
     : colors.border;
@@ -177,7 +177,7 @@ function StatusNode({ data, selected }: NodeProps) {
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           letterSpacing: '0.08em',
-          color: 'var(--ds-link, #0C66E4)',
+          color: 'var(--ds-link)',
           background: DARK.canvas,
           padding: '1px 5px',
           borderRadius: 2,
@@ -209,15 +209,15 @@ function StartNode(_: NodeProps) {
       width: 48,
       height: 48,
       borderRadius: '50%',
-      background: 'var(--ds-background-neutral-bold, #44526E)',
-      border: `2px solid var(--ds-border-bold, #8590A2)`,
+      background: 'var(--ds-background-neutral-bold)',
+      border: `2px solid var(--ds-border-bold)`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontSize: 'var(--ds-font-size-100)',
       fontWeight: 700,
       letterSpacing: '0.06em',
-      color: 'var(--ds-border, #DFE1E6)',
+      color: 'var(--ds-border)',
     }}>
       START
       <Handle
@@ -305,7 +305,7 @@ function DeletableEdge({
                 justifyContent: 'center',
                 fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
-                color: 'var(--ds-text-inverse, #FFFFFF)',
+                color: 'var(--ds-text-inverse)',
                 lineHeight: 1,
               }}
               title="Delete transition"
@@ -611,8 +611,8 @@ export function CatalystWorkflowBuilder({
                 border: 'none',
                 borderRadius: 3,
                 cursor: newStatusName.trim() ? 'pointer' : 'not-allowed',
-                background: newStatusName.trim() ? 'var(--ds-link, var(--ds-link, #0C66E4))' : DARK.border,
-                color: 'var(--ds-text-inverse, #FFFFFF)',
+                background: newStatusName.trim() ? 'var(--ds-link, var(--ds-link))' : DARK.border,
+                color: 'var(--ds-text-inverse)',
                 fontFamily: 'inherit',
               }}
             >

@@ -13,15 +13,15 @@ import { uploadImageToSupabase } from './mediaUpload';
 // ─── Jira's 13 text colors ────────────────────────────────────────────────────
 const TEXT_COLORS = [
   { label: 'Default', value: null },
-  { label: 'Subtle', value: 'var(--ds-text-subtlest, #6B778C)' },
-  { label: 'Red', value: 'var(--ds-background-danger-bold, #C9372C)' },
-  { label: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { label: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
-  { label: 'Green', value: 'var(--ds-background-success-bold, #1F845A)' },
-  { label: 'Teal', value: 'var(--ds-chart-teal-bold, #00B8D9)' },
-  { label: 'Blue', value: 'var(--cp-primary-60, #0052CC)' },
-  { label: 'Purple', value: 'var(--ds-background-discovery-bold, #6554C0)' },
-  { label: 'Pink', value: 'var(--ds-background-danger-bold, #C9372C)' },
+  { label: 'Subtle', value: 'var(--ds-text-subtlest)' },
+  { label: 'Red', value: 'var(--ds-background-danger-bold)' },
+  { label: 'Orange', value: 'var(--ds-background-warning-bold)' },
+  { label: 'Yellow', value: 'var(--ds-background-warning-bold)' },
+  { label: 'Green', value: 'var(--ds-background-success-bold)' },
+  { label: 'Teal', value: 'var(--ds-chart-teal-bold)' },
+  { label: 'Blue', value: 'var(--cp-primary-60)' },
+  { label: 'Purple', value: 'var(--ds-background-discovery-bold)' },
+  { label: 'Pink', value: 'var(--ds-background-danger-bold)' },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -251,7 +251,7 @@ function ColorBtn({ editor }: { editor: Editor }) {
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
           <Type size={13} />
-          <div style={{ width: 12, height: 3, borderRadius: 1, background: currentColor ?? 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))' }} />
+          <div style={{ width: 12, height: 3, borderRadius: 1, background: currentColor ?? 'var(--cp-text-primary, var(--cp-text-inverse))' }} />
         </div>
       </button>
       {open && (
@@ -267,7 +267,7 @@ function ColorBtn({ editor }: { editor: Editor }) {
                 setOpen(false);
               }}
               className="jde-color-swatch"
-              style={{ background: c.value ?? 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', outline: currentColor === c.value ? '2px solid var(--ds-link, #2563eb)' : 'none' }}
+              style={{ background: c.value ?? 'var(--cp-text-primary, var(--cp-text-inverse))', outline: currentColor === c.value ? '2px solid var(--ds-link)' : 'none' }}
             />
           ))}
         </div>
@@ -313,7 +313,7 @@ function LinkBtn({ editor }: { editor: Editor }) {
       </TbBtn>
       {open && (
         <div className="jde-link-dialog">
-          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, marginBottom: 6, color: 'var(--ds-text-subtle, #42526E)' }}>Link URL</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, marginBottom: 6, color: 'var(--ds-text-subtle)' }}>Link URL</div>
           <input
             ref={inputRef}
             value={url}
@@ -378,17 +378,17 @@ const INSERT_ITEMS = [
   // Jira-parity: Action item, Mention, Decision at top
   {
     label: 'Action item',
-    icon: <CheckSquare size={14} style={{ color: 'var(--cp-primary-60, #0052CC)' }} />,
+    icon: <CheckSquare size={14} style={{ color: 'var(--cp-primary-60)' }} />,
     cmd: (e: Editor) => e.chain().focus().toggleTaskList().run(),
   },
   {
     label: 'Mention',
-    icon: <AtSign size={14} style={{ color: 'var(--ds-text-subtle, #42526E)' }} />,
+    icon: <AtSign size={14} style={{ color: 'var(--ds-text-subtle)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent('@').run(),
   },
   {
     label: 'Decision',
-    icon: <Lightbulb size={14} style={{ color: 'var(--ds-background-warning-bold, #E2B203)' }} />,
+    icon: <Lightbulb size={14} style={{ color: 'var(--ds-background-warning-bold)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'note' }, content: [{ type: 'paragraph', content: [{ type: 'text', text: '🟡 Decision: ' }] }] }).run(),
   },
   { type: 'divider' as const },
@@ -399,7 +399,7 @@ const INSERT_ITEMS = [
   },
   {
     label: 'Info panel',
-    icon: <Info size={14} style={{ color: 'var(--cp-primary-60, #0052CC)' }} />,
+    icon: <Info size={14} style={{ color: 'var(--cp-primary-60)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'info' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {
@@ -420,22 +420,22 @@ const INSERT_ITEMS = [
   },
   {
     label: 'Note panel',
-    icon: <StickyNote size={14} style={{ color: 'var(--ds-background-discovery-bold, #6554C0)' }} />,
+    icon: <StickyNote size={14} style={{ color: 'var(--ds-background-discovery-bold)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'note' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {
     label: 'Warning panel',
-    icon: <AlertTriangle size={14} style={{ color: 'var(--ds-background-warning-bold, #E2B203)' }} />,
+    icon: <AlertTriangle size={14} style={{ color: 'var(--ds-background-warning-bold)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'warning' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {
     label: 'Success panel',
-    icon: <CheckCircle size={14} style={{ color: 'var(--ds-background-success-bold, #1F845A)' }} />,
+    icon: <CheckCircle size={14} style={{ color: 'var(--ds-background-success-bold)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'success' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {
     label: 'Error panel',
-    icon: <AlertCircle size={14} style={{ color: 'var(--ds-background-danger-bold, #C9372C)' }} />,
+    icon: <AlertCircle size={14} style={{ color: 'var(--ds-background-danger-bold)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'error' }, content: [{ type: 'paragraph' }] }).run(),
   },
   { type: 'divider' as const },
@@ -555,11 +555,11 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
         onMouseDown={e => { e.preventDefault(); setOpen(v => !v); }}
         className="jde-tb-style-btn"
         title="Improve"
-        style={{ color: 'var(--cp-purple-60, #7C3AED)', gap: 3 }}
+        style={{ color: 'var(--cp-purple-60)', gap: 3 }}
       >
-        <Sparkles size={13} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
-        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-purple-60, #7C3AED)' }}>Improve</span>
-        <ChevronDown size={10} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
+        <Sparkles size={13} style={{ color: 'var(--cp-purple-60)' }} />
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-purple-60)' }}>Improve</span>
+        <ChevronDown size={10} style={{ color: 'var(--cp-purple-60)' }} />
       </button>
       {open && (
         <div className="jde-dropdown jde-dropdown--style">
@@ -572,9 +572,9 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
                 setOpen(false);
               }}
               className="jde-dropdown-item jde-dropdown-item--row"
-              style={{ color: 'var(--cp-purple-60, #7C3AED)' }}
+              style={{ color: 'var(--cp-purple-60)' }}
             >
-              <span className="jde-dropdown-icon" style={{ color: 'var(--cp-purple-60, #7C3AED)' }}>{a.icon}</span>
+              <span className="jde-dropdown-icon" style={{ color: 'var(--cp-purple-60)' }}>{a.icon}</span>
               {a.label}
             </button>
           ))}

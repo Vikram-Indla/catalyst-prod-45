@@ -84,7 +84,7 @@ function taskRowToWorkItem(r: TaskAllWorkRow): WorkItem {
           name: r.assignee.full_name ?? 'Unknown',
           avatarUrl: r.assignee.avatar_url ?? null,
           initials: initialsFromName(r.assignee.full_name ?? ''),
-          color: 'var(--ds-background-accent-purple-subtle, #6554C0)',
+          color: 'var(--ds-background-accent-purple-subtle)',
         }
       : undefined,
     reporterId: null,

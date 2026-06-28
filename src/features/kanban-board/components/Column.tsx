@@ -19,10 +19,10 @@ function wipState(count: number, max: number | null): WipState {
 export const ColumnHeader: React.FC<{ column: KanbanColumn; count: number }> = ({ column, count }) => {
   const wip = wipState(count, column.max);
   const countColor = wip === 'exceeded'
-    ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+    ? token('color.text.danger', 'var(--ds-text-danger)')
     : wip === 'warning'
-      ? token('color.text.warning', 'var(--ds-text-warning, #974F0C)')
-      : token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)');
+      ? token('color.text.warning', 'var(--ds-text-warning)')
+      : token('color.text.subtlest', 'var(--ds-icon-subtle)');
   // Jira board column header: NO status dot — name (uppercase, subtle) + count.
   // Width is owned by the parent column wrapper in Board.
   return (
@@ -33,7 +33,7 @@ export const ColumnHeader: React.FC<{ column: KanbanColumn; count: number }> = (
     }}>
       <span style={{
         fontSize: 'var(--ds-font-size-200)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.3,
-        color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+        color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, lineHeight: '16px',
       }}>
         {column.name}
@@ -133,7 +133,7 @@ export const ColumnBody = forwardRef<HTMLDivElement, ColumnBodyProps>(
           style={{
             flex: fill ? 1 : undefined, overflowY: 'auto', overflowX: 'hidden',
             padding: `${SIZES.CARD_GAP}px 8px`,
-            background: isDragOver ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
+            background: isDragOver ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent',
             borderRadius: 6, transition: 'background-color 150ms ease',
             minHeight: fill ? 0 : 24,
             ...(virtualize ? {} : { display: 'flex', flexDirection: 'column', gap: SIZES.CARD_GAP }),

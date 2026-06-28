@@ -7,16 +7,16 @@ import { X, ChevronDown, Search, Check } from '@/lib/atlaskit-icons';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 const HUB_DOT_COLORS: Record<string, string> = {
-  Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  Product: 'var(--cp-purple-60, #7C3AED)',
-  Task: 'var(--ds-background-warning-bold, #E2B203)',
-  Incident: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  Release: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  Test: 'var(--ds-link, #0C66E4)',
-  Strategy: 'var(--ds-link, #0C66E4)',
-  Plan: 'var(--ds-background-discovery-bold, #6366f1)',
+  Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  Product: 'var(--cp-purple-60)',
+  Task: 'var(--ds-background-warning-bold)',
+  Incident: 'var(--ds-text-danger, var(--cp-danger))',
+  Release: 'var(--ds-text-success, var(--cp-success))',
+  Test: 'var(--ds-link)',
+  Strategy: 'var(--ds-link)',
+  Plan: 'var(--ds-background-discovery-bold)',
 };
-const AVATAR_PALETTE = ['var(--ds-chart-blue-bold, #6b7a8d)', 'var(--ds-chart-green-bold, #7a8b6b)', 'var(--ds-chart-orange-bold, #8b7a6b)', 'var(--ds-background-discovery-bold, #6b6b8b)', 'var(--ds-chart-teal-bold, #6b8b8b)', 'var(--ds-chart-magenta-bold, #8b6b7a)', 'var(--ds-chart-purple-bold, #7a6b8b)', 'var(--ds-background-discovery, #6b8b7a)'];
+const AVATAR_PALETTE = ['var(--ds-chart-blue-bold)', 'var(--ds-chart-green-bold)', 'var(--ds-chart-orange-bold)', 'var(--ds-background-discovery-bold)', 'var(--ds-chart-teal-bold)', 'var(--ds-chart-magenta-bold)', 'var(--ds-chart-purple-bold)', 'var(--ds-background-discovery)'];
 function getAvatarColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);

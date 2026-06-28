@@ -163,7 +163,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
             {/* Add Assignment Button */}
             <Button
               onClick={() => setShowAddAssignment(true)}
-              className="bg-[var(--ds-chart-teal-bold, #0d9488)] hover:bg-[var(--ds-background-accent-teal-bolder, #14b8a6)] text-white rounded-[10px] text-[13px] font-semibold shadow-[0_2px_8px_var(--ds-background-success, rgba(13,148,136,0.3))] hover:shadow-[0_4px_12px_var(--ds-background-success, rgba(13,148,136,0.4))]"
+              className="bg-[var(--ds-chart-teal-bold)] hover:bg-[var(--ds-background-accent-teal-bolder)] text-white rounded-[10px] text-[13px] font-semibold shadow-[0_2px_8px_var(--ds-background-success, rgba(13,148,136,0.3))] hover:shadow-[0_4px_12px_var(--ds-background-success, rgba(13,148,136,0.4))]"
               size="sm"
             >
               <Plus className="w-4 h-4 mr-1.5" />
@@ -181,7 +181,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
           </div>
 
           {/* Controls Bar */}
-          <div className="h-12 px-6 flex items-center gap-4 border-b border-border bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-muted/10 flex-shrink-0">
+          <div className="h-12 px-6 flex items-center gap-4 border-b border-border bg-[var(--ds-surface-sunken)] dark:bg-muted/10 flex-shrink-0">
             <StatusLegend />
             
             <div className="ml-auto flex items-center gap-3">
@@ -251,7 +251,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
               </span>
               <span className="w-px h-4 bg-border" />
               <span className="text-muted-foreground">
-                Total Forecast: <span className="font-bold text-[var(--ds-text-warning,#d97706)]">{summary.forecast}%</span>
+                Total Forecast: <span className="font-bold text-[var(--ds-text-warning)]">{summary.forecast}%</span>
               </span>
             </div>
             

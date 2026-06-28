@@ -70,7 +70,7 @@ export function AllWorkContextMenu({ item, x, y, onClose, onOpenItem }: Props) {
     <div
       ref={ref}
       className="fixed z-[9999] w-52 rounded-lg border bg-[var(--bg-app)] shadow-xl py-1"
-      style={{ left: adjustedX, top: adjustedY, borderColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}
+      style={{ left: adjustedX, top: adjustedY, borderColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' }}
     >
       {ACTIONS.map((action) => {
         if (action.id.startsWith('divider')) {
@@ -82,10 +82,10 @@ export function AllWorkContextMenu({ item, x, y, onClose, onOpenItem }: Props) {
           <button
             key={action.id}
             onClick={() => handleAction(action.id)}
-            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[var(--ds-background-input-hovered,#f8f8f8)] transition-colors text-left"
-            style={{ color: isDanger ? 'var(--sem-danger)' : 'var(--ds-text, #1A1D23)' }}
+            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[var(--ds-background-input-hovered)] transition-colors text-left"
+            style={{ color: isDanger ? 'var(--sem-danger)' : 'var(--ds-text)' }}
           >
-            <Icon className="w-4 h-4 shrink-0" style={{ color: isDanger ? 'var(--sem-danger)' : 'var(--ds-text-subtlest, #6b6e76)' }} />
+            <Icon className="w-4 h-4 shrink-0" style={{ color: isDanger ? 'var(--sem-danger)' : 'var(--ds-text-subtlest)' }} />
             {action.label}
           </button>
         );

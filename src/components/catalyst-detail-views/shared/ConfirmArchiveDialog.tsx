@@ -34,14 +34,14 @@ export function ConfirmArchiveDialog({
         <ModalTitle appearance="warning">Archive issue</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+        <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>
           {issueSummary ? (
             <>Archive <strong>{issueSummary.slice(0, 80)}{issueSummary.length > 80 ? '…' : ''}</strong>?</>
           ) : (
             'Archive this issue?'
           )}
         </p>
-        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
           Archived items can be restored later.
         </p>
       </ModalBody>

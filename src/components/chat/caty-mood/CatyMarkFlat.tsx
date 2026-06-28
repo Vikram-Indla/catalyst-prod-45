@@ -13,8 +13,8 @@
  *  - variant="face" (default): cropped head — compact chrome (dock header).
  *  - variant="full": complete brand cat with the "ask" wordmark — hero / empty states.
  */
-const INK = 'var(--ds-text, #172B4D)';
-const PAPER = 'var(--ds-surface, #FFFFFF)';
+const INK = 'var(--ds-text)';
+const PAPER = 'var(--ds-surface)';
 
 export function CatyMarkFlat({
   size = 28,
@@ -44,7 +44,7 @@ export function CatyMarkFlat({
           {/* ads-scanner:ignore-next-line */}
           <stop stopColor="#F79357" />
           {/* ads-scanner:ignore-next-line */}
-          <stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
+          <stop offset=".5" stopColor="var(--ds-background-danger-bold)" />
           {/* ads-scanner:ignore-next-line */}
           <stop offset=".75" stopColor="#B41572" />
           {/* ads-scanner:ignore-next-line */}

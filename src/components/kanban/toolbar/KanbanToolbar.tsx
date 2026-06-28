@@ -73,19 +73,19 @@ function BoardMenuItem({
       className="flex items-center gap-3 w-full"
       style={{
         padding: '10px 16px', background: 'transparent', border: 'none',
-        cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500,
+        cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontWeight: 500,
         textAlign: 'left', fontFamily: 'var(--cp-font-body)',
         transition: 'background 80ms ease',
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       {icon}
       <span style={{ flex: 1 }}>{label}</span>
       {badge !== undefined && badge > 0 && (
         <span style={{
-          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          background: 'var(--cp-primary-60, #0052CC)', borderRadius: 10, padding: '1px 8px',
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          background: 'var(--cp-primary-60)', borderRadius: 10, padding: '1px 8px',
           lineHeight: '18px',
         }}>{badge}</span>
       )}
@@ -338,8 +338,8 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               height: 32, padding: '0 10px',
               border: 'none', borderRadius: 3,
               fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
-              color: active ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
-              background: active ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
+              color: active ? 'var(--ds-link, var(--cp-primary-60))' : tk.textPrimary,
+              background: active ? 'var(--ds-background-selected)' : 'transparent',
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               transition: 'background 100ms',
               whiteSpace: 'nowrap',
@@ -476,7 +476,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               <>
                 <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
                 <BoardMenuItem
-                  icon={<ArchiveBoxIcon label="" size="small" primaryColor={showArchived ? 'var(--cp-primary-60, #0052CC)' : tk.textSecondary} />}
+                  icon={<ArchiveBoxIcon label="" size="small" primaryColor={showArchived ? 'var(--cp-primary-60)' : tk.textSecondary} />}
                   label={showArchived ? 'Hide archived issues' : 'Show archived issues'}
                   onClick={() => { onShowBoardMenuChange(false); onShowArchivedChange?.(v => !v); }}
                 />

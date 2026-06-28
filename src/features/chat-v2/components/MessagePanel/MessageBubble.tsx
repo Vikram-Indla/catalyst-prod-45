@@ -433,7 +433,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
                 background: 'transparent',
                 border: 'none',
                 padding: 0,
-                color: 'var(--cv2-accent, #1264A3)',
+                color: 'var(--cv2-accent)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 fontSize: 'var(--ds-font-size-200)',

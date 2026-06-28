@@ -9,9 +9,9 @@ import { captureRemoteLocation } from '@/lib/presence-location';
 import { setManualAwayOverride, clearManualAway } from '@/lib/geo-presence';
 
 const QUICK_SET: { label: string; state: Exclude<PresenceState, 'on_leave'>; color: string }[] = [
-  { label: 'In office', state: 'onsite', color: 'var(--ds-icon-success, #22A06B)' },
-  { label: 'Remote',    state: 'remote', color: 'var(--ds-icon-information, #1D7AFC)' },
-  { label: 'Away',      state: 'away',   color: 'var(--ds-icon-warning, #E2B203)' },
+  { label: 'In office', state: 'onsite', color: 'var(--ds-icon-success)' },
+  { label: 'Remote',    state: 'remote', color: 'var(--ds-icon-information)' },
+  { label: 'Away',      state: 'away',   color: 'var(--ds-icon-warning)' },
 ];
 
 const LEAVE_KIND_LABELS: Record<string, string> = {
@@ -105,7 +105,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             letterSpacing: '0.06em',
-            color: token('color.text.subtle', 'var(--ds-text-subtle, #6B778C)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
             marginBottom: 4,
           }}
         >
@@ -129,12 +129,12 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   border: 'none',
                   borderRadius: 3,
                   background: isActive
-                    ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FE)')
+                    ? token('color.background.selected', 'var(--ds-background-selected)')
                     : 'transparent',
                   cursor: 'pointer',
                   fontSize: 'var(--ds-font-size-300)',
                   fontWeight: isActive ? 500 : 400,
-                  color: token('color.text', 'var(--ds-text, #172B4D)'),
+                  color: token('color.text', 'var(--ds-text)'),
                   width: '100%',
                   textAlign: 'left',
                 }}
@@ -143,7 +143,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = isActive
-                    ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FE)')
+                    ? token('color.background.selected', 'var(--ds-background-selected)')
                     : 'transparent';
                 }}
               >
@@ -165,7 +165,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                     aria-hidden="true"
                     style={{
                       fontSize: 'var(--ds-font-size-200)',
-                      color: token('color.text.brand', 'var(--ds-link, #0052CC)'),
+                      color: token('color.text.brand', 'var(--ds-link)'),
                       fontWeight: 600,
                       marginLeft: 'auto',
                     }}
@@ -182,7 +182,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
         {hasActiveLeave && (
           <div
             style={{
-              borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               paddingTop: 8,
               marginBottom: 4,
             }}
@@ -200,7 +200,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
                   letterSpacing: '0.06em',
-                  color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
+                  color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 }}
               >
                 Scheduled leave
@@ -214,7 +214,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   cursor: clearing ? 'not-allowed' : 'pointer',
                   fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
-                  color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
+                  color: token('color.text.danger', 'var(--ds-text-danger)'),
                   padding: '4px',
                   opacity: clearing ? 0.5 : 1,
                 }}
@@ -229,9 +229,9 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
                   style={{
                     padding: '4px 8px',
                     borderRadius: 3,
-                    background: token('color.background.information.subtle', 'var(--ds-background-selected, #E9F2FF)'),
+                    background: token('color.background.information.subtle', 'var(--ds-background-selected)'),
                     fontSize: 'var(--ds-font-size-200)',
-                    color: token('color.text', 'var(--ds-text, #172B4D)'),
+                    color: token('color.text', 'var(--ds-text)'),
                   }}
                 >
                   {LEAVE_KIND_LABELS[leave.kind] ?? leave.kind}
@@ -246,7 +246,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
         {/* Schedule leave trigger */}
         <div
           style={{
-            borderTop: hasActiveLeave ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            borderTop: hasActiveLeave ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
             paddingTop: hasActiveLeave ? 4 : 8,
           }}
         >
@@ -259,7 +259,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
               cursor: 'pointer',
               fontSize: 'var(--ds-font-size-300)',
               fontWeight: 400,
-              color: token('color.link', 'var(--ds-link, #0052CC)'),
+              color: token('color.link', 'var(--ds-link)'),
               width: '100%',
               textAlign: 'left',
             }}

@@ -13,33 +13,33 @@ import { RH } from '@/constants/releasehub.design';
 import { useRunPredictor, type Prediction, type PredictionRisk } from '@/hooks/useReleaseHub';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  danger: 'var(--ds-text-danger, #AE2A19)',
-  warn: 'var(--ds-text-warning, #974F0C)',
-  success: 'var(--ds-text-success, #216E4E)',
-  info: 'var(--ds-text-information, #0055CC)',
-  infoBold: 'var(--ds-background-information-bold, #1868DB)',
-  successBold: 'var(--ds-background-success-bold, #1F845A)',
+  surface: 'var(--ds-surface)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  danger: 'var(--ds-text-danger)',
+  warn: 'var(--ds-text-warning)',
+  success: 'var(--ds-text-success)',
+  info: 'var(--ds-text-information)',
+  infoBold: 'var(--ds-background-information-bold)',
+  successBold: 'var(--ds-background-success-bold)',
 };
 
 const RISK: Record<PredictionRisk, { label: string; fg: string; accent: string }> = {
-  on_track: { label: 'On track', fg: T.success, accent: 'var(--ds-border-success, #4BCE97)' },
-  at_risk: { label: 'At risk', fg: T.warn, accent: 'var(--ds-border-warning, #E2B203)' },
-  off_track: { label: 'Off track', fg: T.danger, accent: 'var(--ds-border-danger, #C9372C)' },
-  done: { label: 'Complete', fg: T.success, accent: 'var(--ds-border-success, #4BCE97)' },
+  on_track: { label: 'On track', fg: T.success, accent: 'var(--ds-border-success)' },
+  at_risk: { label: 'At risk', fg: T.warn, accent: 'var(--ds-border-warning)' },
+  off_track: { label: 'Off track', fg: T.danger, accent: 'var(--ds-border-danger)' },
+  done: { label: 'Complete', fg: T.success, accent: 'var(--ds-border-success)' },
   no_data: { label: 'No data', fg: T.subtlest, accent: T.border },
 };
 
 function stageColor(weight: number): string {
   if (weight >= 1) return T.successBold;
   if (weight >= 0.65) return T.infoBold;
-  if (weight >= 0.35) return 'var(--ds-background-information-bold, #84B0F0)';
-  if (weight > 0) return 'var(--ds-background-information, #BBD3F7)';
+  if (weight >= 0.35) return 'var(--ds-background-information-bold)';
+  if (weight > 0) return 'var(--ds-background-information)';
   return T.border;
 }
 function fmtDate(d: string | null): string {
@@ -121,7 +121,7 @@ export function ReleasePredictorCard({
                 <div style={{ height: 8, width: `${p.predictedPct}%`, background: T.infoBold }} />
               </div>
               <div style={{ position: 'relative', height: 12 }}>
-                <div style={{ position: 'absolute', left: `${p.timeUsedPct}%`, top: -9, width: 1.5, height: 13, background: 'var(--ds-border-danger, #C9372C)' }} />
+                <div style={{ position: 'absolute', left: `${p.timeUsedPct}%`, top: -9, width: 1.5, height: 13, background: 'var(--ds-border-danger)' }} />
               </div>
             </div>
           )}

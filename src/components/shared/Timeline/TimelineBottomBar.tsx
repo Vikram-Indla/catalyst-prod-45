@@ -22,17 +22,17 @@ const ZOOM_LEVELS: { key: ZoomLevel; label: string }[] = [
 ];
 
 const T = {
-  surface:        'var(--ds-surface, #FFFFFF)',
-  border:         'var(--ds-border, #DFE1E6)',
-  borderSelected: 'var(--ds-border-selected, #0052CC)',
-  borderFocused:  'var(--ds-border-focused, #388BFF)',
-  bgSelected:     'var(--ds-background-selected, #E9F2FE)',
-  bgHover:        'var(--ds-background-neutral-subtle-hovered, #F1F2F4)',
-  bgActive:       'var(--ds-background-neutral-subtle-pressed, #DCDFE4)',
-  text:           'var(--ds-text, #172B4D)',
-  textSelected:   'var(--ds-link, #0052CC)',
-  textSubtle:     'var(--ds-text-subtle, #626F86)',
-  focusRing:      '0 0 0 2px var(--ds-border-focused, #388BFF)',
+  surface:        'var(--ds-surface)',
+  border:         'var(--ds-border)',
+  borderSelected: 'var(--ds-border-selected)',
+  borderFocused:  'var(--ds-border-focused)',
+  bgSelected:     'var(--ds-background-selected)',
+  bgHover:        'var(--ds-background-neutral-subtle-hovered)',
+  bgActive:       'var(--ds-background-neutral-subtle-pressed)',
+  text:           'var(--ds-text)',
+  textSelected:   'var(--ds-link)',
+  textSubtle:     'var(--ds-text-subtle)',
+  focusRing:      '0 0 0 2px var(--ds-border-focused)',
 };
 
 function InfoCircleIcon() {

@@ -34,7 +34,7 @@
  * source of truth when Atlaskit provides one):
  *   color.text                rgb(41,42,46)   #292A2E
  *   color.text.subtle         rgb(80,82,88)   #505258
- *   color.text.subtlest       rgb(107,110,118) var(--ds-text-subtlest, #6B6E76)
+ *   color.text.subtlest       rgb(107,110,118) var(--ds-text-subtlest)
  */
 import { token } from '@atlaskit/tokens';
 
@@ -91,31 +91,31 @@ export const type = {
  */
 export const text = {
   /** Primary — headlines, names, values, action text. */
-  primary: token('color.text', 'var(--ds-text, #172B4D)'),
+  primary: token('color.text', 'var(--ds-text)'),
 
   /** Subtle — verbs, meta, labels, placeholders-within-context. */
-  subtle: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+  subtle: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
 
   /** Subtlest — placeholder, disabled-but-readable, ghost text. */
-  subtlest: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+  subtlest: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
 
   /** Link — only for genuine hyperlinks. */
-  link: token('color.link', 'var(--ds-link, #0C66E4)'),
+  link: token('color.link', 'var(--ds-link)'),
 
   /** Inverse — on dark surfaces. */
-  inverse: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'),
+  inverse: token('color.text.inverse', 'var(--ds-surface)'),
 
   /** Danger — error copy, destructive labels. */
-  danger: token('color.text.danger', 'var(--ds-background-danger-bold, #C9372C)'),
+  danger: token('color.text.danger', 'var(--ds-background-danger-bold)'),
 
   /** Success — confirmation copy, completed states. */
-  success: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
+  success: token('color.text.success', 'var(--ds-text-success)'),
 
   /** Warning — caution labels. */
-  warning: token('color.text.warning', 'var(--ds-chart-orange-bold, #A54800)'),
+  warning: token('color.text.warning', 'var(--ds-chart-orange-bold)'),
 
   /** Discovery — AI / purple category accents. */
-  discovery: token('color.text.discovery', 'var(--ds-background-discovery-bold, #6E5DC6)'),
+  discovery: token('color.text.discovery', 'var(--ds-background-discovery-bold)'),
 } as const;
 
 /**

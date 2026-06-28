@@ -49,7 +49,7 @@ const headerStyle: React.CSSProperties = {
   fontSize: 'var(--ds-font-size-400)',
   fontWeight: 500,
   lineHeight: '20px',
-  color: token('color.text.subtle', 'var(--ds-text-subtle, #505258)'),
+  color: token('color.text.subtle', 'var(--ds-text-subtle)'),
 };
 
 const formatOption = (o: PickerOption): ReactNode => (

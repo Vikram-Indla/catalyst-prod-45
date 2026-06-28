@@ -332,7 +332,7 @@ export function SyncConfigPanel() {
               onChange={handleProjectChange}
               placeholder="Select projects..."
               emptyMessage="No accessible projects found. Test your connection first."
-              accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
+              accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"
             />
             <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
               {selectedProjects.length === 0
@@ -445,7 +445,7 @@ export function SyncConfigPanel() {
                             onChange={(vals) => updateProjectConfig(pk, { status_categories: vals })}
                             placeholder="All categories (no filter)"
                             emptyMessage="No categories available."
-                            accentColor="var(--cp-purple-60, #7C3AED)"
+                            accentColor="var(--cp-purple-60)"
                           />
                           <p style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.status_categories.length === 0
@@ -463,7 +463,7 @@ export function SyncConfigPanel() {
                             onChange={(vals) => updateProjectConfig(pk, { issue_types: vals })}
                             placeholder={typesLoading ? 'Loading types...' : 'All types (no filter)'}
                             emptyMessage="No issue types found. Run a sync first."
-                            accentColor="var(--ds-link, #0C66E4)"
+                            accentColor="var(--ds-link)"
                           />
                           <p style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.issue_types.length === 0
@@ -481,7 +481,7 @@ export function SyncConfigPanel() {
                             onChange={(vals) => updateProjectConfig(pk, { sprint_release: vals })}
                             placeholder="All releases (no filter)"
                             emptyMessage={`No versions found for ${pk}. Sync first to discover releases.`}
-                            accentColor="var(--quality-high, #059669)"
+                            accentColor="var(--quality-high)"
                           />
                           <p style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.sprint_release.length === 0

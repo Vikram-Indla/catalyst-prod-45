@@ -30,13 +30,13 @@ interface AssignUsersModalProps {
 }
 
 const T = {
-  text:     'var(--ds-text, #172B4D)',
-  subtle:   'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  border:   'var(--ds-border, #DCDFE4)',
-  surface:  'var(--ds-surface, #FFFFFF)',
-  selected: 'var(--ds-background-selected, #E9F2FE)',
-  brand:    'var(--ds-icon-brand, #0C66E4)',
+  text:     'var(--ds-text)',
+  subtle:   'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  border:   'var(--ds-border)',
+  surface:  'var(--ds-surface)',
+  selected: 'var(--ds-background-selected)',
+  brand:    'var(--ds-icon-brand)',
 };
 
 export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProps) {
@@ -157,7 +157,7 @@ export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProp
                       display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
                       borderBottom: `1px solid ${T.border}`, cursor: 'pointer',
                       background: isChecked ? T.selected : T.surface,
-                      outline: changed ? `2px solid var(--ds-border-brand, #579DFF)` : 'none',
+                      outline: changed ? `2px solid var(--ds-border-brand)` : 'none',
                       outlineOffset: '-2px',
                       transition: 'background 0.1s',
                     }}
@@ -179,7 +179,7 @@ export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProp
                       </p>
                     </div>
                     {changed && (
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, #0C66E4)', flexShrink: 0 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand)', flexShrink: 0 }}>
                         {isChecked ? '+' : '−'}
                       </span>
                     )}
@@ -192,7 +192,7 @@ export function AssignUsersModal({ isOpen, onClose, role }: AssignUsersModalProp
           <p style={{ margin: 0, fontSize: 12, color: T.subtlest }}>
             {selected.size} user{selected.size !== 1 ? 's' : ''} assigned
             {pendingChanges > 0 && (
-              <span style={{ color: 'var(--ds-text-brand, #0C66E4)', marginLeft: 6 }}>
+              <span style={{ color: 'var(--ds-text-brand)', marginLeft: 6 }}>
                 · {pendingChanges} unsaved change{pendingChanges !== 1 ? 's' : ''}
               </span>
             )}

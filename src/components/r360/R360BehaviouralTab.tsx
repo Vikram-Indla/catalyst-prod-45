@@ -12,7 +12,7 @@ const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun=0..Thu=4
 const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
 
 const HUB_COLORS: Record<string, string> = {
-  BAU: 'var(--cp-teal-60, #0D9488)', bau: 'var(--cp-teal-60, #0D9488)', incident: DANGER, Product: 'var(--ds-text-subtle, #44546F)', Task: 'var(--ds-border, #DFE1E6)',
+  BAU: 'var(--cp-teal-60)', bau: 'var(--cp-teal-60)', incident: DANGER, Product: 'var(--ds-text-subtle)', Task: 'var(--ds-border)',
 };
 
 interface BehaviouralTabProps {
@@ -120,10 +120,10 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               const isPeak = val === rhythmData.max && val > 0;
               return (
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: 'var(--cp-font-mono)', color: isPeak ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtle, #44546F)' }}>{val}</span>
+                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: 'var(--cp-font-mono)', color: isPeak ? 'var(--ds-background-brand-bold-hovered)' : 'var(--ds-text-subtle)' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 4,
-                    backgroundColor: isPeak ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--cp-blue)',
+                    backgroundColor: isPeak ? 'var(--ds-background-brand-bold-hovered)' : 'var(--cp-blue)',
                     transition: 'height 300ms ease, background-color 0ms',
                   }} />
                   <span style={{ fontSize: 'var(--ds-font-size-100)', color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
@@ -155,7 +155,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
                 cursor: tile.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
               onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
-              onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
+              onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'; }}
             >
               <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>

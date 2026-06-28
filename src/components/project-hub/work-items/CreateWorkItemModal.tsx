@@ -25,7 +25,7 @@ interface CreateWorkItemModalProps {
 
 // ─── Hierarchy Icons ──────────────────────────────────────
 const HIERARCHY_ICONS: Record<string, { symbol: string; color: string }> = {
-  Epic:    { symbol: '◆', color: 'var(--cp-purple-60, #7C3AED)' },
+  Epic:    { symbol: '◆', color: 'var(--cp-purple-60)' },
   Feature: { symbol: '▲', color: 'var(--cp-blue)' },
   Story:   { symbol: '●', color: 'var(--sem-success)' },
   Bug:     { symbol: '⬡', color: 'var(--sem-danger)' },
@@ -277,7 +277,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
           </div>
           <button
             onClick={handleClose}
-            className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] transition-colors"
             style={{ color: 'var(--fg-4)' }}
           >
             <X size={16} />
@@ -325,7 +325,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full rounded-md border px-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-shadow"
+              className="w-full rounded-md border px-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] transition-shadow"
               style={{ height: 40, borderColor: 'var(--divider)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(); }}
             />
@@ -338,21 +338,21 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Priority</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setPriorityOpen(!priorityOpen); }}
-                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] transition-colors"
+                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] transition-colors"
                 style={{ height: 50, borderColor: 'var(--divider)', color: 'var(--fg-2)' }}
               >
                 <span className="flex items-center gap-1.5">
                   <span style={{ color: pri?.color }}>{pri?.icon}</span>
                   {pri?.label}
                 </span>
-                <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
+                <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]" />
               </button>
               {priorityOpen && (
                 <FixedDropdown width="100%" onClick={e => e.stopPropagation()}>
                   {PRIORITIES.map(p => (
                     <button
                       key={p.value}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] transition-colors"
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setPriority(p.value); setPriorityOpen(false); }}
                     >
@@ -369,22 +369,22 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Assignee</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setAssigneeOpen(!assigneeOpen); }}
-                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] transition-colors"
+                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] transition-colors"
                 style={{ height: 50, borderColor: 'var(--divider)', color: selectedAssignee ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">{selectedAssignee ? selectedAssignee.full_name : 'Unassigned'}</span>
-                <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] shrink-0" />
+                <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] shrink-0" />
               </button>
               {assigneeOpen && (
                 <FixedDropdown maxHeight={220} onClick={e => e.stopPropagation()}>
                   <div className="px-2 py-1.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
                     <div className="relative">
-                      <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
+                      <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]" />
                       <input
                         value={assigneeSearch}
                         onChange={e => setAssigneeSearch(e.target.value)}
                         placeholder="Search..."
-                        className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+                        className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
                         style={{ borderColor: 'var(--divider)', height: 28 }}
                         autoFocus
                       />
@@ -392,7 +392,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   </div>
                   <div className="overflow-y-auto flex-1">
                     <button
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"
                       style={{ color: 'var(--fg-4)' }}
                       onClick={() => { setAssigneeId(null); setAssigneeOpen(false); setAssigneeSearch(''); }}
                     >
@@ -401,7 +401,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                     {filteredProfiles.map(p => (
                       <button
                         key={p.id}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-left"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] text-left"
                         style={{ color: 'var(--fg-2)' }}
                         onClick={() => { setAssigneeId(p.id); setAssigneeOpen(false); setAssigneeSearch(''); }}
                       >
@@ -420,7 +420,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
             <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Labels</label>
             <button
               onClick={e => { e.stopPropagation(); closeDropdowns(); setLabelsOpen(!labelsOpen); }}
-              className="w-full flex items-center gap-1.5 flex-wrap min-h-[50px] rounded-md border px-2.5 py-1.5 text-[12px] hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] transition-colors"
+              className="w-full flex items-center gap-1.5 flex-wrap min-h-[50px] rounded-md border px-2.5 py-1.5 text-[12px] hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] transition-colors"
               style={{ borderColor: 'var(--divider)' }}
             >
               {selectedLabels.length === 0 && <span style={{ color: 'var(--fg-4)' }}>Select labels...</span>}
@@ -441,7 +441,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   </span>
                 );
               })}
-              <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] ml-auto shrink-0" />
+              <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] ml-auto shrink-0" />
             </button>
             {labelsOpen && labels.length > 0 && (
               <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
@@ -451,7 +451,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                     return (
                       <button
                         key={lb.id}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"
                         style={{ color: 'var(--fg-2)' }}
                         onClick={() => {
                           setSelectedLabels(prev =>
@@ -477,12 +477,12 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
             <div>
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Due Date</label>
               <div className="relative">
-                <Calendar size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
+                <Calendar size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]" />
                 <input
                   type="date"
                   value={dueDate}
                   onChange={e => setDueDate(e.target.value)}
-                  className="w-full rounded-md border pl-8 pr-2.5 text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-shadow"
+                  className="w-full rounded-md border pl-8 pr-2.5 text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] transition-shadow"
                   style={{ height: 50, borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)' }}
                 />
               </div>
@@ -493,13 +493,13 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Sprint</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setSprintOpen(!sprintOpen); }}
-                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] transition-colors"
+                className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] transition-colors"
                 style={{ height: 50, borderColor: 'var(--divider)', color: selectedSprint ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">
                   {selectedSprint ? selectedSprint.name : 'None'}
                 </span>
-                <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] shrink-0" />
+                <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] shrink-0" />
               </button>
               {sprintOpen && (
                 <FixedDropdown maxHeight={260} onClick={e => e.stopPropagation()}>
@@ -511,11 +511,11 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                       onChange={(e) => setSprintSearch(e.currentTarget.value)}
                       placeholder="Search sprints"
                       className="w-full px-2 py-1 text-[11px] border rounded outline-none"
-                      style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', background: 'var(--ds-surface, #FFFFFF)' }}
+                      style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', background: 'var(--ds-surface)' }}
                     />
                   </div>
                   <button
-                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
+                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"
                     style={{ color: 'var(--fg-4)' }}
                     onClick={() => { setSprintId(null); setSprintOpen(false); setSprintSearch(''); }}
                   >
@@ -526,7 +526,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                     .map(s => (
                     <button
                       key={s.id}
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-left"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] text-left"
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setSprintId(s.id); setSprintOpen(false); setSprintSearch(''); }}
                     >
@@ -546,24 +546,24 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
             <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Parent</label>
             <button
               onClick={e => { e.stopPropagation(); closeDropdowns(); setParentOpen(!parentOpen); }}
-              className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] transition-colors"
+              className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] transition-colors"
               style={{ height: 50, borderColor: 'var(--divider)', color: selectedParent ? 'var(--fg-2)' : 'var(--fg-4)' }}
             >
               <span className="truncate">
                 {selectedParent ? `${selectedParent.item_key} — ${selectedParent.title || selectedParent.summary}` : 'None'}
               </span>
-              <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] shrink-0" />
+              <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] shrink-0" />
             </button>
             {parentOpen && (
               <FixedDropdown width={280} maxHeight={220} onClick={e => e.stopPropagation()}>
                 <div className="px-2 py-1.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
                   <div className="relative">
-                    <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
+                    <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))]" />
                     <input
                       value={parentSearch}
                       onChange={e => setParentSearch(e.target.value)}
                       placeholder="Search by key or title..."
-                      className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+                      className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
                       style={{ borderColor: 'var(--divider)', height: 28 }}
                       autoFocus
                     />
@@ -571,7 +571,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                 </div>
                 <div className="overflow-y-auto flex-1">
                   <button
-                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
+                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))]"
                     style={{ color: 'var(--fg-4)' }}
                     onClick={() => { setParentId(null); setParentOpen(false); setParentSearch(''); }}
                   >
@@ -580,7 +580,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   {filteredParents.map(p => (
                     <button
                       key={p.id}
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-left"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] text-left"
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setParentId(p.id); setParentOpen(false); setParentSearch(''); }}
                     >
@@ -603,14 +603,14 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               type="checkbox"
               checked={createAnother}
               onChange={e => setCreateAnother(e.target.checked)}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
             />
             Create another
           </label>
           <div className="flex items-center gap-2">
             <button
               onClick={handleClose}
-              className="px-3.5 py-1.5 text-[12px] font-medium rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
+              className="px-3.5 py-1.5 text-[12px] font-medium rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] transition-colors"
               style={{ color: 'var(--fg-3)' }}
             >
               Cancel
@@ -619,7 +619,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               onClick={handleSubmit}
               disabled={!title.trim() || submitting}
               className="flex items-center justify-center rounded-md text-[13px] font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--cp-blue)]"
-              style={{ height: 40, padding: '0 20px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6 }}
+              style={{ height: 40, padding: '0 20px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 6 }}
             >
               {submitting ? 'Creating…' : 'Create'}
             </button>
@@ -664,7 +664,7 @@ function ProfileAvatar({ name, url, size = 20 }: { name: string; url: string | n
   const initials = (name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--cp-purple-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-success, var(--cp-success))'];
   const bg = colors[Math.abs(hash) % colors.length];
 
   if (url) {

@@ -108,8 +108,8 @@ export default function CapacityDepartmentsPage() {
     return (
       <div style={{ padding: 24 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }} className="animate-pulse">
-          <div style={{ height: 32, borderRadius: 3, width: 192, background: 'var(--ds-background-neutral, #F7F8F9)' }} />
-          <div style={{ height: 128, borderRadius: 3, background: 'var(--ds-background-neutral, #F7F8F9)' }} />
+          <div style={{ height: 32, borderRadius: 3, width: 192, background: 'var(--ds-background-neutral)' }} />
+          <div style={{ height: 128, borderRadius: 3, background: 'var(--ds-background-neutral)' }} />
         </div>
       </div>
     );
@@ -121,8 +121,8 @@ export default function CapacityDepartmentsPage() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }}>Resource Departments</h1>
-          <p style={{ fontSize: 14, marginTop: 4, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text)" }}>Resource Departments</h1>
+          <p style={{ fontSize: 14, marginTop: 4, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
             Configure departments for resource management. Changes sync in real-time.
           </p>
         </div>
@@ -136,35 +136,35 @@ export default function CapacityDepartmentsPage() {
       </div>
 
       {/* Departments List */}
-      <div style={{ borderRadius: 8, overflow: "hidden", background: 'var(--ds-surface, #ffffff)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+      <div style={{ borderRadius: 8, overflow: "hidden", background: 'var(--ds-surface)', border: '1px solid var(--ds-border)' }}>
           <table className="w-full">
-            <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+            <thead style={{ background: 'var(--ds-background-neutral)' }}>
               <tr>
                 <th style={{ width: 40, padding: "8px 16px" }}></th>
-                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", width: 96, borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>DID</th>
-                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>Name</th>
-                <th style={{ textAlign: "center", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>Actions</th>
+                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", width: 96, borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>DID</th>
+                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>Name</th>
+                <th style={{ textAlign: "center", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle)", borderBottom: "1.67px solid var(--ds-text, rgba(11, 18, 14, 0.14))" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {departments.map((dept) => (
-                <tr key={dept.id} style={{ borderTop: '1px solid var(--ds-border, #DCDFE4)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
+                <tr key={dept.id} style={{ borderTop: '1px solid var(--ds-border)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
-                  <td style={{ padding: "12px 16px", color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <td style={{ padding: "12px 16px", color: 'var(--ds-text-subtle)' }}>
                     <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
                   </td>
                   <td style={{ padding: "12px 16px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 14, fontFamily: 'var(--ds-font-family-code)', fontWeight: 500, color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_id}</span>
+                      <span style={{ fontSize: 14, fontFamily: 'var(--ds-font-family-code)', fontWeight: 500, color: 'var(--ds-text-brand)' }}>{dept.department_id}</span>
                       <Tooltip content="Copy DID">
                         <button
                           onClick={() => copyToClipboard(dept.department_id)}
                           className="w-6 h-6 rounded flex items-center justify-center transition-colors"
-                          style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
+                          style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))'; }}
                         >
                           <CopyIcon label="" size="small" />
                         </button>
@@ -172,25 +172,25 @@ export default function CapacityDepartmentsPage() {
                     </div>
                   </td>
                   <td style={{ padding: "12px 16px" }}>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }}>{dept.name}</span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text)" }}>{dept.name}</span>
                   </td>
                   <td style={{ padding: "12px 16px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
                       <button
                         onClick={() => openEdit(dept)}
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
-                        style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
+                        style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))'; }}
                       >
                         <EditIcon label="" size="small" />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(dept)}
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
-                        style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
+                        style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger)'; }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))'; }}
                       >
                         <TrashIcon label="" size="small" />
                       </button>
@@ -200,7 +200,7 @@ export default function CapacityDepartmentsPage() {
               ))}
               {departments.length === 0 && (
                 <tr>
-                  <td colSpan={4} style={{ padding: "32px 16px", textAlign: "center", color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <td colSpan={4} style={{ padding: "32px 16px", textAlign: "center", color: 'var(--ds-text-subtle)' }}>
                     No departments configured. Click "Add Department" to create one.
                   </td>
                 </tr>
@@ -217,7 +217,7 @@ export default function CapacityDepartmentsPage() {
           </DialogHeader>
           <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 16, paddingBottom: 16 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -246,7 +246,7 @@ export default function CapacityDepartmentsPage() {
           </DialogHeader>
           <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 16, paddingBottom: 16 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -274,7 +274,7 @@ export default function CapacityDepartmentsPage() {
             <AlertDialogTitle style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {linkedResources.length > 0 ? (
                 <>
-                  <span style={{ display: 'inline-flex', color: 'var(--ds-icon-warning, #F79009)' }}><WarningIcon label="" size="medium" /></span>
+                  <span style={{ display: 'inline-flex', color: 'var(--ds-icon-warning)' }}><WarningIcon label="" size="medium" /></span>
                   Cannot Delete Department
                 </>
               ) : (
@@ -290,14 +290,14 @@ export default function CapacityDepartmentsPage() {
                     <p>
                       The department <strong>"{departmentToDelete?.name}"</strong> cannot be deleted because it has {linkedResources.length} linked resource(s):
                     </p>
-                    <div className="max-h-40 overflow-y-auto rounded-md divide-y" style={{ border: '1px solid var(--ds-border, #DCDFE4)', borderColor: 'var(--ds-border, #DCDFE4)' }}>
+                    <div className="max-h-40 overflow-y-auto rounded-md divide-y" style={{ border: '1px solid var(--ds-border)', borderColor: 'var(--ds-border)' }}>
                       {linkedResources.map((resource) => (
                         <div key={resource.id} className="px-3 py-2 text-sm">
                           {resource.full_name || 'Unnamed Resource'}
                         </div>
                       ))}
                     </div>
-                    <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                    <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>
                       Please reassign or remove these resources before deleting this department.
                     </p>
                   </div>
@@ -314,7 +314,7 @@ export default function CapacityDepartmentsPage() {
             {linkedResources.length === 0 && !checkingLinks && (
               <AlertDialogAction
                 onClick={handleConfirmDelete}
-                style={{ background: 'var(--ds-background-danger-bold, #CA3521)', color: 'var(--ds-surface, #FFFFFF)' }}
+                style={{ background: 'var(--ds-background-danger-bold)', color: 'var(--ds-surface)' }}
               >
                 Delete
               </AlertDialogAction>

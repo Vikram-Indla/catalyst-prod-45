@@ -17,10 +17,10 @@ import type { TaskPriority } from '../../types';
 
 // Priority dot colors (spec A2)
 const PRIORITY_DOT_COLORS: Record<TaskPriority, string> = {
-  critical: 'var(--ds-text-danger, #dc2626)', // red-600
-  high: 'var(--ds-background-warning-bold, #E2B203)',     // orange-500
-  medium: 'var(--ds-background-warning-bold, #E2B203)',   // yellow-500 (NOT green)
-  low: 'var(--ds-text-subtlest, #94a3b8)',      // gray-400
+  critical: 'var(--ds-text-danger)', // red-600
+  high: 'var(--ds-background-warning-bold)',     // orange-500
+  medium: 'var(--ds-background-warning-bold)',   // yellow-500 (NOT green)
+  low: 'var(--ds-text-subtlest)',      // gray-400
 };
 
 export { PRIORITY_DOT_COLORS };
@@ -44,7 +44,7 @@ export const PriorityDropdown = memo(function PriorityDropdown({ task, width, on
               className="w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ backgroundColor: PRIORITY_DOT_COLORS[task.priority] }}
             />
-            <span className="text-sm font-medium" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{currentConfig.label}</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' }}>{currentConfig.label}</span>
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-44 p-1.5 z-[500] bg-popover border border-border shadow-lg" align="start">

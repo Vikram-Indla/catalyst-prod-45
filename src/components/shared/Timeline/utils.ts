@@ -125,9 +125,9 @@ export function hasAnyDates(issues: TimelineIssue[]): boolean {
 export function barColor(issue: TimelineIssue): string {
   if (issue.epicColor) return issue.epicColor;
   const cat = (issue.statusCategory ?? '').toLowerCase();
-  if (cat.includes('done')) return 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))';
-  if (cat.includes('progress')) return 'var(--ds-background-information-bold, #0055CC)';
-  return 'var(--ds-background-neutral-bold, #626F86)';
+  if (cat.includes('done')) return 'var(--ds-background-success-bold, var(--ds-background-success-bold))';
+  if (cat.includes('progress')) return 'var(--ds-background-information-bold)';
+  return 'var(--ds-background-neutral-bold)';
 }
 
 /* ─────────────────────────────── header/grid builders ───────────────── */
@@ -209,9 +209,9 @@ export function dateLabelStyle(x: number, barTop: number, side: 'start' | 'end')
     left: x,
     transform: side === 'end' ? 'translateX(-100%)' : undefined,
     fontSize: 10, fontWeight: 600, lineHeight: 1,
-    color: 'var(--ds-text-subtle, #44546F)',
-    background: 'var(--ds-surface-overlay, #FFFFFF)',
-    border: '1px solid var(--ds-border, #DFE1E6)',
+    color: 'var(--ds-text-subtle)',
+    background: 'var(--ds-surface-overlay)',
+    border: '1px solid var(--ds-border)',
     borderRadius: 3, padding: '2px 5px',
     whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 11,
     boxShadow: '0 1px 3px var(--ds-shadow-overflow, rgba(9,30,66,0.12))',
@@ -225,5 +225,5 @@ export const iconBtnStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   width: 24, height: 24, border: 'none',
   background: 'transparent', cursor: 'pointer', borderRadius: 3, flexShrink: 0,
-  color: 'var(--ds-text-subtle, #42526E)',
+  color: 'var(--ds-text-subtle)',
 };

@@ -70,17 +70,17 @@ const ROD_LENGTH = 24;
 const ROD_THICKNESS = 3;
 /* Lighter than the original gray so the rod reads as a hint rather
    than a structural line — but still distinct from the table border. */
-const ROD_COLOR = 'var(--ds-border, #DFE1E6)';
+const ROD_COLOR = 'var(--ds-border)';
 /* Expanded pill with 6-dot grip (shown when cursor is in the hitbox).
    Hitbox dimensions stay constant whether or not the cursor is inside,
    so mouse-enter/leave can't oscillate as the visual pill changes size. */
 const GRIP_LONG = 28;
 const GRIP_SHORT = 18;
-const GRIP_BG = 'var(--ds-border-focused, #85B8FF)';
+const GRIP_BG = 'var(--ds-border-focused)';
 const GRIP_RADIUS = 4;
 /* 3px white halo around the pill — hides the table border line
    passing behind the rod / grip, gives clean separation. */
-const HALO_SHADOW = '0 0 0 3px var(--ds-surface, #FFFFFF)';
+const HALO_SHADOW = '0 0 0 3px var(--ds-surface)';
 
 export function TableInteractions({ editor, containerRef }: Props) {
   const [hover, setHover] = useState<HoverState | null>(null);
@@ -568,7 +568,7 @@ function GripDots({
             width: 2,
             height: 2,
             borderRadius: '50%',
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--ds-surface)',
           }}
         />
       ))}
@@ -602,7 +602,7 @@ function buildDragPreview(
     'z-index: 2147483645',
     'box-shadow: 0 6px 20px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
     'overflow: hidden',
-    'background: var(--ds-surface, #FFFFFF)',
+    'background: var(--ds-surface)',
   ].join(';');
 
   const wrapper = document.createElement('div');

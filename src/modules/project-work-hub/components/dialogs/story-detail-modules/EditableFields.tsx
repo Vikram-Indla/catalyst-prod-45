@@ -35,7 +35,7 @@ if (
     .cv-priority-select__control--is-focused .cv-priority-select__dropdown-indicator,
     .cv-priority-select__control--menu-is-open .cv-priority-select__dropdown-indicator { display: flex !important; }
     .cv-priority-select__control { border-color: transparent !important; background: transparent !important; box-shadow: none !important; }
-    .cv-priority-select__control:hover { background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important; }
+    .cv-priority-select__control:hover { background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken)) !important; }
     .cv-assignee-select__value-container, .cv-reporter-select__value-container { display: flex !important; }
     .cv-assignee-select__input-container, .cv-reporter-select__input-container { order: 99 !important; }
   `;
@@ -45,7 +45,7 @@ if (
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
   background:
-    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
+    "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))",
   borderRadius: 4,
   border: "none",
   boxShadow: "var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,.15))",
@@ -57,7 +57,7 @@ const ATLASSIAN_DROPDOWN: React.CSSProperties = {
 const CheckmarkIcon = () => (
   <CheckIcon
     size="small"
-    primaryColor="var(--ds-icon-selected, var(--cp-primary-60, #0052CC))"
+    primaryColor="var(--ds-icon-selected, var(--cp-primary-60))"
   />
 );
 
@@ -68,7 +68,7 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
       <path
         d="M3 8l5-5 5 5"
         fill="none"
-        stroke="var(--ds-icon-danger, #FF5630)"
+        stroke="var(--ds-icon-danger)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -76,7 +76,7 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
       <path
         d="M3 12l5-5 5 5"
         fill="none"
-        stroke="var(--ds-icon-danger, #FF5630)"
+        stroke="var(--ds-icon-danger)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -88,7 +88,7 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
       <path
         d="M3 10l5-5 5 5"
         fill="none"
-        stroke="var(--ds-icon-danger, #FF5630)"
+        stroke="var(--ds-icon-danger)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -102,21 +102,21 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
       <path
         d="M3 4.5h10"
         fill="none"
-        stroke="var(--ds-icon-warning, #FFAB00)"
+        stroke="var(--ds-icon-warning)"
         strokeWidth="2"
         strokeLinecap="round"
       />
       <path
         d="M3 8h10"
         fill="none"
-        stroke="var(--ds-icon-warning, #FFAB00)"
+        stroke="var(--ds-icon-warning)"
         strokeWidth="2"
         strokeLinecap="round"
       />
       <path
         d="M3 11.5h10"
         fill="none"
-        stroke="var(--ds-icon-warning, #FFAB00)"
+        stroke="var(--ds-icon-warning)"
         strokeWidth="2"
         strokeLinecap="round"
       />
@@ -127,7 +127,7 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
       <path
         d="M3 6l5 5 5-5"
         fill="none"
-        stroke="var(--ds-link, #2684FF)"
+        stroke="var(--ds-link)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -139,7 +139,7 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
       <path
         d="M3 4l5 5 5-5"
         fill="none"
-        stroke="var(--ds-link, #2684FF)"
+        stroke="var(--ds-link)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -147,7 +147,7 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
       <path
         d="M3 8l5 5 5-5"
         fill="none"
-        stroke="var(--ds-link, #2684FF)"
+        stroke="var(--ds-link)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -213,7 +213,7 @@ export function AvatarCircle({
           fontSize,
           fontWeight: 700,
           color:
-            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
+            "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))",
         }}
       >
         {initials}
@@ -644,7 +644,7 @@ function PriorityChip({ value }: { value: string }) {
       }}
     >
       <CanonicalPriorityIcon level={value} size={16} label="" />
-      <span style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--ds-text, #292A2E)" }}>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--ds-text)" }}>
         {value}
       </span>
     </span>
@@ -757,10 +757,10 @@ export function EditablePriority({
             display: "flex",
             alignItems: "center",
             gap: 6,
-            border: "2px solid var(--ds-border-focused, #388BFF)",
+            border: "2px solid var(--ds-border-focused)",
             borderRadius: 4,
             padding: "2px 6px",
-            background: "var(--ds-background-input, #fff)",
+            background: "var(--ds-background-input)",
             minWidth: 180,
             position: "relative",
             zIndex: 5,
@@ -774,8 +774,8 @@ export function EditablePriority({
               gap: 6,
               fontSize: 'var(--ds-font-size-400)',
               color: hasValue
-                ? "var(--ds-text, #292A2E)"
-                : "var(--ds-text-subtlest, #8993A4)",
+                ? "var(--ds-text)"
+                : "var(--ds-text-subtlest)",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
@@ -812,7 +812,7 @@ export function EditablePriority({
               <CrossCircleIcon
                 label="Clear priority"
                 size="small"
-                primaryColor="var(--ds-text-subtle, #5E6C84)"
+                primaryColor="var(--ds-text-subtle)"
               />
             </button>
           )}
@@ -820,7 +820,7 @@ export function EditablePriority({
             <ChevronDownIcon
               label=""
               size="large"
-              primaryColor="var(--ds-text-subtle, #5E6C84)"
+              primaryColor="var(--ds-text-subtle)"
             />
           </span>
         </div>
@@ -845,7 +845,7 @@ export function EditablePriority({
             <PriorityChip value={currentPriority} />
           ) : (
             <span
-              style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--ds-text-subtle, #5E6C84)" }}
+              style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--ds-text-subtle)" }}
             >
               None
             </span>
@@ -863,8 +863,8 @@ export function EditablePriority({
               top: pickerPos.top,
               left: pickerPos.left,
               width: pickerPos.width,
-              background: "var(--ds-surface, #fff)",
-              border: "1px solid var(--ds-border, #DFE1E6)",
+              background: "var(--ds-surface)",
+              border: "1px solid var(--ds-border)",
               borderRadius: 6,
               boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
               zIndex: 1000,
@@ -883,22 +883,22 @@ export function EditablePriority({
                     padding: "6px 12px",
                     cursor: "pointer",
                     background: isSelected
-                      ? "var(--ds-background-information, #DEEBFF)"
+                      ? "var(--ds-background-information)"
                       : "transparent",
                     borderLeft: isSelected
-                      ? "3px solid var(--ds-border-focused, #388BFF)"
+                      ? "3px solid var(--ds-border-focused)"
                       : "3px solid transparent",
                     transition: "background 80ms",
                   }}
                   onMouseEnter={(e) => {
                     if (!isSelected)
                       (e.currentTarget as HTMLElement).style.background =
-                        "var(--ds-surface-sunken, #F4F5F7)";
+                        "var(--ds-surface-sunken)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background =
                       isSelected
-                        ? "var(--ds-background-information, #DEEBFF)"
+                        ? "var(--ds-background-information)"
                         : "transparent";
                   }}
                 >
@@ -916,18 +916,18 @@ export function EditablePriority({
 /* ── EditableLabels — Jira-parity: type + Enter to create, reuse existing ── */
 
 const LABEL_COLORS = [
-  "var(--ds-background-accent-blue-bold, #4C9AFF)",
-  "var(--ds-background-accent-teal-bold, #00B8D9)",
-  "var(--ds-background-accent-green-bold, #36B37E)",
-  "var(--ds-background-accent-yellow-bold, #FFAB00)",
-  "var(--ds-background-accent-red-bold, #FF5630)",
-  "var(--ds-background-accent-purple-bold, #6554C0)",
-  "var(--ds-background-accent-orange-bold, #FF7452)",
-  "var(--ds-background-accent-green-bolder, #57D9A3)",
-  "var(--ds-background-accent-yellow-bolder, #FFC400)",
-  "var(--ds-background-accent-purple-bolder, #998DD9)",
-  "var(--ds-background-accent-teal-bolder, #79E2F2)",
-  "var(--ds-background-accent-red-bolder, #FF8F73)",
+  "var(--ds-background-accent-blue-bold)",
+  "var(--ds-background-accent-teal-bold)",
+  "var(--ds-background-accent-green-bold)",
+  "var(--ds-background-accent-yellow-bold)",
+  "var(--ds-background-accent-red-bold)",
+  "var(--ds-background-accent-purple-bold)",
+  "var(--ds-background-accent-orange-bold)",
+  "var(--ds-background-accent-green-bolder)",
+  "var(--ds-background-accent-yellow-bolder)",
+  "var(--ds-background-accent-purple-bolder)",
+  "var(--ds-background-accent-teal-bolder)",
+  "var(--ds-background-accent-red-bolder)",
 ];
 function getLabelColor(name: string) {
   let hash = 0;
@@ -1063,7 +1063,7 @@ export function EditableLabels({
             ...base,
             border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
             background:
-              "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))",
+              "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))",
             borderRadius: 3,
             padding: '2px 6px',
             whiteSpace: 'nowrap',
@@ -1074,7 +1074,7 @@ export function EditableLabels({
           multiValueLabel: (base) => ({
             ...base,
             color:
-              "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+              "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))",
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             whiteSpace: 'nowrap',
@@ -1147,7 +1147,7 @@ export function EditableStoryPoints({
         }}
         onMouseEnter={(e) =>
           (e.currentTarget.style.background =
-            "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))")
+            "var(--ds-surface-sunken, var(--cp-bg-sunken))")
         }
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
       >
@@ -1156,8 +1156,8 @@ export function EditableStoryPoints({
             fontSize: 'var(--ds-font-size-400)',
             color:
               currentPoints != null
-                ? "var(--ds-text, #172B4D)"
-                : "var(--ds-text-subtlest, #97A0AF)",
+                ? "var(--ds-text)"
+                : "var(--ds-text-subtlest)",
             fontWeight: 400,
           }}
         >
@@ -1187,18 +1187,18 @@ export function EditableStoryPoints({
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               color:
-                "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                "var(--ds-text-subtlest, var(--cp-text-secondary))",
               background:
                 currentPoints == null
-                  ? "var(--ds-background-information, #DEEBFF)"
+                  ? "var(--ds-background-information)"
                   : "transparent",
               borderBottom:
-                "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
+                "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))",
             }}
             onMouseEnter={(e) => {
               if (currentPoints != null)
                 (e.currentTarget as HTMLElement).style.background =
-                  "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                  "var(--ds-surface-sunken, var(--cp-bg-sunken))";
             }}
             onMouseLeave={(e) => {
               if (currentPoints != null)
@@ -1222,16 +1222,16 @@ export function EditableStoryPoints({
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 400,
                 color:
-                  "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                  "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))",
                 background:
                   p === currentPoints
-                    ? "var(--ds-background-information, #DEEBFF)"
+                    ? "var(--ds-background-information)"
                     : "transparent",
               }}
               onMouseEnter={(e) => {
                 if (p !== currentPoints)
                   (e.currentTarget as HTMLElement).style.background =
-                    "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                    "var(--ds-surface-sunken, var(--cp-bg-sunken))";
               }}
               onMouseLeave={(e) => {
                 if (p !== currentPoints)
@@ -1368,7 +1368,7 @@ export function EditableSprintReleases({
         minWidth: 0,
         position: "relative",
         border: menuIsOpen
-          ? "2px solid var(--ds-border-focused, #388BFF)"
+          ? "2px solid var(--ds-border-focused)"
           : "2px solid transparent",
         borderRadius: 4,
       }}
@@ -1420,7 +1420,7 @@ export function EditableSprintReleases({
               <CrossCircleIcon
                 label="Clear all"
                 size="small"
-                primaryColor="var(--ds-text-subtle, #5E6C84)"
+                primaryColor="var(--ds-text-subtle)"
               />
             </div>
           ),
@@ -1438,7 +1438,7 @@ export function EditableSprintReleases({
               <ChevronDownIcon
                 label=""
                 size="small"
-                primaryColor="var(--ds-text-subtle, #5E6C84)"
+                primaryColor="var(--ds-text-subtle)"
               />
             </div>
           ),
@@ -1461,12 +1461,12 @@ export function EditableSprintReleases({
                 cursor: "pointer",
                 borderLeft:
                   isSelected || isFocused
-                    ? "3px solid var(--ds-border-focused, #388BFF)"
+                    ? "3px solid var(--ds-border-focused)"
                     : "3px solid transparent",
                 background: isSelected
-                  ? "var(--ds-background-information, #DEEBFF)"
+                  ? "var(--ds-background-information)"
                   : isFocused
-                    ? "var(--ds-surface-sunken, #F4F5F7)"
+                    ? "var(--ds-surface-sunken)"
                     : "transparent",
               }}
             >
@@ -1526,7 +1526,7 @@ export function EditableSprintReleases({
             ...base,
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
-            color: "var(--ds-text, #292A2E)",
+            color: "var(--ds-text)",
             padding: 0,
             cursor: "pointer",
             ":hover": { textDecoration: "underline" },
@@ -1534,12 +1534,12 @@ export function EditableSprintReleases({
           multiValueRemove: (base) => ({
             ...base,
             display: menuIsOpen ? "flex" : "none",
-            color: "var(--ds-text-subtle, #505258)",
+            color: "var(--ds-text-subtle)",
             marginLeft: 4,
             ":hover": {
               backgroundColor:
                 "var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08))",
-              color: "var(--ds-text-subtle, #505258)",
+              color: "var(--ds-text-subtle)",
             },
           }),
         }}
@@ -1554,13 +1554,13 @@ export function EditableSprintReleases({
 const EpicIconInline = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
     <rect
-      fill="var(--ds-background-discovery-bold, #6554C0)"
+      fill="var(--ds-background-discovery-bold)"
       width="16"
       height="16"
       rx="2"
     />
     <path
-      fill="var(--ds-surface, #FFF)"
+      fill="var(--ds-surface)"
       d="M8.39 2L4.5 9h3.11v5L11.5 7H8.39V2z"
     />
   </svg>
@@ -1678,7 +1678,7 @@ export function ParentFieldPicker({
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.background =
-            "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+            "var(--ds-surface-sunken, var(--cp-bg-sunken))";
           setHovered(true);
         }}
         onMouseLeave={(e) => {
@@ -1694,7 +1694,7 @@ export function ParentFieldPicker({
                 flex: 1,
                 fontSize: 'var(--ds-font-size-400)',
                 color:
-                  "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                  "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
@@ -1717,20 +1717,20 @@ export function ParentFieldPicker({
                 borderRadius: "50%",
                 border: "none",
                 background:
-                  "var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+                  "var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
                 cursor: "pointer",
-                color: "var(--ds-text-subtle, #42526E)",
+                color: "var(--ds-text-subtle)",
                 flexShrink: 0,
                 opacity: hovered ? 1 : 0,
                 transition: "opacity 0.15s",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.background =
-                  "var(--ds-background-neutral-bold, #C1C7D0)")
+                  "var(--ds-background-neutral-bold)")
               }
               onMouseLeave={(e) =>
                 (e.currentTarget.style.background =
-                  "var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))")
+                  "var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))")
               }
             >
               <svg
@@ -1750,7 +1750,7 @@ export function ParentFieldPicker({
               height="14"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))"
+              stroke="var(--ds-text-subtlest, var(--cp-text-secondary))"
               strokeWidth="2"
               style={{
                 flexShrink: 0,
@@ -1768,7 +1768,7 @@ export function ParentFieldPicker({
                 flex: 1,
                 fontSize: 'var(--ds-font-size-400)',
                 color:
-                  "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                  "var(--ds-text-subtlest, var(--cp-text-secondary))",
               }}
             >
               None
@@ -1812,13 +1812,13 @@ export function ParentFieldPicker({
                     width: "100%",
                     height: 40,
                     padding: "0 12px",
-                    border: "2px solid var(--ds-border-focused, #4C9AFF)",
+                    border: "2px solid var(--ds-border-focused)",
                     borderRadius: 3,
                     fontSize: 'var(--ds-font-size-400)',
                     fontFamily: "inherit",
                     outline: "none",
                     color:
-                      "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                      "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))",
                   }}
                 />
               </div>
@@ -1827,7 +1827,7 @@ export function ParentFieldPicker({
               <div
                 style={{
                   padding: "8px 12px",
-                  borderBottom: "1px solid var(--ds-surface-sunken, #F4F5F7)",
+                  borderBottom: "1px solid var(--ds-surface-sunken)",
                 }}
               >
                 <label
@@ -1838,7 +1838,7 @@ export function ParentFieldPicker({
                     cursor: "pointer",
                     fontSize: 'var(--ds-font-size-400)',
                     color:
-                      "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
+                      "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))",
                   }}
                 >
                   <input
@@ -1849,7 +1849,7 @@ export function ParentFieldPicker({
                       width: 16,
                       height: 16,
                       accentColor:
-                        "var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))",
+                        "var(--ds-background-brand-bold, var(--cp-primary-60))",
                       cursor: "pointer",
                     }}
                   />
@@ -1869,22 +1869,22 @@ export function ParentFieldPicker({
                         padding: "8px 12px",
                         cursor: "pointer",
                         borderBottom:
-                          "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
+                          "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))",
                         background: isActive
-                          ? "var(--ds-background-information, #DEEBFF)"
+                          ? "var(--ds-background-information)"
                           : "transparent",
                         transition: "background 0.1s",
                       }}
                       onMouseEnter={(e) => {
                         if (!isActive)
                           (e.currentTarget as HTMLElement).style.background =
-                            "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+                            "var(--ds-surface-sunken, var(--cp-bg-sunken))";
                       }}
                       onMouseLeave={(e) => {
                         if (!isActive)
                           (e.currentTarget as HTMLElement).style.background =
                             isActive
-                              ? "var(--ds-background-information, #DEEBFF)"
+                              ? "var(--ds-background-information)"
                               : "transparent";
                       }}
                     >
@@ -1903,7 +1903,7 @@ export function ParentFieldPicker({
                             fontFamily: "var(--cp-font-mono)",
                             fontWeight: 600,
                             color:
-                              "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                              "var(--ds-text-subtlest, var(--cp-text-secondary))",
                             fontSize: 'var(--ds-font-size-200)',
                           }}
                         >
@@ -1914,7 +1914,7 @@ export function ParentFieldPicker({
                       <div
                         style={{
                           fontSize: 'var(--ds-font-size-400)',
-                          color: "var(--ds-text, #172B4D)",
+                          color: "var(--ds-text)",
                           paddingLeft: 24,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
@@ -1932,7 +1932,7 @@ export function ParentFieldPicker({
                       padding: 16,
                       fontSize: 'var(--ds-font-size-300)',
                       color:
-                        "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                        "var(--ds-text-subtlest, var(--cp-text-secondary))",
                       textAlign: "center",
                     }}
                   >
@@ -1945,7 +1945,7 @@ export function ParentFieldPicker({
                       padding: 16,
                       fontSize: 'var(--ds-font-size-300)',
                       color:
-                        "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+                        "var(--ds-text-subtlest, var(--cp-text-secondary))",
                       textAlign: "center",
                     }}
                   >

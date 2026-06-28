@@ -87,7 +87,7 @@ function ListCard({
   return (
     <div
       onClick={onClick}
-      className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.08)))] hover:-translate-y-0.5"
+      className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.08)))] hover:-translate-y-0.5"
     >
       {/* LEFT SIDE */}
       <div className="flex-1 min-w-0">
@@ -96,7 +96,7 @@ function ListCard({
           <span className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-md tracking-wide flex-shrink-0">
             {list.key || 'T10'}
           </span>
-          <span className="text-[17px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] tracking-tight truncate">
+          <span className="text-[17px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] tracking-tight truncate">
             {list.name}
           </span>
         </div>
@@ -108,12 +108,12 @@ function ListCard({
             {hasActiveWeek ? (
               <>
                 Week of{' '}
-                <strong className="text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] font-semibold">
+                <strong className="text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] font-semibold">
                   {formatWeekRange(list.week_start, list.week_end)}
                 </strong>
               </>
             ) : (
-              <span className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">No active week</span>
+              <span className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]">No active week</span>
             )}
           </span>
           <span className="text-slate-400">
@@ -129,9 +129,9 @@ function ListCard({
           <div className="text-right">
             {/* Progress Bar */}
             {list.total_count === 0 ? (
-              <div className="w-[140px] h-1.5 rounded-full mb-2" style={{ background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }} />
+              <div className="w-[140px] h-1.5 rounded-full mb-2" style={{ background: 'var(--ds-border, var(--cp-bg-sunken))' }} />
             ) : (
-              <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
+              <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: 'var(--ds-border, var(--cp-bg-sunken))' }}>
                 <div
                   className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300"
                   style={{ width: `${getProgressPercent()}%` }}
@@ -184,7 +184,7 @@ function ListCard({
         {/* More Button */}
         <button
           onClick={onMore}
-          className="w-9 h-9 flex items-center justify-center text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] hover:text-slate-600 transition-all"
+          className="w-9 h-9 flex items-center justify-center text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay)] hover:text-slate-600 transition-all"
         >
           <MoreVertical size={18} />
         </button>
@@ -215,7 +215,7 @@ function CompletedWeekCard({ week }: { week: T10CompletedWeekView }) {
   const rate = getCompletionRate();
 
   return (
-    <div className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.08)))] hover:-translate-y-0.5">
+    <div className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.08)))] hover:-translate-y-0.5">
       {/* Check icon */}
       <div className="w-12 h-12 flex items-center justify-center bg-emerald-50 text-emerald-500 rounded-full mr-4 flex-shrink-0">
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,7 +229,7 @@ function CompletedWeekCard({ week }: { week: T10CompletedWeekView }) {
           <span className="px-2 py-1 font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded">
             {week.list_key || 'T10'}
           </span>
-          <span className="text-[15px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
+          <span className="text-[15px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] truncate">
             {week.list_name}
           </span>
         </div>
@@ -276,7 +276,7 @@ function ArchivedListCard({
   onDelete: () => void;
 }) {
   return (
-    <div className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px]">
+    <div className="flex items-center p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-[14px]">
       {/* Archive icon */}
       <div className="w-12 h-12 flex items-center justify-center bg-amber-50 text-amber-500 rounded-full mr-4 flex-shrink-0">
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -287,10 +287,10 @@ function ArchivedListCard({
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-3 mb-1">
-          <span className="px-2 py-1 font-mono text-xs font-medium text-slate-500 bg-slate-100 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded">
+          <span className="px-2 py-1 font-mono text-xs font-medium text-slate-500 bg-slate-100 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded">
             {list.key || 'T10'}
           </span>
-          <span className="text-[15px] font-semibold text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] truncate">
+          <span className="text-[15px] font-semibold text-slate-700 dark:text-[var(--ds-text-subtlest)] truncate">
             {list.name}
           </span>
         </div>
@@ -471,16 +471,16 @@ export function T10LandingPageV3() {
     archivedLoading;
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-sunken, #FAFAFA)] dark:bg-[var(--ds-surface,var(--cp-bg,#0A0A0A))]">
+    <div className="min-h-screen bg-[var(--ds-surface-sunken)] dark:bg-[var(--ds-surface,var(--cp-bg))]">
       {/* ═══════════════════════════════════════════════════════════════════════
           HEADER
           ═══════════════════════════════════════════════════════════════════════ */}
-      <header className="flex items-center justify-between px-8 py-4 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm">
+      <header className="flex items-center justify-between px-8 py-4 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] shadow-sm">
         {/* Logo */}
         <div className="flex items-center gap-1">
           <span className="text-[32px] font-extrabold text-blue-600 leading-none">10</span>
           <div className="flex flex-col ml-2">
-            <span className="text-xl font-bold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] tracking-tight">
+            <span className="text-xl font-bold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] tracking-tight">
               Priorities
             </span>
             <span className="text-xs font-medium text-slate-500">
@@ -503,7 +503,7 @@ export function T10LandingPageV3() {
           MAIN CONTENT
           ═══════════════════════════════════════════════════════════════════════ */}
       <main 
-        className="mx-auto bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
+        className="mx-auto bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]"
         style={{ 
           maxWidth: '1100px',
           minHeight: 'calc(100vh - 64px)',
@@ -513,14 +513,14 @@ export function T10LandingPageV3() {
         }}
       >
         {/* SEARCH */}
-        <div className="flex items-center gap-3 px-5 py-3.5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-xl mb-5 focus-within:border-blue-500 focus-within:ring-[3px] focus-within:ring-blue-500/10 transition-all">
+        <div className="flex items-center gap-3 px-5 py-3.5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-xl mb-5 focus-within:border-blue-500 focus-within:ring-[3px] focus-within:ring-blue-500/10 transition-all">
           <Search size={18} className="text-slate-400 flex-shrink-0" />
           <input
             type="text"
             placeholder="Search lists, task number, or keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 min-w-0 text-[15px] font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
+            className="flex-1 min-w-0 text-[15px] font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary))] !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
             style={{
               WebkitAppearance: 'none',
               MozAppearance: 'none',
@@ -563,13 +563,13 @@ export function T10LandingPageV3() {
         </div>
 
         {/* TABS */}
-        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] rounded-xl w-fit mb-6 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1))] rounded-xl w-fit mb-6 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))]">
           <button
             onClick={() => setActiveTab('this-week')}
             className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
               activeTab === 'this-week'
-                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)]'
+                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-sm'
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest)]'
             }`}
           >
             This Week
@@ -578,8 +578,8 @@ export function T10LandingPageV3() {
             onClick={() => setActiveTab('completed')}
             className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
               activeTab === 'completed'
-                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)]'
+                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-sm'
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest)]'
             }`}
           >
             Completed
@@ -597,8 +597,8 @@ export function T10LandingPageV3() {
             onClick={() => setActiveTab('archived')}
             className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
               activeTab === 'archived'
-                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)]'
+                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-sm'
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest)]'
             }`}
           >
             Archived
@@ -638,7 +638,7 @@ export function T10LandingPageV3() {
                 ))}
               </div>
             ) : filteredActiveLists.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px]">
+              <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-[14px]">
                 <p className="text-[15px] text-slate-500 mb-4">No lists yet</p>
                 <button
                   onClick={() => setShowNewModal(true)}
@@ -686,7 +686,7 @@ export function T10LandingPageV3() {
                 ))}
               </div>
             ) : filteredCompletedWeeks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px]">
+              <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-[14px]">
                 <p className="text-[15px] text-slate-500 mb-2">No completed weeks yet</p>
                 <p className="text-[13px] text-slate-400">Complete a week by checking out all items</p>
               </div>
@@ -718,7 +718,7 @@ export function T10LandingPageV3() {
                 ))}
               </div>
             ) : filteredArchivedLists.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px]">
+              <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-[14px]">
                 <p className="text-[15px] text-slate-500 mb-2">No archived lists</p>
                 <p className="text-[13px] text-slate-400">Archived lists will appear here</p>
               </div>
@@ -788,7 +788,7 @@ export function T10LandingPageV3() {
           />
           {/* Dropdown */}
           <div
-            className="fixed z-[99999] w-44 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg shadow-xl py-1 animate-in fade-in zoom-in-95 duration-150"
+            className="fixed z-[99999] w-44 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-lg shadow-xl py-1 animate-in fade-in zoom-in-95 duration-150"
             style={{
               top: menuOpen.rect.bottom + 4,
               left: menuOpen.rect.right - 176,
@@ -801,9 +801,9 @@ export function T10LandingPageV3() {
                 setShowRenameModal(true);
                 setMenuOpen(null);
               }}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors"
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 dark:text-[var(--ds-text-subtlest)] hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay)] transition-colors"
             >
-              <Pencil size={15} className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
+              <Pencil size={15} className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" />
               Rename
             </button>
             <button
@@ -813,12 +813,12 @@ export function T10LandingPageV3() {
                 setShowArchiveModal(true);
                 setMenuOpen(null);
               }}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors"
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 dark:text-[var(--ds-text-subtlest)] hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay)] transition-colors"
             >
-              <Archive size={15} className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
+              <Archive size={15} className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]" />
               Archive
             </button>
-            <div className="my-1 border-t border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
+            <div className="my-1 border-t border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1))]" />
             <button
               type="button"
               onClick={() => {

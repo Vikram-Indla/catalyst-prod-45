@@ -56,10 +56,10 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
   };
 
   const PRIORITY_ACCENT: Record<string, string> = {
-    urgent: 'var(--ds-text-danger, #EF4444)',
-    high: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-    medium: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-    low: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+    urgent: 'var(--ds-text-danger)',
+    high: 'var(--ds-text-warning, var(--cp-warning))',
+    medium: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+    low: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
   };
 
   return (
@@ -165,7 +165,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                         No items in this release
                       </div>
                     ) : groupIssues.map(issue => {
-                      const accentColor = PRIORITY_ACCENT[issue.priority] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+                      const accentColor = PRIORITY_ACCENT[issue.priority] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
                       const isHovered = hoveredId === issue.id;
                       return (
                         <div
@@ -185,7 +185,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                         >
                           <GripVertical
                             size={12}
-                            color="var(--ds-border, #DFE1E6)"
+                            color="var(--ds-border)"
                             className="flex-shrink-0"
                             style={{
                               opacity: isHovered ? 1 : 0,

@@ -67,35 +67,35 @@ export type KanbanViewMode = 'board' | 'swimlane';
 
 // Catalyst V5 Color Palette (spec-mandated)
 export const CATALYST_COLORS = {
-  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  primaryHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-  primaryLight: 'var(--ds-background-selected, #eff6ff)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  primaryHover: 'var(--ds-background-brand-bold-hovered)',
+  primaryLight: 'var(--ds-background-selected)',
   
-  teal: 'var(--ds-chart-teal-bold, #0d9488)',
-  tealLight: 'var(--ds-background-success, #DFFCF0)',
+  teal: 'var(--ds-chart-teal-bold)',
+  tealLight: 'var(--ds-background-success)',
   
-  warning: 'var(--ds-text-warning, #d97706)',
-  warningLight: 'var(--ds-background-warning, #FFF7D6)',
+  warning: 'var(--ds-text-warning)',
+  warningLight: 'var(--ds-background-warning)',
   
-  danger: 'var(--ds-text-danger, #ef4444)',
-  dangerLight: 'var(--ds-background-danger, #fef2f2)',
+  danger: 'var(--ds-text-danger)',
+  dangerLight: 'var(--ds-background-danger)',
   
-  success: 'var(--ds-background-success-bold, #059669)',
-  successLight: 'var(--ds-background-success, #DFFCF0)',
+  success: 'var(--ds-background-success-bold)',
+  successLight: 'var(--ds-background-success)',
   
-  purple: 'var(--ds-background-discovery-bold, #8b5cf6)',
-  purpleLight: 'var(--ds-background-discovery, #F3F0FF)',
+  purple: 'var(--ds-background-discovery-bold)',
+  purpleLight: 'var(--ds-background-discovery)',
   
-  gray50: 'var(--ds-surface-sunken, #F7F8F9)',
-  gray100: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-  gray200: 'var(--ds-border, #e5e7eb)',
-  gray300: 'var(--ds-border, #DFE1E6)',
-  gray400: 'var(--ds-text-disabled, #8590A2)',
-  gray500: 'var(--ds-text-subtlest, #626F86)',
-  gray600: 'var(--ds-text-subtlest, #626F86)',
-  gray700: 'var(--ds-text-subtle, #44546F)',
-  gray800: 'var(--ds-text, #172B4D)',
-  gray900: 'var(--ds-text, #172B4D)',
+  gray50: 'var(--ds-surface-sunken)',
+  gray100: 'var(--ds-background-neutral-subtle)',
+  gray200: 'var(--ds-border)',
+  gray300: 'var(--ds-border)',
+  gray400: 'var(--ds-text-disabled)',
+  gray500: 'var(--ds-text-subtlest)',
+  gray600: 'var(--ds-text-subtlest)',
+  gray700: 'var(--ds-text-subtle)',
+  gray800: 'var(--ds-text)',
+  gray900: 'var(--ds-text)',
 } as const;
 
 // Status color mapping by slug - Catalyst V5 semantic colors

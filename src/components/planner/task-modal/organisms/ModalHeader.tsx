@@ -225,7 +225,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 backgroundColor: COLORS.accent,
                 border: 'none',
                 borderRadius: '8px',
-                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 cursor: 'pointer'
               }}
               title="Save title"
@@ -306,7 +306,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               borderRadius: '16px',
               padding: '24px',
               width: '400px',
@@ -325,12 +325,12 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 onClick={() => setShowDeleteConfirm(false)}
                 style={{
                   padding: '10px 20px',
-                  backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
+                  backgroundColor: 'var(--ds-surface-sunken)',
                   border: 'none',
                   borderRadius: '12px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
-                  color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+                  color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
                   cursor: 'pointer'
                 }}
               >
@@ -341,12 +341,12 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 disabled={isLoading}
                 style={{
                   padding: '10px 20px',
-                  backgroundColor: 'var(--ds-text-danger, #dc2626)',
+                  backgroundColor: 'var(--ds-text-danger)',
                   border: 'none',
                   borderRadius: '12px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
                   opacity: isLoading ? 0.7 : 1
                 }}
@@ -394,8 +394,8 @@ const KebabMenu: React.FC<{
           padding: '10px 14px',
           borderRadius: '8px',
           cursor: disabled ? 'not-allowed' : 'pointer',
-          backgroundColor: isHovered && !disabled ? (danger ? 'var(--ds-background-danger, #fef2f2)' : COLORS.surfaceHover) : 'transparent',
-          color: danger ? 'var(--ds-text-danger, #dc2626)' : COLORS.textPrimary,
+          backgroundColor: isHovered && !disabled ? (danger ? 'var(--ds-background-danger)' : COLORS.surfaceHover) : 'transparent',
+          color: danger ? 'var(--ds-text-danger)' : COLORS.textPrimary,
           fontSize: 'var(--ds-font-size-400)',
           transition: 'background-color 0.1s ease',
           opacity: disabled ? 0.5 : 1

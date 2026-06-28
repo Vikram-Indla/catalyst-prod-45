@@ -245,8 +245,8 @@ function TableResizeBarItem({ anchor, editor }: ItemProps) {
           width: BAR_WIDTH,
           height: visibleHeight,
           background: dragging
-            ? "var(--ds-link-pressed, #0055CC)"
-            : "var(--ds-link, #0C66E4)",
+            ? "var(--ds-link-pressed)"
+            : "var(--ds-link)",
           borderRadius: 1,
           transition: dragging ? "none" : "background-color 120ms ease",
         }}

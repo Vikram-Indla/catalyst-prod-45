@@ -33,12 +33,12 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
 
       <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 56px)' }}>
         {isLoading && (
-          <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)' }}>
+          <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
             Loading…
           </div>
         )}
         {!isLoading && bookmarks.length === 0 && (
-          <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)' }}>
+          <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
             Nothing saved yet. Click the bookmark icon on any message to save it for later.
           </div>
         )}
@@ -50,7 +50,7 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
               alignItems: 'flex-start',
               gap: 8,
               padding: '10px 12px',
-              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              borderBottom: '1px solid var(--ds-border)',
             }}
           >
             <button
@@ -72,18 +72,18 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
                   alignItems: 'center',
                   gap: 6,
                   fontSize: 'var(--ds-font-size-300)',
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text)',
                 }}
               >
                 <span style={{ fontWeight: 500 }}>Saved message</span>
-                <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)' }}>
+                <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                   {relative(b.created_at)}
                 </span>
               </div>
               <div
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
-                  color: 'var(--ds-text-subtle, #44546F)',
+                  color: 'var(--ds-text-subtle)',
                   marginTop: 2,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -110,7 +110,7 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
                 border: 'none',
                 cursor: 'pointer',
                 padding: 4,
-                color: 'var(--ds-text-subtle, #44546F)',
+                color: 'var(--ds-text-subtle)',
               }}
             >
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>

@@ -41,7 +41,7 @@ const ITEM_BASE: React.CSSProperties = {
   border: 'none',
   cursor: 'pointer',
   fontSize: 'var(--ds-font-size-400)',
-  color: 'var(--ds-text, #172B4D)',
+  color: 'var(--ds-text)',
   textAlign: 'left',
 };
 
@@ -147,8 +147,8 @@ export function HeaderOverflowMenu({
           position: 'fixed',
           top: rect.bottom + 4,
           right: window.innerWidth - rect.right,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-surface-overlay)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 6,
           boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
           padding: '4px 0',
@@ -160,7 +160,7 @@ export function HeaderOverflowMenu({
           role="menuitemcheckbox"
           iconBefore={
             hideDone ? (
-              <Check size={14} color="var(--cp-primary-60, #0052CC)" />
+              <Check size={14} color="var(--cp-primary-60)" />
             ) : null
           }
           onClick={() => {
@@ -174,7 +174,7 @@ export function HeaderOverflowMenu({
         <div
           style={{
             height: 1,
-            background: 'var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-border)',
             margin: '4px 0',
           }}
         />
@@ -183,16 +183,16 @@ export function HeaderOverflowMenu({
           iconBefore={
             sort.field ? (
               sort.dir === 'asc' ? (
-                <ArrowUp size={14} color="var(--cp-primary-60, #0052CC)" />
+                <ArrowUp size={14} color="var(--cp-primary-60)" />
               ) : (
-                <ArrowDown size={14} color="var(--cp-primary-60, #0052CC)" />
+                <ArrowDown size={14} color="var(--cp-primary-60)" />
               )
             ) : null
           }
           iconAfter={
             <ChevronRight
               size={14}
-              color="var(--ds-text-subtlest, #6B778C)"
+              color="var(--ds-text-subtlest)"
             />
           }
           onClick={(e) => {
@@ -206,14 +206,14 @@ export function HeaderOverflowMenu({
         <div
           style={{
             height: 1,
-            background: 'var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-border)',
             margin: '4px 0',
           }}
         />
 
         <MenuItem
           disabled={bulkEditMode}
-          iconBefore={<Edit3 size={14} color="var(--cp-text-secondary, #44546F)" />}
+          iconBefore={<Edit3 size={14} color="var(--cp-text-secondary)" />}
           onClick={() => {
             onEnterBulkEdit();
             setOpen(false);
@@ -223,7 +223,7 @@ export function HeaderOverflowMenu({
         </MenuItem>
 
         <MenuItem
-          iconBefore={<Search size={14} color="var(--cp-text-secondary, #44546F)" />}
+          iconBefore={<Search size={14} color="var(--cp-text-secondary)" />}
           onClick={() => {
             onViewInSearch();
             setOpen(false);
@@ -248,8 +248,8 @@ export function HeaderOverflowMenu({
           position: 'fixed',
           top: rect.top,
           left: rect.right + 4,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-surface-overlay)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 6,
           boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
           padding: '4px 0',
@@ -266,7 +266,7 @@ export function HeaderOverflowMenu({
               key={field}
               iconAfter={
                 active ? (
-                  <Arrow size={14} color="var(--cp-primary-60, #0052CC)" />
+                  <Arrow size={14} color="var(--cp-primary-60)" />
                 ) : null
               }
               onClick={() => onCycleSort(field)}
@@ -280,7 +280,7 @@ export function HeaderOverflowMenu({
             <div
               style={{
                 height: 1,
-                background: 'var(--ds-border, #DFE1E6)',
+                background: 'var(--ds-border)',
                 margin: '4px 0',
               }}
             />
@@ -288,7 +288,7 @@ export function HeaderOverflowMenu({
               style={{
                 padding: '6px 12px',
                 fontSize: 'var(--ds-font-size-200)',
-                color: 'var(--ds-text-subtlest, #6B778C)',
+                color: 'var(--ds-text-subtlest)',
               }}
             >
               Click again to flip direction or clear.

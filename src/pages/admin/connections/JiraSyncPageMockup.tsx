@@ -21,22 +21,22 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 
 // ADS token colors
 const C = {
-  bgSurface: 'var(--ds-surface, #FFFFFF)',
-  bgSurfaceOverlay: 'var(--ds-surface-overlay, #FFFFFF)',
-  bgSurfaceSunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
-  bgSuccess: 'var(--ds-background-success, #DFFCF0)',
-  bgDanger: 'var(--ds-background-danger, #FFECEB)',
-  bgWarning: 'var(--ds-background-warning, #FFF7D6)',
-  bgInfo: 'var(--ds-background-information, #DEEBFF)',
-  textDefault: 'var(--ds-text, #172B4D)',
-  textSubtle: 'var(--ds-text-subtle, #42526E)',
-  textSubtlest: 'var(--ds-text-subtlest, #6B778C)',
-  textSuccess: 'var(--ds-text-success, #216E4E)',
-  textDanger: 'var(--ds-text-danger, #AE2A19)',
-  textWarning: 'var(--ds-text-warning, #7F5F01)',
-  textInfo: 'var(--ds-text-information, #0747A6)',
-  border: 'var(--ds-border, #DFE1E6)',
+  bgSurface: 'var(--ds-surface)',
+  bgSurfaceOverlay: 'var(--ds-surface-overlay)',
+  bgSurfaceSunken: 'var(--ds-surface-sunken)',
+  bgNeutral: 'var(--ds-background-neutral)',
+  bgSuccess: 'var(--ds-background-success)',
+  bgDanger: 'var(--ds-background-danger)',
+  bgWarning: 'var(--ds-background-warning)',
+  bgInfo: 'var(--ds-background-information)',
+  textDefault: 'var(--ds-text)',
+  textSubtle: 'var(--ds-text-subtle)',
+  textSubtlest: 'var(--ds-text-subtlest)',
+  textSuccess: 'var(--ds-text-success)',
+  textDanger: 'var(--ds-text-danger)',
+  textWarning: 'var(--ds-text-warning)',
+  textInfo: 'var(--ds-text-information)',
+  border: 'var(--ds-border)',
 } as const;
 
 // Source badges (SVG inline)
@@ -50,9 +50,9 @@ const SOURCE_ICONS = {
 function SourceAwareTitle({ title, source, style = {} }: { title: string; source: 'jira' | 'catalyst' | 'notion' | null; style?: Record<string, any> }) {
   const [showSource, setShowSource] = useState(false);
   const sourceColors = {
-    jira: 'var(--ds-link-pressed, #0747A6)',
-    catalyst: 'var(--ds-text, #172B4D)',
-    notion: 'var(--ds-text, #172B4D)',
+    jira: 'var(--ds-link-pressed)',
+    catalyst: 'var(--ds-text)',
+    notion: 'var(--ds-text)',
   };
 
   return (

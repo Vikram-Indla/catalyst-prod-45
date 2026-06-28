@@ -41,16 +41,16 @@ import { ProjectIcon } from '@/components/shared/ProjectIcon';
 // Block A rule 7 (2026-05-01): canonical hub label casing matches HubSwitcher.
 // Block A rule 1 (2026-05-01): canonical URL prefix '/product-hub' (not /producthub).
 const HUB_ITEMS = [
-  { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: 'var(--ds-icon-subtle, #42526E)' },
-  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: 'var(--ds-icon-accent-purple, #8270DB)' },
-  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--ds-icon-brand, #0052CC)' },
-  { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: 'var(--ds-icon-accent-teal, #00A3BF)' },
-  { label: 'Release Hub',  href: '/release-hub/overview', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange, #FF8B00)' },
-  { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green, #36B37E)' },
-  { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red, #DE350B)' },
-  { label: 'Tasks',     href: '/tasks/overview',          Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow, #FFAB00)' },
-  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: 'var(--ds-icon-accent-magenta, #E774BB)' },
-  { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime, #65BA43)' },
+  { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: 'var(--ds-icon-subtle)' },
+  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: 'var(--ds-icon-accent-purple)' },
+  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--ds-icon-brand)' },
+  { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: 'var(--ds-icon-accent-teal)' },
+  { label: 'Release Hub',  href: '/release-hub/overview', Icon: ShipIcon,            tone: 'var(--ds-icon-accent-orange)' },
+  { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: 'var(--ds-icon-accent-green)' },
+  { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: 'var(--ds-icon-accent-red)' },
+  { label: 'Tasks',     href: '/tasks/overview',          Icon: TaskIcon,            tone: 'var(--ds-icon-accent-yellow)' },
+  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: 'var(--ds-icon-accent-magenta)' },
+  { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: 'var(--ds-icon-accent-lime)' },
 ] as const;
 
 /**
@@ -257,30 +257,30 @@ export function SidebarBase({
   // Light-mode hex untouched ("do not touch light mode tokens. zero impact").
   const tokens: DarkTokens = {
     isDark,
-    itemText: 'var(--cp-text-secondary, #42526E)',
-    activeText: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))',
-    activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : 'var(--ds-background-selected, #E9F2FF)',
-    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+    itemText: 'var(--cp-text-secondary)',
+    activeText: 'var(--cp-text-link, var(--cp-primary-60))',
+    activeBg: isDark ? 'var(--ds-background-selected)' : 'var(--ds-background-selected)',
+    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken))',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
-    badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : 'var(--ds-background-neutral, #EBECF0)',
-    badgeText: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
+    badgeBg: isDark ? 'var(--ds-background-neutral-subtle)' : 'var(--ds-background-neutral)',
+    badgeText: 'var(--cp-text-tertiary, var(--cp-text-secondary))',
   };
 
-  // Chevron critique (2026-04-19): brand-blue (var(--cp-primary-60, #0052CC) / --cp-blue) violated
+  // Chevron critique (2026-04-19): brand-blue (var(--cp-primary-60) / --cp-blue) violated
   // the CLAUDE.md colour reservation — blue is reserved for the +Create CTA
   // only. Pulled the toggle to neutral muted tokens so the primary blue cue
   // stays unique to the primary action. Hover lifts to text-primary for an
   // affordance pop without reintroducing brand colour.
-  const chevronColor = 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))';
-  const chevronHoverColor = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
+  const chevronColor = 'var(--cp-text-tertiary, var(--cp-text-secondary))';
+  const chevronHoverColor = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse)))';
   // ADS canonical: side-nav uses --ds-surface-raised (rail surface lifts above
   // page bg --ds-background-neutral). Was incorrectly using page bg token.
-  const sidebarBg = 'var(--ds-surface-raised, var(--cp-bg-elevated, #ffffff))';
+  const sidebarBg = 'var(--ds-surface-raised, var(--cp-bg-elevated))';
   // ADS canonical: --ds-border is translucent (#a6c5e229 dark / #0b120e24 light)
-  const sidebarBorder = 'var(--ds-border, var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))';
-  const dividerColor = 'var(--ds-border, var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))';
-  const sectionLabel = 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))';
-  const hubLabel = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
+  const sidebarBorder = 'var(--ds-border, var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))))';
+  const dividerColor = 'var(--ds-border, var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))))';
+  const sectionLabel = 'var(--cp-text-tertiary, var(--cp-text-secondary))';
+  const hubLabel = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse)))';
 
   const isActive = (path: string, exact: boolean = false, activeMatchPaths: string[] = []) => {
     if (activeMatchPaths.some((matchPath) => location.pathname === matchPath || location.pathname.startsWith(matchPath + '/'))) {
@@ -332,7 +332,7 @@ export function SidebarBase({
           willChange: 'width',
           contain: 'layout style',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? 'var(--ds-border, #454545) transparent' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) transparent',
+          scrollbarColor: isDark ? 'var(--ds-border) transparent' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral)) transparent',
         }}
       >
         {/* Header — hub badge + label only. The collapse toggle now lives
@@ -389,7 +389,7 @@ export function SidebarBase({
                     fontFamily: 'var(--cp-font-heading)',
                     fontSize: token('font.size.100', '14px'),
                     fontWeight: 600,
-                    color: 'var(--ds-text, #292A2E)',
+                    color: 'var(--ds-text)',
                     letterSpacing: '-0.3px',
                     flex: 1,
                     textAlign: 'left',
@@ -417,7 +417,7 @@ export function SidebarBase({
                     fontFamily: 'var(--cp-font-heading)',
                     fontSize: token('font.size.100', '14px'),
                     fontWeight: 600,
-                    color: 'var(--ds-text, #292A2E)',
+                    color: 'var(--ds-text)',
                     letterSpacing: '-0.3px',
                   }}
                 >
@@ -452,7 +452,7 @@ export function SidebarBase({
                     fontFamily: 'var(--ds-font-family-code, monospace)',
                     fontSize: 'var(--ds-font-size-50)',
                     fontWeight: 700,
-                    color: 'var(--ds-text-subtlest, #626F86)',
+                    color: 'var(--ds-text-subtlest)',
                     letterSpacing: '0.5px',
                     textTransform: 'uppercase' as const,
                     lineHeight: 1,
@@ -479,7 +479,7 @@ export function SidebarBase({
                 <span
                   style={{
                     fontFamily: 'var(--cp-font-body)',
-                    color: 'var(--ds-text-subtlest, #626F86)',
+                    color: 'var(--ds-text-subtlest)',
                     fontSize: token('font.size.050', '11px'),
                     fontWeight: 600,
                     letterSpacing: '0',
@@ -506,7 +506,7 @@ export function SidebarBase({
               <span
                 style={{
                   fontFamily: 'var(--cp-font-body)',
-                  color: 'var(--ds-text-subtlest, #626F86)',
+                  color: 'var(--ds-text-subtlest)',
                   fontSize: token('font.size.050', '11px'),
                   fontWeight: 600,
                   letterSpacing: '0',
@@ -549,7 +549,7 @@ export function SidebarBase({
                       <span
                         style={{
                           fontFamily: 'var(--cp-font-body)',
-                          color: 'var(--ds-text-subtlest, #626F86)',
+                          color: 'var(--ds-text-subtlest)',
                           fontSize: token('font.size.050', '11px'),
                           fontWeight: 600,
                           letterSpacing: '0',
@@ -736,7 +736,7 @@ function renderMenuItem(
             top: '6px',
             bottom: '6px',
             width: '3px',
-            background: 'var(--ds-text-selected, #0C66E4)',
+            background: 'var(--ds-text-selected)',
             borderRadius: '0 3px 3px 0',
           }}
         />
@@ -758,8 +758,8 @@ function renderMenuItem(
         />
       )}
       {/* Icon container — ADS icon color tokens:
-          active  → color.icon.brand (var(--ds-link, #0052CC)) — council-approved 2026-05-28
-          inactive → color.icon.subtle (var(--ds-text-subtlest, #6B778C))
+          active  → color.icon.brand (var(--ds-link)) — council-approved 2026-05-28
+          inactive → color.icon.subtle (var(--ds-text-subtlest))
           Source: https://atlassian.design/foundations/color */}
       <span
         className="flex items-center justify-center flex-shrink-0"
@@ -776,8 +776,8 @@ function renderMenuItem(
             className="h-[20px] w-[20px]"
             style={{
               color: active
-                ? 'var(--ds-icon-brand, #0052CC)'
-                : 'var(--ds-icon, #172B4D)',
+                ? 'var(--ds-icon-brand)'
+                : 'var(--ds-icon)',
               strokeWidth: 2,
             }}
           />
@@ -831,11 +831,11 @@ function renderMenuItem(
             starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
           style={{
-            color: starred ? 'var(--ds-text-warning, #f59e0b)' : 'var(--text-4)',
+            color: starred ? 'var(--ds-text-warning)' : 'var(--text-4)',
           }}
           onMouseEnter={(e) => {
             if (!starred) {
-              e.currentTarget.style.color = 'var(--ds-text-warning, #f59e0b)';
+              e.currentTarget.style.color = 'var(--ds-text-warning)';
               e.currentTarget.style.background = 'var(--ds-background-warning-subtle, rgba(245,158,11,0.1))';
             }
           }}
@@ -869,13 +869,13 @@ function renderMenuItem(
               ? 'var(--ds-background-accent-purple-subtlest, rgba(124,58,237,0.06))'
               : item.textBadgeVariant === 'new'
               // ADS color.background.success.bold
-              ? 'var(--ds-background-success-bold, #1F845A)'
+              ? 'var(--ds-background-success-bold)'
               : item.textBadgeVariant === 'beta'
-              ? 'linear-gradient(135deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%)'
+              ? 'linear-gradient(135deg, var(--ds-text-warning) 0%, var(--ds-text-warning) 100%)'
               : 'hsl(var(--brand-primary))',
             color: item.textBadge === 'AI'
-              ? 'var(--cp-purple-60, #7C3AED)'
-              : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              ? 'var(--cp-purple-60)'
+              : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             // ADS color.border.accent.purple
             border: item.textBadge === 'AI' ? '1px solid var(--ds-border-accent-purple, rgba(124,58,237,0.12))' : 'none',
             position: expanded ? 'relative' : 'absolute',

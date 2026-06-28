@@ -420,7 +420,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
             padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
             transition: 'background 100ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = BRAND; }}
         >
           <ChevronLeft size={16} /> Resources
@@ -470,7 +470,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
                 <span>{resourceRole || '—'}</span>
                 {deptName && <><span>·</span><span>{deptName}</span></>}
                 {resourceRid && <><span>·</span><span style={{
-                  background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 4,
+                  background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information)', borderRadius: 4,
                   padding: '2px 7px', fontFamily: 'var(--cp-font-mono)',
                   fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}

@@ -56,8 +56,8 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
       <button onClick={() => setOpen(o => !o)} style={{
         display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px',
-        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, background: 'var(--ds-surface, #fff)', cursor: 'pointer',
-        fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'inherit',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 3, background: 'var(--ds-surface)', cursor: 'pointer',
+        fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontFamily: 'inherit',
       }}>
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
@@ -66,22 +66,22 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 160,
-          background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 4,
+          background: 'var(--ds-surface)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 4,
           boxShadow: '0 4px 8px var(--ds-shadow-raised, rgba(9,30,66,.25))', zIndex: 60, overflow: 'hidden',
         }}>
           {TYPE_OPTIONS.map(opt => (
             <div key={opt.key} onClick={() => { onChange(opt.key); setOpen(false); }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8, height: 36, padding: '0 12px',
-                cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-                background: opt.key === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
+                cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
+                background: opt.key === value ? 'var(--ds-background-information)' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
+              onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle)))'; }}
               onMouseLeave={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
-              {opt.key === value && <CheckMarkIcon label="" color="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))" />}
+              {opt.key === value && <CheckMarkIcon label="" color="var(--ds-background-brand-bold, var(--cp-primary-60))" />}
             </div>
           ))}
         </div>
@@ -129,13 +129,13 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 4px)', right: 0, minWidth: 200, maxHeight: 320, overflowY: 'auto',
-          background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 6,
+          background: 'var(--ds-surface)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 6,
           boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,.25))', zIndex: 80, padding: '4px 0',
         }}>
           {childDisplayGroups.map(group => (
             <div key={group.groupLabel}>
               <div style={{
-                fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',
+                fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase',
                 letterSpacing: '0.06em', padding: '8px 12px 4px',
               }}>{group.groupLabel}</div>
               {group.statuses.map(s => {
@@ -150,14 +150,14 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
                     }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
-                      cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-                      background: isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
+                      cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
+                      background: isActive ? 'var(--ds-background-information)' : 'transparent',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle)))'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <span style={{ flex: 1 }}>{s}</span>
-                    {isActive && <CheckMarkIcon label="" color="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))" />}
+                    {isActive && <CheckMarkIcon label="" color="var(--ds-background-brand-bold, var(--cp-primary-60))" />}
                   </div>
                 );
               })}
@@ -179,7 +179,7 @@ function SortableHeader({ label, sortKey, currentSort, currentDir, onSort, align
       onClick={() => onSort(sortKey)}
       style={{
         display: 'flex', alignItems: 'center', gap: 3, background: 'none', border: 'none',
-        cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: isActive ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+        cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: isActive ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' : 'var(--ds-text-subtlest, var(--cp-text-secondary))',
         textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'inherit', padding: 0,
         justifyContent: align === 'right' ? 'flex-end' : align === 'center' ? 'center' : 'flex-start',
         width: '100%',
@@ -205,7 +205,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
   onClickKey: (id: string) => void;
 }) {
   const isDone = item.status_category === 'done';
-  const avatarColor = item.assignee_display_name ? getAvatarColor(item.assignee_display_name) : 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))';
+  const avatarColor = item.assignee_display_name ? getAvatarColor(item.assignee_display_name) : 'var(--ds-text-disabled, var(--ds-border-bold))';
   const avatarInitial = item.assignee_display_name?.charAt(0).toUpperCase() ?? '?';
 
   return (
@@ -217,7 +217,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
           onClick={e => { e.stopPropagation(); onClickKey(item.id); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-mono)',
-            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', padding: 0, flexShrink: 0,
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', padding: 0, flexShrink: 0,
             textDecoration: 'none',
           }}
           onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
@@ -227,7 +227,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
           {item.issue_key}
         </button>
         <span style={{
-          fontSize: 'var(--ds-font-size-300)', color: isDone ? 'var(--ds-shadow-raised, rgba(9,30,66,0.4))' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+          fontSize: 'var(--ds-font-size-300)', color: isDone ? 'var(--ds-shadow-raised, rgba(9,30,66,0.4))' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
           textDecoration: isDone ? 'line-through' : 'none',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>{item.summary}</span>
@@ -246,7 +246,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
           <div style={{
             width: 24, height: 24, borderRadius: '50%', background: avatarColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface, #fff)',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface)',
           }} title={item.assignee_display_name ?? 'Unassigned'}>
             {avatarInitial}
           </div>
@@ -414,10 +414,10 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
           <button onClick={() => setCreating(true)} title="Create sub-task" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-            cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', transition: 'background 0.15s, color 0.15s',
+            cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', transition: 'background 0.15s, color 0.15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken))'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary))'; }}
           >
             <AddIcon label="Create sub-task" />
           </button>
@@ -427,14 +427,14 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {creating && children.length > 0 && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 8, margin: '0 0 4px 0',
-            background: 'var(--ds-surface-sunken, #FAFBFC)',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 8, margin: '0 0 4px 0',
+            background: 'var(--ds-surface-sunken)',
           }}>
             <AiChatIcon label="" />
-            <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', flex: 1 }}>Create suggested work items</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', flex: 1 }}>Create suggested work items</span>
             <button style={{
-              height: 28, padding: '0 12px', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
-              background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'inherit',
+              height: 28, padding: '0 12px', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 3,
+              background: 'var(--ds-surface)', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontFamily: 'inherit',
             }}>Suggest</button>
           </div>
         )}
@@ -442,10 +442,10 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {/* Progress bar */}
         {children.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0 6px', marginBottom: 2 }}>
-            <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', overflow: 'hidden' }}>
-              <div style={{ width: `${donePercent}%`, height: '100%', borderRadius: 3, background: 'var(--ds-background-success-bold, #36B37E)', transition: 'width 0.3s ease' }} />
+            <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', overflow: 'hidden' }}>
+              <div style={{ width: `${donePercent}%`, height: '100%', borderRadius: 3, background: 'var(--ds-background-success-bold)', transition: 'width 0.3s ease' }} />
             </div>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0, fontWeight: 500 }}>{donePercent}% Done</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', flexShrink: 0, fontWeight: 500 }}>{donePercent}% Done</span>
           </div>
         )}
 
@@ -453,7 +453,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {sorted.length > 0 && (
           <div style={{
             display: 'flex', alignItems: 'center',
-            padding: '6px 12px 6px 40px', borderBottom: '2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+            padding: '6px 12px 6px 40px', borderBottom: '2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
           }}>
             <div style={{ flex: 1 }}>
               <SortableHeader label="Work" sortKey="work" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} />
@@ -502,8 +502,8 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {creating && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 0,
-            border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3, margin: '4px 0 0',
-            background: 'var(--ds-surface, #fff)', overflow: 'hidden',
+            border: '2px solid var(--ds-border-focused)', borderRadius: 3, margin: '4px 0 0',
+            background: 'var(--ds-surface)', overflow: 'hidden',
           }}>
             <input
               ref={createRef}
@@ -518,11 +518,11 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
               maxLength={255}
               style={{
                 flex: 1, height: 36, padding: '0 12px', border: 'none', outline: 'none',
-                fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'inherit',
+                fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontFamily: 'inherit',
                 background: 'transparent',
               }}
             />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' }}>
               <TypeSelector value={draftType} onChange={setDraftType} />
               <button
                 onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
@@ -530,9 +530,9 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
                 title="Create (Enter)"
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  width: 28, height: 28, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
-                  background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
-                  color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', opacity: draftSummary.trim() ? 1 : 0.5,
+                  width: 28, height: 28, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 3,
+                  background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
+                  color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', opacity: draftSummary.trim() ? 1 : 0.5,
                 }}
               >
                 {createMutation.isPending ? <Spinner size="small" /> : <ArrowLeftIcon label="Create" size="small" />}
@@ -543,7 +543,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {creating && (
           <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
             <button onClick={() => { setCreating(false); setDraftSummary(''); }}
-              style={{ background: 'none', border: 'none', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', cursor: 'pointer', fontFamily: 'inherit' }}>
+              style={{ background: 'none', border: 'none', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', cursor: 'pointer', fontFamily: 'inherit' }}>
               Cancel
             </button>
           </div>

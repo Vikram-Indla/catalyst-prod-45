@@ -25,11 +25,11 @@ interface WorkItemRowProps {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, #dc2626)',
-  High: 'var(--ds-background-warning-bold, #E2B203)',
-  Medium: 'var(--ds-text-warning, #d97706)',
-  Low: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  Lowest: 'var(--ds-text-subtlest, #64748b)',
+  Highest: 'var(--ds-text-danger)',
+  High: 'var(--ds-background-warning-bold)',
+  Medium: 'var(--ds-text-warning)',
+  Low: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  Lowest: 'var(--ds-text-subtlest)',
 };
 
 function formatDate(d: string | null) {
@@ -42,13 +42,13 @@ export function WorkItemRow({
   avatarUrl, themeName, themeColor,
   onToggleExpand, onToggleSelect, onOpenDrawer,
 }: WorkItemRowProps) {
-  const priorityColor = PRIORITY_COLORS[item.priority] || 'var(--ds-text-subtlest, #64748b)';
+  const priorityColor = PRIORITY_COLORS[item.priority] || 'var(--ds-text-subtlest)';
   const indentPx = depth * 24;
   const [imgError, setImgError] = useState(false);
 
   return (
     <div
-      className="group grid items-center border-b hover:bg-[var(--ds-surface-sunken,#f8fafc)] cursor-pointer transition-colors"
+      className="group grid items-center border-b hover:bg-[var(--ds-surface-sunken)] cursor-pointer transition-colors"
       style={{
         gridTemplateColumns: '36px 36px minmax(140px, auto) 1fr 120px 140px 120px 130px 90px 90px 90px',
         height: 'var(--wh-row-height, 44px)',
@@ -73,7 +73,7 @@ export function WorkItemRow({
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <div
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 rounded text-[10px] font-semibold whitespace-nowrap opacity-0 group-hover/type:opacity-100 pointer-events-none transition-opacity z-50"
-          style={{ backgroundColor: 'var(--ds-text, #172B4D)', color: 'var(--bg-app)' }}
+          style={{ backgroundColor: 'var(--ds-text)', color: 'var(--bg-app)' }}
         >
           {item.issue_type}
         </div>
@@ -114,7 +114,7 @@ export function WorkItemRow({
         {Array.isArray(item.sprint_release) && item.sprint_release.length > 0 ? (
           <span
             className="inline-flex px-2 py-0.5 rounded text-[10px] font-medium truncate max-w-full"
-            style={{ backgroundColor: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-background-success-bold, #1F845A)', border: '1px solid var(--ds-background-success, #DFFCF0)' }}
+            style={{ backgroundColor: 'var(--ds-background-success)', color: 'var(--ds-background-success-bold)', border: '1px solid var(--ds-background-success)' }}
             title={item.sprint_release.map((v: any) => v.name).join(', ')}
           >
             {item.sprint_release[0]?.name}
@@ -144,7 +144,7 @@ export function WorkItemRow({
             {avatarUrl && !imgError ? (
               <img src={avatarUrl} alt={item.assignee_display_name} className="w-5 h-5 rounded-full shrink-0 object-cover" onError={() => setImgError(true)} />
             ) : (
-              <span className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0" style={{ backgroundColor: 'var(--ds-background-discovery-bold, #6366f1)' }}>
+              <span className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0" style={{ backgroundColor: 'var(--ds-background-discovery-bold)' }}>
                 {item.assignee_display_name[0]?.toUpperCase()}
               </span>
             )}

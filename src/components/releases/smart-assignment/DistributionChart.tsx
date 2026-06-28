@@ -21,9 +21,9 @@ const CHART_COLORS = [
   CATALYST_V5.primary,
   CATALYST_V5.teal,
   CATALYST_V5.warning,
-  'var(--ds-text-danger, #ef4444)',
-  'var(--ds-background-discovery-bold, #8b5cf6)',
-  'var(--ds-background-accent-magenta-bolder, #ec4899)',
+  'var(--ds-text-danger)',
+  'var(--ds-background-discovery-bold)',
+  'var(--ds-background-accent-magenta-bolder)',
 ];
 
 const HEALTH_APPEARANCE: Record<string, LozengeAppearance> = {

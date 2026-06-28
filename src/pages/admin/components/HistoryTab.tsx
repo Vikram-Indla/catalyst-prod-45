@@ -188,7 +188,7 @@ export default function HistoryTab() {
             marginTop: token('space.075', '6px'),
             marginBottom: 0,
             fontSize: 13,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             maxWidth: 760,
           }}
         >
@@ -210,15 +210,15 @@ export default function HistoryTab() {
       </div>
 
       {isLoading ? (
-        <div style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), fontSize: 13 }}>Loading…</div>
+        <div style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'), fontSize: 13 }}>Loading…</div>
       ) : !history || history.length === 0 ? (
         <div
           style={{
             padding: token('space.300', '24px'),
-            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
             borderRadius: 6,
-            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             fontSize: 13,
           }}
         >
@@ -227,14 +227,14 @@ export default function HistoryTab() {
       ) : (
         <div
           style={{
-            border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
+            border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
             borderRadius: 6,
             overflow: 'hidden',
           }}
         >
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
+              <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)') }}>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>When</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Component</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Route</th>
@@ -246,8 +246,8 @@ export default function HistoryTab() {
             </thead>
             <tbody>
               {history.map(row => (
-                <tr key={row.id} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}>
-                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', whiteSpace: 'nowrap', fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+                <tr key={row.id} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}` }}>
+                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', whiteSpace: 'nowrap', fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))') }}>
                     {new Date(row.applied_at).toLocaleString()}
                   </td>
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>
@@ -261,7 +261,7 @@ export default function HistoryTab() {
                         style={{
                           fontFamily: 'var(--ds-font-family-code)',
                           fontSize: 12,
-                          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+                          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
                         }}
                       >
                         {row.route}
@@ -274,7 +274,7 @@ export default function HistoryTab() {
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', fontFamily: 'var(--ds-font-family-code)', fontSize: 12 }}>
                     v{row.version}
                   </td>
-                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', maxWidth: 320, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', maxWidth: 320, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))') }}>
                     {row.notes ?? ''}
                   </td>
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', textAlign: 'right' }}>
@@ -302,7 +302,7 @@ export default function HistoryTab() {
               </ModalTitle>
             </ModalHeader>
             <ModalBody>
-              <div style={{ fontSize: 13, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), marginBottom: token('space.200', '16px') }}>
+              <div style={{ fontSize: 13, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'), marginBottom: token('space.200', '16px') }}>
                 This will affect <strong>{rollbackConsumerCount} consumer files</strong> that import{' '}
                 <code>{rollbackEntry?.name ?? rollbackTarget.component_id}</code>{' '}
                 at the <strong>{rollbackScopeLabel}</strong> scope. {rollbackChangedCount}{' '}
@@ -310,7 +310,7 @@ export default function HistoryTab() {
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <thead>
-                  <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
+                  <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)') }}>
                     <th style={{ padding: 8, textAlign: 'left' }}>Flag</th>
                     <th style={{ padding: 8, textAlign: 'left' }}>Current</th>
                     <th style={{ padding: 8, textAlign: 'left' }}>After rollback</th>
@@ -319,7 +319,7 @@ export default function HistoryTab() {
                 </thead>
                 <tbody>
                   {rollbackDiff.map(d => (
-                    <tr key={d.key} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}>
+                    <tr key={d.key} style={{ borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}` }}>
                       <td style={{ padding: 8, fontFamily: 'var(--ds-font-family-code)' }}>{d.key}</td>
                       <td style={{ padding: 8 }}>{String(d.from ?? '—')}</td>
                       <td style={{ padding: 8 }}>{String(d.to ?? '—')}</td>
@@ -327,7 +327,7 @@ export default function HistoryTab() {
                         {d.change === 'changed' && <Lozenge appearance="moved">changed</Lozenge>}
                         {d.change === 'added' && <Lozenge appearance="success">added</Lozenge>}
                         {d.change === 'removed' && <Lozenge appearance="removed">removed</Lozenge>}
-                        {d.change === 'unchanged' && <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>—</span>}
+                        {d.change === 'unchanged' && <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))') }}>—</span>}
                       </td>
                     </tr>
                   ))}

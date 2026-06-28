@@ -32,8 +32,8 @@ export const STATUS_CONFIG: Record<WorkItemStatus, { bg: string; text: string; l
     label: 'Blocked',
   },
   'Cancelled': {
-    bg: 'var(--ds-surface-sunken, #F7F8F9)',
-    text: 'var(--ds-text-disabled, #8590A2)',
+    bg: 'var(--ds-surface-sunken)',
+    text: 'var(--ds-text-disabled)',
     label: 'Cancelled',
   },
 };
@@ -61,32 +61,32 @@ export const TYPE_CONFIG: Record<WorkItemType, { bg: string; text: string; label
     label: 'Bug',
   },
   'Task': {
-    bg: 'var(--ds-surface-sunken, #F7F8F9)',
-    text: 'var(--ds-text-subtle, #44546F)',
+    bg: 'var(--ds-surface-sunken)',
+    text: 'var(--ds-text-subtle)',
     label: 'Task',
   },
   'Incident': {
-    bg: 'var(--ds-background-warning, #FFF7D6)',
-    text: 'var(--ds-text-warning, #974F0C)',
+    bg: 'var(--ds-background-warning)',
+    text: 'var(--ds-text-warning)',
     label: 'Incident',
   },
 };
 
 /* ── Priority Colors ── */
 export const PRIORITY_CONFIG: Record<Priority, { color: string; label: string }> = {
-  'Critical': { color: 'var(--ds-background-danger-bold, #ef4444)', label: 'Critical' },
-  'High': { color: 'var(--ds-background-warning-bold, #d97706)', label: 'High' },
-  'Medium': { color: 'var(--ds-link, #2563eb)', label: 'Medium' },
-  'Low': { color: 'var(--ds-text-disabled, #8590A2)', label: 'Low' },
+  'Critical': { color: 'var(--ds-background-danger-bold)', label: 'Critical' },
+  'High': { color: 'var(--ds-background-warning-bold)', label: 'High' },
+  'Medium': { color: 'var(--ds-link)', label: 'Medium' },
+  'Low': { color: 'var(--ds-text-disabled)', label: 'Low' },
 };
 
 /* ── Release Status Colors ── */
 export const RELEASE_STATUS_CONFIG: Record<ReleaseStatus, { bg: string; text: string; dot: string }> = {
-  'Planned': { bg: 'var(--ds-surface-sunken, #F7F8F9)', text: 'var(--ds-text-subtle, #44546F)', dot: 'var(--ds-text-disabled, #8590A2)' },
-  'Active': { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1d4ed8)', dot: 'var(--ds-link, #2563eb)' },
-  'At Risk': { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)', dot: 'var(--ds-background-danger-bold, #ef4444)' },
-  'Completed': { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #1F845A)', dot: 'var(--ds-background-success-bold, #1F845A)' },
-  'Cancelled': { bg: 'var(--ds-surface-sunken, #F7F8F9)', text: 'var(--ds-text-subtle, #44546F)', dot: 'var(--ds-text-subtlest, #626F86)' },
+  'Planned': { bg: 'var(--ds-surface-sunken)', text: 'var(--ds-text-subtle)', dot: 'var(--ds-text-disabled)' },
+  'Active': { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', dot: 'var(--ds-link)' },
+  'At Risk': { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', dot: 'var(--ds-background-danger-bold)' },
+  'Completed': { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', dot: 'var(--ds-background-success-bold)' },
+  'Cancelled': { bg: 'var(--ds-surface-sunken)', text: 'var(--ds-text-subtle)', dot: 'var(--ds-text-subtlest)' },
 };
 
 /* ── Sidebar Navigation Items ── */

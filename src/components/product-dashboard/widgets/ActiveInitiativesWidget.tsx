@@ -74,12 +74,12 @@ function stepToStatus(step: string | null): BrStatus {
 // ─── Status chip ──────────────────────────────────────────────────────────────
 
 const CHIP_STYLE: Record<BrStatus, { bg: string; color: string }> = {
-  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, var(--ds-link, #0C66E4))') },
-  'In Review':{ bg: token('color.background.discovery', 'var(--ds-background-discovery, #F3F0FF)'), color: token('color.text.discovery', 'var(--ds-background-discovery-bold, #6E5DC6)') },
-  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))') },
-  Done:      { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
-  Planned:   { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))') },
-  'On Hold': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') },
+  Active:    { bg: token('color.background.information', 'var(--ds-background-selected)'), color: token('color.text.information', 'var(--ds-link, var(--ds-link))') },
+  'In Review':{ bg: token('color.background.discovery', 'var(--ds-background-discovery)'), color: token('color.text.discovery', 'var(--ds-background-discovery-bold)') },
+  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger)'), color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger))') },
+  Done:      { bg: token('color.background.success', 'var(--ds-background-success)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold))') },
+  Planned:   { bg: token('color.background.neutral', 'var(--ds-background-neutral)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest))') },
+  'On Hold': { bg: token('color.background.warning', 'var(--ds-background-warning)'), color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning))') },
 };
 
 function StatusChip({ status }: { status: BrStatus }) {
@@ -135,18 +135,18 @@ function ReleaseBar({ section, rangeStart, totalMs, todayPct }: {
     && today >= section.qStart && today <= section.qEnd;
 
   const barBg = isActive
-    ? 'var(--ds-background-accent-blue-subtlest, #E9F2FF)'
-    : 'var(--ds-background-neutral-subtle, #F7F8F9)';
+    ? 'var(--ds-background-accent-blue-subtlest)'
+    : 'var(--ds-background-neutral-subtle)';
   const barBorder = isActive
-    ? 'var(--ds-border-accent-blue, #0C66E4)'
-    : 'var(--ds-border, #DFE1E6)';
+    ? 'var(--ds-border-accent-blue)'
+    : 'var(--ds-border)';
 
   return (
     <div style={{ position: 'relative', height: 18, flex: 1, minWidth: 0 }}>
       {/* Today line */}
       <div aria-hidden style={{
         position: 'absolute', left: `${todayPct}%`, top: 0, bottom: 0,
-        width: 1.5, background: 'var(--ds-border-accent-red, #C9372C)', opacity: 0.45, zIndex: 1, pointerEvents: 'none',
+        width: 1.5, background: 'var(--ds-border-accent-red)', opacity: 0.45, zIndex: 1, pointerEvents: 'none',
       }} />
       {/* Quarter band */}
       {section.qStart && section.qEnd && (
@@ -179,7 +179,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
   const right = pct(e, rangeStart, totalMs);
   const hasBar = s && e && totalMs > 0;
   const barBg     = token('color.background.accent.blue.subtle', '#CCE0FF');
-  const barBorder = token('color.border.accent.blue', 'var(--ds-link, #0C66E4)');
+  const barBorder = token('color.border.accent.blue', 'var(--ds-link)');
 
   return (
     <div style={{
@@ -188,7 +188,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
       alignItems: 'center',
       gap: 8,
       padding: '5px 0',
-      borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}18`,
+      borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}18`,
     }}>
       {/* Indent spacer */}
       <div />
@@ -198,7 +198,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
         <div style={{
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
-          color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+          color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
           fontFamily: 'ui-monospace, monospace',
           letterSpacing: '0.02em',
           lineHeight: 1.3,
@@ -208,7 +208,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
         <div style={{
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 400,
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
+          color: token('color.text', 'var(--ds-text)'),
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -222,7 +222,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
       <div style={{ position: 'relative', height: 16, minWidth: 0 }}>
         <div aria-hidden style={{
           position: 'absolute', left: `${todayPct}%`, top: 0, bottom: 0,
-          width: 1, background: 'var(--ds-border-accent-red, #C9372C)', opacity: 0.35, zIndex: 1,
+          width: 1, background: 'var(--ds-border-accent-red)', opacity: 0.35, zIndex: 1,
         }} />
         {hasBar && (
           <div style={{
@@ -245,7 +245,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
       <span style={{
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 400,
-        color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+        color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
         textAlign: 'right',
         whiteSpace: 'nowrap',
       }}>
@@ -283,13 +283,13 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
           gap: 8,
           padding: '8px 0',
           cursor: hasBrs ? 'pointer' : 'default',
-          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}50`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}50`,
         }}
       >
         {/* Chevron */}
         <span style={{
           fontSize: 'var(--ds-font-size-100)',
-          color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
+          color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
           transition: 'transform 120ms',
           transform: (hasBrs && expanded) ? 'rotate(90deg)' : 'rotate(0deg)',
           display: 'inline-block',
@@ -302,7 +302,7 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
             <span style={{
               fontSize: 'var(--ds-font-size-300)',
               fontWeight: 600,
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              color: token('color.text', 'var(--ds-text)'),
               letterSpacing: '-0.003em',
               lineHeight: 1.3,
             }}>
@@ -311,8 +311,8 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
             {isActive && (
               <span style={{
                 fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
-                color: token('color.text.information', 'var(--ds-link, #0C66E4)'),
-                background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
+                color: token('color.text.information', 'var(--ds-link)'),
+                background: token('color.background.information', 'var(--ds-background-selected)'),
                 borderRadius: 3, padding: '1px 5px',
                 flexShrink: 0,
               }}>
@@ -326,9 +326,9 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
               {section.sprints.map((sp, i) => (
                 <span key={i} style={{
                   fontSize: 'var(--ds-font-size-50)',
-                  color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
-                  background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-                  border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                  color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
+                  background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
+                  border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                   borderRadius: 3,
                   padding: '1px 5px',
                   whiteSpace: 'nowrap',
@@ -345,12 +345,12 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
         <ReleaseBar section={section} rangeStart={rangeStart} totalMs={totalMs} todayPct={todayPct} />
 
         {/* BR count */}
-        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>
           {section.brs.length} BR{section.brs.length !== 1 ? 's' : ''}
         </span>
 
         {/* Quarter end */}
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), textAlign: 'right', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-disabled)'), textAlign: 'right', whiteSpace: 'nowrap' }}>
           {section.qEnd ? fmtShort(section.qEnd) : '—'}
         </span>
       </div>
@@ -476,7 +476,7 @@ export function ActiveInitiativesWidget() {
   const LABEL_STYLE: React.CSSProperties = {
     fontSize: 'var(--ds-font-size-100)',
     fontWeight: 600,
-    color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+    color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
     letterSpacing: '0.04em',
     textTransform: 'uppercase' as const,
   };
@@ -486,10 +486,10 @@ export function ActiveInitiativesWidget() {
       title="Release Timelines"
       question="Active initiatives across release quarters"
       footerLeft={
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>
           {totalBrs} active BR{totalBrs !== 1 ? 's' : ''}
           {blockedCount > 0 && (
-            <span style={{ color: 'var(--ds-text-accent-red-bolder, #AE2A19)', fontWeight: 600, marginLeft: 8 }}>
+            <span style={{ color: 'var(--ds-text-accent-red-bolder)', fontWeight: 600, marginLeft: 8 }}>
               · {blockedCount} blocked
             </span>
           )}
@@ -501,7 +501,7 @@ export function ActiveInitiativesWidget() {
           style={{
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
-            color: token('color.link', 'var(--ds-link, #0C66E4)'),
+            color: token('color.link', 'var(--ds-link)'),
             textDecoration: 'none',
           }}
         >
@@ -512,11 +512,11 @@ export function ActiveInitiativesWidget() {
       {isLoading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '8px 0' }}>
           {[0, 1, 2].map(i => (
-            <div key={i} className="animate-pulse" style={{ height: 48, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)') }} />
+            <div key={i} className="animate-pulse" style={{ height: 48, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)') }} />
           ))}
         </div>
       ) : !sections?.length ? (
-        <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), fontSize: 'var(--ds-font-size-300)' }}>
+        <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtlest', 'var(--ds-text-disabled)'), fontSize: 'var(--ds-font-size-300)' }}>
           No active initiatives scheduled across release quarters.
         </div>
       ) : (
@@ -527,7 +527,7 @@ export function ActiveInitiativesWidget() {
             gridTemplateColumns: '8px minmax(0,1.2fr) 1fr 72px 68px',
             gap: 8,
             paddingBottom: 8,
-            borderBottom: `2px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            borderBottom: `2px solid ${token('color.border', 'var(--ds-border)')}`,
             marginBottom: 4,
           }}>
             <div />
@@ -538,7 +538,7 @@ export function ActiveInitiativesWidget() {
               </span>
               <span style={{
                 ...LABEL_STYLE,
-                color: 'var(--ds-text-accent-red-bolder, #AE2A19)',
+                color: 'var(--ds-text-accent-red-bolder)',
                 position: 'absolute',
                 left: `${todayPct}%`,
                 transform: 'translateX(-50%)',
@@ -567,7 +567,7 @@ export function ActiveInitiativesWidget() {
               {expandedSections.has(sec.quarter) && (
                 <div style={{ paddingBottom: 6 }}>
                   {sec.brs.length === 0 ? (
-                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), paddingLeft: 16, paddingTop: 4 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled)'), paddingLeft: 16, paddingTop: 4 }}>
                       No active BRs in this quarter
                     </div>
                   ) : (

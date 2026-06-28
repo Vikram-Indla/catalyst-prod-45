@@ -43,8 +43,8 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
             <span 
               className="text-xs mt-1 px-2 py-0.5 rounded-full inline-block w-fit"
               style={{
-                backgroundColor: release.status === 'testing' ? 'var(--ds-background-success, #DCFFF1)' : 'var(--ds-surface-sunken, #f1f5f9)',
-                color: release.status === 'testing' ? 'var(--ds-chart-teal-bold, #0d9488)' : 'var(--ds-text-subtlest, #64748b)'
+                backgroundColor: release.status === 'testing' ? 'var(--ds-background-success)' : 'var(--ds-surface-sunken)',
+                color: release.status === 'testing' ? 'var(--ds-chart-teal-bold)' : 'var(--ds-text-subtlest)'
               }}
             >
               {getStatusLabel(release.status)}
@@ -68,7 +68,7 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
         return (
           <div className="relative">
             {isWinner && (
-              <div className="absolute -top-1 -right-1 text-lg" style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}>★</div>
+              <div className="absolute -top-1 -right-1 text-lg" style={{ color: 'var(--ds-chart-teal-bold)' }}>★</div>
             )}
             <div className="flex flex-col gap-1">
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden w-24">
@@ -91,7 +91,7 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
         return (
           <div className="relative">
             {isWinner && (
-              <div className="absolute -top-1 -right-1 text-lg" style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}>★</div>
+              <div className="absolute -top-1 -right-1 text-lg" style={{ color: 'var(--ds-chart-teal-bold)' }}>★</div>
             )}
             <div className="flex flex-col">
               <span className="text-xl font-bold" style={{ color }}>{percentage}%</span>
@@ -135,13 +135,13 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
             <span 
               className="text-xl font-bold"
               style={{ 
-                color: isRisk ? 'var(--ds-text-danger, #ef4444)' : isWarning ? 'var(--ds-text-warning, #d97706)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'
+                color: isRisk ? 'var(--ds-text-danger)' : isWarning ? 'var(--ds-text-warning)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))'
               }}
             >
               {days}
             </span>
-            {isRisk && <ErrorIcon label="" size="small" primaryColor="var(--ds-text-danger, #ef4444)" />}
-            {!isRisk && isWarning && <WarningIcon label="" size="small" primaryColor="var(--ds-text-warning, #d97706)" />}
+            {isRisk && <ErrorIcon label="" size="small" primaryColor="var(--ds-text-danger)" />}
+            {!isRisk && isWarning && <WarningIcon label="" size="small" primaryColor="var(--ds-text-warning)" />}
             <span className="text-xs text-slate-400">
               {new Date(release.targetDate).toLocaleDateString()}
             </span>
@@ -154,7 +154,7 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
         return (
           <div className="relative">
             {isWinner && (
-              <div className="absolute -top-1 -right-1 text-lg" style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}>★</div>
+              <div className="absolute -top-1 -right-1 text-lg" style={{ color: 'var(--ds-chart-teal-bold)' }}>★</div>
             )}
             <div className="flex flex-col">
               <span className="text-sm font-medium text-slate-700">{total} items</span>
@@ -213,7 +213,7 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
       
       {/* Legend */}
       <div className="px-4 py-2 bg-slate-50 border-t border-slate-200 text-xs text-slate-500">
-        <span style={{ color: 'var(--ds-chart-teal-bold, #0d9488)' }}>★</span> = Best in category
+        <span style={{ color: 'var(--ds-chart-teal-bold)' }}>★</span> = Best in category
       </div>
     </div>
   );

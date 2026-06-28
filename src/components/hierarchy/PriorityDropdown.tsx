@@ -18,7 +18,7 @@ function PriorityBarsInline({ level }: { level: number }) {
   return (
     <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))') : ('var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))') }} />
+        <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))') : ('var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken)))') }} />
       ))}
     </div>
   );
@@ -49,7 +49,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
       ref={ref}
       style={{
         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 180,
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6,
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: 6,
         boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.10))', zIndex: 9999, overflow: 'hidden',
       }}
     >
@@ -61,15 +61,15 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
             onClick={() => { onSelect(p.name); onClose(); }}
             style={{
               height: 50, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
-              cursor: 'pointer', background: isCurrent ? ('var(--cp-bg-page, #F8FAFC)') : undefined,
+              cursor: 'pointer', background: isCurrent ? ('var(--cp-bg-page)') : undefined,
               fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? ('var(--cp-bg-page, #F8FAFC)') : '')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--cp-bg-page)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? ('var(--cp-bg-page)') : '')}
           >
             <PriorityBarsInline level={p.level} />
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', flex: 1 }}>{p.name}</span>
-            {isCurrent && <Check size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />}
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', flex: 1 }}>{p.name}</span>
+            {isCurrent && <Check size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" />}
           </div>
         );
       })}

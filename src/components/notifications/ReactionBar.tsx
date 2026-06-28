@@ -36,7 +36,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 2,
               padding: '4px 8px',
-              border: `0.5px solid ${isHov ? 'var(--ds-link, #0052CC)' : 'var(--ds-border, #DFE1E6)'}`,
+              border: `0.5px solid ${isHov ? 'var(--ds-link)' : 'var(--ds-border)'}`,
               borderRadius: 20,
               background: isHov ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
               cursor: 'pointer',
@@ -47,7 +47,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
             }}
           >
             <span>{emoji}</span>
-            {count > 0 && <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)', fontWeight: 500 }}>{count}</span>}
+            {count > 0 && <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', fontWeight: 500 }}>{count}</span>}
           </button>
         );
       })}
@@ -58,11 +58,11 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           width: 28, height: 28,
           padding: 0,
-          border: 'var(--ds-border, #DFE1E6) 1px solid',
+          border: 'var(--ds-border) 1px solid',
           borderRadius: '50%',
           background: 'transparent',
           cursor: 'pointer',
-          color: 'var(--ds-text-subtlest, #6B778C)',
+          color: 'var(--ds-text-subtlest)',
         }}
       >
         {/* smiley-add glyph — @atlaskit/icon path for emoji-add */}
@@ -80,7 +80,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onReply && (
         <button
           onClick={(e) => { e.stopPropagation(); onReply(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontFamily: 'var(--cp-font-body)' }}
         >
           Reply
         </button>
@@ -89,7 +89,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onViewThread && (
         <button
           onClick={(e) => { e.stopPropagation(); onViewThread(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontFamily: 'var(--cp-font-body)', textDecoration: 'none' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontFamily: 'var(--cp-font-body)', textDecoration: 'none' }}
           onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
           onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
         >

@@ -6,25 +6,25 @@ import { useFreezeWindowsList } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card:     'var(--ds-surface-raised, #FFFFFF)',
-  border:   'var(--ds-border, #DFE1E6)',
-  borderSub:'var(--ds-border-subtle, #F1F2F4)',
-  text:     'var(--ds-text, #172B4D)',
-  subtle:   'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  neutral:  'var(--ds-background-neutral, #F1F2F4)',
-  sunken:   'var(--ds-surface-sunken, #FAFBFC)',
-  selected: 'var(--ds-background-selected, #E9F2FF)',
-  link:     'var(--ds-link, #0C66E4)',
-  danger:   'var(--ds-text-danger, #AE2A19)',
+  card:     'var(--ds-surface-raised)',
+  border:   'var(--ds-border)',
+  borderSub:'var(--ds-border-subtle)',
+  text:     'var(--ds-text)',
+  subtle:   'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  neutral:  'var(--ds-background-neutral)',
+  sunken:   'var(--ds-surface-sunken)',
+  selected: 'var(--ds-background-selected)',
+  link:     'var(--ds-link)',
+  danger:   'var(--ds-text-danger)',
   dangerBg: 'var(--ds-background-danger, rgba(174,42,25,0.08))',
   dangerBorder: 'var(--ds-border-danger, rgba(174,42,25,0.30))',
 };
 
 const BAR = {
-  completed: { bar: 'var(--ds-border, #DFE1E6)', badge: { bg: 'var(--ds-background-neutral, #F1F2F4)', text: 'var(--ds-icon, #44546F)' }, label: 'Released' },
-  active:    { bar: 'var(--ds-link, #0C66E4)', badge: { bg: 'var(--ds-background-selected, #E9F2FF)', text: 'var(--ds-link, #0C66E4)' }, label: 'Active' },
-  upcoming:  { bar: 'var(--ds-background-success-bold, #1F845A)', badge: { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' }, label: 'Upcoming' },
+  completed: { bar: 'var(--ds-border)', badge: { bg: 'var(--ds-background-neutral)', text: 'var(--ds-icon)' }, label: 'Released' },
+  active:    { bar: 'var(--ds-link)', badge: { bg: 'var(--ds-background-selected)', text: 'var(--ds-link)' }, label: 'Active' },
+  upcoming:  { bar: 'var(--ds-background-success-bold)', badge: { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)' }, label: 'Upcoming' },
 } as const;
 
 type GanttStatus = keyof typeof BAR;
@@ -158,7 +158,7 @@ export function ReleaseTimeline() {
             left:  `${barLeft  * 100}%`,
             width: `${barW}%`,
             height: 16, borderRadius: 3,
-            background: dimmed ? 'var(--ds-border, #DFE1E6)' : style.bar,
+            background: dimmed ? 'var(--ds-border)' : style.bar,
             overflow: 'hidden', zIndex: 2,
           }}>
             {status === 'active' && (
@@ -323,7 +323,7 @@ export function ReleaseTimeline() {
             position: 'absolute',
             left: `calc(${NAME_W}px + ${todayRatio} * (100% - ${NAME_W + META_W}px))`,
             top: '50%', transform: 'translate(-50%, -50%)',
-            background: T.link, color: 'var(--ds-surface, #FFFFFF)',
+            background: T.link, color: 'var(--ds-surface)',
             fontFamily: RH.fontBody,
             fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '1px 6px',
             borderRadius: 2, letterSpacing: '0.07em', whiteSpace: 'nowrap',
@@ -340,7 +340,7 @@ export function ReleaseTimeline() {
             borderBottom: `1px solid ${T.borderSub}`,
             padding: '0 16px',
           }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-border, #DFE1E6)', flexShrink: 0 }} />
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-border)', flexShrink: 0 }} />
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, fontStyle: 'italic' }}>
               No active release in progress
             </span>

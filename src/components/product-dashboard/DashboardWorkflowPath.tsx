@@ -5,9 +5,9 @@ import { getBrandColorHex } from '@/components/admin/BrandColorPicker';
 
 // Category → dot color token (for steps that have no explicit color set)
 const CATEGORY_DOT: Record<string, string> = {
-  todo:        token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-  in_progress: token('color.text.information', 'var(--ds-link, #0052CC)'),
-  done:        token('color.text.success', 'var(--ds-text-success, #006644)'),
+  todo:        token('color.text.subtlest', 'var(--ds-text-subtlest)'),
+  in_progress: token('color.text.information', 'var(--ds-link)'),
+  done:        token('color.text.success', 'var(--ds-text-success)'),
 };
 
 export function DashboardWorkflowPath() {
@@ -20,7 +20,7 @@ export function DashboardWorkflowPath() {
         style={{
           height: 32,
           borderRadius: 4,
-          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
           animation: 'pulse 1.5s ease-in-out infinite',
         }}
       />
@@ -38,16 +38,16 @@ export function DashboardWorkflowPath() {
         alignItems: 'center',
         gap: token('space.100', '8px'),
         padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+        background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
         borderRadius: 4,
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
       }}
     >
       <span
         style={{
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
-          color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+          color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
           whiteSpace: 'nowrap',
           marginRight: token('space.100', '8px'),
         }}
@@ -69,7 +69,7 @@ export function DashboardWorkflowPath() {
         }}
       >
         {sorted.map((step, idx) => {
-          const color = token('color.text.information', 'var(--ds-link, #0052CC)');
+          const color = token('color.text.information', 'var(--ds-link)');
           const isLast = idx === sorted.length - 1;
           return (
             <li
@@ -103,7 +103,7 @@ export function DashboardWorkflowPath() {
                   style={{
                     fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 500,
-                    color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtle)'),
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -119,7 +119,7 @@ export function DashboardWorkflowPath() {
                   style={{
                     flex: 1,
                     height: 1,
-                    background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'),
+                    background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))'),
                     margin: `0 ${token('space.075', '6px')}`,
                     minWidth: 8,
                   }}

@@ -2,14 +2,14 @@ import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import { WorkItemTypeIcon } from '@/components/icons';
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
-  Top: { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--cp-purple-60, #7C3AED)' },
-  Mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  Work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
-  Child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
-  top: { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--cp-purple-60, #7C3AED)' },
-  mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
-  child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  Top: { bg: 'var(--ds-background-discovery)', text: 'var(--cp-purple-60)' },
+  Mid: { bg: 'var(--ds-background-selected)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  Work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' },
+  Child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
+  top: { bg: 'var(--ds-background-discovery)', text: 'var(--cp-purple-60)' },
+  mid: { bg: 'var(--ds-background-selected)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' },
+  child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' },
 };
 
 interface TypeRowProps {
@@ -31,7 +31,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
 
   return (
     <div
-      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
+      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken)] transition-colors"
       style={{ height: 48, opacity: isDisabledFeature ? 0.5 : 1 }}
     >
       {/* Work item type icon — canonical, no colored circles (A3) */}
@@ -63,7 +63,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       <div className="relative">
         <button
           onClick={onViewFields}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="View Fields"
         >

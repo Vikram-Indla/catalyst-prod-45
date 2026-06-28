@@ -21,24 +21,24 @@ interface ProjectTableProps {
 export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu, isDark = false }: ProjectTableProps) {
   return (
     <div
-      className={`overflow-x-auto rounded-[6px] border ${isDark ? 'bg-transparent border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]'}`}
+      className={`overflow-x-auto rounded-[6px] border ${isDark ? 'bg-transparent border-[var(--ds-border,var(--cp-ink-1))]' : 'bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))]'}`}
     >
       <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
         <thead>
           <tr
-            className={isDark ? 'bg-[var(--ds-text, #172B4D)]' : 'bg-[var(--ds-surface-sunken,#F8FAFC)]'}
+            className={isDark ? 'bg-[var(--ds-text)]' : 'bg-[var(--ds-surface-sunken)]'}
             style={{ height: 36, maxHeight: 36, position: 'sticky', top: 0, zIndex: 1 }}
           >
             {COLUMNS.map(col => (
               <th
                 key={col.key}
-                className={`border-b ${isDark ? 'border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]'}`}
+                className={`border-b ${isDark ? 'border-[var(--ds-border,var(--cp-ink-1))]' : 'border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))]'}`}
                 style={{
                   width: col.width,
                   padding: '0 12px',
                   fontSize: 10.5,
                   fontWeight: 600,
-                  color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
+                  color: 'var(--cp-text-tertiary, var(--cp-text-secondary))',
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   textAlign: col.key === 'items' ? 'right' : 'left',

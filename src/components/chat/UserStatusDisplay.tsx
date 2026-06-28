@@ -70,7 +70,7 @@ export function UserStatusDisplay({
         <span
           style={{
             fontSize: 'var(--ds-font-size-400)',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             fontWeight: 500,
           }}
         >

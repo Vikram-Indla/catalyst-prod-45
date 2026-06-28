@@ -274,7 +274,7 @@ function CommentBody({ content }: { content: string }) {
   return (
     <div
       ref={ref}
-      className="cds-comment-body text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap leading-relaxed"
+      className="cds-comment-body text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse)))] dark:text-[var(--ds-text,var(--cp-bg-neutral))] whitespace-pre-wrap leading-relaxed"
     >
       {renderContent(content, { roster, currentUserId })}
     </div>
@@ -302,7 +302,7 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
         ref={ref}
         className={cn(
           'flex gap-3 py-3',
-          isHighlighted && 'bg-[var(--ds-background-information, #E9F2FF)]/30 dark:bg-[var(--ds-background-information, #1C3A5C)]/20 -mx-3 px-3 rounded',
+          isHighlighted && 'bg-[var(--ds-background-information)]/30 dark:bg-[var(--ds-background-information)]/20 -mx-3 px-3 rounded',
           className
         )}
       >
@@ -320,14 +320,14 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
               className={cn(
                 'text-[14px] font-semibold',
                 isSystem
-                  ? 'text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]'
-                  : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]'
+                  ? 'text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)]'
+                  : 'text-[var(--ds-text)] dark:text-[var(--ds-text)]'
               )}
             >
               {author.name}
             </span>
           </div>
-          <div className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mb-2">
+          <div className="text-[12px] text-[var(--ds-text-subtlest)] dark:text-[var(--ds-text-subtlest)] mb-2">
             {formatAbsoluteDate(createdAt)}
             {isEdited && (
               <span className="italic ml-2">edited</span>

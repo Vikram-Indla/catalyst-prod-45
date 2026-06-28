@@ -5,7 +5,7 @@
  * Shares state with ProfileMenu's Theme submenu via useThemeMode() — both
  * call setTheme on the same context, so they stay in sync.
  *
- * Colours come from the bridge tokens (token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)') etc.) —
+ * Colours come from the bridge tokens (token('color.text.subtle', 'var(--ds-text-subtlest)') etc.) —
  * no hex literals (CLAUDE.md ADS wrapper contract rule 5).
  *
  * Apr 28, 2026 — moved here from src/components/ui/ThemeToggle.tsx to
@@ -47,25 +47,25 @@ export function ThemeToggle({ testId }: ThemeToggleProps = {}) {
         style={{
           width: 36,
           height: 36,
-          color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
+          color: token('color.text.subtle', 'var(--ds-icon-subtle)'),
           background: 'transparent',
           border: 'none',
           cursor: 'pointer',
           borderRadius: 6,
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))');
+          e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1))');
           e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-shadow-raised, rgba(0,0,0,0.04))');
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.color = token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)');
+          e.currentTarget.style.color = token('color.text.subtle', 'var(--ds-icon-subtle)');
           e.currentTarget.style.background = 'transparent';
         }}
         onFocus={(e) => {
-          e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))');
+          e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1))');
         }}
         onBlur={(e) => {
-          e.currentTarget.style.color = token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)');
+          e.currentTarget.style.color = token('color.text.subtle', 'var(--ds-icon-subtle)');
         }}
         title={label}
       >

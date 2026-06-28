@@ -122,8 +122,8 @@ function renderBody(
           key={`b-${i}`}
           className="cc-mention"
           style={{
-            background: 'var(--ds-background-warning, #FFF7D6)',
-            color: 'var(--ds-text-warning-inverse, #533F04)',
+            background: 'var(--ds-background-warning)',
+            color: 'var(--ds-text-warning-inverse)',
             fontWeight: 600,
             padding: '0 4px',
             borderRadius: 3,
@@ -248,7 +248,7 @@ export function MessageStream({
       ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
       ref.focus();
       // Flash highlight
-      ref.style.background = 'var(--ds-background-selected, #e9f2fe)';
+      ref.style.background = 'var(--ds-background-selected)';
       setTimeout(() => {
         ref.style.background = '';
       }, 1500);
@@ -364,8 +364,8 @@ export function MessageStream({
             gap: 6,
             padding: '5px 14px',
             borderRadius: 16,
-            background: 'var(--ds-background-brand-bold, #0C66E4)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--ds-background-brand-bold)',
+            color: 'var(--ds-text-inverse)',
             border: 'none',
             cursor: 'pointer',
             fontSize: 'var(--ds-font-size-200)',
@@ -466,7 +466,7 @@ export function MessageStream({
         ),
       )}
       {typingUserName && (
-        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic' }}>
+        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', fontStyle: 'italic' }}>
           {typingUserName} is typing…
         </div>
       )}
@@ -664,7 +664,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               aria-label={isPinned ? 'Unpin message' : 'Pin message'}
               title={isPinned ? 'Unpin message' : 'Pin message'}
               onClick={onTogglePin}
-              style={isPinned ? { color: 'var(--ds-icon-warning, #B38600)' } : undefined}
+              style={isPinned ? { color: 'var(--ds-icon-warning)' } : undefined}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill={isPinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <path d="M12 2v6m0 0l4 4-4 4-4-4 4-4zm0 10v10" />
@@ -676,7 +676,7 @@ const MessageRow = React.forwardRef<HTMLDivElement, MessageRowProps>(({
               aria-label={isBookmarked ? 'Remove bookmark' : 'Save for later'}
               title={isBookmarked ? 'Remove bookmark' : 'Save for later'}
               onClick={onToggleBookmark}
-              style={isBookmarked ? { color: 'var(--ds-icon-brand, #0C66E4)' } : undefined}
+              style={isBookmarked ? { color: 'var(--ds-icon-brand)' } : undefined}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />

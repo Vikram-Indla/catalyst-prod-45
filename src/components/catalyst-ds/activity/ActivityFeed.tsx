@@ -60,8 +60,8 @@ function ActivityFeed({
   if (isLoading) {
     return (
       <div className={cn('flex items-center justify-center py-12', className)}>
-        <Loader2 className="h-5 w-5 animate-spin text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mr-2" />
-        <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Loading history...</span>
+        <Loader2 className="h-5 w-5 animate-spin text-[var(--ds-text-subtlest,var(--cp-text-secondary))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))] mr-2" />
+        <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]">Loading history...</span>
       </div>
     );
   }
@@ -69,16 +69,16 @@ function ActivityFeed({
   if (sortedItems.length === 0) {
     return (
       <div className={cn('text-center py-12', className)}>
-        <History className="h-10 w-10 mx-auto mb-3 text-[var(--ds-border, #DFE1E6)] dark:text-[var(--ds-border-bold,#454545)]" />
-        <p className="text-[14px] font-medium text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{emptyMessage}</p>
-        <p className="text-[12px] text-[var(--ds-text-disabled, #8590A2)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-1">{emptyDescription}</p>
+        <History className="h-10 w-10 mx-auto mb-3 text-[var(--ds-border)] dark:text-[var(--ds-border-bold)]" />
+        <p className="text-[14px] font-medium text-[var(--ds-text-subtlest,var(--cp-text-secondary))] dark:text-[var(--ds-text-subtlest)]">{emptyMessage}</p>
+        <p className="text-[12px] text-[var(--ds-text-disabled)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))] mt-1">{emptyDescription}</p>
       </div>
     );
   }
 
   return (
     <div ref={scrollRef} className={cn('overflow-y-auto', className)}>
-      <div className="divide-y divide-[var(--ds-border, #DFE1E6)] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+      <div className="divide-y divide-[var(--ds-border)] dark:divide-[var(--ds-border,var(--cp-ink-1))]">
         {sortedItems.map((item) => (
           <ActivityItem key={item.id} item={item} jiraUserMap={jiraUserMap} />
         ))}
@@ -86,8 +86,8 @@ function ActivityFeed({
 
       {isLoadingMore && (
         <div className="flex items-center justify-center py-4">
-          <Loader2 className="h-4 w-4 animate-spin text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mr-2" />
-          <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Loading more...</span>
+          <Loader2 className="h-4 w-4 animate-spin text-[var(--ds-text-subtlest,var(--cp-text-secondary))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))] mr-2" />
+          <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]">Loading more...</span>
         </div>
       )}
     </div>

@@ -20,15 +20,15 @@ import { catalystToast } from '@/lib/catalystToast';
 
 const TOKENS = `
 [data-sri] {
-  --sri-ink:var(--ds-text, #172B4D); --sri-ink-2:var(--ds-text, #172B4D); --sri-ink-3:var(--ds-text-subtle, #44546F);
-  --sri-ink-m:var(--ds-text-subtlest, #626F86);
-  --sri-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --sri-bg-2:var(--ds-surface-sunken, #FAFAFA); --sri-bg-3:var(--ds-surface-sunken, #F7F8F9);
-  --sri-bdr:var(--ds-border, #DFE1E6); --sri-bdr-s:var(--ds-border, #DFE1E6);
-  --sri-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --sri-ai-d:var(--ds-link-pressed, #0747A6); --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
-  --sri-ai-bg2:var(--ds-background-information, #E9F2FF); --sri-ai-bdr:var(--ds-background-information-bold, #0C66E4); --sri-ai-m:var(--ds-text-brand, #3B82F6);
-  --sri-green:var(--ds-text-success, var(--cp-success, #16A34A)); --sri-green-t:#11853D; --sri-green-bg:var(--ds-background-success, #DFFCF0);
+  --sri-ink:var(--ds-text); --sri-ink-2:var(--ds-text); --sri-ink-3:var(--ds-text-subtle);
+  --sri-ink-m:var(--ds-text-subtlest);
+  --sri-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))); --sri-bg-2:var(--ds-surface-sunken); --sri-bg-3:var(--ds-surface-sunken);
+  --sri-bdr:var(--ds-border); --sri-bdr-s:var(--ds-border);
+  --sri-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); --sri-ai-d:var(--ds-link-pressed); --sri-ai-bg:var(--ds-background-selected);
+  --sri-ai-bg2:var(--ds-background-information); --sri-ai-bdr:var(--ds-background-information-bold); --sri-ai-m:var(--ds-text-brand);
+  --sri-green:var(--ds-text-success, var(--cp-success)); --sri-green-t:#11853D; --sri-green-bg:var(--ds-background-success);
   --sri-teal-t:#0A8277;
-  --sri-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger, #FEF2F2);
+  --sri-red:var(--ds-text-danger, var(--cp-danger)); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger);
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;
   font-family: var(--cp-font-body); color:var(--sri-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
@@ -40,23 +40,23 @@ const TOKENS = `
   --sri-ink-2: var(--ds-surface, rgba(255,255,255,0.82));
   --sri-ink-3: var(--ds-surface, rgba(255,255,255,0.75));
   --sri-ink-m: var(--ds-surface, rgba(255,255,255,0.70));
-  --sri-bg: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
-  --sri-bg-2: var(--ds-surface-overlay, #1F1F1F);
-  --sri-bg-3: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --sri-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --sri-bdr-s: var(--ds-border-bold, #454545);
-  --sri-ai: var(--ds-text-brand, #3B82F6);
-  --sri-ai-d: var(--ds-text-brand, #60A5FA);
+  --sri-bg: var(--ds-surface-raised, var(--cp-ink-1));
+  --sri-bg-2: var(--ds-surface-overlay);
+  --sri-bg-3: var(--ds-border, var(--cp-ink-1));
+  --sri-bdr: var(--ds-border, var(--cp-ink-1));
+  --sri-bdr-s: var(--ds-border-bold);
+  --sri-ai: var(--ds-text-brand);
+  --sri-ai-d: var(--ds-text-brand);
   --sri-ai-bg: var(--ds-background-information-bold, rgba(59,130,246,0.08));
   --sri-ai-bg2: var(--ds-background-information-bold, rgba(59,130,246,0.12));
   --sri-ai-bdr: var(--ds-background-information-bold, rgba(59,130,246,0.16));
-  --sri-ai-m: var(--ds-text-brand, #60A5FA);
-  --sri-green: var(--ds-background-success, #DFFCF0);
-  --sri-green-t: var(--ds-background-success, #DFFCF0);
+  --sri-ai-m: var(--ds-text-brand);
+  --sri-green: var(--ds-background-success);
+  --sri-green-t: var(--ds-background-success);
   --sri-green-bg: var(--ds-background-success-bold, rgba(74,222,128,0.08));
-  --sri-teal-t: var(--ds-background-success, #DCFFF1);
-  --sri-red: var(--ds-border-danger, #FCA5A5);
-  --sri-red-t: var(--ds-border-danger, #FCA5A5);
+  --sri-teal-t: var(--ds-background-success);
+  --sri-red: var(--ds-border-danger);
+  --sri-red-t: var(--ds-border-danger);
   --sri-red-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
 }
 
@@ -69,7 +69,7 @@ const TOKENS = `
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
-    background: var(--ds-surface, #fff) !important;
+    background: var(--ds-surface) !important;
   }
   [data-sri] { background:white !important; }
   [data-sri], [data-sri] * {
@@ -219,7 +219,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
         <header style={{ background: "var(--sri-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "20px 28px", margin: "0 32px", ...F(14), justifyContent: "space-between" }}>
           <div style={F(14) as React.CSSProperties}>
             <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, var(--sri-ai-d), var(--sri-ai))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, #fff)" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface)" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
             </div>
             <div>
               <div style={{ ...S(20), color: "var(--sri-ink)" }}>Executive Brief</div>
@@ -391,7 +391,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
               {/* FIX #16 — export text: no underline */}
               <div style={{ ...F(8) as React.CSSProperties, justifyContent: "space-between", padding: "12px 20px", borderTop: "1px solid var(--sri-bdr)", background: "var(--sri-ai-bg)" }}>
                 <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: "var(--sri-ai-d)", textDecoration: "none" }}>Ready to act? → Export Decision Pack</span>
-                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "var(--ds-surface, #fff)" }}>
+                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "var(--ds-surface)" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                   Export
                 </button>

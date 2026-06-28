@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
  * 2026-04-24 — AgeingTab Atlaskit retune
  * ──────────────────────────────────────
  * This file was originally painted with Tailwind-style literal hexes
- * (var(--ds-text-danger, #EF4444), var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--cp-primary-60, #0052CC), var(--ds-text-subtle, #1E293B), var(--ds-background-warning, #FEF3C7), #92400E …) and 13px Inter
+ * (var(--ds-text-danger), var(--ds-text-warning, var(--cp-amber)), var(--cp-primary-60), var(--ds-text-subtle), var(--ds-background-warning), #92400E …) and 13px Inter
  * body. None of those values are in the Atlassian Design System. After the
  * /design-critique pass we routed every surface through @atlaskit/tokens
  * with hex fallbacks:
@@ -38,41 +38,41 @@ import { useAuth } from '@/hooks/useAuth';
    documented default of that token on a light theme. */
 const ADS = {
   // backgrounds / surfaces
-  surface:       'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  surfaceSunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  neutralSubtle: 'var(--ds-background-neutral-subtle, #F1F2F4)',
-  neutralHover:  'var(--ds-background-neutral-subtle-hovered, #DCDFE4)',
-  neutralBold:   'var(--ds-background-neutral-bold, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+  surface:       'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  surfaceSunken: 'var(--ds-surface-sunken)',
+  neutralSubtle: 'var(--ds-background-neutral-subtle)',
+  neutralHover:  'var(--ds-background-neutral-subtle-hovered)',
+  neutralBold:   'var(--ds-background-neutral-bold, var(--cp-text-secondary, var(--cp-text-secondary)))',
   // state backgrounds
-  dangerBg:      'var(--ds-background-danger, #FFECEB)',
-  warningBg:     'var(--ds-background-warning, #FFF7D6)',
-  infoBg:        'var(--ds-background-information, #E9F2FF)',
-  successBg:     'var(--ds-background-success, #DCFFF1)',
-  selectedBg:    'var(--ds-background-selected, #E9F2FF)',
+  dangerBg:      'var(--ds-background-danger)',
+  warningBg:     'var(--ds-background-warning)',
+  infoBg:        'var(--ds-background-information)',
+  successBg:     'var(--ds-background-success)',
+  selectedBg:    'var(--ds-background-selected)',
   // text
-  text:          'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-  textSubtle:    'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
-  textMuted:     'var(--ds-text-subtlest, #626F86)',
-  textDanger:    'var(--ds-text-danger, #AE2E24)',
-  textWarning:   'var(--ds-text-warning, #7F5F01)',
-  textInfo:      'var(--ds-text-information, #0055CC)',
-  textSuccess:   'var(--ds-text-success, #216E4E)',
-  textSelected:  'var(--ds-text-selected, #0C66E4)',
-  textInverse:   'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  text:          'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
+  textSubtle:    'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
+  textMuted:     'var(--ds-text-subtlest)',
+  textDanger:    'var(--ds-text-danger)',
+  textWarning:   'var(--ds-text-warning)',
+  textInfo:      'var(--ds-text-information)',
+  textSuccess:   'var(--ds-text-success)',
+  textSelected:  'var(--ds-text-selected)',
+  textInverse:   'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
   // borders
-  border:        'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-  borderBold:    'var(--ds-border-bold, #8590A2)',
-  borderDanger:  'var(--ds-border-danger, #C9372C)',
-  borderWarning: 'var(--ds-border-warning, #F5CD47)',
-  borderInfo:    'var(--ds-border-information, #388BFF)',
-  borderSuccess: 'var(--ds-border-success, #4BCE97)',
-  borderSelected:'var(--ds-border-selected, #0C66E4)',
+  border:        'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+  borderBold:    'var(--ds-border-bold)',
+  borderDanger:  'var(--ds-border-danger)',
+  borderWarning: 'var(--ds-border-warning)',
+  borderInfo:    'var(--ds-border-information)',
+  borderSuccess: 'var(--ds-border-success)',
+  borderSelected:'var(--ds-border-selected)',
   // icons
-  iconDanger:    'var(--ds-icon-danger, #C9372C)',
-  iconWarning:   'var(--ds-icon-warning, #B38600)',
-  iconInfo:      'var(--ds-icon-information, #1D7AFC)',
-  iconSuccess:   'var(--ds-icon-success, #22A06B)',
-  iconBrand:     'var(--ds-icon-brand, #1868DB)',
+  iconDanger:    'var(--ds-icon-danger)',
+  iconWarning:   'var(--ds-icon-warning)',
+  iconInfo:      'var(--ds-icon-information)',
+  iconSuccess:   'var(--ds-icon-success)',
+  iconBrand:     'var(--ds-icon-brand)',
 };
 
 /* Atlaskit typography — Inter routed through Atlassian's body scale. We
@@ -137,31 +137,31 @@ function TypeIcon({ type }: { type: ItemType }) {
     Story: (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>Story</title>
-        <path fill="var(--ds-background-success-bold, #1F845A)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M15.647,19.515 L16.937,17.987 L12,13.82 L7.061,17.987 L7,18.153 L7,6.688 C7,6.348 7.412,6 8,6 L16,6 C16.587,6 17,6.349 17,6.688 L17,18.153 Z" />
+        <path fill="var(--ds-background-success-bold)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M15.647,19.515 L16.937,17.987 L12,13.82 L7.061,17.987 L7,18.153 L7,6.688 C7,6.348 7.412,6 8,6 L16,6 C16.587,6 17,6.349 17,6.688 L17,18.153 Z" />
       </svg>
     ),
     Feature: (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>Feature</title>
-        <path fill="var(--ds-background-success-bold, #1F845A)" fillRule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z" />
+        <path fill="var(--ds-background-success-bold)" fillRule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z" />
       </svg>
     ),
     'Sub-task': (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>Sub-task</title>
-        <path fill="var(--ds-background-information-bold, #1D7AFC)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z" />
+        <path fill="var(--ds-background-information-bold)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z" />
       </svg>
     ),
     'QA Bug': (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>QA Bug</title>
-        <path fill="var(--ds-background-danger-bold, #C9372C)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,17 C14.761,17 17,14.761 17,12 C17,9.239 14.761,7 12,7 C9.239,7 7,9.239 7,12 C7,14.761 9.239,17 12,17 Z" />
+        <path fill="var(--ds-background-danger-bold)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,17 C14.761,17 17,14.761 17,12 C17,9.239 14.761,7 12,7 C9.239,7 7,9.239 7,12 C7,14.761 9.239,17 12,17 Z" />
       </svg>
     ),
     'Production Incident': (
       <svg width={size} height={size} viewBox="0 0 24 24">
         <title>Production Incident</title>
-        <path fill="var(--ds-background-danger-bold, #C9372C)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,4 C11.448,4 11,4.448 11,5 L11,14 C11,14.552 11.448,15 12,15 C12.552,15 13,14.552 13,14 L13,5 C13,4.448 12.552,4 12,4 Z M12,17 C11.448,17 11,17.448 11,18 C11,18.552 11.448,19 12,19 C12.552,19 13,18.552 13,18 C13,17.448 12.552,17 12,17 Z" />
+        <path fill="var(--ds-background-danger-bold)" fillRule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,4 C11.448,4 11,4.448 11,5 L11,14 C11,14.552 11.448,15 12,15 C12.552,15 13,14.552 13,14 L13,5 C13,4.448 12.552,4 12,4 Z M12,17 C11.448,17 11,17.448 11,18 C11,18.552 11.448,19 12,19 C12.552,19 13,18.552 13,18 C13,17.448 12.552,17 12,17 Z" />
       </svg>
     ),
   };
@@ -174,8 +174,8 @@ function StatusLozenge({ status }: { status: StatusType }) {
   // values are the published StatusLozenge light-theme hexes (256:1 with
   // their fg ink) and also the Atlaskit lozenge tokens for inprogress /
   // default, so no new palette is introduced.
-  const bg = isActive ? 'var(--ds-background-information, #CCE0FF)' : 'var(--ds-background-neutral, #DCDFE4)';
-  const fg = isActive ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
+  const bg = isActive ? 'var(--ds-background-information)' : 'var(--ds-background-neutral)';
+  const fg = isActive ? 'var(--ds-text-information)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))';
   return (
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',
@@ -301,7 +301,7 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
    /design-critique callouts ⑧⑨:
      - Row height 36 → 40 for body-scale rhythm.
      - Days pill goes INLINE with the number on a single baseline.
-     - Non-Atlaskit hexes (var(--ds-text-danger, #EF4444), var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-success, #22C55E), var(--ds-text-danger, #AE2A19)…) are replaced
+     - Non-Atlaskit hexes (var(--ds-text-danger), var(--ds-text-warning, var(--cp-amber)), var(--ds-text-success), var(--ds-text-danger)…) are replaced
        with the danger / warning / success ADS tokens.
 */
 function AgeingRow({ item }: { item: AgeingItem }) {
@@ -440,9 +440,9 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
 }
 
 /* ── AI Cleanup Button ──
-   /design-critique callout ④: bespoke `var(--ds-text, #172B4D)` navy is off-palette. The
+   /design-critique callout ④: bespoke `var(--ds-text)` navy is off-palette. The
    Atlaskit-correct equivalent for a neutral dark CTA is
-   `color.background.neutral.bold` (var(--cp-text-secondary, var(--cp-text-secondary, #44546F))). The sparkle uses the same
+   `color.background.neutral.bold` (var(--cp-text-secondary, var(--cp-text-secondary))). The sparkle uses the same
    brand blue as the AI Recap tab (see ForYouTabs callout ⓪) so every AI
    affordance in Catalyst reads as the same entity.
 */
@@ -889,7 +889,7 @@ function GroupSection({ groupKey, items, totalCount, isOpen, onToggle }: {
    /design-critique callout ⑤: consumers pass a semantic `intent` instead of
    a raw hex. This ensures every numeric colour in the summary strip resolves
    to an Atlaskit `color.text.{intent}` token — no off-palette slate, no
-   var(--cp-primary-60, #0052CC) legacy brand blue, no bespoke amber.
+   var(--cp-primary-60) legacy brand blue, no bespoke amber.
 */
 type StatIntent = 'neutral' | 'danger' | 'warning' | 'info' | 'success';
 function StatChip({ label, value, intent }: { label: string; value: string | number; intent: StatIntent }) {

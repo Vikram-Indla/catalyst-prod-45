@@ -118,7 +118,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
                 <label key={opt} style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
                   cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)',
-                  background: checked ? 'var(--ds-background-information, #f0f9ff)' : 'transparent',
+                  background: checked ? 'var(--ds-background-information)' : 'transparent',
                 }}>
                   <input
                     type="checkbox"
@@ -272,9 +272,9 @@ export function ReleasesPage() {
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '3px 10px', borderRadius: 9999,
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-              background: chip.type === 'project' ? 'var(--ds-background-success, #DFFCF0)' : 'var(--cp-primary-5)',
-              color: chip.type === 'project' ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
-              border: `1px solid ${chip.type === 'project' ? 'var(--ds-background-success, #DFFCF0)' : 'var(--cp-primary-20)'}`,
+              background: chip.type === 'project' ? 'var(--ds-background-success)' : 'var(--cp-primary-5)',
+              color: chip.type === 'project' ? 'var(--ds-background-success-bold)' : 'var(--ds-background-brand-bold-hovered)',
+              border: `1px solid ${chip.type === 'project' ? 'var(--ds-background-success)' : 'var(--cp-primary-20)'}`,
             }}>
               {chip.type === 'project' ? <FolderGit2 size={11} /> : <Milestone size={11} />}
               {chip.label}

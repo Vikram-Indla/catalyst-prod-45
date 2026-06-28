@@ -8,25 +8,25 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   // 1. Prioritise status_category from Jira (eliminates Unknown)
   const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
   if (cat === 'done' || cat === 'completed')
-    return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: (status || 'DONE').toUpperCase() };
+    return { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', label: (status || 'DONE').toUpperCase() };
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started')
-    return { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: (status || 'IN PROGRESS').toUpperCase() };
+    return { bg: 'var(--ds-link)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', label: (status || 'IN PROGRESS').toUpperCase() };
   if (cat === 'new' || cat === 'todo')
-    return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)', label: (status || 'TO DO').toUpperCase() };
+    return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)', label: (status || 'TO DO').toUpperCase() };
 
   // 2. Fallback: string-match raw status name
   const s = (status || '').toLowerCase();
   // Green
   if (['done', 'closed', 'resolved', 'ready for production', 'beta ready', 'completed', 'production ready', 'monitor', 'released', 'verified'].some(k => s === k))
-    return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: status.toUpperCase() };
+    return { bg: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', label: status.toUpperCase() };
   // Blue
   if (['in progress', 'in development', 'under implementation', 'in review', 'in qa', 'ready for qa', 'retest',
        'code review', 'in uat', 'uat ready', 're-open', 'in beta', 'in production', 'in design', 'in requirements',
        'ready for development', 'in entity integration', 'technical validation', 'end to end testing',
        'deferred for int', 'awaiting info', 'on hold', 'active'].some(k => s === k))
-    return { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: status.toUpperCase() };
+    return { bg: 'var(--ds-link)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', label: status.toUpperCase() };
   // Grey (default — never "Unknown")
-  return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)', label: (status || 'TO DO').toUpperCase() };
+  return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)', label: (status || 'TO DO').toUpperCase() };
 }
 
 function StatusLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
@@ -43,10 +43,10 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
 }
 
 // Icons
-const BugIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))"/><circle cx="8" cy="8" r="3" fill="white"/></svg>;
-const TaskIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-information-bold, #1D7AFC)"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const StoryIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
-const EpicIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #6E5DC6))"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
+const BugIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--ds-background-danger-bold, var(--ds-background-danger-bold))"/><circle cx="8" cy="8" r="3" fill="white"/></svg>;
+const TaskIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-information-bold)"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const StoryIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, var(--ds-background-success-bold))"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
+const EpicIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
 function JiraIcon({ type }: { type: string }) {
   const t = (type || '').toLowerCase();
   if (t.includes('bug')) return <BugIcon />;
@@ -55,9 +55,9 @@ function JiraIcon({ type }: { type: string }) {
   return <TaskIcon />;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, #7C3AED)' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', SEN: 'var(--ds-text-warning, var(--cp-warning))', FAC: 'var(--ds-text-success, var(--cp-success))', OPS: 'var(--cp-teal-60)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', LND: 'var(--cp-purple-60)' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
 
 function getCatFromStatus(status: string, statusCategory?: string): 'done' | 'progress' | 'blocked' | 'todo' {
   // Prioritise status_category
@@ -129,7 +129,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               marginLeft: -32, paddingLeft: 10, marginBottom: 10, userSelect: 'none',
             }}>
               <div style={dotStyle} />
-              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{dateLabel}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>{dateLabel}</span>
               <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{total} items</span>
               {/* Mini bar */}
               <div style={{ display: 'flex', height: '4px', borderRadius: '4px', overflow: 'hidden', width: '80px', background: 'var(--bg-3)', flexShrink: 0 }}>
@@ -152,7 +152,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {groupItems.map((item: any) => {
                   const cat = getCatFromStatus(item.status_name || item.status || '', item.status_category);
-                  const accentDot = cat === 'done' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : cat === 'progress' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+                  const accentDot = cat === 'done' ? 'var(--ds-text-success, var(--cp-success))' : cat === 'progress' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : cat === 'blocked' ? 'var(--ds-text-danger)' : 'var(--ds-text-warning, var(--cp-warning))';
                   const projColor = pColor(item.project_key, item.project_color);
                   return (
                     <div key={item.id} onClick={() => onItemClick(item)} style={{
@@ -177,11 +177,11 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                           {item.project_key && (
-                            <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
+                            <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
                           )}
                         </div>
                         <div style={{
-                          fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '1.4',
+                          fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)', lineHeight: '1.4',
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                         } as React.CSSProperties}>
                           {item.title}

@@ -12,32 +12,32 @@ interface LevelTagProps {
 // Catalyst brand color palette for levels
 const LEVEL_STYLES: Record<string, { base: string; dark: string }> = {
   Enterprise: {
-    base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/12 text-[var(--ds-background-brand-bold-hovered,#1d4ed8)]',
-    dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/20 dark:text-[var(--ds-text-brand,#60a5fa)]',
+    base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/12 text-[var(--ds-background-brand-bold-hovered)]',
+    dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/20 dark:text-[var(--ds-text-brand)]',
   },
   Portfolio: {
-    base: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/12 text-[var(--ds-chart-teal-bolder, #0f766e)]',
-    dark: 'dark:bg-[var(--ds-chart-teal-bold, #0d9488)]/20 dark:text-[var(--ds-background-success, #DCFFF1)]',
+    base: 'bg-[var(--ds-chart-teal-bold)]/12 text-[var(--ds-chart-teal-bolder)]',
+    dark: 'dark:bg-[var(--ds-chart-teal-bold)]/20 dark:text-[var(--ds-background-success)]',
   },
   Product: {
-    base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/12 text-[var(--ds-background-brand-bold-hovered,#1d4ed8)]',
-    dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/20 dark:text-[var(--ds-text-brand,#60a5fa)]',
+    base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/12 text-[var(--ds-background-brand-bold-hovered)]',
+    dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/20 dark:text-[var(--ds-text-brand)]',
   },
   Release: {
-    base: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/12 text-[var(--ds-chart-teal-bolder, #0f766e)]',
-    dark: 'dark:bg-[var(--ds-chart-teal-bold, #0d9488)]/20 dark:text-[var(--ds-background-success, #DCFFF1)]',
+    base: 'bg-[var(--ds-chart-teal-bold)]/12 text-[var(--ds-chart-teal-bolder)]',
+    dark: 'dark:bg-[var(--ds-chart-teal-bold)]/20 dark:text-[var(--ds-background-success)]',
   },
   Program: {
-    base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/12 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
-    dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/20 dark:text-[var(--ds-text-brand,#60a5fa)]',
+    base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/12 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',
+    dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/20 dark:text-[var(--ds-text-brand)]',
   },
   Project: {
-    base: 'bg-[var(--ds-chart-teal-bold, #0d9488)]/12 text-[var(--ds-chart-teal-bolder, #0f766e)]',
-    dark: 'dark:bg-[var(--ds-chart-teal-bold, #0d9488)]/20 dark:text-[var(--ds-background-success, #DCFFF1)]',
+    base: 'bg-[var(--ds-chart-teal-bold)]/12 text-[var(--ds-chart-teal-bolder)]',
+    dark: 'dark:bg-[var(--ds-chart-teal-bold)]/20 dark:text-[var(--ds-background-success)]',
   },
   Planner: {
-    base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/12 text-[var(--ds-background-brand-bold-hovered,#1d4ed8)]',
-    dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/20 dark:text-[var(--ds-text-brand,#60a5fa)]',
+    base: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/12 text-[var(--ds-background-brand-bold-hovered)]',
+    dark: 'dark:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/20 dark:text-[var(--ds-text-brand)]',
   },
 };
 

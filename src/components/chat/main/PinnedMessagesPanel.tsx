@@ -137,7 +137,7 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
         style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
       >
         <PinIcon />
-        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--c-chat-text-subtle, var(--ds-text-subtle, #44546F))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--c-chat-text-subtle, var(--ds-text-subtle))' }}>
           {pinList.length}
         </span>
       </button>
@@ -154,8 +154,8 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
             width: 320,
             maxHeight: 400,
             overflowY: 'auto',
-            background: 'var(--c-chat-surface-raised, var(--ds-surface-overlay, #FFFFFF))',
-            border: '1px solid var(--c-chat-border, var(--ds-border, #DFE1E6))',
+            background: 'var(--c-chat-surface-raised, var(--ds-surface-overlay))',
+            border: '1px solid var(--c-chat-border, var(--ds-border))',
             borderRadius: 8,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))',
             padding: 8,
@@ -168,7 +168,7 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               textTransform: 'none',
-              color: 'var(--c-chat-text-subtle, var(--ds-text-subtle, #44546F))',
+              color: 'var(--c-chat-text-subtle, var(--ds-text-subtle))',
             }}
           >
             Pinned messages
@@ -202,7 +202,7 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
                 }}
               >
                 {author && (
-                  <span style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--c-chat-text, var(--ds-text, #172B4D))' }}>
+                  <span style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--c-chat-text, var(--ds-text))' }}>
                     {author}
                   </span>
                 )}
@@ -210,7 +210,7 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
                   style={{
                     display: 'block',
                     fontSize: 'var(--ds-font-size-300)',
-                    color: 'var(--c-chat-text-subtle, var(--ds-text-subtle, #44546F))',
+                    color: 'var(--c-chat-text-subtle, var(--ds-text-subtle))',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',

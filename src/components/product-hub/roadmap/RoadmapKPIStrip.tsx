@@ -18,8 +18,8 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
   const surface = isDark ? SURFACE_DARK : SURFACE;
 
   const cardStyle: React.CSSProperties = {
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+    border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))'}`,
     borderRadius: 12,
     padding: '14px 18px',
     boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
@@ -60,7 +60,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>By Status</div>
         <div className="flex items-baseline gap-2" style={{ marginTop: 4 }}>
-          <span style={{ fontFamily: FONT.heading, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
+          <span style={{ fontFamily: FONT.heading, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text-success, var(--cp-success))', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
           <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[3] }}>Active</span>
           <span style={{ fontFamily: FONT.heading, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: ink[4], marginLeft: 8, letterSpacing: '-0.03em' }}>{stats.validationCount}</span>
           <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[3] }}>Validation</span>

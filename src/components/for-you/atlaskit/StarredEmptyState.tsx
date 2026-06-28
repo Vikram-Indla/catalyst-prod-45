@@ -37,25 +37,25 @@ interface StarredEmptyStateProps {
   onBrowseFilters?: () => void;
 }
 
-const STAR_GOLD = 'var(--ds-icon-warning, #E2B203)';
-const BLUE_BG = 'var(--ds-background-information, #E9F2FE)';
-const BLUE_FG = 'var(--ds-icon-information, #1868DB)';
-const BLUE_TXT = 'var(--ds-text-information, #0055CC)';
-const PURPLE_BG = 'var(--ds-background-accent-purple-subtler, #F3F0FF)';
-const PURPLE_FG = 'var(--ds-icon-accent-purple, #5E4DB2)';
-const GREEN_BG = 'var(--ds-background-accent-green-subtler, #DCFFF1)';
-const GREEN_FG = 'var(--ds-icon-accent-green, #216E4E)';
-const ORANGE_BG = 'var(--ds-background-accent-orange-subtler, #FFF3D6)';
-const ORANGE_FG = 'var(--ds-icon-accent-orange, #974F0C)';
-const RED_BG = 'var(--ds-background-accent-red-subtler, #FFECEB)';
-const RED_FG = 'var(--ds-icon-accent-red, #AE2E24)';
+const STAR_GOLD = 'var(--ds-icon-warning)';
+const BLUE_BG = 'var(--ds-background-information)';
+const BLUE_FG = 'var(--ds-icon-information)';
+const BLUE_TXT = 'var(--ds-text-information)';
+const PURPLE_BG = 'var(--ds-background-accent-purple-subtler)';
+const PURPLE_FG = 'var(--ds-icon-accent-purple)';
+const GREEN_BG = 'var(--ds-background-accent-green-subtler)';
+const GREEN_FG = 'var(--ds-icon-accent-green)';
+const ORANGE_BG = 'var(--ds-background-accent-orange-subtler)';
+const ORANGE_FG = 'var(--ds-icon-accent-orange)';
+const RED_BG = 'var(--ds-background-accent-red-subtler)';
+const RED_FG = 'var(--ds-icon-accent-red)';
 
-const SURFACE = 'var(--ds-surface, #FFFFFF)';
-const SUNKEN = 'var(--ds-surface-sunken, #F7F8F9)';
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const TEXT = 'var(--ds-text, #172B4D)';
-const TEXT_SUBTLE = 'var(--ds-text-subtle, #44546F)';
-const TEXT_SUBTLEST = 'var(--ds-text-subtlest, #626F86)';
+const SURFACE = 'var(--ds-surface)';
+const SUNKEN = 'var(--ds-surface-sunken)';
+const BORDER = 'var(--ds-border)';
+const TEXT = 'var(--ds-text)';
+const TEXT_SUBTLE = 'var(--ds-text-subtle)';
+const TEXT_SUBTLEST = 'var(--ds-text-subtlest)';
 const BODY_FONT = 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif';
 
 function Tile({ bg, fg, icon, label, hint }: { bg: string; fg: string; icon: React.ReactNode; label: string; hint: string }) {
@@ -99,7 +99,7 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
           <span style={{ position: 'relative', width: 52, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
             <Star size={38} color={STAR_GOLD} fill={STAR_GOLD} />
             <span style={{ position: 'absolute', bottom: 0, right: -2, width: 20, height: 20, borderRadius: '50%', background: BLUE_FG, border: `2px solid ${SURFACE}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Plus size={11} color="var(--ds-text-inverse, #FFFFFF)" />
+              <Plus size={11} color="var(--ds-text-inverse)" />
             </span>
           </span>
           <p style={{ margin: 0, fontSize: 'var(--ds-font-size-600)', fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>Build your starred shortcuts</p>
@@ -126,7 +126,7 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16 }}>
-          <button type="button" onClick={onBrowseWork} style={{ ...ctaBase, flex: 1, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none' }}>
+          <button type="button" onClick={onBrowseWork} style={{ ...ctaBase, flex: 1, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none' }}>
             <Search size={15} />Browse work to star
           </button>
           <button type="button" onClick={onOpenBoard} style={{ ...ctaBase, background: 'transparent', color: TEXT, border: `1px solid ${BORDER}` }}>

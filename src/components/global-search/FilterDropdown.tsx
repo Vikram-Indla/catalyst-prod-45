@@ -131,9 +131,9 @@ export function FilterDropdown({
             maxHeight: 460,
             display: 'flex',
             flexDirection: 'column',
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             borderRadius: 4,
-            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
             boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16)), 0 2px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))',
             overflow: 'hidden',
           }}
@@ -182,9 +182,9 @@ export function FilterDropdown({
                 >
                   <Checkbox isChecked={checked} onChange={() => toggle(opt.id)} />
                   {opt.icon ?? <Avatar appearance="circle" size="small" name={opt.name} src={opt.avatarSrc} />}
-                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontFamily: 'var(--cp-font-body)' }}>
                     {opt.name}
-                    {opt.tag ? <span style={{ color: 'var(--ds-text-subtle, #626F86)' }}> ({opt.tag})</span> : null}
+                    {opt.tag ? <span style={{ color: 'var(--ds-text-subtle)' }}> ({opt.tag})</span> : null}
                   </span>
                 </label>
               );
@@ -206,7 +206,7 @@ export function FilterDropdown({
               padding: '12px 16px',
               borderTop: '1px solid var(--ds-border)',
               fontSize: 'var(--ds-font-size-400)',
-              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
               fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -236,7 +236,7 @@ export function FilterDropdown({
               padding: '0 6px',
               borderRadius: 8,
               background: 'var(--ds-background-brand-bold)',
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               lineHeight: '16px',

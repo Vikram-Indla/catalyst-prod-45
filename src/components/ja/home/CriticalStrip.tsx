@@ -145,7 +145,7 @@ export function CriticalStrip({
                     // Highest severity - subtle gold emphasis
                     ? "bg-[var(--brand-gold)]/5 border-[var(--brand-gold)]/30 hover:bg-[var(--brand-gold)]/10 hover:border-[var(--brand-gold)]"
                     // Normal state - improved contrast in dark mode
-                    : "bg-white dark:bg-[#1c1c1c] border-gray-200 dark:border-[#2c2c2c] hover:bg-gray-50 dark:hover:bg-[var(--ds-text, #172B4D)] hover:border-[var(--brand-gold)]/50"
+                    : "bg-white dark:bg-[#1c1c1c] border-gray-200 dark:border-[#2c2c2c] hover:bg-gray-50 dark:hover:bg-[var(--ds-text)] hover:border-[var(--brand-gold)]/50"
             )}
           >
             {/* Icon - red only for confirmed breach, gold for risk, muted otherwise */}

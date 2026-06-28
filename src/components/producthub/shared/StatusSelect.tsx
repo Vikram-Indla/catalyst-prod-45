@@ -5,34 +5,34 @@ const STATUS_GROUPS = [
   {
     group: 'Intake',
     items: [
-      { value: 'new', label: 'New', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-      { value: 'portfolio_review', label: 'Portfolio Review', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-      { value: 'technical_validation', label: 'Technical Validation', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-      { value: 'estimate', label: 'Estimate', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+      { value: 'new', label: 'New', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+      { value: 'portfolio_review', label: 'Portfolio Review', color: 'var(--ds-text-warning, var(--cp-warning))' },
+      { value: 'technical_validation', label: 'Technical Validation', color: 'var(--ds-text-warning, var(--cp-warning))' },
+      { value: 'estimate', label: 'Estimate', color: 'var(--ds-text-warning, var(--cp-warning))' },
     ],
   },
   {
     group: 'Planning',
     items: [
-      { value: 'demand_approved', label: 'Demand Approved', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-      { value: 'analysis', label: 'Analysis', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-      { value: 'ready_for_development', label: 'Ready for Dev', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+      { value: 'demand_approved', label: 'Demand Approved', color: 'var(--ds-text-success, var(--cp-success))' },
+      { value: 'analysis', label: 'Analysis', color: 'var(--ds-text-success, var(--cp-success))' },
+      { value: 'ready_for_development', label: 'Ready for Dev', color: 'var(--ds-text-success, var(--cp-success))' },
     ],
   },
   {
     group: 'Execution',
     items: [
-      { value: 'under_implementation', label: 'Under Implementation', color: 'var(--cp-teal-60, #0D9488)' },
-      { value: 'on_hold', label: 'On Hold', color: 'var(--ds-text-subtlest, #626F86)' },
-      { value: 'implementation_review', label: 'Implementation Review', color: 'var(--cp-teal-60, #0D9488)' },
+      { value: 'under_implementation', label: 'Under Implementation', color: 'var(--cp-teal-60)' },
+      { value: 'on_hold', label: 'On Hold', color: 'var(--ds-text-subtlest)' },
+      { value: 'implementation_review', label: 'Implementation Review', color: 'var(--cp-teal-60)' },
     ],
   },
   {
     group: 'Closure',
     items: [
-      { value: 'in_support', label: 'In Support', color: 'var(--cp-purple-60, #7C3AED)' },
-      { value: 'done', label: 'Done', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-      { value: 'cancelled', label: 'Cancelled', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
+      { value: 'in_support', label: 'In Support', color: 'var(--cp-purple-60)' },
+      { value: 'done', label: 'Done', color: 'var(--ds-text-success, var(--cp-success))' },
+      { value: 'cancelled', label: 'Cancelled', color: 'var(--ds-text-danger, var(--cp-danger))' },
     ],
   },
 ];
@@ -65,11 +65,11 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         type="button"
         onClick={() => !disabled && setOpen(!open)}
         disabled={disabled}
-        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           borderColor: open ? 'var(--cp-blue)' : 'var(--divider)',
           boxShadow: open ? '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.1))' : 'none',
-          color: selected ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #626F86)',
+          color: selected ? 'var(--ds-text)' : 'var(--ds-text-subtlest)',
           fontWeight: 500,
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -77,16 +77,16 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         <span className="flex items-center gap-2">
           <span
             className="w-2 h-2 rounded-full shrink-0"
-            style={{ backgroundColor: selected?.color || 'var(--ds-text-subtlest, #626F86)' }}
+            style={{ backgroundColor: selected?.color || 'var(--ds-text-subtlest)' }}
           />
           {selected?.label || 'Select status'}
         </span>
-        <ChevronDown className="w-4 h-4 shrink-0" style={{ color: 'var(--ds-text-subtlest, #626F86)' }} />
+        <ChevronDown className="w-4 h-4 shrink-0" style={{ color: 'var(--ds-text-subtlest)' }} />
       </button>
 
       {open && (
         <div
-          className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
+          className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
           style={{
             borderColor: 'var(--divider)',
             boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.14))',
@@ -118,13 +118,13 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
                     padding: '7px 12px',
                     fontSize: 'var(--ds-font-size-300)',
                     fontWeight: value === option.value ? 600 : 500,
-                    color: value === option.value ? 'var(--cp-blue)' : 'var(--ds-text, #172B4D)',
+                    color: value === option.value ? 'var(--cp-blue)' : 'var(--ds-text)',
                     background: value === option.value ? 'var(--cp-blue-wash)' : 'transparent',
                     border: 'none',
                     cursor: 'pointer',
                   }}
                   onMouseEnter={e => {
-                    if (value !== option.value) (e.currentTarget as HTMLElement).style.background = 'var(--bg-1, #F8FAFC)';
+                    if (value !== option.value) (e.currentTarget as HTMLElement).style.background = 'var(--bg-1)';
                   }}
                   onMouseLeave={e => {
                     if (value !== option.value) (e.currentTarget as HTMLElement).style.background = 'transparent';

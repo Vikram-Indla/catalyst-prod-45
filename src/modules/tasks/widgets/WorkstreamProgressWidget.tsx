@@ -38,7 +38,7 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
     for (const t of tasks) {
       const id = t.teamId ?? '__none__';
       const name = t.teamName ?? 'Unassigned workstream';
-      const color = t.teamColor ?? token('color.background.neutral.bold', 'var(--ds-text-subtlest, #6B778C)');
+      const color = t.teamColor ?? token('color.background.neutral.bold', 'var(--ds-text-subtlest)');
       const existing = map.get(id);
       if (existing) {
         existing.total += 1;
@@ -86,9 +86,9 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
               alignItems: 'center',
               gap: 16,
               padding: '8px 12px',
-              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
               borderRadius: token('border.radius', '4px'),
-              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             }}
           >
             <span style={{ ...LABEL, textTransform: 'none' }}>Overall</span>
@@ -96,7 +96,7 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
               style={{
                 flex: 1,
                 height: 10,
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
                 borderRadius: 4,
                 overflow: 'hidden',
               }}
@@ -105,7 +105,7 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
                 style={{
                   width: `${overallPct}%`,
                   height: '100%',
-                  background: token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)'),
+                  background: token('color.background.success.bold', 'var(--ds-background-success-bold)'),
                   transition: 'width 200ms ease',
                 }}
               />
@@ -137,7 +137,7 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
                       alignItems: 'center',
                       gap: 8,
                       ...SMALL,
-                      color: isNone ? token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+                      color: isNone ? token('color.text.subtle', 'var(--ds-text-subtle)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
                       fontStyle: isNone ? 'italic' : 'normal',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
@@ -160,7 +160,7 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
                   <div
                     style={{
                       height: 8,
-                      background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                      background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
                       borderRadius: 4,
                       overflow: 'hidden',
                     }}
@@ -179,7 +179,7 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
                       ...SMALL,
                       fontVariantNumeric: 'tabular-nums',
                       justifySelf: 'end',
-                      color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+                      color: token('color.text.subtle', 'var(--ds-text-subtle)'),
                     }}
                   >
                     {b.done} / {b.total} ({pct}%)
@@ -204,7 +204,7 @@ function SkeletonRows({ count }: { count: number }) {
           style={{
             height: 24,
             borderRadius: token('border.radius', '4px'),
-            background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+            background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
           }}
         />
       ))}

@@ -44,49 +44,49 @@ const STATUS_CONFIG: Record<string, {
 }> = {
   'backlog': {
     label: 'Backlog',
-    dotColor: 'var(--ds-text-subtlest, #94a3b8)',
+    dotColor: 'var(--ds-text-subtlest)',
     bgColor: 'transparent',
-    borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
+    borderColor: 'var(--ds-border, var(--cp-bg-sunken))',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1))',
   },
   'planned': {
     label: 'Planned',
-    dotColor: 'var(--ds-text-brand, #3b82f6)',
+    dotColor: 'var(--ds-text-brand)',
     bgColor: 'transparent',
-    borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
+    borderColor: 'var(--ds-border, var(--cp-bg-sunken))',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1))',
   },
   'in-progress': {
     label: 'In Progress',
-    dotColor: 'var(--ds-text-warning, #f59e0b)',
-    bgColor: 'var(--ds-background-warning, #FFF7D6)',
-    borderColor: 'var(--ds-background-warning, #FFF7D6)',
+    dotColor: 'var(--ds-text-warning)',
+    bgColor: 'var(--ds-background-warning)',
+    borderColor: 'var(--ds-background-warning)',
     darkBgColor: 'var(--ds-background-warning-bold, rgba(251,191,36,0.08))',
     darkBorderColor: 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))',
   },
   'in progress': {
     label: 'In Progress',
-    dotColor: 'var(--ds-text-warning, #f59e0b)',
-    bgColor: 'var(--ds-background-warning, #FFF7D6)',
-    borderColor: 'var(--ds-background-warning, #FFF7D6)',
+    dotColor: 'var(--ds-text-warning)',
+    bgColor: 'var(--ds-background-warning)',
+    borderColor: 'var(--ds-background-warning)',
     darkBgColor: 'var(--ds-background-warning-bold, rgba(251,191,36,0.08))',
     darkBorderColor: 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))',
   },
   'review': {
     label: 'Review',
-    dotColor: 'var(--ds-background-discovery-bold, #6E5DC6)',
+    dotColor: 'var(--ds-background-discovery-bold)',
     bgColor: 'transparent',
-    borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
+    borderColor: 'var(--ds-border, var(--cp-bg-sunken))',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1))',
   },
   'done': {
     label: 'Done',
-    dotColor: 'var(--ds-text-success, #16a34a)',
-    bgColor: 'var(--ds-background-success, #DFFCF0)',
-    borderColor: 'var(--ds-background-success, #DFFCF0)',
+    dotColor: 'var(--ds-text-success)',
+    bgColor: 'var(--ds-background-success)',
+    borderColor: 'var(--ds-background-success)',
     darkBgColor: 'var(--ds-background-success-bold, rgba(74,222,128,0.08))',
     darkBorderColor: 'var(--ds-background-success-bold, rgba(74,222,128,0.2))',
   },
@@ -197,9 +197,9 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
   const getWidth = (colId: string) => columnWidths[colId] || 'auto';
 
   const getProgressColor = (progress: number) => {
-    if (progress >= 100) return 'var(--ds-text-success, #22c55e)';
-    if (progress >= 50) return 'var(--ds-text-brand, #3b82f6)';
-    return 'var(--ds-text-subtlest, #94a3b8)';
+    if (progress >= 100) return 'var(--ds-text-success)';
+    if (progress >= 50) return 'var(--ds-text-brand)';
+    return 'var(--ds-text-subtlest)';
   };
 
   // Get status config for styling
@@ -241,7 +241,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
               fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
-              color: 'var(--ds-text-subtlest, #64748b)',
+              color: 'var(--ds-text-subtlest)',
               whiteSpace: 'nowrap',
               display: 'inline-block',
               background: 'none',
@@ -250,11 +250,11 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               padding: 0,
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.color = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))';
+              e.currentTarget.style.color = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))';
               e.currentTarget.style.textDecoration = 'underline';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.color = 'var(--ds-text-subtlest, #64748b)';
+              e.currentTarget.style.color = 'var(--ds-text-subtlest)';
               e.currentTarget.style.textDecoration = 'none';
             }}
           >
@@ -354,7 +354,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               <button className="tl-date-cell">
                 {task.due_date ? (
                   <>
-                    {/* Normal: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))), Overdue: var(--ds-text-danger, #dc2626) (J1, J2) */}
+                    {/* Normal: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2))), Overdue: var(--ds-text-danger) (J1, J2) */}
                     <span className={cn(
                       'tl-date-value',
                       daysIndicator?.isOverdue && 'tl-date-overdue'
@@ -406,7 +406,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
                     }}
                   />
                 </div>
-                {/* Progress % - var(--ds-text-subtlest, #64748b) (L3) */}
+                {/* Progress % - var(--ds-text-subtlest) (L3) */}
                 <span className="tl-progress-value">{task.progress}%</span>
               </button>
             </PopoverTrigger>

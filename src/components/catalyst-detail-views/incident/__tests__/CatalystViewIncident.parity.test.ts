@@ -18,15 +18,15 @@ describe('CatalystViewIncident parity (static analysis)', () => {
     expect(SRC).not.toMatch(/background:\s*'#FFF5F5'/); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   });
 
-  it('severity banner border must use DS token, not raw var(--ds-background-danger, #FFECEB)', () => {
-    expect(SRC).not.toMatch(/solid var(--ds-background-danger, var(--ds-background-danger, #FFECEB))/);
+  it('severity banner border must use DS token, not raw var(--ds-background-danger)', () => {
+    expect(SRC).not.toMatch(/solid var(--ds-background-danger, var(--ds-background-danger))/);
   });
 
-  it('severity banner text must use DS token, not raw var(--ds-text-danger, #AE2A19)', () => {
-    expect(SRC).not.toMatch(/color:\s*'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))'/);
+  it('severity banner text must use DS token, not raw var(--ds-text-danger)', () => {
+    expect(SRC).not.toMatch(/color:\s*'var(--ds-text-danger, var(--ds-text-danger))'/);
   });
 
-  it('WarningIcon must use DS token, not raw primaryColor var(--ds-background-danger-bold, #C9372C)', () => {
-    expect(SRC).not.toMatch(/primaryColor="var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))"/);
+  it('WarningIcon must use DS token, not raw primaryColor var(--ds-background-danger-bold)', () => {
+    expect(SRC).not.toMatch(/primaryColor="var(--ds-background-danger-bold, var(--ds-background-danger-bold))"/);
   });
 });

@@ -35,28 +35,28 @@ export function GlobalProgressIndicator({
       <div style={{ marginBottom: 8 }}>
         <strong>Current step:</strong> {currentStep}
       </div>
-      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle)' }}>
         <strong>Files processed:</strong> 3 PDF
       </div>
-      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle)' }}>
         <strong>Pages indexed:</strong> 47
       </div>
-      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle)' }}>
         <strong>Images analyzed:</strong> 1 screenshot
       </div>
-      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle)' }}>
         <strong>Comments indexed:</strong> 8
       </div>
-      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle)' }}>
         <strong>Linked items scanned:</strong> 3 (Epic, Feature, Story)
       </div>
-      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ marginBottom: 4, color: 'var(--ds-icon-subtle)' }}>
         <strong>Arabic OCR status:</strong> Complete
       </div>
-      <div style={{ marginBottom: 8, color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ marginBottom: 8, color: 'var(--ds-icon-subtle)' }}>
         <strong>Estimated time remaining:</strong> 15 seconds
       </div>
-      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-icon-subtle)' }}>
         <strong>Destination:</strong> Evidence Pack
       </div>
     </div>
@@ -65,8 +65,8 @@ export function GlobalProgressIndicator({
   return (
     <div
       style={{
-        backgroundColor: 'var(--ds-background-success, #DFFCF0)',
-        borderBottom: '1px solid var(--ds-background-success-bold, #1F845A)',
+        backgroundColor: 'var(--ds-background-success)',
+        borderBottom: '1px solid var(--ds-background-success-bold)',
         padding: '8px 16px',
         display: 'flex',
         alignItems: 'center',
@@ -89,14 +89,14 @@ export function GlobalProgressIndicator({
               width: 16,
               height: 16,
               borderRadius: '50%',
-              backgroundColor: 'var(--ds-background-success-bold, #1F845A)',
+              backgroundColor: 'var(--ds-background-success-bold)',
               animation: 'spin 2s linear infinite',
             }}
           />
-          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-success, #216E4E)', fontWeight: 500 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-success)', fontWeight: 500 }}>
             Preparing Evidence: {itemKey}
           </span>
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)' }}>
             {progress}%
           </span>
         </div>
@@ -106,7 +106,7 @@ export function GlobalProgressIndicator({
         style={{
           width: 120,
           height: 4,
-          backgroundColor: 'var(--ds-background-information, #E9F2FF)',
+          backgroundColor: 'var(--ds-background-information)',
           borderRadius: 2,
           overflow: 'hidden',
         }}
@@ -114,7 +114,7 @@ export function GlobalProgressIndicator({
         <div
           style={{
             height: '100%',
-            backgroundColor: 'var(--ds-link, #0052CC)',
+            backgroundColor: 'var(--ds-link)',
             width: `${progress}%`,
             transition: 'width 0.3s ease-in-out',
           }}

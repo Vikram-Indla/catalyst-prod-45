@@ -72,7 +72,7 @@ function ClockGlyph() {
       height={16}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="var(--cv2-warning, #ECB22E)"
+      stroke="var(--cv2-warning)"
       strokeWidth={1.7}
       strokeLinecap="round"
       strokeLinejoin="round"

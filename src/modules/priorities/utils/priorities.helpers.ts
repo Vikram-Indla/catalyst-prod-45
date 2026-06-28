@@ -69,18 +69,18 @@ export function getStatusClass(status: PriItemStatus): string {
  * Workstream configuration with colors and labels
  */
 export const WORKSTREAM_CONFIG: Record<PriWorkstream, { label: string; color: string }> = {
-  senaie:     { label: 'Senaie',      color: 'var(--ds-icon-information, #1D7AFC)' },
-  catalyst:   { label: 'Catalyst',    color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  tahommona:  { label: 'Tahommona',   color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  delivery:   { label: 'Delivery',    color: 'var(--ds-background-warning-bold, #E2B203)' },
-  mim:        { label: 'MIM',         color: 'var(--ds-background-accent-magenta-bolder, #BE185D)' },
-  standalone: { label: 'Stand-Alone', color: 'var(--ds-background-success-bold, #1F845A)' },
-  dataai:     { label: 'Data & AI',   color: 'var(--ds-icon-information, #1D7AFC)' },
+  senaie:     { label: 'Senaie',      color: 'var(--ds-icon-information)' },
+  catalyst:   { label: 'Catalyst',    color: 'var(--ds-background-discovery-bold)' },
+  tahommona:  { label: 'Tahommona',   color: 'var(--ds-background-discovery-bold)' },
+  delivery:   { label: 'Delivery',    color: 'var(--ds-background-warning-bold)' },
+  mim:        { label: 'MIM',         color: 'var(--ds-background-accent-magenta-bolder)' },
+  standalone: { label: 'Stand-Alone', color: 'var(--ds-background-success-bold)' },
+  dataai:     { label: 'Data & AI',   color: 'var(--ds-icon-information)' },
 };
 
 export function getWorkstreamColor(ws: PriWorkstream | null): string {
-  if (!ws) return 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))';
-  return WORKSTREAM_CONFIG[ws]?.color ?? 'var(--ds-text-subtlest, #626F86)';
+  if (!ws) return 'var(--ds-text-subtlest, var(--ds-text-subtlest))';
+  return WORKSTREAM_CONFIG[ws]?.color ?? 'var(--ds-text-subtlest)';
 }
 
 export function getWorkstreamLabel(ws: PriWorkstream | null): string {

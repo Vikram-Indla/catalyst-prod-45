@@ -32,41 +32,41 @@
    ───────────────────────────────────────────────────────────────────────────── */
 .caty-widget {
   /* Primary */
-  --caty-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --caty-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --caty-primary-muted: var(--ds-background-information, #E9F2FF);
-  --caty-primary-subtle: var(--ds-background-selected, #eff6ff);
+  --caty-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --caty-primary-hover: var(--ds-background-brand-bold-hovered);
+  --caty-primary-muted: var(--ds-background-information);
+  --caty-primary-subtle: var(--ds-background-selected);
   
   /* Text */
-  --caty-text-primary: var(--ds-text, #0f172a);
-  --caty-text-secondary: var(--ds-text-subtle, #475569);
-  --caty-text-muted: var(--ds-text-subtlest, #64748b);
-  --caty-text-light: var(--ds-text-subtlest, #94a3b8);
+  --caty-text-primary: var(--ds-text);
+  --caty-text-secondary: var(--ds-text-subtle);
+  --caty-text-muted: var(--ds-text-subtlest);
+  --caty-text-light: var(--ds-text-subtlest);
   
   /* Status Colors */
-  --caty-success: var(--quality-high, var(--ds-background-success-bold, #059669));
-  --caty-success-bg: var(--ds-background-success, #DFFCF0);
+  --caty-success: var(--quality-high, var(--ds-background-success-bold));
+  --caty-success-bg: var(--ds-background-success);
   --caty-success-border: rgba(5, 150, 105, 0.3);
   
-  --caty-warning: var(--ds-background-warning-bold, #b45309);
-  --caty-warning-bg: var(--ds-background-warning, #FFF7D6);
+  --caty-warning: var(--ds-background-warning-bold);
+  --caty-warning-bg: var(--ds-background-warning);
   --caty-warning-border: rgba(180, 83, 9, 0.3);
   
-  --caty-danger: var(--ds-text-danger, #dc2626);
-  --caty-danger-bg: var(--ds-background-danger, #fef2f2);
+  --caty-danger: var(--ds-text-danger);
+  --caty-danger-bg: var(--ds-background-danger);
   --caty-danger-border: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.3));
   
-  --caty-info: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --caty-info-bg: var(--ds-background-information, #E9F2FF);
+  --caty-info: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --caty-info-bg: var(--ds-background-information);
   
   /* Backgrounds */
-  --caty-bg-panel: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --caty-bg-muted: var(--ds-surface-sunken, #f1f5f9);
-  --caty-bg-subtle: var(--ds-surface-sunken, #f8fafc);
+  --caty-bg-panel: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --caty-bg-muted: var(--ds-surface-sunken);
+  --caty-bg-subtle: var(--ds-surface-sunken);
   
   /* Borders */
-  --caty-border-light: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --caty-border-default: var(--ds-text-disabled, #cbd5e1);
+  --caty-border-light: var(--ds-border, var(--cp-bg-sunken));
+  --caty-border-default: var(--ds-text-disabled);
   
   /* Shadows */
   --caty-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
@@ -124,10 +124,10 @@
   display: flex !important;
   align-items: center !important;
   padding: 20px 24px !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   background-image: none !important;
-  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken)) !important;
   flex-shrink: 0;
 }
 
@@ -141,7 +141,7 @@
   width: 52px !important;
   height: 52px !important;
   min-width: 52px !important;
-  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
   border-radius: 14px !important;
   display: flex !important;
   align-items: center !important;
@@ -163,7 +163,7 @@
   font-family: var(--cp-font-body);
   font-size: 1.25rem !important;
   font-weight: 800 !important;
-  color: var(--ds-text, #0f172a) !important;
+  color: var(--ds-text) !important;
   letter-spacing: -0.02em !important;
   line-height: 1.2 !important;
 }
@@ -175,34 +175,34 @@
   font-family: var(--cp-font-body);
   font-size: 0.8125rem !important;
   font-weight: 400 !important;
-  color: var(--ds-text-subtlest, #64748b) !important;
+  color: var(--ds-text-subtlest) !important;
   margin-top: 2px !important;
 }
 
 .caty-status-dot {
   width: 8px !important;
   height: 8px !important;
-  background: var(--quality-high, var(--ds-background-success-bold, #059669)) !important;
+  background: var(--quality-high, var(--ds-background-success-bold)) !important;
   border-radius: 50% !important;
   flex-shrink: 0;
 }
 
 .caty-status-dot.offline {
-  background: var(--ds-text-danger, #dc2626) !important;
+  background: var(--ds-text-danger) !important;
 }
 
 /* NUCLEAR OVERRIDE - Remove any blue gradient from header */
 [class*="caty-header"],
 [class*="caty"] header,
 .caty-widget header {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   background-image: none !important;
-  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    DARK MODE — Rule 3 paired overrides for !important hex in this file.
-   Brand-blue icon background (var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))), success/danger dots (var(--quality-high, var(--ds-background-success-bold, #059669))/var(--ds-background-danger-bold, #dc2626))
+   Brand-blue icon background (var(--ds-text-brand, var(--cp-workstream-catalyst-primary))), success/danger dots (var(--quality-high, var(--ds-background-success-bold))/var(--ds-background-danger-bold))
    and white svg text on the brand circle are intentional — kept as-is.
    We flip the white panel header and dark text to ADS dark tokens.
    ═══════════════════════════════════════════════════════════════════════════════ */
@@ -211,16 +211,16 @@
 .dark [class*="caty-header"],
 .dark [class*="caty"] header,
 .dark .caty-widget header {
-  background: var(--ds-surface-overlay, #1D2125) !important;
-  background-color: var(--ds-surface-overlay, #1D2125) !important;
+  background: var(--ds-surface-overlay) !important;
+  background-color: var(--ds-surface-overlay) !important;
   background-image: none !important;
-  border-bottom: 1px solid var(--ds-border, #38414A) !important;
+  border-bottom: 1px solid var(--ds-border) !important;
 }
 .dark .caty-header-title {
-  color: var(--ds-text, #B6C2CF) !important;
+  color: var(--ds-text) !important;
 }
 .dark .caty-header-subtitle {
-  color: var(--ds-text-subtle, #9FADBC) !important;
+  color: var(--ds-text-subtle) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -834,7 +834,7 @@
   width: 44px;
   height: 44px;
   min-width: 44px;
-  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 100%);
+  background: linear-gradient(135deg, var(--ds-text-brand) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 100%);
   border-radius: var(--caty-radius-md);
   display: flex;
   align-items: center;
@@ -913,8 +913,8 @@
 }
 
 .caty-tag.location.offshore {
-  background: var(--ds-background-discovery, #F3F0FF);
-  color: var(--ds-background-discovery-bold, #7C3AED);
+  background: var(--ds-background-discovery);
+  color: var(--ds-background-discovery-bold);
 }
 
 /* Utilization Tags */
@@ -1112,7 +1112,7 @@
 .caty-profile-avatar {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 100%);
+  background: linear-gradient(135deg, var(--ds-text-brand) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 100%);
   border-radius: var(--caty-radius-lg);
   display: flex;
   align-items: center;

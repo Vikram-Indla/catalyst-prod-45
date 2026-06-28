@@ -36,7 +36,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
 
   const displayName = value?.name || 'Unassigned';
   const displayInitials = value?.initials || '?';
-  const displayColor = value?.color || 'var(--ds-text-subtlest, #94a3b8)';
+  const displayColor = value?.color || 'var(--ds-text-subtlest)';
 
   return (
     <div 
@@ -164,7 +164,7 @@ const AssigneeItem: React.FC<{
           height: '28px',
           borderRadius: '50%',
           backgroundColor: assignee.color,
-          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600
         }}

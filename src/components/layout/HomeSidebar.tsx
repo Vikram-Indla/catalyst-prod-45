@@ -126,7 +126,7 @@ function SkeletonRowTitle() {
         height: 12,
         width: '70%',
         borderRadius: 4,
-        background: 'var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+        background: 'var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
         opacity: 0.8,
       }}
       aria-hidden="true"
@@ -183,14 +183,14 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
     >
       <span
         aria-hidden="true"
-        style={{ flexShrink: 0, color: 'var(--ds-text-subtle, #44546F)', display: 'inline-flex' }}
+        style={{ flexShrink: 0, color: 'var(--ds-text-subtle)', display: 'inline-flex' }}
       >
         <PageIcon style={{ width: 20, height: 20 }} />
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, flex: 1 }}>
         <span
           style={{
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
             fontWeight: 400,
             fontSize: 'var(--ds-font-size-300)',
             lineHeight: '18px',
@@ -203,7 +203,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         </span>
         <span
           style={{
-            color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+            color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
             fontWeight: 400,
             fontSize: token('font.size.050', '11px'),
             lineHeight: '14px',
@@ -274,7 +274,7 @@ function SpaceGroupHeader({
         aria-hidden="true"
         style={{ flexShrink: 0, display: 'inline-flex', marginLeft: -4 }}
       >
-        <Chevron label="" size="small" primaryColor="var(--ds-text-subtle, #44546F)" />
+        <Chevron label="" size="small" primaryColor="var(--ds-text-subtle)" />
       </span>
       {head.hub === 'project' ? (
         <ProjectIcon
@@ -307,7 +307,7 @@ function SpaceGroupHeader({
       >
         <span
           style={{
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
             fontWeight: 500,
             fontSize: token('font.size.100', '14px'),
             lineHeight: '20px',
@@ -321,7 +321,7 @@ function SpaceGroupHeader({
           <span
             style={{
               flexShrink: 0,
-              color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+              color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
               fontWeight: 400,
               fontSize: token('font.size.075', '12px'),
               lineHeight: '20px',
@@ -411,13 +411,13 @@ function SectionIconWrapper({ section, color }: { section: string; color?: strin
         marginBottom: -4,
         marginLeft: token('space.100', '8px'),
         paddingLeft: token('space.150', '12px'),
-        borderLeft: '1.5px solid var(--ds-border, #091E4224)',
+        borderLeft: '1.5px solid var(--ds-border)',
       }}
     >
       <Icon
         label=""
         size="small"
-        primaryColor={color ?? 'var(--ds-text-subtle, #44546F)'}
+        primaryColor={color ?? 'var(--ds-text-subtle)'}
       />
     </span>
   );
@@ -479,16 +479,16 @@ export default function HomeSidebar({
       // Border color per hub — matches the colored square icons in the hub switcher (Variant A: stroke only).
       const HUB_BORDER_COLORS: Record<string, string> = {
         home:     '#4A7FE0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        strategy: 'var(--ds-background-discovery-bold, #8b5cf6)',
-        ideation: 'var(--ds-background-warning-bold, #f59e0b)',
+        strategy: 'var(--ds-background-discovery-bold)',
+        ideation: 'var(--ds-background-warning-bold)',
         product:  '#38BDF8', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        project:  'var(--ds-background-accent-teal-bolder, #14b8a6)',
-        release:  'var(--ds-background-accent-magenta-bolder, #ec4899)',
-        test:     'var(--ds-background-success-bold, #1F845A)',
-        incident: 'var(--ds-background-danger-bold, #ef4444)',
-        task:     'var(--ds-background-warning-bold, #d97706)',
-        plan:     'var(--ds-background-discovery-bold, #6366f1)',
-        wiki:     'var(--ds-text-subtle, #44546F)',
+        project:  'var(--ds-background-accent-teal-bolder)',
+        release:  'var(--ds-background-accent-magenta-bolder)',
+        test:     'var(--ds-background-success-bold)',
+        incident: 'var(--ds-background-danger-bold)',
+        task:     'var(--ds-background-warning-bold)',
+        plan:     'var(--ds-background-discovery-bold)',
+        wiki:     'var(--ds-text-subtle)',
       };
 
       const hubItems: SidebarMenuItem[] = HUB_NAV_ITEMS.map((hub) => ({
@@ -498,7 +498,7 @@ export default function HomeSidebar({
         path: hub.href,
         icon: ({ style }: { className?: string; style?: React.CSSProperties } = {}) => {
           const maskUrl = `url("${HUB_ICON_OUTLINE_REGISTRY[hub.key as keyof typeof HUB_ICON_OUTLINE_REGISTRY]}")`;
-          const borderColor = HUB_BORDER_COLORS[hub.key] ?? 'var(--ds-border, #DFE1E6)';
+          const borderColor = HUB_BORDER_COLORS[hub.key] ?? 'var(--ds-border)';
           return (
             <span
               aria-label={hub.label}
@@ -509,7 +509,7 @@ export default function HomeSidebar({
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: '8px',
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
                 border: `1.5px solid ${borderColor}`,
                 flexShrink: 0,
               }}
@@ -521,7 +521,7 @@ export default function HomeSidebar({
                   width: '18px',
                   height: '18px',
                   display: 'block',
-                  backgroundColor: style?.color ?? 'var(--ds-icon, #172B4D)',
+                  backgroundColor: style?.color ?? 'var(--ds-icon)',
                   WebkitMaskImage: maskUrl,
                   maskImage: maskUrl,
                   WebkitMaskRepeat: 'no-repeat',
@@ -556,7 +556,7 @@ export default function HomeSidebar({
             {
               id: 'recent-loading-label',
               title: (
-                <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 'var(--ds-font-size-100)' }}>
+                <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-100)' }}>
                   Loading recent pages...
                 </span>
               ),
@@ -582,7 +582,7 @@ export default function HomeSidebar({
           items: [{
             id: 'recent-placeholder',
             title: (
-              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 'var(--ds-font-size-200)' }}>
+              <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>
                 No recent pages
               </span>
             ),

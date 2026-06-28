@@ -59,7 +59,7 @@ export function WorkCellPrefix({
       {issueKey && (
         <span
           style={{
-            color: 'var(--ds-link, #0052CC)',
+            color: 'var(--ds-link)',
             fontSize: 'var(--ds-font-size-400)',
             flexShrink: 0,
             textDecoration: 'underline',

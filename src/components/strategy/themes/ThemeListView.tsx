@@ -59,7 +59,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
   const sortIndicator = (field: SortField) => sortField === field ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
 
   const borderColor = isDark ? DK.border : 'var(--divider)';
-  const borderSubtle = isDark ? DK.borderSubtle : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
+  const borderSubtle = isDark ? DK.borderSubtle : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))';
 
   const colHeaderStyle: React.CSSProperties = {
     fontSize: 10.5, fontWeight: 600,
@@ -83,7 +83,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           padding: '8px 12px',
         }}
       >
-        <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} /></div>
+        <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} /></div>
         <div onClick={() => toggleSort('title')} className="cursor-pointer select-none" style={colHeaderStyle}>Theme{sortIndicator('title')}</div>
         <div style={colHeaderStyle}>Status</div>
         <div onClick={() => toggleSort('progress_pct')} className="cursor-pointer select-none" style={colHeaderStyle}>Progress{sortIndicator('progress_pct')}</div>
@@ -117,7 +117,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           >
             {/* Checkbox */}
             <div onClick={e => e.stopPropagation()}>
-              <input type="checkbox" checked={selected.has(theme.id)} onChange={() => toggleCheck(theme.id)} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
+              <input type="checkbox" checked={selected.has(theme.id)} onChange={() => toggleCheck(theme.id)} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
             </div>
 
             {/* Theme */}
@@ -158,7 +158,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
                 <>
                   <div className="shrink-0 rounded-full flex items-center justify-center" style={{
                     width: 22, height: 22, background: getAvatarColor(theme.owner_name),
-                    fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                   }}>
                     {getInitials(theme.owner_name)}
                   </div>
@@ -195,7 +195,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
 
       {/* Pagination */}
       <div className="flex items-center justify-between px-4 py-3 border-t" style={{ borderColor }}>
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-disabled, #8590A2)' : 'var(--fg-3)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-disabled)' : 'var(--fg-3)' }}>
           Showing {Math.min((page - 1) * perPage + 1, sorted.length)}–{Math.min(page * perPage, sorted.length)} of {sorted.length} themes
         </span>
         <div className="flex items-center gap-2">
@@ -206,11 +206,11 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               fontSize: 'var(--ds-font-size-200)', padding: '2px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
-              color: page === 1 ? (isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? DK.t2 : 'var(--fg-2)'),
+              color: page === 1 ? (isDark ? DK.t4 : 'var(--ds-text-disabled)') : (isDark ? DK.t2 : 'var(--fg-2)'),
               cursor: page === 1 ? 'default' : 'pointer',
             }}
           >←</button>
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-disabled, #8590A2)' : 'var(--fg-3)' }}>Page {page} of {totalPages}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-disabled)' : 'var(--fg-3)' }}>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
@@ -218,7 +218,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               fontSize: 'var(--ds-font-size-200)', padding: '2px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
-              color: page === totalPages ? (isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? DK.t2 : 'var(--fg-2)'),
+              color: page === totalPages ? (isDark ? DK.t4 : 'var(--ds-text-disabled)') : (isDark ? DK.t2 : 'var(--fg-2)'),
               cursor: page === totalPages ? 'default' : 'pointer',
             }}
           >→</button>
@@ -229,14 +229,14 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
       {selected.size > 0 && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12,
+          background: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 12,
           padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
           boxShadow: '0 8px 30px var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 50,
         }}>
           <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500 }}>{selected.size} selected</span>
-          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Change Status</button>
-          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Assign Owner</button>
-          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-background-danger, rgba(239,68,68,0.7))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Delete</button>
+          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-border, var(--cp-ink-1))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface)', cursor: 'pointer' }}>Change Status</button>
+          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-border, var(--cp-ink-1))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface)', cursor: 'pointer' }}>Assign Owner</button>
+          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-background-danger, rgba(239,68,68,0.7))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface)', cursor: 'pointer' }}>Delete</button>
         </div>
       )}
     </div>

@@ -49,8 +49,8 @@ export function DescriptionEditMode({
           padding: '12px',
           fontSize: '13px',
           lineHeight: 1.5,
-          backgroundColor: 'var(--ds-surface, #FFFFFF)',
-          border: error ? '2px solid var(--ds-text-danger, #AE2A19)' : isNearLimit ? '2px solid var(--ds-text-warning, #974F0C)' : '2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          backgroundColor: 'var(--ds-surface)',
+          border: error ? '2px solid var(--ds-text-danger)' : isNearLimit ? '2px solid var(--ds-text-warning)' : '2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
           borderRadius: '4px',
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
           resize: 'vertical',
@@ -63,10 +63,10 @@ export function DescriptionEditMode({
         aria-invalid={!!error}
         aria-describedby={error ? 'description-error' : undefined}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = 'var(--cp-primary-60, #0052CC)';
+          e.currentTarget.style.borderColor = 'var(--cp-primary-60)';
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = error ? 'var(--ds-text-danger, #AE2A19)' : isNearLimit ? 'var(--ds-text-warning, #974F0C)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))';
+          e.currentTarget.style.borderColor = error ? 'var(--ds-text-danger)' : isNearLimit ? 'var(--ds-text-warning)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))';
         }}
       />
 
@@ -76,7 +76,7 @@ export function DescriptionEditMode({
           id="description-error"
           style={{
             fontSize: '12px',
-            color: 'var(--ds-text-danger, #AE2A19)',
+            color: 'var(--ds-text-danger)',
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
@@ -88,21 +88,21 @@ export function DescriptionEditMode({
       )}
 
       {/* Character Counter */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: 'var(--ds-icon-subtle)' }}>
         <div style={{ display: 'flex', gap: '12px' }}>
           <span>
             {charCount} / {maxLength} characters
           </span>
-          {isNearLimit && <span style={{ color: 'var(--ds-text-warning, #974F0C)' }}>⚠️ Limit approaching</span>}
+          {isNearLimit && <span style={{ color: 'var(--ds-text-warning)' }}>⚠️ Limit approaching</span>}
           {mentions.length > 0 && <span>• {mentions.length} mention(s) detected</span>}
         </div>
       </div>
 
       {/* Markdown Hint */}
-      <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>
-        <strong>Formatting:</strong> <code style={{ backgroundColor: 'var(--ds-background-neutral, #F1F2F4)', padding: '2px 4px', borderRadius: '3px' }}>**bold**</code>{' '}
-        <code style={{ backgroundColor: 'var(--ds-background-neutral, #F1F2F4)', padding: '2px 4px', borderRadius: '3px' }}>_italic_</code>{' '}
-        <code style={{ backgroundColor: 'var(--ds-background-neutral, #F1F2F4)', padding: '2px 4px', borderRadius: '3px' }}>`code`</code> • @mention users and
+      <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle)' }}>
+        <strong>Formatting:</strong> <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '2px 4px', borderRadius: '3px' }}>**bold**</code>{' '}
+        <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '2px 4px', borderRadius: '3px' }}>_italic_</code>{' '}
+        <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '2px 4px', borderRadius: '3px' }}>`code`</code> • @mention users and
         paste links
       </div>
 

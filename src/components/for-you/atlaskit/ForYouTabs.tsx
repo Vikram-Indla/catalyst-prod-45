@@ -157,11 +157,11 @@ function TabButton({
   // neutral bg. Rest: transparent.
   // Phase 12 (2026-04-29): reverted to token(). Atlaskit theme handles flip.
   // Selected fill: LIGHT keeps Jira's white-pill + shadow elevation. DARK can't
-  // use shadow elevation (invisible on dark canvas) and elevation.surface (var(--ds-surface, #22272B))
+  // use shadow elevation (invisible on dark canvas) and elevation.surface (var(--ds-surface))
   // matches the container -> no contrast. Use color.background.selected (#1C2B41)
   // so the active tab is clearly distinct in dark. (RCA 2026-06-18)
   const background = isActive
-    ? (isDark ? token('color.background.selected', 'var(--ds-text, #172B4D)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'))
+    ? (isDark ? token('color.background.selected', 'var(--ds-text)') : token('elevation.surface', 'var(--ds-surface)'))
     : hover
       ? token('color.background.neutral.hovered', 'rgba(11,18,14,0.14)')
       : 'transparent';
@@ -192,7 +192,7 @@ function TabButton({
         // white bg + shadow elevation (Jira pattern). Variable weight
         // (400↔600) caused layout shift in the inline-flex strip.
         font: `500 14px/normal var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
         whiteSpace: 'nowrap',
         outline: 'none',
         boxShadow: isActive && !isDark
@@ -218,7 +218,7 @@ function TabButton({
             // neutral, dropping the visual warning at the exact moment the
             // user landed on the tab.
             background: isAgeingBadge
-              ? token('color.background.danger', 'var(--ds-background-danger, #FFECEB)')
+              ? token('color.background.danger', 'var(--ds-background-danger)')
               : isAssignedBadge
                 // Jira parity (probe 2026-05-29): blue badge bg on assigned tab.
                 // token('color.background.accent.blue.subtle') → closest ADS match.
@@ -229,8 +229,8 @@ function TabButton({
             color: isAgeingBadge
               ? token('color.text.danger', '#AE2E24')
               : isAssignedBadge
-                ? token('color.text', 'var(--ds-text, #172B4D)')
-                : token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+                ? token('color.text', 'var(--ds-text)')
+                : token('color.text.subtle', 'var(--ds-text-subtle)'),
             // Jira parity: ageing + assigned use square badges (borderRadius 2px),
             // all others use the pill treatment (borderRadius 999).
             borderRadius: isAgeingBadge || isAssignedBadge ? 2 : 999,

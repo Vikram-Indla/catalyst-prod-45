@@ -6,20 +6,20 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 
 // Professional Palette - Blue + Teal + accents
 export const PROFESSIONAL_PALETTE = {
-  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',     // Blue (Primary)
-  success: 'var(--ds-chart-teal-bold, #0d9488)',     // Teal (Success/Done)
-  warning: 'var(--ds-text-warning, #f59e0b)',     // Amber (Warning)
-  danger: 'var(--ds-text-danger, #ef4444)',      // Red (Critical/Error)
-  neutral: 'var(--ds-text-subtlest, #626F86)',     // Gray (Neutral)
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',     // Blue (Primary)
+  success: 'var(--ds-chart-teal-bold)',     // Teal (Success/Done)
+  warning: 'var(--ds-text-warning)',     // Amber (Warning)
+  danger: 'var(--ds-text-danger)',      // Red (Critical/Error)
+  neutral: 'var(--ds-text-subtlest)',     // Gray (Neutral)
 };
 
 // Array format for easy iteration in charts
 export const CHART_COLORS = [
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',  // Blue - Primary
-  'var(--ds-chart-teal-bold, #0d9488)',  // Teal - Success
-  'var(--ds-text-warning, #f59e0b)',  // Amber - Warning
-  'var(--ds-text-danger, #ef4444)',  // Red - Danger
-  'var(--ds-text-subtlest, #626F86)',  // Gray - Neutral
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',  // Blue - Primary
+  'var(--ds-chart-teal-bold)',  // Teal - Success
+  'var(--ds-text-warning)',  // Amber - Warning
+  'var(--ds-text-danger)',  // Red - Danger
+  'var(--ds-text-subtlest)',  // Gray - Neutral
 ];
 
 interface RiskDonutChartProps {

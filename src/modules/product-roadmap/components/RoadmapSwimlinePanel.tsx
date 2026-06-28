@@ -13,7 +13,7 @@ import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { addMonths } from 'date-fns';
 import { User } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-link, #0C66E4)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-background-discovery-bold)', 'var(--cp-teal-60)', 'var(--ds-text-warning, var(--cp-warning))', 'var(--ds-text-success, var(--cp-success))', 'var(--ds-link)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))'];
 
 function hashColor(name: string): string {
   let hash = 0;
@@ -75,7 +75,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
   }, [items]);
 
   const hc = highContrast;
-  const borderColor = hc ? 'var(--ds-text, #172B4D)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
+  const borderColor = hc ? 'var(--ds-text)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))';
 
   const renderGridlines = () => (
     <div className="absolute inset-0 pointer-events-none flex">
@@ -88,7 +88,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? borderColor : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
+              borderRight: `1px solid ${isQuarterBoundary ? borderColor : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'}`,
               background: period.isCurrent ? 'var(--ds-background-information, rgba(37,99,235,0.03))' : 'transparent',
             }}
           />
@@ -98,7 +98,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
   );
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
       <ScrollArea className="flex-1 w-full">
         <div style={{ minWidth: totalMinWidth }}>
           <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
@@ -109,7 +109,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             {lanes.map(([key, lane]) => {
               const isUnassigned = lane.name === 'Unassigned';
               const initials = isUnassigned ? '?' : getInitials(lane.name);
-              const avatarColor = isUnassigned ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : hashColor(lane.name);
+              const avatarColor = isUnassigned ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' : hashColor(lane.name);
               
               return (
                 <div key={key}>
@@ -118,7 +118,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                     className="flex items-center gap-3 px-4"
                     style={{
                       height: 40,
-                      background: hc ? 'var(--ds-background-neutral, #F0F0F0)' : 'var(--ds-surface-sunken, #FAFBFC)',
+                      background: hc ? 'var(--ds-background-neutral)' : 'var(--ds-surface-sunken)',
                       borderBottom: `1px solid ${borderColor}`,
                       borderTop: `1px solid ${borderColor}`,
                     }}
@@ -130,22 +130,22 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         width: 24,
                         height: 24,
                         background: avatarColor,
-                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                         fontSize: 'var(--ds-font-size-50)',
                         fontWeight: 700,
                       }}
                     >
                       {isUnassigned ? <User className="w-3 h-3" /> : initials}
                     </div>
-                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))' }}>
                       {lane.name}
                     </span>
                     <span
                       style={{
                         fontSize: 'var(--ds-font-size-50)',
                         fontWeight: 600,
-                        color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-                        background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+                        color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
+                        background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
                         borderRadius: 12,
                         padding: '2px 7px',
                         fontFamily: 'var(--cp-font-mono)',
@@ -168,10 +168,10 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         style={{
                           height: 40,
                           backgroundColor: isSelected ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : 'transparent',
-                          borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
+                          borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))',
                         }}
                         onClick={() => onItemClick(item.id)}
-                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #FAFBFC)'; }}
+                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken)'; }}
                         onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
                       >
                         {position ? (
@@ -185,8 +185,8 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                           />
                         ) : (
                           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-                            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Outside range</span>
+                            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
+                            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>Outside range</span>
                           </div>
                         )}
                       </div>

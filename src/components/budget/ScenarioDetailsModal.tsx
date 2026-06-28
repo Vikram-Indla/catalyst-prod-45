@@ -62,10 +62,10 @@ const formatDateDisplay = (dateStr: string) => {
 };
 
 const CATEGORY_COLORS = {
-  insourced: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  cosourced: 'var(--ds-text-success, #0d9488)',
-  outsourced: 'var(--ds-text-warning, #d97706)',
-  licenses: 'var(--ds-text-discovery, #7c3aed)',
+  insourced: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  cosourced: 'var(--ds-text-success)',
+  outsourced: 'var(--ds-text-warning)',
+  licenses: 'var(--ds-text-discovery)',
 } as const;
 
 export function ScenarioDetailsModal({

@@ -153,7 +153,7 @@ export function NewMessagePanel({
             padding: '8px 16px',
             fontFamily: 'var(--cv2-font)',
             fontSize: 'var(--ds-font-size-200)',
-            color: 'var(--ds-text-danger, #AE2A19)',
+            color: 'var(--ds-text-danger)',
             background: 'var(--cv2-bg-panel)',
           }}
         >

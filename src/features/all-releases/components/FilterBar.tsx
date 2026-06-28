@@ -81,13 +81,13 @@ export function FilterBar({
     <div className="flex items-center gap-3 flex-wrap">
       {/* Search */}
       <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] flex items-center"><SearchIcon label="" size="small" primaryColor="currentColor" /></span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))] flex items-center"><SearchIcon label="" size="small" primaryColor="currentColor" /></span>
         <Input
           id="release-search"
           placeholder="Search releases..."
           value={filter.search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-9 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
+          className="pl-9 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]"
         />
       </div>
 
@@ -95,7 +95,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
+            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]",
             filter.status.length > 0 && "border-primary text-primary"
           )}>
             Status
@@ -125,7 +125,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
+            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]",
             filter.health.length > 0 && "border-primary text-primary"
           )}>
             Health
@@ -156,7 +156,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
+            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]",
             filter.quarter !== 'all' && "border-primary text-primary"
           )}>
             {filter.quarter === 'all' ? 'Quarter' : filter.quarter}
@@ -183,7 +183,7 @@ export function FilterBar({
           variant="ghost"
           size="sm"
           onClick={onClearFilters}
-          className="text-slate-500 hover:text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
+          className="text-slate-500 hover:text-slate-700 dark:text-[var(--ds-text-subtlest)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral))]"
         >
           <CloseIcon label="" size="small" primaryColor="currentColor" />
           Clear ({activeFilterCount})

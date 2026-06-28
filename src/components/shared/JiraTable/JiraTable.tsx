@@ -56,10 +56,10 @@ import { ResizeColumnDialog } from './ResizeColumnDialog';
 const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
   padding: '4px 10px',
   fontSize: 'var(--ds-font-size-300)',
-  border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
+  border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
   borderRadius: 3,
-  background: disabled ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-  color: disabled ? 'var(--ds-text-subtlest, #A5ADBA)' : 'var(--ds-text-subtle, #42526E)',
+  background: disabled ? 'var(--ds-surface-sunken, var(--cp-bg-sunken))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+  color: disabled ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtle)',
   cursor: disabled ? 'default' : 'pointer',
   fontFamily: 'inherit',
 });
@@ -514,16 +514,16 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     style.textContent = `
       /* Focus ring via blue left bar + subtle bg */
       .jira-table-grid .jira-table-row-focused > td:first-child {
-        box-shadow: inset 3px 0 0 var(--ds-link, #0C66E4);
+        box-shadow: inset 3px 0 0 var(--ds-link);
       }
       .jira-table-grid .jira-table-row-focused > td {
-        background-color: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) !important;
+        background-color: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
       }
       /* Grid lines via box-shadow (immune to Atlaskit's em-based overrides).
          Phase 12 (2026-04-29): reverted to Atlaskit color.border via
          --ds-border CSS variable. Phase 11 made it flip natively. */
       .jira-table-grid table tbody > tr > td {
-        box-shadow: inset 0 -1px 0 0 var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) !important;
+        box-shadow: inset 0 -1px 0 0 var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))) !important;
       }
       /* Apr 27, 2026 (Vikram audit pass 4): Type column is icon-only, so
          the standard 12px L/R cell padding leaves ~14px of dead space
@@ -542,8 +542,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            token via --ds-surface-sunken CSS variable. Phase 11 unblocked
            dark theme — token flips natively. Removed Catalyst-specific
            [data-theme="dark"] override block; ADS owns the band colour. */
-        box-shadow: inset 0 -2px 0 0 var(--ds-border, var(--ds-border, #C1C7D0)) !important;
-        background: var(--ds-surface-sunken, #F7F8F9) !important;
+        box-shadow: inset 0 -2px 0 0 var(--ds-border, var(--ds-border)) !important;
+        background: var(--ds-surface-sunken) !important;
       }
       /* 2026-06-09 Sticky __actions header: white bg (so scrolled content
          doesn't show through), left divider (visual separator from the
@@ -551,19 +551,19 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          of the header row). Higher-specificity selector + !important
          required to defeat the generic thead-th rule above. */
       .jira-table-grid table thead > tr > th[data-actions-sticky] {
-        background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)) !important;
+        background: var(--cp-bg-elevated, var(--ds-surface)) !important;
         box-shadow:
-          inset 1px 0 0 0 var(--ds-border, #C1C7D0),
-          inset 0 -2px 0 0 var(--ds-border, #C1C7D0) !important;
+          inset 1px 0 0 0 var(--ds-border),
+          inset 0 -2px 0 0 var(--ds-border) !important;
       }
       /* Focused row overrides the td shadow with its own blue bar */
       .jira-table-grid .jira-table-row-focused > td:first-child {
-        box-shadow: inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) !important;
+        box-shadow: inset 3px 0 0 var(--ds-link), inset 0 -1px 0 0 var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))) !important;
       }
       /* Row hover. Apr 28, 2026 (jira-compare cycle 4): tokenized — was
-         hardcoded var(--ds-surface-sunken, #F7F8F9). --ds-background-neutral-subtle-hovered is the
+         hardcoded var(--ds-surface-sunken). --ds-background-neutral-subtle-hovered is the
          exact Atlaskit hover bg (var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) in light theme). */
-      /* Jira DOM probe 2026-05-16: row hover bg = rgba(9,30,66,0.06) ≈ var(--ds-background-neutral, #F1F2F4) */
+      /* Jira DOM probe 2026-05-16: row hover bg = rgba(9,30,66,0.06) ≈ var(--ds-background-neutral) */
       .jira-table-grid table tbody > tr:hover > td {
         background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
       }
@@ -571,11 +571,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          OR opened, tint the entire <td> so the affordance reads as
          "this whole cell is editable" — matches Jira list-view behaviour.
          Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded
-         var(--ds-background-neutral, #F1F2F4). --ds-background-neutral-hovered is the next-step token
+         var(--ds-background-neutral). --ds-background-neutral-hovered is the next-step token
          used for active editor cells. */
       .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor]:hover):not(:has([data-jira-cell-summary])),
       .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor][aria-expanded="true"]):not(:has([data-jira-cell-summary])) {
-        background-color: var(--ds-background-neutral-hovered, #F1F2F4) !important;
+        background-color: var(--ds-background-neutral-hovered) !important;
       }
       /* Title (summary) cell — Vikram directive (2026-06-11):
          (1) td background — let the row's uniform gray hover tint
@@ -651,13 +651,13 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         transition: background 100ms;
       }
       [data-jira-table-row-open]:hover {
-        background: var(--ds-background-selected, #E9F2FF);
+        background: var(--ds-background-selected);
         text-decoration: underline;
       }
       /* Inner trigger buttons no longer self-tint (the whole cell tints).
          Keep a subtle ring for keyboard focus. */
       [data-jira-cell-editor]:focus-visible {
-        outline: 2px solid var(--ds-border-focused, #4688EC);
+        outline: 2px solid var(--ds-border-focused);
         outline-offset: -2px;
         border-radius: 3px;
       }
@@ -669,7 +669,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          the final character (the d of Unassigned rendered as Unassignea
          was the reported defect). */
       [data-jira-cell-ghost] {
-        color: var(--ds-text-subtlest, #97A0AF);
+        color: var(--ds-text-subtlest);
         font-style: italic;
         padding-right: 2px;
         transition: color 80ms ease;
@@ -686,7 +686,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         padding: 0;
       }
       .jira-table-grid table tbody > tr:hover [data-jira-cell-ghost] {
-        color: var(--ds-text-subtle, #5E6C84);
+        color: var(--ds-text-subtle);
       }
       /* Group header + button: hidden by default, visible on row hover.
          Jira only shows the + on hover (parity confirmed 2026-05-08 DOM probe). */
@@ -723,11 +723,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       button.jira-table-create-btn:hover,
       button.jira-table-refresh-btn:hover {
-        background-color: var(--ds-background-neutral, #EBECF0) !important;
+        background-color: var(--ds-background-neutral) !important;
       }
       button.jira-table-create-btn:active,
       button.jira-table-refresh-btn:active {
-        background-color: var(--ds-background-neutral-hovered, #DCDFE4) !important;
+        background-color: var(--ds-background-neutral-hovered) !important;
       }
       /* ── Round H additions ─────────────────────────────────────────
          Sticky header + resize handle. The scroll container is the table
@@ -749,7 +749,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         /* Thin scrollbars (Atlassian parity). Firefox uses scrollbar-width;
            WebKit/Blink use ::-webkit-scrollbar rules below. */
         scrollbar-width: thin;
-        scrollbar-color: var(--ds-background-neutral-hovered, #DCDFE4) transparent;
+        scrollbar-color: var(--ds-background-neutral-hovered) transparent;
       }
       .jira-table-viewport::-webkit-scrollbar {
         width: 10px;
@@ -759,13 +759,13 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background: transparent;
       }
       .jira-table-viewport::-webkit-scrollbar-thumb {
-        background: var(--ds-background-neutral-hovered, #DCDFE4);
+        background: var(--ds-background-neutral-hovered);
         border-radius: 5px;
         border: 2px solid transparent;
         background-clip: content-box;
       }
       .jira-table-viewport::-webkit-scrollbar-thumb:hover {
-        background: var(--ds-background-neutral-pressed, #B3B9C4);
+        background: var(--ds-background-neutral-pressed);
         background-clip: content-box;
       }
       .jira-table-viewport::-webkit-scrollbar-corner {
@@ -802,7 +802,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         position: sticky;
         top: 0;
         z-index: 2;
-        background: var(--ds-surface-sunken, #F7F8F9);
+        background: var(--ds-surface-sunken);
         height: 40px;
         padding: 0 12px;
         vertical-align: middle;
@@ -818,14 +818,14 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         text-overflow: ellipsis;
         /* Re-measured 2026-04-26 from Jira BAU list view header "Summary":
              - 12px / weight 653 (Charlie variable; matched exactly)
-             - color var(--ds-text-subtlest, #6B6E76) (color.text.subtle — re-probed 2026-04-27 vs
-               Jira, was previously written as var(--ds-text-subtle, #44546F) from a stale probe)
+             - color var(--ds-text-subtlest) (color.text.subtle — re-probed 2026-04-27 vs
+               Jira, was previously written as var(--ds-text-subtle) from a stale probe)
              - text-transform: none (Title Case — NOT uppercase)
              - letter-spacing: normal (NOT 0.04em)
            Catalyst's previous UPPERCASE / wide-tracked / muted-grey
            treatment was a Catalyst opinion. Matching Jira's actual list
            view here for parity. Apr 27 2026 jira-compare regression
-           (D-005 + D-006): fontWeight 700 → 653, color var(--ds-text-subtle, var(--ds-icon, #44546F)) → var(--ds-text-subtlest, var(--ds-text-subtlest, #6B6E76)).
+           (D-005 + D-006): fontWeight 700 → 653, color var(--ds-text-subtle, var(--ds-icon)) → var(--ds-text-subtlest, var(--ds-text-subtlest)).
            Jira spec (measured 2026-05-12): 12px/653/var(--ds-text-subtle, rgb(80,82,88)) — NOT 14px/400.
            14px/400 is body text. Headers must be bold and smaller.
            May 12 2026 (design-intelligence RCA): line-height 18px → 16px
@@ -842,11 +842,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         white-space: nowrap;
         user-select: none;
         /* 2026-05-17: Added vertical column dividers matching tbody. */
-        border-right: 1px solid var(--ds-border, #EBECF0);
+        border-right: 1px solid var(--ds-border);
       }
       .jira-table-grid thead th.jira-th-sortable { cursor: pointer; }
-      /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded var(--ds-background-neutral, #EBECF0) */
-      .jira-table-grid thead th.jira-th-sortable:hover { background: var(--ds-background-neutral-hovered, #EBECF0); }
+      /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded var(--ds-background-neutral) */
+      .jira-table-grid thead th.jira-th-sortable:hover { background: var(--ds-background-neutral-hovered); }
       /* 2026-05-10 Jira-parity: row body is the click target for opening
          the detail panel. cursor: pointer signals clickability. Inline
          editor cells override with their own cursors (text/pointer).
@@ -885,32 +885,32 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         /* Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface
            token via --ds-surface CSS variable. Phase 11 unblocked Atlaskit's
            bundled dark theme so --ds-surface flips natively. */
-        background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+        background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
         /* Apr 27, 2026 (L60): explicit typography baseline per Jira-parity
            spec — 14/20/400 with primary text color. Cells with their own
            cell-renderers (Lozenge, Avatar, dates, etc.) override locally;
            all unstyled text inherits this default so we don't drift.
            Apr 28, 2026 (jira-compare cycle 2 typography RCA): switched
-           from legacy hardcoded var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))) (rgb 23,43,77 — old Atlassian
+           from legacy hardcoded var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse))) (rgb 23,43,77 — old Atlassian
            Refresh "neutral 800") to the modern --ds-text token (resolves
            to rgb 41,42,46 on Jira /list per live probe of Catalyst H1
            AND Jira BAU body cells). The legacy hex was the cause of the
            washed-out / blue-shifted body text Vikram flagged: every body
-           td was rendering var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))) while headers + H1 used the modern
+           td was rendering var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse))) while headers + H1 used the modern
            token. Token-first ensures dark-mode + Dark mode switch flips
-           too. Fallback hex updated to var(--ds-text, #172B4D) to match Jira's resolved
+           too. Fallback hex updated to var(--ds-text) to match Jira's resolved
            --ds-text in light theme. */
         font-size: 14px;
         line-height: 20px;
         font-weight: 400;
-        color: var(--ds-text, #292A2E);
+        color: var(--ds-text);
         font-family: inherit;
         /* 2026-05-17: Added vertical column dividers. Each td renders a
            right border so columns are visually separated. Without this,
            the table appears as plain rows without grid structure. Jira
-           uses 1px solid var(--ds-border, #DFE1E6) (Atlaskit border.subtle) on the right
+           uses 1px solid var(--ds-border) (Atlaskit border.subtle) on the right
            edge of each cell. */
-        border-right: 1px solid var(--ds-border, #EBECF0);
+        border-right: 1px solid var(--ds-border);
       }
       /* Column resize handle — 6px hit area on the right edge of each
          sortable/resizable header. Highlights on hover to advertise. */
@@ -947,7 +947,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         right: 0;
         bottom: 0;
         width: 2px;
-        background: var(--cp-resize-handle-hover, var(--ds-text-subtlest, #626F86));
+        background: var(--cp-resize-handle-hover, var(--ds-text-subtlest));
         z-index: 3;
         pointer-events: none;
       }
@@ -959,12 +959,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         right: 0;
         bottom: 0;
         width: 2px;
-        background: var(--ds-border-selected, #4C9AFF);
+        background: var(--ds-border-selected);
         z-index: 3;
         pointer-events: none;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) !important;
+        background: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
       }
 
       /* ── Apr 27, 2026 (L59): Sticky Key-column prefix ──
@@ -1001,7 +1001,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         position: sticky;
         top: 0;
         z-index: 2;
-        background: var(--ds-surface-sunken, #F7F8F9);
+        background: var(--ds-surface-sunken);
       }
       .jira-table-grid thead th {
         color: var(--ds-text-subtle, rgb(80, 82, 88)) !important;
@@ -1016,7 +1016,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) !important;
+        background: var(--ds-surface-sunken, var(--cp-bg-sunken)) !important;
       }
       /* 2026-05-10 Jira-parity: group header rows stick below the thead
          while their child rows scroll past. top:40px = thead height.
@@ -1025,7 +1025,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         position: sticky;
         top: 40px;
         z-index: 1;
-        background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
+        background: var(--ds-surface-sunken, var(--cp-bg-sunken));
       }
       /* ── Critique fixes (2026-04) — ported from the retired legacy table ──
          Center the selection checkbox in its column.
@@ -1038,7 +1038,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         text-align: center;
         padding-left: 0 !important;
         padding-right: 0 !important;
-        border-right: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6))) !important;
+        border-right: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border))) !important;
       }
       .jira-table-grid.has-select-col table thead > tr > th:first-child > span,
       .jira-table-grid.has-select-col table tbody > tr > td:first-child > [data-jira-table-editor],
@@ -1076,7 +1076,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Strengthen grid lines to match the legacy renderer + critique-fix tone. */
       .jira-table-grid table tbody > tr > td {
-        box-shadow: inset 0 -1px 0 0 var(--ds-border, #E4E6EA) !important;
+        box-shadow: inset 0 -1px 0 0 var(--ds-border) !important;
       }
       /* Row hover tint matches Jira's list view. */
       .jira-table-grid table tbody > tr:hover > td {
@@ -1104,29 +1104,29 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* "Add comment" ghost text — always visible (Jira parity: shown at rest in every row) */
       .jira-table-grid table tbody > tr td [data-jira-cell-ghost] {
         visibility: visible;
-        color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+        color: var(--ds-text-subtlest, var(--cp-text-secondary));
       }
       /* ─────────────────────────────────────────────────────────────────────
          DARK MODE — Rule 3 paired overrides for !important hex above.
          Most surfaces already use --ds-* tokens that flip natively under
          @atlaskit/tokens dark mode. The remaining hardcoded fallbacks
-         (var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) group-row bg, var(--ds-surface-sunken, #F7F8F9) sticky header, var(--ds-link, #0C66E4) focus bar,
-         var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) grid line) need explicit .dark companions per Rule 3.
+         (var(--ds-surface-sunken, var(--cp-bg-sunken)) group-row bg, var(--ds-surface-sunken) sticky header, var(--ds-link) focus bar,
+         var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))) grid line) need explicit .dark companions per Rule 3.
          ───────────────────────────────────────────────────────────────────── */
       .dark .jira-table-grid .jira-table-row-focused > td {
-        background-color: var(--ds-background-selected, #1C2B41) !important;
+        background-color: var(--ds-background-selected) !important;
       }
       .dark .jira-table-grid tbody tr.jira-table-group-row > td,
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: var(--ds-surface-sunken, #1D2125) !important;
+        background: var(--ds-surface-sunken) !important;
       }
       .dark .jira-table-grid thead th {
-        background: var(--ds-surface-sunken, #1D2125) !important;
+        background: var(--ds-surface-sunken) !important;
       }
       .dark .jira-table-grid .jira-table-row-focused > td:first-child {
-        box-shadow: inset 3px 0 0 var(--ds-border-selected, #579DFF), inset 0 -1px 0 0 var(--ds-border, #38414A) !important;
+        box-shadow: inset 3px 0 0 var(--ds-border-selected), inset 0 -1px 0 0 var(--ds-border) !important;
       }
     `;
     document.head.appendChild(style);
@@ -1241,7 +1241,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             style={{
               fontSize: d.headerFontSize,
               fontWeight: 700,
-              color: 'var(--ds-text-subtle, #505258)',
+              color: 'var(--ds-text-subtle)',
               textTransform: 'none',
               letterSpacing: 'normal',
               whiteSpace: 'nowrap',
@@ -1367,7 +1367,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             <div
               style={{
                 fontSize: d.cellFontSize,
-                color: 'var(--ds-text, #292A2E)',
+                color: 'var(--ds-text)',
                 paddingTop: d.cellPaddingY - 4,
                 paddingBottom: d.cellPaddingY - 4,
                 paddingLeft: isFirstDataCol && indentPx > 0 ? indentPx : (col.align === 'center' ? undefined : 4),
@@ -1423,7 +1423,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         padding: 0,
                         border: 'none',
                         background: 'transparent',
-                        color: 'var(--ds-text-subtle, #6B6E76)',
+                        color: 'var(--ds-text-subtle)',
                         borderRadius: 3,
                         cursor: 'pointer',
                       }}
@@ -1607,8 +1607,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     width: 24,
                     height: 24,
                     // 2026-05-08 DOM probe: Jira group header chevron color = rgb(80,82,88)
-                    // = --ds-text-subtle. Was var(--ds-text-subtlest, #6B6E76) (--ds-text-subtlest) — too faint.
-                    color: 'var(--ds-text-subtle, #505258)',
+                    // = --ds-text-subtle. Was var(--ds-text-subtlest) (--ds-text-subtlest) — too faint.
+                    color: 'var(--ds-text-subtle)',
                     transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
                     transition: 'transform 200ms ease',
                     flexShrink: 0,
@@ -1627,12 +1627,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   {(g as any).labelNode}
                 </span>
               ) : (
-                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {g.label}
                 </span>
               )}
               {g.meta && (
-                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
                   {g.meta}
                 </span>
               )}
@@ -1659,7 +1659,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       padding: 0,
                       border: 'none',
                       background: 'transparent',
-                      color: 'var(--ds-text-subtle, #6B6E76)',
+                      color: 'var(--ds-text-subtle)',
                       borderRadius: 3,
                       cursor: 'pointer',
                     }}
@@ -1850,10 +1850,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         fontFamily:
           '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
         fontSize: d.cellFontSize,
-        color: 'var(--ds-text, #292A2E)',
+        color: 'var(--ds-text)',
         outline: 'none',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-        border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+        border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
         // Apr 27, 2026 — jira-compare audit P2 #10: Jira's outer table
         // card uses 8px border-radius; Catalyst was 6px. Bumped to
         // match — minor token drift, single-line change.
@@ -1970,8 +1970,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                           `left:-10000px`,
                           `width:${ghostW}px`,
                           `height:${ghostH}px`,
-                          `background:var(--ds-background-selected, #E9F2FF)`,
-                          `border:2px solid var(--ds-border-selected, #4C9AFF)`,
+                          `background:var(--ds-background-selected)`,
+                          `border:2px solid var(--ds-border-selected)`,
                           `border-radius:3px`,
                           `pointer-events:none`,
                           `box-sizing:border-box`,
@@ -2025,7 +2025,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       background: isDragOverThis
                         ? 'var(--ds-background-selected, rgba(76, 154, 255, 0.15))'
                         : meta?.id === '__actions'
-                          ? 'var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))'
+                          ? 'var(--cp-bg-elevated, var(--ds-surface))'
                           : undefined,
                       // 2026-06-09: when __actions header sticks during
                       // horizontal scroll, add a 1px left divider so the
@@ -2033,10 +2033,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       // content sliding underneath it. Combined with the
                       // bottom border that all headers share.
                       boxShadow: isDragOverThis
-                        ? 'inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF), inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF), inset 0 -2px 0 0 var(--ds-border, #C1C7D0)'
+                        ? 'inset 1px 0 0 0 var(--ds-border-selected), inset -1px 0 0 0 var(--ds-border-selected), inset 0 -2px 0 0 var(--ds-border)'
                         : meta?.id === '__actions'
-                          ? 'inset 1px 0 0 0 var(--ds-border, #C1C7D0), inset 0 -2px 0 0 var(--ds-border, #C1C7D0)'
-                          : 'inset 0 -2px 0 0 var(--ds-border, #C1C7D0)',
+                          ? 'inset 1px 0 0 0 var(--ds-border), inset 0 -2px 0 0 var(--ds-border)'
+                          : 'inset 0 -2px 0 0 var(--ds-border)',
                       // 2026-05-10 Jira-parity: sort affordance wins over reorder
                       // affordance for cursor. Sortable headers always show pointer
                       // so click-to-sort is discoverable. Active drag shows grabbing.
@@ -2089,8 +2089,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                             borderRadius: 3,
                             background: 'transparent',
                             color: isSorted
-                              ? 'var(--ds-text, #292A2E)'
-                              : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+                              ? 'var(--ds-text)'
+                              : 'var(--ds-text-subtlest, var(--cp-text-secondary))',
                             cursor: 'pointer',
                             flexShrink: 0,
                             overflow: 'hidden',
@@ -2129,10 +2129,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                               justifyContent: 'center',
                               height: 18,
                               padding: 0,
-                              border: isMenuOpen ? '1px solid var(--ds-border-selected, #0C66E4)' : 'none',
+                              border: isMenuOpen ? '1px solid var(--ds-border-selected)' : 'none',
                               borderRadius: 3,
-                              background: isMenuOpen ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
-                              color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+                              background: isMenuOpen ? 'var(--ds-background-selected)' : 'transparent',
+                              color: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
                               cursor: 'pointer',
                               flexShrink: 0,
                               overflow: 'hidden',
@@ -2181,7 +2181,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                               border: 'none',
                               borderRadius: 3,
                               background: showChevron ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
-                              color: col.hasActiveFilter ? 'var(--ds-icon-brand, #0C66E4)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+                              color: col.hasActiveFilter ? 'var(--ds-icon-brand)' : 'var(--ds-text-subtlest, var(--cp-text-secondary))',
                               cursor: 'pointer',
                               flexShrink: 0,
                               opacity: showChevron ? 1 : 0,
@@ -2285,11 +2285,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                           position: 'sticky',
                           right: 0,
                           zIndex: 2,
-                          background: 'var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))',
+                          background: 'var(--cp-bg-elevated, var(--ds-surface))',
                         } : {}),
                         ...(isDropTarget ? {
                           background: 'var(--ds-background-selected, rgba(76, 154, 255, 0.15))',
-                          boxShadow: 'inset 1px 0 0 0 var(--ds-border-selected, #4C9AFF), inset -1px 0 0 0 var(--ds-border-selected, #4C9AFF)',
+                          boxShadow: 'inset 1px 0 0 0 var(--ds-border-selected), inset -1px 0 0 0 var(--ds-border-selected)',
                         } : {}),
                       }}>
                         {c.content}
@@ -2379,7 +2379,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                                 position: 'sticky',
                                 right: 0,
                                 zIndex: 2,
-                                background: 'var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))',
+                                background: 'var(--cp-bg-elevated, var(--ds-surface))',
                               } : {}),
                             }}>
                               {c.content}
@@ -2446,15 +2446,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         return (
           <div
             style={{
-              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
               minHeight: 40,
               flexShrink: 0,
               marginTop: 'auto',
               ...(creating ? {
-                borderTop: '2px solid var(--ds-border-focused, #4688EC)',
-                borderLeft: '2px solid var(--ds-border-focused, #4688EC)',
-                borderRight: '2px solid var(--ds-border-focused, #4688EC)',
-                borderBottom: '2px solid var(--ds-border-focused, #4688EC)',
+                borderTop: '2px solid var(--ds-border-focused)',
+                borderLeft: '2px solid var(--ds-border-focused)',
+                borderRight: '2px solid var(--ds-border-focused)',
+                borderBottom: '2px solid var(--ds-border-focused)',
                 borderBottomLeftRadius: 8,
                 borderBottomRightRadius: 8,
               } : {
@@ -2486,7 +2486,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     border: 'none',
                     background: 'transparent',
                     cursor: 'pointer',
-                    color: 'var(--ds-text, #292A2E)',
+                    color: 'var(--ds-text)',
                     fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 600,
                     borderRadius: 3,
@@ -2503,7 +2503,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     gap: 6,
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
-                    color: 'var(--ds-text, #292A2E)',
+                    color: 'var(--ds-text)',
                   }}
                 >
                   {showCount && <span>{countLabel}</span>}
@@ -2524,7 +2524,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         borderRadius: 3,
                         cursor: 'pointer',
                         padding: 0,
-                        color: 'var(--ds-text, #292A2E)',
+                        color: 'var(--ds-text)',
                       }}
                     >
                       <svg
@@ -2568,10 +2568,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             justifyContent: 'flex-end',
             gap: 8,
             padding: '8px 12px',
-            borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
+            borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
             fontSize: 'var(--ds-font-size-300)',
-            color: 'var(--ds-text-subtle, #42526E)',
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+            color: 'var(--ds-text-subtle)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
           }}>
             <button
               type="button"
@@ -2602,8 +2602,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             top: filterMenu.top,
             left: filterMenu.left,
             zIndex: 9999,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
             borderRadius: 4,
             boxShadow: '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))',
             minWidth: 220,
@@ -2632,13 +2632,13 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             left: ctxMenu.x,
             zIndex: 1100,
             minWidth: 200,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-            border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+            border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
             borderRadius: 4,
             boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
             padding: 4,
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
           }}
         >
           {contextMenuActions
@@ -2665,9 +2665,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     border: 'none',
                     background: 'transparent',
                     // Apr 28, 2026 (jira-compare cycle 3 typography sweep):
-                    // legacy var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))) → --ds-text fallback #292A2E to match
+                    // legacy var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse))) → --ds-text fallback #292A2E to match
                     // the rest of the table's body-text token swap.
-                    color: a.danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #292A2E)',
+                    color: a.danger ? 'var(--ds-text-danger)' : 'var(--ds-text)',
                     fontSize: 'var(--ds-font-size-400)',
                     textAlign: 'left',
                     cursor: disabled ? 'default' : 'pointer',
@@ -2675,7 +2675,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     fontFamily: 'inherit',
                     borderRadius: 3,
                   }}
-                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? 'var(--ds-background-danger-hovered, #FFEBE6)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
+                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? 'var(--ds-background-danger-hovered)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle)))'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {a.icon}
@@ -2966,15 +2966,15 @@ function ColumnManagerTrigger<TRow>({
           background: 'transparent',
           // 2026-06-09: black stroke (color.text default) per user spec —
           // was inheriting subtle gray which was too light against Jira.
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text)',
           cursor: 'pointer',
           borderRadius: 3,
           outline: 'none',
           boxShadow: 'none',
         }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))')}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
-        onFocus={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')}
+        onFocus={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))')}
         onBlur={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
       >
         {/* 2026-06-09 Jira parity: Jira's column-picker icon is a bordered
@@ -3007,8 +3007,8 @@ function ColumnManagerTrigger<TRow>({
             right: anchor.right,
             zIndex: 1000,
             minWidth: 260,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-            border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+            border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
             borderRadius: 4,
             boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))',
             padding: 8,
@@ -3016,11 +3016,11 @@ function ColumnManagerTrigger<TRow>({
             display: 'flex',
             flexDirection: 'column',
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 6px' }}>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
               Columns
             </span>
             <button
@@ -3032,7 +3032,7 @@ function ColumnManagerTrigger<TRow>({
                 gap: 4,
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--ds-link, #0C66E4)',
+                color: 'var(--ds-link)',
                 fontSize: 'var(--ds-font-size-200)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
@@ -3071,13 +3071,13 @@ function ColumnManagerTrigger<TRow>({
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    borderBottom: `2px solid ${isActive ? 'var(--ds-link, #0C66E4)' : 'transparent'}`,
+                    borderBottom: `2px solid ${isActive ? 'var(--ds-link)' : 'transparent'}`,
                     padding: '6px 10px',
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: isActive ? 600 : 500,
-                    color: isActive ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+                    color: isActive ? 'var(--ds-link)' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
                     marginBottom: -1,
                   }}
                 >
@@ -3094,7 +3094,7 @@ function ColumnManagerTrigger<TRow>({
               value={search}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               elemBeforeInput={
-                <span style={{ paddingInlineStart: 8, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex', alignItems: 'center' }}>
+                <span style={{ paddingInlineStart: 8, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', display: 'flex', alignItems: 'center' }}>
                   <SearchIcon label="" size="small" />
                 </span>
               }
@@ -3102,7 +3102,7 @@ function ColumnManagerTrigger<TRow>({
           </div>
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #7A869A)' }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>No matches</div>
             )}
             {filtered.map((c) => {
               const isVisible = visibility.has(c.id);
@@ -3120,9 +3120,9 @@ function ColumnManagerTrigger<TRow>({
                     cursor: 'pointer',
                     borderRadius: 3,
                     fontSize: 'var(--ds-font-size-400)',
-                    color: 'var(--ds-text, #292A2E)',
+                    color: 'var(--ds-text)',
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))')}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle)))')}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   <AkCheckbox
@@ -3138,14 +3138,14 @@ function ColumnManagerTrigger<TRow>({
           {/* 2026-05-12 Jira parity: "X of Y" count display at the bottom */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)',
-            borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', marginTop: 4,
+            padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)',
+            borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', marginTop: 4,
           }}>
             <span>{matchCount} of {totalInTab}</span>
           </div>
           {/* Locked columns hint */}
           {columns.some((c) => c.alwaysVisible) && (
-            <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)' }}>
+            <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
               {columns.filter((c) => c.alwaysVisible && !c.id.startsWith('__')).map((c) => c.label || c.id).join(', ')} are required.
             </div>
           )}

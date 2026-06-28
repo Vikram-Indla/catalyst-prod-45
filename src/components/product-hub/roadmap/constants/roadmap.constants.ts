@@ -14,40 +14,40 @@ export const TYPE_COLORS: Record<string, {
   hover: string;
 }> = {
   business_request: {
-    solid: 'var(--ds-icon-accent-yellow, #B38600)', light: 'var(--ds-background-warning, #FFF7D6)', label: 'Business Request',
-    gradient: 'linear-gradient(135deg, var(--ds-icon-accent-yellow, #B38600), #8A6700)',
-    hover: 'var(--ds-text-warning, #8A6700)',
+    solid: 'var(--ds-icon-accent-yellow)', light: 'var(--ds-background-warning)', label: 'Business Request',
+    gradient: 'linear-gradient(135deg, var(--ds-icon-accent-yellow), #8A6700)',
+    hover: 'var(--ds-text-warning)',
   },
 };
 
 // ── Priority Colors ──
 export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label: string }> = {
-  P0: { color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Critical' },
-  P1: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', label: 'High' },
-  P2: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', label: 'Medium' },
+  P0: { color: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', label: 'Critical' },
+  P1: { color: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', label: 'High' },
+  P2: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', label: 'Medium' },
 };
 
 // ── Status Colors ──
 export const STATUS_COLORS: Record<string, { color: string; bg: string; label: string }> = {
-  Active:    { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', label: 'Active' },
-  Planned:   { color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', label: 'Planned' },
-  Completed: { color: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-background-success, #DFFCF0)', label: 'Completed' },
-  Cancelled: { color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Cancelled' },
+  Active:    { color: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', label: 'Active' },
+  Planned:   { color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--bg-1)', label: 'Planned' },
+  Completed: { color: 'var(--cp-teal-60)', bg: 'var(--ds-background-success)', label: 'Completed' },
+  Cancelled: { color: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', label: 'Cancelled' },
 };
 
 // ── Ink / Surface ──
 export const INK = {
-  1: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',  // primary text
-  2: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',  // secondary text (AUDIT #17: not muted)
-  3: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',  // tertiary
-  4: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',  // muted
+  1: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))',  // primary text
+  2: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',  // secondary text (AUDIT #17: not muted)
+  3: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',  // tertiary
+  4: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',  // muted
 };
 
 export const SURFACE = {
-  page: 'var(--bg-1, #F8FAFC)',
-  card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-  borderLight: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+  page: 'var(--bg-1)',
+  card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+  border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))',
+  borderLight: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
 };
 
 // ── Dark Mode Variants (Dark mode One Surface Model) ──
@@ -59,10 +59,10 @@ export const INK_DARK = {
 };
 
 export const SURFACE_DARK = {
-  page: 'var(--ds-surface, #0A0A0A)',
+  page: 'var(--ds-surface)',
   card: 'transparent',
-  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  borderLight: 'var(--ds-border, var(--cp-ink-1, #292929))',
+  border: 'var(--ds-border, var(--cp-ink-1))',
+  borderLight: 'var(--ds-border, var(--cp-ink-1))',
 };
 
 // 2026-06-09 ADS compliance sweep — roadmap module was using
@@ -81,15 +81,15 @@ export const LIST_PANEL_WIDTH = 420;
 export const DETAIL_PANEL_WIDTH = 420;
 
 // ── Avatar (AUDIT #3: always blue) ──
-export const AVATAR_BG = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
+export const AVATAR_BG = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
 
 // ── Owner palette (for avatar backgrounds) — AUDIT #3: all blue ──
-export const OWNER_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'];
+export const OWNER_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'];
 
 // ── Scrollbar CSS ──
 export const SCROLLBAR_CSS = `
   .roadmap-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
   .roadmap-scroll::-webkit-scrollbar-track { background: transparent; }
-  .roadmap-scroll::-webkit-scrollbar-thumb { background: var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))); border-radius: 3px; }
-  .roadmap-scroll::-webkit-scrollbar-thumb:hover { background: var(--ds-text-disabled, #CBD5E1); }
+  .roadmap-scroll::-webkit-scrollbar-thumb { background: var(--bd-default, var(--cp-border, var(--cp-bg-sunken))); border-radius: 3px; }
+  .roadmap-scroll::-webkit-scrollbar-thumb:hover { background: var(--ds-text-disabled); }
 `;

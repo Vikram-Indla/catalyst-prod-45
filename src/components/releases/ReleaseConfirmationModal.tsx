@@ -41,7 +41,7 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontWeight: 600,
   fontSize: 'var(--ds-font-size-200)',
-  color: 'var(--ds-text, #172B4D)',
+  color: 'var(--ds-text)',
   marginBottom: 6,
 };
 
@@ -51,7 +51,7 @@ const radioRow: React.CSSProperties = {
   gap: 8,
   cursor: 'pointer',
   fontSize: 'var(--ds-font-size-400)',
-  color: 'var(--ds-text, #292A2E)',
+  color: 'var(--ds-text)',
   userSelect: 'none',
 };
 
@@ -212,8 +212,8 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
           <ModalHeader hasCloseButton>
             <ModalTitle>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: 'var(--ds-icon-warning, #E2B203)', display: 'inline-flex' }}>
-                  <WarningIcon label="" primaryColor="var(--ds-icon-warning, #E2B203)" size="medium" />
+                <span style={{ color: 'var(--ds-icon-warning)', display: 'inline-flex' }}>
+                  <WarningIcon label="" primaryColor="var(--ds-icon-warning)" size="medium" />
                 </span>
                 <span>Release {release.name}</span>
               </span>
@@ -221,9 +221,9 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
                 This {config.label.lowerSingular} contains{' '}
-                <span style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500 }}>
+                <span style={{ color: 'var(--ds-link)', fontWeight: 500 }}>
                   {unresolvedCount} unresolved work item{unresolvedCount === 1 ? '' : 's'}
                 </span>
                 .
@@ -233,12 +233,12 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
                 <div>
                   <div style={labelStyle}>
                     Unresolved work items
-                    <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
+                    <span style={{ color: 'var(--ds-text-danger)', marginLeft: 2 }}>*</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <label style={radioRow}>
                       <input
-                        style={{ accentColor: 'var(--ds-border-selected, #1868DB)' }}
+                        style={{ accentColor: 'var(--ds-border-selected)' }}
                         type="radio"
                         name="release-action"
                         checked={action === 'move'}
@@ -258,7 +258,7 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
                     </div>
                     <label style={radioRow}>
                       <input
-                        style={{ accentColor: 'var(--ds-border-selected, #1868DB)' }}
+                        style={{ accentColor: 'var(--ds-border-selected)' }}
                         type="radio"
                         name="release-action"
                         checked={action === 'ignore'}

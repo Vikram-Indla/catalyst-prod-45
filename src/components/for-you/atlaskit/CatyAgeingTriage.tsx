@@ -107,28 +107,28 @@ export function CatyAgeingTriage({ items, onOpenDetail }: CatyAgeingTriageProps)
     <CatyInsightCard title="Stale item triage" onRefresh={runTriage} onDismiss={() => { setResults([]); writeAgeingTriageSnapshot([]); }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {results.map((r) => (
-          <div key={r.issueKey} style={{ padding: 8, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
+          <div key={r.issueKey} style={{ padding: 8, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)') }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => toggleExpand(r.issueKey)}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   fontSize: 'var(--ds-font-size-200)', fontWeight: 600, flexShrink: 0, minWidth: 56,
                   color: r.daysOpen > 90
-                    ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+                    ? token('color.text.danger', 'var(--ds-text-danger)')
                     : r.daysOpen > 60
-                      ? token('color.text.warning', 'var(--ds-text-warning, #974F0C)')
-                      : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                      ? token('color.text.warning', 'var(--ds-text-warning)')
+                      : token('color.text.subtle', 'var(--ds-icon)'),
                 }}>
                   {r.daysOpen} days
                 </span>
-                <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', 'var(--ds-link, #0052CC)') }}>{r.issueKey}</span>
-                <span dir="auto" style={{ font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.summary}</span>
+                <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', 'var(--ds-link)') }}>{r.issueKey}</span>
+                <span dir="auto" style={{ font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.summary}</span>
               </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill={token('color.text.subtle', 'var(--ds-icon, #44546F)')} style={{ transform: expanded.has(r.issueKey) ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}><path d="M7 10l5 5 5-5z" /></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill={token('color.text.subtle', 'var(--ds-icon)')} style={{ transform: expanded.has(r.issueKey) ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}><path d="M7 10l5 5 5-5z" /></svg>
             </div>
             {expanded.has(r.issueKey) && (
               <div style={{ paddingBlockStart: 8, paddingInlineStart: 4 }}>
-                <p style={{ margin: '0 0 4px', font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{r.reason}</p>
-                <p style={{ margin: 0, font: `500 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{r.suggestion}</p>
+                <p style={{ margin: '0 0 4px', font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtle', 'var(--ds-icon)') }}>{r.reason}</p>
+                <p style={{ margin: 0, font: `500 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text)') }}>{r.suggestion}</p>
                 {onOpenDetail && <div style={{ paddingBlockStart: 8 }}><Button appearance="subtle" spacing="compact" onClick={() => onOpenDetail(r.issueKey)}>Open detail</Button></div>}
               </div>
             )}

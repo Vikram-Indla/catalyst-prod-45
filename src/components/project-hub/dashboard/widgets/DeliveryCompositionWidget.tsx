@@ -112,7 +112,7 @@ export default function DeliveryCompositionWidget({
               style={{
                 height: 40,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)'),
               }}
             />
           ))}
@@ -132,17 +132,17 @@ export default function DeliveryCompositionWidget({
               gridTemplateColumns: '140px 1fr 40px',
               gap: 8,
               paddingBottom: 6,
-              borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             }}
           >
-            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>Step</span>
-            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
+            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>Step</span>
+            <span style={{ ...LABEL, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>
               Health breakdown
             </span>
             <span
               style={{
                 ...LABEL,
-                color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+                color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
                 textAlign: 'right',
               }}
             >
@@ -185,7 +185,7 @@ export default function DeliveryCompositionWidget({
                   style={{
                     height: 20,
                     borderRadius: 3,
-                    background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+                    background: token('color.background.neutral', 'var(--ds-background-neutral)'),
                     overflow: 'hidden',
                     display: 'flex',
                   }}
@@ -194,7 +194,7 @@ export default function DeliveryCompositionWidget({
                     <div
                       style={{
                         width: `${overdueW}%`,
-                        background: 'var(--ds-background-accent-red-bolder, #C9372C)',
+                        background: 'var(--ds-background-accent-red-bolder)',
                       }}
                     />
                   )}
@@ -202,7 +202,7 @@ export default function DeliveryCompositionWidget({
                     <div
                       style={{
                         width: `${atRiskW}%`,
-                        background: 'var(--ds-background-accent-orange-bolder, #C25100)',
+                        background: 'var(--ds-background-accent-orange-bolder)',
                       }}
                     />
                   )}
@@ -210,7 +210,7 @@ export default function DeliveryCompositionWidget({
                     <div
                       style={{
                         width: `${healthyW}%`,
-                        background: 'var(--ds-background-accent-green-bolder, #1F845A)',
+                        background: 'var(--ds-background-accent-green-bolder)',
                       }}
                     />
                   )}
@@ -218,7 +218,7 @@ export default function DeliveryCompositionWidget({
                     <div
                       style={{
                         width: `${uncommittedW}%`,
-                        background: token('color.background.neutral.hovered', 'var(--ds-border-disabled, #DCDFE4)'),
+                        background: token('color.background.neutral.hovered', 'var(--ds-border-disabled)'),
                       }}
                     />
                   )}
@@ -245,21 +245,21 @@ export default function DeliveryCompositionWidget({
               display: 'flex',
               gap: 12,
               paddingTop: 8,
-              borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               flexWrap: 'wrap',
             }}
           >
             {[
-              { label: 'Overdue', color: 'var(--ds-background-accent-red-bolder, #C9372C)' },
-              { label: 'At Risk', color: 'var(--ds-background-accent-orange-bolder, #C25100)' },
-              { label: 'Healthy', color: 'var(--ds-background-accent-green-bolder, #1F845A)' },
-              { label: 'Uncommitted', color: token('color.background.neutral.hovered', 'var(--ds-border-disabled, #DCDFE4)') },
+              { label: 'Overdue', color: 'var(--ds-background-accent-red-bolder)' },
+              { label: 'At Risk', color: 'var(--ds-background-accent-orange-bolder)' },
+              { label: 'Healthy', color: 'var(--ds-background-accent-green-bolder)' },
+              { label: 'Uncommitted', color: token('color.background.neutral.hovered', 'var(--ds-border-disabled)') },
             ].map((l) => (
               <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <div
                   style={{ width: 10, height: 10, borderRadius: 2, background: l.color, flexShrink: 0 }}
                 />
-                <span style={{ ...LABEL, color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)') }}>
+                <span style={{ ...LABEL, color: token('color.text.subtle', 'var(--ds-text-subtlest)') }}>
                   {l.label}
                 </span>
               </div>

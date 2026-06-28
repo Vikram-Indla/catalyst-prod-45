@@ -7,15 +7,15 @@ interface EmptyStateProps {
 
 export default function EmptyState({ variant }: EmptyStateProps) {
   const { isDark } = useTheme();
-  const text1 = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';
-  const text3 = 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
-  const iconBgMuted = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
+  const text1 = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))';
+  const text3 = 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))';
+  const iconBgMuted = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))';
 
   if (variant === 'allCaughtUp') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', gap: 8 }}>
-        <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cp-success-light, #E3FCEF)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <CheckCircle size={24} color={'var(--cp-success-text, #006644)'} />
+        <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--cp-success-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <CheckCircle size={24} color={'var(--cp-success-text)'} />
         </div>
         <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: text1 }}>All caught up!</span>
         <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', color: text3 }}>You're on top of everything.</span>

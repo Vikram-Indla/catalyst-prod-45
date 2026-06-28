@@ -145,7 +145,7 @@ export function RoadmapMinimap({
               width: `${Math.max(bar.width, 2)}%`,
               top: bar.row * rowHeight,
               height: Math.max(rowHeight - 1, 2),
-              backgroundColor: STATUS_COLORS[bar.status as keyof typeof STATUS_COLORS] || 'var(--ds-text-subtlest, #626F86)',
+              backgroundColor: STATUS_COLORS[bar.status as keyof typeof STATUS_COLORS] || 'var(--ds-text-subtlest)',
             }}
           />
         ))}

@@ -49,7 +49,7 @@ export function FilterUsageSparkline({
         <polyline
           points={pts}
           fill="none"
-          stroke={`var(--ds-chart-blue-bold, #1868DB)`}
+          stroke={`var(--ds-chart-blue-bold)`}
           strokeWidth={1.5}
           strokeLinejoin="round"
           strokeLinecap="round"
@@ -58,7 +58,7 @@ export function FilterUsageSparkline({
         {data.length > 0 && (() => {
           const last = pts.split(' ').pop()!;
           const [lx, ly] = last.split(',').map(Number);
-          return <circle cx={lx} cy={ly} r={2} fill={`var(--ds-chart-blue-bold, #1868DB)`} />;
+          return <circle cx={lx} cy={ly} r={2} fill={`var(--ds-chart-blue-bold)`} />;
         })()}
       </svg>
       {totalCount !== undefined && (

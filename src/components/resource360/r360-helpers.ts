@@ -58,37 +58,37 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
 
   // First try exact match
   if (lower === 'todo' || lower === 'to do')
-    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
+    return { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', category: 'unstarted' };
   if (lower === 'in progress' || lower === 'under implementation' || lower === 'in development')
-    return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text, #172B4D)', category: 'started' };
+    return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', text: 'var(--ds-text)', category: 'started' };
   if (lower === 'in review' || lower === 'in qa' || lower === 'ready for qa' || lower === 'retest')
-    return { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'started' };
+    return { dot: 'var(--cp-teal-60)', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', category: 'started' };
   if (lower === 'in uat' || lower === 'uat ready')
-    return { dot: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-background-discovery, #F3F0FF)', text: '#4C1D95', category: 'started' };
+    return { dot: 'var(--cp-purple-60)', bg: 'var(--ds-background-discovery)', text: '#4C1D95', category: 'started' };
   if (lower === 'done' || lower === 'closed' || lower === 'resolved' || lower === 'ready for production' || lower === 'beta ready')
-    return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'completed' };
+    return { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', category: 'completed' };
   if (lower === 'blocked')
-    return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #AE2A19)', category: 'blocked' };
+    return { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', category: 'blocked' };
   if (lower === 're-open' || lower === 'reopen')
-    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
+    return { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', category: 'unstarted' };
   if (lower === 'in requirements' || lower === 'awaiting info')
-    return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
+    return { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', category: 'unstarted' };
   if (lower === 'rejected')
-    return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #AE2A19)', category: 'completed' };
+    return { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', category: 'completed' };
 
   // Fallback to statusCategory if available
   if (statusCategory) {
     const catLower = statusCategory.toLowerCase();
     if (catLower === 'done' || catLower === 'complete')
-      return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'completed' };
+      return { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', category: 'completed' };
     if (catLower === 'in progress' || catLower === 'indeterminate')
-      return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text, #172B4D)', category: 'started' };
+      return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', text: 'var(--ds-text)', category: 'started' };
     if (catLower === 'to do' || catLower === 'new')
-      return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', category: 'unstarted' };
+      return { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', category: 'unstarted' };
   }
 
   // Default — gray for truly unknown statuses
-  return { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', category: 'unstarted' };
+  return { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', category: 'unstarted' };
 }
 
 /** @deprecated Use resolveStatusStyle instead */
@@ -97,20 +97,20 @@ export const getStatusStyle = getStatusStyleFallback;
 /** Priority config */
 export function getPriorityColor(priority: string): string {
   switch (priority?.toLowerCase()) {
-    case 'critical': return 'var(--ds-text-danger, #BE123C)';
-    case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-    case 'high': return 'var(--ds-background-warning-bold, #E2B203)';
-    case 'medium': return 'var(--ds-text-warning, #974F0C)';
-    case 'low': return 'var(--ds-text-subtle, #57534E)';
-    default: return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+    case 'critical': return 'var(--ds-text-danger)';
+    case 'highest': return 'var(--ds-text-danger, var(--cp-danger))';
+    case 'high': return 'var(--ds-background-warning-bold)';
+    case 'medium': return 'var(--ds-text-warning)';
+    case 'low': return 'var(--ds-text-subtle)';
+    default: return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
   }
 }
 
 /** Age color */
 export function getAgeColor(ageDays: number): string {
-  if (ageDays <= 7) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  if (ageDays <= 14) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  return 'var(--ds-text-danger, #EF4444)';
+  if (ageDays <= 7) return 'var(--ds-text-success, var(--cp-success))';
+  if (ageDays <= 14) return 'var(--ds-text-warning, var(--cp-warning))';
+  return 'var(--ds-text-danger)';
 }
 
 export function getAgeLabel(ageDays: number): string {

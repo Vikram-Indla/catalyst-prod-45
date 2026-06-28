@@ -17,9 +17,9 @@ import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '.
 import '../../shared/tokens/workhub-tokens.css';
 
 const WORKSTREAM_COLORS: Record<string, string> = {
-  software: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  business: 'var(--ds-text-brand, #3B82F6)',
-  service_desk: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',
+  software: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  business: 'var(--ds-text-brand)',
+  service_desk: 'var(--ds-text-warning, var(--cp-amber))',
 };
 
 export function JiraConnection() {
@@ -153,9 +153,9 @@ export function JiraConnection() {
                 {/* Jira logo placeholder */}
                 <div style={{
                   width: 48, height: 48, borderRadius: 'var(--wh-rad)',
-                  background: 'linear-gradient(135deg, var(--cp-primary-60, #0052CC), var(--ds-link, #0C66E4))',
+                  background: 'linear-gradient(135deg, var(--cp-primary-60), var(--ds-link))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--ds-surface, #fff)', fontWeight: 800, fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--wh-fh)',
+                  color: 'var(--ds-surface)', fontWeight: 800, fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--wh-fh)',
                 }}>
                   JIRA
                 </div>

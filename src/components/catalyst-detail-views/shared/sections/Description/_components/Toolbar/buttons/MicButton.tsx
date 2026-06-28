@@ -36,8 +36,8 @@ export function MicButton({
           transform: translateX(-50%);
           display: flex;
           gap: 4px;
-          background: var(--ds-surface-overlay, #FFFFFF);
-          border: 1px solid var(--ds-border, #DFE1E6);
+          background: var(--ds-surface-overlay);
+          border: 1px solid var(--ds-border);
           border-radius: 999px;
           padding: 3px 6px;
           box-shadow: 0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14));
@@ -73,11 +73,11 @@ export function MicButton({
                     fontSize: 'var(--ds-font-size-100)',
                     fontWeight: sel ? 600 : 400,
                     background: sel
-                      ? 'var(--ds-background-selected, #E9F2FE)'
+                      ? 'var(--ds-background-selected)'
                       : 'transparent',
                     color: sel
-                      ? 'var(--ds-text-selected, #0C66E4)'
-                      : 'var(--ds-text-subtle, #6B778C)',
+                      ? 'var(--ds-text-selected)'
+                      : 'var(--ds-text-subtle)',
                     cursor: 'pointer',
                   }}
                 >

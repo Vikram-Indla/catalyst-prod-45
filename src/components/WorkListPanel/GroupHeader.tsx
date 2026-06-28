@@ -50,7 +50,7 @@ export const GroupHeader = memo(function GroupHeader({
           width: '20px',
           height: '20px',
           fontSize: 'var(--ds-font-size-200)',
-          color: 'var(--ds-icon-subtle, #626F86)',
+          color: 'var(--ds-icon-subtle)',
           transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
           transition: 'transform 150ms',
         }}
@@ -61,7 +61,7 @@ export const GroupHeader = memo(function GroupHeader({
         style={{
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 600,
-          color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+          color: 'var(--cp-text-primary, var(--cp-text-inverse))',
           flex: 1,
         }}
       >
@@ -70,10 +70,10 @@ export const GroupHeader = memo(function GroupHeader({
       <span
         style={{
           fontSize: 'var(--ds-font-size-200)',
-          color: 'var(--ds-icon-subtle, #626F86)',
+          color: 'var(--ds-icon-subtle)',
           fontWeight: 500,
           padding: '2px 6px',
-          backgroundColor: 'var(--ds-background-neutral, #F1F2F4)',
+          backgroundColor: 'var(--ds-background-neutral)',
           borderRadius: '3px',
         }}
       >

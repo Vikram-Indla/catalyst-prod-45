@@ -58,18 +58,18 @@ function useUpdateIdea() {
 
 // ─── Status Lozenge — 3-color guardrail, NO DOTS ─────────────────
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
-  'Draft':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  'New':          { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
-  'Submitted':    { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Under Review': { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'In Progress':  { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Approved':     { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Converted':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Done':         { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Draft':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  'New':          { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' },
+  'Submitted':    { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Under Review': { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'In Progress':  { bg: 'var(--ds-link)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Approved':     { bg: 'var(--cp-lozenge-green-bg)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Converted':    { bg: 'var(--cp-lozenge-green-bg)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
+  'Done':         { bg: 'var(--cp-lozenge-green-bg)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' },
 };
 
 function StatusLozenge({ status }: { status: string }) {
-  const s = STATUS_LOZENGE[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' };
+  const s = STATUS_LOZENGE[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' };
   return (
     <span style={{
       display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
@@ -100,11 +100,11 @@ function PriorityLozenge({ priority }: { priority: string }) {
 // Note: selectStyle/inputStyle are used in edit mode — dark mode applied inline via isDark
 const selectStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
-  padding: '0 8px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: '100%', outline: 'none',
 };
 const inputStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
-  padding: '0 8px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', width: '100%', outline: 'none',
 };
 
 function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
@@ -113,7 +113,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: '6px',
+        letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: '6px',
       }}>
         {label}
       </div>
@@ -134,8 +134,8 @@ const formatSource = (source: string): string => {
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const { isDark } = useTheme();
   const dk = isDark ? DK : LK;
-  const darkSelectStyle: React.CSSProperties = { ...selectStyle, color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderColor: 'var(--cp-border-default, rgba(15,23,42,0.14))' };
-  const darkInputStyle: React.CSSProperties = { ...inputStyle, color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderColor: 'var(--cp-border-default, rgba(15,23,42,0.14))' };
+  const darkSelectStyle: React.CSSProperties = { ...selectStyle, color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderColor: 'var(--cp-border-default, rgba(15,23,42,0.14))' };
+  const darkInputStyle: React.CSSProperties = { ...inputStyle, color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderColor: 'var(--cp-border-default, rgba(15,23,42,0.14))' };
   const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
   const { data: dbFactors } = useImpactFactors(ideaKey);
   const updateIdea = useUpdateIdea();
@@ -231,7 +231,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   if (isLoading) return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: dk.t3, fontSize: 'var(--ds-font-size-400)' }}>Loading...</span>
       </div>
     </>
@@ -249,7 +249,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.40))', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -260,7 +260,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         }}>
           <span style={{
             fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700,
-            color: dk.blueKey, background: 'var(--cp-primary-light, #EFF6FF)', padding: '3px 10px', borderRadius: '4px',
+            color: dk.blueKey, background: 'var(--cp-primary-light)', padding: '3px 10px', borderRadius: '4px',
           }}>
             {rawIdea.idea_key}
           </span>
@@ -269,7 +269,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           <button onClick={() => { if (isEditing) { resetLocalState(); setIsEditing(false); } else { setIsEditing(true); } }} style={{
             width: '32px', height: '32px', borderRadius: '6px',
             border: `1px solid ${dk.border}`,
-            background: isEditing ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+            background: isEditing ? ('var(--cp-primary-light)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'),
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: dk.t2,
           }}>
@@ -292,7 +292,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           {/* Convert banner */}
           {localStatus === 'Approved' && (
             <div style={{
-              margin: '16px 24px 0', background: 'var(--cp-success-light, #F0FDF4)', border: `1px solid ${'var(--cp-success, #86EFAC)'}`,
+              margin: '16px 24px 0', background: 'var(--cp-success-light)', border: `1px solid ${'var(--cp-success)'}`,
               borderRadius: '6px', padding: '12px 16px',
               display: 'flex', alignItems: 'center', gap: '12px',
             }}>
@@ -301,7 +301,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 <div style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, marginTop: '2px' }}>Convert to an request to begin planning.</div>
               </div>
               <button onClick={() => onConvert?.(rawIdea.idea_key)} style={{
-                background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px',
+                background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', borderRadius: '6px',
                 padding: '7px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
               }}>
                 → Convert
@@ -397,8 +397,8 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       height: 20, padding: '0 6px', borderRadius: 4,
                       fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
-                      background: QUARTER_BADGE[quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-                      color: QUARTER_BADGE[quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+                      background: QUARTER_BADGE[quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))',
+                      color: QUARTER_BADGE[quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
                     }}>{quarter} 2026</span>
                   ) : <span style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3 }}>—</span>
                 )
@@ -411,9 +411,9 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
-                      width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                      width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0,
+                      color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0,
                     }}>{assigneeInitials}</div>
                     <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: assigneeName ? dk.t1 : dk.t3 }}>
                       {assigneeName || 'Unassigned'}
@@ -448,12 +448,12 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   onClick={() => setLocalIsCommitted(!localIsCommitted)}
                   style={{
                     width: '44px', height: '24px', borderRadius: '12px', border: 'none',
-                    backgroundColor: localIsCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'),
+                    backgroundColor: localIsCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken)))'),
                     cursor: 'pointer', position: 'relative', transition: 'background 200ms ease',
                   }}
                 >
                   <div style={{
-                    width: '18px', height: '18px', borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    width: '18px', height: '18px', borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                     position: 'absolute', top: '3px',
                     left: localIsCommitted ? '23px' : '3px',
                     transition: 'left 200ms ease',
@@ -478,7 +478,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 style={{
                   width: '100%', borderRadius: '4px', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`,
                   padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: dk.t1, resize: 'vertical',
-                  fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 }}
               />
             ) : (
@@ -505,10 +505,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
                 borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
                 ...(impactScore >= 3.5
-                  ? { backgroundColor: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }
+                  ? { backgroundColor: 'var(--cp-lozenge-green-bg)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }
                   : impactScore >= 2.0
-                    ? { backgroundColor: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }
-                    : { backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)' }),
+                    ? { backgroundColor: 'var(--ds-link)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }
+                    : { backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' }),
               }}>
                 {impactScore >= 3.5 ? 'HIGH' : impactScore >= 2.0 ? 'MEDIUM' : 'LOW'}
               </span>
@@ -526,7 +526,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%',
-                  backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', color: dk.t2,
+                  backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 'var(--ds-font-size-300)', fontWeight: 700, flexShrink: 0,
                 }}>
@@ -537,10 +537,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
                     <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t2 }}>{dim.weight}</span>
                   </div>
-                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${(dim.score / 5) * 100}%`,
-                      backgroundColor: dim.score > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
+                      backgroundColor: dim.score > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'transparent',
                       borderRadius: '4px', transition: 'width 300ms ease',
                     }} />
                   </div>
@@ -569,19 +569,19 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         {isEditing && (
           <div style={{
             padding: '12px 24px', borderTop: `1px solid ${dk.border}`,
-            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
           }}>
             <button onClick={() => { resetLocalState(); setIsEditing(false); }} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
               border: `1px solid ${dk.border}`,
-              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: dk.t2,
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', color: dk.t2,
               fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
             }}>
               Cancel
             </button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
               opacity: updateIdea.isPending ? 0.7 : 1,
             }}>
@@ -641,15 +641,15 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             const timeAgo = c.created_at ? getRelativeTime(c.created_at) : '';
             return (
               <div key={c.id} style={{
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${dk.divider}`,
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `1px solid ${dk.divider}`,
                 borderRadius: '6px', padding: '12px 16px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
-                      width: '28px', height: '28px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                      width: '28px', height: '28px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
+                      color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                     }}>{initials}</div>
                     <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.t1 }}>{name}</span>
                   </div>
@@ -674,7 +674,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             flex: 1, minHeight: '50px', maxHeight: '120px', resize: 'vertical',
             border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px',
             fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--cp-font-body)', outline: 'none', color: dk.t1,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           }}
         />
         {newComment.trim() && (
@@ -682,7 +682,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             onClick={handleSubmit}
             disabled={addComment.isPending}
             style={{
-              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', borderRadius: '6px',
               width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', flexShrink: 0,
             }}

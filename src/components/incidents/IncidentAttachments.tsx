@@ -19,7 +19,7 @@ const getFileIcon = (name: string) => {
   if (['txt', 'log', 'md', 'json'].includes(ext || '')) {
     return <FileText className="w-5 h-5 text-gray-500" />;
   }
-  return <File className="w-5 h-5 text-[var(--ds-text-subtlest, #626F86)]" />;
+  return <File className="w-5 h-5 text-[var(--ds-text-subtlest)]" />;
 };
 
 export function IncidentAttachments({
@@ -45,13 +45,13 @@ export function IncidentAttachments({
   };
 
   return (
-    <div className="bg-white border border-[var(--ds-border, #E8E8E8)] rounded-lg overflow-hidden">
-      <div className="px-4 py-3 border-b border-[var(--ds-border, #E8E8E8)] flex items-center gap-2">
-        <Paperclip className="w-4 h-4 text-[var(--ds-text-subtlest, #626F86)]" />
-        <h3 className="text-[11px] font-semibold uppercase text-[var(--ds-text-subtlest, #626F86)] tracking-wide">
+    <div className="bg-white border border-[var(--ds-border)] rounded-lg overflow-hidden">
+      <div className="px-4 py-3 border-b border-[var(--ds-border)] flex items-center gap-2">
+        <Paperclip className="w-4 h-4 text-[var(--ds-text-subtlest)]" />
+        <h3 className="text-[11px] font-semibold uppercase text-[var(--ds-text-subtlest)] tracking-wide">
           Attachments
         </h3>
-        <span className="text-xs text-[var(--ds-text-subtlest, #626F86)]">({attachments.length})</span>
+        <span className="text-xs text-[var(--ds-text-subtlest)]">({attachments.length})</span>
       </div>
 
       <div className="p-4">
@@ -61,13 +61,13 @@ export function IncidentAttachments({
             {attachments.map(attachment => (
               <div 
                 key={attachment.id}
-                className="flex items-center justify-between p-3 bg-[var(--ds-surface-sunken,#FAFBFC)] rounded-lg border border-[var(--ds-border, #E8E8E8)] group hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
+                className="flex items-center justify-between p-3 bg-[var(--ds-surface-sunken)] rounded-lg border border-[var(--ds-border)] group hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
               >
                 <div className="flex items-center gap-3">
                   {getFileIcon(attachment.name)}
                   <div>
-                    <p className="text-sm font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">{attachment.name}</p>
-                    <p className="text-xs text-[var(--ds-text-subtlest, #626F86)]">
+                    <p className="text-sm font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse)))]">{attachment.name}</p>
+                    <p className="text-xs text-[var(--ds-text-subtlest)]">
                       {attachment.size} • Uploaded by {attachment.uploadedBy} at {attachment.uploadedAt}
                     </p>
                   </div>
@@ -79,7 +79,7 @@ export function IncidentAttachments({
                     className="h-8 w-8 p-0"
                     onClick={() => onDownload?.(attachment)}
                   >
-                    <Download className="w-4 h-4 text-[var(--ds-text-subtlest, #626F86)]" />
+                    <Download className="w-4 h-4 text-[var(--ds-text-subtlest)]" />
                   </Button>
                   {isEditMode && (
                     <Button 
@@ -102,13 +102,13 @@ export function IncidentAttachments({
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] rounded-lg p-6 text-center cursor-pointer hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/5 transition-colors"
+          className="border-2 border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))] rounded-lg p-6 text-center cursor-pointer hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]/5 transition-colors"
         >
-          <Upload className="w-8 h-8 text-[var(--ds-text-subtlest, #626F86)] mx-auto mb-2" />
-          <p className="text-sm text-[var(--ds-text-subtlest, #5C5C5C)]">
-            Drop files here or <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] font-medium">click to upload</span>
+          <Upload className="w-8 h-8 text-[var(--ds-text-subtlest)] mx-auto mb-2" />
+          <p className="text-sm text-[var(--ds-text-subtlest)]">
+            Drop files here or <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] font-medium">click to upload</span>
           </p>
-          <p className="text-xs text-[var(--ds-text-subtlest, #626F86)] mt-1">Max 10MB per file</p>
+          <p className="text-xs text-[var(--ds-text-subtlest)] mt-1">Max 10MB per file</p>
         </div>
         <input
           ref={fileInputRef}

@@ -21,14 +21,14 @@ const CATALYST_STATUS_COLORS: Record<string, string> = {
 
 // Fallback colors for any unmapped statuses - cycles through brand palette
 const BRAND_FALLBACK_COLORS = [
-  'var(--ds-chart-teal-bold, #0d9488)', // Teal
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
-  'var(--ds-text-subtlest, #626F86)', // Gray
-  'var(--ds-chart-teal-bolder, #0f766e)', // Teal Dark
-  'var(--ds-text-brand, #60a5fa)', // Blue Light
-  'var(--ds-background-brand-bold-hovered, #1d4ed8)', // Blue Dark
-  'var(--ds-text-subtlest, #626F86)', // Gray Dark
-  'var(--ds-text-disabled, #8590A2)', // Gray Light
+  'var(--ds-chart-teal-bold)', // Teal
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', // Blue
+  'var(--ds-text-subtlest)', // Gray
+  'var(--ds-chart-teal-bolder)', // Teal Dark
+  'var(--ds-text-brand)', // Blue Light
+  'var(--ds-background-brand-bold-hovered)', // Blue Dark
+  'var(--ds-text-subtlest)', // Gray Dark
+  'var(--ds-text-disabled)', // Gray Light
 ];
 
 function getStatusColor(statusKey: string, index: number): string {
@@ -134,7 +134,7 @@ export function ProductRoadmapLegend({ isVisible, showMilestones }: ProductRoadm
                         <div 
                           className="w-3 h-3 rotate-45 border-2"
                           style={{ 
-                            backgroundColor: item.filled ? item.color : ('fillColor' in item ? item.fillColor : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+                            backgroundColor: item.filled ? item.color : ('fillColor' in item ? item.fillColor : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'),
                             borderColor: item.color
                           }}
                         />

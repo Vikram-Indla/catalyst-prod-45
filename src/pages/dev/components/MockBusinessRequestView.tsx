@@ -26,7 +26,7 @@ export function MockBusinessRequestView({
   return (
     <div style={{ padding: 0 }}>
       {/* Header with title and action */}
-      <div style={{ backgroundColor: 'var(--ds-surface, #FFFFFF)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ backgroundColor: 'var(--ds-surface)', borderBottom: '1px solid var(--ds-border)', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <Inline space="space.150" alignBlock="center">
             <Heading as="h1" level="h600">
@@ -54,7 +54,7 @@ export function MockBusinessRequestView({
       {/* Content area */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 0 }}>
         {/* Main content */}
-        <div style={{ padding: 32, borderRight: '1px solid var(--ds-border, #DFE1E6)' }}>
+        <div style={{ padding: 32, borderRight: '1px solid var(--ds-border)' }}>
           <Tabs id="br-tabs" onChange={setSelectedTab} selected={selectedTab}>
             <TabList>
               <Tab>Description</Tab>
@@ -68,7 +68,7 @@ export function MockBusinessRequestView({
                 <Heading as="h3" level="h500" style={{ marginBottom: 12 }}>
                   Business Objective
                 </Heading>
-                <p style={{ margin: '0 0 16px 0', color: 'var(--ds-text, #172B4D)', fontSize: 'var(--ds-font-size-400)' }}>
+                <p style={{ margin: '0 0 16px 0', color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
                   Enable citizens to renew their industrial licenses online in both Arabic and
                   English, reducing the burden on back-office staff and improving citizen
                   experience.
@@ -77,7 +77,7 @@ export function MockBusinessRequestView({
                 <Heading as="h3" level="h500" style={{ marginBottom: 12 }}>
                   Scope
                 </Heading>
-                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: 'var(--ds-font-size-400)' }}>
+                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
                   <li>Applicant submission portal (Arabic + English)</li>
                   <li>Back-office review dashboard</li>
                   <li>Decision notification system</li>
@@ -88,7 +88,7 @@ export function MockBusinessRequestView({
                 <Heading as="h3" level="h500" style={{ marginBottom: 12 }}>
                   Acceptance Criteria
                 </Heading>
-                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: 'var(--ds-font-size-400)' }}>
+                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
                   <li>✓ Support for Arabic and English throughout the application</li>
                   <li>✓ Mobile-responsive design for citizen portal</li>
                   <li>✓ Real-time submission status tracking</li>
@@ -200,7 +200,7 @@ export function MockBusinessRequestView({
         </div>
 
         {/* Right sidebar */}
-        <div style={{ padding: 16, backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)' }}>
+        <div style={{ padding: 16, backgroundColor: 'var(--ds-surface-sunken)' }}>
           <Stack space="space.150">
             <div>
               <Heading as="h4" level="h700" style={{ marginBottom: 8 }}>
@@ -213,7 +213,7 @@ export function MockBusinessRequestView({
               <Heading as="h4" level="h700" style={{ marginBottom: 8 }}>
                 Product
               </Heading>
-              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
                 Licensing Platform
               </div>
             </div>
@@ -229,7 +229,7 @@ export function MockBusinessRequestView({
               <Heading as="h4" level="h700" style={{ marginBottom: 8 }}>
                 Created
               </Heading>
-              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
                 15 June 2026
               </div>
             </div>
@@ -238,7 +238,7 @@ export function MockBusinessRequestView({
               <Heading as="h4" level="h700" style={{ marginBottom: 8 }}>
                 Stakeholders
               </Heading>
-              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
                 Vikram Indla<br />
                 Abdullah Almetwally
               </div>
@@ -265,8 +265,8 @@ function AttachmentItem({
     <div
       style={{
         padding: '12px',
-        backgroundColor: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        backgroundColor: 'var(--ds-surface)',
+        border: '1px solid var(--ds-border)',
         borderRadius: '4px',
         display: 'flex',
         alignItems: 'center',
@@ -275,10 +275,10 @@ function AttachmentItem({
     >
       <span style={{ fontSize: 'var(--ds-font-size-600)' }}>📄</span>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>
           {name}
         </div>
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)' }}>
           {type} • {size}
         </div>
       </div>
@@ -299,28 +299,28 @@ function CommentItem({
   type: string;
 }) {
   const typeColor: Record<string, string> = {
-    decision: 'var(--ds-link, #0052CC)',
-    change: 'var(--ds-text-warning, #974F0C)',
-    question: 'var(--ds-text-success, #216E4E)',
-    unresolved: 'var(--ds-text-danger, #AE2A19)',
-    conflict: 'var(--ds-text-warning, #974F0C)',
-    test: 'var(--ds-background-discovery-bold, #6E5DC6)',
+    decision: 'var(--ds-link)',
+    change: 'var(--ds-text-warning)',
+    question: 'var(--ds-text-success)',
+    unresolved: 'var(--ds-text-danger)',
+    conflict: 'var(--ds-text-warning)',
+    test: 'var(--ds-background-discovery-bold)',
   };
 
   return (
     <div
       style={{
         padding: '12px',
-        backgroundColor: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        backgroundColor: 'var(--ds-surface)',
+        border: '1px solid var(--ds-border)',
         borderLeft: `4px solid ${typeColor[type]}`,
         borderRadius: '4px',
       }}
     >
-      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: 4 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)', marginBottom: 4 }}>
         <strong>{author}</strong> — {role}
       </div>
-      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>
         {text}
       </div>
     </div>
@@ -346,8 +346,8 @@ function LinkedItemRow({
     <div
       style={{
         padding: '12px',
-        backgroundColor: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        backgroundColor: 'var(--ds-surface)',
+        border: '1px solid var(--ds-border)',
         borderRadius: '4px',
         display: 'flex',
         alignItems: 'center',
@@ -356,10 +356,10 @@ function LinkedItemRow({
     >
       <span>{icons[type]}</span>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>
           {id}
         </div>
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)' }}>
           {name}
         </div>
       </div>

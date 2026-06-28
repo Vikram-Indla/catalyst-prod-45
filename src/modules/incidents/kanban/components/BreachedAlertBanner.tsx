@@ -28,9 +28,9 @@ export const BreachedAlertBanner = memo(function BreachedAlertBanner({
       )}
     >
       <div className="flex items-center gap-3">
-        <AlertTriangle className="h-5 w-5 text-[var(--ds-text-danger,#ef4444)] dark:text-[var(--ds-background-danger, #FFECEB)]" />
+        <AlertTriangle className="h-5 w-5 text-[var(--ds-text-danger)] dark:text-[var(--ds-background-danger)]" />
         <div className="flex items-center gap-2">
-          <span className="text-[15px] font-bold text-[var(--ds-text-danger,#ef4444)] dark:text-[var(--ds-background-danger, #FFECEB)]">
+          <span className="text-[15px] font-bold text-[var(--ds-text-danger)] dark:text-[var(--ds-background-danger)]">
             {breachedCount} SLA {breachedCount === 1 ? 'Breach' : 'Breaches'}
           </span>
           <span className="text-sm text-[var(--ds-background-danger, rgba(239,68,68,0.8))] dark:text-[rgba(248,113,113,0.8)]">
@@ -43,9 +43,9 @@ export const BreachedAlertBanner = memo(function BreachedAlertBanner({
         size="sm" 
         className={cn(
           "font-semibold transition-colors",
-          "border-[var(--ds-text-danger,#ef4444)] text-[var(--ds-text-danger,#ef4444)]",
-          "dark:border-[var(--ds-background-danger, #FFECEB)] dark:text-[var(--ds-background-danger, #FFECEB)]",
-          "hover:bg-[var(--ds-text-danger,#ef4444)] hover:text-white dark:hover:bg-[var(--ds-background-danger, #FFECEB)]"
+          "border-[var(--ds-text-danger)] text-[var(--ds-text-danger)]",
+          "dark:border-[var(--ds-background-danger)] dark:text-[var(--ds-background-danger)]",
+          "hover:bg-[var(--ds-text-danger)] hover:text-white dark:hover:bg-[var(--ds-background-danger)]"
         )}
         onClick={onViewBreached}
       >

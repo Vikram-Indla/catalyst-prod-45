@@ -56,29 +56,29 @@ export function VelocityChart({ cycleId, days = 14 }: VelocityChartProps) {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e5e7eb)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
               <XAxis 
                 dataKey="dateLabel" 
                 tick={{ fontSize: 'var(--ds-font-size-100)' }} 
-                stroke="var(--ds-text-disabled, #8590A2)"
+                stroke="var(--ds-text-disabled)"
               />
               <YAxis 
                 yAxisId="left"
                 tick={{ fontSize: 'var(--ds-font-size-100)' }} 
-                stroke="var(--ds-text-disabled, #8590A2)"
+                stroke="var(--ds-text-disabled)"
                 allowDecimals={false}
               />
               <YAxis 
                 yAxisId="right"
                 orientation="right"
                 tick={{ fontSize: 'var(--ds-font-size-100)' }} 
-                stroke="var(--ds-text-disabled, #8590A2)"
+                stroke="var(--ds-text-disabled)"
                 allowDecimals={false}
               />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: 'white', 
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '8px',
                   fontSize: 'var(--ds-font-size-200)'
                 }}

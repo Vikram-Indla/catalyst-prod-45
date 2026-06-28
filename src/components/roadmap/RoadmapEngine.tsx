@@ -467,7 +467,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
 
   // Get status gradient from config
   const getStatusGradient = (statusKey: string) => {
-    return config.statusColors[statusKey]?.gradient || 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-text-brand, #60a5fa))';
+    return config.statusColors[statusKey]?.gradient || 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), var(--ds-text-brand))';
   };
 
   // Get status label from config
@@ -539,7 +539,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                   placeholder={isRTL ? 'بحث...' : 'Search ID or title...'}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 text-xs bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] px-3"
+                  className="h-9 text-xs bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] dark:text-[var(--ds-text,var(--cp-bg-neutral))] px-3"
                   style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '12px' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') {
@@ -559,7 +559,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                 }}
                 className={cn(
                   "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md",
-                  isSearchExpanded ? "text-white" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[hsl(var(--roadmap-charcoal))]"
+                  isSearchExpanded ? "text-white" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] text-[hsl(var(--roadmap-charcoal))]"
                 )}
                 style={{
                   backgroundColor: isSearchExpanded ? 'hsl(var(--roadmap-status-new))' : undefined,
@@ -577,7 +577,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
               onClick={() => setShowMilestones(!showMilestones)}
               className={cn(
                 "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                showMilestones ? "text-white" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[hsl(var(--roadmap-charcoal))]"
+                showMilestones ? "text-white" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] text-[hsl(var(--roadmap-charcoal))]"
               )}
               style={{
                 backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
@@ -594,7 +594,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
           <Tooltip content="Filters" position="bottom" delay={200}>
             <button
               onClick={() => setFiltersDialogOpen(true)}
-              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-sm hover:shadow-md"
+              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-sm hover:shadow-md"
               style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
             >
               <Filter className="w-[18px] h-[18px]" />
@@ -606,7 +606,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
             <Tooltip content="Time Period" position="bottom" delay={200}>
               <PopoverTrigger asChild>
                 <button
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-sm hover:shadow-md"
+                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-sm hover:shadow-md"
                   style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
                 >
                   <Calendar className="w-[18px] h-[18px]" />
@@ -615,7 +615,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
             </Tooltip>
             <PopoverContent 
               align="end" 
-              className="w-[360px] p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-xl rounded-xl z-[400]"
+              className="w-[360px] p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-xl rounded-xl z-[400]"
               style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
             >
               {/* View Scale Section */}
@@ -817,7 +817,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
           {/* Language Toggle */}
           <button
             onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-            className="h-9 px-2 flex items-center gap-1 rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-sm hover:shadow-md"
+            className="h-9 px-2 flex items-center gap-1 rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-sm hover:shadow-md"
             style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
           >
             <span className={cn("text-xs font-semibold px-1 py-0.5 rounded", language === 'en' ? "text-white" : "")} style={{ backgroundColor: language === 'en' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'en' ? 'white' : 'hsl(var(--roadmap-charcoal))' }}>EN</span>
@@ -830,7 +830,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
           <Tooltip content="Export" position="bottom" delay={200}>
             <button
               onClick={handleExport}
-              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-sm hover:shadow-md"
+              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-sm hover:shadow-md"
               style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
             >
               <Download className="w-[18px] h-[18px]" />
@@ -843,7 +843,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
               onClick={() => setShowLegend(!showLegend)}
               className={cn(
                 "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                showLegend ? "text-white" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[hsl(var(--roadmap-charcoal))]"
+                showLegend ? "text-white" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] text-[hsl(var(--roadmap-charcoal))]"
               )}
               style={{
                 backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
@@ -858,7 +858,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
           <Tooltip content={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'} position="bottom" delay={200}>
             <button
               onClick={toggleFullscreen}
-              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-sm hover:shadow-md"
+              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] shadow-sm hover:shadow-md"
               style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
             >
               {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
@@ -949,7 +949,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                     delay={300}
                     content={
                       <>
-                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'var(--ds-text, #C5A86E)' }}>
+                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'var(--ds-text)' }}>
                           {item.key || item.id.slice(0, 8)}
                         </div>
                         <div className="font-medium" style={{ color: 'white' }}>
@@ -1052,21 +1052,21 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
 
                     const tooltipContent = (
                       <>
-                        <div className="text-xs font-medium mb-1.5" style={{ color: 'var(--ds-text-subtle, #B5A48A)' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
+                        <div className="text-xs font-medium mb-1.5" style={{ color: 'var(--ds-text-subtle)' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
                         <div className="font-medium text-sm mb-3 leading-snug" style={{ color: 'white' }}>{isRTL ? item.titleAr : item.titleEn}</div>
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: 'var(--ds-text-subtle, #A89778)' }}>STATUS:</span>
-                          <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(166,144,94,0.3)', color: 'var(--ds-text, #DED6CA)' }}>{getStatusLabel(item.status)}</span>
+                          <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: 'var(--ds-text-subtle)' }}>STATUS:</span>
+                          <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(166,144,94,0.3)', color: 'var(--ds-text)' }}>{getStatusLabel(item.status)}</span>
                         </div>
                         <div className="flex items-center gap-2 py-2 px-3 rounded-md mb-3" style={{ backgroundColor: 'rgba(166,144,94,0.15)' }}> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-                          <Calendar className="w-3.5 h-3.5" style={{ color: 'var(--ds-chart-yellow-bold, #A89778)' }} />
-                          <span className="text-xs" style={{ color: 'var(--ds-chart-yellow-bolder, #D4CABC)' }}>{startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                          <span style={{ color: 'var(--ds-chart-orange-bold, #A6905E)' }}>→</span>
-                          <span className="text-xs" style={{ color: 'var(--ds-chart-yellow-bolder, #D4CABC)' }}>{endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <Calendar className="w-3.5 h-3.5" style={{ color: 'var(--ds-chart-yellow-bold)' }} />
+                          <span className="text-xs" style={{ color: 'var(--ds-chart-yellow-bolder)' }}>{startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span style={{ color: 'var(--ds-chart-orange-bold)' }}>→</span>
+                          <span className="text-xs" style={{ color: 'var(--ds-chart-yellow-bolder)' }}>{endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                         </div>
                         {showMilestones && item.milestones.length > 0 && (
                           <div>
-                            <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--ds-chart-yellow-bold, #A89778)' }}>
+                            <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--ds-chart-yellow-bold)' }}>
                               {config.workItemType === 'theme' ? `CHILD EPICS (${item.milestones.length})` :
                                config.workItemType === 'epic' ? `CHILD FEATURES (${item.milestones.length})` :
                                `MILESTONES (${item.milestones.length})`}
@@ -1079,22 +1079,22 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
 
                                 return (
                                   <div key={idx} className="flex items-center gap-2 text-xs">
-                                    <div className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0" style={{ backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent', borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'var(--ds-chart-orange-bolder, #957F51)', color: ms.state === 'complete' ? 'white' : 'var(--ds-chart-yellow-bold, #BFB097)' }}>
+                                    <div className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0" style={{ backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent', borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'var(--ds-chart-orange-bolder)', color: ms.state === 'complete' ? 'white' : 'var(--ds-chart-yellow-bold)' }}>
                                       {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (idx + 1)}
                                     </div>
                                     {isEpicMarker ? (
                                       <>
-                                        <span className="font-medium" style={{ color: 'var(--ds-chart-yellow-bolder, #DED6CA)' }}>{milestoneData.epicKey}</span>
-                                        <span className="truncate max-w-[120px]" style={{ color: 'var(--ds-chart-yellow-bold, #BFB097)' }}>{milestoneData.epicName}</span>
+                                        <span className="font-medium" style={{ color: 'var(--ds-chart-yellow-bolder)' }}>{milestoneData.epicKey}</span>
+                                        <span className="truncate max-w-[120px]" style={{ color: 'var(--ds-chart-yellow-bold)' }}>{milestoneData.epicName}</span>
                                       </>
                                     ) : isFeatureMarker ? (
                                       <>
-                                        <span className="font-medium truncate max-w-[180px]" style={{ color: 'var(--ds-chart-yellow-bolder, #DED6CA)' }}>{milestoneData.featureName}</span>
+                                        <span className="font-medium truncate max-w-[180px]" style={{ color: 'var(--ds-chart-yellow-bolder)' }}>{milestoneData.featureName}</span>
                                       </>
                                     ) : (
-                                      <span style={{ color: 'var(--ds-chart-yellow-bolder, #D4CABC)' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
+                                      <span style={{ color: 'var(--ds-chart-yellow-bolder)' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
                                     )}
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))' : ms.state === 'current' ? 'var(--ds-chart-orange-bold, #CCB27A)' : 'var(--ds-chart-yellow-bold, #B5A48A)' }}>
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? 'var(--ds-background-success-bold, var(--ds-background-success-bold))' : ms.state === 'current' ? 'var(--ds-chart-orange-bold)' : 'var(--ds-chart-yellow-bold)' }}>
                                       {isEpicMarker ? (milestoneData.epicStatus || 'proposed').replace('_', ' ') :
                                        isFeatureMarker ? (milestoneData.featureStatus || 'funnel').replace('_', ' ') :
                                        (ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending')}
@@ -1103,7 +1103,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                 );
                               })}
                               {item.milestones.length > 5 && (
-                                <div className="text-[10px] italic" style={{ color: 'var(--ds-chart-orange-bold, #A6905E)' }}>
+                                <div className="text-[10px] italic" style={{ color: 'var(--ds-chart-orange-bold)' }}>
                                   +{item.milestones.length - 5} more {config.workItemType === 'theme' ? 'epics' : config.workItemType === 'epic' ? 'features' : 'milestones'}
                                 </div>
                               )}

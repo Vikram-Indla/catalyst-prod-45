@@ -19,7 +19,7 @@ const ageColor = (days: number | null | undefined): string => {
   if (days > 365) return 'var(--sem-danger)';
   if (days > 14) return 'var(--sem-danger)';
   if (days > 7) return 'var(--sem-warning)';
-  return 'var(--quality-high, #059669)';
+  return 'var(--quality-high)';
 };
 
 const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) => {
@@ -118,7 +118,7 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                           </span>
                         </td>
                         <td style={{ padding: '0 10px' }}>
-                          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: hubColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: hubColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>
                             {HUB_SHORT[it.source_hub] || it.source_hub}
                           </span>
                         </td>
@@ -152,7 +152,7 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                             background: isReported ? 'transparent' : sc.dot,
-                            color: isReported ? sc.dot : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                            color: isReported ? sc.dot : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                             border: isReported ? `1.5px solid ${sc.dot}` : 'none',
                           }}>
                             {isReported ? 'R' : 'A'}

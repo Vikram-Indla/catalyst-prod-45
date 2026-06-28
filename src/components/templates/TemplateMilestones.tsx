@@ -27,9 +27,9 @@ interface TemplateMilestonesProps {
 }
 
 const MILESTONE_TYPES = [
-  { value: 'checkpoint', label: 'Checkpoint', icon: Flag, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  { value: 'review', label: 'Review', icon: CheckCircle, color: 'var(--ds-chart-teal-bold, #0d9488)' },
-  { value: 'deadline', label: 'Deadline', icon: AlertCircle, color: 'var(--ds-text-danger, #ef4444)' },
+  { value: 'checkpoint', label: 'Checkpoint', icon: Flag, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  { value: 'review', label: 'Review', icon: CheckCircle, color: 'var(--ds-chart-teal-bold)' },
+  { value: 'deadline', label: 'Deadline', icon: AlertCircle, color: 'var(--ds-text-danger)' },
 ] as const;
 
 export function TemplateMilestones({
@@ -117,7 +117,7 @@ export function TemplateMilestones({
             variant="outline"
             size="sm"
             onClick={addMilestone}
-            className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-selected,#eff6ff)]"
+            className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] hover:bg-[var(--ds-background-selected)]"
           >
             <Plus className="w-4 h-4 mr-1.5" />
             Add Milestone

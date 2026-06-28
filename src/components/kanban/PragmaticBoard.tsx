@@ -287,7 +287,7 @@ const PragmaticCard = memo(function PragmaticCard({
             top: ctxMenu.y,
             zIndex: 9999,
             minWidth: 180,
-            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             borderRadius: 4,
             boxShadow: 'var(--ds-shadow-overlay, rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px)',
             padding: '4px 0',
@@ -317,9 +317,9 @@ const PragmaticCard = memo(function PragmaticCard({
                 padding: '8px 16px', background: 'transparent',
                 border: 'none', cursor: 'pointer', textAlign: 'left',
                 fontSize: 'var(--ds-font-size-400)', lineHeight: '20px',
-                color: item.danger ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
+                color: item.danger ? 'var(--ds-text-danger)' : tk.textPrimary,
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle)))'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               {item.label}
@@ -458,13 +458,13 @@ const PragmaticColumn = memo(function PragmaticColumn({
             width="14" height="14" viewBox="0 0 16 16" fill="none"
             style={{ flexShrink: 0 }}
           >
-            <path d="M3 8l3.5 3.5L13 5" stroke="var(--ds-text-success, #1F845A)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M3 8l3.5 3.5L13 5" stroke="var(--ds-text-success)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         ) : issueIds.length > 0 ? (
           <span style={{
             fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
             color: tk.textMuted,
-            background: 'var(--ds-background-neutral, #F1F2F4)',
+            background: 'var(--ds-background-neutral)',
             padding: '1px 6px',
             borderRadius: 3,
             lineHeight: '16px',
@@ -480,13 +480,13 @@ const PragmaticColumn = memo(function PragmaticColumn({
             style={{
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
-              color: issueIds.length > column.wipLimit ? 'var(--ds-text-danger, #AE2A19)' : tk.textMuted,
+              color: issueIds.length > column.wipLimit ? 'var(--ds-text-danger)' : tk.textMuted,
               fontFamily: 'var(--cp-font-body)',
               lineHeight: '16px',
               padding: '0 8px',
               borderRadius: 3,
-              background: issueIds.length > column.wipLimit ? 'var(--ds-background-danger, #FFEBE6)' : 'transparent',
-              border: `1px solid ${issueIds.length > column.wipLimit ? 'var(--ds-border-danger, #AE2A19)' : tk.borderSubtle}`,
+              background: issueIds.length > column.wipLimit ? 'var(--ds-background-danger)' : 'transparent',
+              border: `1px solid ${issueIds.length > column.wipLimit ? 'var(--ds-border-danger)' : tk.borderSubtle}`,
               letterSpacing: 0.2,
             }}
             aria-label={`Work-in-progress limit ${column.wipLimit}`}
@@ -530,7 +530,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
               top: meatballAnchor.y,
               zIndex: 9999,
               minWidth: 200,
-              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               borderRadius: 4,
               boxShadow: 'var(--ds-shadow-overlay, rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px)',
               padding: '8px 0',
@@ -551,7 +551,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
             {column.wipLimit != null && (
               <div style={{
                 padding: '8px 16px', fontSize: 'var(--ds-font-size-200)', display: 'flex', justifyContent: 'space-between',
-                color: issueIds.length > column.wipLimit ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
+                color: issueIds.length > column.wipLimit ? 'var(--ds-text-danger)' : tk.textPrimary,
               }}>
                 <span>WIP limit</span>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>
@@ -789,7 +789,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               <div key={i} style={{
                 height: h, borderRadius: 4,
                 marginBottom: i < 2 ? 12 : 0,
-                background: 'var(--ds-skeleton, var(--ds-background-neutral, #F1F2F4))',
+                background: 'var(--ds-skeleton, var(--ds-background-neutral))',
                 boxShadow: tk.cardShadowRest,
                 animationName: 'kanbanSkeletonPulse',
                 animationDuration: '1.6s',
@@ -893,7 +893,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               tabIndex={showCreate ? 0 : -1}
               aria-hidden={!showCreate}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))';
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))';
                 (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
               }}
               onMouseLeave={(e) => {
@@ -1053,7 +1053,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
             tabIndex={showCreate ? 0 : -1}
             aria-hidden={!showCreate}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))';
+              (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral))';
               (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
             }}
             onMouseLeave={(e) => {

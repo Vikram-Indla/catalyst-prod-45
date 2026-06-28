@@ -7,11 +7,11 @@ interface Props {
 }
 
 const COLORS: string[] = [
-  'var(--ds-text, #172B4D)', 'var(--ds-link-pressed, #0747A6)', 'var(--ds-text-success, #006644)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text-danger, #AE2A19)', 'var(--ds-text, #172B4D)',
-  'var(--ds-text-subtle, #42526E)', 'var(--ds-link, #0052CC)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-text-subtle, #44546F)',
-  'var(--ds-text-subtlest, #626F86)', 'var(--ds-link, #0C66E4)', 'var(--ds-background-success-bold, #57D9A3)', '#FFC400', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-information, #E9F2FF)',
-  'var(--ds-text-disabled, #8590A2)', 'var(--ds-background-information-bold, #0C66E4)', '#79F2C0', '#FFE380', 'var(--ds-background-danger, #FFECEB)', 'var(--ds-background-information, #E9F2FF)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  'var(--ds-border, #DFE1E6)', 'var(--ds-background-information, #E9F2FF)', '#ABF5D1', 'var(--ds-background-warning, #FFF7D6)', '#FFBDAD', 'var(--ds-surface, #FFFFFF)',
+  'var(--ds-text)', 'var(--ds-link-pressed)', 'var(--ds-text-success)', 'var(--ds-background-warning-bold)', 'var(--ds-text-danger)', 'var(--ds-text)',
+  'var(--ds-text-subtle)', 'var(--ds-link)', 'var(--ds-background-success-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-background-danger-bold)', 'var(--ds-text-subtle)',
+  'var(--ds-text-subtlest)', 'var(--ds-link)', 'var(--ds-background-success-bold)', '#FFC400', 'var(--ds-background-danger-bold)', 'var(--ds-background-information)',
+  'var(--ds-text-disabled)', 'var(--ds-background-information-bold)', '#79F2C0', '#FFE380', 'var(--ds-background-danger)', 'var(--ds-background-information)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  'var(--ds-border)', 'var(--ds-background-information)', '#ABF5D1', 'var(--ds-background-warning)', '#FFBDAD', 'var(--ds-surface)',
 ];
 
 function isRemoveDisabled(editor: Editor): boolean {
@@ -19,7 +19,7 @@ function isRemoveDisabled(editor: Editor): boolean {
   const color = (attrs?.color as string | undefined) ?? null;
   if (!color) return true;
   const c = color.toLowerCase().trim();
-  return c === 'var(--ds-text, #172B4D)' || c === 'var(--ds-surface, #FFFFFF)' || c === 'black' || c === 'white';
+  return c === 'var(--ds-text)' || c === 'var(--ds-surface)' || c === 'black' || c === 'white';
 }
 
 export function TextColorPicker({ editor }: Props) {
@@ -52,9 +52,9 @@ export function TextColorPicker({ editor }: Props) {
             fontSize: 'var(--ds-font-size-200)',
             lineHeight: '14px',
             padding: '0 4px',
-            border: '1px solid var(--ds-text-subtle, #44546F)',
+            border: '1px solid var(--ds-text-subtle)',
             borderRadius: 3,
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
           }}
         >
           A
@@ -70,8 +70,8 @@ export function TextColorPicker({ editor }: Props) {
             top: 32,
             left: 0,
             zIndex: 10,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface-overlay)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
             boxShadow:
               '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
@@ -101,7 +101,7 @@ export function TextColorPicker({ editor }: Props) {
                 style={{
                   width: 24,
                   height: 24,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: 3,
                   background: c,
                   cursor: 'pointer',
@@ -121,10 +121,10 @@ export function TextColorPicker({ editor }: Props) {
             style={{
               width: '100%',
               padding: '6px 8px',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              border: '1px solid var(--ds-border)',
               borderRadius: 3,
-              background: 'var(--ds-surface, #FFFFFF)',
-              color: 'var(--ds-text, #292A2E)',
+              background: 'var(--ds-surface)',
+              color: 'var(--ds-text)',
               fontSize: 'var(--ds-font-size-200)',
               fontWeight: 500,
               cursor: isRemoveDisabled(editor) ? 'not-allowed' : 'pointer',

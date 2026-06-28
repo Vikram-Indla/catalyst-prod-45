@@ -89,7 +89,7 @@ const rowBaseStyle: React.CSSProperties = {
   padding: '8px 12px',
   fontSize: 'var(--ds-font-size-400)',
   fontFamily: 'var(--ds-font-family-body)',
-  color: 'var(--ds-text, #172B4D)',
+  color: 'var(--ds-text)',
   cursor: 'pointer',
   userSelect: 'none',
   lineHeight: 1.3,
@@ -97,8 +97,8 @@ const rowBaseStyle: React.CSSProperties = {
 
 const submenuShellStyle: React.CSSProperties = {
   position: 'fixed',
-  background: 'var(--ds-surface-overlay, #FFFFFF)',
-  border: '1px solid var(--ds-border, #DFE1E6)',
+  background: 'var(--ds-surface-overlay)',
+  border: '1px solid var(--ds-border)',
   borderRadius: 6,
   boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))',
   padding: '4px 0',
@@ -157,13 +157,13 @@ function MenuRow({
       style={{
         ...rowBaseStyle,
         cursor: disabled ? 'not-allowed' : 'pointer',
-        color: disabled ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text, #172B4D)',
+        color: disabled ? 'var(--ds-text-disabled)' : 'var(--ds-text)',
         background: showHover ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
       }}
     >
       <span style={{ flex: 1 }}>{label}</span>
       {hasSubmenu && (
-        <span style={{ color: disabled ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-text-subtlest, #626F86)', lineHeight: 0 }}>
+        <span style={{ color: disabled ? 'var(--ds-text-disabled)' : 'var(--ds-text-subtlest)', lineHeight: 0 }}>
           <ChevronRight />
         </span>
       )}
@@ -172,7 +172,7 @@ function MenuRow({
 }
 
 function Separator() {
-  return <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />;
+  return <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />;
 }
 
 export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
@@ -453,7 +453,7 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
     <div style={{ padding: '8px 12px' }}>
       <div style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
-        color: 'var(--ds-text-subtlest, #6B778C)',
+        color: 'var(--ds-text-subtlest)',
         marginBottom: 8,
       }}>
         Work item color
@@ -474,8 +474,8 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
                 width: 24, height: 24, borderRadius: 4, padding: 0, cursor: 'pointer',
                 background: hex,
                 border: selected
-                  ? '2px solid var(--ds-border-selected, #0052CC)'
-                  : '1px solid var(--ds-border, #DFE1E6)',
+                  ? '2px solid var(--ds-border-selected)'
+                  : '1px solid var(--ds-border)',
                 outline: 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
@@ -483,7 +483,7 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
               {selected && (
                 <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
                   <path d="M2 6l2.5 2.5L10 3"
-                    stroke="var(--ds-text-inverse, #FFFFFF)" strokeWidth="2"
+                    stroke="var(--ds-text-inverse)" strokeWidth="2"
                     fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               )}
@@ -499,7 +499,7 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
           style={{
             marginTop: 8, padding: '4px 8px',
             background: 'transparent', border: 'none',
-            color: 'var(--ds-text-subtle, #44546F)',
+            color: 'var(--ds-text-subtle)',
             fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-body)',
             cursor: 'pointer', borderRadius: 3,
           }}
@@ -539,11 +539,11 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '0 8px',
-          border: '1.5px solid var(--ds-border-focused, #388BFF)',
+          border: '1.5px solid var(--ds-border-focused)',
           borderRadius: 4, height: 36,
-          background: 'var(--ds-background-input, #FFFFFF)',
+          background: 'var(--ds-background-input)',
         }}>
-          <span style={{ color: 'var(--ds-text-subtle, #44546F)', lineHeight: 0, flexShrink: 0 }}>
+          <span style={{ color: 'var(--ds-text-subtle)', lineHeight: 0, flexShrink: 0 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="7" />
@@ -571,18 +571,18 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
               flex: 1, border: 'none', outline: 'none',
               background: 'transparent',
               fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--ds-font-family-body)',
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text)',
               padding: 0, minWidth: 0,
             }}
           />
         </div>
       </div>
-      <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)' }} />
+      <div style={{ height: 1, background: 'var(--ds-border)' }} />
       <div role="listbox" style={{ maxHeight: 320, overflowY: 'auto', padding: '4px 0' }}>
         {filteredParents.length === 0 ? (
           <div style={{
             padding: '16px 12px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
-            color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic',
+            color: 'var(--ds-text-subtlest)', fontStyle: 'italic',
           }}>
             No matching work items
           </div>
@@ -628,13 +628,13 @@ function ParentRow({ candidate, onPick }: { candidate: TimelineIssue; onPick: ()
         <JiraIssueTypeIcon type={candidate.issueType} size={16} />
       </span>
       <span style={{
-        fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)',
+        fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)',
         whiteSpace: 'nowrap', flexShrink: 0,
       }}>
         {candidate.issueKey}
       </span>
       <span style={{
-        fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)',
+        fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0,
       }}>
         {candidate.summary}

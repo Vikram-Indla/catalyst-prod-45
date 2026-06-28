@@ -10,18 +10,18 @@ import {
 } from '@/hooks/admin/useFieldLayouts';
 
 const T = {
-  surface:      'var(--ds-surface, #FFFFFF)',
-  surfaceSunken:'var(--ds-surface-sunken, #F7F8F9)',
-  text:         'var(--ds-text, #172B4D)',
-  textSubtle:   'var(--ds-text-subtle, #44546F)',
-  textSubtlest: 'var(--ds-text-subtlest, #626F86)',
-  brand:        'var(--ds-link, #0C66E4)',
-  border:       'var(--ds-border, #DCDFE4)',
-  borderSubtle: 'var(--ds-border-subtle, #EBECF0)',
-  bgNeutral:    'var(--ds-background-neutral, #F1F2F4)',
-  bgHover:      'var(--ds-background-neutral-hovered, #E2E4E9)',
-  danger:       'var(--ds-text-danger, #AE2A19)',
-  dangerBold:   'var(--ds-background-danger-bold, #CA3521)',
+  surface:      'var(--ds-surface)',
+  surfaceSunken:'var(--ds-surface-sunken)',
+  text:         'var(--ds-text)',
+  textSubtle:   'var(--ds-text-subtle)',
+  textSubtlest: 'var(--ds-text-subtlest)',
+  brand:        'var(--ds-link)',
+  border:       'var(--ds-border)',
+  borderSubtle: 'var(--ds-border-subtle)',
+  bgNeutral:    'var(--ds-background-neutral)',
+  bgHover:      'var(--ds-background-neutral-hovered)',
+  danger:       'var(--ds-text-danger)',
+  dangerBold:   'var(--ds-background-danger-bold)',
 };
 
 const ISSUE_TYPES = [
@@ -283,7 +283,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
         {/* Body */}
         <form onSubmit={handleSubmit} style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
           {error && (
-            <div style={{ padding: '10px 14px', background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 4, color: T.danger, fontSize: 'var(--ds-font-size-400)' }}>
+            <div style={{ padding: '10px 14px', background: 'var(--ds-background-danger)', borderRadius: 4, color: T.danger, fontSize: 'var(--ds-font-size-400)' }}>
               {error}
             </div>
           )}
@@ -404,7 +404,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
                       style={{
                         padding: '4px 10px', fontSize: 'var(--ds-font-size-200)', borderRadius: 12,
                         border: `1px solid ${checked ? T.brand : T.border}`,
-                        background: checked ? 'var(--ds-background-selected, #E9F2FE)' : T.surface,
+                        background: checked ? 'var(--ds-background-selected)' : T.surface,
                         color: checked ? T.brand : T.textSubtle,
                         cursor: 'pointer', fontWeight: checked ? 600 : 400,
                       }}
@@ -440,7 +440,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
             style={{
               padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
               border: 'none', background: T.brand,
-              color: 'var(--ds-text-inverse, #FFFFFF)', cursor: saving ? 'not-allowed' : 'pointer',
+              color: 'var(--ds-text-inverse)', cursor: saving ? 'not-allowed' : 'pointer',
               opacity: saving ? 0.7 : 1,
             }}
           >
@@ -485,7 +485,7 @@ export default function FieldRegistryPage() {
             onClick={() => { setEditTarget(null); setDrawerOpen(true); }}
             style={{
               padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, borderRadius: 4,
-              border: 'none', background: T.brand, color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
+              border: 'none', background: T.brand, color: 'var(--ds-surface)', cursor: 'pointer',
               whiteSpace: 'nowrap',
             }}
           >
@@ -566,11 +566,11 @@ export default function FieldRegistryPage() {
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-                color: field.is_active ? 'var(--ds-text-success, #216E4E)' : T.textSubtlest,
+                color: field.is_active ? 'var(--ds-text-success)' : T.textSubtlest,
               }}>
                 <span style={{
                   width: 6, height: 6, borderRadius: '50%',
-                  background: field.is_active ? 'var(--ds-icon-success, #22A06B)' : T.textSubtlest,
+                  background: field.is_active ? 'var(--ds-icon-success)' : T.textSubtlest,
                   display: 'inline-block',
                 }} />
                 {field.is_active ? 'Active' : 'Inactive'}

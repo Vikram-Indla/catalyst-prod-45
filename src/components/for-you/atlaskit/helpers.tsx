@@ -96,7 +96,7 @@ export function groupByRecency(items: WorkItem[], order: Recency[]): Array<{ buc
 
 export function GroupHeading({ bucket }: { bucket: Recency }) {
   // Jira parity (DOM probe 2026-04-24): the group heading on For You is a
-  // 14px / weight 500 / Title Case span in `color.text.subtlest` (var(--ds-text-subtlest, #6B6E76),
+  // 14px / weight 500 / Title Case span in `color.text.subtlest` (var(--ds-text-subtlest),
   // rgb(107,110,118)). It is NOT uppercase and has no letter-spacing —
   // earlier iterations mistook a per-row status lozenge for the group heading.
   return (
@@ -157,7 +157,7 @@ export function ForYouEmptyState({
     <div style={{ padding: '48px 16px' }}>
       <EmptyState
         header={title}
-        description={<span style={{ color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>{description}</span>}
+        description={<span style={{ color: token('color.text.subtle', 'var(--ds-icon-subtle)') }}>{description}</span>}
         renderImage={renderImage}
         primaryAction={
           primaryActionText && onPrimaryAction ? (
@@ -166,8 +166,8 @@ export function ForYouEmptyState({
               onClick={onPrimaryAction}
               style={{
                 padding: '8px 16px',
-                background: token('color.background.selected.bold', 'var(--ds-link, #0C66E4)'),
-                color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
+                background: token('color.background.selected.bold', 'var(--ds-link)'),
+                color: token('color.text.inverse', 'var(--ds-text-inverse)'),
                 border: 'none',
                 borderRadius: 3,
                 cursor: 'pointer',
@@ -186,7 +186,7 @@ export function ForYouEmptyState({
               style={{
                 padding: '8px 16px',
                 background: 'transparent',
-                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                 border: 'none',
                 borderRadius: 3,
                 cursor: 'pointer',

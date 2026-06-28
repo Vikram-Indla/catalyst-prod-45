@@ -18,12 +18,12 @@ interface RbacRolesTableProps {
 }
 
 const T = {
-  text:        'var(--ds-text, #172B4D)',
-  subtle:      'var(--ds-text-subtle, #44546F)',
-  subtlest:    'var(--ds-text-subtlest, #626F86)',
-  border:      'var(--ds-border, #DCDFE4)',
-  selected:    'var(--ds-background-selected, #E9F2FE)',
-  brandBorder: 'var(--ds-border-brand, #0052CC)',
+  text:        'var(--ds-text)',
+  subtle:      'var(--ds-text-subtle)',
+  subtlest:    'var(--ds-text-subtlest)',
+  border:      'var(--ds-border)',
+  selected:    'var(--ds-background-selected)',
+  brandBorder: 'var(--ds-border-brand)',
   hover:       'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
 };
 

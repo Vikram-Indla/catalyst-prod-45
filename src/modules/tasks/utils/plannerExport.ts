@@ -19,22 +19,22 @@ interface ExportOptions {
 
 // Brand colors for enterprise styling
 const BRAND_COLORS = {
-  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-  secondary: 'var(--ds-link-pressed, #1e40af)',
-  accent: 'var(--ds-text-brand, #3b82f6)',
-  text: 'var(--ds-text, #172B4D)',
-  textMuted: 'var(--ds-text-subtlest, #626F86)',
-  border: 'var(--ds-border, #e5e7eb)',
-  success: 'var(--ds-background-success-bold, #059669)',
-  warning: 'var(--ds-text-warning, #f59e0b)',
-  danger: 'var(--ds-text-danger, #ef4444)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  secondary: 'var(--ds-link-pressed)',
+  accent: 'var(--ds-text-brand)',
+  text: 'var(--ds-text)',
+  textMuted: 'var(--ds-text-subtlest)',
+  border: 'var(--ds-border)',
+  success: 'var(--ds-background-success-bold)',
+  warning: 'var(--ds-text-warning)',
+  danger: 'var(--ds-text-danger)',
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'var(--ds-text-danger, #ef4444)',
-  high: 'var(--ds-background-warning-bold, #f97316)',
-  medium: 'var(--ds-background-warning-bold, #E2B203)',
-  low: 'var(--ds-text-success, #22c55e)',
+  critical: 'var(--ds-text-danger)',
+  high: 'var(--ds-background-warning-bold)',
+  medium: 'var(--ds-background-warning-bold)',
+  low: 'var(--ds-text-success)',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -144,7 +144,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
   const addSummaryStats = () => {
     const stats = calculateStats(tasks);
     
-    pdf.setFillColor('var(--ds-surface-sunken, #f8fafc)');
+    pdf.setFillColor('var(--ds-surface-sunken)');
     pdf.roundedRect(margin, currentY, pageWidth - (margin * 2), 25, 3, 3, 'F');
     
     const statBoxWidth = (pageWidth - (margin * 2)) / 5;
@@ -199,7 +199,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       theme: 'grid',
       headStyles: {
         fillColor: BRAND_COLORS.primary,
-        textColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        textColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         fontSize: 9,
         fontStyle: 'bold',
         halign: 'left',
@@ -211,7 +211,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
         cellPadding: 2.5,
       },
       alternateRowStyles: {
-        fillColor: 'var(--ds-surface-sunken, #F7F8F9)',
+        fillColor: 'var(--ds-surface-sunken)',
       },
       columnStyles: {
         0: { cellWidth: 25, fontStyle: 'bold', textColor: BRAND_COLORS.primary },

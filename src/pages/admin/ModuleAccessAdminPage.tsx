@@ -9,10 +9,10 @@ import { FeatureFlagsContent } from '@/components/admin/FeatureFlagsContent';
 export default function ModuleAccessAdminPage() {
   return (
     <div style={{ padding: '24px 32px', width: '100%' }}>
-      <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: 0, lineHeight: '28px' }}>
+      <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text)', margin: 0, lineHeight: '28px' }}>
         Module access
       </h1>
-      <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle, #44546F)', margin: '4px 0 24px' }}>
+      <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle)', margin: '4px 0 24px' }}>
         Control which modules each role sees at login. Set per-role access to full, view, or hidden across the platform.
       </p>
       <Tabs id="module-access-tabs">

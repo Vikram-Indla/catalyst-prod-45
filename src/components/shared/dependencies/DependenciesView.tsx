@@ -17,7 +17,7 @@ import DependenciesDiagram from './DependenciesDiagram';
 import AddDependencyModal from './AddDependencyModal';
 import type { DependencyData, DependencyCandidate, DependencyType, HubType } from './types';
 
-const T = { surface: 'var(--ds-surface, #FFFFFF)' };
+const T = { surface: 'var(--ds-surface)' };
 
 interface DependenciesViewProps {
   hubType: HubType;
@@ -70,7 +70,7 @@ export default function DependenciesView({
             <Spinner size="large" />
           </div>
         ) : error ? (
-          <div style={{ padding: 32, color: 'var(--ds-text-danger, #AE2A19)' }}>
+          <div style={{ padding: 32, color: 'var(--ds-text-danger)' }}>
             Error loading dependencies: {(error as any)?.message ?? String(error)}
           </div>
         ) : isEmpty ? (

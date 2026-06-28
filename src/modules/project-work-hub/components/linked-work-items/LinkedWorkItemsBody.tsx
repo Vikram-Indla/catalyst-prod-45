@@ -58,7 +58,7 @@ export function LinkedWorkItemsBody({
 
       {!isLoading && isError && (
         <div className="lwi-error" role="alert">
-          <WarningIcon size="small" label="" primaryColor="var(--ds-icon-warning, #FF8B00)" />
+          <WarningIcon size="small" label="" primaryColor="var(--ds-icon-warning)" />
           <span>Couldn&rsquo;t load linked work items. Try again.</span>
         </div>
       )}

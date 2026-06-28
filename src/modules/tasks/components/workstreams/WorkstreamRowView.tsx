@@ -138,7 +138,7 @@ export const WorkstreamRow: React.FC<{
               justifyContent: 'center',
               fontSize: 'var(--ds-font-size-500)',
               fontWeight: 700,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               flexShrink: 0,
             }}
           >
@@ -212,7 +212,7 @@ export const WorkstreamRow: React.FC<{
                     justifyContent: 'center',
                     fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
-                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                     flexShrink: 0,
                   }}
                 >

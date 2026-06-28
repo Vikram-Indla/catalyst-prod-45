@@ -459,7 +459,7 @@ export function ResourceModal({
                             }}
                             className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
                           />
-                          <div className="w-8 h-8 rounded-full bg-[var(--ds-background-neutral-subtle, #d4b896)] flex items-center justify-center text-xs font-semibold text-[var(--ds-text-subtle, #4a3f35)]">
+                          <div className="w-8 h-8 rounded-full bg-[var(--ds-background-neutral-subtle)] flex items-center justify-center text-xs font-semibold text-[var(--ds-text-subtle)]">
                             {initials}
                           </div>
                           <div className="flex-1 min-w-0">

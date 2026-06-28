@@ -69,9 +69,9 @@ export function EditorView({
       style={{
         display: "flex",
         flexDirection: "column",
-        border: "1px solid var(--ds-border, #DFE1E6)",
+        border: "1px solid var(--ds-border)",
         borderRadius: 4,
-        background: "var(--ds-surface, #FFFFFF)",
+        background: "var(--ds-surface)",
         boxShadow: "0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.08))",
         /* Caps the editor height; when content exceeds this, the body
            scrolls internally with the toolbar staying pinned in place. */
@@ -120,7 +120,7 @@ export function EditorView({
           style={{
             flexShrink: 0,
             padding: "6px 16px 8px 28px",
-            background: "var(--ds-surface, #FFFFFF)",
+            background: "var(--ds-surface)",
           }}
         >
           {footer}

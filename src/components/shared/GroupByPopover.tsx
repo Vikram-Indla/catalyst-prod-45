@@ -107,14 +107,14 @@ interface GroupByPopoverProps<K extends string> {
 /* ═══ ADS tokens — all values use var(--ds-*) so light/dark mode is automatic ═══ */
 
 const T = {
-  text:         'var(--ds-text, #172B4D)',
-  textSubtlest: 'var(--ds-text-subtlest, #6B778C)',
-  border:       'var(--ds-border, #DFE1E6)',
-  borderFocus:  'var(--ds-border-focused, #4C9AFF)',
-  surface:      'var(--ds-surface, #FFFFFF)',
+  text:         'var(--ds-text)',
+  textSubtlest: 'var(--ds-text-subtlest)',
+  border:       'var(--ds-border)',
+  borderFocus:  'var(--ds-border-focused)',
+  surface:      'var(--ds-surface)',
   hover:        'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
-  selected:     'var(--ds-background-selected, #DEEBFF)',
-  selectedText: 'var(--ds-link, #0052CC)',
+  selected:     'var(--ds-background-selected)',
+  selectedText: 'var(--ds-link)',
   shadow:       'var(--ds-shadow-overlay)',
 };
 
@@ -212,9 +212,9 @@ export function GroupByPopover<K extends string>({
             : isHovered
               ? hover
               : T.surface,
-          border: `1px solid ${(open || isFocused || isActive) ? 'var(--ds-border-selected, var(--ds-link, #0C66E4))' : T.border}`,
+          border: `1px solid ${(open || isFocused || isActive) ? 'var(--ds-border-selected, var(--ds-link))' : T.border}`,
           boxShadow: (open || isFocused || isActive)
-            ? '0 0 0 1px var(--ds-border-selected, #0C66E4)'
+            ? '0 0 0 1px var(--ds-border-selected)'
             : 'none',
           borderRadius: 3,
           cursor: 'pointer',
@@ -232,7 +232,7 @@ export function GroupByPopover<K extends string>({
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             minWidth: 18, height: 18,
-            background: 'var(--ds-link, var(--cp-primary-60, #0052CC))', color: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--ds-link, var(--cp-primary-60))', color: 'var(--ds-text-inverse)',
             fontSize: 'var(--ds-font-size-50)', fontWeight: 700, borderRadius: 9,
           }}>1</span>
         )}

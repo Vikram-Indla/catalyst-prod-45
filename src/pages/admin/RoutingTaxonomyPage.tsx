@@ -79,7 +79,7 @@ export default function RoutingTaxonomyPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <Heading size="large">Routing taxonomy</Heading>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+          <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
             Last scan: {lastScan}
           </span>
           <Button appearance="subtle" onClick={() => refetch()}>Refresh</Button>
@@ -110,13 +110,13 @@ export default function RoutingTaxonomyPage() {
           <Spinner size="large" />
         </div>
       ) : filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 48, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
+        <div style={{ textAlign: 'center', padding: 48, color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
           No violations found.
         </div>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
-            <tr style={{ borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`, textAlign: 'left' }}>
+            <tr style={{ borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`, textAlign: 'left' }}>
               <th style={{ padding: '8px 12px', fontWeight: 600 }}>Severity</th>
               <th style={{ padding: '8px 12px', fontWeight: 600 }}>Rule</th>
               <th style={{ padding: '8px 12px', fontWeight: 600 }}>File</th>
@@ -129,7 +129,7 @@ export default function RoutingTaxonomyPage() {
               <tr
                 key={v.id}
                 style={{
-                  borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                  borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                   opacity: v.resolved ? 0.5 : 1,
                 }}
               >
@@ -139,7 +139,7 @@ export default function RoutingTaxonomyPage() {
                 <td style={{ padding: '8px 12px' }}>
                   <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>{v.rule_id}</span>
                   <br />
-                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>{v.rule_name}</span>
+                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))') }}>{v.rule_name}</span>
                 </td>
                 <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>
                   {v.file}:{v.line}
@@ -147,7 +147,7 @@ export default function RoutingTaxonomyPage() {
                 <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>
                   {v.path || v.text}
                 </td>
-                <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: token('color.text.success', 'var(--ds-text-success, #216E4E)') }}>
+                <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: token('color.text.success', 'var(--ds-text-success)') }}>
                   {v.fix || '—'}
                 </td>
               </tr>
@@ -156,7 +156,7 @@ export default function RoutingTaxonomyPage() {
         </table>
       )}
 
-      <div style={{ marginTop: 32, padding: 16, background: token('color.background.neutral', 'var(--ds-surface-sunken, #F7F8F9)'), borderRadius: 4 }}>
+      <div style={{ marginTop: 32, padding: 16, background: token('color.background.neutral', 'var(--ds-surface-sunken)'), borderRadius: 4 }}>
         <Heading size="small">Scanner rules</Heading>
         <ul style={{ margin: '8px 0', paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
           <li><strong>RT-001</strong> — Route paths must use kebab-case (no camelCase segments)</li>

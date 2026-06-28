@@ -157,7 +157,7 @@ export function HuddleFab() {
 
   if (!active || windowState !== 'minimized') return null;
 
-  const green = 'var(--ds-icon-success, #22A06B)';
+  const green = 'var(--ds-icon-success)';
 
   // Screen-share toggle — disabled while the remote peer is sharing (only one screen at a time).
   const screenShareBtn = !connecting ? (
@@ -169,7 +169,7 @@ export function HuddleFab() {
       aria-pressed={sharing}
       title={remoteSharing ? 'Other participant is sharing' : sharing ? 'Stop sharing screen' : 'Share screen'}
       style={{
-        ...iconBtnStyle(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)', sharing ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #172B4D)'),
+        ...iconBtnStyle(sharing ? 'var(--ds-background-selected)' : 'var(--ds-surface-sunken)', sharing ? 'var(--ds-text-selected)' : 'var(--ds-text)'),
         opacity: remoteSharing ? 0.45 : 1,
         cursor: remoteSharing ? 'not-allowed' : 'pointer',
       }}
@@ -184,7 +184,7 @@ export function HuddleFab() {
       data-huddle-btn
       onClick={leave}
       title="Leave huddle"
-      style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', 'var(--ds-text-inverse, #FFFFFF)')}
+      style={iconBtnStyle('var(--ds-background-danger-bold)', 'var(--ds-text-inverse)')}
     >
       <PhoneDownIcon />
     </button>
@@ -213,8 +213,8 @@ export function HuddleFab() {
         height: 56,
         padding: '0 8px',
         borderRadius: 999,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: `1.5px solid ${connecting ? 'var(--ds-border, #DFE1E6)' : 'var(--ds-border-success, #4BCE97)'}`,
+        background: 'var(--ds-surface-overlay)',
+        border: `1.5px solid ${connecting ? 'var(--ds-border)' : 'var(--ds-border-success)'}`,
         boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,.18)), 0 2px 6px var(--ds-shadow-raised, rgba(9,30,66,.12))',
         transition: 'gap .18s ease, padding .18s ease, border-radius .18s ease',
         userSelect: 'none',
@@ -225,7 +225,7 @@ export function HuddleFab() {
         {participants.length > 0 ? (
           participants.map((p, i) => (
             <span key={p.userId} title={p.name || undefined}
-              style={{ marginLeft: i === 0 ? 0 : -10, borderRadius: '50%', boxShadow: '0 0 0 2px var(--ds-surface-overlay, #FFFFFF)' }}>
+              style={{ marginLeft: i === 0 ? 0 : -10, borderRadius: '50%', boxShadow: '0 0 0 2px var(--ds-surface-overlay)' }}>
               <Avatar size="medium" name={p.name || undefined} src={p.avatarUrl || undefined} />
             </span>
           ))
@@ -256,7 +256,7 @@ export function HuddleFab() {
   );
 }
 
-function iconBtnStyle(bg: string, color = 'var(--ds-text, #172B4D)'): React.CSSProperties {
+function iconBtnStyle(bg: string, color = 'var(--ds-text)'): React.CSSProperties {
   return {
     width: 40, height: 40, borderRadius: '50%', border: 'none', cursor: 'pointer',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

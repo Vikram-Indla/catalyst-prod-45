@@ -73,10 +73,10 @@ export function ReleaseSummaryCard({
     >
       <div className="csc-surface">
         <header className="csc-header">
-          <SparklesIcon size="small" label="" primaryColor="var(--ds-icon, #44546F)" />
+          <SparklesIcon size="small" label="" primaryColor="var(--ds-icon)" />
           <span className="csc-header__title">{entityLabel} summary</span>
           <span className="csc-header__lock">
-            <LockIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #6b6e76)" />
+            <LockIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
             Only visible to you
           </span>
           <button
@@ -86,7 +86,7 @@ export function ReleaseSummaryCard({
             aria-label="Dismiss summary"
             data-testid="rsc-dismiss"
           >
-            <CloseIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #6b6e76)" />
+            <CloseIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
           </button>
         </header>
 
@@ -152,7 +152,7 @@ export function ReleaseSummaryCard({
                   <ThumbsUpIcon
                     size="small"
                     label=""
-                    primaryColor={selectedVote === 'up' ? 'var(--ds-text-information, #0c66e4)' : 'var(--ds-icon-subtle, #6b6e76)'}
+                    primaryColor={selectedVote === 'up' ? 'var(--ds-text-information)' : 'var(--ds-icon-subtle)'}
                   />
                 </button>
                 <button
@@ -166,7 +166,7 @@ export function ReleaseSummaryCard({
                   <ThumbsDownIcon
                     size="small"
                     label=""
-                    primaryColor={selectedVote === 'down' ? 'var(--ds-text-information, #0c66e4)' : 'var(--ds-icon-subtle, #6b6e76)'}
+                    primaryColor={selectedVote === 'down' ? 'var(--ds-text-information)' : 'var(--ds-icon-subtle)'}
                   />
                 </button>
                 <button
@@ -176,7 +176,7 @@ export function ReleaseSummaryCard({
                   aria-label="Copy summary"
                   data-testid="rsc-copy"
                 >
-                  <CopyIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #6b6e76)" />
+                  <CopyIcon size="small" label="" primaryColor="var(--ds-icon-subtle)" />
                 </button>
               </div>
             </footer>

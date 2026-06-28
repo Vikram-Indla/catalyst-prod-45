@@ -25,9 +25,9 @@ import Tooltip from '@atlaskit/tooltip';
 // ───────────────────────── shared pill + portal ─────────────────────────
 
 const PILL_HEIGHT = 32;
-const PILL_BLUE = 'var(--ds-border-selected, #1868DB)';
-const PILL_BG_ACTIVE = 'var(--ds-background-selected, #E9F2FE)';
-const PILL_TEXT_ACTIVE = 'var(--ds-text-selected, #0C66E4)';
+const PILL_BLUE = 'var(--ds-border-selected)';
+const PILL_BG_ACTIVE = 'var(--ds-background-selected)';
+const PILL_TEXT_ACTIVE = 'var(--ds-text-selected)';
 
 function pillStyle(active: boolean, whiteBg = false): React.CSSProperties {
   return {
@@ -37,9 +37,9 @@ function pillStyle(active: boolean, whiteBg = false): React.CSSProperties {
     height: PILL_HEIGHT,
     padding: '0 10px',
     borderRadius: 3,
-    border: `1px solid ${active ? PILL_BLUE : 'var(--ds-border, #DFE1E6)'}`,
-    background: active && !whiteBg ? PILL_BG_ACTIVE : 'var(--ds-surface, #FFFFFF)',
-    color: active ? PILL_TEXT_ACTIVE : 'var(--ds-text, #292A2E)',
+    border: `1px solid ${active ? PILL_BLUE : 'var(--ds-border)'}`,
+    background: active && !whiteBg ? PILL_BG_ACTIVE : 'var(--ds-surface)',
+    color: active ? PILL_TEXT_ACTIVE : 'var(--ds-text)',
     fontSize: 'var(--ds-font-size-400)',
     fontWeight: 500,
     fontFamily: 'inherit',
@@ -135,8 +135,8 @@ function PopupShell({
         minWidth: Math.max(width, pos.width),
         maxHeight: 360,
         zIndex: 10000,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         overflow: 'hidden',
@@ -171,13 +171,13 @@ function SearchInput({
         height: 32,
         padding: '0 8px',
         borderRadius: 3,
-        border: `1px solid ${focused ? PILL_BLUE : 'var(--ds-border, #DFE1E6)'}`,
-        background: 'var(--ds-surface, #FFFFFF)',
+        border: `1px solid ${focused ? PILL_BLUE : 'var(--ds-border)'}`,
+        background: 'var(--ds-surface)',
         boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
         transition: 'border-color 80ms ease, box-shadow 80ms ease',
       }}
     >
-      <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+      <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest)' }}>
         <SearchIcon label="" size="small" />
       </span>
       <input
@@ -193,7 +193,7 @@ function SearchInput({
           outline: 'none',
           background: 'transparent',
           fontSize: 'var(--ds-font-size-400)',
-          color: 'var(--ds-text, #292A2E)',
+          color: 'var(--ds-text)',
           fontFamily: 'inherit',
           padding: 0,
         }}
@@ -234,7 +234,7 @@ function CheckboxRow({
         boxSizing: 'border-box',
         padding: '6px 12px 6px 16px',
         cursor: 'pointer',
-        background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
+        background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
         userSelect: 'none',
       }}
     >
@@ -254,7 +254,7 @@ function CheckboxRow({
       <span
         style={{
           fontSize: 'var(--ds-font-size-400)',
-          color: checked ? PILL_TEXT_ACTIVE : 'var(--ds-text, #292A2E)',
+          color: checked ? PILL_TEXT_ACTIVE : 'var(--ds-text)',
           fontWeight: checked ? 500 : 400,
         }}
       >
@@ -293,9 +293,9 @@ function RadioRow({
         boxSizing: 'border-box',
         padding: '8px 12px 8px 16px',
         cursor: 'pointer',
-        background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)' : 'transparent',
+        background: checked ? PILL_BG_ACTIVE : hover ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
         fontSize: 'var(--ds-font-size-400)',
-        color: checked ? PILL_TEXT_ACTIVE : 'var(--ds-text, #292A2E)',
+        color: checked ? PILL_TEXT_ACTIVE : 'var(--ds-text)',
         fontWeight: checked ? 500 : 400,
       }}
     >
@@ -466,12 +466,12 @@ export function ProductFilter({
         </button>
       </Tooltip>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={280}>
-        <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+        <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border)' }}>
           <SearchInput value={query} onChange={setQuery} placeholder={placeholder} />
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
           {filtered.length === 0 ? (
-            <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
               No matches
             </div>
           ) : (
@@ -483,7 +483,7 @@ export function ProductFilter({
                   <>
                     {opt.name}
                     {opt.tag && (
-                      <span style={{ color: 'var(--ds-text-subtle, #626F86)' }}> ({opt.tag})</span>
+                      <span style={{ color: 'var(--ds-text-subtle)' }}> ({opt.tag})</span>
                     )}
                   </>
                 }
@@ -500,7 +500,7 @@ export function ProductFilter({
               all: 'unset',
               cursor: 'pointer',
               padding: '10px 12px',
-              borderTop: '1px solid var(--ds-border, #DFE1E6)',
+              borderTop: '1px solid var(--ds-border)',
               fontSize: 'var(--ds-font-size-300)',
               color: PILL_TEXT_ACTIVE,
               fontWeight: 500,
@@ -630,9 +630,9 @@ export function ProductSelect({
     height: 36,
     padding: '0 10px',
     borderRadius: 3,
-    border: `1px solid ${open ? PILL_BLUE : hasError ? 'var(--ds-border-danger, #AE2A19)' : 'var(--ds-border, #DFE1E6)'}`,
-    background: disabled ? 'var(--ds-background-disabled, #F1F2F4)' : 'var(--ds-surface, #FFFFFF)',
-    color: disabled ? 'var(--ds-text-disabled, #A5ADBA)' : selected ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
+    border: `1px solid ${open ? PILL_BLUE : hasError ? 'var(--ds-border-danger)' : 'var(--ds-border)'}`,
+    background: disabled ? 'var(--ds-background-disabled)' : 'var(--ds-surface)',
+    color: disabled ? 'var(--ds-text-disabled)' : selected ? 'var(--ds-text)' : 'var(--ds-text-subtlest)',
     fontSize: 'var(--ds-font-size-400)',
     fontWeight: 400,
     fontFamily: 'inherit',
@@ -686,16 +686,16 @@ export function ProductSelect({
               height: 20,
               marginLeft: 8,
               borderRadius: 3,
-              color: 'var(--ds-text-subtle, #6B778C)',
+              color: 'var(--ds-text-subtle)',
               cursor: 'pointer',
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
-              (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #292A2E)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';
+              (e.currentTarget as HTMLElement).style.color = 'var(--ds-text)';
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLElement).style.background = 'transparent';
-              (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #6B778C)';
+              (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle)';
             }}
           >
             <CrossIcon label="" size="small" />
@@ -703,12 +703,12 @@ export function ProductSelect({
         )}
       </button>
       <PopupShell open={open} pos={pos} popupRef={popupRef} width={280}>
-        <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+        <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border)' }}>
           <SearchInput value={query} onChange={setQuery} placeholder={searchPlaceholder} />
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
           {filtered.length === 0 ? (
-            <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
               No matches
             </div>
           ) : (

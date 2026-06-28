@@ -232,7 +232,7 @@ function NameStep({
           gap: 8,
           padding: '8px 10px',
           background: 'var(--cv2-bg-input)',
-          border: '1px solid var(--cv2-accent, #1264A3)',
+          border: '1px solid var(--cv2-accent)',
           borderRadius: 'var(--cv2-radius-sm)',
         }}
       >
@@ -372,7 +372,7 @@ function RadioRow({
           width: 18,
           height: 18,
           borderRadius: '50%',
-          border: `2px solid ${checked ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-border-strong)'}`,
+          border: `2px solid ${checked ? 'var(--cv2-accent)' : 'var(--cv2-border-strong)'}`,
           background: 'transparent',
           display: 'inline-flex',
           alignItems: 'center',
@@ -387,7 +387,7 @@ function RadioRow({
               width: 8,
               height: 8,
               borderRadius: '50%',
-              background: 'var(--cv2-accent, #1264A3)',
+              background: 'var(--cv2-accent)',
             }}
           />
         )}
@@ -481,8 +481,8 @@ function PrimaryButton({
       disabled={disabled}
       style={{
         padding: '8px 18px',
-        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
-        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
+        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success)',
+        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',

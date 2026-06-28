@@ -379,8 +379,8 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
                   onClick={() => setCollapsed(v => !v)}
                 >
                   {collapsed
-                    ? <ChevronRightIcon label="" color="var(--ds-text-subtle, #505258)" />
-                    : <ChevronDownIcon label="" color="var(--ds-text-subtle, #505258)" />
+                    ? <ChevronRightIcon label="" color="var(--ds-text-subtle)" />
+                    : <ChevronDownIcon label="" color="var(--ds-text-subtle)" />
                   }
                 </button>
               </Tooltip>
@@ -513,7 +513,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
-              className="bg-[var(--ds-background-danger-bold,#DE350B)] hover:bg-[var(--ds-background-danger-bold-hovered,#BF2600)] text-white"
+              className="bg-[var(--ds-background-danger-bold)] hover:bg-[var(--ds-background-danger-bold-hovered)] text-white"
             >Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -642,10 +642,10 @@ function PlusIcon() {
 function FileIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="4" fill="var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))" />
+      <rect width="32" height="32" rx="4" fill="var(--ds-surface-sunken, var(--cp-bg-sunken))" />
       <path d="M10 8h8l6 6v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z"
-        fill="var(--ds-background-neutral, #DDE1E6)" stroke="var(--ds-border, #BFC4CE)" strokeWidth="1" />
-      <path d="M18 8v6h6" fill="none" stroke="var(--ds-border, #BFC4CE)" strokeWidth="1" />
+        fill="var(--ds-background-neutral)" stroke="var(--ds-border)" strokeWidth="1" />
+      <path d="M18 8v6h6" fill="none" stroke="var(--ds-border)" strokeWidth="1" />
     </svg>
   );
 }

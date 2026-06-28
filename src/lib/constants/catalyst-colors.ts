@@ -6,83 +6,83 @@
  * ⚠️ DO NOT IMPORT COLORS FROM TAILWIND DEFAULTS
  * 
  * APPROVED COLORS:
- * - Primary Blue: var(--cp-workstream-catalyst-primary, #2563eb) (main), var(--ds-background-information-bold, #3b82f6), var(--ds-link-pressed, #1d4ed8)
- * - Teal: var(--ds-chart-teal-bold, #0d9488) (success/available/healthy)
- * - Warning: var(--ds-background-warning-bold, #d97706) (30-60 days contract)
- * - Danger: var(--ds-background-danger-bold, #ef4444) (critical/<30 days)
+ * - Primary Blue: var(--cp-workstream-catalyst-primary) (main), var(--ds-background-information-bold), var(--ds-link-pressed)
+ * - Teal: var(--ds-chart-teal-bold) (success/available/healthy)
+ * - Warning: var(--ds-background-warning-bold) (30-60 days contract)
+ * - Danger: var(--ds-background-danger-bold) (critical/<30 days)
  * - Neutral Gray scale
  */
 
 export const CATALYST_COLORS = {
   // Primary Blue Scale
   primary: {
-    50: 'var(--ds-surface, #eff6ff)',
-    100: 'var(--ds-background-neutral, #dbeafe)',
-    200: 'var(--ds-background-neutral, #bfdbfe)',
-    300: 'var(--ds-link, #93c5fd)',
-    400: 'var(--ds-link, #60a5fa)',
-    500: 'var(--ds-link, #3b82f6)',
-    600: 'var(--ds-link, #2563eb)', // MAIN
-    700: 'var(--ds-link, #1d4ed8)',
-    800: 'var(--ds-link, #1e40af)',
+    50: 'var(--ds-surface)',
+    100: 'var(--ds-background-neutral)',
+    200: 'var(--ds-background-neutral)',
+    300: 'var(--ds-link)',
+    400: 'var(--ds-link)',
+    500: 'var(--ds-link)',
+    600: 'var(--ds-link)', // MAIN
+    700: 'var(--ds-link)',
+    800: 'var(--ds-link)',
   },
 
   // Teal - Success/Available/Healthy Contract
   teal: {
-    50: 'var(--ds-surface, #f0fdfa)',
-    100: 'var(--ds-background-neutral, #ccfbf1)',
-    500: 'var(--ds-text-success, #14b8a6)',
-    600: 'var(--ds-text-success, #0d9488)', // MAIN
-    700: 'var(--ds-text-success, #0f766e)',
+    50: 'var(--ds-surface)',
+    100: 'var(--ds-background-neutral)',
+    500: 'var(--ds-text-success)',
+    600: 'var(--ds-text-success)', // MAIN
+    700: 'var(--ds-text-success)',
   },
 
   // Warning - Contract 30-60 days
   warning: {
-    50: 'var(--ds-surface, #fffbeb)',
-    100: 'var(--ds-background-neutral, #fef3c7)',
-    light: 'var(--ds-text-warning, #f59e0b)',
-    DEFAULT: 'var(--ds-text-warning, #d97706)', // MAIN
-    dark: 'var(--ds-text-warning, #b45309)',
+    50: 'var(--ds-surface)',
+    100: 'var(--ds-background-neutral)',
+    light: 'var(--ds-text-warning)',
+    DEFAULT: 'var(--ds-text-warning)', // MAIN
+    dark: 'var(--ds-text-warning)',
   },
 
   // Danger - Critical/Over-allocated/<30 days
   danger: {
-    50: 'var(--ds-surface, #fef2f2)',
-    100: 'var(--ds-background-neutral, #fee2e2)',
-    light: 'var(--ds-text-danger, #f87171)',
-    DEFAULT: 'var(--ds-text-danger, #ef4444)', // MAIN
-    dark: 'var(--ds-text-danger, #dc2626)',
+    50: 'var(--ds-surface)',
+    100: 'var(--ds-background-neutral)',
+    light: 'var(--ds-text-danger)',
+    DEFAULT: 'var(--ds-text-danger)', // MAIN
+    dark: 'var(--ds-text-danger)',
   },
 
   // Neutral Gray Scale
   gray: {
-    50: 'var(--ds-surface-sunken, #f9fafb)',
-    100: 'var(--ds-background-neutral, #f3f4f6)',
-    200: 'var(--ds-border, #e5e7eb)',
-    300: 'var(--ds-border, #d1d5db)',
-    400: 'var(--ds-text-subtlest, #9ca3af)', // Permanent contract
-    500: 'var(--ds-text-subtlest, #6b7280)',
-    600: 'var(--ds-text-subtle, #4b5563)',
-    700: 'var(--ds-text-subtle, #374151)',
-    800: 'var(--ds-text, #1f2937)',
-    900: 'var(--ds-text, #111827)',
+    50: 'var(--ds-surface-sunken)',
+    100: 'var(--ds-background-neutral)',
+    200: 'var(--ds-border)',
+    300: 'var(--ds-border)',
+    400: 'var(--ds-text-subtlest)', // Permanent contract
+    500: 'var(--ds-text-subtlest)',
+    600: 'var(--ds-text-subtle)',
+    700: 'var(--ds-text-subtle)',
+    800: 'var(--ds-text)',
+    900: 'var(--ds-text)',
   },
 
   // Slate for neutral projects
   slate: {
-    400: 'var(--ds-text-subtlest, #94a3b8)',
-    500: 'var(--ds-text-subtle, #64748b)',
-    600: 'var(--ds-text-subtle, #475569)',
+    400: 'var(--ds-text-subtlest)',
+    500: 'var(--ds-text-subtle)',
+    600: 'var(--ds-text-subtle)',
   },
 } as const;
 
 // Contract Ring Colors
 export const CONTRACT_RING_COLORS = {
-  healthy: CATALYST_COLORS.teal[600],     // var(--ds-chart-teal-bold, #0d9488) - 60+ days
-  warning: CATALYST_COLORS.warning.DEFAULT, // var(--ds-background-warning-bold, #d97706) - 30-60 days
-  critical: CATALYST_COLORS.danger.DEFAULT, // var(--ds-background-danger-bold, #ef4444) - <30 days
-  permanent: CATALYST_COLORS.gray[400],     // var(--ds-text-disabled, #8590A2) - No end date
-  expired: CATALYST_COLORS.gray[400],       // var(--ds-text-disabled, #8590A2) - Past date
+  healthy: CATALYST_COLORS.teal[600],     // var(--ds-chart-teal-bold) - 60+ days
+  warning: CATALYST_COLORS.warning.DEFAULT, // var(--ds-background-warning-bold) - 30-60 days
+  critical: CATALYST_COLORS.danger.DEFAULT, // var(--ds-background-danger-bold) - <30 days
+  permanent: CATALYST_COLORS.gray[400],     // var(--ds-text-disabled) - No end date
+  expired: CATALYST_COLORS.gray[400],       // var(--ds-text-disabled) - Past date
 } as const;
 
 // Allocation Bar Gradients (CSS)

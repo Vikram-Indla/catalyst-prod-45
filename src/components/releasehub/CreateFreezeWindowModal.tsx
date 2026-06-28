@@ -25,8 +25,8 @@ const ENVS: Opt[] = [
   { label: 'Production', value: 'production' },
 ];
 
-const labelStyle: React.CSSProperties = { display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4 };
-const errStyle: React.CSSProperties = { fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 };
+const labelStyle: React.CSSProperties = { display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 };
+const errStyle: React.CSSProperties = { fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', marginTop: 4 };
 
 export function CreateFreezeWindowModal({ onClose }: Props) {
   const create = useCreateFreezeWindow();
@@ -64,7 +64,7 @@ export function CreateFreezeWindowModal({ onClose }: Props) {
         <ModalHeader hasCloseButton><ModalTitle>New freeze window</ModalTitle></ModalHeader>
         <ModalBody>
           {formError && (
-            <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: 8, borderRadius: 4, marginBottom: 16 }}>{formError}</div>
+            <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger)', padding: 8, borderRadius: 4, marginBottom: 16 }}>{formError}</div>
           )}
 
           <div style={{ marginBottom: 16 }}>

@@ -46,11 +46,11 @@ export function ToolbarIconButton({
     border: 'none',
     borderRadius: 3,
     background: active
-      ? 'var(--ds-background-selected, #E9F2FE)'
+      ? 'var(--ds-background-selected)'
       : 'transparent',
     color: active
-      ? 'var(--ds-text-selected, #0C66E4)'
-      : 'var(--ds-text-subtle, #44546F)',
+      ? 'var(--ds-text-selected)'
+      : 'var(--ds-text-subtle)',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.4 : 1,
     transition: 'background 100ms ease, color 100ms ease',
@@ -100,7 +100,7 @@ export function ToolbarSeparator() {
         width: 1,
         height: 18,
         margin: '0 4px',
-        background: 'var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-border)',
       }}
     />
   );

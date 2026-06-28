@@ -117,7 +117,7 @@ export function UserStatusPicker({
                   marginBottom: '8px',
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
-                  color: 'var(--ds-text-subtle, #42526E)',
+                  color: 'var(--ds-text-subtle)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
                 }}
@@ -139,9 +139,9 @@ export function UserStatusPicker({
                     style={{
                       padding: '12px',
                       fontSize: 'var(--ds-font-size-800)',
-                      border: emoji === e ? '2px solid var(--ds-link, #0052CC)' : '1px solid var(--ds-border, #DFE1E6)',
+                      border: emoji === e ? '2px solid var(--ds-link)' : '1px solid var(--ds-border)',
                       borderRadius: '6px',
-                      background: emoji === e ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                      background: emoji === e ? 'var(--ds-background-selected)' : 'transparent',
                       cursor: 'pointer',
                       transition: 'all 150ms',
                     }}
@@ -160,7 +160,7 @@ export function UserStatusPicker({
                   marginBottom: '8px',
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
-                  color: 'var(--ds-text-subtle, #42526E)',
+                  color: 'var(--ds-text-subtle)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
                 }}
@@ -176,7 +176,7 @@ export function UserStatusPicker({
               <div
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
-                  color: 'var(--ds-text-subtlest, #6B778C)',
+                  color: 'var(--ds-text-subtlest)',
                   marginTop: '4px',
                 }}
               >
@@ -192,7 +192,7 @@ export function UserStatusPicker({
                   marginBottom: '8px',
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
-                  color: 'var(--ds-text-subtle, #42526E)',
+                  color: 'var(--ds-text-subtle)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
                 }}
@@ -213,9 +213,9 @@ export function UserStatusPicker({
                     style={{
                       padding: '8px 12px',
                       fontSize: 'var(--ds-font-size-300)',
-                      border: expireAfterMinutes === opt.minutes ? '2px solid var(--ds-link, #0052CC)' : '1px solid var(--ds-border, #DFE1E6)',
+                      border: expireAfterMinutes === opt.minutes ? '2px solid var(--ds-link)' : '1px solid var(--ds-border)',
                       borderRadius: '4px',
-                      background: expireAfterMinutes === opt.minutes ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
+                      background: expireAfterMinutes === opt.minutes ? 'var(--ds-background-selected)' : 'transparent',
                       cursor: 'pointer',
                       transition: 'all 150ms',
                     }}

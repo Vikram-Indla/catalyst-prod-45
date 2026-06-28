@@ -75,7 +75,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             gap: '8px',
             padding: '10px 20px',
             backgroundColor: COLORS.accent,
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             border: 'none',
             borderRadius: '12px',
             fontSize: 'var(--ds-font-size-400)',

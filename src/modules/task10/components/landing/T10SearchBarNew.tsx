@@ -54,8 +54,8 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
           gap: '12px',
           height: '48px',
           padding: '0 16px',
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: isFocused ? '2px solid var(--ds-link, #2563eb)' : '1px solid var(--ds-border, #DFE1E6)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+          border: isFocused ? '2px solid var(--ds-link)' : '1px solid var(--ds-border)',
           borderRadius: '12px',
           boxShadow: isFocused ? '0 4px 12px var(--ds-background-information, rgba(37, 99, 235, 0.1))' : 'none',
           transition: 'all 0.15s ease',
@@ -65,7 +65,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
           size={18} 
           style={{ 
             flexShrink: 0, 
-            color: 'var(--ds-text-subtlest, #94a3b8)',
+            color: 'var(--ds-text-subtlest)',
           }} 
         />
         <input
@@ -83,7 +83,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
             margin: 0,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 'var(--ds-font-size-400)',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             backgroundColor: 'transparent',
             border: 'none',
             borderRadius: 0,
@@ -103,9 +103,9 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
               padding: '0 8px',
               fontSize: 'var(--ds-font-size-200)',
               fontFamily: 'monospace',
-              color: 'var(--ds-text-subtlest, #94a3b8)',
-              backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              color: 'var(--ds-text-subtlest)',
+              backgroundColor: 'var(--ds-surface-sunken)',
+              border: '1px solid var(--ds-border)',
               borderRadius: '6px',
             }}
           >

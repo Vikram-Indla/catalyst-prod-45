@@ -49,21 +49,21 @@ function SidebarMemberRow({
 }) {
   const [hover, setHover] = React.useState(false);
 
-  let pillBg = token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)');
-  let pillColor = token('color.text.subtle', 'var(--ds-icon, #44546F)');
+  let pillBg = token('color.background.neutral', 'var(--ds-background-neutral)');
+  let pillColor = token('color.text.subtle', 'var(--ds-icon)');
   let pillText = 'Away';
 
   if (presenceState === 'available' || presenceState === 'active' || presenceState === 'on_site') {
-    pillBg = token('color.background.success.subtle', 'var(--ds-background-success, #DFFCF0)');
-    pillColor = token('color.text.success', 'var(--ds-text-success, #216E4E)');
+    pillBg = token('color.background.success.subtle', 'var(--ds-background-success)');
+    pillColor = token('color.text.success', 'var(--ds-text-success)');
     pillText = 'On site';
   } else if (presenceState === 'remote') {
-    pillBg = token('color.background.information.subtle', 'var(--ds-background-selected, #E9F2FF)');
-    pillColor = token('color.text.information', 'var(--ds-link, #0C66E4)');
+    pillBg = token('color.background.information.subtle', 'var(--ds-background-selected)');
+    pillColor = token('color.text.information', 'var(--ds-link)');
     pillText = 'Remote';
   } else {
-    pillBg = token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)');
-    pillColor = token('color.text.subtle', 'var(--ds-icon, #44546F)');
+    pillBg = token('color.background.neutral', 'var(--ds-background-neutral)');
+    pillColor = token('color.text.subtle', 'var(--ds-icon)');
     pillText = 'Away';
     if (backOn) {
       pillText = `Away · Back ${new Date(backOn).toLocaleDateString('en', { month: 'short', day: 'numeric' })}`;
@@ -87,11 +87,11 @@ function SidebarMemberRow({
         borderRadius: 8,
         border: 'none',
 
-        borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         background: active
-          ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
+          ? token('color.background.selected', 'var(--ds-background-selected)')
           : hover
-            ? token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)')
+            ? token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle)')
             : 'transparent',
         cursor: 'pointer',
         transition: 'all 120ms ease',
@@ -103,14 +103,14 @@ function SidebarMemberRow({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 600 : 400,
-          color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+          color: active ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {name}
         </div>
         {sublabel && (
           <div style={{
-            fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {sublabel}
@@ -140,7 +140,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-      color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+      color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
     }}>
       {children}
     </div>
@@ -174,21 +174,21 @@ function SidebarRoster({
       data-testid="r360-roster-sidebar"
       style={{
         width: 220, flexShrink: 0,
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 8,
         display: 'flex', flexDirection: 'column',
         position: 'sticky',
         top: 0,
         maxHeight: 'calc(100vh - 200px)',
         alignSelf: 'flex-start',
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
         overflow: 'hidden',
       }}
     >
       <div style={{
         flexShrink: 0,
         padding: '12px 12px 8px',
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
       }}>
         <SectionLabel>Team members</SectionLabel>
         <input
@@ -203,10 +203,10 @@ function SidebarRoster({
             marginTop: 8,
             padding: '4px 8px',
             fontSize: 'var(--ds-font-size-200)',
-            border: `2px solid ${focused ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border.input', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))')}`,
+            border: `2px solid ${focused ? token('color.border.focused', 'var(--ds-border-focused)') : token('color.border.input', 'var(--ds-text-disabled, var(--ds-border-bold))')}`,
             borderRadius: 3,
-            background: token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            background: token('color.background.input', 'var(--ds-surface-sunken)'),
+            color: token('color.text', 'var(--ds-text)'),
             outline: 'none',
             boxSizing: 'border-box' as const,
             transition: 'border-color 120ms ease',
@@ -235,7 +235,7 @@ function SidebarRoster({
           <div style={{
             padding: '12px',
             fontSize: 'var(--ds-font-size-200)',
-            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             textAlign: 'center' as const,
           }}>
             No match
@@ -246,7 +246,7 @@ function SidebarRoster({
           <div style={{
             padding: '12px',
             fontSize: 'var(--ds-font-size-200)',
-            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             textAlign: 'center' as const,
           }}>
             No team members yet
@@ -258,8 +258,8 @@ function SidebarRoster({
       <div style={{
         flexShrink: 0,
         padding: '8px 12px',
-        borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
+        borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -267,7 +267,7 @@ function SidebarRoster({
         <span style={{
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
-          color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+          color: token('color.text.subtle', 'var(--ds-icon)'),
           fontVariantNumeric: 'tabular-nums',
         }}>
           {selectedIndex > 0 ? selectedIndex : '–'} of {team.length}
@@ -297,19 +297,19 @@ function MemberPill({
         display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
         padding: '4px 16px', borderRadius: 20,
         border: active
-          ? `2px solid ${token('color.border.brand', 'var(--ds-link, #0052CC)')}`
-          : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          ? `2px solid ${token('color.border.brand', 'var(--ds-link)')}`
+          : `1px solid ${token('color.border', 'var(--ds-border)')}`,
         background: active
-          ? token('color.background.selected', 'var(--ds-background-information, #E9F2FF)')
-          : hover ? token('color.background.neutral.hovered', 'var(--ds-border, #DFE1E6)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          ? token('color.background.selected', 'var(--ds-background-information)')
+          : hover ? token('color.background.neutral.hovered', 'var(--ds-border)') : token('elevation.surface', 'var(--ds-surface)'),
         cursor: 'pointer', transition: 'all 120ms ease', gap: 0,
       }}
     >
-      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'), whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'), whiteSpace: 'nowrap' }}>
         {label}
       </span>
       {sublabel && (
-        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtlest)'), whiteSpace: 'nowrap' }}>
           {sublabel}
         </span>
       )}
@@ -322,8 +322,8 @@ function MemberPill({
 function R360Skeleton() {
   return (
     <div style={{ padding: '24px 0' }}>
-      <div style={{ height: 120, borderRadius: 8, marginBottom: 16, background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'), animation: 'pulse 1.5s ease-in-out infinite' }} />
-      <div style={{ height: 400, borderRadius: 8, background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'), animation: 'pulse 1.5s ease-in-out infinite' }} />
+      <div style={{ height: 120, borderRadius: 8, marginBottom: 16, background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'), animation: 'pulse 1.5s ease-in-out infinite' }} />
+      <div style={{ height: 400, borderRadius: 8, background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'), animation: 'pulse 1.5s ease-in-out infinite' }} />
     </div>
   );
 }
@@ -344,7 +344,7 @@ export function R360PanelView({ resourceId, isLoading }: R360PanelViewProps) {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
-        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 'var(--ds-font-size-400)',
+        color: token('color.text.subtle', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-400)',
       }}>
         No resource profile found for your account.
       </div>
@@ -416,7 +416,7 @@ export default function R360Panel() {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
-        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 'var(--ds-font-size-400)',
+        color: token('color.text.subtle', 'var(--ds-text-subtlest)'), fontSize: 'var(--ds-font-size-400)',
       }}>
         No resource profile found for your account.{' '}
         <span style={{ fontSize: 'var(--ds-font-size-200)', display: 'block', marginTop: 8 }}>
@@ -452,7 +452,7 @@ export default function R360Panel() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '12px 0 16px', flexWrap: 'wrap',
-            borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             marginBottom: 8,
           }}
         >
@@ -468,8 +468,8 @@ export default function R360Panel() {
         </div>
       ) : null}
 
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)') }}>
-        <CatyWorkloadRisk teamMembers={(teamResources.length > 0 ? teamResources : myResourceId ? [{ id: myResourceId, profile_id: '', name: 'You', role_name: null, avatar_url: null }] : []).map(r => ({ userId: r.id, name: r.name, allocationPct: 80, allocationColor: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', isYou: r.id === myResourceId, projectBreakdown: [] }))} />
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface)') }}>
+        <CatyWorkloadRisk teamMembers={(teamResources.length > 0 ? teamResources : myResourceId ? [{ id: myResourceId, profile_id: '', name: 'You', role_name: null, avatar_url: null }] : []).map(r => ({ userId: r.id, name: r.name, allocationPct: 80, allocationColor: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', isYou: r.id === myResourceId, projectBreakdown: [] }))} />
         <R360MemberDetail
           resourceId={activeResourceId}
           embedded

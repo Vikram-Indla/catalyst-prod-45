@@ -422,7 +422,7 @@ export function ImproveIssueDropdown({
     background: 'transparent',
     border: 'none',
     fontSize: 'var(--ds-font-size-400)',
-    color: token('color.text', 'var(--ds-text, #172B4D)'),
+    color: token('color.text', 'var(--ds-text)'),
     cursor: 'pointer',
     fontFamily: 'inherit',
     textAlign: 'left',
@@ -459,7 +459,7 @@ export function ImproveIssueDropdown({
             height: 32, padding: '0 12px', borderRadius: 6,
             border: 'none', outline: 'none', appearance: 'none',
             background: 'transparent',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             cursor: 'pointer',
             fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
             fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
@@ -467,7 +467,7 @@ export function ImproveIssueDropdown({
             lineHeight: 1,
             transition: 'background 0.15s',
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9))'; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
           {catyIsImproving ? (
@@ -488,8 +488,8 @@ export function ImproveIssueDropdown({
               top: menuPos.top,
               left: menuPos.left,
               width: 260,
-              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+              background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
               zIndex: 2000,
@@ -501,7 +501,7 @@ export function ImproveIssueDropdown({
                 padding: '4px 14px 6px',
                 fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
-                color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
+                color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -515,10 +515,10 @@ export function ImproveIssueDropdown({
               data-testid="catalyst-improve-issue-dropdown.improve-description"
               onClick={handleStartImproveDescription}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
-              <WandIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
+              <WandIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest)')} />
               <span style={{ flex: 1 }}>Improve description</span>
             </button>
 
@@ -528,10 +528,10 @@ export function ImproveIssueDropdown({
               data-testid="catalyst-improve-issue-dropdown.summarize-comments"
               onClick={handleStartSummarize}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
-              <CommentIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
+              <CommentIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest)')} />
               <span style={{ flex: 1 }}>Summarize comments</span>
             </button>
 
@@ -542,10 +542,10 @@ export function ImproveIssueDropdown({
                 data-testid="catalyst-improve-issue-dropdown.suggest-child-issues"
                 onClick={() => openMode('children')}
                 style={itemStyle}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                <ListBulletedIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
+                <ListBulletedIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest)')} />
                 <span style={{ flex: 1 }}>Suggest child work items</span>
               </button>
             )}
@@ -562,10 +562,10 @@ export function ImproveIssueDropdown({
                   opacity: (subtaskGen.isDisabled || isSubtaskGenerating || isSubtaskCreating) ? 0.5 : 1,
                   cursor: (subtaskGen.isDisabled || isSubtaskGenerating || isSubtaskCreating) ? 'not-allowed' : 'pointer',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                <ChildIssuesIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
+                <ChildIssuesIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest)')} />
                 <span style={{ flex: 1 }}>Generate subtasks</span>
               </button>
             )}
@@ -577,10 +577,10 @@ export function ImproveIssueDropdown({
                 data-testid="catalyst-improve-issue-dropdown.plan-work-items"
                 onClick={handlePlanWorkItems}
                 style={itemStyle}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                <PageIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
+                <PageIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest)')} />
                 <span style={{ flex: 1 }}>Plan work items</span>
               </button>
             )}
@@ -600,10 +600,10 @@ export function ImproveIssueDropdown({
                 }
               }}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
-              <SearchIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
+              <SearchIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest)')} />
               <span style={{ flex: 1 }}>Link similar work items</span>
             </button>
 
@@ -619,13 +619,13 @@ export function ImproveIssueDropdown({
                   opacity: (storyGen.isDisabled || storyGen.maxGenerationsReached) ? 0.5 : 1,
                   cursor: (storyGen.isDisabled || storyGen.maxGenerationsReached) ? 'not-allowed' : 'pointer',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle))'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                <PageIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
+                <PageIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest)')} />
                 <span style={{ flex: 1 }}>Generate stories from docs</span>
                 {storyGen.generationCount > 0 && (
-                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                     {storyGen.generationCount}/2
                   </span>
                 )}
@@ -646,15 +646,15 @@ export function ImproveIssueDropdown({
             top: emptyHintPos.top,
             left: emptyHintPos.left,
             zIndex: 2001,
-            background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-            border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+            background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+            border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 8,
             boxShadow: '0 4px 16px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14))',
             padding: '12px 16px',
             maxWidth: 260,
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
             fontFamily: 'inherit',
             lineHeight: '20px',
             pointerEvents: 'none',
@@ -724,7 +724,7 @@ export function ImproveIssueDropdown({
               aria-label={isSubtaskGenerating ? 'Generating subtasks…' : 'Creating subtasks…'}
             >
               <Spinner size="large" />
-              <div style={{ marginTop: 16, fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+              <div style={{ marginTop: 16, fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: token('color.text', 'var(--ds-text)') }}>
                 {isSubtaskGenerating ? 'Generating subtasks…' : 'Creating subtasks…'}
               </div>
             </div>

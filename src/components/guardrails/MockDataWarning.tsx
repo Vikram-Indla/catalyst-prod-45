@@ -60,7 +60,7 @@ export function warnMockDataBan(module: string) {
     `Module "${module}" attempted to use mock/seed data.\n` +
     `This is BANNED. All data must come from the database.\n` +
     `See CATALYST_DATA_POLICY.md for details.`,
-    'background: var(--ds-text-danger, var(--cp-danger, #DC2626)); color: white; font-weight: bold; padding: 4px 8px; border-radius: 4px;',
-    'color: var(--ds-text-danger, var(--cp-danger, #DC2626)); font-weight: normal;'
+    'background: var(--ds-text-danger, var(--cp-danger)); color: white; font-weight: bold; padding: 4px 8px; border-radius: 4px;',
+    'color: var(--ds-text-danger, var(--cp-danger)); font-weight: normal;'
   );
 }

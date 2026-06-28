@@ -79,22 +79,22 @@ interface RequestDetailPanelProps {
 
 // Status color mapping based on process step value - QA spec colors
 const STATUS_COLORS: Record<string, string> = {
-  new_request: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',      // Blue
-  new_demand: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',       // Blue
-  draft: 'bg-[var(--ds-text-subtlest, #626F86)]',            // Gray
-  in_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
-  ea_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
-  analyse: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',          // Blue
-  approved: 'bg-[var(--ds-icon-information, #1D7AFC)]',         // Teal
-  ready_to_implement: 'bg-[var(--ds-icon-information, #1D7AFC)]', // Teal
-  implement: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
-  closed: 'bg-[var(--ds-icon-information, #1D7AFC)]',           // Teal
-  completed: 'bg-[var(--ds-icon-information, #1D7AFC)]',        // Teal
-  rejected: 'bg-[var(--ds-text-danger,#ef4444)]',         // Red
-  on_hold: 'bg-[var(--ds-text-warning,#d97706)]',          // Orange
+  new_request: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',      // Blue
+  new_demand: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',       // Blue
+  draft: 'bg-[var(--ds-text-subtlest)]',            // Gray
+  in_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',        // Blue
+  ea_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',        // Blue
+  analyse: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',          // Blue
+  approved: 'bg-[var(--ds-icon-information)]',         // Teal
+  ready_to_implement: 'bg-[var(--ds-icon-information)]', // Teal
+  implement: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]',        // Blue
+  closed: 'bg-[var(--ds-icon-information)]',           // Teal
+  completed: 'bg-[var(--ds-icon-information)]',        // Teal
+  rejected: 'bg-[var(--ds-text-danger)]',         // Red
+  on_hold: 'bg-[var(--ds-text-warning)]',          // Orange
 };
 
-const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))]';
+const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[var(--ds-text-subtlest, var(--ds-text-subtlest))]';
 
 // Quarter options (canonical storage format: "Q1-2026"; display: "Q1 2026")
 const QUARTER_OPTIONS = [
@@ -391,10 +391,10 @@ export function RequestDetailPanel({
   const priorityLabel = request.autoPriority?.charAt(0).toUpperCase() + request.autoPriority?.slice(1) || 'Unscored';
   // Priority dot colors per QA spec
   const priorityColor = request.autoPriority?.toLowerCase() === 'high' || request.autoPriority?.toLowerCase() === 'critical' 
-    ? 'bg-[var(--ds-text-danger,#ef4444)]'  // Red for high/critical
+    ? 'bg-[var(--ds-text-danger)]'  // Red for high/critical
     : request.autoPriority?.toLowerCase() === 'medium' 
-      ? 'bg-[var(--ds-text-warning,#d97706)]'  // Orange for medium
-      : 'bg-[var(--ds-text-subtlest, #626F86)]'; // Gray for low/unscored
+      ? 'bg-[var(--ds-text-warning)]'  // Orange for medium
+      : 'bg-[var(--ds-text-subtlest)]'; // Gray for low/unscored
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '—';

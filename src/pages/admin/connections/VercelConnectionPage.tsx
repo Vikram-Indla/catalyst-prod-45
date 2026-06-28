@@ -150,24 +150,24 @@ function vercelSt(dep?: VercelDeployment | null): StageSt {
 }
 
 const ST_BORDER: Record<StageSt, string> = {
-  idle: 'var(--ds-border, #DFE1E6)',
-  running: 'var(--ds-border-brand, #0052CC)',
-  success: 'var(--ds-border-success, #1F845A)',
-  failed: 'var(--ds-border-danger, #AE2A19)',
+  idle: 'var(--ds-border)',
+  running: 'var(--ds-border-brand)',
+  success: 'var(--ds-border-success)',
+  failed: 'var(--ds-border-danger)',
 };
 
 const ST_BG: Record<StageSt, string> = {
-  idle: 'var(--ds-surface-sunken, #F7F8F9)',
-  running: 'var(--ds-background-information-subtle, #E9F2FF)',
-  success: 'var(--ds-background-success-subtle, #DCFFF1)',
-  failed: 'var(--ds-background-danger-subtle, #FFECEB)',
+  idle: 'var(--ds-surface-sunken)',
+  running: 'var(--ds-background-information-subtle)',
+  success: 'var(--ds-background-success-subtle)',
+  failed: 'var(--ds-background-danger-subtle)',
 };
 
 const ST_TEXT: Record<StageSt, string> = {
-  idle: 'var(--ds-text-subtlest, #6B778C)',
-  running: 'var(--ds-text-information, #0055CC)',
-  success: 'var(--ds-text-success, #1F845A)',
-  failed: 'var(--ds-text-danger, #AE2A19)',
+  idle: 'var(--ds-text-subtlest)',
+  running: 'var(--ds-text-information)',
+  success: 'var(--ds-text-success)',
+  failed: 'var(--ds-text-danger)',
 };
 
 const ST_LABEL: Record<StageSt, string> = {
@@ -358,7 +358,7 @@ function StageCard({
         border: `2px solid ${ST_BORDER[status]}`,
         borderRadius: 6,
         overflow: 'hidden',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
         display: 'flex',
         flexDirection: 'column',
         transition: 'border-color 0.2s',
@@ -386,7 +386,7 @@ function StageCard({
               height: 22,
               borderRadius: '50%',
               background: ST_TEXT[status],
-              color: 'var(--ds-surface, #FFFFFF)',
+              color: 'var(--ds-surface)',
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               flexShrink: 0,
@@ -396,10 +396,10 @@ function StageCard({
             {index}
           </span>
           <div>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #292A2E)', lineHeight: '16px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', lineHeight: '16px' }}>
               {title}
             </div>
-            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 1 }}>{subtitle}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 1 }}>{subtitle}</div>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
@@ -428,7 +428,7 @@ function StageCard({
               style={{
                 fontSize: 'var(--ds-font-size-50)',
                 fontWeight: 653,
-                color: 'var(--ds-text-subtlest, #6B778C)',
+                color: 'var(--ds-text-subtlest)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 marginBottom: 3,
@@ -439,7 +439,7 @@ function StageCard({
             <div
               style={{
                 fontSize: 'var(--ds-font-size-200)',
-                color: 'var(--ds-text, #292A2E)',
+                color: 'var(--ds-text)',
                 fontFamily: r.mono ? 'var(--ds-font-family-code)' : 'inherit',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -447,7 +447,7 @@ function StageCard({
               }}
             >
               {r.value ?? (
-                <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ color: 'var(--ds-text-subtlest)' }}>
                   {cardLoading ? 'Loading…' : '—'}
                 </span>
               )}
@@ -473,7 +473,7 @@ function StageCard({
 // ─── Pipeline connector ───────────────────────────────────────────────────────
 
 function PipelineConnector({ active, label }: { active?: boolean; label?: string }) {
-  const color = active ? 'var(--ds-border-brand, #0052CC)' : 'var(--ds-border, #DFE1E6)';
+  const color = active ? 'var(--ds-border-brand)' : 'var(--ds-border)';
   return (
     <div
       style={{
@@ -489,7 +489,7 @@ function PipelineConnector({ active, label }: { active?: boolean; label?: string
         <div
           style={{
             fontSize: 'var(--ds-font-size-50)',
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest)',
             whiteSpace: 'nowrap',
             textAlign: 'center',
             marginBottom: 2,
@@ -537,12 +537,12 @@ function VercelStateBadge({ state }: { state: string }) {
 function StepIcon({ status, conclusion }: { status: string; conclusion: string | null }) {
   if (status === 'in_progress') return <Spinner size="small" />;
   if (status === 'completed' && conclusion === 'success')
-    return <span style={{ color: 'var(--ds-text-success, #1F845A)', fontWeight: 700 }}>✓</span>;
+    return <span style={{ color: 'var(--ds-text-success)', fontWeight: 700 }}>✓</span>;
   if (status === 'completed' && conclusion === 'failure')
-    return <span style={{ color: 'var(--ds-text-danger, #AE2A19)', fontWeight: 700 }}>✗</span>;
+    return <span style={{ color: 'var(--ds-text-danger)', fontWeight: 700 }}>✗</span>;
   if (status === 'completed')
-    return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>;
-  return <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>○</span>;
+    return <span style={{ color: 'var(--ds-text-subtlest)' }}>—</span>;
+  return <span style={{ color: 'var(--ds-text-subtlest)' }}>○</span>;
 }
 
 function LiveProgress({
@@ -591,8 +591,8 @@ function LiveProgress({
   return (
     <div
       style={{
-        background: 'var(--ds-surface, #FFFFFF)',
-        border: '2px solid var(--ds-border-brand, #0052CC)',
+        background: 'var(--ds-surface)',
+        border: '2px solid var(--ds-border-brand)',
         borderRadius: 4,
         padding: '16px 20px',
         marginBottom: 20,
@@ -601,10 +601,10 @@ function LiveProgress({
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
         <Spinner size="medium" />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>
             Deploying to production
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #505258)', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 2 }}>
             <code
               style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)' }}
             >
@@ -620,7 +620,7 @@ function LiveProgress({
           rel="noopener noreferrer"
           style={{
             fontSize: 'var(--ds-font-size-200)',
-            color: 'var(--ds-link, #0052CC)',
+            color: 'var(--ds-link)',
             textDecoration: 'none',
             flexShrink: 0,
           }}
@@ -632,7 +632,7 @@ function LiveProgress({
         <ProgressBar value={progress} isIndeterminate={visibleSteps.length === 0} />
       </div>
       {fetchError && (
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
           Step data unavailable — check GitHub Actions directly
         </div>
       )}
@@ -657,8 +657,8 @@ function LiveProgress({
                   fontSize: 'var(--ds-font-size-300)',
                   color:
                     step.status === 'in_progress'
-                      ? 'var(--ds-text, #292A2E)'
-                      : 'var(--ds-text-subtle, #505258)',
+                      ? 'var(--ds-text)'
+                      : 'var(--ds-text-subtle)',
                   fontWeight: step.status === 'in_progress' ? 500 : 400,
                   flex: 1,
                 }}
@@ -666,7 +666,7 @@ function LiveProgress({
                 {step.name}
               </span>
               {step.status === 'completed' && step.started_at && step.completed_at && (
-                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                   {fmtDuration(
                     new Date(step.completed_at).getTime() -
                       new Date(step.started_at).getTime(),
@@ -674,7 +674,7 @@ function LiveProgress({
                 </span>
               )}
               {step.status === 'in_progress' && step.started_at && (
-                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                   {fmtDuration(Date.now() - new Date(step.started_at).getTime())}…
                 </span>
               )}
@@ -778,9 +778,9 @@ function SmartPromotePanel({
 
   const selectStyle: React.CSSProperties = {
     fontSize: 'var(--ds-font-size-400)',
-    color: 'var(--ds-text, #292A2E)',
-    background: 'var(--ds-surface, #FFFFFF)',
-    border: '1px solid var(--ds-border, #DCDFE4)',
+    color: 'var(--ds-text)',
+    background: 'var(--ds-surface)',
+    border: '1px solid var(--ds-border)',
     borderRadius: 3,
     padding: '5px 10px',
     fontFamily: FONT,
@@ -793,7 +793,7 @@ function SmartPromotePanel({
     border: 'none',
     padding: 0,
     fontSize: 'var(--ds-font-size-300)',
-    color: 'var(--ds-link, #0052CC)',
+    color: 'var(--ds-link)',
     cursor: 'pointer',
     fontFamily: FONT,
     textDecoration: 'none',
@@ -802,32 +802,32 @@ function SmartPromotePanel({
   return (
     <div
       style={{
-        border: '1px solid var(--ds-border, #DCDFE4)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 6,
         overflow: 'hidden',
         marginBottom: 20,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--ds-surface)',
       }}
     >
       <div
         style={{
           padding: '14px 20px',
-          background: 'var(--ds-surface-sunken, #F7F8F9)',
-          borderBottom: '1px solid var(--ds-border, #DCDFE4)',
+          background: 'var(--ds-surface-sunken)',
+          borderBottom: '1px solid var(--ds-border)',
         }}
       >
         <div
           style={{
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 600,
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
             marginBottom: 10,
           }}
         >
           Promote branch to production
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #505258)', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', whiteSpace: 'nowrap' }}>
             Source:
           </span>
           <select
@@ -846,17 +846,17 @@ function SmartPromotePanel({
               : <option value="main">main</option>}
           </select>
           {loadingBranches && <Spinner size="small" />}
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>→</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>→</span>
           <code
             style={{
               fontSize: 'var(--ds-font-size-200)',
-              color: 'var(--ds-text-subtle, #505258)',
+              color: 'var(--ds-text-subtle)',
               fontFamily: 'var(--ds-font-family-code)',
             }}
           >
             production
           </code>
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
             → GitHub CI → ksa-catalyst.com
           </span>
         </div>
@@ -866,9 +866,9 @@ function SmartPromotePanel({
         <div
           style={{
             padding: '10px 20px',
-            background: 'var(--ds-background-warning-subtle, #FFF7D6)',
+            background: 'var(--ds-background-warning-subtle)',
             fontSize: 'var(--ds-font-size-300)',
-            color: 'var(--ds-text-warning, #974F0C)',
+            color: 'var(--ds-text-warning)',
           }}
         >
           ⚠ Deploy gate is OFF — enable it below before promoting
@@ -881,11 +881,11 @@ function SmartPromotePanel({
             padding: '12px 20px',
             fontSize: 'var(--ds-font-size-300)',
             color: result.ok
-              ? 'var(--ds-text-success, #1F845A)'
-              : 'var(--ds-text-danger, #AE2A19)',
+              ? 'var(--ds-text-success)'
+              : 'var(--ds-text-danger)',
             background: result.ok
-              ? 'var(--ds-background-success-subtle, #DCFFF1)'
-              : 'var(--ds-background-danger-subtle, #FFECEB)',
+              ? 'var(--ds-background-success-subtle)'
+              : 'var(--ds-background-danger-subtle)',
           }}
         >
           {result.ok ? '✓' : '✗'} {result.message}
@@ -895,14 +895,14 @@ function SmartPromotePanel({
       {loadingSummary && (
         <div style={{ padding: '20px', display: 'flex', gap: 10, alignItems: 'center' }}>
           <Spinner size="small" />
-          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #505258)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
             Analysing branch…
           </span>
         </div>
       )}
 
       {summaryError && !loadingSummary && (
-        <div style={{ padding: '12px 20px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, #AE2A19)' }}>
+        <div style={{ padding: '12px 20px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger)' }}>
           Could not load summary: {summaryError}
         </div>
       )}
@@ -910,7 +910,7 @@ function SmartPromotePanel({
       {summary && !loadingSummary && (
         <div style={{ padding: '16px 20px' }}>
           {summary.ahead_by === 0 ? (
-            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
               ✓ Production is up to date — no new commits to promote from{' '}
               <code style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)' }}>
                 {selectedBranch}
@@ -921,8 +921,8 @@ function SmartPromotePanel({
               {summary.ai_summary && (
                 <div
                   style={{
-                    background: 'var(--ds-background-information-subtle, #E9F2FF)',
-                    border: '1px solid var(--ds-border-information, #579DFF)',
+                    background: 'var(--ds-background-information-subtle)',
+                    border: '1px solid var(--ds-border-information)',
                     borderRadius: 4,
                     padding: '12px 14px',
                     marginBottom: 16,
@@ -932,7 +932,7 @@ function SmartPromotePanel({
                     style={{
                       fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
-                      color: 'var(--ds-text-information, #0055CC)',
+                      color: 'var(--ds-text-information)',
                       marginBottom: 6,
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
@@ -943,7 +943,7 @@ function SmartPromotePanel({
                   <div
                     style={{
                       fontSize: 'var(--ds-font-size-400)',
-                      color: 'var(--ds-text, #292A2E)',
+                      color: 'var(--ds-text)',
                       lineHeight: '20px',
                     }}
                   >
@@ -955,8 +955,8 @@ function SmartPromotePanel({
               {summary.has_migrations && (
                 <div
                   style={{
-                    background: 'var(--ds-background-danger-subtle, #FFECEB)',
-                    border: '1px solid var(--ds-border-danger, #F87168)',
+                    background: 'var(--ds-background-danger-subtle)',
+                    border: '1px solid var(--ds-border-danger)',
                     borderRadius: 4,
                     padding: '12px 14px',
                     marginBottom: 16,
@@ -966,7 +966,7 @@ function SmartPromotePanel({
                     style={{
                       fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 600,
-                      color: 'var(--ds-text-danger, #AE2A19)',
+                      color: 'var(--ds-text-danger)',
                       marginBottom: 6,
                     }}
                   >
@@ -978,7 +978,7 @@ function SmartPromotePanel({
                         key={f}
                         style={{
                           fontSize: 'var(--ds-font-size-200)',
-                          color: 'var(--ds-text-subtle, #505258)',
+                          color: 'var(--ds-text-subtle)',
                           fontFamily: 'var(--ds-font-family-code)',
                           marginBottom: 2,
                         }}
@@ -1000,7 +1000,7 @@ function SmartPromotePanel({
                 }}
               >
                 <span
-                  style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}
+                  style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}
                 >
                   {summary.ahead_by} commit{summary.ahead_by !== 1 ? 's' : ''} ahead of
                   production
@@ -1010,8 +1010,8 @@ function SmartPromotePanel({
                     key={g.label}
                     style={{
                       fontSize: 'var(--ds-font-size-200)',
-                      color: 'var(--ds-text-subtle, #505258)',
-                      background: 'var(--ds-background-neutral, #F1F2F4)',
+                      color: 'var(--ds-text-subtle)',
+                      background: 'var(--ds-background-neutral)',
                       borderRadius: 3,
                       padding: '2px 8px',
                     }}
@@ -1045,7 +1045,7 @@ function SmartPromotePanel({
                       <code
                         style={{
                           fontSize: 'var(--ds-font-size-100)',
-                          color: 'var(--ds-link, #0052CC)',
+                          color: 'var(--ds-link)',
                           fontFamily: 'var(--ds-font-family-code)',
                           flexShrink: 0,
                           marginTop: 1,
@@ -1058,7 +1058,7 @@ function SmartPromotePanel({
                         <div
                           style={{
                             fontSize: 'var(--ds-font-size-300)',
-                            color: 'var(--ds-text, #292A2E)',
+                            color: 'var(--ds-text)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -1069,7 +1069,7 @@ function SmartPromotePanel({
                         <div
                           style={{
                             fontSize: 'var(--ds-font-size-100)',
-                            color: 'var(--ds-text-subtlest, #6B778C)',
+                            color: 'var(--ds-text-subtlest)',
                             marginTop: 1,
                           }}
                         >
@@ -1097,8 +1097,8 @@ function SmartPromotePanel({
                 <div
                   style={{
                     marginTop: 16,
-                    background: 'var(--ds-surface-sunken, #F7F8F9)',
-                    border: '1px solid var(--ds-border, #DCDFE4)',
+                    background: 'var(--ds-surface-sunken)',
+                    border: '1px solid var(--ds-border)',
                     borderRadius: 4,
                     padding: '16px 18px',
                   }}
@@ -1107,7 +1107,7 @@ function SmartPromotePanel({
                     style={{
                       fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 600,
-                      color: 'var(--ds-text, #292A2E)',
+                      color: 'var(--ds-text)',
                       marginBottom: 12,
                     }}
                   >
@@ -1126,7 +1126,7 @@ function SmartPromotePanel({
                     <li
                       style={{
                         fontSize: 'var(--ds-font-size-300)',
-                        color: 'var(--ds-text, #292A2E)',
+                        color: 'var(--ds-text)',
                         display: 'flex',
                         alignItems: 'flex-start',
                         gap: 8,
@@ -1134,7 +1134,7 @@ function SmartPromotePanel({
                     >
                       <span
                         style={{
-                          color: 'var(--ds-text-success, #1F845A)',
+                          color: 'var(--ds-text-success)',
                           fontWeight: 700,
                           flexShrink: 0,
                         }}
@@ -1167,7 +1167,7 @@ function SmartPromotePanel({
                       <li
                         style={{
                           fontSize: 'var(--ds-font-size-300)',
-                          color: 'var(--ds-text, #292A2E)',
+                          color: 'var(--ds-text)',
                           display: 'flex',
                           alignItems: 'flex-start',
                           gap: 8,
@@ -1175,7 +1175,7 @@ function SmartPromotePanel({
                       >
                         <span
                           style={{
-                            color: 'var(--ds-text-success, #1F845A)',
+                            color: 'var(--ds-text-success)',
                             fontWeight: 700,
                             flexShrink: 0,
                           }}
@@ -1191,7 +1191,7 @@ function SmartPromotePanel({
                     <li
                       style={{
                         fontSize: 'var(--ds-font-size-300)',
-                        color: 'var(--ds-text, #292A2E)',
+                        color: 'var(--ds-text)',
                         display: 'flex',
                         alignItems: 'flex-start',
                         gap: 8,
@@ -1199,7 +1199,7 @@ function SmartPromotePanel({
                     >
                       <span
                         style={{
-                          color: 'var(--ds-text-success, #1F845A)',
+                          color: 'var(--ds-text-success)',
                           fontWeight: 700,
                           flexShrink: 0,
                         }}
@@ -1212,7 +1212,7 @@ function SmartPromotePanel({
                       <li
                         style={{
                           fontSize: 'var(--ds-font-size-300)',
-                          color: 'var(--ds-text-danger, #AE2A19)',
+                          color: 'var(--ds-text-danger)',
                           display: 'flex',
                           alignItems: 'flex-start',
                           gap: 8,
@@ -1229,7 +1229,7 @@ function SmartPromotePanel({
                       <div
                         style={{
                           fontSize: 'var(--ds-font-size-300)',
-                          color: 'var(--ds-text, #292A2E)',
+                          color: 'var(--ds-text)',
                           marginBottom: 6,
                         }}
                       >
@@ -1245,9 +1245,9 @@ function SmartPromotePanel({
                         style={{
                           fontSize: 'var(--ds-font-size-400)',
                           fontFamily: FONT,
-                          color: 'var(--ds-text, #292A2E)',
-                          background: 'var(--ds-surface, #FFFFFF)',
-                          border: '1px solid var(--ds-border, #DCDFE4)',
+                          color: 'var(--ds-text)',
+                          background: 'var(--ds-surface)',
+                          border: '1px solid var(--ds-border)',
                           borderRadius: 3,
                           padding: '7px 10px',
                           width: '100%',
@@ -1310,19 +1310,19 @@ function ConfigPanel({
           style={{
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             marginBottom: 4,
           }}
         >
           GitHub personal access token{' '}
           {config.github_pat_set && (
-            <span style={{ color: 'var(--ds-text-success, #1F845A)' }}>✓ saved</span>
+            <span style={{ color: 'var(--ds-text-success)' }}>✓ saved</span>
           )}
         </div>
         <div
           style={{
             fontSize: 'var(--ds-font-size-100)',
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest)',
             marginBottom: 6,
           }}
         >
@@ -1341,19 +1341,19 @@ function ConfigPanel({
           style={{
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             marginBottom: 4,
           }}
         >
           Vercel API token{' '}
           {config.vercel_token_set && (
-            <span style={{ color: 'var(--ds-text-success, #1F845A)' }}>✓ saved</span>
+            <span style={{ color: 'var(--ds-text-success)' }}>✓ saved</span>
           )}
         </div>
         <div
           style={{
             fontSize: 'var(--ds-font-size-100)',
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest)',
             marginBottom: 6,
           }}
         >
@@ -1389,7 +1389,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 'var(--ds-font-size-200)',
         fontWeight: 653,
-        color: 'var(--ds-text-subtle, #505258)',
+        color: 'var(--ds-text-subtle)',
         padding: '20px 0 8px',
         borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
         marginBottom: 12,
@@ -1406,21 +1406,21 @@ const TH: React.CSSProperties = {
   textAlign: 'left',
   fontSize: 'var(--ds-font-size-200)',
   fontWeight: 653,
-  color: 'var(--ds-text-subtle, #505258)',
+  color: 'var(--ds-text-subtle)',
   padding: '8px 12px 8px 0',
   borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
   whiteSpace: 'nowrap',
 };
 const TD: React.CSSProperties = {
   fontSize: 'var(--ds-font-size-400)',
-  color: 'var(--ds-text, #292A2E)',
+  color: 'var(--ds-text)',
   padding: '10px 12px 10px 0',
   borderBottom: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.08))',
   verticalAlign: 'middle',
 };
 const TD_MUTED: React.CSSProperties = {
   ...TD,
-  color: 'var(--ds-text-subtle, #505258)',
+  color: 'var(--ds-text-subtle)',
   fontSize: 'var(--ds-font-size-300)',
 };
 const MONO: React.CSSProperties = {
@@ -1476,7 +1476,7 @@ export default function VercelConnectionPage() {
             display: 'flex',
             alignItems: 'center',
             gap: 12,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             fontFamily: FONT,
           }}
         >
@@ -1511,7 +1511,7 @@ export default function VercelConnectionPage() {
             display: 'flex',
             alignItems: 'center',
             gap: 12,
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             fontFamily: FONT,
           }}
         >
@@ -1544,7 +1544,7 @@ export default function VercelConnectionPage() {
         style={{
           padding: '24px 32px 48px',
           maxWidth: 1280,
-          color: 'var(--ds-text, #292A2E)',
+          color: 'var(--ds-text)',
           fontFamily: FONT,
         }}
       >
@@ -1564,12 +1564,12 @@ export default function VercelConnectionPage() {
                 width: 36,
                 height: 36,
                 borderRadius: 6,
-                background: 'var(--ds-text, #292A2E)',
+                background: 'var(--ds-text)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: 'var(--ds-font-size-600)',
-                color: 'var(--ds-surface, #FFFFFF)',
+                color: 'var(--ds-surface)',
                 fontWeight: 700,
                 flexShrink: 0,
               }}
@@ -1581,7 +1581,7 @@ export default function VercelConnectionPage() {
                 fontSize: 'var(--ds-font-size-800)',
                 fontWeight: 653,
                 lineHeight: '28px',
-                color: 'var(--ds-text, #292A2E)',
+                color: 'var(--ds-text)',
                 margin: 0,
               }}
             >
@@ -1615,7 +1615,7 @@ export default function VercelConnectionPage() {
         <p
           style={{
             fontSize: 'var(--ds-font-size-400)',
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             margin: '0 0 4px',
             lineHeight: '20px',
           }}
@@ -1626,7 +1626,7 @@ export default function VercelConnectionPage() {
           <p
             style={{
               fontSize: 'var(--ds-font-size-200)',
-              color: 'var(--ds-text-subtlest, #6B778C)',
+              color: 'var(--ds-text-subtlest)',
               margin: '0 0 28px',
             }}
           >
@@ -1655,7 +1655,7 @@ export default function VercelConnectionPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      color: 'var(--ds-link, #0052CC)',
+                      color: 'var(--ds-link)',
                       textDecoration: 'none',
                       fontFamily: 'var(--ds-font-family-code)',
                     }}
@@ -1675,7 +1675,7 @@ export default function VercelConnectionPage() {
                     <code
                       style={{
                         fontFamily: 'var(--ds-font-family-code)',
-                        color: 'var(--ds-text-subtle, #505258)',
+                        color: 'var(--ds-text-subtle)',
                       }}
                     >
                       {envs.mainBranch.sha}
@@ -1705,7 +1705,7 @@ export default function VercelConnectionPage() {
                 rel="noopener noreferrer"
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
-                  color: 'var(--ds-link, #0052CC)',
+                  color: 'var(--ds-link)',
                   textDecoration: 'none',
                 }}
               >
@@ -1739,7 +1739,7 @@ export default function VercelConnectionPage() {
                     href={latestStagingRun.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
+                    style={{ color: 'var(--ds-link)', textDecoration: 'none' }}
                   >
                     {fmtRelative(latestStagingRun.created_at)} ·{' '}
                     {fmtDuration(latestStagingRun.duration_ms)}
@@ -1753,7 +1753,7 @@ export default function VercelConnectionPage() {
                     <code
                       style={{
                         fontFamily: 'var(--ds-font-family-code)',
-                        color: 'var(--ds-text-subtle, #505258)',
+                        color: 'var(--ds-text-subtle)',
                       }}
                     >
                       {latestStagingRun.head_sha}
@@ -1784,7 +1784,7 @@ export default function VercelConnectionPage() {
                   rel="noopener noreferrer"
                   style={{
                     fontSize: 'var(--ds-font-size-200)',
-                    color: 'var(--ds-link, #0052CC)',
+                    color: 'var(--ds-link)',
                     textDecoration: 'none',
                   }}
                 >
@@ -1822,7 +1822,7 @@ export default function VercelConnectionPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      color: 'var(--ds-link, #0052CC)',
+                      color: 'var(--ds-link)',
                       textDecoration: 'none',
                       fontFamily: 'var(--ds-font-family-code)',
                     }}
@@ -1843,7 +1843,7 @@ export default function VercelConnectionPage() {
                       <code
                         style={{
                           fontFamily: 'var(--ds-font-family-code)',
-                          color: 'var(--ds-text-subtle, #505258)',
+                          color: 'var(--ds-text-subtle)',
                         }}
                       >
                         {latestDeployment?.meta.github_commit_sha?.slice(0, 7) ??
@@ -1872,7 +1872,7 @@ export default function VercelConnectionPage() {
                         style={{
                           display: 'block',
                           fontSize: 'var(--ds-font-size-100)',
-                          color: 'var(--ds-text-subtlest, #6B778C)',
+                          color: 'var(--ds-text-subtlest)',
                           marginTop: 2,
                         }}
                       >
@@ -1894,7 +1894,7 @@ export default function VercelConnectionPage() {
                   rel="noopener noreferrer"
                   style={{
                     fontSize: 'var(--ds-font-size-200)',
-                    color: 'var(--ds-link, #0052CC)',
+                    color: 'var(--ds-link)',
                     textDecoration: 'none',
                   }}
                 >
@@ -1907,7 +1907,7 @@ export default function VercelConnectionPage() {
                     rel="noopener noreferrer"
                     style={{
                       fontSize: 'var(--ds-font-size-200)',
-                      color: 'var(--ds-link, #0052CC)',
+                      color: 'var(--ds-link)',
                       textDecoration: 'none',
                     }}
                   >
@@ -1949,8 +1949,8 @@ export default function VercelConnectionPage() {
         {/* ── Deploy gate ───────────────────────────────────────────────────── */}
         <div
           style={{
-            background: 'var(--ds-surface, #FFFFFF)',
-            border: `1px solid ${gate.production_deploy_enabled ? 'var(--ds-border-success, #1F845A)' : 'var(--ds-border, #DCDFE4)'}`,
+            background: 'var(--ds-surface)',
+            border: `1px solid ${gate.production_deploy_enabled ? 'var(--ds-border-success)' : 'var(--ds-border)'}`,
             borderRadius: 4,
             padding: '16px 20px',
             marginBottom: 20,
@@ -1965,7 +1965,7 @@ export default function VercelConnectionPage() {
               style={{
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
-                color: 'var(--ds-text, #292A2E)',
+                color: 'var(--ds-text)',
                 marginBottom: 4,
                 display: 'flex',
                 alignItems: 'center',
@@ -1978,7 +1978,7 @@ export default function VercelConnectionPage() {
             <div
               style={{
                 fontSize: 'var(--ds-font-size-300)',
-                color: 'var(--ds-text-subtle, #505258)',
+                color: 'var(--ds-text-subtle)',
                 lineHeight: '18px',
               }}
             >
@@ -1990,7 +1990,7 @@ export default function VercelConnectionPage() {
               <div
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
-                  color: 'var(--ds-text-subtlest, #6B778C)',
+                  color: 'var(--ds-text-subtlest)',
                   marginTop: 4,
                 }}
               >
@@ -2013,8 +2013,8 @@ export default function VercelConnectionPage() {
                 fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: gate.production_deploy_enabled
-                  ? 'var(--ds-text-success, #1F845A)'
-                  : 'var(--ds-text-subtlest, #6B778C)',
+                  ? 'var(--ds-text-success)'
+                  : 'var(--ds-text-subtlest)',
               }}
             >
               {gate.production_deploy_enabled ? 'ON' : 'OFF'}
@@ -2060,7 +2060,7 @@ export default function VercelConnectionPage() {
           >
             Redeploy current production commit
           </Button>
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
             Re-runs Vercel build without changing commit
           </span>
           <a
@@ -2070,7 +2070,7 @@ export default function VercelConnectionPage() {
             style={{
               marginLeft: 'auto',
               fontSize: 'var(--ds-font-size-300)',
-              color: 'var(--ds-link, #0052CC)',
+              color: 'var(--ds-link)',
               textDecoration: 'none',
               flexShrink: 0,
             }}
@@ -2085,10 +2085,10 @@ export default function VercelConnectionPage() {
             display: 'flex',
             gap: 0,
             marginBottom: 24,
-            border: '1px solid var(--ds-border, #DCDFE4)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
             overflow: 'hidden',
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--ds-surface)',
           }}
         >
           {(
@@ -2103,13 +2103,13 @@ export default function VercelConnectionPage() {
                 label: 'Succeeded',
                 value: stats.success,
                 sub: `of ${stats.total} runs`,
-                accent: stats.success > 0 ? 'var(--ds-text-success, #1F845A)' : undefined,
+                accent: stats.success > 0 ? 'var(--ds-text-success)' : undefined,
               },
               {
                 label: 'Failed',
                 value: stats.failed,
                 sub: `of ${stats.total} runs`,
-                accent: stats.failed > 0 ? 'var(--ds-text-danger, #AE2A19)' : undefined,
+                accent: stats.failed > 0 ? 'var(--ds-text-danger)' : undefined,
               },
               {
                 label: 'Staging CI',
@@ -2125,14 +2125,14 @@ export default function VercelConnectionPage() {
                 flex: 1,
                 padding: '16px 20px',
                 borderLeft:
-                  i > 0 ? '1px solid var(--ds-border, #DCDFE4)' : 'none',
+                  i > 0 ? '1px solid var(--ds-border)' : 'none',
               }}
             >
               <div
                 style={{
                   fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 653,
-                  color: 'var(--ds-text-subtlest, #6B778C)',
+                  color: 'var(--ds-text-subtlest)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   marginBottom: 6,
@@ -2145,7 +2145,7 @@ export default function VercelConnectionPage() {
                   fontSize: 'var(--ds-font-size-800)',
                   fontWeight: 653,
                   lineHeight: 1,
-                  color: s.accent ?? 'var(--ds-text, #292A2E)',
+                  color: s.accent ?? 'var(--ds-text)',
                 }}
               >
                 {s.value}
@@ -2153,7 +2153,7 @@ export default function VercelConnectionPage() {
               <div
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
-                  color: 'var(--ds-text-subtlest, #6B778C)',
+                  color: 'var(--ds-text-subtlest)',
                   marginTop: 4,
                 }}
               >
@@ -2170,7 +2170,7 @@ export default function VercelConnectionPage() {
           style={{
             display: 'flex',
             gap: 0,
-            borderBottom: '1px solid var(--ds-border, #DCDFE4)',
+            borderBottom: '1px solid var(--ds-border)',
             marginBottom: 16,
           }}
         >
@@ -2190,13 +2190,13 @@ export default function VercelConnectionPage() {
                 fontWeight: historyTab === tab.key ? 600 : 400,
                 color:
                   historyTab === tab.key
-                    ? 'var(--ds-text, #292A2E)'
-                    : 'var(--ds-text-subtle, #505258)',
+                    ? 'var(--ds-text)'
+                    : 'var(--ds-text-subtle)',
                 background: 'none',
                 border: 'none',
                 borderBottom:
                   historyTab === tab.key
-                    ? '2px solid var(--ds-link, #0052CC)'
+                    ? '2px solid var(--ds-link)'
                     : '2px solid transparent',
                 cursor: 'pointer',
                 fontFamily: FONT,
@@ -2218,7 +2218,7 @@ export default function VercelConnectionPage() {
                 padding: '32px 0',
                 textAlign: 'center',
                 fontSize: 'var(--ds-font-size-400)',
-                color: 'var(--ds-text-subtlest, #6B778C)',
+                color: 'var(--ds-text-subtlest)',
               }}
             >
               {config.github_pat_set
@@ -2232,7 +2232,7 @@ export default function VercelConnectionPage() {
                   style={{
                     position: 'sticky',
                     top: 0,
-                    background: 'var(--ds-surface, #FFFFFF)',
+                    background: 'var(--ds-surface)',
                     zIndex: 1,
                   }}
                 >
@@ -2258,7 +2258,7 @@ export default function VercelConnectionPage() {
                           rel="noopener noreferrer"
                           style={{
                             ...MONO,
-                            color: 'var(--ds-link, #0052CC)',
+                            color: 'var(--ds-link)',
                             textDecoration: 'none',
                           }}
                         >
@@ -2272,7 +2272,7 @@ export default function VercelConnectionPage() {
                           <span
                             style={{
                               ...MONO,
-                              color: 'var(--ds-text-subtle, #505258)',
+                              color: 'var(--ds-text-subtle)',
                               display: 'block',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -2303,7 +2303,7 @@ export default function VercelConnectionPage() {
                 padding: '32px 0',
                 textAlign: 'center',
                 fontSize: 'var(--ds-font-size-400)',
-                color: 'var(--ds-text-subtlest, #6B778C)',
+                color: 'var(--ds-text-subtlest)',
               }}
             >
               {config.github_pat_set
@@ -2317,7 +2317,7 @@ export default function VercelConnectionPage() {
                   style={{
                     position: 'sticky',
                     top: 0,
-                    background: 'var(--ds-surface, #FFFFFF)',
+                    background: 'var(--ds-surface)',
                     zIndex: 1,
                   }}
                 >
@@ -2343,7 +2343,7 @@ export default function VercelConnectionPage() {
                           rel="noopener noreferrer"
                           style={{
                             ...MONO,
-                            color: 'var(--ds-link, #0052CC)',
+                            color: 'var(--ds-link)',
                             textDecoration: 'none',
                           }}
                         >
@@ -2354,7 +2354,7 @@ export default function VercelConnectionPage() {
                         <span
                           style={{
                             ...MONO,
-                            color: 'var(--ds-text-subtle, #505258)',
+                            color: 'var(--ds-text-subtle)',
                             display: 'block',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -2384,7 +2384,7 @@ export default function VercelConnectionPage() {
                 padding: '32px 0',
                 textAlign: 'center',
                 fontSize: 'var(--ds-font-size-400)',
-                color: 'var(--ds-text-subtlest, #6B778C)',
+                color: 'var(--ds-text-subtlest)',
               }}
             >
               {config.vercel_token_set
@@ -2398,7 +2398,7 @@ export default function VercelConnectionPage() {
                   style={{
                     position: 'sticky',
                     top: 0,
-                    background: 'var(--ds-surface, #FFFFFF)',
+                    background: 'var(--ds-surface)',
                     zIndex: 1,
                   }}
                 >
@@ -2423,7 +2423,7 @@ export default function VercelConnectionPage() {
                           rel="noopener noreferrer"
                           style={{
                             fontSize: 'var(--ds-font-size-300)',
-                            color: 'var(--ds-link, #0052CC)',
+                            color: 'var(--ds-link)',
                             textDecoration: 'none',
                           }}
                         >
@@ -2431,7 +2431,7 @@ export default function VercelConnectionPage() {
                         </a>
                       </td>
                       <td style={TD}>
-                        <code style={{ ...MONO, color: 'var(--ds-text-subtle, #505258)' }}>
+                        <code style={{ ...MONO, color: 'var(--ds-text-subtle)' }}>
                           {d.meta.github_commit_sha?.slice(0, 7) ?? '—'}
                         </code>
                       </td>
@@ -2456,7 +2456,7 @@ export default function VercelConnectionPage() {
               cursor: 'pointer',
               fontSize: 'var(--ds-font-size-200)',
               fontWeight: 653,
-              color: 'var(--ds-text-subtle, #505258)',
+              color: 'var(--ds-text-subtle)',
               padding: 0,
               display: 'inline-flex',
               alignItems: 'center',

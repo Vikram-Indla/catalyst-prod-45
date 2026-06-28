@@ -27,7 +27,7 @@ export interface ReorderColumnsInput {
 }
 
 // task_statuses.color is varchar(7) — it stores a plain hex (#rrggbb).
-// Color pickers may pass ADS token strings like 'var(--ds-text-brand, #3b82f6)'
+// Color pickers may pass ADS token strings like 'var(--ds-text-brand)'
 // which overflow the column. Extract the hex fallback (or first hex) so any
 // picker's value is normalized to a storable 7-char hex before insert/update.
 function normalizeHexColor(color: string | undefined): string | undefined {

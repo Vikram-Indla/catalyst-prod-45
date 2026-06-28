@@ -19,8 +19,8 @@ export function UploadProgressBanner({ label = 'Processing uploaded file…' }: 
         padding: '8px 14px',
         borderRadius: 4,
         background:
-          'repeating-linear-gradient(135deg, var(--cv2-accent, #1264A3) 0 14px, var(--cv2-accent-strong, #0B4F84) 14px 28px)',
-        color: 'var(--ds-text-inverse, #FFFFFF)',
+          'repeating-linear-gradient(135deg, var(--cv2-accent) 0 14px, var(--cv2-accent-strong) 14px 28px)',
+        color: 'var(--ds-text-inverse)',
         fontFamily: 'var(--cv2-font)',
         fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,

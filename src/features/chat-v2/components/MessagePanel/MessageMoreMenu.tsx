@@ -207,7 +207,7 @@ const Item = React.forwardRef<HTMLButtonElement, {
         height: 34,
         padding: '0 14px',
         background: active ? 'var(--cv2-accent)' : 'transparent',
-        color: active ? 'var(--ds-text-inverse, #FFFFFF)' : danger ? 'var(--cv2-danger)' : 'var(--cv2-text)',
+        color: active ? 'var(--ds-text-inverse)' : danger ? 'var(--cv2-danger)' : 'var(--cv2-text)',
         border: 'none',
         cursor: 'pointer',
         textAlign: 'left',
@@ -236,7 +236,7 @@ const Item = React.forwardRef<HTMLButtonElement, {
         </span>
       )}
       {trailingArrow && (
-        <ChevronRightIcon size={14} style={{ color: active ? 'var(--ds-surface, #FFFFFF)' : 'var(--cv2-text-subtle)' }} />
+        <ChevronRightIcon size={14} style={{ color: active ? 'var(--ds-surface)' : 'var(--cv2-text-subtle)' }} />
       )}
     </button>
   );

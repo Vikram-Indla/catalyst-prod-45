@@ -144,23 +144,23 @@ export function WiringAudit() {
     <div
       style={{
         margin: "24px 0",
-        border: "1.5px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))",
+        border: "1.5px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))",
         borderRadius: 8,
-        backgroundColor: "var(--ds-surface-sunken, #FAFBFC)",
+        backgroundColor: "var(--ds-surface-sunken)",
         padding: 20,
         fontFamily: 'var(--cp-font-body)',
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))", margin: 0 }}>
+        <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))", margin: 0 }}>
           P8 Wiring Audit — {checks.length} checks
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {results.length > 0 && (
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--ds-text-subtle, #475569)" }}>
-              <span style={{ color: "var(--ds-text-success, #006644)", fontWeight: 600 }}>{passCount} pass</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--ds-text-subtle)" }}>
+              <span style={{ color: "var(--ds-text-success)", fontWeight: 600 }}>{passCount} pass</span>
               {failCount > 0 && (
-                <span style={{ color: "var(--ds-text-danger, var(--cp-danger, #DC2626))", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
+                <span style={{ color: "var(--ds-text-danger, var(--cp-danger))", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
               )}
             </span>
           )}
@@ -173,8 +173,8 @@ export function WiringAudit() {
               fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
-              backgroundColor: "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))",
-              color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+              backgroundColor: "var(--ds-text-brand, var(--cp-workstream-catalyst-primary))",
+              color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
               border: "none",
               borderRadius: 6,
               cursor: running ? "not-allowed" : "pointer",
@@ -194,8 +194,8 @@ export function WiringAudit() {
             alignItems: "center",
             gap: 8,
             padding: "6px 0",
-            borderTop: i === 0 ? "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))" : "none",
-            borderBottom: "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))",
+            borderTop: i === 0 ? "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))" : "none",
+            borderBottom: "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))",
             fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -210,15 +210,15 @@ export function WiringAudit() {
               justifyContent: "center",
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
-              color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
-              backgroundColor: r.status === "pass" ? "var(--ds-text-success, #006644)" : "var(--ds-text-danger, var(--cp-danger, #DC2626))",
+              color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))",
+              backgroundColor: r.status === "pass" ? "var(--ds-text-success)" : "var(--ds-text-danger, var(--cp-danger))",
               flexShrink: 0,
             }}
           >
             {r.status === "pass" ? "✓" : "✗"}
           </span>
-          <span style={{ fontWeight: 600, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))", minWidth: 180 }}>{r.name}</span>
-          <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" }}>{r.detail}</span>
+          <span style={{ fontWeight: 600, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))", minWidth: 180 }}>{r.name}</span>
+          <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" }}>{r.detail}</span>
         </div>
       ))}
     </div>

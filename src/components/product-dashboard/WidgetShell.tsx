@@ -25,9 +25,9 @@ export function WidgetIconBtn({
         width: 32,
         height: 32,
         border: 'none',
-        background: hover ? token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)') : 'transparent',
+        background: hover ? token('color.background.neutral.hovered', 'var(--ds-background-neutral)') : 'transparent',
         borderRadius: 4,
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
@@ -69,7 +69,7 @@ export function WidgetShell({
     <article
       aria-label={ariaLabel ?? title}
       style={{
-        background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface', 'var(--ds-surface)'),
         borderRadius: 8,
         boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         overflow: 'hidden',
@@ -85,7 +85,7 @@ export function WidgetShell({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: collapsed ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          borderBottom: collapsed ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
           gap: 12,
           cursor: 'pointer',
           userSelect: 'none',
@@ -98,7 +98,7 @@ export function WidgetShell({
               margin: 0,
               fontSize: 'var(--ds-font-size-700)',
               fontWeight: 500,
-              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
               lineHeight: '24px',
             }}
           >
@@ -109,7 +109,7 @@ export function WidgetShell({
               style={{
                 fontSize: 'var(--ds-font-size-300)',
                 lineHeight: '18px',
-                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                 marginTop: 2,
                 fontStyle: 'italic',
               }}
@@ -142,10 +142,10 @@ export function WidgetShell({
             <div
               style={{
                 padding: '10px 24px',
-                borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+                borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
                 fontSize: 'var(--ds-font-size-100)',
                 lineHeight: '16px',
-                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -157,7 +157,7 @@ export function WidgetShell({
                   href="#"
                   onClick={e => e.preventDefault()}
                   style={{
-                    color: token('color.link', 'var(--ds-link, #0C66E4)'),
+                    color: token('color.link', 'var(--ds-link)'),
                     textDecoration: 'none',
                     fontWeight: 500,
                   }}

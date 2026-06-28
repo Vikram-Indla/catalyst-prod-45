@@ -20,13 +20,13 @@ import { ChevronDown, Check, X } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card: 'var(--ds-surface-overlay, #FFFFFF)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  selectedBg: 'var(--ds-background-selected, #E9F2FE)',
+  card: 'var(--ds-surface-overlay)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  selectedBg: 'var(--ds-background-selected)',
   hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
 };
 
@@ -91,7 +91,7 @@ function FacetDropdown({ facet, selected, onChange }: {
       >
         {facet.label}
         {count > 0 && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, minWidth: 16, height: 16, borderRadius: 8, padding: '0 4px', background: T.link, color: 'var(--ds-text-inverse, #FFFFFF)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{count}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, minWidth: 16, height: 16, borderRadius: 8, padding: '0 4px', background: T.link, color: 'var(--ds-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{count}</span>
         )}
         <ChevronDown size={14} style={{ color: count > 0 ? T.link : T.subtlest }} />
       </button>

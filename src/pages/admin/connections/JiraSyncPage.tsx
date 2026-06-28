@@ -36,20 +36,20 @@ const lookbackToDateMode = (m: number): string => (m <= 1 ? 'Last 30 days' : m >
 const SYNC_ISSUE_TYPES = ['Epic', 'Feature', 'Story', 'Task', 'Sub-task', 'QA Bug', 'Change Request', 'Production Incident', 'Business Gap'];
 
 const C = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  surfaceOverlay: 'var(--ds-surface-overlay, #FFFFFF)',
-  surfaceSunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  neutral: 'var(--ds-background-neutral, #F1F2F4)',
-  bgSuccess: 'var(--ds-background-success, #DFFCF0)',
-  bgDanger: 'var(--ds-background-danger, #FFECEB)',
-  bgInfo: 'var(--ds-background-information, #DEEBFF)',
-  text: 'var(--ds-text, #172B4D)',
-  textSubtle: 'var(--ds-text-subtle, #42526E)',
-  textSubtlest: 'var(--ds-text-subtlest, #6B778C)',
-  textSuccess: 'var(--ds-text-success, #216E4E)',
-  textDanger: 'var(--ds-text-danger, #AE2A19)',
-  textInfo: 'var(--ds-text-information, #0747A6)',
-  border: 'var(--ds-border, #DFE1E6)',
+  surface: 'var(--ds-surface)',
+  surfaceOverlay: 'var(--ds-surface-overlay)',
+  surfaceSunken: 'var(--ds-surface-sunken)',
+  neutral: 'var(--ds-background-neutral)',
+  bgSuccess: 'var(--ds-background-success)',
+  bgDanger: 'var(--ds-background-danger)',
+  bgInfo: 'var(--ds-background-information)',
+  text: 'var(--ds-text)',
+  textSubtle: 'var(--ds-text-subtle)',
+  textSubtlest: 'var(--ds-text-subtlest)',
+  textSuccess: 'var(--ds-text-success)',
+  textDanger: 'var(--ds-text-danger)',
+  textInfo: 'var(--ds-text-information)',
+  border: 'var(--ds-border)',
 } as const;
 
 const FH = 'var(--ds-font-family-heading)';
@@ -317,8 +317,8 @@ const TD = { padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', fontFami
 // sentence-case (ADS typography rule — never all-caps).
 function StatusPill({ children, tone = 'neutral' }: { children: any; tone?: 'neutral' | 'danger' }) {
   const palette = {
-    neutral: { bg: 'var(--ds-background-neutral, #DCDFE4)', fg: 'var(--ds-text-subtle, #44546F)' },
-    danger: { bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #AE2A19)' },
+    neutral: { bg: 'var(--ds-background-neutral)', fg: 'var(--ds-text-subtle)' },
+    danger: { bg: 'var(--ds-background-danger)', fg: 'var(--ds-text-danger)' },
   } as const;
   const c = palette[tone];
   return (

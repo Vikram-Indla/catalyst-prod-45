@@ -7,7 +7,7 @@ import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
 
 // ── Avatar colours — cycling through 6 brand colours ─────────────────────────
 
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-chart-teal-bold, #00A3BF)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-danger-bold, #C9372C)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold)', 'var(--ds-chart-teal-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-background-success-bold)', 'var(--ds-background-discovery-bold)', 'var(--ds-background-danger-bold)'];
 
 function avatarColor(name: string): string {
   let h = 0;
@@ -42,10 +42,10 @@ function WorkloadRow({
   const isHeavy  = pct >= 90;
   const isMedium = pct >= 50 && !isHeavy;
   const barColor = isHeavy
-    ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
+    ? token('color.text.danger', 'var(--ds-text-danger)')
     : isMedium
-    ? 'var(--ds-background-warning-bold, #F5A623)'
-    : 'var(--ds-chart-purple-bold, #8A7CFF)';
+    ? 'var(--ds-background-warning-bold)'
+    : 'var(--ds-chart-purple-bold)';
 
   return (
     <div
@@ -56,7 +56,7 @@ function WorkloadRow({
         alignItems: 'center',
         gap: 10,
         padding: '8px 0',
-        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
@@ -66,7 +66,7 @@ function WorkloadRow({
             height: 24,
             borderRadius: '50%',
             background: avatarColor(name),
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--ds-text-inverse)',
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             display: 'inline-flex',
@@ -84,7 +84,7 @@ function WorkloadRow({
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
           }}
         >
           {name}
@@ -95,7 +95,7 @@ function WorkloadRow({
         style={{
           height: 18,
           borderRadius: 3,
-          background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
           overflow: 'hidden',
         }}
       >
@@ -115,7 +115,7 @@ function WorkloadRow({
           fontWeight: 700,
           textAlign: 'right',
           fontVariantNumeric: 'tabular-nums',
-          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
         }}
       >
         {count}
@@ -141,10 +141,10 @@ function WorkloadCol({
         style={{
           margin: '0 0 12px',
           paddingBottom: 8,
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
         }}
@@ -155,7 +155,7 @@ function WorkloadCol({
         <div
           style={{
             fontSize: 'var(--ds-font-size-300)',
-            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             padding: '12px 0',
           }}
         >
@@ -207,7 +207,7 @@ export function WhoCarriesWhatWidget() {
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
+          background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
           boxShadow: '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         }}
       />
@@ -276,7 +276,7 @@ export function WhoCarriesWhatWidget() {
           style={{
             padding: 24,
             fontSize: 'var(--ds-font-size-300)',
-            color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
             textAlign: 'center',
           }}
         >

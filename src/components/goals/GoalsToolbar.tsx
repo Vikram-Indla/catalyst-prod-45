@@ -27,9 +27,9 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
-  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  hover: 'var(--ds-surface-overlay, #1F1F1F)',
-  float: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
+  border: 'var(--ds-border, var(--cp-ink-1))',
+  hover: 'var(--ds-surface-overlay)',
+  float: 'var(--ds-surface-raised, var(--cp-ink-1))',
 };
 
 const viewButtons: { key: 'tree' | 'list' | 'heatmap'; label: string; icon: typeof List }[] = [
@@ -70,14 +70,14 @@ function FilterDropdown({
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           padding: '5px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
-          color: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? DK.t2 : 'var(--fg-3)'),
+          color: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : (isDark ? DK.t2 : 'var(--fg-3)'),
           background: selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : (isDark ? 'transparent' : 'var(--bg-app)'),
           border: `1px solid ${selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.3))' : (isDark ? DK.border : 'var(--divider)')}`,
           borderRadius: 8, cursor: 'pointer',
         }}
       >
         {label}
-        {selected.length > 0 && <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--ds-surface, #FFF)', borderRadius: 99, padding: '0 5px', lineHeight: '16px' }}>{selected.length}</span>}
+        {selected.length > 0 && <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--ds-surface)', borderRadius: 99, padding: '0 5px', lineHeight: '16px' }}>{selected.length}</span>}
         <ChevronDown size={12} />
       </button>
       {open && (
@@ -97,7 +97,7 @@ function FilterDropdown({
             const isSelected = selected.includes(opt.id);
             return (
               <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t1 : 'var(--fg-1)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--cp-bd-zone)')}
+                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--cp-bd-zone)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <input type="checkbox" checked={isSelected} onChange={() => onToggle(opt.id)} style={{ accentColor: 'var(--cp-blue)' }} />
@@ -138,7 +138,7 @@ export function GoalsToolbar({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         {/* View Switcher */}
-        <div style={{ display: 'inline-flex', background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', borderRadius: 8, padding: 3, gap: 2 }}>
+        <div style={{ display: 'inline-flex', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', borderRadius: 8, padding: 3, gap: 2 }}>
           {viewButtons.map(vb => {
             const active = currentView === vb.key;
             return (
@@ -147,7 +147,7 @@ export function GoalsToolbar({
                 padding: '5px 12px', fontSize: 'var(--ds-font-size-200)',
                 fontWeight: active ? 600 : 500,
                 color: active ? (isDark ? 'var(--bg-app)' : 'var(--fg-1)') : (isDark ? 'var(--fg-4)' : 'var(--fg-3)'),
-                background: active ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bg-app)') : 'transparent',
+                background: active ? (isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bg-app)') : 'transparent',
                 border: 'none', borderRadius: 6, cursor: 'pointer',
                 boxShadow: active && !isDark ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.08))' : 'none',
                 transition: 'all 150ms',
@@ -161,7 +161,7 @@ export function GoalsToolbar({
 
         {/* Search */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, padding: '5px 10px', minWidth: 220 }}>
-          <Search size={14} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} />
+          <Search size={14} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))'} />
           <input
             type="text" placeholder="Search goals or KRs..."
             value={searchQuery} onChange={e => onSearch(e.target.value)}
@@ -169,7 +169,7 @@ export function GoalsToolbar({
           />
           {searchQuery && (
             <button onClick={() => onSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-              <X size={12} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} />
+              <X size={12} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))'} />
             </button>
           )}
         </div>

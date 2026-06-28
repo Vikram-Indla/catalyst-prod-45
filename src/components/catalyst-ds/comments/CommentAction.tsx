@@ -12,8 +12,8 @@ const CommentAction = React.forwardRef<HTMLButtonElement, CommentActionProps>(
       type="button"
       className={cn(
         'inline-flex items-center gap-1 text-[12px] font-medium',
-        'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:underline',
-        'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
+        'text-[var(--ds-text-subtlest,var(--cp-text-secondary))] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse)))] hover:underline',
+        'dark:text-[var(--ds-text-subtlest)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral))]',
         'transition-colors duration-150 cursor-pointer',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline',
         className

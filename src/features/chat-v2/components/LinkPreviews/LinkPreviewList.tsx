@@ -62,7 +62,7 @@ function LinkPreviewCard({ preview }: { preview: LinkPreviewRow }) {
             style={{
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
-              color: 'var(--cv2-link, var(--cv2-accent, #1264A3))',
+              color: 'var(--cv2-link, var(--cv2-accent))',
               marginTop: 1,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -131,8 +131,8 @@ function Favicon({ domain }: { domain: string }) {
 
 // Stable accent color per domain — uses a tiny hash to pick from a fixed palette.
 const ACCENT_PALETTE = [
-  'var(--ds-link, #0065FF)', '#1D8DDA', '#36C5F0', '#2EB67D', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  '#7B61FF', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-warning-bold, #E2B203)', '#9333EA', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  'var(--ds-link)', '#1D8DDA', '#36C5F0', '#2EB67D', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  '#7B61FF', 'var(--ds-background-danger-bold)', 'var(--ds-background-warning-bold)', '#9333EA', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
 ];
 function accentColorFor(domain: string): string {
   let h = 0;

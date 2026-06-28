@@ -22,15 +22,15 @@ interface Props {
  * PresenceRing — CatalystAvatar with a coloured ring overlay.
  *
  * Ring spec (from prototypes/presence-availability.html, 2026-06-02):
- *   available  → solid 2px BLUE ring  (var(--ds-link, #1868DB), --ds-link)
+ *   available  → solid 2px BLUE ring  (var(--ds-link), --ds-link)
  *   away       → hollow/dashed 2px BLUE ring (same colour, different treatment)
- *   busy       → solid 2px GREY ring  (var(--ds-text-subtlest, #6B6E76), --ds-text-subtlest)
- *   offline    → solid 2px AMBER ring (var(--ds-background-warning-bold, #E2B203), --ds-icon-warning)
- *   on_leave   → solid 2px RED ring   (var(--ds-background-danger-bold, #C9372C), --ds-icon-danger)
+ *   busy       → solid 2px GREY ring  (var(--ds-text-subtlest), --ds-text-subtlest)
+ *   offline    → solid 2px AMBER ring (var(--ds-background-warning-bold), --ds-icon-warning)
+ *   on_leave   → solid 2px RED ring   (var(--ds-background-danger-bold), --ds-icon-danger)
  *
  * Ring rendering:
  *   Solid states → wrapper span has box-shadow:
- *     0 0 0 2px var(--ds-surface,#fff),     ← white gap
+ *     0 0 0 2px var(--ds-surface),     ← white gap
  *     0 0 0 4px <ringColor>                 ← coloured ring
  *   away (dashed) → inner box-shadow for white gap only +
  *     absolutely positioned span with border:2px dashed <ringColor>
@@ -59,7 +59,7 @@ export function PresenceRing({ name, src, size = 'medium', state, testId, toolti
             display:     'inline-flex',
             flexShrink:  0,
             borderRadius: '50%',
-            boxShadow:   `0 0 0 2px var(--ds-surface, #FFFFFF)`,
+            boxShadow:   `0 0 0 2px var(--ds-surface)`,
           }}
         >
           <CatalystAvatar name={name} src={src} size={size} testId={testId} />
@@ -90,7 +90,7 @@ export function PresenceRing({ name, src, size = 'medium', state, testId, toolti
           flexShrink:   0,
           borderRadius: '50%',
           // 2px white gap + 2px coloured ring
-          boxShadow:    `0 0 0 2px var(--ds-surface, #FFFFFF), 0 0 0 4px ${ringColor}`,
+          boxShadow:    `0 0 0 2px var(--ds-surface), 0 0 0 4px ${ringColor}`,
           // Extra margin so the ring doesn't clip the avatar group layout
           margin:       2,
         }}

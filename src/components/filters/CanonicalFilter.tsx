@@ -115,21 +115,21 @@ export const CANONICAL_PRIORITY_OPTIONS: CanonicalPriorityOption[] = [
 /** Map a priority id → its Atlaskit core icon (color tinted). */
 function priorityIcon(id: string): React.ReactNode {
   switch (id) {
-    case 'Highest': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-inverse, #FFFFFF)', background: 'var(--ds-background-danger-bold, #C9372C)', borderRadius: 2, padding: '0 2px' }}><PriorityHighestIcon label="" size="small" /></span>;
-    case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #AE2A19)' }}><PriorityHighIcon    label="" size="small" /></span>;
-    case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-text-warning, #974F0C)' }}><PriorityMediumIcon  label="" size="small" /></span>;
-    case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link, #0C66E4)' }}><PriorityLowIcon     label="" size="small" /></span>;
-    case 'Lowest':  return <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest, #626F86)' }}><PriorityLowestIcon  label="" size="small" /></span>;
+    case 'Highest': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-inverse)', background: 'var(--ds-background-danger-bold)', borderRadius: 2, padding: '0 2px' }}><PriorityHighestIcon label="" size="small" /></span>;
+    case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger)' }}><PriorityHighIcon    label="" size="small" /></span>;
+    case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-text-warning)' }}><PriorityMediumIcon  label="" size="small" /></span>;
+    case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link)' }}><PriorityLowIcon     label="" size="small" /></span>;
+    case 'Lowest':  return <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest)' }}><PriorityLowestIcon  label="" size="small" /></span>;
     default:        return null;
   }
 }
 /** Map a severity id → its Atlaskit core icon (color tinted). */
 function severityIcon(id: string): React.ReactNode {
   switch (id) {
-    case 'Blocker': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #AE2A19)' }}><PriorityBlockerIcon label="" size="small" /></span>;
-    case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-background-danger-bold, #E15D31)' }}><PriorityHighIcon    label="" size="small" /></span>;
-    case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-background-warning-bold, #E4A11B)' }}><PriorityMediumIcon  label="" size="small" /></span>;
-    case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link, #2898BD)' }}><PriorityLowIcon     label="" size="small" /></span>;
+    case 'Blocker': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger)' }}><PriorityBlockerIcon label="" size="small" /></span>;
+    case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-background-danger-bold)' }}><PriorityHighIcon    label="" size="small" /></span>;
+    case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-background-warning-bold)' }}><PriorityMediumIcon  label="" size="small" /></span>;
+    case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link)' }}><PriorityLowIcon     label="" size="small" /></span>;
     default:        return null;
   }
 }
@@ -555,16 +555,16 @@ export function CanonicalFilter({
     return DEFAULT_FILTERS.filter((n) => n.toLowerCase().includes(q));
   }, [savedSearch]);
 
-  const blue = token('color.text.selected', 'var(--ds-link, #0C66E4)');
-  const blueBg = token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)');
-  const blueBorder = token('color.border.selected', 'var(--ds-link, #0C66E4)');
-  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
-  const surface = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
-  const surfaceOverlay = token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
-  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle, #44546F)');
-  const textDisabled = token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)');
+  const blue = token('color.text.selected', 'var(--ds-link)');
+  const blueBg = token('color.background.selected', 'var(--ds-background-selected)');
+  const blueBorder = token('color.border.selected', 'var(--ds-link)');
+  const borderSubtle = token('color.border', 'var(--ds-border)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
+  const surface = token('elevation.surface', 'var(--ds-surface)');
+  const surfaceOverlay = token('elevation.surface.overlay', 'var(--ds-surface)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
+  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle)');
+  const textDisabled = token('color.text.disabled', 'var(--ds-text-disabled)');
 
   return (
     <>
@@ -600,8 +600,8 @@ export function CanonicalFilter({
               minWidth: 22,
               height: 18,
               borderRadius: 3,
-              background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold, #0C66E4)'),
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold)'),
+              color: token('color.text', 'var(--ds-text)'),
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               display: 'inline-flex',
@@ -857,7 +857,7 @@ export function CanonicalFilter({
                       border: `1px solid ${borderSubtle}`,
                       borderRadius: 3,
                       background: surface,
-                      color: removedFields.length === 0 ? token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)') : textSubtle,
+                      color: removedFields.length === 0 ? token('color.text.disabled', 'var(--ds-text-disabled)') : textSubtle,
                       fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 500,
                       fontFamily: 'inherit',
@@ -880,7 +880,7 @@ export function CanonicalFilter({
                         top: addFieldBtnRef.current.getBoundingClientRect().bottom + 4,
                         left: addFieldBtnRef.current.getBoundingClientRect().left,
                         minWidth: 180,
-                        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+                        background: token('elevation.surface.overlay', 'var(--ds-surface)'),
                         border: `1px solid ${borderSubtle}`,
                         borderRadius: 6,
                         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
@@ -997,8 +997,8 @@ export function CanonicalFilter({
                 top: ellipsisPos.top,
                 left: ellipsisPos.left,
                 minWidth: 180,
-                background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-                border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+                border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                 borderRadius: 6,
                 boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
                 padding: '4px 0',
@@ -1019,7 +1019,7 @@ export function CanonicalFilter({
                   }}
                 />
               ))}
-              <div style={{ height: 1, background: token('color.border', 'var(--ds-border, #DFE1E6)'), margin: '4px 0' }} />
+              <div style={{ height: 1, background: token('color.border', 'var(--ds-border)'), margin: '4px 0' }} />
               <EllipsisMenuItem
                 label="Remove filter"
                 enabled
@@ -1048,9 +1048,9 @@ function EllipsisMenuItem({
   onClick: () => void;
 }) {
   const [hover, setHover] = useState(false);
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
-  const textDisabled = token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
+  const textDisabled = token('color.text.disabled', 'var(--ds-text-disabled)');
   return (
     <div
       role="menuitem"
@@ -1087,11 +1087,11 @@ function TabButton({
   onClick: () => void;
 }) {
   const [hover, setHover] = useState(false);
-  const blue = token('color.text.selected', 'var(--ds-link, #0C66E4)');
-  const blueBg = token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)');
-  const blueBorder = token('color.border.selected', 'var(--ds-link, #0C66E4)');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
+  const blue = token('color.text.selected', 'var(--ds-link)');
+  const blueBg = token('color.background.selected', 'var(--ds-background-selected)');
+  const blueBorder = token('color.border.selected', 'var(--ds-link)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
 
   let background: string = 'transparent';
   if (active) background = blueBg;
@@ -1150,11 +1150,11 @@ function FieldItem({
   onDrop: () => void;
 }) {
   const [hover, setHover] = useState(false);
-  const blue = token('color.text.selected', 'var(--ds-link, #0C66E4)');
-  const blueBg = token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
-  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle, #44546F)');
+  const blue = token('color.text.selected', 'var(--ds-link)');
+  const blueBg = token('color.background.selected', 'var(--ds-background-selected)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
+  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle)');
 
   let background: string = 'transparent';
   if (active) background = blueBg;
@@ -1244,7 +1244,7 @@ function FieldItem({
           borderRadius: 3,
           background,
           color: active || hover ? blue : textPrimary,
-          outline: isDragOver ? `2px solid ${token('color.border.selected', 'var(--ds-link, #0C66E4)')}` : 'none',
+          outline: isDragOver ? `2px solid ${token('color.border.selected', 'var(--ds-link)')}` : 'none',
           outlineOffset: isDragOver ? -2 : 0,
         }}
       >
@@ -1256,7 +1256,7 @@ function FieldItem({
               top: 0,
               bottom: 0,
               width: 3,
-              background: token('color.background.selected.bold', 'var(--ds-link, #0C66E4)'),
+              background: token('color.background.selected.bold', 'var(--ds-link)'),
             }}
           />
         )}
@@ -1268,8 +1268,8 @@ function FieldItem({
               height: 18,
               padding: '0 6px',
               borderRadius: 3,
-              background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold, #0C66E4)'),
-              color: token('color.text', 'var(--ds-text, #172B4D)'),
+              background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold)'),
+              color: token('color.text', 'var(--ds-text)'),
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               display: 'inline-flex',
@@ -1287,7 +1287,7 @@ function FieldItem({
                 type="button"
                 aria-label={pinned ? 'Unpin field' : 'Pin field'}
                 onClick={(e) => { e.stopPropagation(); onTogglePin(); }}
-                style={{ ...iconBtnStyle(), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
+                style={{ ...iconBtnStyle(), color: token('color.text', 'var(--ds-text, var(--ds-text))') }}
               >
                 <TinyIcon>
                   {pinned
@@ -1371,8 +1371,8 @@ function SavedSearchInput({
   onChange: (v: string) => void;
 }) {
   const [focused, setFocused] = useState(false);
-  const blueBorder = token('color.border.selected', 'var(--ds-link, #0C66E4)');
-  const borderInput = token('color.border.input', 'var(--ds-text-disabled, #8590A2)');
+  const blueBorder = token('color.border.selected', 'var(--ds-link)');
+  const borderInput = token('color.border.input', 'var(--ds-text-disabled)');
 
   return (
     <div style={{ position: 'relative' }}>
@@ -1384,7 +1384,7 @@ function SavedSearchInput({
           transform: 'translateY(-50%)',
           display: 'flex',
           pointerEvents: 'none',
-          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
         }}
       >
         <SearchIcon label="" />
@@ -1406,8 +1406,8 @@ function SavedSearchInput({
           outline: 'none',
           fontSize: 'var(--ds-font-size-300)',
           fontFamily: 'inherit',
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
-          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          color: token('color.text', 'var(--ds-text)'),
+          background: token('elevation.surface', 'var(--ds-surface)'),
           boxShadow: focused ? `0 0 0 1px ${blueBorder}` : 'none',
           boxSizing: 'border-box',
         }}
@@ -1436,7 +1436,7 @@ function SavedSection({
           padding: '6px 12px',
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 700,
-          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
         }}
       >
         {title}
@@ -1446,7 +1446,7 @@ function SavedSection({
           style={{
             padding: '6px 12px',
             fontSize: 'var(--ds-font-size-200)',
-            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'),
+            color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
           }}
         >
           No filters
@@ -1478,10 +1478,10 @@ function SavedItem({
   showStar?: boolean;
 }) {
   const [hover, setHover] = useState(false);
-  const blue = token('color.text.selected', 'var(--ds-link, #0C66E4)');
-  const blueBg = token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
+  const blue = token('color.text.selected', 'var(--ds-link)');
+  const blueBg = token('color.background.selected', 'var(--ds-background-selected)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
 
   let background: string = 'transparent';
   if (active) background = blueBg;
@@ -1517,7 +1517,7 @@ function SavedItem({
             top: 0,
             bottom: 0,
             width: 3,
-            background: token('color.background.selected.bold', 'var(--ds-link, #0C66E4)'),
+            background: token('color.background.selected.bold', 'var(--ds-link)'),
           }}
         />
       )}
@@ -1528,7 +1528,7 @@ function SavedItem({
           aria-label="Star filter"
           style={{
             display: 'inline-flex',
-            color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -1541,7 +1541,7 @@ function SavedItem({
 
 function FeedbackButton() {
   const [hover, setHover] = useState(false);
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
   return (
     <button
       type="button"
@@ -1577,13 +1577,13 @@ function Kbd({ children }: { children: React.ReactNode }) {
         minWidth: 22,
         height: 20,
         padding: '0 6px',
-        background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        background: token('color.background.neutral', 'var(--ds-background-neutral)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-100)',
         fontFamily: 'inherit',
         fontWeight: 600,
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
       }}
     >
       {children}
@@ -1683,11 +1683,11 @@ function AdvancedTabBody({
     for (const k of Object.keys(projectMetaMap)) m[k] = projectMetaMap[k].name;
     return m;
   }, [projectMetaMap]);
-  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
-  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle, #44546F)');
-  const surface = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
+  const borderSubtle = token('color.border', 'var(--ds-border)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
+  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle)');
+  const surface = token('elevation.surface', 'var(--ds-surface)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
 
   const [addOpen, setAddOpen] = useState(false);
   const addBtnRef = useRef<HTMLButtonElement>(null);
@@ -1818,12 +1818,12 @@ function ProjectChip({
   const [operator, setOperator] = useState<'=' | '!='>('=');
   const anchorRef = useRef<HTMLDivElement>(null);
   const opAnchorRef = useRef<HTMLButtonElement>(null);
-  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
-  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle, #44546F)');
-  const surface = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
-  const blue = token('color.text.selected', 'var(--ds-link, #0C66E4)');
+  const borderSubtle = token('color.border', 'var(--ds-border)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
+  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle)');
+  const surface = token('elevation.surface', 'var(--ds-surface)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
+  const blue = token('color.text.selected', 'var(--ds-link)');
   const isActive = popOpen || opOpen;
   // Mid pill + right segment only render when the user has selections OR
   // explicitly touched the operator (non-default). Clearing resets both.
@@ -1850,9 +1850,9 @@ function ProjectChip({
         height: 40,
         padding: '0 10px 0 14px',
         minWidth: 400,
-        border: `1px solid ${isActive ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : borderSubtle}`,
+        border: `1px solid ${isActive ? token('color.border.selected', 'var(--ds-link)') : borderSubtle}`,
         borderRadius: 3,
-        background: isActive ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : hover ? hoverNeutral : surface,
+        background: isActive ? token('color.background.selected', 'var(--ds-background-selected)') : hover ? hoverNeutral : surface,
         fontSize: 'var(--ds-font-size-300)',
         fontFamily: 'inherit',
         cursor: 'pointer',
@@ -1953,8 +1953,8 @@ function ProjectAvatar({
         width: 20,
         height: 20,
         borderRadius: 3,
-        background: color || 'var(--ds-link, #0C66E4)',
-        color: 'var(--ds-text-inverse, #FFFFFF)',
+        background: color || 'var(--ds-link)',
+        color: 'var(--ds-text-inverse)',
         fontSize: 'var(--ds-font-size-50)',
         fontWeight: 700,
         flexShrink: 0,
@@ -1980,7 +1980,7 @@ function FirstAndMore({
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
       <span style={{
-        color: activeColor || token('color.text', 'var(--ds-text, #172B4D)'),
+        color: activeColor || token('color.text', 'var(--ds-text)'),
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
@@ -1994,8 +1994,8 @@ function FirstAndMore({
           minWidth: 22,
           height: 18,
           borderRadius: 3,
-          background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold, #0C66E4)'),
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
+          background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold)'),
+          color: token('color.text', 'var(--ds-text)'),
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           display: 'inline-flex',
@@ -2068,7 +2068,7 @@ function ProjectPickerPopover({
   const rect = anchorRef.current.getBoundingClientRect();
   const q = search.trim().toLowerCase();
   const filtered = q ? rows.filter((r) => r.name.toLowerCase().includes(q) || r.key.toLowerCase().includes(q)) : rows;
-  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
+  const borderSubtle = token('color.border', 'var(--ds-border)');
 
   return createPortal(
     <div
@@ -2083,7 +2083,7 @@ function ProjectPickerPopover({
         left: rect.left,
         width: 360,
         maxHeight: 420,
-        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+        background: token('elevation.surface.overlay', 'var(--ds-surface)'),
         border: `1px solid ${borderSubtle}`,
         borderRadius: 6,
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
@@ -2105,10 +2105,10 @@ function ProjectPickerPopover({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '8px 12px',
-            background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             border: 0,
             borderRadius: 3,
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
             fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'inherit',
             cursor: 'pointer',
@@ -2136,7 +2136,7 @@ function ProjectPickerPopover({
       </div>
       <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0', minHeight: 0 }}>
         {filtered.length === 0 ? (
-          <div style={{ padding: 12, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+          <div style={{ padding: 12, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
             No matches
           </div>
         ) : filtered.map((r) => (
@@ -2166,7 +2166,7 @@ function ProjectPickerPopover({
             border: 0,
             background: 'transparent',
             // Always-gray text per spec — color does not flip blue when enabled.
-            color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle)'),
             cursor: selectedKeys.length > 0 ? 'pointer' : 'not-allowed',
             opacity: selectedKeys.length > 0 ? 1 : 0.6,
             fontSize: 'var(--ds-font-size-300)',
@@ -2260,12 +2260,12 @@ function ClauseChip({
     onValueChange({ ...value, [field]: [], [exKey]: [] } as CanonicalFilterValue);
   }
 
-  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
-  const blueBorder = token('color.border.selected', 'var(--ds-link, #0C66E4)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
-  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle, #44546F)');
-  const surface = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
+  const borderSubtle = token('color.border', 'var(--ds-border)');
+  const blueBorder = token('color.border.selected', 'var(--ds-link)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
+  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle)');
+  const surface = token('elevation.surface', 'var(--ds-surface)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
   const [hover, setHover] = useState(false);
   const isActive = valOpen || opOpen;
   const activeValues = operator === '=' ? includeVals : excludeVals;
@@ -2284,7 +2284,7 @@ function ClauseChip({
 
   // Background: white idle, gray on hover, blue-tinted when active.
   let chipBg: string = surface;
-  if (isActive) chipBg = token('color.background.selected', 'var(--ds-background-selected, var(--ds-background-information, #E9F2FF))');
+  if (isActive) chipBg = token('color.background.selected', 'var(--ds-background-selected, var(--ds-background-information))');
   else if (hover) chipBg = hoverNeutral;
 
   return (
@@ -2451,8 +2451,8 @@ function OperatorMenu({
         top: rect.bottom + 4,
         left: rect.left,
         minWidth: 160,
-        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 6,
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         padding: '4px 0',
@@ -2508,8 +2508,8 @@ function AddFilterMenu({
         top: rect.bottom + 4,
         left: rect.left,
         minWidth: 180,
-        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 6,
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         padding: '4px 0',
@@ -2518,7 +2518,7 @@ function AddFilterMenu({
       }}
     >
       {options.length === 0 ? (
-        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
           All fields already added
         </div>
       ) : options.map((o) => (
@@ -2624,8 +2624,8 @@ function ValuePickerPopover({
         left: rect.left,
         width: 320,
         maxHeight: 420,
-        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
-        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+        background: token('elevation.surface.overlay', 'var(--ds-surface)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         borderRadius: 6,
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         zIndex: 10000,
@@ -2635,7 +2635,7 @@ function ValuePickerPopover({
         fontFamily: 'inherit',
       }}
     >
-      <div style={{ padding: 8, borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` }}>
+      <div style={{ padding: 8, borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}` }}>
         <button
           ref={headerOpRef}
           type="button"
@@ -2646,10 +2646,10 @@ function ValuePickerPopover({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '8px 12px',
-            background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             border: 0,
             borderRadius: 3,
-            color: token('color.text', 'var(--ds-text, #172B4D)'),
+            color: token('color.text', 'var(--ds-text)'),
             fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'inherit',
             cursor: 'pointer',
@@ -2716,12 +2716,12 @@ function tokenizeForHighlight(src: string): HighlightSpan[] {
     }
   };
   // Order matters: strings first (so keywords inside strings aren't recolored).
-  push(JQL_STRINGS, 'var(--ds-background-discovery-bold, #7C3AED)');   // purple
-  push(JQL_NUMBERS, 'var(--ds-text-danger, #AE2A19)');   // orange
-  push(JQL_KEYWORDS, 'var(--ds-link, #0C66E4)');  // blue
-  push(JQL_FIELDS, 'var(--ds-link, #0C66E4)');    // blue (same as keywords — Jira parity)
-  push(JQL_FUNCS, 'var(--ds-chart-teal-bolder, #0f766e)');     // teal
-  push(JQL_OPS, 'var(--ds-text-subtlest, #6B6E76)');       // gray
+  push(JQL_STRINGS, 'var(--ds-background-discovery-bold)');   // purple
+  push(JQL_NUMBERS, 'var(--ds-text-danger)');   // orange
+  push(JQL_KEYWORDS, 'var(--ds-link)');  // blue
+  push(JQL_FIELDS, 'var(--ds-link)');    // blue (same as keywords — Jira parity)
+  push(JQL_FUNCS, 'var(--ds-chart-teal-bolder)');     // teal
+  push(JQL_OPS, 'var(--ds-text-subtlest)');       // gray
   // Resolve overlaps — keep the FIRST span (by index) that covers a position.
   spans.sort((a, b) => (a.start - b.start) || (b.end - b.start) - (a.end - a.start));
   const merged: HighlightSpan[] = [];
@@ -2786,12 +2786,12 @@ function JqlTabBody({
     }
   }
 
-  const blueBorder = token('color.border.selected', 'var(--ds-link, #0C66E4)');
-  const borderInput = token('color.border.input', 'var(--ds-text-disabled, #8590A2)');
-  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
-  const surface = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');
-  const textPrimary = token('color.text', 'var(--ds-text, #172B4D)');
-  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle, #44546F)');
+  const blueBorder = token('color.border.selected', 'var(--ds-link)');
+  const borderInput = token('color.border.input', 'var(--ds-text-disabled)');
+  const borderSubtle = token('color.border', 'var(--ds-border)');
+  const surface = token('elevation.surface', 'var(--ds-surface)');
+  const textPrimary = token('color.text', 'var(--ds-text)');
+  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle)');
 
   const editorHeight = expanded ? 320 : 140;
   const spans = tokenizeForHighlight(text);
@@ -2942,7 +2942,7 @@ function JqlTabBody({
           color: textSubtle,
         }}
       >
-        <span style={{ color: errMsg ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') : textSubtle }}>
+        <span style={{ color: errMsg ? token('color.text.danger', 'var(--ds-text-danger)') : textSubtle }}>
           {errMsg || ''}
         </span>
         <span>
@@ -3037,7 +3037,7 @@ function FieldEditor(props: FieldEditorProps) {
       onClearField={onClearField}
     >
       {filtered.length === 0 ? (
-        <div style={{ padding: 12, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+        <div style={{ padding: 12, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
           No matches
         </div>
       ) : (
@@ -3159,7 +3159,7 @@ function ParentEditor({
         />
       ))}
       {loading && (
-        <div style={{ padding: 8, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+        <div style={{ padding: 8, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
           Loading…
         </div>
       )}
@@ -3190,10 +3190,10 @@ function EditorShell({
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void;
   children: React.ReactNode;
 }) {
-  const borderSubtle = token('color.border', 'var(--ds-border, #DFE1E6)');
-  const blue = token('color.text.selected', 'var(--ds-link, #0C66E4)');
-  const textDisabled = token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)');
-  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle, #44546F)');
+  const borderSubtle = token('color.border', 'var(--ds-border)');
+  const blue = token('color.text.selected', 'var(--ds-link)');
+  const textDisabled = token('color.text.disabled', 'var(--ds-text-disabled)');
+  const textSubtle = token('color.text.subtle', 'var(--ds-text-subtle)');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
@@ -3261,8 +3261,8 @@ function FilterSearchInput({
   placeholder: string;
 }) {
   const [focused, setFocused] = useState(false);
-  const blueBorder = token('color.border.selected', 'var(--ds-link, #0C66E4)');
-  const borderInput = token('color.border.input', 'var(--ds-text-disabled, #8590A2)');
+  const blueBorder = token('color.border.selected', 'var(--ds-link)');
+  const borderInput = token('color.border.input', 'var(--ds-text-disabled)');
   return (
     <div style={{ position: 'relative' }}>
       <span
@@ -3273,7 +3273,7 @@ function FilterSearchInput({
           transform: 'translateY(-50%)',
           display: 'flex',
           pointerEvents: 'none',
-          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle)'),
         }}
       >
         <SearchIcon label="" />
@@ -3295,8 +3295,8 @@ function FilterSearchInput({
           outline: 'none',
           fontSize: 'var(--ds-font-size-300)',
           fontFamily: 'inherit',
-          color: token('color.text', 'var(--ds-text, #172B4D)'),
-          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          color: token('color.text', 'var(--ds-text)'),
+          background: token('elevation.surface', 'var(--ds-surface)'),
           boxShadow: focused ? `0 0 0 1px ${blueBorder}` : 'none',
           boxSizing: 'border-box',
         }}
@@ -3321,9 +3321,9 @@ function OptionRow({
   onClick: () => void;
 }) {
   const [hover, setHover] = useState(false);
-  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
-  const blue = token('color.background.selected.bold', 'var(--ds-link, #0C66E4)');
-  const borderInput = token('color.border.input', 'var(--ds-text-disabled, #8590A2)');
+  const hoverNeutral = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral)');
+  const blue = token('color.background.selected.bold', 'var(--ds-link)');
+  const borderInput = token('color.border.input', 'var(--ds-text-disabled)');
   return (
     <div
       role="checkbox"
@@ -3343,7 +3343,7 @@ function OptionRow({
         cursor: 'pointer',
         background: hover ? hoverNeutral : 'transparent',
         fontSize: 'var(--ds-font-size-300)',
-        color: token('color.text', 'var(--ds-text, #172B4D)'),
+        color: token('color.text', 'var(--ds-text)'),
       }}
     >
       <span
@@ -3361,7 +3361,7 @@ function OptionRow({
       >
         {checked && (
           <svg width="10" height="10" viewBox="0 0 16 16" aria-hidden focusable="false">
-            <path d="M3 8.5l3 3 7-7" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M3 8.5l3 3 7-7" fill="none" stroke="var(--ds-surface)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </span>
@@ -3373,7 +3373,7 @@ function OptionRow({
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
         )}
         {sublabel && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {sublabel}
           </span>
         )}

@@ -213,15 +213,15 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     }
     .vf-btn--cancel:hover { background: var(--ds-surface, rgba(255,255,255,0.22)); }
     .vf-btn--commit {
-      background: var(--ds-link, #0C66E4);
-      color: var(--ds-text-inverse, #FFFFFF);
+      background: var(--ds-link);
+      color: var(--ds-text-inverse);
     }
-    .vf-btn--commit:hover { background: var(--ds-link, #0C66E4); }
+    .vf-btn--commit:hover { background: var(--ds-link); }
     .vf-btn--commit-review {
       background: #F79009; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-      color: var(--ds-text-inverse, #FFFFFF);
+      color: var(--ds-text-inverse);
     }
-    .vf-btn--commit-review:hover { background: var(--ds-background-warning-bold, #d97706); }
+    .vf-btn--commit-review:hover { background: var(--ds-background-warning-bold); }
   `;
   document.head.appendChild(s);
 }

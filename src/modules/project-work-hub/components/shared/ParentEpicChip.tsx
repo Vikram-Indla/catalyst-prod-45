@@ -29,14 +29,14 @@ export const ParentEpicChip: React.FC<ParentEpicChipProps> = ({ epicId, epicKey,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        background: 'var(--ds-background-accent-purple-subtlest, #EAE6FF)',
-        color: 'var(--ds-text-accent-purple, #403294)',
+        background: 'var(--ds-background-accent-purple-subtlest)',
+        color: 'var(--ds-text-accent-purple)',
         cursor: 'pointer',
         transition: 'background 0.12s',
       }}
       title={label}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-accent-purple-subtler, #C0B6F2)')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-background-accent-purple-subtlest, #EAE6FF)')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-accent-purple-subtler)')}
+      onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-background-accent-purple-subtlest)')}
     >
       <JiraIssueTypeIcon type="epic" size={14} />
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>

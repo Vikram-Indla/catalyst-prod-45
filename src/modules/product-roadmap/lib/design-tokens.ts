@@ -7,58 +7,58 @@
 export const catalystTokens = {
   // Brand - Catalyst V5 Blue
   brand: {
-    primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
-    primaryHover: 'var(--ds-text-brand, #3b82f6)',
+    primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+    primaryHover: 'var(--ds-text-brand)',
   },
 
   // Semantic Status
   status: {
     success: {
-      base: 'var(--ds-chart-teal-bold, #0d9488)',
+      base: 'var(--ds-chart-teal-bold)',
       bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.1))',
-      text: 'var(--ds-text-success, #216E4E)',
+      text: 'var(--ds-text-success)',
     },
     warning: {
-      base: 'var(--ds-text-warning, #f59e0b)',
+      base: 'var(--ds-text-warning)',
       bg: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))',
-      text: 'var(--ds-background-warning-bold, #b45309)',
+      text: 'var(--ds-background-warning-bold)',
     },
     danger: {
-      base: 'var(--ds-text-danger, #ef4444)',
+      base: 'var(--ds-text-danger)',
       bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.1))',
-      text: 'var(--ds-text-danger, #AE2A19)',
+      text: 'var(--ds-text-danger)',
     },
     info: {
-      base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+      base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
       bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))',
-      text: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
+      text: 'var(--ds-background-brand-bold-hovered)',
     },
   },
 
   // Secondary Palette (Product Colors)
   secondary: {
     blue: {
-      base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+      base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
       bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.15))',
     },
     teal: {
-      base: 'var(--ds-chart-teal-bold, #0d9488)',
+      base: 'var(--ds-chart-teal-bold)',
       bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))',
     },
     olive: {
-      base: 'var(--ds-chart-teal-bold, #0d9488)',
+      base: 'var(--ds-chart-teal-bold)',
       bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))',
     },
     bronze: {
-      base: 'var(--ds-text-subtlest, #626F86)',
+      base: 'var(--ds-text-subtlest)',
       bg: 'rgba(107, 114, 128, 0.15)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     },
     champagne: {
-      base: 'var(--ds-text-disabled, #8590A2)',
+      base: 'var(--ds-text-disabled)',
       bg: 'var(--ds-text-disabled, rgba(156, 163, 175, 0.2))',
     },
     grey: {
-      base: 'var(--ds-border, #DFE1E6)',
+      base: 'var(--ds-border)',
       bg: 'rgba(200, 204, 208, 0.15)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
     },
   },
@@ -66,34 +66,34 @@ export const catalystTokens = {
   // Light Mode
   light: {
     text: {
-      primary: 'var(--ds-surface, #0a0a0a)',
-      secondary: 'var(--ds-text-subtle, #44546F)',
-      muted: 'var(--ds-text-subtlest, #626F86)',
+      primary: 'var(--ds-surface)',
+      secondary: 'var(--ds-text-subtle)',
+      muted: 'var(--ds-text-subtlest)',
     },
     surface: {
-      bg: 'var(--ds-surface-sunken, #FAFAFA)',
-      card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-      hover: 'var(--ds-background-neutral, #F0F0F0)',
+      bg: 'var(--ds-surface-sunken)',
+      card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+      hover: 'var(--ds-background-neutral)',
       active: 'var(--ds-background-information, rgba(37, 99, 235, 0.12))',
     },
     border: {
-      default: 'var(--ds-border, #DFE1E6)',
-      subtle: 'var(--ds-background-neutral, #F0F0F0)',
-      strong: 'var(--ds-background-neutral-hovered, #D4D4D4)',
+      default: 'var(--ds-border)',
+      subtle: 'var(--ds-background-neutral)',
+      strong: 'var(--ds-background-neutral-hovered)',
     },
   },
 
   // Dark Mode — DARK MODE ADS neutral
   dark: {
     text: {
-      primary: 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))',
-      secondary: 'var(--ds-text-subtlest, #A1A1A1)',
-      muted: 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))',
+      primary: 'var(--ds-text, var(--cp-bg-neutral))',
+      secondary: 'var(--ds-text-subtlest)',
+      muted: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
     },
     surface: {
-      bg: 'var(--ds-surface, #0A0A0A)',
-      card: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
-      hover: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
+      bg: 'var(--ds-surface)',
+      card: 'var(--ds-surface-raised, var(--cp-ink-1))',
+      hover: 'var(--ds-surface-raised, var(--cp-ink-1))',
       active: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.2))',
     },
     border: {
@@ -106,10 +106,10 @@ export const catalystTokens = {
 
 // Timeline bar colors by product - Catalyst V5 palette
 export const PRODUCT_COLORS: Record<string, string> = {
-  MINI: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',  // Primary blue
-  SEN: 'var(--ds-chart-teal-bold, #0d9488)',   // Teal/Success
-  ENT: 'var(--ds-text-subtlest, #626F86)',   // Neutral gray
-  UNA: 'var(--ds-text-subtle, #44546F)',   // Muted gray
+  MINI: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',  // Primary blue
+  SEN: 'var(--ds-chart-teal-bold)',   // Teal/Success
+  ENT: 'var(--ds-text-subtlest)',   // Neutral gray
+  UNA: 'var(--ds-text-subtle)',   // Muted gray
 };
 
 // Get color for a product, with fallback
@@ -122,8 +122,8 @@ export function getProductColor(productCode: string | null): string {
 export const TIMELINE_COLORS = {
   gridLine: 'var(--ds-surface, rgba(255, 255, 255, 0.05))',
   gridLineDark: 'var(--ds-surface, rgba(255, 255, 255, 0.05))',
-  todayLine: 'var(--ds-text-danger, #ef4444)',      // Danger red
-  milestoneMarker: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Primary blue
-  barDefault: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',      // Primary blue
-  barHover: 'var(--ds-text-brand, #3b82f6)',        // Primary hover
+  todayLine: 'var(--ds-text-danger)',      // Danger red
+  milestoneMarker: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', // Primary blue
+  barDefault: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',      // Primary blue
+  barHover: 'var(--ds-text-brand)',        // Primary hover
 };

@@ -12,7 +12,7 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 export function statusBackground(cat: string | undefined): string {
   if (cat === 'done') return 'var(--ds-background-success, rgba(148,199,72,0.18))';
   if (cat === 'inprogress') return 'var(--ds-background-information, rgba(102,157,241,0.18))';
-  return 'var(--ds-background-neutral-subtle, #F7F8F9)';
+  return 'var(--ds-background-neutral-subtle)';
 }
 
 export interface TicketKeyChipProps {
@@ -42,7 +42,7 @@ export function TicketKeyChip({ issueKey, issueType, summary, statusCategory }: 
         border: 'none',
         background: statusBackground(statusCategory),
         borderRadius: 3,
-        color: 'var(--ds-link, #0052CC)',
+        color: 'var(--ds-link)',
         font: 'inherit',
         fontWeight: 500,
         cursor: 'pointer',

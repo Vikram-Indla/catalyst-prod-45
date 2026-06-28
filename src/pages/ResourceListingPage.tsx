@@ -32,12 +32,12 @@ interface Resource {
 
 /* ── Constants ── */
 const DEPT_COLORS: Record<string, string> = {
-  Delivery: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  Product: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))',
-  Governance: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
-  Operations: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-  'Technical Support': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  'Strategy & Planning': 'var(--ds-link, #0C66E4)',
+  Delivery: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  Product: 'var(--cp-purple-60, var(--ds-background-discovery-bold))',
+  Governance: 'var(--cp-teal-60, var(--ds-chart-teal-bold))',
+  Operations: 'var(--ds-text-warning, var(--cp-warning))',
+  'Technical Support': 'var(--ds-text-danger, var(--cp-danger))',
+  'Strategy & Planning': 'var(--ds-link)',
 };
 
 type SortKey = 'full_name' | 'dept_name' | 'job_role' | 'assignment_name' | 'location_type' | 'vendor_name';
@@ -59,7 +59,7 @@ const getInitials = (name: string) => {
     ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
     : (parts[0]?.[0] || '?').toUpperCase();
 };
-const AVATAR_COLORS = ['var(--ds-chart-blue-bold, #6b7a8d)', 'var(--ds-chart-green-bold, #7a8b6b)', 'var(--ds-chart-orange-bold, #8b7a6b)', 'var(--ds-background-discovery-bold, #6b6b8b)', 'var(--ds-chart-teal-bold, #6b8b8b)', 'var(--ds-chart-magenta-bold, #8b6b7a)', 'var(--ds-chart-purple-bold, #7a6b8b)', 'var(--ds-background-discovery, #6b8b7a)'];
+const AVATAR_COLORS = ['var(--ds-chart-blue-bold)', 'var(--ds-chart-green-bold)', 'var(--ds-chart-orange-bold)', 'var(--ds-background-discovery-bold)', 'var(--ds-chart-teal-bold)', 'var(--ds-chart-magenta-bold)', 'var(--ds-chart-purple-bold)', 'var(--ds-background-discovery)'];
 
 const hashColor = (name: string) => {
   let hash = 0;
@@ -70,37 +70,37 @@ const hashColor = (name: string) => {
 /* ── Dark mode token map ── */
 function useTokens(dk: boolean) {
   return useMemo(() => ({
-    pageBg:       dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-    surfaceBg:    dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-    elevatedBg:   dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-    headerBg:     dk ? 'var(--ds-text, #172B4D)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-    hoverBg:      dk ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #F8FAFC)',
-    border:       dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-    borderSubtle: dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-background-neutral-subtle, #F7F8F9)',
-    borderInput:  dk ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border, #DFE1E6)',
-    borderFocus:  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-    text1:        dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-    text2:        dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #475569)',
-    text3:        dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-    textMuted:    dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, #626F86)',
-    textDim:      dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-border, #DFE1E6)',
-    inputBg:      dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-    badgeBg:      dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
-    badgeText:    dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #475569)',
-    pillBg:       dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-    pillBorder:   dk ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border, #DFE1E6)',
-    pillActiveBorder: dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, #172B4D)',
-    pillActiveText:   dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, #172B4D)',
-    pillInactiveText: dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #626F86)',
-    pillHoverBg:  dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
-    pillHoverText: dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, #172B4D)',
-    typePillBg:       dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface-sunken, #F8FAFC)',
-    typePillActiveBg: dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-    shimmerFrom:  dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
-    shimmerMid:   dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-    tooltipBg:    dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-text, #172B4D)',
-    tooltipText:  dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-surface-sunken, #f1f5f9)',
-    divider:      dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+    pageBg:       dk ? 'var(--ds-surface)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+    surfaceBg:    dk ? 'var(--ds-surface)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+    elevatedBg:   dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+    headerBg:     dk ? 'var(--ds-text)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+    hoverBg:      dk ? 'var(--ds-surface-overlay)' : 'var(--ds-surface-sunken)',
+    border:       dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))',
+    borderSubtle: dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-background-neutral-subtle)',
+    borderInput:  dk ? 'var(--ds-border-bold)' : 'var(--ds-border)',
+    borderFocus:  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+    text1:        dk ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))',
+    text2:        dk ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtle)',
+    text3:        dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
+    textMuted:    dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest)',
+    textDim:      dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-border)',
+    inputBg:      dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+    badgeBg:      dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
+    badgeText:    dk ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtle)',
+    pillBg:       dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+    pillBorder:   dk ? 'var(--ds-border-bold)' : 'var(--ds-border)',
+    pillActiveBorder: dk ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text)',
+    pillActiveText:   dk ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text)',
+    pillInactiveText: dk ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest)',
+    pillHoverBg:  dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
+    pillHoverText: dk ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text)',
+    typePillBg:       dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface-sunken)',
+    typePillActiveBg: dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
+    shimmerFrom:  dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
+    shimmerMid:   dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))',
+    tooltipBg:    dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-text)',
+    tooltipText:  dk ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-surface-sunken)',
+    divider:      dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))',
     focusShadow:  dk ? '0 0 0 3px var(--ds-background-information, rgba(37,99,235,.2))' : '0 0 0 3px var(--ds-background-information, rgba(37,99,235,.1))',
   }), [dk]);
 }
@@ -320,9 +320,9 @@ export default function ResourceListingPage() {
                   fontSize: 'var(--ds-font-size-200)', fontWeight: isActive ? 600 : 500, cursor: 'pointer',
                   transition: 'all 150ms ease',
                   display: 'inline-flex', alignItems: 'center', gap: 4,
-                  border: isActive ? `1.5px solid ${isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, #172B4D)'}` : `1px solid ${t.pillBorder}`,
+                  border: isActive ? `1.5px solid ${isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text)'}` : `1px solid ${t.pillBorder}`,
                   background: isActive ? t.typePillActiveBg : 'transparent',
-                  color: isActive ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, #172B4D)') : t.text2,
+                  color: isActive ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text)') : t.text2,
                 }}
                 onMouseEnter={e => {
                   if (!isActive) {
@@ -447,7 +447,7 @@ export default function ResourceListingPage() {
                         }}>
                           <span style={{
                             width: '6px', height: '6px', borderRadius: '50%',
-                            background: DEPT_COLORS[r.dept_name] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0,
+                            background: DEPT_COLORS[r.dept_name] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', flexShrink: 0,
                           }} />
                           {r.dept_name}
                         </span>
@@ -477,7 +477,7 @@ export default function ResourceListingPage() {
                       <div className="r360-actions" style={{ display: 'inline-flex', gap: '4px', opacity: 0, transition: 'opacity 150ms ease' }}>
                         <ActionBtn
                           tooltip="Open Intelligence"
-                          bg="var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))" bgHover="var(--ds-background-discovery-bold, #6d28d9)"
+                          bg="var(--cp-purple-60, var(--ds-background-discovery-bold))" bgHover="var(--ds-background-discovery-bold)"
                           shadowColor="var(--ds-background-discovery-bold, rgba(124,58,237,0.2))"
                           icon={<Zap size={13} strokeWidth={1.9} />}
                           onClick={(e) => {
@@ -487,20 +487,20 @@ export default function ResourceListingPage() {
                         />
                         <ActionBtn
                           tooltip="Resource 360°"
-                          bg={'var(--cp-text-secondary, var(--ds-text, #172B4D))'} bgHover={'var(--cp-text-primary, var(--ds-text, #172B4D))'}
+                          bg={'var(--cp-text-secondary, var(--ds-text))'} bgHover={'var(--cp-text-primary, var(--ds-text))'}
                           icon={<RotateCw size={13} strokeWidth={1.9} />}
                           onClick={(e) => { e.stopPropagation(); navTo(r.id, 'ring'); }}
                         />
                         <ActionBtn
                           tooltip="Chronology View"
-                          bg="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" bgHover="var(--ds-background-brand-bold-hovered, #1d4ed8)"
+                          bg="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" bgHover="var(--ds-background-brand-bold-hovered)"
                           shadowColor="var(--ds-background-information, rgba(37,99,235,0.2))"
                           icon={<Clock size={13} strokeWidth={1.9} />}
                           onClick={(e) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}
                         />
                         <ActionBtn
                           tooltip="Board View"
-                          bg="var(--ds-chart-teal-bold, #0d9488)" bgHover="var(--ds-chart-teal-bolder, #0f766e)"
+                          bg="var(--ds-chart-teal-bold)" bgHover="var(--ds-chart-teal-bolder)"
                           shadowColor="var(--ds-background-success, rgba(13,148,136,0.2))"
                           icon={<LayoutGrid size={13} strokeWidth={1.9} />}
                           onClick={(e) => { e.stopPropagation(); navTo(r.id, 'board'); }}
@@ -545,9 +545,9 @@ export default function ResourceListingPage() {
                     onClick={() => setPage(n)}
                     style={{
                       width: 28, height: 28, borderRadius: 4,
-                      border: `1px solid ${safePage === n ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : t.border}`,
-                      background: safePage === n ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
-                      color: safePage === n ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : t.text2,
+                      border: `1px solid ${safePage === n ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : t.border}`,
+                      background: safePage === n ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'transparent',
+                      color: safePage === n ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))))' : t.text2,
                       fontWeight: safePage === n ? 600 : 400,
                       cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
                     }}
@@ -653,7 +653,7 @@ function ResourceAvatar({ name, avatarUrl }: { name: string; avatarUrl: string |
   return (
     <div style={{
       width: 28, height: 28, borderRadius: '50%',
-      background: hashColor(name), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+      background: hashColor(name), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: 'var(--ds-font-size-100)', fontWeight: 600, flexShrink: 0,
     }}>
@@ -687,7 +687,7 @@ function ActionBtn({
         }}
         onMouseEnter={e => {
           e.currentTarget.style.background = bg;
-          e.currentTarget.style.color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))';
+          e.currentTarget.style.color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))';
           e.currentTarget.style.boxShadow = `0 2px 8px ${shadowColor || 'var(--ds-shadow-raised, rgba(0,0,0,0.12))'}`;
           e.currentTarget.style.transform = 'translateY(-1px)';
         }}

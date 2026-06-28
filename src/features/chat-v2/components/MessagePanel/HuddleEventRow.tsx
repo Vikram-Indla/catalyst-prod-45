@@ -16,17 +16,17 @@ export function HuddleEventRow({ message }: { message: ChatMessage }) {
       style={{
         display: 'flex', alignItems: 'center', gap: 10,
         padding: '8px 20px', margin: '2px 0',
-        color: 'var(--cv2-text-muted, var(--ds-text-subtle, #44546F))',
+        color: 'var(--cv2-text-muted, var(--ds-text-subtle))',
         fontFamily: 'var(--cv2-font)', fontSize: 13,
       }}
     >
       <span aria-hidden style={{
         flex: '0 0 auto', width: 28, height: 28, borderRadius: 6,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--ds-surface-sunken, #F7F8F9)',
+        background: 'var(--ds-surface-sunken)',
       }}>🎧</span>
       <span>
-        <strong style={{ color: 'var(--ds-text, #172B4D)' }}>A huddle happened</strong>
+        <strong style={{ color: 'var(--ds-text)' }}>A huddle happened</strong>
         {'  '}{detail}
       </span>
     </div>

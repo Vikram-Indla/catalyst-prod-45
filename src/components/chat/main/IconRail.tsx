@@ -114,10 +114,10 @@ export function IconRail({
         onClick={onOpenCaty}
         aria-label="Open Caty AI"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-discovery, #6E5DC6)" strokeWidth={2}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ds-icon-discovery)" strokeWidth={2}>
           <path d="M12 3l1.9 5.8L20 10l-5.1 1.9L12 18l-1.9-6.1L5 10l5.1-1.2z" />
         </svg>
-        <span className="cc-navitem__lbl" style={{ color: 'var(--ds-text-discovery, #6E5DC6)' }}>
+        <span className="cc-navitem__lbl" style={{ color: 'var(--ds-text-discovery)' }}>
           Caty AI
         </span>
       </button>

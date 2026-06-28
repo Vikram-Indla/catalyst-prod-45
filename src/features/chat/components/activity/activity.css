@@ -205,12 +205,12 @@
 /* Selected row in master-detail (list stays, source loads on the right). */
 .c-act-item[data-selected="true"],
 .c-act-item[data-selected="true"][data-unread="true"] {
-  background: var(--ds-background-selected, #E9F2FE);
+  background: var(--ds-background-selected);
   box-shadow: inset 2px 0 0 0 var(--c-chat-accent);
 }
 
 .c-act-item[data-selected="true"]:hover {
-  background: var(--ds-background-selected, #E9F2FE);
+  background: var(--ds-background-selected);
 }
 
 .c-act-item__icon {

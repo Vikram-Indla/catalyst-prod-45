@@ -11,17 +11,17 @@ export function StatusLegend() {
     <div className="flex items-center gap-4">
       <LegendItem 
         label="Committed" 
-        color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" 
+        color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" 
         variant="solid"
       />
       <LegendItem 
         label="Forecast" 
-        color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" 
+        color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" 
         variant="striped"
       />
       <div className="w-px h-4 bg-border" />
       <div className="flex items-center gap-1.5">
-        <div className="w-3 h-3 rounded-full bg-[var(--ds-chart-teal-bold, #0d9488)]" />
+        <div className="w-3 h-3 rounded-full bg-[var(--ds-chart-teal-bold)]" />
         <span className="text-[11px] font-medium text-muted-foreground">Available</span>
       </div>
     </div>

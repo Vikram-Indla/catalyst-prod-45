@@ -126,7 +126,7 @@ export function T10CheckoutModalNew({
           transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '520px',
-          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           borderRadius: '12px',
           boxShadow: '0 25px 50px -12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.25))',
           zIndex: 601,
@@ -155,18 +155,18 @@ export function T10CheckoutModalNew({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: 'var(--ds-background-success, #dcfce7)',
+                backgroundColor: 'var(--ds-background-success)',
                 borderRadius: '50%',
-                color: 'var(--ds-text-success, #22c55e)',
+                color: 'var(--ds-text-success)',
                 marginBottom: '16px',
               }}
             >
               <CheckCircle size={32} />
             </div>
-            <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '0 0 8px' }}>
+            <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 8px' }}>
               Checkout Complete!
             </h3>
-            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, #626F86)', margin: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest)', margin: 0 }}>
               {selectedIds.length} items have been checked out.
               {startNextWeek && ' A new week has been started.'}
             </p>
@@ -180,8 +180,8 @@ export function T10CheckoutModalNew({
                 alignItems: 'center',
                 gap: '12px',
                 padding: '20px 24px',
-                background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
-                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               }}
             >
               <div
@@ -227,8 +227,8 @@ export function T10CheckoutModalNew({
 
             {/* Body */}
             <div style={{ padding: '24px' }}>
-              <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #44546F)', marginBottom: '16px' }}>
-                <strong style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>{completedItems.length}</strong> items completed this week
+              <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', marginBottom: '16px' }}>
+                <strong style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>{completedItems.length}</strong> items completed this week
               </p>
 
               {/* Items List */}
@@ -253,8 +253,8 @@ export function T10CheckoutModalNew({
                         alignItems: 'center',
                         gap: '12px',
                         padding: '12px 14px',
-                        backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : 'var(--ds-surface-sunken, #F7F8F9)',
-                        border: isSelected ? '1px solid var(--ds-link, #2563eb)' : '1px solid var(--ds-border, #DFE1E6)',
+                        backgroundColor: isSelected ? 'var(--ds-background-selected)' : 'var(--ds-surface-sunken)',
+                        border: isSelected ? '1px solid var(--ds-link)' : '1px solid var(--ds-border)',
                         borderRadius: '8px',
                         cursor: 'pointer',
                       }}
@@ -263,15 +263,15 @@ export function T10CheckoutModalNew({
                         style={{
                           width: '20px',
                           height: '20px',
-                          border: isSelected ? '2px solid var(--ds-link, #2563eb)' : '2px solid var(--ds-border, #DFE1E6)',
+                          border: isSelected ? '2px solid var(--ds-link)' : '2px solid var(--ds-border)',
                           borderRadius: '4px',
-                          backgroundColor: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
+                          backgroundColor: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'transparent',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}
                       >
-                        {isSelected && <Check size={12} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
+                        {isSelected && <Check size={12} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" />}
                       </div>
                       <div
                         style={{
@@ -282,8 +282,8 @@ export function T10CheckoutModalNew({
                           justifyContent: 'center',
                           fontSize: 'var(--ds-font-size-200)',
                           fontWeight: 600,
-                          color: 'var(--ds-text-subtlest, #626F86)',
-                          backgroundColor: 'var(--ds-border, #e5e7eb)',
+                          color: 'var(--ds-text-subtlest)',
+                          backgroundColor: 'var(--ds-border)',
                           borderRadius: '50%',
                         }}
                       >
@@ -294,7 +294,7 @@ export function T10CheckoutModalNew({
                           style={{
                             fontSize: 'var(--ds-font-size-400)',
                             fontWeight: 500,
-                            color: 'var(--ds-text, #172B4D)',
+                            color: 'var(--ds-text)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -307,7 +307,7 @@ export function T10CheckoutModalNew({
                             style={{
                               fontFamily: "'SF Mono', Monaco, monospace",
                               fontSize: 'var(--ds-font-size-100)',
-                              color: 'var(--ds-text-subtlest, #626F86)',
+                              color: 'var(--ds-text-subtlest)',
                             }}
                           >
                             {item.taskhub_key}
@@ -326,7 +326,7 @@ export function T10CheckoutModalNew({
                   flexDirection: 'column',
                   gap: '12px',
                   paddingTop: '16px',
-                  borderTop: '1px solid var(--ds-background-neutral-subtle, #F7F8F9)',
+                  borderTop: '1px solid var(--ds-background-neutral-subtle)',
                 }}
               >
                 {incompleteCount > 0 && (
@@ -343,19 +343,19 @@ export function T10CheckoutModalNew({
                       style={{
                         width: '18px',
                         height: '18px',
-                        border: carryOver ? '2px solid var(--ds-link, #2563eb)' : '2px solid var(--ds-border, #DFE1E6)',
+                        border: carryOver ? '2px solid var(--ds-link)' : '2px solid var(--ds-border)',
                         borderRadius: '4px',
-                        backgroundColor: carryOver ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
+                        backgroundColor: carryOver ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'transparent',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      {carryOver && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
+                      {carryOver && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" />}
                     </div>
-                    <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #44546F)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
                       Carry over incomplete items to next week{' '}
-                      <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>({incompleteCount} items)</span>
+                      <span style={{ color: 'var(--ds-text-subtlest)' }}>({incompleteCount} items)</span>
                     </span>
                   </label>
                 )}
@@ -373,17 +373,17 @@ export function T10CheckoutModalNew({
                     style={{
                       width: '18px',
                       height: '18px',
-                      border: startNextWeek ? '2px solid var(--ds-link, #2563eb)' : '2px solid var(--ds-border, #DFE1E6)',
+                      border: startNextWeek ? '2px solid var(--ds-link)' : '2px solid var(--ds-border)',
                       borderRadius: '4px',
-                      backgroundColor: startNextWeek ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
+                      backgroundColor: startNextWeek ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'transparent',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    {startNextWeek && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
+                    {startNextWeek && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))" />}
                   </div>
-                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
                     Start next week after checkout
                   </span>
                 </label>
@@ -397,8 +397,8 @@ export function T10CheckoutModalNew({
                 justifyContent: 'flex-end',
                 gap: '12px',
                 padding: '16px 24px',
-                backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
-                borderTop: '1px solid var(--ds-border, #DFE1E6)',
+                backgroundColor: 'var(--ds-surface-sunken)',
+                borderTop: '1px solid var(--ds-border)',
               }}
             >
               <button
@@ -408,9 +408,9 @@ export function T10CheckoutModalNew({
                   padding: '10px 20px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
-                  color: 'var(--ds-text-subtle, #44546F)',
-                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
+                  color: 'var(--ds-text-subtle)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                  border: '1px solid var(--ds-border)',
                   borderRadius: '6px',
                   cursor: 'pointer',
                 }}
@@ -428,8 +428,8 @@ export function T10CheckoutModalNew({
                   padding: '10px 20px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
-                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                   border: 'none',
                   borderRadius: '6px',
                   cursor: selectedIds.length === 0 ? 'not-allowed' : 'pointer',

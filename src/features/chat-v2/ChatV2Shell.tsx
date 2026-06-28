@@ -924,7 +924,7 @@ function SidebarSplitter({
           width: 3,
           height: 36,
           borderRadius: 2,
-          background: showAccent ? 'var(--ds-surface, #FFFFFF)' : 'var(--cv2-text-subtle)',
+          background: showAccent ? 'var(--ds-surface)' : 'var(--cv2-text-subtle)',
           opacity: showAccent ? 0.9 : 0.35,
           pointerEvents: 'none',
           transition: 'background 120ms ease, opacity 120ms ease',
@@ -959,14 +959,14 @@ export function ChatV2Shell() {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
-        color: 'var(--ds-text-subtlest, #6B778C)',
+        color: 'var(--ds-text-subtlest)',
         fontSize: 'var(--ds-font-size-400)',
       }}>
         <div style={{
           width: 20,
           height: 20,
-          border: '2px solid var(--ds-border, #DFE1E6)',
-          borderTopColor: 'var(--ds-border-brand, #0C66E4)',
+          border: '2px solid var(--ds-border)',
+          borderTopColor: 'var(--ds-border-brand)',
           borderRadius: '50%',
           animation: 'spin 0.7s linear infinite',
         }} />

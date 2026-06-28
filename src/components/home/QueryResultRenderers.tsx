@@ -164,7 +164,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                     marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase',
                     padding: '2px 8px', borderRadius: 4,
                     background: r.health === 'on-track' ? 'var(--sem-success)' : 'var(--sem-warning-bg)',
-                    color: r.health === 'on-track' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--sem-warning)',
+                    color: r.health === 'on-track' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--sem-warning)',
                   }}>
                     {r.health === 'on-track' ? 'ON TRACK' : 'AT RISK'}
                   </span>

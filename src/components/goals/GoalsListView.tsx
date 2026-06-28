@@ -13,36 +13,36 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+  border: 'var(--ds-border, var(--cp-ink-1))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1))',
 };
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
-  'Nada Alfassam':      { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' },
-  'Sitah Alqahtani':    { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)' },
-  'Sulaiman Alessa':    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' },
-  'ibrahim alqusiyer':  { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
+  'Nada Alfassam':      { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)' },
+  'Sitah Alqahtani':    { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)' },
+  'Sulaiman Alessa':    { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)' },
+  'ibrahim alqusiyer':  { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)' },
   'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  'Izza Ali':           { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)' },
+  'Izza Ali':           { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)' },
 };
 function getAvatarColors(name: string) {
   if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const palettes = [{ bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' }, { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)' }, { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #3730a3)' }, { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #5b21b6)' }];
+  const palettes = [{ bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)' }, { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)' }, { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)' }, { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: 'var(--ds-background-discovery)', text: 'var(--ds-background-discovery-bold)' }];
   return palettes[Math.abs(hash) % palettes.length];
 }
 
 function statusBadge(status: string, isDark = false) {
   const map: Record<string, { dot: string; bg: string; text: string; bgDk: string; txtDk: string; label: string }> = {
-    active:      { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', bgDk: 'var(--ds-text, var(--ds-text, #172B4D))', txtDk: 'var(--ds-background-success, #DFFCF0)', label: 'Active' },
-    on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', bgDk: 'var(--ds-text, var(--ds-text, #172B4D))', txtDk: 'var(--ds-background-success, #DFFCF0)', label: 'On Track' },
-    completed:   { dot: 'var(--ds-background-discovery-bold, #6E5DC6)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #4338ca))', bgDk: 'var(--ds-text, var(--ds-text, #172B4D))', txtDk: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))', label: 'Completed' },
-    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--ds-background-warning, rgba(217,119,6,0.08))',  text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #b45309))', bgDk: '#2A2418', txtDk: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))', label: 'At Risk' },
-    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.08))',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgDk: 'var(--ds-text, var(--ds-text, #172B4D))', txtDk: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
-    draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
-    not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
-    cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },
+    active:      { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', bgDk: 'var(--ds-text, var(--ds-text))', txtDk: 'var(--ds-background-success)', label: 'Active' },
+    on_track:    { dot: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))',  text: 'var(--ds-background-success-bold, var(--ds-background-success-bold))', bgDk: 'var(--ds-text, var(--ds-text))', txtDk: 'var(--ds-background-success)', label: 'On Track' },
+    completed:   { dot: 'var(--ds-background-discovery-bold)', bg: 'rgba(79,70,229,0.08)',  text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold))', bgDk: 'var(--ds-text, var(--ds-text))', txtDk: 'var(--ds-background-information-bold, var(--ds-link))', label: 'Completed' },
+    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning))', bg: 'var(--ds-background-warning, rgba(217,119,6,0.08))',  text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))', bgDk: '#2A2418', txtDk: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))', label: 'At Risk' },
+    off_track:   { dot: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger, rgba(239,68,68,0.08))',  text: 'var(--ds-text-danger, var(--cp-danger))', bgDk: 'var(--ds-text, var(--ds-text))', txtDk: 'var(--ds-border-danger)', label: 'Off Track' },
+    draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1))', txtDk: 'var(--ds-text-subtlest)', label: 'Draft' },
+    not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1))', txtDk: 'var(--ds-text-subtlest)', label: 'Not Started' },
+    cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1))', txtDk: 'var(--ds-text-subtlest)', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -95,7 +95,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
   const tableBorder = isDark ? DK.border : 'var(--divider)';
   const rowBorder = isDark ? DK.borderSubtle : 'var(--cp-bd-zone)';
   const rowBg = isDark ? 'transparent' : 'transparent';
-  const rowHover = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
+  const rowHover = isDark ? 'var(--ds-surface-overlay)' : 'var(--bg-1)';
 
   return (
     <div style={{ border: `1px solid ${tableBorder}`, borderRadius: 12, overflow: 'hidden', background: isDark ? 'transparent' : 'var(--bg-app)' }}>
@@ -116,7 +116,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
       {sortedGoals.map(goal => {
         const theme = themeMap.get(goal.theme_id);
         const pct = Math.round(goal.progress_pct || 0);
-        const barColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
+        const barColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-danger)';
         const initials = goal.owner_name ? goal.owner_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '';
         const ownerColors = goal.owner_name ? getAvatarColors(goal.owner_name) : null;
         return (
@@ -129,7 +129,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
             onMouseEnter={e => (e.currentTarget.style.background = rowHover)}
             onMouseLeave={e => (e.currentTarget.style.background = rowBg)}
           >
-            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
             <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               {theme && (<><span style={{ width: 8, height: 8, borderRadius: 4, background: theme.color, flexShrink: 0 }} /><span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t2 : 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span></>)}
@@ -144,11 +144,11 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
                   <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.owner_name}</span>
                 </>
               ) : (
-                <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)' }}>—</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t4 : 'var(--ds-text-disabled)' }}>—</span>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
+              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
                 <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
               </div>
               <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: barColor }}>{pct}%</span>

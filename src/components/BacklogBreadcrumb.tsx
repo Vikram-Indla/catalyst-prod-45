@@ -17,17 +17,17 @@ export const BacklogBreadcrumb = memo(function BacklogBreadcrumb() {
           padding: 0,
           margin: 0,
           fontSize: 'var(--ds-font-size-400)',
-          color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
+          color: 'var(--cp-text-primary, var(--cp-text-inverse))',
         }}
       >
         <li>
-          <Link to="/" style={{ color: 'var(--ds-link, #0C66E4)', textDecoration: 'none' }}>
+          <Link to="/" style={{ color: 'var(--ds-link)', textDecoration: 'none' }}>
             Home
           </Link>
         </li>
-        <li style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>/</li>
+        <li style={{ color: 'var(--ds-text-subtlest)' }}>/</li>
         <li>
-          <Link to="/workitems" style={{ color: 'var(--ds-link, #0C66E4)', textDecoration: 'none' }}>
+          <Link to="/workitems" style={{ color: 'var(--ds-link)', textDecoration: 'none' }}>
             Work Items
           </Link>
         </li>

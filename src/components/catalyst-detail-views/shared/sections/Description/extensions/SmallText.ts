@@ -28,7 +28,7 @@ export const SmallText = Mark.create<SmallTextOptions>({
     return {
       HTMLAttributes: {
         style:
-          'font-size:12px;line-height:16px;color:var(--ds-text-subtle,#505258);',
+          'font-size:12px;line-height:16px;color:var(--ds-text-subtle);',
       },
     };
   },

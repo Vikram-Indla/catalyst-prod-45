@@ -201,7 +201,7 @@ export function resolveIncidentIcon(card: BoardIssue): ReactNode | null {
       />
     );
   }
-  return <AlertTriangle size={14} strokeWidth={2} style={{ color: 'var(--ds-background-danger-bold, #C9372C)' }} />;
+  return <AlertTriangle size={14} strokeWidth={2} style={{ color: 'var(--ds-background-danger-bold)' }} />;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

@@ -90,7 +90,7 @@ export function makeDragHandleCell(isDragEnabled: () => boolean) {
           width: 20,
           height: 20,
           cursor: "grab",
-          color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
+          color: token("color.text.subtle", "var(--ds-text-subtle)"),
         }}
         className="jira-drag-handle"
       >
@@ -132,7 +132,7 @@ export function makeRowMenuCell({
               border: "none",
               borderRadius: 3,
               background: "transparent",
-              color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
+              color: token("color.text.subtle", "var(--ds-text-subtle)"),
               cursor: "pointer",
               opacity: 0,
               transition: "opacity 120ms ease, background 100ms ease",
@@ -140,7 +140,7 @@ export function makeRowMenuCell({
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLElement).style.background = token(
                 "color.background.neutral.subtle.hovered",
-                "var(--ds-background-neutral-subtle, #F4F5F7)",
+                "var(--ds-background-neutral-subtle)",
               );
             }}
             onMouseLeave={(e) => {
@@ -181,7 +181,7 @@ export function makeRowMenuCell({
                 onDelete(row);
               }}
             >
-              <span style={{ color: "var(--ds-text-danger, #AE2A19)" }}>
+              <span style={{ color: "var(--ds-text-danger)" }}>
                 Delete
               </span>
             </DropdownItem>
@@ -225,14 +225,14 @@ export function makeCaretCell({
           border: "none",
           borderRadius: 3,
           background: "transparent",
-          color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
+          color: token("color.text.subtle", "var(--ds-text-subtle)"),
           cursor: "pointer",
           padding: 0,
         }}
         onMouseEnter={(e) =>
           ((e.currentTarget as HTMLElement).style.background = token(
             "color.background.neutral.subtle.hovered",
-            "var(--ds-background-neutral-subtle, #F4F5F7)",
+            "var(--ds-background-neutral-subtle)",
           ))
         }
         onMouseLeave={(e) =>
@@ -302,13 +302,13 @@ export function makeKeyCell(
           boxSizing: "border-box",
           fontFamily: "inherit",
           fontWeight: 400,
-          color: token("color.link", "var(--ds-link, #0C66E4)"),
+          color: token("color.link", "var(--ds-link)"),
           fontSize: 'var(--ds-font-size-400)',
           letterSpacing: 0,
           whiteSpace: "nowrap",
           cursor: "pointer",
           textDecoration: "underline",
-          border: `2px solid ${token("color.border.focused", "var(--ds-border-focused, #388BFF)")}`,
+          border: `2px solid ${token("color.border.focused", "var(--ds-border-focused)")}`,
           borderRadius: 3,
           padding: "2px 6px",
         }
@@ -318,7 +318,7 @@ export function makeKeyCell(
           padding: "0 2px",
           fontFamily: "inherit",
           fontWeight: 400,
-          color: token("color.link", "var(--ds-link, #0C66E4)"),
+          color: token("color.link", "var(--ds-link)"),
           fontSize: 'var(--ds-font-size-400)',
           lineHeight: 1,
           letterSpacing: 0,
@@ -391,7 +391,7 @@ export function makeKeyCell(
 // wire it on the column with `onCellEdit`.
 //
 // Apr 27, 2026 (L60): typography per Jira-parity spec — 14/20/400 with
-// `color.text` (var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))). Inherits from JiraTable's tbody td baseline so
+// `color.text` (var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))). Inherits from JiraTable's tbody td baseline so
 // no explicit fontSize is needed here; only truncation behavior.
 //
 // Tooltip on truncated text is the user's spec requirement — added via
@@ -417,7 +417,7 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
           flex: 1,
           // 2026-05-08 DOM probe: Jira summary links = rgb(80,82,88) = --ds-text-subtle.
           // Catalyst was inheriting --ds-text (rgb 41,42,46 — near-black). Fixed.
-          color: "var(--ds-text-subtle, #505258)",
+          color: "var(--ds-text-subtle)",
         }}
       >
         {summary}
@@ -481,7 +481,7 @@ export function makeStatusCell(
     const status = getStatus(row);
     if (!status)
       return (
-        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}>
           —
         </span>
       );
@@ -659,7 +659,7 @@ export function makeStatusEditCell<T>(opts: {
               ) : undefined}
             />
           ) : (
-            <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>—</span>
+            <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}>—</span>
           )}
         </button>
         {open &&
@@ -672,7 +672,7 @@ export function makeStatusEditCell<T>(opts: {
                 top: pos.top,
                 left: pos.left,
                 zIndex: 9999,
-                background: token("elevation.surface.overlay", "var(--ds-surface, #FFFFFF)"),
+                background: token("elevation.surface.overlay", "var(--ds-surface)"),
                 borderRadius: 4,
                 boxShadow:
                   "0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,.25)), 0 0 0 1px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.08))",
@@ -715,7 +715,7 @@ export function makeStatusEditCell<T>(opts: {
                       padding: "4px 12px",
                       border: "none",
                       background: isActive
-                        ? token("color.background.selected", "var(--ds-background-selected, #E9F2FF)")
+                        ? token("color.background.selected", "var(--ds-background-selected)")
                         : "transparent",
                       cursor: "pointer",
                       textAlign: "left",
@@ -723,16 +723,16 @@ export function makeStatusEditCell<T>(opts: {
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.background =
                         isActive
-                          ? token("color.background.selected", "var(--ds-background-selected, #E9F2FF)")
+                          ? token("color.background.selected", "var(--ds-background-selected)")
                           : token(
                               "color.background.neutral.subtle.hovered",
-                              "var(--ds-surface-sunken, #F7F8F9)",
+                              "var(--ds-surface-sunken)",
                             );
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.background =
                         isActive
-                          ? token("color.background.selected", "var(--ds-background-selected, #E9F2FF)")
+                          ? token("color.background.selected", "var(--ds-background-selected)")
                           : "transparent";
                     }}
                   >
@@ -748,7 +748,7 @@ export function makeStatusEditCell<T>(opts: {
                           marginLeft: 4,
                           color: token(
                             "color.icon.brand",
-                            "var(--cp-primary-60, #0052CC)",
+                            "var(--cp-primary-60)",
                           ),
                         }}
                       >
@@ -804,7 +804,7 @@ export function makeAssigneeCell(
           style={{
             color: token(
               "color.text",
-              "var(--cp-text-primary, var(--cp-text-inverse, #172B4D))",
+              "var(--cp-text-primary, var(--cp-text-inverse))",
             ),
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -838,7 +838,7 @@ export function makeParentCell(
     const p = getParent(row);
     if (!p)
       return (
-        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}>
           —
         </span>
       );
@@ -922,7 +922,7 @@ export function makeCommentsCell(
           display: "inline-flex",
           alignItems: "center",
           gap: 4,
-          color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
+          color: token("color.text.subtle", "var(--ds-text-subtle)"),
         }}
       >
         {/* Icon wrapper: relative container for the blue dot badge when hasCount */}
@@ -930,7 +930,7 @@ export function makeCommentsCell(
           style={{
             position: "relative",
             display: "inline-flex",
-            color: token("color.icon.subtle", "var(--ds-text-subtlest, #6B778C)"),
+            color: token("color.icon.subtle", "var(--ds-text-subtlest)"),
           }}
         >
           <CommentIcon label="" size="small" />
@@ -946,9 +946,9 @@ export function makeCommentsCell(
                 borderRadius: "50%",
                 backgroundColor: token(
                   "color.background.information.bold",
-                  "var(--ds-link, #0C66E4)",
+                  "var(--ds-link)",
                 ),
-                border: `1.5px solid ${token("elevation.surface", "var(--ds-surface, #FFFFFF)")}`,
+                border: `1.5px solid ${token("elevation.surface", "var(--ds-surface)")}`,
                 boxSizing: "border-box",
               }}
             />
@@ -959,7 +959,7 @@ export function makeCommentsCell(
         ) : (
           <span
             data-jira-cell-ghost
-            style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #6B778C)") }}
+            style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}
           >
             Add comment
           </span>
@@ -1011,16 +1011,16 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
       level >= 4
         ? token("color.icon.danger", "#E5484D")
         : level >= 3
-          ? token("color.icon.warning", "var(--cp-amber, #F59E0B)")
+          ? token("color.icon.warning", "var(--cp-amber)")
           : level >= 1
             ? token("color.icon.success", "#22C55E")
             : token(
                 "color.border",
-                "var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))",
+                "var(--cp-lozenge-grey-bg, var(--cp-border-neutral))",
               );
     const inactive = token(
       "color.border",
-      "var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))",
+      "var(--cp-lozenge-grey-bg, var(--cp-border-neutral))",
     );
     return (
       <span
@@ -1073,7 +1073,7 @@ export function makeDateCell(
     const iso = getISO(row);
     if (!iso) {
       return (
-        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}>
           —
         </span>
       );
@@ -1087,7 +1087,7 @@ export function makeDateCell(
       <span
         title={fullIso}
         style={{
-          color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
+          color: token("color.text.subtle", "var(--ds-text-subtle)"),
           fontSize: 'var(--ds-font-size-400)',
           lineHeight: "20px",
           fontWeight: 400,
@@ -1102,14 +1102,14 @@ export function makeDateCell(
 
 // ─── Labels Cell ─────────────────────────────────────────────────────────────
 // Renders label tags as Jira-style outlined chips. Measured from Jira live DOM:
-//   bg transparent, border 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)), borderRadius 4px, padding 0px 4px,
+//   bg transparent, border 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral)), borderRadius 4px, padding 0px 4px,
 //   fontSize 14px, fontWeight 400, color #292A2E.
 export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
   return function LabelsCell({ row }: CellProps<any>) {
     const labels = getLabels(row);
     if (!labels || labels.length === 0) {
       return (
-        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}>
           —
         </span>
       );
@@ -1124,11 +1124,11 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
               alignItems: "center",
               padding: "0 4px",
               borderRadius: 4,
-              border: `1px solid ${token("color.border", "var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))")}`,
+              border: `1px solid ${token("color.border", "var(--cp-lozenge-grey-bg, var(--cp-border-neutral))")}`,
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               lineHeight: "20px",
-              color: token("color.text", "var(--ds-text, #172B4D)"),
+              color: token("color.text", "var(--ds-text)"),
               whiteSpace: "nowrap",
             }}
           >
@@ -1158,7 +1158,7 @@ export function makeSprintReleaseCell(
       : [];
     if (versions.length === 0) {
       return (
-        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>
+        <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest)") }}>
           —
         </span>
       );
@@ -1179,7 +1179,7 @@ export function makeSprintReleaseCell(
               padding: "0px 4px",
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
-              color: token("color.text", "var(--ds-text, #172B4D)"),
+              color: token("color.text", "var(--ds-text)"),
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",

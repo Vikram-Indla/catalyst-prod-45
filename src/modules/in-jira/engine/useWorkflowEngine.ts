@@ -16,11 +16,11 @@ const mockWorkflow: Workflow = {
   isActive: true,
   isDefault: true,
   statuses: [
-    { id: 'backlog', name: 'Backlog', category: 'todo', color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
-    { id: 'todo', name: 'To Do', category: 'todo', color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
-    { id: 'in-progress', name: 'In Progress', category: 'in_progress', color: 'var(--cp-primary-60, #0052CC)' },
-    { id: 'in-review', name: 'In Review', category: 'in_progress', color: 'var(--ds-background-warning-bold, #E2B203)' },
-    { id: 'done', name: 'Done', category: 'done', color: 'var(--ds-background-success-bold, #1F845A)' },
+    { id: 'backlog', name: 'Backlog', category: 'todo', color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' },
+    { id: 'todo', name: 'To Do', category: 'todo', color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' },
+    { id: 'in-progress', name: 'In Progress', category: 'in_progress', color: 'var(--cp-primary-60)' },
+    { id: 'in-review', name: 'In Review', category: 'in_progress', color: 'var(--ds-background-warning-bold)' },
+    { id: 'done', name: 'Done', category: 'done', color: 'var(--ds-background-success-bold)' },
   ],
   transitions: [
     {
@@ -224,7 +224,7 @@ export function useWorkflowEngine(options: UseWorkflowEngineOptions = {}): UseWo
       return {
         name: status.name,
         category: status.category,
-        color: status.color || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+        color: status.color || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
       };
     },
     [workflow]

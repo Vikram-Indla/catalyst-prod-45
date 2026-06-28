@@ -99,14 +99,14 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
           margin: '0 0 6px',
           fontSize: 'var(--ds-font-size-700)',
           fontWeight: 600,
-          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
         }}>
           Create your password
         </h2>
         <p style={{
           margin: 0,
           fontSize: 'var(--ds-font-size-400)',
-          color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+          color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
         }}>
           Set a strong password to access your account.
         </p>
@@ -123,7 +123,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label
             htmlFor="fpr-new"
-            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
           >
             New password
           </label>
@@ -156,7 +156,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
             margin: 0,
             padding: '10px 12px',
             listStyle: 'none',
-            background: 'var(--ds-background-neutral, #F7F8F9)',
+            background: 'var(--ds-background-neutral)',
             borderRadius: 'var(--ds-border-radius, 3px)',
             display: 'flex',
             flexDirection: 'column',
@@ -171,8 +171,8 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
                   alignItems: 'center',
                   gap: 6,
                   color: r.passed
-                    ? 'var(--ds-text-success, #216E4E)'
-                    : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+                    ? 'var(--ds-text-success)'
+                    : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
                   transition: 'color 0.15s',
                 }}
               >
@@ -187,7 +187,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label
             htmlFor="fpr-confirm"
-            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}
           >
             Confirm password
           </label>
@@ -213,7 +213,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
             }
           />
           {confirmPwd.length > 0 && !passwordsMatch && (
-            <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)' }}>
+            <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>
               Passwords do not match
             </p>
           )}
@@ -232,7 +232,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
 
       {/* Safety valve — email reset link */}
       <div style={{
-        borderTop: '1px solid var(--ds-border, #091E4224)',
+        borderTop: '1px solid var(--ds-border)',
         paddingTop: 16,
         textAlign: 'center',
         display: 'flex',
@@ -240,7 +240,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         alignItems: 'center',
         gap: 8,
       }}>
-        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #626F86)' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
           Having trouble setting a password?
         </p>
         <Button

@@ -172,7 +172,7 @@ export function IssueListPanel({
                   {opt.label}
                 </label>
               ))}
-              <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
+              <div style={{ height: 1, background: 'var(--ds-border)', margin: '4px 0' }} />
               {SORT_OPTIONS.filter(o => o.group === 'extra').map(opt => (
                 <label key={opt.key} className="jlpSortOption">
                   <input type="radio" name="sort" checked={sortKey === opt.key} onChange={() => { setSortKey(opt.key); setSortMenuOpen(false); }} />
@@ -234,7 +234,7 @@ export function IssueListPanel({
                       <IssueKeyLink
                         issueKey={item.issue_key}
                         className="jlpCardKey"
-                        style={{ color: 'var(--cp-primary-60, #0052CC)', textDecoration: 'none' }}
+                        style={{ color: 'var(--cp-primary-60)', textDecoration: 'none' }}
                       />
                     </div>
                     <CatalystOwnerAvatar

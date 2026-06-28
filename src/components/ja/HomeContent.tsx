@@ -767,8 +767,8 @@ export function HomeContent() {
               )}
             >
               {/* Header with blue accent per design system v2.0 */}
-              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--ds-text-subtle, #44546F)] dark:text-[var(--ds-text-disabled, #8590A2)] border-b border-border pb-2">
-                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] rounded-r" />
+              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--ds-text-subtle)] dark:text-[var(--ds-text-disabled)] border-b border-border pb-2">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] rounded-r" />
                 My focus
               </div>
               

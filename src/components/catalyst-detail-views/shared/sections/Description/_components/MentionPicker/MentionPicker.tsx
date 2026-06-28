@@ -81,8 +81,8 @@ export function MentionPicker({ query, coords, onSelect, onDismiss }: Props) {
         zIndex: 2147483600,
         minWidth: 240,
         maxWidth: 320,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: 'var(--ds-surface-overlay)',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4,
         boxShadow: '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
         padding: 4,
@@ -107,7 +107,7 @@ export function MentionPicker({ query, coords, onSelect, onDismiss }: Props) {
             borderRadius: 3,
             background:
               i === activeIdx
-                ? 'var(--ds-background-selected, #E9F2FE)'
+                ? 'var(--ds-background-selected)'
                 : 'transparent',
             cursor: 'pointer',
             textAlign: 'left',
@@ -127,27 +127,27 @@ export function MentionPicker({ query, coords, onSelect, onDismiss }: Props) {
                 width: 24,
                 height: 24,
                 borderRadius: '50%',
-                background: 'var(--ds-background-neutral, #F1F2F4)',
+                background: 'var(--ds-background-neutral)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
-                color: 'var(--ds-text-subtle, #44546F)',
+                color: 'var(--ds-text-subtle)',
               }}
             >
               {(u.full_name ?? '?').charAt(0).toUpperCase()}
             </span>
           )}
           <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
               {u.full_name}
             </span>
             {u.email && (
               <span
                 style={{
                   fontSize: 'var(--ds-font-size-100)',
-                  color: 'var(--ds-text-subtlest, #6B778C)',
+                  color: 'var(--ds-text-subtlest)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',

@@ -6,40 +6,40 @@ import { Tooltip } from '@/components/ads';
 // Icon colors that work in both light and dark modes (from Catalyst design system)
 const ICON_COLORS: Record<string, string> = {
   // Enterprise
-  theme: 'var(--ds-chart-teal-bold, #0d9488)',      // Teal
-  objective: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',  // Blue
+  theme: 'var(--ds-chart-teal-bold)',      // Teal
+  objective: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',  // Blue
   
   // Product
-  'business-request': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
+  'business-request': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', // Blue
   
   // Program
-  epic: 'var(--ds-background-discovery-bold, #904EE2)',       // Purple
+  epic: 'var(--ds-background-discovery-bold)',       // Purple
   
   // Project
-  feature: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',    // Amber
-  story: 'var(--ds-background-success-bold, #1F845A)',      // Green
-  task: 'var(--ds-link, #0065FF)',       // Blue
-  defect: 'var(--ds-background-danger-bold, #C9372C)',     // Red
-  incident: 'var(--ds-text-danger, #EF4444)',   // Red-500
+  feature: 'var(--ds-text-warning, var(--cp-amber))',    // Amber
+  story: 'var(--ds-background-success-bold)',      // Green
+  task: 'var(--ds-link)',       // Blue
+  defect: 'var(--ds-background-danger-bold)',     // Red
+  incident: 'var(--ds-text-danger)',   // Red-500
   
   // Other
-  dependency: 'var(--ds-text-brand, #3B82F6)', // Blue
-  risk: 'var(--ds-background-warning-bold, #f97316)',       // Orange
+  dependency: 'var(--ds-text-brand)', // Blue
+  risk: 'var(--ds-background-warning-bold)',       // Orange
 };
 
 // Alternative colors for outline style (slightly muted for balance)
 const OUTLINE_COLORS: Record<string, string> = {
-  theme: 'var(--ds-background-accent-teal-bolder, #14b8a6)',
-  objective: 'var(--ds-text-brand, #3b82f6)',
+  theme: 'var(--ds-background-accent-teal-bolder)',
+  objective: 'var(--ds-text-brand)',
   'business-request': '#9c8466', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   epic: '#a060f0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  feature: 'var(--ds-background-warning-bold, #E2B203)',
-  story: 'var(--ds-background-success, #DFFCF0)',
-  task: 'var(--ds-text-brand, #3b82f6)',
-  defect: 'var(--ds-background-danger, #FFECEB)',
-  incident: 'var(--ds-background-danger, #FFECEB)',
-  dependency: 'var(--ds-text-brand, #60a5fa)',
-  risk: 'var(--ds-background-warning-bold, #E2B203)',
+  feature: 'var(--ds-background-warning-bold)',
+  story: 'var(--ds-background-success)',
+  task: 'var(--ds-text-brand)',
+  defect: 'var(--ds-background-danger)',
+  incident: 'var(--ds-background-danger)',
+  dependency: 'var(--ds-text-brand)',
+  risk: 'var(--ds-background-warning-bold)',
 };
 
 // Work item type labels for tooltips
@@ -76,7 +76,7 @@ export function WorkItemIcon({ type, size = 16, className = '', forceStyle, hide
   const { getIconStyle } = useWorkItemIconPreferences();
   
   const iconStyle = forceStyle || getIconStyle(type);
-  const color = ICON_COLORS[type] || 'var(--ds-text-subtlest, #626F86)';
+  const color = ICON_COLORS[type] || 'var(--ds-text-subtlest)';
   const outlineColor = OUTLINE_COLORS[type] || color;
   const label = WORK_ITEM_LABELS[type] || type.charAt(0).toUpperCase() + type.slice(1).replace(/-/g, ' ');
   
@@ -202,7 +202,7 @@ function FilledIcon({ type, size, color, className }: { type: string; size: numb
     default:
       return (
         <svg {...commonProps}>
-          <rect width="16" height="16" rx="3" fill="var(--ds-text-subtlest, #626F86)" />
+          <rect width="16" height="16" rx="3" fill="var(--ds-text-subtlest)" />
           <circle cx="8" cy="8" r="3" fill="white" />
         </svg>
       );

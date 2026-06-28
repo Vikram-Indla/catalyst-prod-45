@@ -345,8 +345,8 @@ export function T10WeekPage() {
             padding: '10px 20px',
             fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
-            color: 'var(--ds-text-subtlest, #64748b)',
-            background: 'var(--ds-surface-sunken, #f1f5f9)',
+            color: 'var(--ds-text-subtlest)',
+            background: 'var(--ds-surface-sunken)',
             borderRadius: 8
           }}>
             <Check size={16} /> Week Closed

@@ -38,19 +38,19 @@ interface DrawerHeaderProps {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
-  planned: { label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
-  'in-progress': { label: 'In Progress', color: 'var(--ds-link, #0C66E4)' },
-  in_progress: { label: 'In Progress', color: 'var(--ds-link, #0C66E4)' },
-  review: { label: 'Review', color: 'var(--ds-background-discovery-bold, #6E5DC6)' },
-  done: { label: 'Done', color: 'var(--ds-text-success, #16a34a)' },
+  backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest)' },
+  planned: { label: 'Planned', color: 'var(--ds-text-brand)' },
+  'in-progress': { label: 'In Progress', color: 'var(--ds-link)' },
+  in_progress: { label: 'In Progress', color: 'var(--ds-link)' },
+  review: { label: 'Review', color: 'var(--ds-background-discovery-bold)' },
+  done: { label: 'Done', color: 'var(--ds-text-success)' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
-  critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)' },
-  high: { label: 'High', color: 'var(--ds-text-warning, #974F0C)' },
-  medium: { label: 'Medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
-  low: { label: 'Low', color: 'var(--ds-text-subtlest, #94a3b8)' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger)' },
+  high: { label: 'High', color: 'var(--ds-text-warning)' },
+  medium: { label: 'Medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+  low: { label: 'Low', color: 'var(--ds-text-subtlest)' },
 };
 
 function useStatuses() {
@@ -300,15 +300,15 @@ function WorkstreamSelector({
 // CLAUDE.md §L38 — hex literals only (no HSL).
 function getAvatarColor(name: string): string {
   const colors = [
-    'var(--ds-link, #2A6DF4)',  // Blue
-    'var(--ds-background-discovery-bold, #7C3BED)',  // Purple
-    'var(--ds-background-success-bold, #25A777)',  // Teal
-    'var(--ds-background-danger-bold, #E92063)',  // Pink
-    'var(--ds-background-warning-bold, #F97015)',  // Orange
-    'var(--ds-chart-green-bold, #21C45D)',  // Green
-    'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky
-    'var(--ds-chart-yellow-bold, #FAC814)',  // Amber
-    'var(--ds-chart-purple-bold, #BB36D3)',  // Fuchsia
+    'var(--ds-link)',  // Blue
+    'var(--ds-background-discovery-bold)',  // Purple
+    'var(--ds-background-success-bold)',  // Teal
+    'var(--ds-background-danger-bold)',  // Pink
+    'var(--ds-background-warning-bold)',  // Orange
+    'var(--ds-chart-green-bold)',  // Green
+    'var(--ds-chart-blue-bold)',  // Sky
+    'var(--ds-chart-yellow-bold)',  // Amber
+    'var(--ds-chart-purple-bold)',  // Fuchsia
     '#1DAFA1',  // Cyan // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   ];
   let hash = 0;

@@ -43,7 +43,7 @@ export function openImagePreview(src: string): void {
     "border-radius:50%",
     "border:none",
     "background:var(--ds-surface, rgba(255,255,255,0.15))",
-    "color:var(--ds-surface, #FFFFFF)",
+    "color:var(--ds-surface)",
     "font-size:24px",
     "cursor:pointer",
     "display:flex",

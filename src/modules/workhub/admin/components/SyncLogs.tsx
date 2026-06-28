@@ -169,36 +169,36 @@ export function SyncLogs() {
     <div className="wh-module space-y-6">
       {/* Page Header */}
       <div>
-        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>
+        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text))))' }}>
           Sync & Logs
         </h1>
-        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: '4px' }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginTop: '4px' }}>
           Monitor synchronization status and manage sync schedules
         </p>
       </div>
 
       {/* Health Strip */}
       <div className="grid grid-cols-5 gap-3">
-        <HealthBox label="SYNC STATUS" value={syncStatus === 'healthy' ? '● Healthy' : syncStatus === 'syncing' ? '● Syncing' : syncStatus === 'error' ? '● Error' : '● Waiting'} valueColor={syncStatus === 'healthy' ? 'var(--ds-background-success-bold, #059669)' : syncStatus === 'syncing' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : syncStatus === 'error' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} loading={healthLoading} spinning={syncStatus === 'syncing'} />
-        <HealthBox label="LAST SYNC" value={health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : '—'} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))" loading={healthLoading} />
-        <HealthBox label="ISSUES CACHED" value={formatNumber(health?.issueCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))" loading={healthLoading} />
-        <HealthBox label="VERSIONS CACHED" value={formatNumber(health?.versionCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))" loading={healthLoading} />
-        <HealthBox label="PROJECTS" value={String(health?.projectCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))" loading={healthLoading} />
+        <HealthBox label="SYNC STATUS" value={syncStatus === 'healthy' ? '● Healthy' : syncStatus === 'syncing' ? '● Syncing' : syncStatus === 'error' ? '● Error' : '● Waiting'} valueColor={syncStatus === 'healthy' ? 'var(--ds-background-success-bold)' : syncStatus === 'syncing' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : syncStatus === 'error' ? 'var(--ds-text-danger)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))'} loading={healthLoading} spinning={syncStatus === 'syncing'} />
+        <HealthBox label="LAST SYNC" value={health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : '—'} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))" loading={healthLoading} />
+        <HealthBox label="ISSUES CACHED" value={formatNumber(health?.issueCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))" loading={healthLoading} />
+        <HealthBox label="VERSIONS CACHED" value={formatNumber(health?.versionCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))" loading={healthLoading} />
+        <HealthBox label="PROJECTS" value={String(health?.projectCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))" loading={healthLoading} />
       </div>
 
       {/* Error Banner */}
       {syncStatus === 'error' && lastError && (
-        <div style={{ background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid var(--ds-background-danger, #FFECEB)', borderRadius: '8px', padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-          <span style={{ flexShrink: 0, marginTop: 2, display: 'flex', color: 'var(--ds-text-danger, #EF4444)' }}><CrossCircleIcon label="" size="small" /></span>
+        <div style={{ background: 'var(--ds-background-danger)', border: '1px solid var(--ds-background-danger)', borderRadius: '8px', padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+          <span style={{ flexShrink: 0, marginTop: 2, display: 'flex', color: 'var(--ds-text-danger)' }}><CrossCircleIcon label="" size="small" /></span>
           <div>
-            <div style={{ fontFamily: 'var(--cp-font-heading)', fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, #EF4444)' }}>Sync Failed</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', marginTop: '4px' }}>{lastError.error_message || 'An unknown error occurred.'}</div>
+            <div style={{ fontFamily: 'var(--cp-font-heading)', fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger)' }}>Sync Failed</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', marginTop: '4px' }}>{lastError.error_message || 'An unknown error occurred.'}</div>
           </div>
         </div>
       )}
 
       {/* Sync Filters Card */}
-      <div style={{ background: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', borderRadius: '8px', overflow: 'visible' }}>
+      <div style={{ background: 'var(--bg-1, var(--ds-surface-sunken))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', borderRadius: '8px', overflow: 'visible' }}>
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
           style={{
@@ -208,18 +208,18 @@ export function SyncLogs() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FilterIcon label="" size="small" />
-            <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>
+            <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text))))' }}>
               Sync Filters
             </span>
             {hasFilters && (
-              <span style={{ fontSize: 'var(--ds-font-size-50)', padding: '1px 8px', borderRadius: '12px', background: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', padding: '1px 8px', borderRadius: '12px', background: 'var(--ds-background-information)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                 {activeFilterCount} active
               </span>
             )}
           </div>
           {filtersOpen
-            ? <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'inline-flex' }}><ChevronDownIcon label="" size="small" /></span>
-            : <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'inline-flex' }}><ChevronRightIcon label="" size="small" /></span>
+            ? <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', display: 'inline-flex' }}><ChevronDownIcon label="" size="small" /></span>
+            : <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', display: 'inline-flex' }}><ChevronRightIcon label="" size="small" /></span>
           }
         </button>
 
@@ -227,7 +227,7 @@ export function SyncLogs() {
           <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Date Range */}
             <div>
-              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '.4px', marginBottom: '8px', fontFamily: 'var(--cp-font-body)' }}>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', textTransform: 'uppercase', letterSpacing: '.4px', marginBottom: '8px', fontFamily: 'var(--cp-font-body)' }}>
                 Date Range (Lookback)
               </label>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -244,9 +244,9 @@ export function SyncLogs() {
                     style={{
                       padding: '5px 14px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                       fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
-                      border: lookbackMonths === opt.value ? '1px solid var(--ds-link, #2563eb)' : '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))',
-                      background: lookbackMonths === opt.value ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-                      color: lookbackMonths === opt.value ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))',
+                      border: lookbackMonths === opt.value ? '1px solid var(--ds-link)' : '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))',
+                      background: lookbackMonths === opt.value ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
+                      color: lookbackMonths === opt.value ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
                     }}
                   >
                     {opt.label}
@@ -263,7 +263,7 @@ export function SyncLogs() {
               onChange={setSelectedProjects}
               placeholder="Select projects…"
               emptyMessage="Run a sync first to populate projects"
-              accentColor="var(--ds-link, #0C66E4)"
+              accentColor="var(--ds-link)"
             />
 
             {/* Issue Types */}
@@ -274,7 +274,7 @@ export function SyncLogs() {
               onChange={setSelectedTypes}
               placeholder="Select work item types…"
               emptyMessage="Run a sync first to populate types"
-              accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
+              accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"
             />
 
             {/* Sprint/Iterations */}
@@ -285,11 +285,11 @@ export function SyncLogs() {
               onChange={setSelectedVersions}
               placeholder="Select sprint/releases…"
               emptyMessage="Run a sync first to populate versions"
-              accentColor="var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))"
+              accentColor="var(--cp-purple-60, var(--ds-background-discovery-bold))"
             />
 
             {!hasFilters && (typeOptions.length > 0 || projectOptions.length > 0) && (
-              <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-danger, #EF4444)', fontWeight: 600 }}>⚠ Select at least one project, type, or version to sync</span>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-danger)', fontWeight: 600 }}>⚠ Select at least one project, type, or version to sync</span>
             )}
 
             {/* Save Filters */}
@@ -299,8 +299,8 @@ export function SyncLogs() {
                 disabled={saveFilters.isPending}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))',
-                  background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+                  padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))',
+                  background: 'var(--bg-app, var(--ds-surface))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                   cursor: saveFilters.isPending ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -321,7 +321,7 @@ export function SyncLogs() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             padding: '8px 16px', borderRadius: '6px', border: 'none',
-            background: isSyncing ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : !hasFilters ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)',
+            background: isSyncing ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' : !hasFilters ? 'var(--ds-text-disabled)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)',
             fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: isSyncing || !hasFilters ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -330,25 +330,25 @@ export function SyncLogs() {
           {isSyncing ? 'Syncing…' : 'Sync with Filters'}
         </button>
         {hasFilters && !isSyncing && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontFamily: 'var(--cp-font-body)' }}>
             {lookbackMonths}mo lookback{selectedProjects.length > 0 ? ` · ${selectedProjects.length} projects` : ''}{selectedTypes.length > 0 ? ` · ${selectedTypes.length} types` : ''}{selectedVersions.length > 0 ? ` · ${selectedVersions.length} versions` : ''}
           </span>
         )}
         {!hasFilters && !isSyncing && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, #EF4444)', fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', fontFamily: 'var(--cp-font-body)' }}>
             Select work item types or sprint/releases above
           </span>
         )}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
           {confirmFullSync ? (
             <>
-              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, #EF4444)', fontWeight: 600 }}>Pull ALL data? This may be slow.</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', fontWeight: 600 }}>Pull ALL data? This may be slow.</span>
               <button
                 onClick={handleFullSync}
                 disabled={isSyncing}
                 style={{
-                  padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--ds-background-danger-bold, #ef4444)',
-                  background: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #EF4444)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+                  padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--ds-background-danger-bold)',
+                  background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -357,8 +357,8 @@ export function SyncLogs() {
               <button
                 onClick={() => setConfirmFullSync(false)}
                 style={{
-                  padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))',
-                  background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+                  padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))',
+                  background: 'var(--bg-app, var(--ds-surface))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -370,8 +370,8 @@ export function SyncLogs() {
               onClick={handleFullSync}
               disabled={isSyncing}
               style={{
-                padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))',
-                background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+                padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))',
+                background: 'var(--bg-app, var(--ds-surface))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                 cursor: isSyncing ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)',
               }}
             >
@@ -384,8 +384,8 @@ export function SyncLogs() {
             onClick={handleFilteredSync}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '6px',
-              padding: '8px 16px', borderRadius: '6px', border: '1px solid var(--ds-background-danger, #FFECEB)',
-              background: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #EF4444)',
+              padding: '8px 16px', borderRadius: '6px', border: '1px solid var(--ds-background-danger)',
+              background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)',
               fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -396,31 +396,31 @@ export function SyncLogs() {
       </div>
 
       {/* Sync Schedule */}
-      <div style={{ background: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', borderRadius: '8px', padding: '20px' }}>
-        <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))', marginBottom: '16px' }}>
+      <div style={{ background: 'var(--bg-1, var(--ds-surface-sunken))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', borderRadius: '8px', padding: '20px' }}>
+        <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text))))', marginBottom: '16px' }}>
           Sync Schedule
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <label style={{ width: '180px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontFamily: 'var(--cp-font-body)' }}>Incremental sync every:</label>
-            <select value={intervalMin} onChange={(e) => setIntervalMin(Number(e.target.value))} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))' }}>
+            <label style={{ width: '180px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontFamily: 'var(--cp-font-body)' }}>Incremental sync every:</label>
+            <select value={intervalMin} onChange={(e) => setIntervalMin(Number(e.target.value))} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, var(--ds-surface))' }}>
               <option value={15}>15 minutes</option>
               <option value={30}>30 minutes</option>
               <option value={60}>60 minutes</option>
             </select>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Fetches recently updated issues</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>Fetches recently updated issues</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <label style={{ width: '180px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontFamily: 'var(--cp-font-body)' }}>Full sync daily at:</label>
-            <select value={fullSyncTime} onChange={(e) => setFullSyncTime(e.target.value)} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))' }}>
+            <label style={{ width: '180px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontFamily: 'var(--cp-font-body)' }}>Full sync daily at:</label>
+            <select value={fullSyncTime} onChange={(e) => setFullSyncTime(e.target.value)} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, var(--ds-surface))' }}>
               <option value="02:00">02:00 UTC</option>
               <option value="06:00">06:00 UTC</option>
               <option value="12:00">12:00 UTC</option>
             </select>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Complete re-sync with pruning</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>Complete re-sync with pruning</span>
           </div>
           <div style={{ marginTop: '8px' }}>
-            <button onClick={handleSaveSchedule} disabled={updateSchedule.isPending} style={{ padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
+            <button onClick={handleSaveSchedule} disabled={updateSchedule.isPending} style={{ padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', background: 'var(--bg-app, var(--ds-surface))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
               {updateSchedule.isPending ? 'Saving…' : 'Save Schedule'}
             </button>
           </div>
@@ -428,22 +428,22 @@ export function SyncLogs() {
       </div>
 
       {/* Sync Log */}
-      <div style={{ background: 'var(--bg-app, var(--ds-surface, #FFFFFF))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', borderRadius: '8px', overflow: 'hidden' }}>
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>Sync Log</span>
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
+      <div style={{ background: 'var(--bg-app, var(--ds-surface))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', borderRadius: '8px', overflow: 'hidden' }}>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text))))' }}>Sync Log</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
         </div>
         <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '8px 20px', background: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', position: 'sticky', top: 0, zIndex: 1 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '8px 20px', background: 'var(--bg-1, var(--ds-surface-sunken))', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', position: 'sticky', top: 0, zIndex: 1 }}>
             {['TIMESTAMP', 'TYPE', 'STATUS', 'DETAILS', 'PROJECTS', 'DURATION'].map(h => (
-              <span key={h} style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', letterSpacing: '.5px', textTransform: 'uppercase', textAlign: h === 'DURATION' ? 'right' : 'left' }}>{h}</span>
+              <span key={h} style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', letterSpacing: '.5px', textTransform: 'uppercase', textAlign: h === 'DURATION' ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
           {logsLoading ? (
             <div style={{ padding: '40px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}><Spinner size="medium" /></div>
           ) : !logs || logs.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 'var(--ds-font-size-300)' }}>
-              <span style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, color: 'var(--ds-text-disabled, #CBD5E1)' }}><ClockIcon label="" size="medium" /></span>
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontSize: 'var(--ds-font-size-300)' }}>
+              <span style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, color: 'var(--ds-text-disabled)' }}><ClockIcon label="" size="medium" /></span>
               No sync runs yet. Click "Force Sync Now" to run the first sync.
             </div>
           ) : (
@@ -457,7 +457,7 @@ export function SyncLogs() {
 
 function HealthBox({ label, value, valueColor, loading, spinning }: { label: string; value: string; valueColor: string; loading?: boolean; spinning?: boolean }) {
   return (
-    <div style={{ background: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', borderRadius: '6px', padding: '14px', textAlign: 'center' }}>
+    <div style={{ background: 'var(--bg-1, var(--ds-surface-sunken))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', borderRadius: '6px', padding: '14px', textAlign: 'center' }}>
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 4 }}><Spinner size="medium" /></div>
       ) : (
@@ -466,21 +466,21 @@ function HealthBox({ label, value, valueColor, loading, spinning }: { label: str
           {value}
         </div>
       )}
-      <div style={{ fontSize: 'var(--ds-font-size-100)', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', letterSpacing: '.3px', marginTop: '4px', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', letterSpacing: '.3px', marginTop: '4px', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}>{label}</div>
     </div>
   )
 }
 
 function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (ms: number) => string }) {
   const statusColors: Record<string, { bg: string; text: string }> = {
-    success: { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #059669)' },
-    warning: { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
-    error: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #EF4444)' },
-    running: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+    success: { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)' },
+    warning: { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning, var(--cp-amber))' },
+    error: { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)' },
+    running: { bg: 'var(--ds-background-selected)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
   }
   const typeColors: Record<string, { bg: string; text: string }> = {
-    incremental: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-    full: { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' },
+    incremental: { bg: 'var(--ds-background-selected)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
+    full: { bg: 'var(--ds-background-discovery)', text: 'var(--cp-purple-60, var(--ds-background-discovery-bold))' },
   }
   const sc = statusColors[log.status] || statusColors.running
   const tc = typeColors[log.sync_type] || typeColors.full
@@ -498,28 +498,28 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
 
   return (
     <div
-      style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '10px 20px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))', alignItems: 'center', fontSize: 'var(--ds-font-size-200)' }}
-      onMouseOver={(e) => (e.currentTarget.style.background = 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))')}
+      style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '10px 20px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))', alignItems: 'center', fontSize: 'var(--ds-font-size-200)' }}
+      onMouseOver={(e) => (e.currentTarget.style.background = 'var(--bg-1, var(--ds-surface-sunken))')}
       onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
     >
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{timestamp}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{timestamp}</span>
       <span><span style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 8px', borderRadius: '4px', background: tc.bg, color: tc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'var(--cp-font-body)' }}>{log.sync_type}</span></span>
       <span><span style={{ fontSize: 'var(--ds-font-size-50)', padding: '2px 10px', borderRadius: '12px', background: sc.bg, color: sc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'var(--cp-font-body)' }}>{log.status}</span></span>
-      <span style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{details}</span>
+      <span style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{details}</span>
       <span style={{ display: 'flex', gap: '3px', flexWrap: 'wrap' }}>
         {projectChips ? (
           projectChips.length <= 3 ? (
             projectChips.map(p => (
-              <span key={p} style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: '4px', background: 'var(--ds-background-information, #E9F2FF)', color: '#0369A1', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>{p}</span>
+              <span key={p} style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: '4px', background: 'var(--ds-background-information)', color: '#0369A1', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>{p}</span>
             ))
           ) : (
-            <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: '4px', background: 'var(--ds-background-information, #E9F2FF)', color: '#0369A1', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>{projectChips.length} projects</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: '4px', background: 'var(--ds-background-information)', color: '#0369A1', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>{projectChips.length} projects</span>
           )
         ) : (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled, #CBD5E1)' }}>All</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled)' }}>All</span>
         )}
       </span>
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textAlign: 'right' }}>{log.duration_ms ? formatDuration(log.duration_ms) : '—'}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', textAlign: 'right' }}>{log.duration_ms ? formatDuration(log.duration_ms) : '—'}</span>
     </div>
   )
 }

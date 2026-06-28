@@ -38,13 +38,13 @@ const SECTION_ORDER = ['details', 'people', 'dates'];
 
 function VisibilityDot({ visible, required }: { visible: boolean; required: boolean }) {
   if (required) return (
-    <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-danger, #DC2626)', marginLeft: 4 }} title="Required">*</span>
+    <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-danger)', marginLeft: 4 }} title="Required">*</span>
   );
   return (
     <span
       style={{
         display: 'inline-block', width: 7, height: 7, borderRadius: '50%',
-        background: visible ? 'var(--cp-success, #16A34A)' : 'var(--ds-border, #DFE1E6)',
+        background: visible ? 'var(--cp-success)' : 'var(--ds-border)',
         marginLeft: 4, flexShrink: 0,
       }}
       title={visible ? 'Visible' : 'Hidden'}
@@ -72,7 +72,7 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
   }, {});
 
   return (
-    <div style={{ padding: '16px 20px 20px', background: 'var(--ds-surface-sunken,#F8FAFC)', borderTop: '1px solid var(--divider)' }}>
+    <div style={{ padding: '16px 20px 20px', background: 'var(--ds-surface-sunken)', borderTop: '1px solid var(--divider)' }}>
       <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginBottom: 16, fontFamily: 'var(--cp-font-body)' }}>
         Field layout for <strong>{typeName}</strong> — controls which fields appear and in what order on Create, Edit, and View screens.
       </p>
@@ -87,9 +87,9 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
             return (
               <div
                 key={section}
-                style={{ background: 'var(--ds-surface, #fff)', border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}
+                style={{ background: 'var(--ds-surface)', border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}
               >
-                <div style={{ padding: '8px 12px', background: 'var(--ds-surface-sunken,#F8FAFC)', borderBottom: '1px solid var(--divider)' }}>
+                <div style={{ padding: '8px 12px', background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--divider)' }}>
                   <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)' }}>
                     {SECTION_LABELS[section] ?? section}
                   </span>
@@ -107,13 +107,13 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
                     >
                       <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                         {f.field_label}
-                        {f.is_required && <span style={{ color: 'var(--cp-danger, #DC2626)', marginLeft: 3 }}>*</span>}
+                        {f.is_required && <span style={{ color: 'var(--cp-danger)', marginLeft: 3 }}>*</span>}
                       </span>
                       <span
                         style={{
                           fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 7px', borderRadius: 10,
-                          background: f.is_visible ? 'var(--ds-background-success, #DFFCF0)' : 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
-                          color: f.is_visible ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
+                          background: f.is_visible ? 'var(--ds-background-success)' : 'var(--cp-bg-sunken, var(--cp-bg-sunken))',
+                          color: f.is_visible ? 'var(--ds-background-success-bold)' : 'var(--cp-ink-4, var(--cp-border-neutral-light))',
                         }}
                       >
                         {f.is_visible ? 'Shown' : 'Hidden'}
@@ -176,7 +176,7 @@ export function LayoutTab({ projectId }: LayoutTabProps) {
               style={{
                 padding: '10px 20px',
                 borderBottom: '1px solid var(--divider)',
-                background: 'var(--ds-surface-sunken,#F8FAFC)',
+                background: 'var(--ds-surface-sunken)',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}
             >
@@ -201,11 +201,11 @@ export function LayoutTab({ projectId }: LayoutTabProps) {
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                       padding: '12px 20px', border: 'none', cursor: 'pointer',
-                      background: isOpen ? 'var(--ds-background-selected,#EFF6FF)' : 'transparent',
+                      background: isOpen ? 'var(--ds-background-selected)' : 'transparent',
                       borderBottom: (!isOpen && i < groupTypes.length - 1) ? '1px solid var(--divider)' : 'none',
                       textAlign: 'left', transition: 'background 80ms',
                     }}
-                    onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background = 'var(--ds-surface-sunken,#F8FAFC)'; }}
+                    onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background = 'var(--ds-surface-sunken)'; }}
                     onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background = 'transparent'; }}
                     aria-expanded={isOpen}
                   >

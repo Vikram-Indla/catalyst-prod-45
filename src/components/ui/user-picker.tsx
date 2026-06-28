@@ -199,7 +199,7 @@ function TriggerContent({
       ) : (
         <span
           className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-          style={{ background: 'var(--ds-text-brand, #2563EB)' }}
+          style={{ background: 'var(--ds-text-brand)' }}
         >
           {singleSelected.name.slice(0, 1).toUpperCase()}
         </span>

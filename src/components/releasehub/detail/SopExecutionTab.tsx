@@ -11,13 +11,13 @@ import { catalystToast } from '@/lib/catalystToast';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
@@ -32,11 +32,11 @@ const STATUS_OPTS = [
 
 function statusColor(status: string): { fg: string; bg: string } {
   switch (status) {
-    case 'done': return { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' };
-    case 'in_progress': return { fg: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FE)' };
+    case 'done': return { fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' };
+    case 'in_progress': return { fg: 'var(--ds-text-information)', bg: 'var(--ds-background-information)' };
     case 'blocked':
-    case 'failed': return { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' };
-    case 'skipped': return { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' };
+    case 'failed': return { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' };
+    case 'skipped': return { fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' };
     default: return { fg: T.subtle, bg: T.sunken };
   }
 }
@@ -125,7 +125,7 @@ function ApplyTemplateBar({ changeId }: { changeId: string }) {
       <button
         onClick={() => { if (sel) apply.mutate({ templateId: sel.value, changeId }, { onSuccess: (n) => { catalystToast.success(`Applied ${n} step${n === 1 ? '' : 's'}`); setSel(null); }, onError: () => catalystToast.error('Failed to apply template') }); }}
         disabled={!sel || apply.isPending}
-        style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: sel ? 'pointer' : 'not-allowed', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, opacity: sel ? 1 : 0.5 }}
+        style={{ height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: sel ? 'pointer' : 'not-allowed', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, opacity: sel ? 1 : 0.5 }}
       >
         Apply
       </button>
@@ -146,8 +146,8 @@ export function SopExecutionTab({ changeId }: { changeId: string }) {
       ) : (
         <>
           {incompleteMandatory > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', border: '1px solid var(--ds-border-discovery, #B8ACF6)', borderRadius: 6, padding: '8px 12px', marginBottom: 12 }}>
-              <Sparkles size={14} style={{ color: 'var(--ds-text-discovery, #5E4DB2)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-discovery)', background: 'var(--ds-background-discovery)', border: '1px solid var(--ds-border-discovery)', borderRadius: 6, padding: '8px 12px', marginBottom: 12 }}>
+              <Sparkles size={14} style={{ color: 'var(--ds-text-discovery)' }} />
               Caty: {incompleteMandatory} mandatory step{incompleteMandatory === 1 ? '' : 's'} still incomplete — this change is not ready to implement.
             </div>
           )}

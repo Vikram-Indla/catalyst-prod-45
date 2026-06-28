@@ -166,12 +166,12 @@ const INTENT_META: Record<ThemeIntent, { label: string; appearance: React.Compon
 // match the Lozenge appearance family above, but use the *.bolder ramp so
 // the ribbon stays legible against both light and dark page surfaces.
 const INTENT_RIBBON: Record<ThemeIntent, string> = {
-  bug:     'var(--ds-background-danger-bolder, #CA3521)',
-  feature: 'var(--ds-background-discovery-bolder, #5E4DB2)',
-  infra:   'var(--ds-background-brand-bolder, #0C66E4)',
-  ux:      'var(--ds-background-warning-bolder, #B65C02)',
-  data:    'var(--ds-background-success-bolder, #1F845A)',
-  other:   'var(--ds-background-neutral-bolder, #626F86)',
+  bug:     'var(--ds-background-danger-bolder)',
+  feature: 'var(--ds-background-discovery-bolder)',
+  infra:   'var(--ds-background-brand-bolder)',
+  ux:      'var(--ds-background-warning-bolder)',
+  data:    'var(--ds-background-success-bolder)',
+  other:   'var(--ds-background-neutral-bolder)',
 };
 
 // ─── Clipboard action formatters ────────────────────────────────────────────
@@ -242,9 +242,9 @@ function bucketOf(category: string | null): StatusBucket {
 // ADS semantic fills — grey (neutral), blue (information/in-progress), green
 // (success/done). Bright enough to read on both light and dark surfaces.
 const STATUS_META: Record<StatusBucket, { label: string; color: string }> = {
-  todo:       { label: 'to do',        color: 'var(--ds-background-neutral-bold, #6B778C)' },
-  inprogress: { label: 'in progress',  color: 'var(--ds-background-information-bold, #0C66E4)' },
-  done:       { label: 'done',         color: 'var(--ds-background-success-bold, #22A06B)' },
+  todo:       { label: 'to do',        color: 'var(--ds-background-neutral-bold)' },
+  inprogress: { label: 'in progress',  color: 'var(--ds-background-information-bold)' },
+  done:       { label: 'done',         color: 'var(--ds-background-success-bold)' },
 };
 
 export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardProps) {
@@ -393,7 +393,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
         <span
           style={{
             ...type.meta,
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             whiteSpace: 'nowrap',
           }}
         >
@@ -414,7 +414,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
       <p
         style={{
           ...type.body,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
           margin: 0,
         }}
       >
@@ -477,10 +477,10 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
       {statusTotal > 0 && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ ...type.meta, color: token('color.text', 'var(--ds-text, #172B4D)'), fontWeight: 500 }}>
+            <span style={{ ...type.meta, color: token('color.text', 'var(--ds-text)'), fontWeight: 500 }}>
               {statusTotal} {statusTotal === 1 ? 'issue' : 'issues'}
             </span>
-            <span style={{ ...type.meta, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
+            <span style={{ ...type.meta, color: token('color.text.subtle', 'var(--ds-icon)') }}>
               {Math.round((statusCounts.done / statusTotal) * 100)}% done
             </span>
           </div>
@@ -508,7 +508,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
                 key={b}
                 style={{
                   ...type.meta,
-                  color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                  color: token('color.text.subtle', 'var(--ds-icon)'),
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 5,
@@ -560,7 +560,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
             borderRadius: 4,
             letterSpacing: '0.02em',
             background: INTENT_RIBBON[theme.intent],
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--ds-text-inverse)',
           }}
         >
           {intent.label}

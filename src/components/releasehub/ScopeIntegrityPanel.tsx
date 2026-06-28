@@ -3,19 +3,19 @@ import { useReleasePortfolio } from '@/hooks/useReleasePortfolio';
 import { RH } from '@/constants/releasehub.design';
 
 const T = {
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  success: 'var(--ds-text-success, #216E4E)',
+  card: 'var(--ds-surface-raised)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  success: 'var(--ds-text-success)',
   successBg: 'var(--ds-background-success, rgba(34,160,107,0.12))',
-  warning: 'var(--ds-text-warning, #A54800)',
+  warning: 'var(--ds-text-warning)',
   warningBg: 'var(--ds-background-warning, rgba(255,153,31,0.12))',
-  danger: 'var(--ds-text-danger, #AE2A19)',
+  danger: 'var(--ds-text-danger)',
   dangerBg: 'var(--ds-background-danger, rgba(174,42,25,0.10))',
-  bgNeutral: 'var(--ds-background-neutral, #F1F2F4)',
-  bgBrand: 'var(--ds-background-brand-bold, #0C66E4)',
+  bgNeutral: 'var(--ds-background-neutral)',
+  bgBrand: 'var(--ds-background-brand-bold)',
 };
 
 const SKIP_STATUS = ['completed', 'released', 'done', 'rolled_back', 'cancelled', 'archived', 'draft', 'production'];
