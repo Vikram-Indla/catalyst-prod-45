@@ -51,6 +51,14 @@ export function HuddleWindow() {
   const showRemote = remoteSharing;
   const screenVisible = remoteSharing || localSharing;
 
+  const toggleMute = useHuddleStore((s) => s.toggleMute);
+  const startScreen = useHuddleStore((s) => s.startScreen);
+  const stopScreen = useHuddleStore((s) => s.stopScreen);
+  const leave = useHuddleStore((s) => s.leave);
+  const toggleChatPanel = useHuddleStore((s) => s.toggleChatPanel);
+  const muted = !!active?.micMuted;
+  const sharing = !!active?.screenSharing;
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const strokesRef = useRef<{ id: string; color: string; points: { x: number; y: number }[]; t: number }[]>([]);
@@ -297,7 +305,29 @@ export function HuddleWindow() {
         )}
       </div>
 
-      {/* control bar added in Task 9 */}
+      <div style={{ flex: '0 0 auto', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+        borderTop: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-overlay, #FFFFFF)' }}>
+        <button type="button" data-huddle-btn onClick={toggleMute} aria-pressed={muted} title={muted ? 'Unmute' : 'Mute'}
+          style={ctrlBtn(muted ? 'var(--ds-background-warning, #FFF7D6)' : 'var(--ds-surface-sunken, #F7F8F9)')}>
+          {muted ? 'Unmute' : 'Mute'}
+        </button>
+        <button type="button" data-huddle-btn disabled={remoteSharing}
+          onClick={() => { if (!remoteSharing) void (sharing ? stopScreen() : startScreen()); }}
+          aria-pressed={sharing}
+          title={remoteSharing ? 'Other participant is sharing' : sharing ? 'Stop sharing' : 'Share screen'}
+          style={{ ...ctrlBtn(sharing ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)'),
+            opacity: remoteSharing ? 0.45 : 1, cursor: remoteSharing ? 'not-allowed' : 'pointer' }}>
+          {sharing ? 'Stop share' : 'Share screen'}
+        </button>
+        <button type="button" data-huddle-btn onClick={toggleChatPanel} aria-pressed={chatPanelOpen} title="Toggle chat"
+          style={ctrlBtn(chatPanelOpen ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface-sunken, #F7F8F9)')}>
+          Chat
+        </button>
+        <button type="button" data-huddle-btn onClick={leave} title="Leave huddle"
+          style={{ ...ctrlBtn('var(--ds-background-danger-bold, #C9372C)'), color: '#FFFFFF' }}>
+          Leave
+        </button>
+      </div>
     </div>
   );
 }
@@ -307,3 +337,11 @@ const winBtn: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
   background: 'var(--ds-surface-sunken, #F7F8F9)', color: 'var(--ds-text, #172B4D)', fontSize: 14,
 };
+
+function ctrlBtn(bg: string): React.CSSProperties {
+  return {
+    height: 40, padding: '0 16px', borderRadius: 999, border: 'none', cursor: 'pointer',
+    display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600,
+    background: bg, color: 'var(--ds-text, #172B4D)',
+  };
+}
