@@ -152,6 +152,9 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       if (gate.blocked) {
         throw new Error(gate.message ?? 'Move blocked by workflow.');
       }
+      if (gate.reasonRequired) {
+        throw new Error('This transition requires a reason. Open the issue detail to provide one.');
+      }
     }
 
     const patch: Record<string, unknown> = { status };

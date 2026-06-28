@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { resolveBridgedKey, recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
+import { resolveBridgedKey, recordAdvisoryStatusChange, checkReasonRequired } from '@/lib/workflow/canonical/runtime';
 import { DOMAIN_ADAPTER_CONFIGS } from '@/lib/workflow/canonical/adapters';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -542,6 +542,14 @@ export function useUpdateDefect() {
         updates.assignee_id = assigned_to;
       }
 
+      // Deny before mutation if reason required (Prompt 4 compliance).
+      if (auditTo && auditFrom !== auditTo) {
+        const preflight = await checkReasonRequired('defect', null, auditFrom, auditTo);
+        if (preflight.reasonRequired) {
+          throw new Error('This transition requires a reason. Open the defect detail view to provide one.');
+        }
+      }
+
       const { data, error } = await supabase
         .from('tm_defects')
         .update(updates)
@@ -553,17 +561,10 @@ export function useUpdateDefect() {
 
       // Advisory canonical audit for the Defect transition (ph_wf_audit).
       if (auditTo && auditFrom !== auditTo) {
-        const advisory = await recordAdvisoryStatusChange({
+        await recordAdvisoryStatusChange({
           entityKey: 'defect', entityId: id, projectKey: null,
           fromStatusRaw: auditFrom, toStatusRaw: auditTo, sourceSurface: 'defect_list',
         });
-        // Reason-required guard fires but no reason UI exists on this surface.
-        // Warn explicitly — do not silently audit would_block=true with no feedback.
-        if (advisory?.reasonRequired) {
-          catalystToast.warning(
-            'This status transition requires a reason. Open the defect detail to provide one before the gate is enforced.'
-          );
-        }
       }
       return { ...mapDbRowToTMDefect(data), project_id };
     },
