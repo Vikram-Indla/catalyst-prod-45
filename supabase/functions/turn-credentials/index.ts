@@ -11,7 +11,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const TTL_SECONDS = 60 * 60; // creds valid 1 hour
+// Creds valid 24h. coturn caps a relay allocation at the credential expiry, so
+// the TTL must outlast any realistic call (a 1h TTL would drop relay mid-call
+// after an hour). Still per-call ephemeral — the static secret never ships.
+const TTL_SECONDS = 24 * 60 * 60;
 
 function base64(bytes: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(bytes)));

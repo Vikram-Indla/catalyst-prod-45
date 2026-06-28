@@ -139,7 +139,13 @@ export class HuddleConnection {
 
   private ensurePc(): RTCPeerConnection {
     if (this.pc) return this.pc;
-    const pc = new RTCPeerConnection({ iceServers: this.iceServers });
+    // Debug: localStorage.setItem('huddle-force-relay','1') forces ALL media
+    // through TURN (drops direct P2P) to verify the relay works. Off by default.
+    const forceRelay = typeof localStorage !== 'undefined' && localStorage.getItem('huddle-force-relay') === '1';
+    const pc = new RTCPeerConnection({
+      iceServers: this.iceServers,
+      ...(forceRelay ? { iceTransportPolicy: 'relay' as RTCIceTransportPolicy } : {}),
+    });
     this.localStream?.getTracks().forEach((t) => pc.addTrack(t, this.localStream as MediaStream));
     pc.ontrack = (e) => {
       if (e.track.kind === 'video') {
