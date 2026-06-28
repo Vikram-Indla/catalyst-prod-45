@@ -6,7 +6,6 @@
 
 // Layout & Container Components
 export { PageContainer } from './PageContainer';
-export { PageShell } from './PageShell';
 export { CommandCenterHeader } from './CommandCenterHeader';
 export { DrawerPanel, DrawerSection } from './DrawerPanel';
 export { SurfaceCard } from './SurfaceCard';

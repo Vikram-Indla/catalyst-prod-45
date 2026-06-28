@@ -10,7 +10,6 @@ import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { DrawerPanel } from '@/components/shared/DrawerPanel';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
-import { PageShell } from '@/components/shared/PageShell';
 import { QuickAddRow } from '@/components/shared/QuickAddRow';
 import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
@@ -64,9 +63,4 @@ export const QuickAddRowDefault: StoryObj = {
 export const ResizableTableHeaderDefault: StoryObj = {
   name: 'ResizableTableHeader / Default',
   render: () => <Wrap><ResizableTableHeader colKey="BAU-5972" label="Sample item title" width={42} onResizeStart={fn()} onDragStart={fn()} onDragOver={fn()} onDragEnd={fn()} /></Wrap>,
-}
-
-export const PageShellDefault: StoryObj = {
-  name: 'PageShell / Default',
-  render: () => <Wrap><PageShell  /></Wrap>,
 }
