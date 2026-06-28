@@ -43,8 +43,8 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
               fontSize: 'var(--ds-font-size-300)',
               transition: 'all 200ms cubic-bezier(0.4,0,0.2,1)',
               cursor: 'pointer',
-              border: isActive ? 'none' : '1px solid var(--cp-bd)',
-              background: isActive ? 'var(--cp-blue)' : 'transparent',
+              border: isActive ? 'none' : '1px solid var(--ds-border)',
+              background: isActive ? 'var(--ds-text-brand)' : 'transparent',
               color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--cp-t2)',
               fontWeight: isActive ? 600 : 500,
               outline: 'none',
@@ -63,8 +63,8 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: isActive ? 'var(--ds-surface, rgba(255,255,255,0.9))' : 'var(--cp-hover)',
-                color: isActive ? 'var(--cp-blue-text)' : 'var(--cp-t3)',
+                background: isActive ? 'var(--ds-surface, rgba(255,255,255,0.9))' : 'var(--ds-background-neutral-subtle)',
+                color: isActive ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
               }}
             >
               {tab.count > 99 ? '99+' : tab.count}

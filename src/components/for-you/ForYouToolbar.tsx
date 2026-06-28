@@ -27,8 +27,8 @@ export function ForYouToolbar({
         onClick={open}
         className="flex items-center gap-1.5 px-3 h-8 rounded-[7px] flex-1 min-w-0 sm:min-w-[240px] max-w-full sm:max-w-[520px] transition-all duration-150 cursor-pointer"
         style={{
-          background: 'var(--cp-bg)',
-          border: '1px solid var(--cp-bd)',
+          background: 'var(--ds-surface)',
+          border: '1px solid var(--ds-border)',
         }}
       >
         <Search className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--cp-t4)' }} />
@@ -43,7 +43,7 @@ export function ForYouToolbar({
         <span className="hidden sm:inline-flex" style={{
           padding: '0px 6px',
           background: 'var(--cp-bd-zone)',
-          border: '1px solid var(--cp-bd)',
+          border: '1px solid var(--ds-border)',
           borderRadius: 4,
           fontSize: 'var(--ds-font-size-50)',
           fontWeight: 600,

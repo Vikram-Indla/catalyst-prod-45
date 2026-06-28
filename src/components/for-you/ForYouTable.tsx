@@ -38,15 +38,15 @@ const PRIORITY_LABELS: Record<number, string> = {
 };
 
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
-  Project:  { bg: 'var(--cp-blue-wash)', color: 'var(--cp-blue-text)', border: 'var(--cp-blue)' },
-  Product:  { bg: 'var(--cp-blue-wash)', color: 'var(--cp-blue-text)', border: 'var(--cp-blue)' },
+  Project:  { bg: 'var(--ds-background-information)', color: 'var(--ds-text-brand)', border: 'var(--ds-text-brand)' },
+  Product:  { bg: 'var(--ds-background-information)', color: 'var(--ds-text-brand)', border: 'var(--ds-text-brand)' },
   Task:     { bg: 'var(--cp-warn-bg)', color: 'var(--cp-warn)', border: 'var(--cp-warn)' },
   Incident: { bg: 'var(--cp-err-bg)', color: 'var(--cp-err)', border: 'var(--cp-err)' },
   Release:  { bg: 'var(--cp-ok-bg)', color: 'var(--cp-ok)', border: 'var(--cp-ok)' },
-  Test:     { bg: 'var(--cp-hover)', color: 'var(--cp-t3)', border: 'var(--cp-t3)' },
+  Test:     { bg: 'var(--ds-background-neutral-subtle)', color: 'var(--ds-text-subtle)', border: 'var(--ds-text-subtle)' },
 };
 
-const AVATAR_COLOURS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-link)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-background-accent-magenta-bolder)'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, var(--ds-text-brand))', 'var(--cp-teal-60)', 'var(--ds-link)', 'var(--ds-text-danger, var(--ds-text-danger))', 'var(--ds-background-accent-magenta-bolder)'];
 
 const FORYOU_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
@@ -262,7 +262,7 @@ export function CatalystTable({
                         <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
                       </div>
                       <JiraIssueTypeIcon type={item.issueType} size={16} />
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>{item.key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand))' }}>{item.key}</span>
                       {(item.attachmentCount ?? 0) > 0 && (
                         <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', transform: 'rotate(-45deg)' }} />
                       )}
@@ -364,7 +364,7 @@ export function CatalystTable({
               {(item.attachmentCount ?? 0) > 0 && (
                 <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
               )}
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>{item.key}</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand))' }}>{item.key}</span>
             </div>
           </td>
         );

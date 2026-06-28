@@ -23,7 +23,7 @@ export function ForYouLightBulkBar({
     height: 32, padding: '0 14px',
     backgroundColor: 'transparent', border: 'none', borderRadius: 8,
     cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-t2)',
-    transition: 'background 0.1s', fontFamily: 'var(--cp-font-body)',
+    transition: 'background 0.1s', fontFamily: 'var(--ds-font-family)',
   };
 
   return (
@@ -31,26 +31,26 @@ export function ForYouLightBulkBar({
       position: 'fixed', bottom: 24, left: '48%', transform: 'translateX(-50%)',
       display: 'flex', alignItems: 'center', gap: 0,
       height: 48, padding: '0 8px',
-      backgroundColor: 'var(--cp-float)', border: '1px solid var(--cp-bd)',
+      backgroundColor: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)',
       borderRadius: 12,
       boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.04))',
       zIndex: 90, animation: 'fy-dropIn 0.2s ease',
     }}>
       <span style={{
         display: 'flex', alignItems: 'center', height: 32,
-        padding: '0 14px', backgroundColor: 'var(--cp-blue-wash)', color: 'var(--cp-blue-text)',
+        padding: '0 14px', backgroundColor: 'var(--ds-background-information)', color: 'var(--ds-text-brand)',
         borderRadius: 8, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, marginRight: 8,
       }}>
         {selectedCount} selected
       </span>
 
-      <div style={{ width: 1, height: 24, backgroundColor: 'var(--cp-bd)' }} />
+      <div style={{ width: 1, height: 24, backgroundColor: 'var(--ds-border)' }} />
 
       {onAssignOwner && (
         <button
           style={actionBtn}
           onClick={onAssignOwner}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-hover)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
         >
           <UserPlus size={14} /> Assign Owner
@@ -61,7 +61,7 @@ export function ForYouLightBulkBar({
         <button
           style={actionBtn}
           onClick={onApprove}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-hover)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
         >
           <Check size={14} /> Approve
@@ -79,16 +79,16 @@ export function ForYouLightBulkBar({
         </button>
       )}
 
-      <div style={{ width: 1, height: 24, backgroundColor: 'var(--cp-bd)' }} />
+      <div style={{ width: 1, height: 24, backgroundColor: 'var(--ds-border)' }} />
 
       <button
         onClick={onClear}
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           width: 32, height: 32, backgroundColor: 'transparent',
-          border: 'none', borderRadius: 8, cursor: 'pointer', color: 'var(--cp-t3)',
+          border: 'none', borderRadius: 8, cursor: 'pointer', color: 'var(--ds-text-subtle)',
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-hover)'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         <X size={16} />

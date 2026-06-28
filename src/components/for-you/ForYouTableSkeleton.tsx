@@ -11,23 +11,23 @@ interface ForYouTableSkeletonProps {
 
 export function ForYouTableSkeleton({ rowCount = 5 }: ForYouTableSkeletonProps) {
   const skeletonBlockStyle: React.CSSProperties = {
-    background: 'var(--cp-hover)',
+    background: 'var(--ds-background-neutral-subtle)',
   };
 
   return (
     <div
       className="rounded-lg overflow-hidden"
       style={{
-        border: '1px solid var(--cp-bd)',
-        background: 'var(--cp-bg)',
+        border: '1px solid var(--ds-border)',
+        background: 'var(--ds-surface)',
       }}
     >
       {/* Table Header Skeleton */}
       <div
         className="grid grid-cols-[40px_120px_1fr_80px_80px_160px] gap-4 px-4 py-3"
         style={{
-          background: 'var(--cp-bg)',
-          borderBottom: '1px solid var(--cp-bd)',
+          background: 'var(--ds-surface)',
+          borderBottom: '1px solid var(--ds-border)',
         }}
       >
         <div className="w-4 h-4 rounded animate-pulse" style={skeletonBlockStyle} />
@@ -42,7 +42,7 @@ export function ForYouTableSkeleton({ rowCount = 5 }: ForYouTableSkeletonProps) 
       <div
         className="px-4 py-2 border-l-[3px]"
         style={{
-          background: 'var(--cp-bg)',
+          background: 'var(--ds-surface)',
           borderLeftColor: 'var(--cp-bd-zone)',
           borderTop: '1px solid var(--cp-bd-zone)',
           borderBottom: '1px solid var(--cp-bd-zone)',
@@ -61,7 +61,7 @@ export function ForYouTableSkeleton({ rowCount = 5 }: ForYouTableSkeletonProps) 
           )}
           style={{
             borderBottom: index === rowCount - 1 ? 'none' : '1px solid var(--cp-bd-table)',
-            background: 'var(--cp-bg)',
+            background: 'var(--ds-surface)',
           }}
         >
           <div className="flex items-center">
