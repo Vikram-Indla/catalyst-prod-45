@@ -42,6 +42,14 @@ const INITIAL_FORM: CreateStoryFormData = {
   labels: [],
 };
 
+// Product/routing keys that are NOT selectable projects. INV ("Investor Journey
+// Product") is a product line (canonical source: public.products), MDT is a
+// Jira→product routing key, TH-DEFAULT is the TestHub default container. They
+// leak into public.projects via product/PDM scaffolding + append-only Jira sync,
+// so every project-list surface filters them out. Matches the exclusion sets in
+// DockDirectory.tsx and ContextSwitcher.tsx.
+const EXCLUDED_PROJECT_KEYS = new Set(['INV', 'TH-DEFAULT', 'MDT']);
+
 // Fetch projects for the project selector.
 // Bucket F (2026-05-09): enriches with ph_projects.icon + ph_projects.color so
 // the ProjectIcon Lucide fallback works for non-bundled-registry projects.
@@ -61,7 +69,10 @@ export function useProjects() {
         .is('archived_at', null)
         .order('name');
       if (error) throw error;
-      const rows = data ?? [];
+      // Drop product/routing rows that aren't real selectable projects.
+      const rows = (data ?? []).filter(
+        (p: any) => !EXCLUDED_PROJECT_KEYS.has(p.key)
+      );
 
       // Secondary: ph_projects for Lucide icon + color (fallback for non-Jira projects).
       const { data: phRows } = await supabase
