@@ -152,14 +152,18 @@ async function postHuddleSummary(
 ) {
   if (!conversationId || !huddleId || !authorId) return;
   const durationSeconds = startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : 0;
-  const { error } = await db.from('chat_messages').insert({
-    conversation_id: conversationId,
-    author_id: authorId,
-    body_text: 'A huddle happened',
-    event_type: 'huddle_summary',
-    event_meta: { huddle_id: huddleId, duration_seconds: durationSeconds, with_name: withName },
-  });
-  void error; // duplicate summary from the other peer is expected & ignored
+  try {
+    const { error } = await db.from('chat_messages').insert({
+      conversation_id: conversationId,
+      author_id: authorId,
+      body_text: 'A huddle happened',
+      event_type: 'huddle_summary',
+      event_meta: { huddle_id: huddleId, duration_seconds: durationSeconds, with_name: withName },
+    });
+    void error; // duplicate summary from the other peer is expected & ignored
+  } catch {
+    // best-effort — swallow transport-level errors same as markLeft/beat
+  }
 }
 
 export const useHuddleStore = create<HuddleStore>((set, get) => ({
@@ -189,7 +193,11 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
         remoteScreenStream = stream;
         const a = get().active;
         // When a remote share arrives, pop the window open (normal) so it's seen.
-        if (a) set({ active: { ...a, remoteSharing: !!stream }, ...(stream ? { screenWindow: 'normal' as ScreenWindowMode } : {}) });
+        if (a) set({
+          active: { ...a, remoteSharing: !!stream },
+          ...(stream ? { screenWindow: 'normal' as ScreenWindowMode } : {}),
+          ...(stream && get().windowState === 'minimized' ? { windowState: 'open' as const } : {}),
+        });
       },
       onLocalScreenEnded: () => {
         localScreenStream = null;

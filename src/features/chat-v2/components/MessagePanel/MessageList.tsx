@@ -61,8 +61,15 @@ function buildRenderList(messages: ChatMessage[]): RenderItem[] {
       message: m,
       showHeader: !sameAuthor,
     });
-    lastAuthor = m.authorId;
-    lastTime = t;
+    if (m.eventType) {
+      // Event rows (e.g. huddle_summary) must not suppress the header of the
+      // next real message — reset grouping trackers after pushing.
+      lastAuthor = null;
+      lastTime = 0;
+    } else {
+      lastAuthor = m.authorId;
+      lastTime = t;
+    }
   }
   return out;
 }
