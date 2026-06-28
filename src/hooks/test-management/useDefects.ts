@@ -553,10 +553,17 @@ export function useUpdateDefect() {
 
       // Advisory canonical audit for the Defect transition (ph_wf_audit).
       if (auditTo && auditFrom !== auditTo) {
-        await recordAdvisoryStatusChange({
+        const advisory = await recordAdvisoryStatusChange({
           entityKey: 'defect', entityId: id, projectKey: null,
           fromStatusRaw: auditFrom, toStatusRaw: auditTo, sourceSurface: 'defect_list',
         });
+        // Reason-required guard fires but no reason UI exists on this surface.
+        // Warn explicitly — do not silently audit would_block=true with no feedback.
+        if (advisory?.reasonRequired) {
+          catalystToast.warning(
+            'This status transition requires a reason. Open the defect detail to provide one before the gate is enforced.'
+          );
+        }
       }
       return { ...mapDbRowToTMDefect(data), project_id };
     },
