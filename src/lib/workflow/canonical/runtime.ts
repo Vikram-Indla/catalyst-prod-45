@@ -248,8 +248,15 @@ export function evaluateGuardsReal(
         const has = !!(reason && reason.trim());
         return { ...base, passed: has, detail: has ? 'reason provided' : 'reason required' };
       }
-      case 'qa_signoff': case 'uat_signoff': case 'test_coverage':
-        return { ...base, passed: null, detail: 'no evidence source — advisory until Test Hub slice' };
+      case 'test_coverage': {
+        // Real coverage from tm_test_case_links (count injected into issueRow).
+        const cov = (issueRow as any)?._coverageCount;
+        if (cov == null) return { ...base, passed: null, detail: 'no coverage data available' };
+        const has = Number(cov) >= 1;
+        return { ...base, passed: has, detail: has ? `${cov} linked test case(s)` : 'no linked test cases — coverage required' };
+      }
+      case 'qa_signoff': case 'uat_signoff':
+        return { ...base, passed: null, detail: 'no sign-off evidence source — advisory' };
       default:
         return { ...base, passed: null, detail: 'not evaluated' };
     }
@@ -286,6 +293,18 @@ export async function gateTransition(args: {
     const superBypass = actor.isSuperAdmin;
     const bypassReasonOk = !superBypass || !!(effReason && effReason.trim());
 
+    // Real test coverage: count linked test cases for entities with a
+    // test_coverage guard on this transition (tm_test_case_links is polymorphic).
+    if (match?.guards.some((g) => g.guardType === 'test_coverage') && args.issueRow?.id) {
+      try {
+        const { count } = await supabase
+          .from('tm_test_case_links')
+          .select('id', { count: 'exact', head: true })
+          .eq('linked_item_type', args.entityKey)
+          .eq('linked_item_id', args.issueRow.id);
+        (args.issueRow as any)._coverageCount = count ?? 0;
+      } catch { /* leave undefined → advisory */ }
+    }
     const guardResults = evaluateGuardsReal(match, args.issueRow, effReason);
     const failingGuards = guardResults.filter((g) => g.isBlocking && g.passed === false);
 

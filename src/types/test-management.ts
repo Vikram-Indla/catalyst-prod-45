@@ -430,6 +430,12 @@ export interface CreateDefectInput {
 export interface UpdateDefectInput extends Partial<CreateDefectInput> {
   id: string;
   status?: DefectStatus;
+  /**
+   * Canonical Defect workflow status key (ph_wf_version_statuses.status_key) —
+   * bridged Option-A write path. When set, workflow_status_key is the source of
+   * truth and the enum `status` is only set to its nearest safe compat value.
+   */
+  workflowStatusKey?: string;
 }
 
 export interface ReportSummary {

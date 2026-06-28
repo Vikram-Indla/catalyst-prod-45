@@ -19,6 +19,7 @@ const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
   epic: 'epic', Epic: 'epic',
   feature: 'feature', Feature: 'feature',
   subtask: 'subtask', 'sub-task': 'subtask', 'Sub-task': 'subtask',
+  defect: 'defect', Defect: 'defect', 'qa bug': 'defect',
 };
 
 export interface CanonicalWorkflowExtras {
