@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { MessageBubble } from './MessageBubble';
 import { DateSeparator } from './DateSeparator';
+import { HuddleEventRow } from './HuddleEventRow';
 import { dayKey } from '../../lib/formatTimestamp';
 import type { ChatMessage } from '@/types/chat';
 import type { AttachmentMap } from '../../hooks/useMessageAttachments';
@@ -171,6 +172,8 @@ export function MessageList({
               onJumpMostRecent={handleJumpRecent}
               onJumpBeginning={handleJumpBeginning}
             />
+          ) : item.message!.eventType === 'huddle_summary' ? (
+            <HuddleEventRow key={item.key} message={item.message!} />
           ) : (
             <MessageBubble
               key={item.key}
