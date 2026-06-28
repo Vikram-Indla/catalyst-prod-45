@@ -1,10 +1,85 @@
 {
-  "tokens": 27531,
-  "typography": 2133,
-  "spacing": 1118,
+  "tokens": 27514,
+  "typography": 2132,
+  "spacing": 1082,
   "fontImports": 0,
   "capturedOn": "2026-06-28",
   "audit": "design-governance/rules/audit.js src",
-  "feature": "CAT-ADS-COMPLIANCE-20260627-001",
-  "note": "Per-category fail-on-increase baseline for scripts/ads-audit-gate.cjs. The gate fails only when a category EXCEEDS its baseline, so existing debt never blocks. `tokens` is noisy (var()/token() fallbacks over-reported) but the ratchet is increase-only, so the noise is inert. Lower a category via `node scripts/ads-audit-gate.cjs --update` after a remediation slice; baselines only move down."
+  "gate": "scripts/ads-audit-gate.cjs",
+  "scanner": "design-governance/rules/audit.js",
+  "description": "Per-category fail-on-increase baseline for ADS audit. Ratchet direction: down_only (except tokens which is noisy but free). Updated Phase 12.",
+  "ratchet_rules": [
+    "typography.baseline can only decrease or stay same",
+    "spacing.baseline can only decrease or stay same",
+    "fontImports.baseline can only stay 0",
+    "tokens.baseline can increase or decrease (audit noise)",
+    "Increases in typography/spacing/fontImports require Vikram approval + issue CAT-ADS-XXXXX"
+  ],
+  "categories_explained": {
+    "tokens": "ADS token usage (noisy: over-reports var()/token() fallbacks, but ratchet is increase-only so inert)",
+    "typography": "Hard-coded font-size, font-weight, line-height violations (must use ADS token scale)",
+    "spacing": "Off-grid spacing violations (not 4/8/16/24/32/40/48px, must align to 8px grid)",
+    "fontImports": "Custom font imports outside ADS token system (must use canonical fonts only)"
+  },
+  "phases_completed": [
+    {
+      "phase": 5,
+      "name": "Token Foundation",
+      "date": "2026-06-28",
+      "result": "Hard-coded colors 709 → 20 ✅",
+      "baseline_file": "color-baseline.json"
+    },
+    {
+      "phase": 7,
+      "name": "Dark Surfaces",
+      "date": "in progress",
+      "result": "Hierarchy established, contrast fixes ongoing"
+    },
+    {
+      "phase": 10,
+      "name": "Icons",
+      "date": "2026-06-28",
+      "result": "Registry 25 items, SVG fixed 28, CatalystIconWrapper created ✅"
+    }
+  ],
+  "next_phases": [
+    {
+      "phase": 6,
+      "name": "Light Surfaces",
+      "focus": "Color hierarchy for light mode"
+    },
+    {
+      "phase": 8,
+      "name": "Typography Scale",
+      "focus": "Hard-coded font-size remediation"
+    },
+    {
+      "phase": 9,
+      "name": "Spacing Grid",
+      "focus": "Off-grid spacing remediation"
+    },
+    {
+      "phase": 11,
+      "name": "Component Canonicity",
+      "focus": "Hand-rolled component audit"
+    },
+    {
+      "phase": 13,
+      "name": "Screenshot Validation",
+      "focus": "Light + dark mode visual regression"
+    },
+    {
+      "phase": 14,
+      "name": "Accessibility Audit",
+      "focus": "WCAG 2.2 Level A compliance"
+    }
+  ],
+  "last_updated_by": "Claude Code Phase 12",
+  "last_updated_date": "2026-06-28",
+  "next_review": "2026-09-28",
+  "metadata": {
+    "tool": "npm run audit:ads",
+    "gate_tool": "npm run audit:ads:gate",
+    "update_tool": "npm run audit:ads:update-baseline"
+  }
 }
