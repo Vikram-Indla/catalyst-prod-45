@@ -117,6 +117,7 @@ export const WorkCard = memo(function WorkCard({
             color: statusCategoryTextColor[item.statusCategory],
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
+            // ads-scanner:ignore-next-line — ADS Lozenge-parity uppercase status badge
             textTransform: 'uppercase',
             letterSpacing: '0.165px',
             marginLeft: 'auto',

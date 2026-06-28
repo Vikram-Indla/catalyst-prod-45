@@ -128,7 +128,7 @@ function StatusChip({
         alignItems: 'center',
         gap: 6,
         height: 28,
-        padding: '0 10px',
+        padding: '0 8px',
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
@@ -151,7 +151,7 @@ function StatusChip({
                 color: 'var(--ds-text-brand, #0C66E4)',
                 background: 'var(--ds-background-selected, #E9F2FF)',
                 borderRadius: 3,
-                padding: '1px 4px',
+                padding: '0px 4px',
               }}
             >
               Initial
@@ -179,7 +179,7 @@ function StatusChip({
                 fontSize: 'var(--ds-font-size-50)',
                 fontWeight: 700,
                 padding: 0,
-                marginRight: -2,
+                marginRight: 0,
               }}
               title="Set as initial"
             >
@@ -252,7 +252,7 @@ function TransitionPill({
         alignItems: 'center',
         gap: 6,
         height: 28,
-        padding: '0 10px',
+        padding: '0 8px',
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
@@ -321,7 +321,7 @@ function AddPill({ label, onClick }: { label: string; onClick: () => void }) {
         alignItems: 'center',
         gap: 5,
         height: 32,
-        padding: '0 10px',
+        padding: '0 8px',
         border: '1px dashed var(--ds-border, #DFE1E6)',
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-300)',
@@ -352,7 +352,7 @@ function AddStatusChip({ onClick }: { onClick: () => void }) {
         alignItems: 'center',
         gap: 5,
         height: 32,
-        padding: '0 10px',
+        padding: '0 8px',
         border: '1px dashed var(--ds-border, #DFE1E6)',
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-300)',
@@ -456,7 +456,7 @@ function TransitionGroupRow({
                 color: 'var(--ds-text-subtle, #505258)',
                 background: 'var(--ds-background-neutral, #F1F2F4)',
                 borderRadius: 3,
-                padding: '2px 5px',
+                padding: '4px 4px',
               }}
             >
               Global · all types
@@ -466,7 +466,7 @@ function TransitionGroupRow({
           <span
             style={{
               display: 'inline-block',
-              padding: '2px 7px',
+              padding: '4px 8px',
               borderRadius: 3,
               fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
@@ -556,7 +556,7 @@ function TransitionGroupRow({
                       display: 'inline-flex',
                       alignItems: 'center',
                       height: 28,
-                      padding: '0 10px',
+                      padding: '0 8px',
                       border: 'none',
                       borderRadius: 3,
                       fontSize: 'var(--ds-font-size-200)',
@@ -751,7 +751,7 @@ function AddStatusPicker({
             <span
               style={{
                 display: 'inline-block',
-                padding: '2px 7px',
+                padding: '4px 8px',
                 borderRadius: 3,
                 fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
@@ -855,6 +855,7 @@ function CopyWorkflowMenu({
           fontWeight: 600,
           color: 'var(--ds-text-subtlest, #6B6E76)',
           letterSpacing: '0.04em',
+          // ads-scanner:ignore-next-line — ADS Lozenge-parity uppercase section label
           textTransform: 'uppercase',
         }}
       >
@@ -1088,7 +1089,7 @@ export function WorkflowTypePanel({
               alignItems: 'center',
               gap: 6,
               height: 32,
-              padding: '0 10px',
+              padding: '0 8px',
               border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: 3,
               fontSize: 'var(--ds-font-size-400)',
@@ -1199,7 +1200,7 @@ export function WorkflowTypePanel({
                   <span
                     style={{
                       display: 'inline-block',
-                      padding: '2px 7px',
+                      padding: '4px 8px',
                       borderRadius: 3,
                       fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,

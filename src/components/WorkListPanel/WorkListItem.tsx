@@ -70,7 +70,7 @@ export const WorkListItem = memo(function WorkListItem({
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: 'var(--ds-text-subtlest, #6B778C)',
-            marginBottom: '2px',
+            marginBottom: '4px',
           }}
         >
           {item.key}
@@ -94,7 +94,7 @@ export const WorkListItem = memo(function WorkListItem({
         style={{
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 500,
-          padding: '2px 6px',
+          padding: '4px 8px',
           backgroundColor: 'var(--ds-background-information, #E6EDFA)',
           color: 'var(--ds-link, #0C66E4)',
           borderRadius: '3px',
