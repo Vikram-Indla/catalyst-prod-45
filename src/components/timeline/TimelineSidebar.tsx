@@ -45,7 +45,7 @@ export function TimelineSidebar({
               className="px-2 py-0.5 rounded text-[10px] mr-2"
               style={{
                 background: release.id === 'unassigned' 
-                  ? 'rgba(200, 204, 208, 0.15)'
+                  ? 'rgba(200, 204, 208, 0.15)' // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                   : 'var(--ds-background-success-bold, rgba(34, 197, 94, 0.1))',
                 color: release.id === 'unassigned' ? 'var(--ds-text-subtlest, #626F86)' : 'var(--ds-background-success-bold, #1F845A)'
               }}
