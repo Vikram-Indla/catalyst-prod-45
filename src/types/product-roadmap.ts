@@ -42,11 +42,26 @@ export interface Demand {
   rank: number | null;
   progress: number;
   milestones: DemandMilestone[];
-  // Quarter fields - plannedQuarters is the multi-select array, plannedQuarter is primary for display
-  plannedQuarter: PlannedQuarter;
-  plannedQuarters: PlannedQuarter[];
+
+  /**
+   * @deprecated (2026-06-28) Use milestones and productMilestones instead.
+   * Remove in Q4 2026.
+   */
+  plannedQuarter?: PlannedQuarter;
+
+  /**
+   * @deprecated (2026-06-28) Use milestones and productMilestones instead.
+   * Remove in Q4 2026.
+   */
+  plannedQuarters?: PlannedQuarter[];
+
   priorityTier: PriorityTier;
   health: HealthStatus;
+
+  // NEW: Milestone-based fields (added by service layer, not in DB)
+  // productMilestones?: ProductMilestoneWithProgress[];
+  // linkedFeatures?: Feature[];
+  // progressPercent?: number; // From features, NOT sprints
 }
 
 export type Scale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';

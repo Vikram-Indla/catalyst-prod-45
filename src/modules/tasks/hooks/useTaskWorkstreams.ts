@@ -374,6 +374,9 @@ export function useDeleteWorkstream() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      // Slice 8: deleting an archived workstream must also refresh the archived
+      // count badge (it previously lagged — this invalidation was missing).
+      queryClient.invalidateQueries({ queryKey: ['planner-workstreams-archived-count'] });
       catalystToast.success('Workstream deleted', 'The workstream has been permanently deleted.');
     },
     onError: (error: Error) => {

@@ -1,6 +1,12 @@
 // src/components/layout/HuddleScreenView.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen } from '@/store/huddleStore';
+import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen, sendHuddleMarker, onHuddleMarker } from '@/store/huddleStore';
+
+/** A drawn annotation stroke. Points are normalized (0..1) to the video area. */
+interface MarkerStroke { id: string; color: string; points: { x: number; y: number }[]; t: number; }
+const LOCAL_HEX = '#22A06B';   // my strokes = green; remote strokes use the sender's color
+const FADE_HOLD = 2500;        // ms at full opacity after last update
+const FADE_OUT = 700;          // ms fade-out duration
 
 /**
  * HuddleScreenView — the shared-screen window during a huddle.
@@ -26,6 +32,7 @@ export function HuddleScreenView() {
   const mode = useHuddleStore((s) => s.screenWindow);
   const setMode = useHuddleStore((s) => s.setScreenWindow);
   const stopScreen = useHuddleStore((s) => s.stopScreen);
+  const markerPen = useHuddleStore((s) => s.markerPen);
 
   const remoteSharing = !!active?.remoteSharing;
   const localSharing = !!active?.screenSharing;
@@ -37,6 +44,101 @@ export function HuddleScreenView() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const strokesRef = useRef<MarkerStroke[]>([]);
+  const drawingRef = useRef<MarkerStroke | null>(null);
+  const lastSendRef = useRef(0);
+
+  // receive remote markers → upsert by stroke id
+  useEffect(() => onHuddleMarker((m) => {
+    const s = m as MarkerStroke;
+    if (!s || !s.id || !Array.isArray(s.points)) return;
+    const arr = strokesRef.current;
+    const i = arr.findIndex((x) => x.id === s.id);
+    const next: MarkerStroke = { id: s.id, color: s.color || '#C9372C', points: s.points, t: Date.now() };
+    if (i >= 0) arr[i] = next; else arr.push(next);
+  }), []);
+
+  // redraw loop — draw all strokes scaled to the canvas, fade out old ones
+  useEffect(() => {
+    let raf = 0;
+    const loop = () => {
+      const cv = canvasRef.current;
+      if (cv) {
+        const w = cv.clientWidth, h = cv.clientHeight;
+        if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+        const ctx = cv.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, w, h);
+          const now = Date.now();
+          strokesRef.current = strokesRef.current.filter((s) => now - s.t < FADE_HOLD + FADE_OUT);
+          // map normalized (content-relative) coords back onto the letterboxed
+          // video content rect, so markers land on the SAME pixel for both peers.
+          const cr = contentRect(w, h);
+          for (const s of strokesRef.current) {
+            const age = now - s.t;
+            const op = age < FADE_HOLD ? 1 : Math.max(0, 1 - (age - FADE_HOLD) / FADE_OUT);
+            ctx.globalAlpha = op;
+            ctx.strokeStyle = s.color;
+            ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.beginPath();
+            s.points.forEach((p, idx) => {
+              const x = cr.x + p.x * cr.w, y = cr.y + p.y * cr.h;
+              if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1;
+        }
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // The video uses object-fit:contain, so its content is letterboxed inside the
+  // canvas. Compute the actual content rect from the video's intrinsic size so
+  // marker coords are normalized to the CONTENT (identical for both peers),
+  // not the raw canvas (which differs by window size/aspect).
+  const contentRect = (W: number, H: number) => {
+    const v = videoRef.current;
+    const vw = v?.videoWidth || 0, vh = v?.videoHeight || 0;
+    if (!vw || !vh) return { x: 0, y: 0, w: W, h: H };
+    const s = Math.min(W / vw, H / vh);
+    const cw = vw * s, ch = vh * s;
+    return { x: (W - cw) / 2, y: (H - ch) / 2, w: cw, h: ch };
+  };
+  const normPt = (e: React.PointerEvent) => {
+    const cv = canvasRef.current!;
+    const r = cv.getBoundingClientRect();
+    const cr = contentRect(r.width, r.height);
+    return { x: (e.clientX - r.left - cr.x) / cr.w, y: (e.clientY - r.top - cr.y) / cr.h };
+  };
+  const onCanvasDown = useCallback((e: React.PointerEvent) => {
+    if (!markerPen) return;
+    e.stopPropagation();
+    const id = `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+    const stroke: MarkerStroke = { id, color: LOCAL_HEX, points: [normPt(e)], t: Date.now() };
+    drawingRef.current = stroke;
+    strokesRef.current.push(stroke);
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* ignore */ }
+  }, [markerPen]);
+  const onCanvasMove = useCallback((e: React.PointerEvent) => {
+    const d = drawingRef.current;
+    if (!markerPen || !d || e.buttons === 0) return;
+    d.points.push(normPt(e));
+    d.t = Date.now();
+    const now = Date.now();
+    if (now - lastSendRef.current > 50) {
+      lastSendRef.current = now;
+      sendHuddleMarker({ id: d.id, color: d.color, points: d.points });
+    }
+  }, [markerPen]);
+  const onCanvasUp = useCallback(() => {
+    const d = drawingRef.current;
+    if (d) { sendHuddleMarker({ id: d.id, color: d.color, points: d.points }); drawingRef.current = null; }
+  }, []);
 
   // bind the right stream to the <video>
   useEffect(() => {
@@ -93,13 +195,29 @@ export function HuddleScreenView() {
   const maximized = mode === 'maximized';
 
   const videoEl = (
-    <video
-      ref={videoRef}
-      autoPlay
-      playsInline
-      muted
-      style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    />
+    <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex' }}>
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }}
+      />
+      {/* annotation overlay — captures pointer only when MY pen is enabled */}
+      <canvas
+        ref={canvasRef}
+        onPointerDown={onCanvasDown}
+        onPointerMove={onCanvasMove}
+        onPointerUp={onCanvasUp}
+        onPointerCancel={onCanvasUp}
+        style={{
+          position: 'absolute', inset: 0, width: '100%', height: '100%',
+          pointerEvents: markerPen ? 'auto' : 'none',
+          cursor: markerPen ? 'crosshair' : 'default',
+          touchAction: 'none',
+        }}
+      />
+    </div>
   );
 
   const titleBar = (
@@ -123,7 +241,7 @@ export function HuddleScreenView() {
         {localSharing && (
           <button type="button" data-huddle-btn onClick={() => { void stopScreen(); }}
             style={{ border: 'none', cursor: 'pointer', borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600,
-              background: 'var(--ds-background-danger-bold, #C9372C)', color: 'var(--ds-surface, #FFFFFF)', marginRight: 4 }}>
+              background: 'var(--ds-background-danger-bold, #C9372C)', color: '#FFFFFF', marginRight: 4 }}>
             Stop
           </button>
         )}
@@ -138,10 +256,10 @@ export function HuddleScreenView() {
   if (maximized) {
     return (
       <div role="dialog" aria-label="Shared screen (maximized)"
-        style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(9,30,66,.75)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+        style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(9,30,66,.75)',
           display: 'flex', flexDirection: 'column', padding: 24 }}>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0,
-          background: '#000', borderRadius: 12, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+          background: '#000', borderRadius: 12, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}>
           {titleBar}
           {videoEl}
         </div>
@@ -159,9 +277,9 @@ export function HuddleScreenView() {
         position: 'fixed', top: pos.top, left: pos.left, zIndex: 65,
         width: size.w, height: size.h, minWidth: 240, minHeight: 160,
         resize: 'both', overflow: 'hidden',
-        background: '#000', borderRadius: 12, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+        background: '#000', borderRadius: 12,
         border: '1.5px solid var(--ds-border, #DFE1E6)',
-        boxShadow: '0 12px 34px rgba(9,30,66,.28)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
+        boxShadow: '0 12px 34px rgba(9,30,66,.28)',
         display: 'flex', flexDirection: 'column',
       }}
     >

@@ -22,6 +22,9 @@ export interface ChatConversation {
   memberCount?: number;
   /** Avatar URLs of OTHER members. Populated for `dm` and `group_dm` kinds. */
   dmAvatarUrls?: string[];
+  /** User ids of OTHER members. Populated for `dm` and `group_dm` kinds.
+   *  Used to show a "on a huddle" indicator in the DM list. */
+  dmMemberIds?: string[];
   /** Display names of OTHER members in their original (full) form.
    *  Populated for `dm` and `group_dm` kinds; used by the DM tab list to
    *  show full names ("Adnan Ali, Mazen Yehia") instead of the compact

@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useCreateIncident } from '@/hooks/useIncidents';
+import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import { useTheme } from '@/hooks/useTheme';
@@ -30,6 +31,7 @@ const SEV_STYLES: Record<string, { bg: string; border: string; text: string; dar
 
 export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
   const createIncident = useCreateIncident();
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const { isDark } = useTheme();
   const [title, setTitle] = useState('');
@@ -41,7 +43,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
     if (!title.trim()) { catalystToast.error('Title is required'); return; }
     setIsSubmitting(true);
     try {
-      await createIncident.mutateAsync({
+      const created = await createIncident.mutateAsync({
         title: title.trim(),
         description,
         severity: severity as any,
@@ -54,6 +56,8 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
       setDescription('');
       setSeverity('SEV3');
       onClose();
+      // Land on the created incident's detail view in incident hub.
+      if ((created as any)?.id) navigate(`/incident-hub/view/${(created as any).id}`);
     } catch {
       catalystToast.error('Failed to create incident');
     } finally {

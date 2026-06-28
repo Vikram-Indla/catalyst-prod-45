@@ -92,6 +92,18 @@ import {
   useWorkflowStatuses,
 } from './useCreateStory';
 import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
+// CAT-TASKS-20260627-001 Slice 9B — this canonical modal now natively handles
+// the Catalyst-native 'Task' work type (workstream instead of project, writes
+// to the tasks table). Other work types are unchanged.
+import { useNavigate } from 'react-router-dom';
+import { useTaskWorkstreams } from '@/modules/tasks/hooks/useTaskWorkstreams';
+import { useCreateTaskMutation } from '@/modules/tasks/components/CreateTaskModal/hooks/useCreateTaskMutation';
+import { adfToPlainText } from '@/utils/adf';
+import type { TaskPriority } from '@/modules/tasks/types';
+// ── Defect (QA Bug) work type → tm_defects (TestHub) ──────────────────────────
+import { DatePicker } from '@atlaskit/datetime-picker';
+import { useCreateDefect, resolveTmProjectId } from '@/hooks/test-management/useDefects';
+import type { DefectSeverity } from '@/types/test-management';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public API (callers' contract — DO NOT CHANGE)
@@ -133,6 +145,12 @@ export interface CreateStoryModalProps {
   workTypes?: readonly string[];
   /** Initial value for the Work type field. Defaults to 'Story'. */
   defaultWorkType?: string;
+  /**
+   * Slice 9C — when opening as a Task (defaultWorkType='Task'), pre-selects this
+   * workstream. Lets the retired bespoke CreateTaskModal's `defaultWorkstream`
+   * contract flow through unchanged.
+   */
+  defaultWorkstreamId?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -188,6 +206,30 @@ const DEFAULT_STATUS_OPTIONS = [
   { value: 'To Do', label: 'To Do', color_category: 'todo' },
   { value: 'In Progress', label: 'In Progress', color_category: 'in_progress' },
   { value: 'Done', label: 'Done', color_category: 'done' },
+];
+
+// ── Defect (QA Bug) option sets — tm_defects enums (CAT-TESTHUB-DEFECT-CANONICAL) ──
+const DEFECT_STATUS_OPTIONS = [
+  { value: 'open', label: 'Open', color_category: 'todo' },
+  { value: 'in_progress', label: 'In progress', color_category: 'in_progress' },
+  { value: 'resolved', label: 'Resolved', color_category: 'done' },
+  { value: 'closed', label: 'Closed', color_category: 'done' },
+  { value: 'reopened', label: 'Reopened', color_category: 'todo' },
+];
+// Canonical 5-level severity (see work-item-canon WORK_ITEM_SEVERITIES).
+// value = the DefectSeverity union; tm_defects enum bridge lowercases on write.
+const DEFECT_SEVERITY_OPTIONS = [
+  { value: 'BLOCKER', label: 'Blocker' },
+  { value: 'CRITICAL', label: 'Critical' },
+  { value: 'MAJOR', label: 'Major' },
+  { value: 'MINOR', label: 'Minor' },
+  { value: 'TRIVIAL', label: 'Trivial' },
+];
+const DEFECT_ENVIRONMENT_OPTIONS = [
+  { value: 'QA', label: 'QA' },
+  { value: 'Staging', label: 'Staging' },
+  { value: 'Beta', label: 'Beta' },
+  { value: 'Prod', label: 'Prod' },
 ];
 
 // Lozenge appearance buckets — Atlaskit gives us 5 named appearances and we
@@ -403,6 +445,7 @@ export function CreateStoryModal({
   onOpenTask,
   workTypes,
   defaultWorkType = 'Story',
+  defaultWorkstreamId,
 }: CreateStoryModalProps) {
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -419,9 +462,82 @@ export function CreateStoryModal({
   const createMutation = useCreateStoryMutation();
 
   const [workType, setWorkType] = useState<string>(defaultWorkType);
+  // The modal is mounted persistently in the header (CreateDropdown), so its
+  // work-type state would otherwise keep whatever value it had at first mount
+  // and ignore the route-derived defaultWorkType. Re-sync on every open (and
+  // when the prop changes, e.g. the Business Request hand-off) so the Tasks
+  // module gets 'Task', product-hub backlog gets 'Business Request', etc.
+  useEffect(() => {
+    if (open) setWorkType(defaultWorkType);
+  }, [open, defaultWorkType]);
   const [createAnother, setCreateAnother] = useState(false);
   // Incremented each time the form is reset — forces EpicDescriptionEditor to remount with empty content.
   const [editorKey, setEditorKey] = useState(0);
+
+  // ── Slice 9B: Task work type (Catalyst-native, tasks table) ───────────────
+  const isTask = workType === 'Task';
+  const navigate = useNavigate();
+  const { data: workstreams = [] } = useTaskWorkstreams(false);
+  const createTaskMutation = useCreateTaskMutation();
+  const [workstreamId, setWorkstreamId] = useState<string>(defaultWorkstreamId ?? '');
+  // Pre-select the workstream when opened with one (e.g. created from a board).
+  useEffect(() => {
+    if (open && defaultWorkstreamId && !workstreamId) {
+      setWorkstreamId(defaultWorkstreamId);
+    }
+  }, [open, defaultWorkstreamId, workstreamId]);
+  // Task mode requires a workstream. When opened without an explicit one,
+  // default to the first available workstream so the field isn't blank.
+  useEffect(() => {
+    if (open && isTask && !workstreamId && workstreams.length > 0) {
+      setWorkstreamId(workstreams[0].id);
+    }
+  }, [open, isTask, workstreamId, workstreams]);
+  const { data: taskStatuses = [] } = useQuery({
+    queryKey: ['create-modal-task-statuses'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('task_statuses')
+        .select('id, name, slug, is_default, position')
+        .order('position');
+      return (data ?? []) as Array<{ id: string; name: string; slug: string; is_default: boolean }>;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+  const workstreamOptions: IconOption[] = useMemo(
+    () => workstreams.map((w: any) => ({ value: w.id, label: w.name })),
+    [workstreams],
+  );
+  const taskStatusOptions = useMemo(
+    () => taskStatuses.map((s) => ({ value: s.name, label: s.name, color_category: s.slug })),
+    [taskStatuses],
+  );
+  const defaultTaskStatusName = useMemo(
+    () => taskStatuses.find((s) => s.is_default)?.name ?? taskStatuses[0]?.name ?? 'Backlog',
+    [taskStatuses],
+  );
+
+  // ── Defect (QA Bug) work type — writes to tm_defects (TestHub) ────────────
+  // The Project field always uses the canonical project list (projectOptions,
+  // same as Story/Task). tm_defects.project_id FKs tm_projects, so the chosen
+  // canonical project is resolved to (or provisioned as) a tm_projects row at
+  // submit time via resolveTmProjectId — see handleSubmit's isDefect branch.
+  const isDefect = workType === 'QA Bug';
+  const createDefect = useCreateDefect();
+  const [defectSeverity, setDefectSeverity] = useState<DefectSeverity>('MINOR');
+  const [defectComponent, setDefectComponent] = useState('');
+  const [defectEnvironment, setDefectEnvironment] = useState('');
+  const [defectDueDate, setDefectDueDate] = useState('');
+  const [defectExpectedAdf, setDefectExpectedAdf] = useState<unknown>(null);
+  const [defectActualAdf, setDefectActualAdf] = useState<unknown>(null);
+  const resetDefectState = useCallback(() => {
+    setDefectSeverity('MINOR');
+    setDefectComponent('');
+    setDefectEnvironment('');
+    setDefectDueDate('');
+    setDefectExpectedAdf(null);
+    setDefectActualAdf(null);
+  }, []);
 
   // Primary: admin/workflows (ph_workflow_* tables) — shared canonical source.
   const {
@@ -479,17 +595,34 @@ export function CreateStoryModal({
   // Canonical source: catalyst_workflow_schemes/_statuses via useWorkflowStatuses.
   // INITIAL_STATUS_BY_TYPE removed (Bucket B, 2026-05-09) — DB is the only authority.
   useEffect(() => {
+    if (isTask || isDefect) return; // task/defect default separately — see effects below
     if (statusesLoading) return;
     const initial = dbInitialStatus ?? 'To Do';
     if (form.status !== initial) updateField('status', initial);
-  }, [workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isTask, isDefect, workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Defect initial status = 'open' (tm_defect_status). Set when entering defect
+  // mode or when the current status isn't a valid defect status.
+  useEffect(() => {
+    if (!isDefect) return;
+    const valid = DEFECT_STATUS_OPTIONS.some((o) => o.value === form.status);
+    if (!valid) updateField('status', 'open');
+  }, [isDefect, form.status]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Task initial status = the default task status (Backlog). Set when entering
+  // task mode or when the current status isn't a valid task status.
+  useEffect(() => {
+    if (!isTask || taskStatusOptions.length === 0) return;
+    const valid = taskStatusOptions.some((o) => o.value === form.status);
+    if (!valid) updateField('status', defaultTaskStatusName);
+  }, [isTask, defaultTaskStatusName, taskStatusOptions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Options ──────────────────────────────────────────────────────────────
   const projectOptions: IconOption[] = useMemo(
     () =>
       projects.map((p: any) => ({
         value: p.id,
-        label: p.name,
+        label: p.name ?? p.key ?? '',
         icon: (
           // Bucket F (2026-05-09): pass iconName + color so Lucide fallback
           // works for non-bundled-registry projects (ph_projects data joined).
@@ -587,6 +720,109 @@ export function CreateStoryModal({
     setSubmitAttempted(true);
     setFormError(null);
 
+    // ── Slice 9B: Task writes to the tasks table (not ph_issues) ──────────
+    if (isTask) {
+      if (!workstreamId) {
+        setFormError('Workstream is required');
+        return;
+      }
+      if (!form.summary.trim()) return; // Summary ErrorMessage renders inline
+      if (!form.reporterId) {
+        setFormError('Reporter is required');
+        return;
+      }
+      try {
+        const statusId =
+          taskStatuses.find((s) => s.name === form.status)?.id ??
+          taskStatuses.find((s) => s.is_default)?.id;
+        const adf = form.descriptionAdf ?? null;
+        const result = await createTaskMutation.mutateAsync({
+          title: form.summary.trim(),
+          description: adf ? adfToPlainText(adf as any) : form.description || undefined,
+          description_adf: adf ?? undefined,
+          workstream_id: workstreamId,
+          assignee_id: form.assigneeId || undefined,
+          reporter_id: form.reporterId || undefined,
+          labels: form.labels?.length ? form.labels : undefined,
+          priority: (form.priority || 'Medium').toLowerCase() as TaskPriority,
+          status_id: statusId || undefined,
+          parent_work_item_key: form.parentId || undefined,
+        });
+        onSuccess?.(result.key); // success flag is shown by the task mutation
+        if (createAnother) {
+          reset(true);
+          setWorkstreamId('');
+          setEditorKey((k) => k + 1);
+          setSubmitAttempted(false);
+        } else {
+          onClose();
+          reset();
+          setWorkstreamId('');
+          setEditorKey((k) => k + 1);
+          if (result.key) navigate(`/tasks/view/${result.key}`);
+        }
+      } catch (err: any) {
+        setFormError(err?.message ?? 'Failed to create task');
+      }
+      return;
+    }
+
+    // ── Defect (QA Bug) writes to tm_defects (not ph_issues) ──────────────
+    if (isDefect) {
+      if (!form.projectId) {
+        setFormError('Project is required');
+        return;
+      }
+      if (!form.summary.trim()) return; // Summary ErrorMessage renders inline
+      try {
+        const descAdf = form.descriptionAdf ?? null;
+        const sprintName = (form.sprintReleases ?? [])
+          .map((id) => sprintOptions.find((o) => o.value === id)?.label)
+          .filter(Boolean)[0] as string | undefined;
+        // The dropdown holds a canonical projects.id; tm_defects.project_id FKs
+        // tm_projects. Resolve (or provision) the matching tm_projects row.
+        const canonicalProject = projects.find((p) => p.id === form.projectId);
+        const tmProjectId = await resolveTmProjectId({
+          key: (canonicalProject as any)?.key ?? null,
+          name: (canonicalProject as any)?.name ?? null,
+        });
+        await createDefect.mutateAsync({
+          project_id: tmProjectId,
+          title: form.summary.trim(),
+          description: descAdf ? adfToPlainText(descAdf as any) : undefined,
+          description_adf: descAdf ?? undefined,
+          severity: defectSeverity,
+          priority: (form.priority || 'Medium').toLowerCase(),
+          component: defectComponent || undefined,
+          environment: defectEnvironment || undefined,
+          expected_result: defectExpectedAdf ? adfToPlainText(defectExpectedAdf as any) : undefined,
+          expected_result_adf: defectExpectedAdf ?? undefined,
+          actual_result: defectActualAdf ? adfToPlainText(defectActualAdf as any) : undefined,
+          actual_result_adf: defectActualAdf ?? undefined,
+          due_date: defectDueDate || undefined,
+          assigned_to: form.assigneeId || undefined,
+          parent_key: form.parentId || undefined,
+          sprint: sprintName,
+        });
+        flag.success('Defect created');
+        onSuccess?.('');
+        if (createAnother) {
+          reset(true);
+          resetDefectState();
+          setEditorKey((k) => k + 1);
+          setSubmitAttempted(false);
+        } else {
+          onClose();
+          reset();
+          resetDefectState();
+          setEditorKey((k) => k + 1);
+        }
+      } catch (err: any) {
+        setFormError(err?.message ?? 'Failed to create defect');
+      }
+      return;
+    }
+
     if (!form.projectId && workType !== 'Business Request') {
       setFormError('Project is required');
       return;
@@ -647,6 +883,11 @@ export function CreateStoryModal({
         onClose();
         reset();
         setEditorKey(k => k + 1);
+        // Land on the created item's detail view in its hub. Linked-create
+        // (from within another item) must NOT navigate away.
+        if (!isCreateLinkedMode && result.issue_key && resolvedKey) {
+          navigate(`/project-hub/${resolvedKey}/backlog/${result.issue_key}`);
+        }
       }
     } catch (err: any) {
       setFormError(err?.message ?? 'Failed to create work item');
@@ -663,6 +904,11 @@ export function CreateStoryModal({
     reset,
     createAnother,
     setEditorKey,
+    isTask,
+    workstreamId,
+    taskStatuses,
+    createTaskMutation,
+    navigate,
   ]);
 
   const handleClose = useCallback(() => {
@@ -749,12 +995,8 @@ export function CreateStoryModal({
                           onOpenBusinessRequest();
                           return;
                         }
-                        // Task is Catalyst-native — hand off to CreateTaskModal.
-                        if (selected === 'Task' && onOpenTask) {
-                          handleClose();
-                          onOpenTask();
-                          return;
-                        }
+                        // Slice 9B: 'Task' is now a first-class in-modal type
+                        // (workstream + tasks table). No more handoff.
                         setWorkType(selected);
                       }}
                       formatOptionLabel={formatIconOption}
@@ -764,8 +1006,35 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Project — only shown for non-BR types ─────────── */}
-              {workType !== 'Business Request' && (
+              {/* ── Workstream (Task) — replaces Project for the task type ── */}
+              {isTask ? (
+                <Field name="workstream" label="Workstream" isRequired>
+                  {({ fieldProps: { id, isRequired, isDisabled } }) => (
+                    <>
+                      <Select<IconOption>
+                        id={id}
+                        isRequired={isRequired}
+                        isDisabled={isDisabled}
+                        inputId="cs-workstream"
+                        options={workstreamOptions}
+                        value={
+                          workstreamOptions.find((o) => o.value === workstreamId) ?? null
+                        }
+                        onChange={(opt) =>
+                          setWorkstreamId((opt as IconOption)?.value ?? '')
+                        }
+                        placeholder="Select workstream"
+                        formatOptionLabel={formatIconOption}
+                        isSearchable
+                      />
+                      {submitAttempted && !workstreamId && (
+                        <ErrorMessage>Workstream is required</ErrorMessage>
+                      )}
+                    </>
+                  )}
+                </Field>
+              ) : workType !== 'Business Request' ? (
+                /* ── Project — only shown for non-BR, non-Task types ── */
                 <Field
                   name="space"
                   label="Project"
@@ -798,7 +1067,7 @@ export function CreateStoryModal({
                     </>
                   )}
                 </Field>
-              )}
+              ) : null}
 
               {/* ── Status — CatalystStatusPill (canonical, workflow-driven).
                    User can override the initial status before creating.
@@ -808,15 +1077,19 @@ export function CreateStoryModal({
                 {() => (
                   <>
                     <div style={{ display: 'block', marginTop: 4 }}>
-                      {statusesLoading ? (
+                      {!isTask && !isDefect && statusesLoading ? (
                         <Spinner size="small" />
                       ) : (
                         <CatalystStatusPill
-                          status={form.status || 'To Do'}
+                          status={form.status || (isTask ? defaultTaskStatusName : isDefect ? 'open' : 'To Do')}
                           statusCategory={
-                            workflowStatuses.find((s) => s.value === form.status)?.color_category ?? null
+                            isDefect
+                              ? (DEFECT_STATUS_OPTIONS.find((s) => s.value === form.status)?.color_category ?? null)
+                              : isTask
+                              ? (taskStatuses.find((s) => s.name === form.status)?.slug ?? null)
+                              : (workflowStatuses.find((s) => s.value === form.status)?.color_category ?? null)
                           }
-                          statusOptions={resolvedStatusOptions}
+                          statusOptions={isDefect ? DEFECT_STATUS_OPTIONS : isTask ? taskStatusOptions : resolvedStatusOptions}
                           onStatusChange={(newStatus) => updateField('status', newStatus)}
                           issueType={workType}
                         />
@@ -868,12 +1141,40 @@ export function CreateStoryModal({
                 {({ fieldProps: { id, isDisabled } }) => (
                   <>
                     <AsyncSelect<IconOption>
-                      key={`parent-${resolvedKey || 'none'}`}
+                      key={`parent-${isTask || isDefect ? 'anyitem' : resolvedKey || 'none'}`}
                       id={id}
-                      isDisabled={isDisabled || !resolvedKey}
+                      isDisabled={isDisabled || (!isTask && !isDefect && !resolvedKey)}
                       inputId="cs-parent"
                       defaultOptions
                       loadOptions={async (input: string) => {
+                        const searchTerm = input.trim();
+                        const results: IconOption[] = [];
+
+                        // Slice 9B: a Task links to ANY work item EXCEPT sub-task
+                        // (not project-scoped). The link is stored in
+                        // task_work_item_links on create.
+                        if (isTask || isDefect) {
+                          let tq = supabase
+                            .from('ph_issues')
+                            .select('issue_key, summary, issue_type')
+                            .not('issue_type', 'ilike', 'sub-task')
+                            .order('jira_updated_at', { ascending: false })
+                            .limit(30);
+                          if (searchTerm) {
+                            tq = tq.or(`issue_key.ilike.%${searchTerm}%,summary.ilike.%${searchTerm}%`);
+                          }
+                          const { data: tdata } = await tq;
+                          (tdata ?? []).forEach((d: any) => {
+                            results.push({
+                              value: d.issue_key,
+                              label: d.summary,
+                              sublabel: d.issue_key,
+                              icon: <WorkItemTypeIcon type={d.issue_type} size={14} />,
+                            });
+                          });
+                          return results;
+                        }
+
                         // Bucket E (2026-05-09): parent types driven by PARENT_TYPE_RULES.
                         // All parent types — including 'Business Request' — live in ph_issues
                         // for the BAU project (source='catalyst'|'jira', issue_type='Business Request').
@@ -882,9 +1183,6 @@ export function CreateStoryModal({
                         if (!resolvedKey) return [];
                         const eligibleTypes = PARENT_TYPE_RULES[workType] ?? [];
                         if (eligibleTypes.length === 0) return [];
-
-                        const searchTerm = input.trim();
-                        const results: IconOption[] = [];
 
                         // All eligible parent types come from ph_issues for this project
                         let q = supabase
@@ -915,7 +1213,13 @@ export function CreateStoryModal({
                           (opt as IconOption)?.value ?? null,
                         )
                       }
-                      placeholder={resolvedKey ? 'Select parent' : 'Select a project first'}
+                      placeholder={
+                        isTask || isDefect
+                          ? 'Link a work item (optional)'
+                          : resolvedKey
+                            ? 'Select parent'
+                            : 'Select a project first'
+                      }
                       formatOptionLabel={formatIconOption}
                       isClearable
                     />
@@ -979,13 +1283,113 @@ export function CreateStoryModal({
                 )}
               </Field>
 
+              {/* ── Defect-only fields (QA Bug → tm_defects) ──────────── */}
+              {isDefect && (
+                <>
+                  <Field name="severity" label="Severity">
+                    {({ fieldProps }) => (
+                      <Select<IconOption>
+                        {...fieldProps}
+                        inputId="cs-defect-severity"
+                        options={DEFECT_SEVERITY_OPTIONS}
+                        value={DEFECT_SEVERITY_OPTIONS.find((o) => o.value === defectSeverity) ?? null}
+                        onChange={(opt) =>
+                          setDefectSeverity(((opt as IconOption)?.value as any) ?? 'MINOR')
+                        }
+                        isSearchable={false}
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="function" label="Function">
+                    {({ fieldProps }) => (
+                      <Textfield
+                        {...(fieldProps as any)}
+                        placeholder="e.g. Authentication"
+                        value={defectComponent}
+                        onChange={(e) => setDefectComponent((e.target as HTMLInputElement).value)}
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="environment" label="Environment">
+                    {({ fieldProps }) => (
+                      <Select<IconOption>
+                        {...fieldProps}
+                        inputId="cs-defect-environment"
+                        options={DEFECT_ENVIRONMENT_OPTIONS}
+                        value={DEFECT_ENVIRONMENT_OPTIONS.find((o) => o.value === defectEnvironment) ?? null}
+                        onChange={(opt) => setDefectEnvironment((opt as IconOption)?.value ?? '')}
+                        placeholder="Select environment"
+                        isClearable
+                        isSearchable={false}
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="dueDate" label="Due date">
+                    {({ fieldProps }) => (
+                      <DatePicker
+                        {...(fieldProps as any)}
+                        inputId="cs-defect-due"
+                        value={defectDueDate}
+                        onChange={(v) => setDefectDueDate(v || '')}
+                        placeholder="dd/mm/yyyy"
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="expectedResult" label="Expected result">
+                    {() => (
+                      <div className="cs-adf-desc-wrapper">
+                        <RichTextEditor
+                          key={`expected-${editorKey}`}
+                          initialAdf={null}
+                          hideActionButtons
+                          onSave={() => {}}
+                          onCancel={() => {}}
+                          onChange={(tiptapJson) => {
+                            try {
+                              setDefectExpectedAdf(tiptapToAdf(tiptapJson));
+                            } catch {
+                              setDefectExpectedAdf(null);
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                  </Field>
+
+                  <Field name="actualResult" label="Actual result">
+                    {() => (
+                      <div className="cs-adf-desc-wrapper">
+                        <RichTextEditor
+                          key={`actual-${editorKey}`}
+                          initialAdf={null}
+                          hideActionButtons
+                          onSave={() => {}}
+                          onCancel={() => {}}
+                          onChange={(tiptapJson) => {
+                            try {
+                              setDefectActualAdf(tiptapToAdf(tiptapJson));
+                            } catch {
+                              setDefectActualAdf(null);
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                  </Field>
+                </>
+              )}
+
               {/* ── Sprint ─────────────────────────────────────────────
                   2026-06-26 (revised): always render dropdown with ALL
                   sprints (past + current + future). Searchable + multi-
                   select. No empty-state placeholder; an empty options
                   list still shows the picker so user knows the field
                   exists. */}
-              {workType !== 'Business Request' && (
+              {workType !== 'Business Request' && !isTask && (
                 <Field name="sprints" label="Sprint">
                   {({ fieldProps }) => (
                     <Select<IconOption, true>
@@ -1070,6 +1474,10 @@ export function CreateStoryModal({
                 )}
               </Field>
 
+              {/* Reporter + Labels are ph_issues-only; defects set reporter from
+                  the auth user in useCreateDefect and omit labels here. */}
+              {!isDefect && (
+              <>
               {/* ── Reporter — required, current user (ADS: disabled Select) ── */}
               <Field name="reporter" label="Reporter" isRequired>
                 {({ fieldProps }) => {
@@ -1128,6 +1536,8 @@ export function CreateStoryModal({
                   />
                 )}
               </Field>
+              </>
+              )}
 
 
             </Box>
@@ -1147,7 +1557,7 @@ export function CreateStoryModal({
               </Button>
               <Button
                 appearance="primary"
-                isLoading={createMutation.isPending}
+                isLoading={isDefect ? createDefect.isPending : isTask ? createTaskMutation.isPending : createMutation.isPending}
                 onClick={handleSubmit}
               >
                 Create

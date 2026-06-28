@@ -22,7 +22,7 @@ import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
 import { HuddleFab } from "./HuddleFab";
 import { HuddleIncoming } from "./HuddleIncoming";
 import { HuddleScreenView } from "./HuddleScreenView";
-import { HuddleTicketsModal } from "./HuddleTicketsModal";
+import { HuddleAutoFilters } from "./HuddleAutoFilters";
 
 /**
  * lazyWithRetry — defends against Vite stale-chunk errors after deploys/HMR.
@@ -880,7 +880,7 @@ function CatalystShellContent() {
       <HuddleFab />
       <HuddleIncoming />
       <HuddleScreenView />
-      <HuddleTicketsModal />
+      <HuddleAutoFilters />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">

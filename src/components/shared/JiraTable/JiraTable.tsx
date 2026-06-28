@@ -1276,6 +1276,21 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       cells: Array<{ key: string; content: React.ReactNode; colSpan?: number }>;
     }> = [];
 
+    // RCA 2026-06-28 (excess Work-column left padding): the expand-chevron
+    // slot must be reserved only when at least one VISIBLE row is actually
+    // expandable. Callers (BacklogPage, Tasks) pass `getRowHasChildren`
+    // UNCONDITIONALLY as a function, so gating the empty placeholder on mere
+    // prop-presence reserved ~28px (24px slot + 4px margin) on every row even
+    // when 0 rows had children — pushing the type icon + key right. Gate on
+    // actual expandability instead. Slot stays uniform across rows when a
+    // parent exists (children align under it); a fully-flat list reserves
+    // nothing. Matches Jira: the toggle column appears only when something can
+    // be toggled.
+    const anyRowHasChildren = !!getRowHasChildren && (
+      pagedData.some((r) => getRowHasChildren(r)) ||
+      (groups?.some((g) => g.rows.some((r) => getRowHasChildren(r))) ?? false)
+    );
+
     const renderDataRow = (row: TRow) => {
       const id = getRowId(row);
       const isSelected = selectedSet.has(id);
@@ -1427,10 +1442,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     </button>
                   );
                 }
-                // Only render the empty slot when the hierarchy feature is active
-                // (getRowHasChildren is provided). Leaf rows in a flat list skip
-                // the slot entirely so the type icon starts at the cell edge.
-                if (!getRowHasChildren) return null;
+                // Only render the empty slot when the table actually has an
+                // expandable row (see anyRowHasChildren RCA above). Leaf rows in
+                // a flat list — or a hierarchy where nothing is currently
+                // expandable — skip the slot so the type icon starts at the
+                // cell edge with no dead padding.
+                if (!anyRowHasChildren) return null;
                 return (
                   <span
                     aria-hidden="true"

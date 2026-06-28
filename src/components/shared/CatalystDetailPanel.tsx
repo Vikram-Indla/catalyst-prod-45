@@ -82,7 +82,7 @@ export interface CatalystDetailPanelProps {
   onOpenFullPage?: () => void;
 
   /** Source table / view variant */
-  entityKind?: 'ph_issue' | 'task' | 'release';
+  entityKind?: 'ph_issue' | 'task' | 'release' | 'test_cycle';
 
   /** Inline mode: flex item with fixed width, no resize. Overlay mode (default):
    *  position:fixed with drag-resize handle. */
@@ -188,6 +188,8 @@ export function CatalystDetailPanel(props: CatalystDetailPanelProps) {
         <ReleasePanelBody itemId={itemId} typeIconLabel={typeIconLabel} onClose={onClose} onOpenFullPage={onOpenFullPage} />
       ) : entityKind === 'task' ? (
         <TaskPanelBody itemId={itemId} itemType={itemType} typeIconLabel={typeIconLabel} projectKey={projectKey} projectId={projectId} onClose={onClose} onOpenFullPage={onOpenFullPage} />
+      ) : entityKind === 'test_cycle' ? (
+        <TestCyclePanelBody itemId={itemId} itemType={itemType} typeIconLabel={typeIconLabel} projectKey={projectKey} projectId={projectId} onClose={onClose} onOpenFullPage={onOpenFullPage} />
       ) : (
         <PhIssuePanelBody itemId={itemId} itemType={itemType} typeIconLabel={typeIconLabel} projectKey={projectKey} projectId={projectId} onClose={onClose} onOpenFullPage={onOpenFullPage} />
       )}
@@ -543,6 +545,49 @@ function TaskPanelBody({
             panelMode={true}
             hideSidebar={true}
             entityKind="task"
+          />
+        </Suspense>
+      </div>
+    </>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Test cycle body — delegates to CatalystViewTestCycle via the router
+// (entityKind='test_cycle'). tm_test_cycles, UUID-keyed. 2026-06-28.
+// ──────────────────────────────────────────────────────────────────────
+
+function TestCyclePanelBody({
+  itemId, itemType, typeIconLabel, projectKey, projectId, onClose, onOpenFullPage,
+}: {
+  itemId: string;
+  itemType?: string;
+  typeIconLabel?: string;
+  projectKey: string;
+  projectId?: string;
+  onClose: () => void;
+  onOpenFullPage?: () => void;
+}) {
+  return (
+    <>
+      <ChromeRow
+        type={typeIconLabel || itemType || 'Test Cycle'}
+        labelText="Test Cycle"
+        onClose={onClose}
+        onOpenFullPage={onOpenFullPage}
+      />
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}><Spinner size="medium" /></div>}>
+          <CatalystDetailRouter
+            isOpen={true}
+            onClose={onClose}
+            itemId={itemId}
+            itemType={itemType}
+            projectKey={projectKey}
+            projectId={projectId}
+            panelMode={true}
+            hideSidebar={true}
+            entityKind="test_cycle"
           />
         </Suspense>
       </div>

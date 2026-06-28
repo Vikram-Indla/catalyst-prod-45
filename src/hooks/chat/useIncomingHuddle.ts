@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useHuddleStore } from '@/store/huddleStore';
-import { useHuddleActions } from '@/hooks/chat/useHuddleData';
+import { useHuddleActions, liveCutoff } from '@/hooks/chat/useHuddleData';
 import type { ChatConversation } from '@/types/chat';
 
 const db = supabase as unknown as { from: (t: string) => any };
@@ -54,6 +54,8 @@ export function useIncomingHuddle(): {
   const { data } = useQuery<IncomingHuddle | null>({
     queryKey: ['chat', 'huddle', 'incoming', userId],
     enabled: !!userId,
+    // Poll so a stale (all-dropped) huddle stops ringing even without a DB event.
+    refetchInterval: 10_000,
     queryFn: async () => {
       if (!userId) return null;
       const { data: huds } = await db.from('chat_huddles')
@@ -65,8 +67,16 @@ export function useIncomingHuddle(): {
       const { data: mine } = await db.from('chat_huddle_participants')
         .select('huddle_id').eq('user_id', userId);
       const inIds = new Set(((mine ?? []) as PartRow[]).map((p) => p.huddle_id));
+      // Only ring for huddles that still have a LIVE caller (fresh heartbeat).
+      // A huddle whose participants all dropped is stale — don't ring for it.
+      const { data: fresh } = await db.from('chat_huddle_participants')
+        .select('huddle_id')
+        .in('huddle_id', rows.map((h) => h.id))
+        .is('left_at', null)
+        .gt('last_seen_at', liveCutoff());
+      const liveHuddleIds = new Set(((fresh ?? []) as PartRow[]).map((p) => p.huddle_id));
       const candidate = rows.find(
-        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id),
+        (h) => h.started_by !== userId && !inIds.has(h.id) && !declined.has(h.id) && liveHuddleIds.has(h.id),
       );
       if (!candidate) return null;
       const [{ data: caller }, { data: conv }] = await Promise.all([

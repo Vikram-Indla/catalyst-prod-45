@@ -39,22 +39,22 @@ export type StatusAppearance =
  * status with text from another.
  */
 export const STATUS_BG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-background-success, #DFFCF0)',     // done
-  inprogress: 'var(--ds-background-information, #E9F2FF)',  // in progress
-  moved:      'var(--ds-background-warning, #FFF7D6)',      // moved
-  new:        'var(--ds-background-discovery, #F3F0FF)',    // new
-  removed:    'var(--ds-background-danger, #FFECEB)',       // cancelled/rejected
-  default:    'var(--ds-background-neutral, #F1F2F4)',      // todo/backlog
+  success:    'var(--ds-background-success-bold)',      // done — bold green
+  inprogress: 'var(--ds-background-information-bold)', // in progress — bold blue
+  moved:      'var(--ds-background-warning-bold)',      // blocked/on hold — bold yellow
+  new:        'var(--ds-background-discovery)',         // new/discovery — subtle (no bold token)
+  removed:    'var(--ds-background-danger-bold)',       // cancelled/removed — bold red
+  default:    'var(--ds-background-neutral)',           // todo/backlog — neutral
 };
 
 /** Matching ADS text token per status (paired with STATUS_BG above). */
 export const STATUS_FG: Record<StatusAppearance, string> = {
-  success:    'var(--ds-text-success, #216E4E)',
-  inprogress: 'var(--ds-text-information, #0055CC)',
-  moved:      'var(--ds-text-warning, #A54800)',
-  new:        'var(--ds-text-discovery, #5E4DB2)',
-  removed:    'var(--ds-text-danger, #AE2E24)',
-  default:    'var(--ds-text, #172B4D)',
+  success:    'var(--ds-text-inverse)',
+  inprogress: 'var(--ds-text-inverse)',
+  moved:      'var(--ds-text-inverse)',
+  new:        'var(--ds-text-discovery)',
+  removed:    'var(--ds-text-inverse)',
+  default:    'var(--ds-text-subtle)',
 };
 
 /** Default status text token (neutral). Prefer statusFg(appearance) for pills so

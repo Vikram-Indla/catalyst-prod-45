@@ -395,10 +395,13 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
     return (
       <span
         title={summary}
-        // dir="auto" — Arabic summaries render RTL, English LTR, mixed rows
-        // pick direction from the first strong char. App-wide RTL fix
-        // (Vikram 2026-06-18); no-op for Latin text.
-        dir="auto"
+        // Jira parity (2026-06-28): summary cell stays LTR/left-aligned, NO
+        // dir="auto". Verified against live Jira (digital-transformation
+        // MDT-281/282, Arabic summaries): every ancestor span→td→tr→table is
+        // direction:ltr; text-align:start with no dir attribute. The browser's
+        // Unicode bidi algorithm orders Arabic glyphs inside the run on its
+        // own; the block itself is LTR. dir="auto" right-aligned Arabic and
+        // diverged from Jira. See JiraTable/editors.tsx for the matching cells.
         style={{
           overflow: "hidden",
           textOverflow: "ellipsis",

@@ -83,6 +83,7 @@ async function fetchDmTitles(
   groupCounts: Map<string, number>;
   avatars: Map<string, string[]>;
   fullNames: Map<string, string[]>;
+  memberIds: Map<string, string[]>;
 }> {
   const dmTitles = new Map<string, string>();
   const groupNames = new Map<string, string[]>();
@@ -90,15 +91,20 @@ async function fetchDmTitles(
   const groupTitles = new Map<string, string>();
   const avatars = new Map<string, string[]>();
   const fullNames = new Map<string, string[]>();
-  if (convIds.length === 0) return { dmTitles, groupTitles, groupCounts, avatars, fullNames };
+  const memberIds = new Map<string, string[]>();
+  if (convIds.length === 0) return { dmTitles, groupTitles, groupCounts, avatars, fullNames, memberIds };
   try {
     const { data, error } = await db
       .from('chat_conversation_members')
       .select('conversation_id, user_id, profiles:user_id ( full_name, avatar_url )')
       .in('conversation_id', convIds)
       .neq('user_id', userId);
-    if (error || !data) return { dmTitles, groupTitles, groupCounts, avatars, fullNames };
+    if (error || !data) return { dmTitles, groupTitles, groupCounts, avatars, fullNames, memberIds };
     for (const m of data as DmMemberRow[]) {
+      // capture the member id regardless of whether a display name resolved
+      const idList = memberIds.get(m.conversation_id) ?? [];
+      idList.push(m.user_id);
+      memberIds.set(m.conversation_id, idList);
       const p = pickProfile(m.profiles);
       const name = p?.name ?? null;
       const avatar = p?.avatar ?? null;
@@ -129,7 +135,7 @@ async function fetchDmTitles(
   } catch {
     // leave empty — DMs fall back to their stored title
   }
-  return { dmTitles, groupTitles, groupCounts, avatars, fullNames };
+  return { dmTitles, groupTitles, groupCounts, avatars, fullNames, memberIds };
 }
 
 async function fetchConversations(userId: string): Promise<ChatConversation[]> {
@@ -223,7 +229,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
       .filter((c) => c.kind === 'dm' || c.kind === 'group_dm')
       .map((c) => c.id);
     if (titleIds.length > 0) {
-      const { dmTitles, groupTitles, groupCounts, avatars, fullNames } = await fetchDmTitles(titleIds, userId);
+      const { dmTitles, groupTitles, groupCounts, avatars, fullNames, memberIds } = await fetchDmTitles(titleIds, userId);
       for (const c of conversations) {
         if (c.kind === 'group_dm') {
           c.memberCount = groupCounts.get(c.id) ?? 0;
@@ -231,6 +237,7 @@ async function fetchConversations(userId: string): Promise<ChatConversation[]> {
         if (c.kind === 'dm' || c.kind === 'group_dm') {
           c.dmAvatarUrls = avatars.get(c.id) ?? [];
           c.dmMemberNames = fullNames.get(c.id) ?? [];
+          c.dmMemberIds = memberIds.get(c.id) ?? [];
         }
         if (c.title) continue;
         if (c.kind === 'dm') {

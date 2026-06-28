@@ -112,13 +112,9 @@ export function useCreateKanbanTask() {
       
       const nextPosition = (existing?.[0]?.position ?? -1) + 1;
       
-      // Generate a temporary key - the DB trigger will override with proper PLN-XXX
-      const tempKey = `PLN-${Date.now()}`;
-      
+      // Key is assigned by the DB trigger (uniform TSK-N) — single source of truth.
       const { data, error } = await typedQuery('tasks')
         .insert([{
-          key: tempKey,
-          task_key: tempKey,
           title: task.title!,
           description: task.description || null,
           status_id: task.status_id!,

@@ -50,9 +50,56 @@ function resolveValue(raw: string): string {
 }
 
 /**
+ * Build a single filter descriptor from a field name, operator, and value.
+ * Shared by translate() (flat list) and the AST parser (boolean tree) so leaf
+ * semantics — account-id column routing, date/function resolution, IS EMPTY —
+ * are identical across both. Returns null for unknown fields/operators.
+ *
+ * `value` is a string for single values (or value-list array for in/not in).
+ */
+export function buildLeafFilter(
+  fieldName: string,
+  opStr: string,
+  value: string | string[],
+): JqlFilter | null {
+  const fieldDef = JQL_FIELD_MAP[fieldName];
+  if (!fieldDef) return null;
+
+  const method = OPERATOR_TO_METHOD[opStr.toLowerCase()];
+  if (!method) return null;
+
+  // is / is not with EMPTY / NULL → {method:'is', value:null}.
+  // NB: historically both is and is-not collapse to method:'is' here — kept
+  // verbatim so translate() output is unchanged.
+  if (method === 'is' || method === 'not_is') {
+    const raw = (typeof value === 'string' ? value : '').toUpperCase();
+    const isNull = raw === 'EMPTY' || raw === 'NULL';
+    return { method: 'is', column: fieldDef.column, value: isNull ? null : (value as string) };
+  }
+
+  // Value list (in / not in)
+  if (Array.isArray(value)) {
+    const column =
+      fieldDef.type === 'user' && fieldDef.accountIdColumn && value.every(isJiraAccountId)
+        ? fieldDef.accountIdColumn
+        : fieldDef.column;
+    return { method, column, value };
+  }
+
+  // Single value (function, value, direction treated as plain value)
+  const resolved = resolveValue(value);
+  const column =
+    fieldDef.type === 'user' && fieldDef.accountIdColumn && isJiraAccountId(resolved)
+      ? fieldDef.accountIdColumn
+      : fieldDef.column;
+  return { method, column, value: resolved };
+}
+
+/**
  * Translate a JQL string into an array of filter descriptors.
  *
- * Unrecognised fields are silently dropped.
+ * Unrecognised fields are silently dropped. OR / parentheses are flattened
+ * (all clauses ANDed) — for true boolean semantics use parseJqlAst().
  * Callers apply filters via applyJqlToQuery().
  */
 export function translate(jql: string): JqlFilter[] {
@@ -76,13 +123,10 @@ export function translate(jql: string): JqlFilter[] {
       break;
     }
 
-    // Expect: field → operator → value
+    // Expect: field → operator → value (group parens are skipped here)
     if (tok.type !== 'field') { i++; continue; }
 
     const fieldName = (tok.value as string).toLowerCase();
-    const fieldDef  = JQL_FIELD_MAP[fieldName];
-    if (!fieldDef) { i += 3; continue; } // skip field + op + value
-
     const opTok    = tokens[i + 1];
     const valTok   = tokens[i + 2];
     i += 3;
@@ -90,38 +134,9 @@ export function translate(jql: string): JqlFilter[] {
     if (!opTok || opTok.type !== 'operator') continue;
     if (!valTok) continue;
 
-    const method = OPERATOR_TO_METHOD[opTok.value as string];
-    if (!method) continue;
-
-    // is / is not with EMPTY / NULL → {method:'is', value:null}
-    if (method === 'is' || method === 'not_is') {
-      const raw = (typeof valTok.value === 'string' ? valTok.value : '').toUpperCase();
-      const isNull = raw === 'EMPTY' || raw === 'NULL';
-      filters.push({ method: 'is', column: fieldDef.column, value: isNull ? null : valTok.value as string });
-      continue;
-    }
-
-    // Value list (in / not in)
-    if (valTok.type === 'value-list') {
-      const vals = valTok.value as string[];
-      // For user fields: if every value in the list looks like an account ID, use the account_id column
-      const column =
-        fieldDef.type === 'user' && fieldDef.accountIdColumn && vals.every(isJiraAccountId)
-          ? fieldDef.accountIdColumn
-          : fieldDef.column;
-      filters.push({ method, column, value: vals });
-      continue;
-    }
-
-    // Single value (function, value, direction treated as plain value)
-    const raw = valTok.value as string;
-    const resolved = resolveValue(raw);
-    // For user fields: if the resolved value looks like an account ID, use the account_id column
-    const column =
-      fieldDef.type === 'user' && fieldDef.accountIdColumn && isJiraAccountId(resolved)
-        ? fieldDef.accountIdColumn
-        : fieldDef.column;
-    filters.push({ method, column, value: resolved });
+    const value = valTok.type === 'value-list' ? (valTok.value as string[]) : (valTok.value as string);
+    const leaf = buildLeafFilter(fieldName, opTok.value as string, value);
+    if (leaf) filters.push(leaf);
   }
 
   return filters;

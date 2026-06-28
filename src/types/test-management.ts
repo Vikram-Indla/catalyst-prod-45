@@ -6,7 +6,7 @@ export type RunStatus = 'NOT_RUN' | 'IN_PROGRESS' | 'PASSED' | 'FAILED' | 'BLOCK
 
 export type DefectStatus = 'OPEN' | 'IN_PROGRESS' | 'FIXED' | 'VERIFIED' | 'CLOSED' | 'WONT_FIX' | 'DUPLICATE';
 
-export type DefectSeverity = 'CRITICAL' | 'MAJOR' | 'MINOR' | 'TRIVIAL';
+export type DefectSeverity = 'BLOCKER' | 'CRITICAL' | 'MAJOR' | 'MINOR' | 'TRIVIAL';
 
 // Test Plan status types
 export type TestPlanStatus = 'draft' | 'active' | 'completed' | 'archived';
@@ -401,7 +401,20 @@ export interface UpdateCycleInput extends Partial<CreateCycleInput> {
 export interface CreateDefectInput {
   title: string;
   description?: string;
+  description_adf?: unknown;
   severity: DefectSeverity;
+  priority?: string;
+  component?: string;
+  environment?: string;
+  affects_version?: string;
+  steps_to_reproduce?: string;
+  expected_result?: string;
+  expected_result_adf?: unknown;
+  actual_result?: string;
+  actual_result_adf?: unknown;
+  due_date?: string;
+  parent_key?: string;
+  sprint?: string;
   assigned_to?: string;
   case_id?: string;
   run_id?: string;
@@ -553,6 +566,7 @@ export function getExecutionStatusColor(status: RunStatus): string {
 
 export function getSeverityColor(severity: DefectSeverity): string {
   const map: Record<DefectSeverity, string> = {
+    BLOCKER: 'text-danger',
     CRITICAL: 'text-danger',
     MAJOR: 'text-warning',
     MINOR: 'text-info',

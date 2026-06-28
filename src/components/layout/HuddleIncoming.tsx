@@ -27,10 +27,11 @@ export function HuddleIncoming() {
   const ringRef = useRef<HTMLSpanElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
 
-  // play ringtone while an incoming call is pending
+  // play ringtone + close the Caty chat dock while an incoming call is pending
   useEffect(() => {
     if (!incoming) return;
     startRing();
+    window.dispatchEvent(new CustomEvent('huddle:incoming-ring'));
     return () => stopRing();
   }, [incoming?.huddleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
