@@ -2,11 +2,12 @@
  * WorkHub Type Definitions
  * All core types for releases, themes, work items, resources, and KPIs
  */
+import type { CatalystPriority } from '@/lib/catalyst-priority';
 
 export type WorkItemType = 'Epic' | 'Story' | 'Subtask' | 'Bug' | 'Task' | 'Incident';
 export type WorkItemStatus = 'To Do' | 'In Progress' | 'In Review' | 'Done' | 'Blocked' | 'Cancelled';
-/** @deprecated Use CatalystPriority from '@/lib/catalyst-priority' instead. */
-export type Priority = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
+/** Canonical Catalyst priority (Highest..Lowest). Aliased to the single source. */
+export type Priority = CatalystPriority;
 export type ReleaseStatus = 'Planned' | 'Active' | 'At Risk' | 'Completed' | 'Cancelled';
 export type ThemeStatus = 'Active' | 'Completed' | 'On Hold';
 export type SyncSource = 'jira' | 'catalyst' | 'manual';

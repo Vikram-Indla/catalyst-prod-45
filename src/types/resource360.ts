@@ -2,6 +2,7 @@
  * Resource 360° Drawer Types
  * Complete work context visualization for resources
  */
+import type { CatalystPriority } from '@/lib/catalyst-priority';
 
 export interface Resource360Data {
   id: string;
@@ -99,8 +100,8 @@ export type R360WorkItemType =
   | 'Test Case' | 'Test Plan' | 'Incident' | 'Release' | 'Requirement';
 
 export type R360StatusCategory = 'todo' | 'progress' | 'done';
-/** @deprecated Use CatalystPriority from '@/lib/catalyst-priority' instead. */
-export type R360Priority = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
+/** Canonical Catalyst priority (Highest..Lowest). Aliased to the single source. */
+export type R360Priority = CatalystPriority;
 export type R360ResourceRole = 'assigned' | 'reported';
 export type R360ContractType = 'Fixed' | 'Variable' | 'Freelance';
 export type R360LocationType = 'Onsite' | 'Off-Shore' | 'Hybrid';
