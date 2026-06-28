@@ -46,6 +46,7 @@ const sections: SidebarSection[] = [
       { id: 'project-status', title: 'Project Status ✦', path: '/testhub/reports/project-status', icon: FileText, exact: false },
       { id: 'sprint-status', title: 'Sprint Status ✦', path: '/testhub/reports/sprint-status', icon: FileText, exact: false },
       { id: 'tester-status', title: 'Tester Perf ✦', path: '/testhub/reports/tester-status', icon: FileText, exact: false },
+      { id: 'team-status', title: 'Team Perf ✦', path: '/testhub/reports/team-status', icon: FileText, exact: false },
       { id: 'reports-lab',  title: 'Reports Lab ✦', path: '/testhub/reports-lab',  icon: FileText,         exact: false },
     ],
   },
