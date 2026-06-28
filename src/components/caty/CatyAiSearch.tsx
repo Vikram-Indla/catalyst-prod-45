@@ -140,7 +140,7 @@ export function CatyAiSearch({
           margin: 0,
           padding: 0,
           border: 0,
-          outline: 2px solid var(--ds-border-focused),
+          outline: "2px solid var(--ds-border-focused)",
           background: "transparent",
           boxShadow: "none",
           font: "inherit",
