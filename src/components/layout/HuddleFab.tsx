@@ -36,6 +36,8 @@ export function HuddleFab() {
   const stopScreen = useHuddleStore((s) => s.stopScreen);
   const screenWindow = useHuddleStore((s) => s.screenWindow);
   const setScreenWindow = useHuddleStore((s) => s.setScreenWindow);
+  const windowState = useHuddleStore((s) => s.windowState);
+  const setWindowState = useHuddleStore((s) => s.setWindowState);
   const { huddle } = useActiveHuddle(active?.conversationId ?? null);
   const participants = huddle?.participants ?? [];
   const navigate = useNavigate();
@@ -154,7 +156,7 @@ export function HuddleFab() {
     dragRef.current = null;
     el?.classList.remove('huddle-fab-dragging');
     if (!d || !el) return;
-    if (!d.moved) { setExpanded((v) => !v); return; } // click (no drag) → toggle expand
+    if (!d.moved) { setWindowState('open'); return; } // click (no drag) → reopen the window
     // snap to nearest horizontal edge so the panel grows inward
     const r = el.getBoundingClientRect();
     const center = r.left + r.width / 2;
@@ -169,9 +171,9 @@ export function HuddleFab() {
     el.style.top = `${next.top}px`;
     setPos(next);
     try { localStorage.setItem(POS_KEY, JSON.stringify(next)); } catch { /* ignore */ }
-  }, []);
+  }, [setWindowState]); // setWindowState is a stable Zustand action
 
-  if (!active) return null;
+  if (!active || windowState !== 'minimized') return null;
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
   const ss = String(seconds % 60).padStart(2, '0');

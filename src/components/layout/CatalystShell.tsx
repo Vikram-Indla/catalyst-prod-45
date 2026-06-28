@@ -21,7 +21,7 @@ import { useNavBreakpoint } from "@/hooks/useNavBreakpoint";
 import { GlobalMobileDrawer } from "./GlobalMobileDrawer";
 import { HuddleFab } from "./HuddleFab";
 import { HuddleIncoming } from "./HuddleIncoming";
-import { HuddleScreenView } from "./HuddleScreenView";
+import { HuddleWindow } from "./HuddleWindow";
 import { HuddleAutoFilters } from "./HuddleAutoFilters";
 
 /**
@@ -879,7 +879,7 @@ function CatalystShellContent() {
       </div>
       <HuddleFab />
       <HuddleIncoming />
-      <HuddleScreenView />
+      <HuddleWindow />
       <HuddleAutoFilters />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
