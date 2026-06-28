@@ -117,7 +117,7 @@ export function MessagePanelHeader({
             border: 'none',
             color: 'var(--cv2-text-strong)',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 17,
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 700,
             letterSpacing: '-0.01em',
             cursor: 'pointer',
@@ -238,7 +238,7 @@ function PanelTabBtn({
         borderBottom: active ? '2px solid var(--cv2-accent)' : '2px solid transparent',
         cursor: 'pointer',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: active ? 700 : 500,
       }}
     >

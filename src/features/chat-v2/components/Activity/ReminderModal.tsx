@@ -96,7 +96,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Reminder
           </div>
           <button
@@ -117,7 +117,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
               background: 'var(--cv2-bg-row-hover)',
               borderLeft: '3px solid var(--cv2-accent)',
               borderRadius: 'var(--cv2-radius-sm)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--cv2-text-subtle)',
               maxHeight: 80,
               overflow: 'hidden',
@@ -131,7 +131,7 @@ export function ReminderModal({ attachedMessageText, onCancel, onSave }: Reminde
           >
             <div
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: 0.4,
@@ -194,7 +194,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <div style={{ flex: 1, position: 'relative' }}>
       <div
         style={{
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           marginBottom: 6,
@@ -238,7 +238,7 @@ function PickerButton({
         borderRadius: 'var(--cv2-radius-sm)',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
       }}
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -308,7 +308,7 @@ function CalendarPopover({
             <ChevronLeftIcon size={14} />
           </NavBtn>
         </div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
           {MONTH_LABELS[viewMonth]} {viewYear}
         </div>
         <div style={{ display: 'inline-flex', gap: 4 }}>
@@ -330,7 +330,7 @@ function CalendarPopover({
             key={d}
             style={{
               textAlign: 'center',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               color: 'var(--cv2-text-muted)',
               fontWeight: 600,
               padding: '4px 0',
@@ -389,7 +389,7 @@ function CalendarPopover({
                       ? '2px solid var(--cv2-accent)'
                       : '2px solid transparent',
                   borderRadius: isSel ? 6 : isToday ? '50%' : 6,
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: isSel || isToday ? 700 : 400,
                   cursor: allowed ? 'pointer' : 'not-allowed',
                   transition: 'background var(--cv2-transition-fast)',
@@ -505,7 +505,7 @@ function TimeDropdown({
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
             }}
           >
             {sel && '✓ '}{s.label}
@@ -529,7 +529,7 @@ function PrimaryBtn({ onClick, children }: { onClick: () => void; children: Reac
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         cursor: 'pointer',
       }}
@@ -552,7 +552,7 @@ function SecondaryBtn({ onClick, children }: { onClick: () => void; children: Re
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         cursor: 'pointer',
       }}

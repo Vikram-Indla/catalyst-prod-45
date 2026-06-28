@@ -31,7 +31,7 @@ export function SidebarSection({
           padding: '8px 8px 8px 12px',
           color: 'var(--cv2-text-subtle)',
           fontFamily: 'var(--cv2-font)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 700,
           userSelect: 'none',
         }}

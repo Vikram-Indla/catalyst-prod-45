@@ -144,7 +144,7 @@ export function MessageList({
             textAlign: 'center',
             color: 'var(--cv2-text-muted)',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           Loading messages…
@@ -156,7 +156,7 @@ export function MessageList({
             textAlign: 'center',
             color: 'var(--cv2-text-muted)',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           No messages yet. Say hello.

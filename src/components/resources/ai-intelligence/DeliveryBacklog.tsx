@@ -73,7 +73,7 @@ export const DeliveryBacklog: React.FC<Props> = ({ metrics, hubs }) => {
       {/* Per-hub backlog list */}
       <div style={{ border: '1px solid var(--rai-border)', borderRadius: 8, marginTop: 16, overflow: 'hidden' }}>
         {sorted.length === 0 && (
-          <div style={{ padding: '14px 16px', fontSize: 13, color: 'var(--rai-ink-muted)', fontStyle: 'italic' }}>
+          <div style={{ padding: '14px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--rai-ink-muted)', fontStyle: 'italic' }}>
             No open items in backlog
           </div>
         )}
@@ -108,11 +108,11 @@ export const DeliveryBacklog: React.FC<Props> = ({ metrics, hubs }) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--rai-ink-tertiary)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--rai-ink-tertiary)' }}>
             Total Not Done Across All Hubs
           </span>
           <span style={{
-            fontFamily: 'var(--rai-font-heading)', fontSize: 16, fontWeight: 700,
+            fontFamily: 'var(--rai-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700,
             color: totalOpen >= 1 ? 'var(--rai-danger)' : 'var(--rai-ink-muted)',
           }}>
             {totalOpen}

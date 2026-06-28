@@ -132,7 +132,7 @@ function ToolbarButton({ action }: { action: ActionDef }) {
           borderRadius: 6,
           color: action.highlight ? 'var(--cv2-saved-fg)' : 'var(--cv2-text-subtle)',
           cursor: 'pointer',
-          fontSize: 16,
+          fontSize: 'var(--ds-font-size-500)',
           lineHeight: 1,
           transition: 'background var(--cv2-transition-fast), color var(--cv2-transition-fast)',
         }}

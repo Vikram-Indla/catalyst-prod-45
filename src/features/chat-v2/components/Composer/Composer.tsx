@@ -244,7 +244,7 @@ export function Composer({
               background: 'rgba(224, 30, 90, 0.12)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
               border: '1px solid rgba(224, 30, 90, 0.45)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
               color: 'var(--cv2-text-strong)',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               borderRadius: 6,
               display: 'flex',
               flexDirection: 'column',

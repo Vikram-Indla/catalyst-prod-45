@@ -70,7 +70,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
         style={{ width: 180, borderColor: 'var(--divider)' }}
       >
         <div className="p-2">
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '4px 8px', marginBottom: 4 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '4px 8px', marginBottom: 4 }}>
             Releases
           </div>
           {/* All */}
@@ -110,7 +110,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
         {loading ? (
           <div className="p-4"><SkeletonTable rows={8} /></div>
         ) : Object.keys(groups).length === 0 ? (
-          <div className="flex items-center justify-center" style={{ padding: 60, color: 'var(--fg-4)', fontSize: 13, fontFamily: 'var(--cp-font-body)' }}>
+          <div className="flex items-center justify-center" style={{ padding: 60, color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)' }}>
             No items in this release
           </div>
         ) : (
@@ -134,14 +134,14 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                   {isCollapsed
                     ? <ChevronRight size={14} color="var(--fg-3)" />
                     : <ChevronDown size={14} color="var(--fg-3)" />}
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                     {getReleaseName(groupId)}
                   </span>
                   <span
                     className="rounded-full flex items-center justify-center bg-[var(--cp-bd-zone)]"
                     style={{
                       width: 20, height: 20,
-                      fontSize: 10, fontWeight: 600,
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                       color: 'var(--fg-3)',
                       fontFamily: 'var(--cp-font-mono)',
                     }}
@@ -153,7 +153,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                     <div className="rounded-full overflow-hidden bg-[var(--divider)]" style={{ width: 60, height: 4 }}>
                       <div className="rounded-full bg-[var(--sem-success)]" style={{ width: `${progress}%`, height: '100%', transition: 'width 200ms ease' }} />
                     </div>
-                    <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>{progress}%</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)' }}>{progress}%</span>
                   </div>
                 </div>
 
@@ -161,7 +161,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                 {!isCollapsed && (
                   <div>
                     {groupIssues.length === 0 ? (
-                      <div style={{ padding: '20px 16px', color: 'var(--fg-4)', fontSize: 12, textAlign: 'center' }}>
+                      <div style={{ padding: '20px 16px', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)', textAlign: 'center' }}>
                         No items in this release
                       </div>
                     ) : groupIssues.map(issue => {
@@ -193,13 +193,13 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                             }}
                           />
                           <PHIssueTypeIcon type={issue.type} size={16} />
-                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>
                             {getDisplayKey(issue)}
                           </span>
                           <PHSourceTag source={issue.source} />
                           <span
                             className="truncate flex-1"
-                            style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}
+                            style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}
                           >
                             {issue.title}
                           </span>
@@ -238,7 +238,7 @@ function SidebarButton({ label, count, progress, isActive, onClick }: {
       className={`w-full text-left rounded-md mb-0.5 transition-colors ${isActive ? 'bg-[var(--cp-blue-wash)]' : 'bg-transparent'}`}
       style={{
         padding: '6px 10px',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: isActive ? 600 : 500,
         color: isActive ? 'var(--cp-blue)' : 'var(--fg-2)',
         border: isActive ? '1px solid var(--cp-primary-20)' : '1px solid transparent',
@@ -248,7 +248,7 @@ function SidebarButton({ label, count, progress, isActive, onClick }: {
     >
       <div className="flex items-center justify-between mb-1">
         <span>{label}</span>
-        <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
           {count}
         </span>
       </div>

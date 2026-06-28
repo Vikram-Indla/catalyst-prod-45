@@ -59,7 +59,7 @@ export function PinsPanel({
     >
       <div
         style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
           color: 'var(--cv2-text-muted)',
           marginBottom: 12,
@@ -73,7 +73,7 @@ export function PinsPanel({
             padding: '40px 16px',
             textAlign: 'center',
             color: 'var(--cv2-text-muted)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           No pinned messages in this conversation yet.
@@ -184,17 +184,17 @@ function PinnedCard({
       <PresenceAvatar name={message.authorName} size={32} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             {message.authorName}
           </span>
-          <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>
             {formatMessageTime(message.createdAt)}
           </span>
         </div>
         <div
           style={{
             marginTop: 4,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: 'var(--cv2-text)',
             wordBreak: 'break-word',
             whiteSpace: 'pre-wrap',
@@ -324,7 +324,7 @@ function PinnedCard({
             boxShadow: 'var(--cv2-shadow-modal)',
             padding: '10px 16px',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             zIndex: 'var(--cv2-modal-z, 1000)' as unknown as number,
           }}
         >

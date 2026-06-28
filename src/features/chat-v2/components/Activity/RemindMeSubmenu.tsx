@@ -143,12 +143,12 @@ function SubItem({
         cursor: 'pointer',
         textAlign: 'left',
         fontFamily: 'inherit',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
       }}
     >
       <span>{label}</span>
       {detail && (
-        <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)' }}>{detail}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>{detail}</span>
       )}
     </button>
   );

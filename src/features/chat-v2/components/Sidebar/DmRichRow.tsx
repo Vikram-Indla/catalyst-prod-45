@@ -72,7 +72,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
               flex: 1,
               minWidth: 0,
               fontFamily: 'var(--cv2-font)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: hasUnread ? 700 : 700,
               color: 'var(--cv2-text-strong)',
               overflow: 'hidden',
@@ -97,7 +97,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
               style={{
                 flex: '0 0 auto',
                 fontFamily: 'var(--cv2-font)',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: hasUnread ? 'var(--cv2-text-strong)' : 'var(--cv2-text-muted)',
                 whiteSpace: 'nowrap',
               }}
@@ -110,7 +110,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
           <div
             style={{
               fontFamily: 'var(--cv2-font)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: hasUnread ? 'var(--cv2-text)' : 'var(--cv2-text-muted)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -135,7 +135,7 @@ export function DmRichRow({ conversation, isActive, onClick, hasHuddle = false }
             borderRadius: 9,
             background: 'var(--cv2-unread)',
             color: 'var(--cv2-unread-text, #FFFFFF)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',

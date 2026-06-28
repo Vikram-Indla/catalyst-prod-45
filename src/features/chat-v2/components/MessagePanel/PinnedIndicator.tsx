@@ -16,7 +16,7 @@ export function PinnedIndicator({ byMe, byName }: PinnedIndicatorProps) {
         gap: 6,
         marginBottom: 4,
         fontFamily: 'var(--cv2-font)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
       }}
     >
