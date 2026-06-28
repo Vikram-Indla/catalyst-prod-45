@@ -16,7 +16,7 @@ export const BacklogBreadcrumb = memo(function BacklogBreadcrumb() {
           listStyle: 'none',
           padding: 0,
           margin: 0,
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
         }}
       >

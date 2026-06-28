@@ -308,7 +308,7 @@ function SummaryHeader({ mode, payload }: { mode: SummaryPanelMode; payload: Sum
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div
         style={{
-          fontSize: 22,
+          fontSize: 'var(--ds-font-size-700)',
           fontWeight: 800,
           color: 'var(--cv2-text-strong)',
           lineHeight: 1.25,

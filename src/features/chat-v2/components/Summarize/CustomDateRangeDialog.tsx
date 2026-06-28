@@ -140,7 +140,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             padding: '20px 24px 16px',
           }}
         >
-          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Summarize custom date range
           </div>
           <button

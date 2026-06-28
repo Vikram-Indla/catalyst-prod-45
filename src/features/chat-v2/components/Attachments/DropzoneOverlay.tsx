@@ -28,7 +28,7 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
     >
       <DropzoneArt />
       <div style={{ textAlign: 'center', padding: '0 24px' }}>
-        <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, color: 'var(--ds-surface, #FFFFFF)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, marginBottom: 8, color: 'var(--ds-surface, #FFFFFF)' }}>
           Upload to {workspaceTitle}
         </div>
         {recipientName && (

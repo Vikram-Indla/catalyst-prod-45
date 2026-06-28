@@ -25,7 +25,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
           style={{
             margin: 0,
             fontFamily: 'var(--cv2-font)',
-            fontSize: 28,
+            fontSize: 'var(--ds-font-size-800)',
             fontWeight: 800,
             color: 'var(--cv2-text-strong)',
             display: 'flex',
@@ -36,7 +36,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
           <span
             aria-hidden="true"
             style={{
-              fontSize: 26,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 400,
               color: 'var(--cv2-text-subtle)',
             }}

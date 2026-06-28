@@ -159,7 +159,7 @@ function Header({
       }}
     >
       <div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
           Create a channel
         </div>
         {step === 2 && channelName && (
