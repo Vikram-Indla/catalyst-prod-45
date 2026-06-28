@@ -131,7 +131,7 @@
 /* Gap between groups */
 .c-msg--full {
   /* ads-scanner:ignore-next-line — V3 proto spacing, var not available */
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .c-msg-group:first-child .c-msg--full:first-child {

@@ -111,7 +111,7 @@
   align-items: center;
   justify-content: center;
   height: 20px;
-  padding: 0 6px;
+  padding: 0 8px;
   border-radius: 3px;
   font-size: 11px;
   font-weight: 700;
@@ -3757,7 +3757,7 @@ input[type="checkbox"]:checked {
 /* Health badges */
 .all-releases-table [class*="health"] span,
 .all-releases-table [class*="health"] div {
-  padding: 1px 6px !important;
+  padding: 1px 8px !important;
   font-size: 11px !important;
   max-height: 22px !important;
 }
@@ -6795,7 +6795,7 @@ html.dark .cp-feed-type-tile,
       --cp-lozenge-grey-bg,
       var(--cp-border-neutral, var(--ds-border, #dfe1e6))
     );
-  padding: 8px 10px;
+  padding: 8px 12px;
   text-align: left;
   vertical-align: top;
   word-wrap: break-word;
@@ -6850,7 +6850,7 @@ html.dark .cp-feed-type-tile,
 .adf-description-content .adf-status {
   display: inline-block;
   border-radius: 3px;
-  padding: 1px 6px;
+  padding: 1px 8px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -6893,7 +6893,7 @@ html.dark .cp-feed-type-tile,
     var(--cp-text-inverse, var(--ds-text, #172b4d))
   );
   border-radius: 3px;
-  padding: 1px 6px;
+  padding: 1px 8px;
   font-size: 13px;
 }
 
@@ -6945,7 +6945,7 @@ html.dark .cp-feed-type-tile,
 .adf-description-content .adf-task-item {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: 8px;
   padding: 2px 0;
   font-size: 14px;
 }
@@ -7069,7 +7069,7 @@ html.dark .cp-feed-type-tile,
 .adf-description-content h2 {
   font-size: 18px;
   font-weight: 600;
-  margin: 14px 0 6px;
+  margin: 16px 0 8px;
 }
 .adf-description-content h3 {
   font-size: 16px;
@@ -7079,7 +7079,7 @@ html.dark .cp-feed-type-tile,
 .adf-description-content h4 {
   font-size: 15px;
   font-weight: 600;
-  margin: 10px 0 4px;
+  margin: 12px 0 4px;
 }
 .adf-description-content h5 {
   font-size: 14px;

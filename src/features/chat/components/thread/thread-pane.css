@@ -184,7 +184,7 @@
 
 .c-thread .c-msg--full {
   /* ads-scanner:ignore-next-line — 6px top breathing room between thread reply groups */
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .c-thread .c-msg-group:first-child .c-msg--full:first-child {

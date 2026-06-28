@@ -89,7 +89,7 @@
   width: 100%;
   border: 1px solid var(--c-chat-border);
   border-radius: 6px;
-  padding: 4px 28px;
+  padding: 4px 32px;
   font-size: 13px;
   background: var(--c-chat-surface-sunken);
   color: var(--c-chat-text);
