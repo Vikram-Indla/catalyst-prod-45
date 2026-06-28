@@ -36,7 +36,7 @@ function toIdea(r: IdeaRow): Idea {
     votes: r.vote_count,
     request: r.linked_initiative_key || null,
     dept: r.assigned_team || '',
-    assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2), color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : null,
+    assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2), color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' } : null,
     ai: r.ai_enrichment_status === 'completed' ? 'ready' : 'pending',
     theme: r.theme,
     assigned_team: r.assigned_team,
@@ -132,10 +132,10 @@ export default function IdeasBacklogPage() {
             <p style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3, margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into requests — powered by IMPACT scoring & AI Intelligence</p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '1px solid var(--ds-link, #2563EB)', borderRadius: '6px', padding: '7px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', border: '1px solid var(--ds-link)', borderRadius: '6px', padding: '7px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Sparkles size={14} /> Intelligence
             </button>
-            <button onClick={() => setCreateOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setCreateOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Plus size={14} /> New Idea
             </button>
           </div>
@@ -183,21 +183,21 @@ export default function IdeasBacklogPage() {
         <div style={{ position: 'relative', width: '220px' }}>
           <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: dk.t3 }} />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search ideas..."
-            style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${dk.border}`, borderRadius: '6px', fontSize: 'var(--ds-font-size-300)', color: dk.t1, outline: 'none' }}
+            style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `1px solid ${dk.border}`, borderRadius: '6px', fontSize: 'var(--ds-font-size-300)', color: dk.t1, outline: 'none' }}
           />
         </div>
         {FILTER_PILLS.map(pill => {
           const isActive = statusFilter === pill.key;
           return (
             <button key={pill.key} onClick={() => setStatusFilter(pill.key)} style={{
-              background: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
-              border: `1px solid ${isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : dk.border}`,
+              background: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))'), color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : dk.t2,
+              border: `1px solid ${isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : dk.border}`,
               borderRadius: '20px', padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer', transition: 'all 150ms',
             }}>{pill.label}</button>
           );
         })}
         <div style={{ flex: 1 }} />
-        <button onClick={() => setTriageOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <button onClick={() => setTriageOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <Sparkles size={12} /> AI Triage ({ideas.length})
         </button>
       </div>
@@ -213,12 +213,12 @@ export default function IdeasBacklogPage() {
             <div style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3 }}>Create your first idea to get started.</div>
           </div>
         ) : (
-          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '50px', background: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
+                <tr style={{ height: '50px', background: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken)))' }}>
                   <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
-                    <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
+                    <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
                   </th>
                   {[
                     { label: 'KEY', width: '90px' }, { label: 'TITLE' }, { label: 'STATUS', width: '140px' },
@@ -228,7 +228,7 @@ export default function IdeasBacklogPage() {
                   ].map(col => (
                     <th key={col.label} style={{
                       textAlign: 'left', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', padding: '10px 12px',
+                      letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))', padding: '10px 12px',
                       borderBottom: `0.75px solid ${dk.divider}`, whiteSpace: 'nowrap', width: col.width,
                     }}>{col.label}</th>
                   ))}
@@ -244,7 +244,7 @@ export default function IdeasBacklogPage() {
                       onMouseLeave={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-                        <input type="checkbox" checked={selectedRows.has(idea.idea_key)} onChange={() => toggleRow(idea.idea_key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
+                        <input type="checkbox" checked={selectedRows.has(idea.idea_key)} onChange={() => toggleRow(idea.idea_key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
@@ -266,12 +266,12 @@ export default function IdeasBacklogPage() {
                         </div>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: dk.t2, border: `1px solid ${dk.border}` }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {(idea.idea_type || 'Feature').substring(0, 7)}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 650, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: dk.t2, border: `1px solid ${dk.border}` }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 650, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {idea.priority || 'P2'}
                         </span>
                       </td>
@@ -287,13 +287,13 @@ export default function IdeasBacklogPage() {
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         {idea.roadmap_quarter ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{idea.roadmap_quarter}</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>{idea.roadmap_quarter}</span>
                         ) : <span style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3 }}>—</span>}
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         {idea.assigned_to_name ? (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, flexShrink: 0 }}>
+                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, flexShrink: 0 }}>
                               {idea.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2)}
                             </div>
                             <span style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.assigned_to_name}</span>
@@ -347,17 +347,17 @@ export default function IdeasBacklogPage() {
 function StatusBadge({ status }: { status: string }) {
   const { isDark } = useTheme();
   const darkColors: Record<string, { bg: string; text: string }> = {
-    'Draft':                    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
-    'Submitted':                { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
-    'Under Review':             { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
-    'Approved':                 { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
-    'Rejected':                 { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
-    'Converted':                { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success, #DFFCF0)' },
-    'Converted to Request':  { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success, #DFFCF0)' },
+    'Draft':                    { bg: 'var(--ds-border, var(--cp-ink-1))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
+    'Submitted':                { bg: 'var(--ds-border, var(--cp-ink-1))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
+    'Under Review':             { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, var(--ds-link))' },
+    'Approved':                 { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, var(--ds-link))' },
+    'Rejected':                 { bg: 'var(--ds-border, var(--cp-ink-1))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
+    'Converted':                { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success)' },
+    'Converted to Request':  { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success)' },
   };
   const s = isDark
-    ? (darkColors[status] ?? { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-text-subtlest, #A1A1A1)' })
-    : (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' });
+    ? (darkColors[status] ?? { bg: 'var(--ds-border, var(--cp-ink-1))', text: 'var(--ds-text-subtlest)' })
+    : (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text-subtle)' });
   const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{
@@ -395,11 +395,11 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
   };
 
   const selectBg = isDark ? 'bg-transparent' : 'bg-white';
-  const selectDropdown = isDark ? 'bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-gray-700 text-white' : 'bg-white';
+  const selectDropdown = isDark ? 'bg-[var(--ds-surface-raised,var(--cp-ink-1))] border-gray-700 text-white' : 'bg-white';
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <DialogContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] sm:max-w-[480px]">
+      <DialogContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontWeight: 650, fontSize: 'var(--ds-font-size-600)', color: dk.t1 }}>New Idea</DialogTitle>
         </DialogHeader>
@@ -407,7 +407,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
           <div>
             <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>TITLE *</label>
             <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter idea title..."
-              style={{ width: '100%', height: '50px', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', outline: 'none', color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}
+              style={{ width: '100%', height: '50px', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', outline: 'none', color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -443,12 +443,12 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
           <div>
             <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Optional description..."
-              style={{ width: '100%', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', resize: 'vertical', outline: 'none', fontFamily: 'var(--cp-font-body)', color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}
+              style={{ width: '100%', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', resize: 'vertical', outline: 'none', fontFamily: 'var(--cp-font-body)', color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-            <button onClick={onClose} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: dk.t2, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
+            <button onClick={onClose} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', color: dk.t2, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
               {createIdea.isPending ? 'Creating...' : 'Create Idea'}
             </button>
           </div>

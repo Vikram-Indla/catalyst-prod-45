@@ -11,9 +11,9 @@ import { WorkItemStatusLozenge } from '@/components/workflow';
 import type { WorkItem } from '@/types/workItem.types';
 
 /* ── Priority SVG icons (Jira-native) ── */
-const P_DANGER = 'var(--ds-icon-danger, #FF5630)';
-const P_WARNING = 'var(--ds-icon-warning, #FFAB00)';
-const P_INFO = 'var(--ds-icon-information, #2684FF)';
+const P_DANGER = 'var(--ds-icon-danger)';
+const P_WARNING = 'var(--ds-icon-warning)';
+const P_INFO = 'var(--ds-icon-information)';
 const PRIORITY_SVG: Record<string, React.ReactNode> = {
   highest: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8l5-5 5 5" fill="none" stroke={P_DANGER} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12l5-5 5 5" fill="none" stroke={P_DANGER} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   high: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 10l5-5 5 5" fill="none" stroke={P_DANGER} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
@@ -31,12 +31,12 @@ function getInitials(name: string): string {
 }
 
 const AVATAR_COLORS = [
-  'var(--ds-background-accent-purple-subtle, #6554C0)',
-  'var(--ds-background-accent-blue-subtle, #2684FF)',
-  'var(--ds-background-accent-green-subtle, #36B37E)',
-  'var(--ds-background-accent-red-subtle, #FF5630)',
-  'var(--ds-background-accent-yellow-subtle, #FFAB00)',
-  'var(--ds-background-accent-teal-subtle, #00B8D9)',
+  'var(--ds-background-accent-purple-subtle)',
+  'var(--ds-background-accent-blue-subtle)',
+  'var(--ds-background-accent-green-subtle)',
+  'var(--ds-background-accent-red-subtle)',
+  'var(--ds-background-accent-yellow-subtle)',
+  'var(--ds-background-accent-teal-subtle)',
 ];
 function hashColor(name: string): string {
   let h = 0;
@@ -46,15 +46,15 @@ function hashColor(name: string): string {
 
 /* ── Tokens ── */
 const T = {
-  headerBg: 'var(--cp-bg-sunken, #F7F8F9)',
-  headerText: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
-  borderColor: 'var(--cp-border-default, #DDDEE1)',
+  headerBg: 'var(--cp-bg-sunken)',
+  headerText: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary)))',
+  borderColor: 'var(--cp-border-default)',
   rowHover: 'var(--cp-interact-hover, rgba(0,0,0,0.04))',
-  keyColor: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))',
-  textPrimary: 'var(--cp-text-primary, #292A2E)',
-  textSecondary: 'var(--cp-text-secondary, #505258)',
-  textMuted: 'var(--cp-text-tertiary, #6B6E76)',
-  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  keyColor: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary))',
+  textPrimary: 'var(--cp-text-primary)',
+  textSecondary: 'var(--cp-text-secondary)',
+  textMuted: 'var(--cp-text-tertiary)',
+  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
 };
 
 interface AllWorkTableProps {
@@ -142,7 +142,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} style={{
             height: 36, borderRadius: 4, marginBottom: 4,
-            background: 'linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 25%, var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) 50%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 75%)',
+            background: 'linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 25%, var(--ds-border, var(--cp-border, var(--cp-bg-sunken))) 50%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken))) 75%)',
             backgroundSize: '200% 100%',
             animation: 'shimmer 1.5s infinite',
           }} />
@@ -216,10 +216,10 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             onClick={() => toggleSort('updated')}
             style={{
               height: 28, padding: '0 8px',
-              border: `1px solid ${sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.borderColor}`,
+              border: `1px solid ${sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : T.borderColor}`,
               borderRadius: 3,
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-              color: sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.textSecondary,
+              color: sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : T.textSecondary,
               background: sortBy === 'updated' ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
@@ -230,10 +230,10 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             onClick={() => toggleSort('created')}
             style={{
               height: 28, padding: '0 8px',
-              border: `1px solid ${sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.borderColor}`,
+              border: `1px solid ${sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : T.borderColor}`,
               borderRadius: 3,
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-              color: sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.textSecondary,
+              color: sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : T.textSecondary,
               background: sortBy === 'created' ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
@@ -331,7 +331,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                         width: 24, height: 24, borderRadius: '50%',
                         background: item.assignee.color || hashColor(item.assignee.name),
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface, #fff)',
+                        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface)',
                         flexShrink: 0,
                       }}>
                         {item.assignee.initials || getInitials(item.assignee.name)}
@@ -406,14 +406,14 @@ const thStyle: React.CSSProperties = {
   padding: '8px 12px',
   fontSize: 'var(--ds-font-size-100)',
   fontWeight: 653,
-  color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #44546F))',
+  color: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
   fontFamily: 'var(--cp-font-body)',
   whiteSpace: 'nowrap',
   textAlign: 'left',
   position: 'sticky',
   top: 0,
   zIndex: 1,
-  background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+  background: 'var(--ds-background-neutral-subtle)',
 };
 
 const tdStyle: React.CSSProperties = {
@@ -436,11 +436,11 @@ function PaginationBtn({ children, disabled, active, onClick }: {
       onClick={onClick}
       style={{
         height: 28, minWidth: 28, padding: '0 8px',
-        border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-border-default, #DDDEE1)'}`,
+        border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--cp-border-default)'}`,
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 400,
-        color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
-        background: active ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        color: disabled ? 'var(--cp-text-muted)' : active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary)))',
+        background: active ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         cursor: disabled ? 'default' : 'pointer',
         fontFamily: 'var(--cp-font-body)',
         opacity: disabled ? 0.5 : 1,

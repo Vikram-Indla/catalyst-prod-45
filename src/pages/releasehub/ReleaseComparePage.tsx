@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/releasehub/EmptyState';
 import { BarChart3 } from '@/lib/atlaskit-icons';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 
-const RADAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'];
+const RADAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-danger, var(--cp-danger))', 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'];
 const statusScore: Record<string, number> = { todo: 20, in_progress: 55, done: 100, archived: 10 };
 
 export default function ReleaseComparePage() {
@@ -31,10 +31,10 @@ export default function ReleaseComparePage() {
     return [
       { label: 'Status', values: selectedReleases.map((r: any) => r.status), render: (v: any) => <ReleaseStatusBadge status={v} />, bestIdx: -1 },
       { label: 'Target Date', values: selectedReleases.map((r: any) => r.target_date), render: (v: any) => v ? new Date(v).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—', bestIdx: -1 },
-      { label: 'Days Remaining', values: selectedReleases.map((r: any) => r.days_remaining ?? 0), render: (v: any, r: any) => r?.is_overdue ? <span className="text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] font-bold">{Math.abs(v)}d OVERDUE</span> : <span>{v}d</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.days_remaining ?? 0), true) },
-      { label: 'CHG Count', values: selectedReleases.map((r: any) => r.change_count || r.chg_count || 0), render: (v: any) => <span className="font-bold" style={{ fontFamily: RH.fontMono, color: v === 0 ? 'var(--cp-teal-60, #0D9488)' : RH.ink1 }}>{v}</span>, bestIdx: -1 },
+      { label: 'Days Remaining', values: selectedReleases.map((r: any) => r.days_remaining ?? 0), render: (v: any, r: any) => r?.is_overdue ? <span className="text-[var(--ds-text-danger,var(--cp-danger))] font-bold">{Math.abs(v)}d OVERDUE</span> : <span>{v}d</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.days_remaining ?? 0), true) },
+      { label: 'CHG Count', values: selectedReleases.map((r: any) => r.change_count || r.chg_count || 0), render: (v: any) => <span className="font-bold" style={{ fontFamily: RH.fontMono, color: v === 0 ? 'var(--cp-teal-60)' : RH.ink1 }}>{v}</span>, bestIdx: -1 },
       { label: 'Test Cycles', values: selectedReleases.map((r: any) => r.test_cycle_count || 0), render: (v: any) => <span>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.test_cycle_count || 0), true) },
-      { label: 'Sign-offs Pending', values: selectedReleases.map((r: any) => r.pending_signoffs || 0), render: (v: any) => <span className={v > 0 ? 'text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] font-bold' : ''}>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.pending_signoffs || 0), false) },
+      { label: 'Sign-offs Pending', values: selectedReleases.map((r: any) => r.pending_signoffs || 0), render: (v: any) => <span className={v > 0 ? 'text-[var(--ds-text-danger,var(--cp-danger))] font-bold' : ''}>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.pending_signoffs || 0), false) },
     ];
   }, [selectedReleases]);
 
@@ -56,7 +56,7 @@ export default function ReleaseComparePage() {
     <div className="rh-page">
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Release Compare</h1>
-        <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]" style={{ fontFamily: RH.fontBody }}>Side-by-side release comparison (select up to 4)</p>
+        <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))]" style={{ fontFamily: RH.fontBody }}>Side-by-side release comparison (select up to 4)</p>
       </div>
 
       {isLoading ? (
@@ -70,12 +70,12 @@ export default function ReleaseComparePage() {
               const isSelected = selected.includes(r.id);
               return (
                 <button key={r.id} onClick={() => toggleSelect(r.id)}
-                  className={`bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[var(--cp-teal-60, #0D9488)] border-2 ring-2 ring-[var(--cp-teal-60, #0D9488)]/20' : 'border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] hover:border-[var(--ds-border, #C9D3E0)]'}`}
+                  className={`bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[var(--cp-teal-60)] border-2 ring-2 ring-[var(--cp-teal-60)]/20' : 'border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] hover:border-[var(--ds-border)]'}`}
                   style={{ transition: 'all 0.12s ease' }}>
                   <span className="text-[13px] font-semibold block truncate" style={{ color: RH.ink1 }}>{r.name}</span>
                   <div className="flex items-center gap-2 mt-1.5">
                     <ReleaseStatusBadge status={r.status} />
-                    {r.version && <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]" style={{ fontFamily: RH.fontMono }}>{r.version}</span>}
+                    {r.version && <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))]" style={{ fontFamily: RH.fontMono }}>{r.version}</span>}
                   </div>
                 </button>
               );
@@ -84,25 +84,25 @@ export default function ReleaseComparePage() {
 
           {selectedReleases.length >= 2 ? (
             <div className="space-y-4">
-              <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+              <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] overflow-hidden">
                 <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
                   <thead>
-                    <tr className="bg-[var(--ds-surface-sunken, #F4F7FA)] border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
-                      <th scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[var(--ds-text-subtle,#475569)] w-[160px]">METRIC</th>
+                    <tr className="bg-[var(--ds-surface-sunken)] border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))]">
+                      <th scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[var(--ds-text-subtle)] w-[160px]">METRIC</th>
                       {selectedReleases.map((r: any) => (
-                        <th key={r.id} scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[var(--ds-text-subtle,#475569)]">{r.name}</th>
+                        <th key={r.id} scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[var(--ds-text-subtle)]">{r.name}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {comparisonRows.map(row => (
-                      <tr key={row.label} className="border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] h-9">
-                        <td className="px-3 py-0 font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{row.label}</td>
+                      <tr key={row.label} className="border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken)))] h-9">
+                        <td className="px-3 py-0 font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary)))]">{row.label}</td>
                         {selectedReleases.map((r: any, i: number) => (
                           <td key={r.id} className="px-3 py-0">
                             <span className="inline-flex items-center gap-1">
                               {row.render(row.values[i] as any, r)}
-                              {row.bestIdx === i && <span className="text-[var(--cp-teal-60, #0D9488)]">★</span>}
+                              {row.bestIdx === i && <span className="text-[var(--cp-teal-60)]">★</span>}
                             </span>
                           </td>
                         ))}
@@ -113,12 +113,12 @@ export default function ReleaseComparePage() {
               </div>
 
               {radarData.length > 0 && (
-                <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] p-4">
+                <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] p-4">
                   <h3 className="text-[14px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Radar Comparison</h3>
                   <ResponsiveContainer width="100%" height={320}>
                     <RadarChart data={radarData}>
-                      <PolarGrid stroke="var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))" />
-                      <PolarAngleAxis dataKey="subject" tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtle, #475569)' }} />
+                      <PolarGrid stroke="var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))" />
+                      <PolarAngleAxis dataKey="subject" tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtle)' }} />
                       <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 'var(--ds-font-size-50)' }} />
                       {selectedReleases.map((r: any, i: number) => (
                         <Radar key={r.id} name={r.name} dataKey={`r${i}`} stroke={RADAR_COLORS[i]} fill={RADAR_COLORS[i]} fillOpacity={0.15} />
@@ -130,7 +130,7 @@ export default function ReleaseComparePage() {
               )}
             </div>
           ) : (
-            <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] p-8 text-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-[13px]">
+            <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] p-8 text-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light)))] text-[13px]">
               Select at least 2 releases above to see a comparison
             </div>
           )}

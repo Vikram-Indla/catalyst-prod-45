@@ -20,7 +20,7 @@ export const Default: Story = {
       </DropdownItemGroup>
       <DropdownItemGroup>
         <DropdownItem>
-          <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>Delete issue</span>
+          <span style={{ color: 'var(--ds-text-danger)' }}>Delete issue</span>
         </DropdownItem>
       </DropdownItemGroup>
     </DropdownMenu>

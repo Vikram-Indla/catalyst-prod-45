@@ -9,14 +9,14 @@ const ELEVATIONS = [
 
 function ElevationDemo() {
   return (
-    <div style={{ padding: 32, fontFamily: 'Atlassian Sans, -apple-system, sans-serif', background: 'var(--ds-surface-sunken, #F7F8F9)', minHeight: '100vh' }}>
-      <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: '0 0 24px' }}>Elevation</h1>
+    <div style={{ padding: 32, fontFamily: 'Atlassian Sans, -apple-system, sans-serif', background: 'var(--ds-surface-sunken)', minHeight: '100vh' }}>
+      <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text)', margin: '0 0 24px' }}>Elevation</h1>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
         {ELEVATIONS.map((e) => (
-          <div key={e.name} style={{ background: `var(${e.token}, ${e.fallback})`, boxShadow: e.shadow, borderRadius: 8, padding: 24, border: e.shadow === 'none' ? '1px solid var(--ds-border, #DFE1E6)' : 'none' }}>
-            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBlockEnd: 4 }}>{e.name}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text-subtlest, #6B778C)', marginBlockEnd: 8 }}>var({e.token})</div>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #42526E)' }}>{e.description}</div>
+          <div key={e.name} style={{ background: `var(${e.token}, ${e.fallback})`, boxShadow: e.shadow, borderRadius: 8, padding: 24, border: e.shadow === 'none' ? '1px solid var(--ds-border)' : 'none' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)', marginBlockEnd: 4 }}>{e.name}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text-subtlest)', marginBlockEnd: 8 }}>var({e.token})</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>{e.description}</div>
           </div>
         ))}
       </div>

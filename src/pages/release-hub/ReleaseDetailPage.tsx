@@ -32,10 +32,10 @@ import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 import { type EntityConfig, RELEASE_CONFIG } from '@/lib/entity-hub/config';
 
-const BORDER = 'var(--ds-border, #DFE1E6)';
-const TEXT = 'var(--ds-text, #292A2E)';
-const SUBTLE = 'var(--ds-text-subtle, #505258)';
-const LINK = 'var(--ds-link, #0052CC)';
+const BORDER = 'var(--ds-border)';
+const TEXT = 'var(--ds-text)';
+const SUBTLE = 'var(--ds-text-subtle)';
+const LINK = 'var(--ds-link)';
 
 interface ReleaseRow {
   id: string;
@@ -289,7 +289,7 @@ export function ReleaseDetailPage({
                 border: `2px solid ${LINK}`,
                 borderRadius: 3,
                 outline: 'none',
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-surface)',
               }}
             />
             <button
@@ -306,16 +306,16 @@ export function ReleaseDetailPage({
                 width: 32,
                 height: 32,
                 borderRadius: 3,
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border)',
                 boxSizing: 'border-box',
-                background: 'var(--ds-surface, #FFFFFF)',
-                color: canSaveTitle ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-disabled, #A5ADBA)',
+                background: 'var(--ds-surface)',
+                color: canSaveTitle ? 'var(--ds-text)' : 'var(--ds-text-disabled)',
                 opacity: canSaveTitle ? 1 : 0.6,
               }}
               onMouseEnter={(e) => {
-                if (canSaveTitle) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
+                if (canSaveTitle) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))';
               }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface)'; }}
             >
               <CheckIcon label="" size="medium" />
             </button>
@@ -332,13 +332,13 @@ export function ReleaseDetailPage({
                 width: 32,
                 height: 32,
                 borderRadius: 3,
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border)',
                 boxSizing: 'border-box',
-                background: 'var(--ds-surface, #FFFFFF)',
-                color: 'var(--ds-text-subtle, #505258)',
+                background: 'var(--ds-surface)',
+                color: 'var(--ds-text-subtle)',
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface)'; }}
             >
               <CrossIcon label="" size="medium" />
             </button>
@@ -433,7 +433,7 @@ export function ReleaseDetailPage({
           position: 'relative',
           alignSelf: 'stretch',
           width: 1,
-          background: 'var(--ds-border, #DFE1E6)',
+          background: 'var(--ds-border)',
           flexShrink: 0,
         }}
       >
@@ -452,17 +452,17 @@ export function ReleaseDetailPage({
             width: 24,
             height: 24,
             borderRadius: '50%',
-            background: 'var(--ds-surface, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-surface)',
+            border: '1px solid var(--ds-border)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--ds-text-subtle, #505258)',
+            color: 'var(--ds-text-subtle)',
             boxShadow: '0 1px 2px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             zIndex: 1,
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral))'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface)'; }}
         >
           {sidebarCollapsed ? <ChevronLeftIcon label="" size="small" /> : <ChevronRightIcon label="" size="small" />}
         </button>

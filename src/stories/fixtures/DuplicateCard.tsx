@@ -88,27 +88,27 @@ export interface DuplicateCardProps {
 }
 
 const STATUS_STYLES: Record<DuplicateStatus, { bg: string; text: string; label: string }> = {
-  canonical: { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'CANONICAL' },
-  wrapper:   { bg: 'var(--ds-background-selected, #E9F2FF)', text: 'var(--ds-link, #0C66E4)', label: 'WRAPPER' },
-  deprecated:{ bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', label: 'DEPRECATED' },
-  replace:   { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)', label: 'MUST REPLACE' },
-  delete:    { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)', label: 'DELETE' },
-  keep:      { bg: 'var(--ds-background-neutral, #F1F2F4)', text: 'var(--ds-icon, #44546F)', label: 'KEEP (DIFFERENT PURPOSE)' },
-  replaced:  { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'REPLACED ✓' },
+  canonical: { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'CANONICAL' },
+  wrapper:   { bg: 'var(--ds-background-selected)', text: 'var(--ds-link)', label: 'WRAPPER' },
+  deprecated:{ bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', label: 'DEPRECATED' },
+  replace:   { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', label: 'MUST REPLACE' },
+  delete:    { bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', label: 'DELETE' },
+  keep:      { bg: 'var(--ds-background-neutral)', text: 'var(--ds-icon)', label: 'KEEP (DIFFERENT PURPOSE)' },
+  replaced:  { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'REPLACED ✓' },
 };
 
 const ADS_CLOSENESS_STYLES: Record<AdsCloseness, { bg: string; text: string; label: string; icon: string }> = {
-  exact:    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'ADS EXACT',    icon: '●' },
-  close:    { bg: 'var(--ds-background-selected, #E9F2FF)', text: 'var(--ds-link, #0C66E4)', label: 'ADS CLOSE',    icon: '◐' },
-  partial:  { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', label: 'ADS PARTIAL',  icon: '◔' },
-  divergent:{ bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)', label: 'ADS DIVERGENT',icon: '○' },
-  none:     { bg: 'var(--ds-background-neutral, #F1F2F4)', text: 'var(--ds-icon, #44546F)', label: 'NO ADS',       icon: '✕' },
+  exact:    { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'ADS EXACT',    icon: '●' },
+  close:    { bg: 'var(--ds-background-selected)', text: 'var(--ds-link)', label: 'ADS CLOSE',    icon: '◐' },
+  partial:  { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', label: 'ADS PARTIAL',  icon: '◔' },
+  divergent:{ bg: 'var(--ds-background-danger)', text: 'var(--ds-text-danger)', label: 'ADS DIVERGENT',icon: '○' },
+  none:     { bg: 'var(--ds-background-neutral)', text: 'var(--ds-icon)', label: 'NO ADS',       icon: '✕' },
 };
 
 const SWEEP_BADGE: Record<string, { bg: string; text: string; label: string }> = {
-  'not-started': { bg: 'var(--ds-background-neutral, #F1F2F4)', text: 'var(--ds-icon, #44546F)', label: 'SWEEP: NOT STARTED' },
-  'in-progress': { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)', label: 'SWEEP: IN PROGRESS' },
-  'complete':    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', label: 'SWEEP: COMPLETE ✓' },
+  'not-started': { bg: 'var(--ds-background-neutral)', text: 'var(--ds-icon)', label: 'SWEEP: NOT STARTED' },
+  'in-progress': { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', label: 'SWEEP: IN PROGRESS' },
+  'complete':    { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'SWEEP: COMPLETE ✓' },
 };
 
 export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendation, restoreCommit, sweepStatus = 'not-started' }: DuplicateCardProps) {
@@ -118,24 +118,24 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
 
   return (
     <div style={{
-      border: '1px solid var(--ds-border, #DFE1E6)',
+      border: '1px solid var(--ds-border)',
       borderRadius: 8,
       marginBottom: 24,
-      background: 'var(--ds-surface, #fff)',
+      background: 'var(--ds-surface)',
       fontFamily: 'var(--ds-font-family-body, "Atlassian Sans", -apple-system, sans-serif)',
       fontSize: 'var(--ds-font-size-400)',
     }}>
       {/* Header */}
       <div style={{
         padding: '12px 16px',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+        borderBottom: '1px solid var(--ds-border)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
         <div>
-          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Duplicate Detection — Component Consolidation
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: 'var(--ds-text, #172B4D)', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: 'var(--ds-text)', marginTop: 2 }}>
             {purpose}
           </div>
         </div>
@@ -145,20 +145,20 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
       </div>
 
       {/* Canonical */}
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-background-success-subtle, #DFFCF0)' }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border)', background: 'var(--ds-background-success-subtle)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-success, #216E4E)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-success)' }}>
             CANONICAL — USE THIS ONE
           </div>
-          <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-text-success, #216E4E)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>
+          <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-text-success)', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>
             {canonical.consumers} consumers
           </span>
         </div>
-        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 653, color: 'var(--ds-text, #172B4D)' }}>{canonical.name}</div>
-        <code style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon, #44546F)', fontFamily: 'monospace' }}>{canonical.source}</code>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 653, color: 'var(--ds-text)' }}>{canonical.name}</div>
+        <code style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon)', fontFamily: 'monospace' }}>{canonical.source}</code>
         <div style={{ marginTop: 4, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {canonical.ads && (
-            <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-background-selected, #E9F2FF)', color: 'var(--ds-link, #0C66E4)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
+            <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-background-selected)', color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
               ADS: {canonical.ads}
             </span>
           )}
@@ -174,15 +174,15 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
       </div>
 
       {/* Duplicates table */}
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', marginBottom: 8 }}>
           Duplicates ({duplicates.length} components · {totalDuplicateConsumers} consumers to migrate)
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-300)' }}>
           <thead>
             <tr>
               {['Component', 'Source', 'Consumers', 'ADS', 'Status', 'Risk'].map(h => (
-                <th key={h} style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <th key={h} style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ds-border)', fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)' }}>
                   {h}
                 </th>
               ))}
@@ -193,27 +193,27 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
               const s = STATUS_STYLES[d.status];
               return (
                 <tr key={i}>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)', fontWeight: 600 }}>
+                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)', fontWeight: 600 }}>
                     {d.name}
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
+                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
                     <code style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'monospace' }}>{d.source}</code>
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
+                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
                     {d.consumers}
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
+                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
                     {d.adsCloseness ? (() => {
                       const ac = ADS_CLOSENESS_STYLES[d.adsCloseness!];
                       return <span style={{ padding: '2px 6px', borderRadius: 3, background: ac.bg, color: ac.text, fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>{ac.icon} {ac.label}</span>;
-                    })() : <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>}
+                    })() : <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest)' }}>—</span>}
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)' }}>
+                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)' }}>
                     <span style={{ padding: '2px 8px', borderRadius: 3, background: s.bg, color: s.text, fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>
                       {s.label}
                     </span>
                   </td>
-                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <td style={{ padding: '6px 8px', borderBottom: '1px solid var(--ds-border-subtle)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                     {d.breakageRisk ?? '—'}
                   </td>
                 </tr>
@@ -225,15 +225,15 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
 
       {/* Sweep summary */}
       {needsReplace.length > 0 && (
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-background-warning-subtle, #FFF7D6)' }}>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-warning, #974F0C)', marginBottom: 4 }}>
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border)', background: 'var(--ds-background-warning-subtle)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-warning)', marginBottom: 4 }}>
             Sweep Plan — {needsReplace.length} components to replace
           </div>
-          <ol style={{ margin: 0, paddingLeft: 20, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-icon, #44546F)' }}>
+          <ol style={{ margin: 0, paddingLeft: 20, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-icon)' }}>
             {needsReplace.map((d, i) => (
               <li key={i} style={{ marginBottom: 4 }}>
                 Replace <code>{d.name}</code> ({d.consumers} consumers) → <code>{canonical.name}</code>
-                {d.breakageRisk && <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}> — Risk: {d.breakageRisk}</span>}
+                {d.breakageRisk && <span style={{ color: 'var(--ds-text-danger)' }}> — Risk: {d.breakageRisk}</span>}
               </li>
             ))}
           </ol>
@@ -242,42 +242,42 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
 
       {/* ADS Recommendation */}
       {adsRecommendation && (
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-background-information-subtle, #E9F2FF)' }}>
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border)', background: 'var(--ds-background-information-subtle)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-link, #0C66E4)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>
+            <span style={{ padding: '2px 8px', borderRadius: 3, background: 'var(--ds-link)', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}>
               ADS RECOMMENDATION
             </span>
-            <a href={adsRecommendation.docsUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0C66E4)', textDecoration: 'underline' }}>
+            <a href={adsRecommendation.docsUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link)', textDecoration: 'underline' }}>
               {adsRecommendation.package} docs
             </a>
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', marginBottom: 8, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', marginBottom: 8, lineHeight: 1.5 }}>
             {adsRecommendation.guidance}
           </div>
           {adsRecommendation.tokens && adsRecommendation.tokens.length > 0 && (
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>Required tokens</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>Required tokens</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {adsRecommendation.tokens.map((t, i) => (
-                  <code key={i} style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-neutral, #F1F2F4)', fontFamily: 'monospace' }}>{t}</code>
+                  <code key={i} style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-neutral)', fontFamily: 'monospace' }}>{t}</code>
                 ))}
               </div>
             </div>
           )}
           {adsRecommendation.requiredProps && adsRecommendation.requiredProps.length > 0 && (
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>Required props for ADS compliance</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>Required props for ADS compliance</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {adsRecommendation.requiredProps.map((p, i) => (
-                  <code key={i} style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-success, #DFFCF0)', fontFamily: 'monospace' }}>{p}</code>
+                  <code key={i} style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-success)', fontFamily: 'monospace' }}>{p}</code>
                 ))}
               </div>
             </div>
           )}
           {adsRecommendation.antiPatterns && adsRecommendation.antiPatterns.length > 0 && (
             <div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 4 }}>Anti-patterns (ADS warns against)</div>
-              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-danger)', marginBottom: 4 }}>Anti-patterns (ADS warns against)</div>
+              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>
                 {adsRecommendation.antiPatterns.map((ap, i) => (
                   <li key={i} style={{ marginBottom: 2 }}>{ap}</li>
                 ))}
@@ -289,7 +289,7 @@ export function DuplicateCard({ purpose, canonical, duplicates, adsRecommendatio
 
       {/* Restore */}
       {restoreCommit && (
-        <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
+        <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
           <strong>Restore point:</strong> <code>git revert {restoreCommit}</code> — reverts the consolidation if any replacement breaks a surface. Run <code>git log --oneline {restoreCommit}..HEAD</code> to see what would be affected.
         </div>
       )}

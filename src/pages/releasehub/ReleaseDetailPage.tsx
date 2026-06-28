@@ -29,17 +29,17 @@ import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  brand: 'var(--ds-background-brand-bold, #0C66E4)',
-  success: 'var(--ds-background-success-bold, #1F845A)',
-  inverse: 'var(--ds-text-inverse, #FFFFFF)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  brand: 'var(--ds-background-brand-bold)',
+  success: 'var(--ds-background-success-bold)',
+  inverse: 'var(--ds-text-inverse)',
 };
 
 // Default 5-stage tracker (used while config loads or as fallback).
@@ -64,9 +64,9 @@ const TERMINAL: Record<string, string> = { rolled_back: 'Rolled back', cancelled
 function HealthPill({ health }: { health: string | null }) {
   if (!health) return null;
   const map: Record<string, { label: string; fg: string; bg: string }> = {
-    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    on_track: { label: 'On track', fg: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FE)' },
-    done: { label: 'Done', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
+    on_track: { label: 'On track', fg: 'var(--ds-text-information)', bg: 'var(--ds-background-information)' },
+    done: { label: 'Done', fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
   };
   const m = map[health] ?? { label: health, fg: T.subtle, bg: T.sunken };
   return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3 }}>{m.label}</span>;
@@ -127,8 +127,8 @@ function CatyRiskAdvisory({ r, changeCount }: { r: any; changeCount: number }) {
   const level = elevated ? 'Elevated risk' : moderate ? 'Moderate risk' : 'Low risk';
   const text = elevated ? `${level} — ${reasons.join('; ')}.` : moderate ? `${level} — readiness is ${r.readiness_pct}%.` : `${level} — no blocking signals detected.`;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', border: '1px solid var(--ds-border-discovery, #B8ACF6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
-      <Sparkles size={14} style={{ color: 'var(--ds-text-discovery, #5E4DB2)' }} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-discovery)', background: 'var(--ds-background-discovery)', border: '1px solid var(--ds-border-discovery)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
+      <Sparkles size={14} style={{ color: 'var(--ds-text-discovery)' }} />
       Caty: {text}
     </div>
   );
@@ -216,7 +216,7 @@ export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { 
               {r.name}{r.version ? <span style={{ color: T.subtlest, fontWeight: 400 }}> · {r.version}</span> : null}
             </h1>
             {statusLabel ? (
-              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
             ) : (
               <StatusLozenge status={r.status} />
             )}

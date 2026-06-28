@@ -21,13 +21,13 @@ import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
+  surface: 'var(--ds-surface)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
@@ -73,7 +73,7 @@ function ApprovalWindow({ approval, onClose }: { approval: PendingApproval; onCl
           </div>
           <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtle, marginBottom: 4 }} htmlFor="signoff-comment">Comment</label>
           <TextArea id="signoff-comment" value={comment} onChange={(e) => setComment((e.target as HTMLTextAreaElement).value)} placeholder="Optional for approve, required for reject" minimumRows={3} />
-          {error && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>{error}</div>}
+          {error && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger)', marginTop: 4 }}>{error}</div>}
         </ModalBody>
         <ModalFooter>
           <Button appearance="subtle" onClick={onClose}>Cancel</Button>

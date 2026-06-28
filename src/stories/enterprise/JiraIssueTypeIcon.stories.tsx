@@ -24,9 +24,9 @@ export const AllTypes: Story = {
   render: () => (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
       {ALL_TYPES.map((type) => (
-        <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)' }}>
+        <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 4, border: '1px solid var(--ds-border)' }}>
           <JiraIssueTypeIcon type={type} size={16} />
-          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>{type}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>{type}</span>
         </div>
       ))}
     </div>
@@ -39,8 +39,8 @@ export const RealIssueKeys: Story = {
       {Object.values(ISSUES).map((issue) => (
         <div key={issue.issue_key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <JiraIssueTypeIcon type={issue.issue_type} size={16} />
-          <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text-subtle, #42526E)' }}>{issue.issue_key}</span>
-          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>{issue.summary}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text-subtle)' }}>{issue.issue_key}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>{issue.summary}</span>
         </div>
       ))}
     </div>

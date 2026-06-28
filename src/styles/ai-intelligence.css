@@ -4,28 +4,28 @@
    ═══════════════════════════════════════════════════════════ */
 
 [data-module="ai-intelligence"] {
-  --rai-ink: var(--ds-text, #172B4D);
-  --rai-ink-secondary: var(--ds-text, #172B4D);
-  --rai-ink-tertiary: var(--ds-text-subtle, #44546F);
-  --rai-ink-muted: var(--ds-text-subtlest, #626F86);
-  --rai-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --rai-surface-secondary: var(--ds-surface-sunken, #FAFAFA);
-  --rai-surface-tertiary: var(--ds-surface-sunken, #F7F8F9);
-  --rai-border: var(--ds-border, #DFE1E6);
-  --rai-border-strong: var(--ds-border, #DFE1E6);
-  --rai-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
-  --rai-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
-  --rai-primary-bg: var(--ds-background-selected, #EFF6FF);
-  --rai-teal: var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488));
-  --rai-teal-bg: var(--ds-background-success, #DFFCF0);
-  --rai-success: var(--ds-text-success, var(--cp-success, #16A34A));
-  --rai-success-bg: var(--ds-background-success, #DFFCF0);
-  --rai-warning: var(--ds-text-warning, var(--cp-warning, #D97706));
-  --rai-warning-bg: var(--ds-background-warning, #FFF7D6);
-  --rai-danger: var(--ds-text-danger, var(--cp-danger, #DC2626));
-  --rai-danger-bg: var(--ds-background-danger, #FEF2F2);
-  --rai-purple: var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED));
-  --rai-purple-bg: var(--ds-background-discovery, #F3F0FF);
+  --rai-ink: var(--ds-text);
+  --rai-ink-secondary: var(--ds-text);
+  --rai-ink-tertiary: var(--ds-text-subtle);
+  --rai-ink-muted: var(--ds-text-subtlest);
+  --rai-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --rai-surface-secondary: var(--ds-surface-sunken);
+  --rai-surface-tertiary: var(--ds-surface-sunken);
+  --rai-border: var(--ds-border);
+  --rai-border-strong: var(--ds-border);
+  --rai-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --rai-primary-hover: var(--ds-background-brand-bold-hovered);
+  --rai-primary-bg: var(--ds-background-selected);
+  --rai-teal: var(--cp-teal-60, var(--ds-chart-teal-bold));
+  --rai-teal-bg: var(--ds-background-success);
+  --rai-success: var(--ds-text-success, var(--cp-success));
+  --rai-success-bg: var(--ds-background-success);
+  --rai-warning: var(--ds-text-warning, var(--cp-warning));
+  --rai-warning-bg: var(--ds-background-warning);
+  --rai-danger: var(--ds-text-danger, var(--cp-danger));
+  --rai-danger-bg: var(--ds-background-danger);
+  --rai-purple: var(--cp-purple-60, var(--ds-background-discovery-bold));
+  --rai-purple-bg: var(--ds-background-discovery);
 
   --rai-font-heading: var(--cp-font-heading);
   --rai-font-body: var(--cp-font-body);
@@ -119,7 +119,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--rai-primary), var(--ds-background-discovery-bold, #6E5DC6));
+  background: linear-gradient(135deg, var(--rai-primary), var(--ds-background-discovery-bold));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -442,7 +442,7 @@
   margin-left: 4px;
 }
 .rai-ticket-ref:hover {
-  background: var(--ds-background-information, #E9F2FF);
+  background: var(--ds-background-information);
 }
 
 /* Warning callout */
@@ -773,7 +773,7 @@
 /* Story teaser */
 .rai-teaser {
   position: relative;
-  background: linear-gradient(135deg, var(--rai-primary-bg) 0%, var(--ds-background-discovery, #F3F0FF) 100%);
+  background: linear-gradient(135deg, var(--rai-primary-bg) 0%, var(--ds-background-discovery) 100%);
   border: 1px solid var(--ds-background-information, rgba(37, 99, 235, 0.12));
   border-radius: 8px;
   padding: 14px 16px;
@@ -794,7 +794,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, var(--ds-border-bold, #454545) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, var(--ds-border-bold) 50%, transparent 100%);
   animation: raiShimmer 4s infinite;
   pointer-events: none;
 }
@@ -963,27 +963,27 @@
    Redefines --rai-* tokens for ADS neutral dark dark mode
    ═══════════════════════════════════════════════════════════ */
 .dark [data-module="ai-intelligence"] , [data-theme="dark"] [data-module="ai-intelligence"] {
-  --rai-ink: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
-  --rai-ink-secondary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --rai-ink-tertiary: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)));
+  --rai-ink: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --rai-ink-secondary: var(--ds-text, var(--cp-bg-neutral));
+  --rai-ink-tertiary: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
   --rai-ink-muted: var(--fg-4, rgba(237,237,237,0.30));
-  --rai-surface: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
-  --rai-surface-secondary: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --rai-surface-tertiary: var(--ds-border, var(--cp-ink-1, #292929));
-  --rai-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --rai-border-strong: var(--ds-border-bold, #454545);
-  --rai-primary: var(--ds-text-brand, #60A5FA);
-  --rai-primary-hover: var(--ds-text-brand, #3B82F6);
+  --rai-surface: var(--cp-bg-page, var(--ds-surface));
+  --rai-surface-secondary: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --rai-surface-tertiary: var(--ds-border, var(--cp-ink-1));
+  --rai-border: var(--ds-border, var(--cp-ink-1));
+  --rai-border-strong: var(--ds-border-bold);
+  --rai-primary: var(--ds-text-brand);
+  --rai-primary-hover: var(--ds-text-brand);
   --rai-primary-bg: var(--ds-background-information-bold, rgba(59,130,246,0.10));
-  --rai-teal: var(--ds-background-success, #DCFFF1);
+  --rai-teal: var(--ds-background-success);
   --rai-teal-bg: rgba(94,234,212,0.10);
-  --rai-success: var(--ds-background-success, #DFFCF0);
+  --rai-success: var(--ds-background-success);
   --rai-success-bg: var(--ds-background-success-bold, rgba(74,222,128,0.12));
-  --rai-warning: var(--ds-background-warning, #FFF7D6);
+  --rai-warning: var(--ds-background-warning);
   --rai-warning-bg: var(--ds-background-warning, rgba(253,230,138,0.10));
-  --rai-danger: var(--ds-border-danger, #FCA5A5);
+  --rai-danger: var(--ds-border-danger);
   --rai-danger-bg: var(--ds-background-danger, rgba(239,68,68,0.10));
-  --rai-purple: var(--ds-background-discovery, #F3F0FF);
+  --rai-purple: var(--ds-background-discovery);
   --rai-purple-bg: var(--ds-background-discovery-bold, rgba(167,139,250,0.10));
 }
 

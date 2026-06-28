@@ -189,7 +189,7 @@ export default function IncidentViewPage() {
   })) || [];
 
   return (
-    <div className="h-full flex flex-col bg-[var(--ds-surface-sunken, #f5f7fa)]">
+    <div className="h-full flex flex-col bg-[var(--ds-surface-sunken)]">
       {/* Page Header */}
       <div className="bg-card border-b border-border px-6 py-4 flex-shrink-0">
         {/* Breadcrumbs */}
@@ -444,7 +444,7 @@ export default function IncidentViewPage() {
         </main>
 
         {/* Right Sidebar */}
-        <aside className="overflow-y-auto p-5 space-y-4 bg-[var(--ds-surface-sunken,#fafbfc)] border-l border-border">
+        <aside className="overflow-y-auto p-5 space-y-4 bg-[var(--ds-surface-sunken)] border-l border-border">
           {/* Status Card */}
           <div className="bg-card border border-border rounded-lg p-4">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block mb-2">Status</label>

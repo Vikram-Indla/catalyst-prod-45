@@ -11,12 +11,12 @@
  * 2026-05-21: Left Panel Navigator spec alignment (14 gaps closed):
  *  - GroupBySelector: @atlaskit/dropdown-menu (Group by: None/Status/Assignee/Priority)
  *  - SortConfigButton + RefreshButton: @atlaskit/button/new IconButton appearance="subtle"
- *  - IssueCardList: background var(--ds-surface-sunken, #F7F8F9), gap 1px hairline separator (flex column)
- *  - Active card: 3px solid var(--ds-link, #0C66E4) left accent bar (position:absolute), var(--ds-background-information, #E9F2FF) bg
- *  - Active summary color: var(--ds-link, #0C66E4)
+ *  - IssueCardList: background var(--ds-surface-sunken), gap 1px hairline separator (flex column)
+ *  - Active card: 3px solid var(--ds-link) left accent bar (position:absolute), var(--ds-background-information) bg
+ *  - Active summary color: var(--ds-link)
  *  - IssueTypeIcon: 20px
- *  - IssueKey typography: 13px/500/var(--ds-text-subtle, #44546F)
- *  - Footer: 40px sticky, mixed-weight "N of 1000+" (gray + bold blue var(--ds-link, #0C66E4))
+ *  - IssueKey typography: 13px/500/var(--ds-text-subtle)
+ *  - Footer: 40px sticky, mixed-weight "N of 1000+" (gray + bold blue var(--ds-link))
  *  - Infinite scroll: IntersectionObserver + @atlaskit/spinner (replaces Load-more button)
  *  - Keyboard: Up/Down arrows, J/K vim-style, Home/End, Enter/Space, Escape propagates to parent
  */
@@ -38,7 +38,7 @@ import { HealthStatusBadge } from '@/components/business-request/HealthStatusBad
 function WorkListHealthBadge({ requestKey }: { requestKey: string }) {
   const { health, isLoading } = useBusinessRequestHealth(requestKey);
   if (isLoading) return (
-    <div style={{ width: 72, height: 18, borderRadius: 3, background: 'var(--ds-background-neutral, #F1F2F4)', opacity: 0.6 }} />
+    <div style={{ width: 72, height: 18, borderRadius: 3, background: 'var(--ds-background-neutral)', opacity: 0.6 }} />
   );
   if (!health) return null;
   return <HealthStatusBadge health={health} />;
@@ -300,8 +300,8 @@ export function WorkListPanel({
             display: 'block',
             border: 'none',
             background: selected
-              ? 'var(--ds-background-selected, #E9F2FF)'
-              : 'var(--ds-surface, #FFFFFF)',
+              ? 'var(--ds-background-selected)'
+              : 'var(--ds-surface)',
             // Inset left padding by 3px when selected so text doesn't sit on bar
             padding: selected ? '16px 16px 16px 19px' : '16px',
             cursor: 'pointer',
@@ -314,11 +314,11 @@ export function WorkListPanel({
           onMouseEnter={e => {
             if (!selected)
               e.currentTarget.style.background =
-                'var(--ds-background-neutral-hovered, #F8F9FA)';
+                'var(--ds-background-neutral-hovered)';
           }}
           onMouseLeave={e => {
             if (!selected)
-              e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
+              e.currentTarget.style.background = 'var(--ds-surface)';
           }}
         >
           {/* ── Left accent bar (active card only) ── */}
@@ -331,7 +331,7 @@ export function WorkListPanel({
                 left: 0,
                 bottom: 0,
                 width: 3,
-                background: 'var(--ds-background-brand-bold, #0C66E4)',
+                background: 'var(--ds-background-brand-bold)',
                 borderRadius: '2px 0 0 2px',
               }}
             />
@@ -343,8 +343,8 @@ export function WorkListPanel({
             style={{
               fontWeight: 400,
               color: selected
-                ? 'var(--ds-link, #0C66E4)'
-                : 'var(--ds-text, #292A2E)',
+                ? 'var(--ds-link)'
+                : 'var(--ds-text)',
               marginBottom: 8,
               lineHeight: '20px',
               fontSize: 'var(--ds-font-size-400)',
@@ -366,7 +366,7 @@ export function WorkListPanel({
               style={{
                 fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
-                color: 'var(--ds-text-subtlest, #44546F)',
+                color: 'var(--ds-text-subtlest)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 6,
@@ -402,7 +402,7 @@ export function WorkListPanel({
                     font: 'inherit',
                     fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
-                    color: 'var(--ds-text-subtlest, #44546F)',
+                    color: 'var(--ds-text-subtlest)',
                     cursor: 'pointer',
                     textDecoration: 'underline',
                     textUnderlineOffset: 2,
@@ -435,7 +435,7 @@ export function WorkListPanel({
                   fallbackInitials={item.assignee?.initials || 'NA'}
                   fallbackColor={
                     item.assignee?.color ||
-                    'var(--ds-background-accent-purple-subtle, #6554C0)'
+                    'var(--ds-background-accent-purple-subtle)'
                   }
                 />
               )}
@@ -473,7 +473,7 @@ export function WorkListPanel({
             padding: '8px 12px',
             borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
             flexWrap: 'nowrap',
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--ds-surface)',
           }}
         >
           <div
@@ -502,7 +502,7 @@ export function WorkListPanel({
                 width: '100%',
                 fontSize: 'var(--ds-font-size-400)',
                 background: 'transparent',
-                color: 'var(--ds-text, #172B4D)',
+                color: 'var(--ds-text)',
               }}
             />
           </div>
@@ -519,7 +519,7 @@ export function WorkListPanel({
           justifyContent: 'space-between',
           padding: '0 4px 0 12px',
           borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-surface)',
         }}
       >
         {/* GroupBySelector — GroupByPopover: instant open, search, keyboard nav, clear */}
@@ -556,8 +556,8 @@ export function WorkListPanel({
           flex: 1,
           overflowY: 'auto',
           minHeight: 0,
-          // IssueCardList container: var(--ds-surface-sunken, #F7F8F9) bg with 1px gap (hairline sep between cards)
-          background: 'var(--ds-background-neutral, #F7F8F9)',
+          // IssueCardList container: var(--ds-surface-sunken) bg with 1px gap (hairline sep between cards)
+          background: 'var(--ds-background-neutral)',
           display: 'flex',
           flexDirection: 'column',
           gap: 1,
@@ -581,8 +581,8 @@ export function WorkListPanel({
                     padding: '8px 8px',
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
-                    color: 'var(--ds-text-subtle, #626F86)',
-                    background: 'var(--ds-background-neutral, #F7F8F9)',
+                    color: 'var(--ds-text-subtle)',
+                    background: 'var(--ds-background-neutral)',
                     border: 'none',
                     borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.08))',
                     borderRadius: 0,
@@ -593,7 +593,7 @@ export function WorkListPanel({
                     flexShrink: 0,
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-neutral, #F7F8F9)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-neutral)'; }}
                 >
                   {/* Chevron — rotates 90° when collapsed */}
                   <svg
@@ -607,7 +607,7 @@ export function WorkListPanel({
                     <JiraIssueTypeIcon type={group.label as any} size={14} />
                   )}
                   <span style={{ flex: 1 }}>{group.label}</span>
-                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-subtlest, #8590A2)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-subtlest)' }}>
                     {group.items.length}
                   </span>
                 </button>
@@ -629,7 +629,7 @@ export function WorkListPanel({
               display: 'flex',
               justifyContent: 'center',
               padding: '12px 0',
-              background: 'var(--ds-background-neutral, #F7F8F9)',
+              background: 'var(--ds-background-neutral)',
             }}
           >
             <Spinner size="small" />
@@ -649,7 +649,7 @@ export function WorkListPanel({
             style={{
               padding: '32px 16px',
               textAlign: 'center',
-              color: 'var(--ds-text-subtle, #626F86)',
+              color: 'var(--ds-text-subtle)',
               fontSize: 'var(--ds-font-size-400)',
             }}
           >
@@ -670,15 +670,15 @@ export function WorkListPanel({
             alignItems: 'center',
             justifyContent: 'center',
             borderTop: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--ds-surface)',
             fontSize: 'var(--ds-font-size-300)',
             gap: 4,
           }}
         >
-          <span style={{ color: 'var(--ds-text-subtle, #626F86)', fontWeight: 400 }}>
+          <span style={{ color: 'var(--ds-text-subtle)', fontWeight: 400 }}>
             {visibleCount} of
           </span>
-          <span style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 700 }}>
+          <span style={{ color: 'var(--ds-link)', fontWeight: 700 }}>
             {totalLabel}
           </span>
         </div>

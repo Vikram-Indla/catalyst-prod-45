@@ -94,16 +94,16 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
 
 /* ── Avatar color palette ── */
 const FILTER_AVATAR_COLORS = [
-  'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
-  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  'var(--ds-text-success, var(--cp-success, #16A34A))',
-  'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-  token('color.background.accent.blue.subtlest', 'var(--ds-link, #0284c7)'),
-  'var(--quality-high, var(--ds-background-success-bold, #059669))',
-  token('color.background.accent.red.subtlest', 'var(--ds-text-danger, #BE123C)'),
-  'var(--ds-background-brand-bold-hovered, #1D4ED8)',
-  'var(--ds-background-accent-teal-subtlest, #0F766E)'
+  'var(--cp-teal-60, var(--ds-chart-teal-bold))',
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'var(--ds-text-danger, var(--cp-danger))',
+  'var(--ds-text-success, var(--cp-success))',
+  'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
+  token('color.background.accent.blue.subtlest', 'var(--ds-link)'),
+  'var(--quality-high, var(--ds-background-success-bold))',
+  token('color.background.accent.red.subtlest', 'var(--ds-text-danger)'),
+  'var(--ds-background-brand-bold-hovered)',
+  'var(--ds-background-accent-teal-subtlest)'
 ];
 function getFilterAvatarColor(name: string): string {
   let hash = 0;
@@ -123,7 +123,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       style={{
         height: 32, padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`, display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px'),
         fontSize: 'var(--ds-font-size-200)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-        color: active ? token('color.text.brand', 'var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb))') : token('color.text.subtle', 'var(--cp-text-secondary)'),
+        color: active ? token('color.text.brand', 'var(--cp-workstream-catalyst-primary, var(--ds-link))') : token('color.text.subtle', 'var(--cp-text-secondary)'),
         background: active ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.06))') : token('elevation.surface', 'var(--cp-bg-elevated)'),
         border: `1px solid ${active ? token('color.border.selected', 'var(--ds-background-information, rgba(37,99,235,0.3))') : token('color.border', 'var(--cp-border-default)')}`,
         borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
@@ -134,7 +134,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       {label}
       {active && (
         <span style={{
-          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
+          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
           borderRadius: 9999, minWidth: 16, height: 16, display: 'inline-flex',
           alignItems: 'center', justifyContent: 'center', padding: '0 4px',
         }}>{values.length}</span>
@@ -143,27 +143,27 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
         <span
           onClick={e => { e.stopPropagation(); onClear(); }}
           style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: 'var(--cp-text-tertiary)' }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))')}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text-danger, var(--cp-danger))')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))')}
         >
           <X size={10} />
         </span>
       )}
-      <ChevronDown size={11} color={active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
+      <ChevronDown size={11} color={active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
     </button>
   );
 }
 
 /* ── Status color dot ── */
 const STATUS_DOT_COLORS: Record<string, string> = {
-  'Done': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Closed': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Resolved': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Released': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'In Production': 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  'In Development': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Beta': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In QA': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'UAT Ready': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Review': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-  'Ready for Production': 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', 'Ready for QA': 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
-  'Backlog': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', 'To Do': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', 'Open': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-  'On Hold': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Info': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Information': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Blocked': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  'Done': 'var(--ds-text-success, var(--cp-success))', 'Closed': 'var(--ds-text-success, var(--cp-success))', 'Resolved': 'var(--ds-text-success, var(--cp-success))', 'Released': 'var(--ds-text-success, var(--cp-success))', 'In Production': 'var(--ds-text-success, var(--cp-success))',
+  'In Development': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'In Beta': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'In QA': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'UAT Ready': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'In Review': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+  'Ready for Production': 'var(--cp-teal-60, var(--ds-chart-teal-bold))', 'Ready for QA': 'var(--cp-teal-60, var(--ds-chart-teal-bold))',
+  'Backlog': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', 'To Do': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', 'Open': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
+  'On Hold': 'var(--ds-text-warning, var(--cp-warning))', 'Awaiting Info': 'var(--ds-text-warning, var(--cp-warning))', 'Awaiting Information': 'var(--ds-text-warning, var(--cp-warning))', 'Blocked': 'var(--ds-text-danger, var(--cp-danger))',
 };
 function getStatusDotColor(status: string): string {
-  return STATUS_DOT_COLORS[status] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+  return STATUS_DOT_COLORS[status] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
 }
 
 /* ── Priority icon (4 bars) ── */
@@ -175,7 +175,7 @@ function PriorityIcon({ name }: { name: string }) {
   else if (n === 'high' || n === 'highest') level = 3;
   else if (n === 'medium') level = 2;
   else if (n === 'low' || n === 'lowest') level = 1;
-  const color = level >= 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : level === 2 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+  const color = level >= 3 ? 'var(--ds-text-danger, var(--cp-danger))' : level === 2 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
   return (
     <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (
@@ -221,7 +221,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
               height: 32, background: token('color.background.neutral.subtle', 'var(--cp-bg-page)'), borderRadius: 6, border: '1px solid transparent',
               transition: 'border-color 80ms',
             }}>
-              <Search size={13} color={token('color.icon.subtle', 'var(--ds-text-disabled, #8590A2)')} />
+              <Search size={13} color={token('color.icon.subtle', 'var(--ds-text-disabled)')} />
               <input
                 value={q} onChange={e => setQ(e.target.value)}
                 placeholder="Search..."
@@ -237,8 +237,8 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
 
         {/* Select all / Clear */}
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`, borderBottom: `1px solid ${token('color.border', 'var(--cp-border-default)')}` }}>
-          <button onClick={selectAll} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: token('color.text.brand', 'var(--ds-link, #2563eb)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
-          <button onClick={clearAll} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
+          <button onClick={selectAll} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: token('color.text.brand', 'var(--ds-link)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
+          <button onClick={clearAll} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-text-subtlest)'), background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
         </div>
 
         {/* Options */}
@@ -258,12 +258,12 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 onMouseLeave={e => (e.currentTarget.style.background = isSelected ? token('color.background.selected', 'var(--ds-background-information, rgba(37,99,235,0.04))') : 'transparent')}
               >
                 <div style={{
-                  width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-disabled, #CBD5E1)'}`,
-                  background: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-disabled)'}`,
+                  background: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--cp-bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, transition: 'all 80ms',
                 }}>
                   {isSelected && (
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.2 7.5L8 3" stroke="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.2 7.5L8 3" stroke="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   )}
                 </div>
                 <input type="checkbox" checked={isSelected}
@@ -283,7 +283,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                         <img src={avatarUrl} alt={opt} loading="lazy" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                       ) : (
                         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}>{initials}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))' }}>{initials}</span>
                         </div>
                       )}
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt}</span>
@@ -307,7 +307,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
 
                 {variant === 'release' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: 4, background: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', flexShrink: 0 }} />
+                    <div style={{ width: 6, height: 6, borderRadius: 4, background: 'var(--cp-teal-60, var(--ds-chart-teal-bold))', flexShrink: 0 }} />
                     <span style={{ fontSize: 'var(--ds-font-size-200)' }}>{opt}</span>
                   </div>
                 )}
@@ -399,10 +399,10 @@ export default function HierarchyPage() {
           padding: `0 ${token('space.100', '8px')}`, background: token('color.background.neutral.subtle', 'var(--cp-bg-page)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
-          onFocus={e => { e.currentTarget.style.borderColor = token('color.border.focused', 'var(--ds-link, #2563eb)'); e.currentTarget.style.boxShadow = `0 0 0 3px ${token('color.border.focused', 'var(--ds-background-information, rgba(37,99,235,0.08))')}`; }}
+          onFocus={e => { e.currentTarget.style.borderColor = token('color.border.focused', 'var(--ds-link)'); e.currentTarget.style.boxShadow = `0 0 0 3px ${token('color.border.focused', 'var(--ds-background-information, rgba(37,99,235,0.08))')}`; }}
           onBlur={e => { e.currentTarget.style.borderColor = token('color.border', 'var(--cp-border-default)'); e.currentTarget.style.boxShadow = 'none'; }}
         >
-          <Search size={14} color={token('color.icon.subtle', 'var(--ds-text-disabled, #8590A2)')} style={{ flexShrink: 0 }} />
+          <Search size={14} color={token('color.icon.subtle', 'var(--ds-text-disabled)')} style={{ flexShrink: 0 }} />
           <input
             value={searchInput}
             onChange={e => handleSearchChange(e.target.value)}
@@ -424,9 +424,9 @@ export default function HierarchyPage() {
           style={{
             height: 34, padding: `0 ${token('space.150', '12px')}`, display: 'flex', alignItems: 'center', gap: token('space.075', '6px'),
             fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-            color: activeFilterCount > 0 ? token('color.text.brand', 'var(--ds-link, #2563eb)') : token('color.text.subtle', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))'),
+            color: activeFilterCount > 0 ? token('color.text.brand', 'var(--ds-link)') : token('color.text.subtle', 'var(--ds-text-subtlest, var(--ds-text-subtlest))'),
             background: activeFilterCount > 0 ? token('color.background.selected', 'var(--cp-interact-selected)') : token('elevation.surface', 'var(--cp-bg-elevated)'),
-            border: `1px solid ${activeFilterCount > 0 ? token('color.border.selected', 'var(--ds-link, #2563eb)') : token('color.border', 'var(--cp-border-default)')}`,
+            border: `1px solid ${activeFilterCount > 0 ? token('color.border.selected', 'var(--ds-link)') : token('color.border', 'var(--cp-border-default)')}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',
           }}
         >
@@ -434,7 +434,7 @@ export default function HierarchyPage() {
           Filter
           {activeFilterCount > 0 && (
             <span style={{
-              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: token('color.background.brand.bold', 'var(--ds-link, #2563eb)'), color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'),
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: token('color.background.brand.bold', 'var(--ds-link)'), color: token('color.text.inverse', 'var(--ds-surface)'),
               borderRadius: 9999, minWidth: 18, height: 18, display: 'inline-flex',
               alignItems: 'center', justifyContent: 'center', padding: `0 ${token('space.050', '4px')}`,
             }}>{activeFilterCount}</span>
@@ -451,7 +451,7 @@ export default function HierarchyPage() {
               background: viewMode === 'table' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               transition: 'background 80ms',
             }}>
-            <TableProperties size={14} color={viewMode === 'table' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'} />
+            <TableProperties size={14} color={viewMode === 'table' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'} />
           </button>
           <button onClick={() => setViewMode('tree')}
             style={{
@@ -459,7 +459,7 @@ export default function HierarchyPage() {
               background: viewMode === 'tree' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               borderLeft: `1px solid ${'var(--cp-border-default)'}`, transition: 'background 80ms',
             }}>
-            <GitBranch size={14} color={viewMode === 'tree' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'} />
+            <GitBranch size={14} color={viewMode === 'tree' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'} />
           </button>
         </div>
       </div>
@@ -556,8 +556,8 @@ export default function HierarchyPage() {
                 background: 'none', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 4, cursor: 'pointer',
                 color: 'var(--cp-text-tertiary)', transition: 'all 80ms',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; e.currentTarget.style.color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-danger, var(--cp-danger))'; e.currentTarget.style.color = 'var(--ds-text-danger, var(--cp-danger))'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'; }}
               title="Clear all filters"
             >
               <X size={14} />
@@ -573,16 +573,16 @@ export default function HierarchyPage() {
             <TableSkeleton rows={10} />
           ) : isError ? (
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
-              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>Failed to load work items</p>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger))', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary)', margin: 0 }}>There was an error fetching the work items.</p>
-              <button onClick={() => refetch()} style={{ height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'), background: token('color.background.brand.bold', 'var(--ds-link, #2563eb)'), border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+              <button onClick={() => refetch()} style={{ height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: token('color.text.inverse', 'var(--ds-surface)'), background: token('color.background.brand.bold', 'var(--ds-link)'), border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: token('space.075', '6px') }}>
                 <RefreshCw size={14} /> Retry
               </button>
             </div>
           ) : filteredItems.length === 0 ? (
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9))))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Search size={20} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken))))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Search size={20} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
               </div>
               <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0 }}>
                 {search || activeFilterCount > 0 ? 'No items match your filters' : 'No work items found'}
@@ -593,7 +593,7 @@ export default function HierarchyPage() {
               {(search || activeFilterCount > 0) && (
                 <button onClick={handleClearAllFilters} style={{
                   height: 32, padding: `0 ${token('space.150', '12px')}`, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-                  color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), background: token('elevation.surface', 'var(--cp-bg-elevated)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 6, cursor: 'pointer',
+                  color: token('color.text.subtle', 'var(--ds-text-subtlest)'), background: token('elevation.surface', 'var(--cp-bg-elevated)'), border: `1px solid ${token('color.border', 'var(--cp-border-default)')}`, borderRadius: 6, cursor: 'pointer',
                 }}>
                   Clear filters
                 </button>

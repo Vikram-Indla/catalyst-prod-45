@@ -251,9 +251,9 @@ export default function ProjectListPage() {
               <button
                 onClick={onNewProject}
                 className="flex items-center gap-1.5 mt-6 rounded-md transition-all"
-                style={{ height: 50, padding: '0 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
+                style={{ height: 50, padding: '0 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'; }}
               >
                 <Plus size={16} />
                 New Project
@@ -280,7 +280,7 @@ export default function ProjectListPage() {
                 const pageNum = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
                 return (
                   <button key={pageNum} onClick={() => setPage(pageNum)} className="flex items-center justify-center rounded transition-colors"
-                    style={{ width: 28, height: 28, border: pageNum === page ? 'none' : `1px solid ${T.border}`, background: pageNum === page ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-bg-elevated)', color: pageNum === page ? 'var(--ds-surface, #FFF)' : T.t2, fontSize: 'var(--ds-font-size-200)', fontWeight: pageNum === page ? 600 : 400, cursor: 'pointer' }}
+                    style={{ width: 28, height: 28, border: pageNum === page ? 'none' : `1px solid ${T.border}`, background: pageNum === page ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--cp-bg-elevated)', color: pageNum === page ? 'var(--ds-surface)' : T.t2, fontSize: 'var(--ds-font-size-200)', fontWeight: pageNum === page ? 600 : 400, cursor: 'pointer' }}
                   >
                     {pageNum + 1}
                   </button>
@@ -346,17 +346,17 @@ export default function ProjectListPage() {
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <Star size={16} style={{ color: T.t3 }} fill={starredIds.has(ctxMenu.project.id) ? 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))' : 'none'} />
+              <Star size={16} style={{ color: T.t3 }} fill={starredIds.has(ctxMenu.project.id) ? 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))' : 'none'} />
               {starredIds.has(ctxMenu.project.id) ? 'Unstar' : 'Star'}
             </button>
             <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
             <button onClick={() => { archiveProject(ctxMenu.project.id, ctxMenu.project.name); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 50, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-err-bg, #FEF2F2)'; }}
+              style={{ height: 50, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, var(--cp-danger))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-err-bg)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <Archive size={16} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" /> Archive
+              <Archive size={16} color="var(--ds-text-danger, var(--cp-danger))" /> Archive
             </button>
           </div>
         )}

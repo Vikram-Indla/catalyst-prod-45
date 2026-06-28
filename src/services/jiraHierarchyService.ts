@@ -7,45 +7,45 @@ import type { WorkItem } from '@/types/hierarchy';
 function issueTypeToLevel(type: string): { level: number; name: string; color: string; colorText: string } {
   switch (type) {
     case 'Epic':
-      return { level: 1, name: 'Epic', color: 'var(--ds-link, #2563eb)', colorText: 'var(--ds-link-pressed, #1d4ed8)' };
+      return { level: 1, name: 'Epic', color: 'var(--ds-link)', colorText: 'var(--ds-link-pressed)' };
     case 'Story':
-      return { level: 3, name: 'Story', color: 'var(--cp-success, #16A34A)', colorText: 'var(--ds-background-success-bold, #1F845A)' };
+      return { level: 3, name: 'Story', color: 'var(--cp-success)', colorText: 'var(--ds-background-success-bold)' };
     case 'Sub-task':
-      return { level: 4, name: 'Sub-task', color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: 'var(--ds-text-subtle, #44546F)' };
+      return { level: 4, name: 'Sub-task', color: 'var(--cp-ink-3, var(--cp-text-secondary))', colorText: 'var(--ds-text-subtle)' };
     case 'QA Bug':
-      return { level: 3, name: 'QA Bug', color: 'var(--cp-danger, #DC2626)', colorText: 'var(--ds-text-danger, #AE2A19)' };
+      return { level: 3, name: 'QA Bug', color: 'var(--cp-danger)', colorText: 'var(--ds-text-danger)' };
     case 'Frontend':
-      return { level: 3, name: 'Frontend', color: 'var(--ds-link, #0C66E4)', colorText: '#0E7490' };
+      return { level: 3, name: 'Frontend', color: 'var(--ds-link)', colorText: '#0E7490' };
     case 'Backend':
-      return { level: 3, name: 'Backend', color: 'var(--cp-purple-60, #7C3AED)', colorText: 'var(--ds-background-discovery-bold, #6d28d9)' };
+      return { level: 3, name: 'Backend', color: 'var(--cp-purple-60)', colorText: 'var(--ds-background-discovery-bold)' };
     case 'Task':
-      return { level: 3, name: 'Task', color: 'var(--cp-warning, #D97706)', colorText: 'var(--ds-background-warning-bold, #b45309)' };
+      return { level: 3, name: 'Task', color: 'var(--cp-warning)', colorText: 'var(--ds-background-warning-bold)' };
     case 'Production Incident':
-      return { level: 3, name: 'Incident', color: 'var(--cp-danger, #DC2626)', colorText: 'var(--ds-text-danger, #AE2A19)' };
+      return { level: 3, name: 'Incident', color: 'var(--cp-danger)', colorText: 'var(--ds-text-danger)' };
     case 'Change Request':
-      return { level: 3, name: 'Change Req', color: 'var(--ds-background-warning-bold, #E2B203)', colorText: 'var(--ds-text-danger, #AE2A19)' };
+      return { level: 3, name: 'Change Req', color: 'var(--ds-background-warning-bold)', colorText: 'var(--ds-text-danger)' };
     case 'Business Gap':
-      return { level: 1, name: 'Business Gap', color: 'var(--cp-teal-60, #0D9488)', colorText: 'var(--ds-chart-teal-bolder, #0f766e)' };
+      return { level: 1, name: 'Business Gap', color: 'var(--cp-teal-60)', colorText: 'var(--ds-chart-teal-bolder)' };
     default:
-      return { level: 3, name: type, color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: 'var(--ds-text-subtle, #44546F)' };
+      return { level: 3, name: type, color: 'var(--cp-ink-3, var(--cp-text-secondary))', colorText: 'var(--ds-text-subtle)' };
   }
 }
 
 function statusCategoryToColors(category: string): { color: string; colorText: string; isTerminal: boolean } {
   switch (category) {
     case 'Done':
-      return { color: 'var(--cp-success, #16A34A)', colorText: 'var(--ds-background-success-bold, #1F845A)', isTerminal: true };
+      return { color: 'var(--cp-success)', colorText: 'var(--ds-background-success-bold)', isTerminal: true };
     case 'In Progress':
-      return { color: 'var(--ds-link, #2563eb)', colorText: 'var(--ds-link-pressed, #1d4ed8)', isTerminal: false };
+      return { color: 'var(--ds-link)', colorText: 'var(--ds-link-pressed)', isTerminal: false };
     case 'To Do':
     default:
-      return { color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: 'var(--ds-text-subtle, #44546F)', isTerminal: false };
+      return { color: 'var(--cp-ink-3, var(--cp-text-secondary))', colorText: 'var(--ds-text-subtle)', isTerminal: false };
   }
 }
 
 function priorityToObj(priority: string | null): WorkItem['priority'] | undefined {
   if (!priority) return undefined;
-  return { name: priority, color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: 'var(--ds-text-subtle, #44546F)' };
+  return { name: priority, color: 'var(--cp-ink-3, var(--cp-text-secondary))', colorText: 'var(--ds-text-subtle)' };
 }
 
 function transformJiraIssue(row: any): WorkItem {

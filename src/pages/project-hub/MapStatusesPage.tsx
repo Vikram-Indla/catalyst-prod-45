@@ -36,11 +36,11 @@ function StatusPill({
 
   const catColor = mapping.bucketType === 'column'
     ? (mapping.statusName.toLowerCase().includes('done') || mapping.statusName.toLowerCase().includes('closed') || mapping.statusName.toLowerCase().includes('production') || mapping.statusName.toLowerCase().includes('resolved')
-      ? 'var(--ds-text-success, #006644)' : mapping.statusName.toLowerCase().includes('progress') || mapping.statusName.toLowerCase().includes('dev') || mapping.statusName.toLowerCase().includes('qa') || mapping.statusName.toLowerCase().includes('uat') || mapping.statusName.toLowerCase().includes('design') || mapping.statusName.toLowerCase().includes('beta') || mapping.statusName.toLowerCase().includes('testing') || mapping.statusName.toLowerCase().includes('review')
-        ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text, #253858)')
-    : 'var(--ds-text, #253858)';
+      ? 'var(--ds-text-success)' : mapping.statusName.toLowerCase().includes('progress') || mapping.statusName.toLowerCase().includes('dev') || mapping.statusName.toLowerCase().includes('qa') || mapping.statusName.toLowerCase().includes('uat') || mapping.statusName.toLowerCase().includes('design') || mapping.statusName.toLowerCase().includes('beta') || mapping.statusName.toLowerCase().includes('testing') || mapping.statusName.toLowerCase().includes('review')
+        ? 'var(--ds-link-pressed)' : 'var(--ds-text)')
+    : 'var(--ds-text)';
 
-  const catBg = catColor === 'var(--ds-text-success, #006644)' ? 'var(--ds-background-success, #DFFCF0)' : catColor === 'var(--ds-link-pressed, #0747A6)' ? 'var(--ds-background-information, #E9F2FF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+  const catBg = catColor === 'var(--ds-text-success)' ? 'var(--ds-background-success)' : catColor === 'var(--ds-link-pressed)' ? 'var(--ds-background-information)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))';
 
   return (
     <div
@@ -170,7 +170,7 @@ function ColumnCard({
               }}
             />
             <button onClick={commitRename} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-              <Check size={14} color="var(--ds-background-success-bold, #1F845A)" />
+              <Check size={14} color="var(--ds-background-success-bold)" />
             </button>
             <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
               <X size={14} color={tk.textMuted} />
@@ -339,7 +339,7 @@ function AddColumnBtn({ tk, onAdd }: { tk: any; onAdd: (name: string) => void })
         }}
       />
       <button onClick={submit} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-        <Check size={16} color="var(--ds-background-success-bold, #1F845A)" />
+        <Check size={16} color="var(--ds-background-success-bold)" />
       </button>
       <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
         <X size={16} color={tk.textMuted} />
@@ -387,7 +387,7 @@ function DeleteConfirm({
             onClick={onConfirm}
             style={{
               height: 32, padding: '0 12px', borderRadius: 6,
-              border: 'none', background: 'var(--ds-background-danger-bold, #C9372C)', color: 'var(--ds-surface, #fff)',
+              border: 'none', background: 'var(--ds-background-danger-bold)', color: 'var(--ds-surface)',
               fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
             }}
@@ -588,8 +588,8 @@ export default function MapStatusesPage() {
           </span>
           {hasChanges && (
             <span style={{
-              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-background-danger-bold, #C9372C)',
-              background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 3, padding: '2px 8px',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-background-danger-bold)',
+              background: 'var(--ds-background-danger)', borderRadius: 3, padding: '2px 8px',
             }}>
               Unsaved changes
             </span>
@@ -597,7 +597,7 @@ export default function MapStatusesPage() {
         </div>
         <div className="flex items-center gap-2">
           {saveError && (
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold, #C9372C)' }}>{saveError}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold)' }}>{saveError}</span>
           )}
           <button
             onClick={() => { cancel(); }}
@@ -618,8 +618,8 @@ export default function MapStatusesPage() {
             disabled={!hasChanges || saving}
             style={{
               height: 32, padding: '0 14px', borderRadius: 6,
-              border: 'none', background: hasChanges ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : tk.chipBg,
-              color: hasChanges ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textDisabled,
+              border: 'none', background: hasChanges ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : tk.chipBg,
+              color: hasChanges ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : tk.textDisabled,
               fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: hasChanges ? 'pointer' : 'default',
               fontFamily: 'var(--cp-font-body)',
             }}

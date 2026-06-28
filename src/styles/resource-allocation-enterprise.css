@@ -17,25 +17,25 @@
    ───────────────────────────────────────────────────────────── */
 .ra-enterprise-clean {
   /* NEUTRAL FOUNDATION */
-  --ra-white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --ra-slate-50: var(--ds-surface-sunken, #f8fafc);
-  --ra-slate-100: var(--ds-surface-sunken, #f1f5f9);
-  --ra-slate-200: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --ra-slate-300: var(--ds-text-disabled, #cbd5e1);
-  --ra-slate-400: var(--ds-text-subtlest, #94a3b8);
-  --ra-slate-500: var(--ds-text-subtlest, #64748b);
-  --ra-slate-600: var(--ds-text-subtle, #475569);
-  --ra-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --ra-slate-800: var(--ds-text, #172B4D);
+  --ra-white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --ra-slate-50: var(--ds-surface-sunken);
+  --ra-slate-100: var(--ds-surface-sunken);
+  --ra-slate-200: var(--ds-border, var(--cp-bg-sunken));
+  --ra-slate-300: var(--ds-text-disabled);
+  --ra-slate-400: var(--ds-text-subtlest);
+  --ra-slate-500: var(--ds-text-subtlest);
+  --ra-slate-600: var(--ds-text-subtle);
+  --ra-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --ra-slate-800: var(--ds-text);
 
   /* PROJECT COLORS (Bar Fill) */
-  --ra-project-sectorial: var(--ds-text-brand, #3b82f6);
-  --ra-project-dataplatform: var(--ds-background-success-bold, #059669);
-  --ra-project-senaei: var(--ds-text-warning, #f59e0b);
-  --ra-project-tahommena: var(--ds-background-accent-magenta-bolder, #ec4899);
-  --ra-project-inspection: var(--ds-background-discovery-bold, #8b5cf6);
-  --ra-project-irplatform: var(--ds-icon-information, #1D7AFC);
-  --ra-project-default: var(--ds-text-brand, #3b82f6);
+  --ra-project-sectorial: var(--ds-text-brand);
+  --ra-project-dataplatform: var(--ds-background-success-bold);
+  --ra-project-senaei: var(--ds-text-warning);
+  --ra-project-tahommena: var(--ds-background-accent-magenta-bolder);
+  --ra-project-inspection: var(--ds-background-discovery-bold);
+  --ra-project-irplatform: var(--ds-icon-information);
+  --ra-project-default: var(--ds-text-brand);
   
   /* CELL CONFIGURATION */
   --ra-cell-bg: var(--ra-white);
@@ -357,9 +357,9 @@
 
 /* Available capacity row - keep green styling */
 .ra-enterprise-clean [class*="bg-emerald"] .rounded-md {
-  background: var(--ds-background-success, #DFFCF0) !important;
-  color: var(--quality-high, var(--ds-background-success-bold, #059669)) !important;
-  border-color: var(--ds-background-success, #a7f3d0) !important;
+  background: var(--ds-background-success) !important;
+  color: var(--quality-high, var(--ds-background-success-bold)) !important;
+  border-color: var(--ds-background-success) !important;
 }
 
 .ra-enterprise-clean [class*="bg-emerald"] .rounded-md::after {
@@ -398,7 +398,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 /* Override ANY blue background on cells */
-.ra-enterprise-clean td div[style*="var(--ds-text-brand, #3b82f6)"],
+.ra-enterprise-clean td div[style*="var(--ds-text-brand)"],
 .ra-enterprise-clean td div[style*="var(--ds-background-information-bold, rgb(59, 130, 246))"],
 .ra-enterprise-clean td div[style*="BRAND_COLOR"],
 .ra-enterprise-clean td div.bg-blue-500,
@@ -445,39 +445,39 @@
    ───────────────────────────────────────────────────────────── */
 .dark .ra-enterprise-clean , [data-theme="dark"] .ra-enterprise-clean {
   /* NEUTRAL FOUNDATION — dark */
-  --ra-white: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --ra-slate-50: var(--ds-surface-overlay, #1F1F1F);
-  --ra-slate-100: var(--ds-border, var(--cp-ink-1, #292929));
-  --ra-slate-200: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --ra-slate-300: var(--ds-border-bold, #454545);
+  --ra-white: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --ra-slate-50: var(--ds-surface-overlay);
+  --ra-slate-100: var(--ds-border, var(--cp-ink-1));
+  --ra-slate-200: var(--ds-border, var(--cp-ink-1));
+  --ra-slate-300: var(--ds-border-bold);
   --ra-slate-400: var(--fg-4, rgba(237,237,237,0.30));
-  --ra-slate-500: var(--ds-text-subtlest, #626F86);
-  --ra-slate-600: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)));
-  --ra-slate-700: var(--fg-2, var(--ds-text-subtlest, #626F86));
-  --ra-slate-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  --ra-slate-500: var(--ds-text-subtlest);
+  --ra-slate-600: var(--fg-3, var(--cp-text-secondary, var(--ds-text-subtlest)));
+  --ra-slate-700: var(--fg-2, var(--ds-text-subtlest));
+  --ra-slate-800: var(--ds-text, var(--cp-bg-neutral));
 
   /* CELL */
-  --ra-cell-bg: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --ra-cell-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --ra-cell-bg: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --ra-cell-border: var(--ds-border, var(--cp-ink-1));
 
   /* BAR TRACK */
-  --ra-bar-track-bg: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --ra-bar-track-bg: var(--ds-border, var(--cp-ink-1));
 
   /* TEXT */
-  --ra-text-percent: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
-  --ra-text-project: var(--ds-text-subtlest, #626F86);
+  --ra-text-percent: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
+  --ra-text-project: var(--ds-text-subtlest);
 
   /* AVATAR */
-  --ra-avatar-bg: var(--ds-border-bold, #454545);
-  --ra-avatar-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)));
+  --ra-avatar-bg: var(--ds-border-bold);
+  --ra-avatar-text: var(--fg-1, var(--cp-bg-neutral, var(--ds-background-neutral)));
 
   /* END/EMPTY CELL */
   --ra-end-bg: repeating-linear-gradient(
     -45deg,
-    var(--ds-surface-overlay, #1F1F1F),
-    var(--ds-surface-overlay, #1F1F1F) 4px,
-    var(--ds-border, var(--cp-ink-1, #292929)) 4px,
-    var(--ds-border, var(--cp-ink-1, #292929)) 8px
+    var(--ds-surface-overlay),
+    var(--ds-surface-overlay) 4px,
+    var(--ds-border, var(--cp-ink-1)) 4px,
+    var(--ds-border, var(--cp-ink-1)) 8px
   );
   --ra-end-text: var(--fg-4, rgba(237,237,237,0.30));
 }

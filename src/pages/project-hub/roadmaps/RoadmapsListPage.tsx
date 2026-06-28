@@ -146,7 +146,7 @@ function RoadmapKebabMenu({ row, currentUserId, projectKey, onDeleted }: Roadmap
         padding: '6px 12px',
         fontSize: 'var(--ds-font-size-400)',
         cursor: 'pointer',
-        color: danger ? 'var(--ds-text-danger, #AE2A19)' : token('color.text'),
+        color: danger ? 'var(--ds-text-danger)' : token('color.text'),
         whiteSpace: 'nowrap',
       }}
       onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'))}

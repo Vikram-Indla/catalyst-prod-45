@@ -324,26 +324,26 @@ export interface WhFilterConfig {
 
 export const WH_STATUS_COLORS: Record<WhStatusColorKey, { bg: string; text: string; dot: string }> = {
   // ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token for muted neutral dot (probed 2026-06-28)
-  gray:   { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-icon, #44546F)', dot: '#8c8f96' },
+  gray:   { bg: 'var(--ds-border)', text: 'var(--ds-icon)', dot: '#8c8f96' },
   // ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token for deep-blue text (probed 2026-06-28)
-  blue:   { bg: 'var(--ds-background-information, #E9F2FF)', text: '#0c3578', dot: 'var(--ds-link, #1868DB)' },
+  blue:   { bg: 'var(--ds-background-information)', text: '#0c3578', dot: 'var(--ds-link)' },
   // ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token for success text/dot hues (probed 2026-06-28)
-  green:  { bg: 'var(--ds-background-success-bold, #6A9A23)', text: '#1b4d1b', dot: '#22863a' },
+  green:  { bg: 'var(--ds-background-success-bold)', text: '#1b4d1b', dot: '#22863a' },
   // ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token for danger bg/text hues (probed 2026-06-28)
-  red:    { bg: '#f87168', text: '#601e16', dot: 'var(--ds-background-danger-bold, #ef4444)' },
+  red:    { bg: '#f87168', text: '#601e16', dot: 'var(--ds-background-danger-bold)' },
   // ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token for warning text hue (probed 2026-06-28)
-  yellow: { bg: 'var(--ds-background-warning-bold, #E2B203)', text: '#5c4813', dot: 'var(--ds-background-warning-bold, #d97706)' },
+  yellow: { bg: 'var(--ds-background-warning-bold)', text: '#5c4813', dot: 'var(--ds-background-warning-bold)' },
   // ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token for teal bg/text (probed 2026-06-28)
-  teal:   { bg: '#82c7c2', text: '#0d4e48', dot: 'var(--ds-chart-teal-bold, #0d9488)' },
+  teal:   { bg: '#82c7c2', text: '#0d4e48', dot: 'var(--ds-chart-teal-bold)' },
   // ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token for light-purple bg/text (probed 2026-06-28)
-  purple: { bg: '#c597f4', text: '#3b1761', dot: 'var(--ds-background-discovery-bold, #7C3AED)' },
+  purple: { bg: '#c597f4', text: '#3b1761', dot: 'var(--ds-background-discovery-bold)' },
 };
 
 export const WH_PRIORITY_CONFIG: Record<WhPriority, { bars: number; color: string; label: string }> = {
-  Highest: { bars: 4, color: 'var(--ds-background-danger-bold, #ef4444)', label: 'Highest' },
-  High:    { bars: 3, color: 'var(--ds-background-warning-bold, #f97316)', label: 'High' },
-  Medium:  { bars: 2, color: 'var(--ds-background-information-bold, #3b82f6)', label: 'Medium' },
-  Low:     { bars: 1, color: 'var(--ds-background-success-bold, #1F845A)', label: 'Low' },
+  Highest: { bars: 4, color: 'var(--ds-background-danger-bold)', label: 'Highest' },
+  High:    { bars: 3, color: 'var(--ds-background-warning-bold)', label: 'High' },
+  Medium:  { bars: 2, color: 'var(--ds-background-information-bold)', label: 'Medium' },
+  Low:     { bars: 1, color: 'var(--ds-background-success-bold)', label: 'Low' },
   // ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token for lowest-priority muted gray (probed 2026-06-28)
   Lowest:  { bars: 0, color: '#8c8f96', label: 'Lowest' },
 };

@@ -94,11 +94,11 @@ export default function ProjectBoardPage() {
   }, [openFilter]);
 
   const statCards = [
-    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
-    { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DCFCE7)', accent: '' },
-    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
-    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: stats.overdue > 0 ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', accent: '' },
-    { label: 'AI Features', value: '0%', icon: Sparkles, color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-background-discovery, #F5F3FF)', accent: 'var(--cp-purple-60, #7C3AED)' },
+    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', accent: '' },
+    { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'var(--ds-text-success, var(--cp-success))', bg: 'var(--ds-background-success)', accent: '' },
+    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', bg: 'var(--ds-background-selected)', accent: '' },
+    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? 'var(--ds-text-danger)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', bg: stats.overdue > 0 ? 'var(--ds-background-danger)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', accent: '' },
+    { label: 'AI Features', value: '0%', icon: Sparkles, color: 'var(--cp-purple-60)', bg: 'var(--ds-background-discovery)', accent: 'var(--cp-purple-60)' },
   ];
 
   const views: { key: ProjectView; label: string; icon: typeof Columns3 }[] = [
@@ -159,7 +159,7 @@ export default function ProjectBoardPage() {
         {/* View Switcher */}
         <div
           className="flex items-center gap-0.5 p-1 rounded-lg"
-          style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}
+          style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))' }}
         >
           {views.map(v => {
             const isActive = activeView === v.key;
@@ -174,7 +174,7 @@ export default function ProjectBoardPage() {
                   fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6, cursor: 'pointer', border: 'none',
                   background: isActive ? ('var(--cp-bg-elevated)') : 'transparent',
-                  color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-secondary)'),
+                  color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--cp-text-secondary)'),
                   boxShadow: isActive ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.08))' : 'none',
                   transition: 'all 150ms ease',
                 }}
@@ -188,7 +188,7 @@ export default function ProjectBoardPage() {
 
         {/* Search */}
         <div className="relative">
-          <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" className="absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" className="absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
@@ -213,9 +213,9 @@ export default function ProjectBoardPage() {
             padding: '6px 12px', height: 32,
             fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
             borderRadius: 6, cursor: 'pointer',
-            border: hasActiveFilters ? '1px solid var(--ds-background-information, #E9F2FF)' : ('1px solid var(--cp-border-default)'),
+            border: hasActiveFilters ? '1px solid var(--ds-background-information)' : ('1px solid var(--cp-border-default)'),
             background: hasActiveFilters ? ('var(--cp-interact-selected)') : ('var(--cp-bg-elevated)'),
-            color: hasActiveFilters ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-secondary)'),
+            color: hasActiveFilters ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--cp-text-secondary)'),
             fontFamily: 'var(--cp-font-body)',
             transition: 'all 150ms ease',
           }}
@@ -225,7 +225,7 @@ export default function ProjectBoardPage() {
           {hasActiveFilters && (
             <span
               className="rounded-full flex items-center justify-center"
-              style={{ width: 16, height: 16, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}
+              style={{ width: 16, height: 16, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}
             >
               {[filterType, filterStatus, filterPriority, filterSource].filter(Boolean).length}
             </span>
@@ -317,7 +317,7 @@ export default function ProjectBoardPage() {
               onClick={clearFilters}
               className="self-end transition-colors"
               style={{
-                fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-danger, #EF4444)',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-danger)',
                 background: 'transparent', border: 'none', cursor: 'pointer',
                 textDecoration: 'underline',
               }}
@@ -353,7 +353,7 @@ export default function ProjectBoardPage() {
           className="flex flex-col items-center justify-center rounded-xl border"
           style={{ padding: '80px 40px', background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)' }}
         >
-          <GanttChart size={36} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth={1.5} />
+          <GanttChart size={36} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" strokeWidth={1.5} />
           <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>
             Timeline View
           </span>
@@ -403,7 +403,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
 
   return (
     <div className="flex flex-col gap-1 relative" data-filter-dropdown>
-      <label style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <label style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </label>
       <button
@@ -416,7 +416,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
         }}
       >
         <span className="truncate">{selectedLabel}</span>
-        <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
+        <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
       </button>
       {isOpen && (
         <div
@@ -438,7 +438,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
               onMouseLeave={e => { if (value !== o.value) e.currentTarget.style.background = 'transparent'; }}
             >
               {o.label}
-              {value === o.value && <span style={{ float: 'right', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 'var(--ds-font-size-100)' }}>✓</span>}
+              {value === o.value && <span style={{ float: 'right', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontSize: 'var(--ds-font-size-100)' }}>✓</span>}
             </button>
           ))}
         </div>

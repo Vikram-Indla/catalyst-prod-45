@@ -847,8 +847,8 @@ export default function FullAppRoutes() {
         <Route path="/capacity" element={<S><CapacityPlanningPage /></S>} />
         <Route path="/risks" element={<S><RisksGridPage /></S>} />
         <Route path="/risk-roam-report" element={<S><RiskRoamReportPage /></S>} />
-        <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
-        <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
+        <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1))', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
+        <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1))', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
 
         <Route path="/projects" element={<Navigate to="/project-hub/projects" replace />} />
         <Route path="/projects/:projectKey" element={<Navigate to="/project-hub/projects" replace />} />

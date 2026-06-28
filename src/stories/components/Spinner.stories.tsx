@@ -20,7 +20,7 @@ export const AllSizes: Story = {
       {(['small', 'medium', 'large', 'xlarge'] as const).map((s) => (
         <div key={s} style={{ textAlign: 'center' }}>
           <Spinner size={s} />
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginBlockStart: 8 }}>{s}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginBlockStart: 8 }}>{s}</div>
         </div>
       ))}
     </div>
@@ -29,7 +29,7 @@ export const AllSizes: Story = {
 
 export const InvertedOnDark: Story = {
   render: () => (
-    <div style={{ background: 'var(--ds-background-neutral-bold, #44546F)', padding: 24, borderRadius: 8, display: 'inline-flex', gap: 16 }}>
+    <div style={{ background: 'var(--ds-background-neutral-bold)', padding: 24, borderRadius: 8, display: 'inline-flex', gap: 16 }}>
       <Spinner size="small" appearance="invert" />
       <Spinner size="medium" appearance="invert" />
     </div>

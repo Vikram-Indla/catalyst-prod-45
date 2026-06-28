@@ -86,15 +86,15 @@ function KpiCard({ value, label, subtitle }: { value: number; label: string; sub
     <div style={{
       flex: 1,
       minWidth: 0,
-      background: 'var(--ds-surface, #FFFFFF)',
-      border: '1px solid var(--ds-border, #DFE1E6)',
+      background: 'var(--ds-surface)',
+      border: '1px solid var(--ds-border)',
       borderRadius: 8,
       padding: '20px 24px',
     }}>
       <div style={{
         fontSize: 36,
         fontWeight: 700,
-        color: 'var(--ds-text, #172B4D)',
+        color: 'var(--ds-text)',
         lineHeight: 1,
         fontFamily: 'var(--ds-font-family-body)',
       }}>
@@ -104,7 +104,7 @@ function KpiCard({ value, label, subtitle }: { value: number; label: string; sub
         marginTop: 8,
         fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
-        color: 'var(--ds-text, #172B4D)',
+        color: 'var(--ds-text)',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
         {label}
@@ -112,7 +112,7 @@ function KpiCard({ value, label, subtitle }: { value: number; label: string; sub
       <div style={{
         marginTop: 4,
         fontSize: 'var(--ds-font-size-200)',
-        color: 'var(--ds-text-subtle, #42526E)',
+        color: 'var(--ds-text-subtle)',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
         {subtitle}
@@ -121,7 +121,7 @@ function KpiCard({ value, label, subtitle }: { value: number; label: string; sub
   );
 }
 
-const BAR_FILL = 'var(--ds-background-information-bold, #0052CC)';
+const BAR_FILL = 'var(--ds-background-information-bold)';
 
 function ProportionBar({ label, count, max }: { label: string; count: number; max: number }) {
   const pct = max > 0 ? (count / max) * 100 : 0;
@@ -131,7 +131,7 @@ function ProportionBar({ label, count, max }: { label: string; count: number; ma
         minWidth: 140,
         maxWidth: 140,
         fontSize: 'var(--ds-font-size-300)',
-        color: 'var(--ds-text-subtle, #42526E)',
+        color: 'var(--ds-text-subtle)',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
@@ -141,7 +141,7 @@ function ProportionBar({ label, count, max }: { label: string; count: number; ma
       </span>
       <div style={{
         flex: 1,
-        background: 'var(--ds-background-neutral, #F1F2F4)',
+        background: 'var(--ds-background-neutral)',
         borderRadius: 3,
         height: 8,
       }}>
@@ -156,7 +156,7 @@ function ProportionBar({ label, count, max }: { label: string; count: number; ma
         minWidth: 32,
         fontSize: 'var(--ds-font-size-300)',
         textAlign: 'right',
-        color: 'var(--ds-text, #172B4D)',
+        color: 'var(--ds-text)',
         fontWeight: 500,
         fontFamily: 'var(--ds-font-family-body)',
       }}>
@@ -234,7 +234,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
         <Spinner size="medium" />
-        <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-400)' }}>Loading dashboard…</span>
+        <span style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-400)' }}>Loading dashboard…</span>
       </div>
     );
   }
@@ -304,7 +304,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
         {dashboard.isLoading && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 0' }}>
             <Spinner size="small" />
-            <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-300)' }}>Fetching metrics…</span>
+            <span style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>Fetching metrics…</span>
           </div>
         )}
 
@@ -323,7 +323,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
               <div style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 justifyContent: 'center', padding: '48px 0', gap: 8,
-                color: 'var(--ds-text-subtle, #42526E)',
+                color: 'var(--ds-text-subtle)',
               }}>
                 <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500 }}>No issues to display</span>
                 <span style={{ fontSize: 'var(--ds-font-size-400)' }}>The filter returned no results.</span>
@@ -382,7 +382,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                             <div style={{
                               fontSize: 'var(--ds-font-size-200)',
                               fontWeight: 600,
-                              color: 'var(--ds-text-subtlest, #6B778C)',
+                              color: 'var(--ds-text-subtlest)',
                               padding: '8px 0 4px',
                               fontFamily: 'var(--ds-font-family-body)',
                             }}>
@@ -397,7 +397,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                   alignItems: 'center',
                                   gap: 8,
                                   padding: '6px 0',
-                                  borderBottom: '1px solid var(--ds-border-subtle, #F1F2F4)',
+                                  borderBottom: '1px solid var(--ds-border-subtle)',
                                 }}
                               >
                                 {/* Type icon — zero-assumption: null issueType → no icon */}
@@ -413,7 +413,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                   flexShrink: 0,
                                   fontSize: 'var(--ds-font-size-200)',
                                   fontWeight: 500,
-                                  color: 'var(--ds-text-subtlest, #6B778C)',
+                                  color: 'var(--ds-text-subtlest)',
                                   fontFamily: 'var(--ds-font-family-body)',
                                   letterSpacing: '0.01em',
                                 }}>
@@ -425,7 +425,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                   flex: 1,
                                   minWidth: 0,
                                   fontSize: 'var(--ds-font-size-300)',
-                                  color: 'var(--ds-text, #172B4D)',
+                                  color: 'var(--ds-text)',
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
                                   whiteSpace: 'nowrap',
@@ -439,8 +439,8 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                   flexShrink: 0,
                                   fontSize: 'var(--ds-font-size-100)',
                                   fontWeight: 500,
-                                  color: 'var(--ds-text-subtle, #42526E)',
-                                  background: 'var(--ds-background-neutral, #F1F2F4)',
+                                  color: 'var(--ds-text-subtle)',
+                                  background: 'var(--ds-background-neutral)',
                                   padding: '2px 8px',
                                   borderRadius: 3,
                                   fontFamily: 'var(--ds-font-family-body)',

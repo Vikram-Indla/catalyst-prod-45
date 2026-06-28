@@ -150,8 +150,8 @@ function KPICard({
             className={cn(
               "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md cursor-help",
               kpi.trend.isPositive
-                ? "bg-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-chart-teal-bold, #0d9488)]"
-                : "bg-[var(--ds-background-danger,#fef2f2)] text-[var(--ds-text-danger,#ef4444)]"
+                ? "bg-[var(--ds-background-success)] text-[var(--ds-chart-teal-bold)]"
+                : "bg-[var(--ds-background-danger)] text-[var(--ds-text-danger)]"
             )}
           >
             <TrendIcon className="w-3 h-3" />
@@ -198,7 +198,7 @@ function ProgressRing({ percentage, status, size = 48 }: { percentage: number; s
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))"
+          stroke="var(--ds-border, var(--cp-bg-sunken))"
           strokeWidth={strokeWidth}
         />
         {/* Progress circle */}
@@ -242,14 +242,14 @@ function ReleaseHealthItem({ release, onClick }: { release: ReleaseHealthData; o
       </div>
       
       <div className="flex items-center gap-2">
-        <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-chart-teal-bold, #0d9488)]">
+        <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-success)] text-[var(--ds-chart-teal-bold)]">
           {release.passed} Passed
         </span>
-        <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-danger,#fef2f2)] text-[var(--ds-text-danger,#ef4444)]">
+        <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-danger)] text-[var(--ds-text-danger)]">
           {release.failed} Failed
         </span>
         {release.blocked > 0 && (
-          <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-warning, #FFF7D6)] text-[var(--ds-text-warning,#d97706)]">
+          <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[var(--ds-background-warning)] text-[var(--ds-text-warning)]">
             {release.blocked} Blocked
           </span>
         )}
@@ -261,9 +261,9 @@ function ReleaseHealthItem({ release, onClick }: { release: ReleaseHealthData; o
 // Quality Gate Item - Clickable
 function QualityGateItem({ gate, onClick }: { gate: QualityGate; onClick?: () => void }) {
   const statusConfig = {
-    passed: { bg: 'bg-[var(--ds-background-success, #DFFCF0)]', text: 'text-[var(--ds-chart-teal-bold, #0d9488)]', icon: CheckCircle2 },
-    warning: { bg: 'bg-[var(--ds-background-warning, #FFF7D6)]', text: 'text-[var(--ds-text-warning,#d97706)]', icon: AlertTriangle },
-    failed: { bg: 'bg-[var(--ds-background-danger,#fef2f2)]', text: 'text-[var(--ds-text-danger,#ef4444)]', icon: AlertTriangle },
+    passed: { bg: 'bg-[var(--ds-background-success)]', text: 'text-[var(--ds-chart-teal-bold)]', icon: CheckCircle2 },
+    warning: { bg: 'bg-[var(--ds-background-warning)]', text: 'text-[var(--ds-text-warning)]', icon: AlertTriangle },
+    failed: { bg: 'bg-[var(--ds-background-danger)]', text: 'text-[var(--ds-text-danger)]', icon: AlertTriangle },
   };
   const config = statusConfig[gate.status];
   const Icon = config.icon;
@@ -304,10 +304,10 @@ function QualityGateItem({ gate, onClick }: { gate: QualityGate; onClick?: () =>
 // Activity Item - Clickable
 function ActivityItem({ activity, onSubjectClick }: { activity: ActivityItemType; onSubjectClick?: (activity: ActivityItemType) => void }) {
   const typeConfig = {
-    passed: { bg: 'bg-[var(--ds-background-success, #DFFCF0)]', text: 'text-[var(--ds-chart-teal-bold, #0d9488)]', icon: CheckCircle2 },
-    failed: { bg: 'bg-[var(--ds-background-danger,#fef2f2)]', text: 'text-[var(--ds-text-danger,#ef4444)]', icon: AlertTriangle },
-    defect: { bg: 'bg-[var(--ds-background-warning, #FFF7D6)]', text: 'text-[var(--ds-text-warning,#d97706)]', icon: Bug },
-    comment: { bg: 'bg-[var(--ds-background-selected,#eff6ff)]', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', icon: MessageSquare },
+    passed: { bg: 'bg-[var(--ds-background-success)]', text: 'text-[var(--ds-chart-teal-bold)]', icon: CheckCircle2 },
+    failed: { bg: 'bg-[var(--ds-background-danger)]', text: 'text-[var(--ds-text-danger)]', icon: AlertTriangle },
+    defect: { bg: 'bg-[var(--ds-background-warning)]', text: 'text-[var(--ds-text-warning)]', icon: Bug },
+    comment: { bg: 'bg-[var(--ds-background-selected)]', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]', icon: MessageSquare },
   };
   const config = typeConfig[activity.type];
   const Icon = config.icon;
@@ -342,7 +342,7 @@ function TeamMemberItem({ member }: { member: TeamMemberPerformance }) {
   const colorMap = {
     blue: CATALYST_V5.primary,
     teal: CATALYST_V5.teal,
-    purple: 'var(--ds-background-discovery-bold, #8b5cf6)',
+    purple: 'var(--ds-background-discovery-bold)',
     orange: CATALYST_V5.warning,
   };
   
@@ -370,8 +370,8 @@ function TeamMemberItem({ member }: { member: TeamMemberPerformance }) {
 function MilestoneItem({ milestone }: { milestone: Milestone }) {
   const urgencyConfig: Record<string, { border: string; text: string }> = {
     normal: { border: CATALYST_V5.primary, text: 'text-foreground' },
-    warning: { border: CATALYST_V5.warning, text: 'text-[var(--ds-text-warning,#d97706)]' },
-    danger: { border: CATALYST_V5.danger, text: 'text-[var(--ds-text-danger,#ef4444)]' },
+    warning: { border: CATALYST_V5.warning, text: 'text-[var(--ds-text-warning)]' },
+    danger: { border: CATALYST_V5.danger, text: 'text-[var(--ds-text-danger)]' },
   };
   const config = urgencyConfig[milestone.urgency] ?? urgencyConfig.normal;
   const date = new Date(milestone.dueDate);
@@ -740,17 +740,17 @@ export default function CommandCenterPage() {
                 <div className="h-[200px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={testProgress || []} barCategoryGap="20%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, var(--cp-bg-sunken))" vertical={false} />
                       <XAxis 
                         dataKey="sprint" 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest)' }}
                       />
                       <YAxis 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest)' }}
                         tickFormatter={(v) => `${v}%`}
                       />
                       <Tooltip 
@@ -760,7 +760,7 @@ export default function CommandCenterPage() {
                       <Bar dataKey="passed" stackId="a" fill={CATALYST_V5.teal} radius={[0, 0, 0, 0]} />
                       <Bar dataKey="failed" stackId="a" fill={CATALYST_V5.danger} radius={[0, 0, 0, 0]} />
                       <Bar dataKey="blocked" stackId="a" fill={CATALYST_V5.warning} radius={[0, 0, 0, 0]} />
-                      <Bar dataKey="notRun" stackId="a" fill="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="notRun" stackId="a" fill="var(--ds-border, var(--cp-bg-sunken))" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -778,7 +778,7 @@ export default function CommandCenterPage() {
                     Blocked
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm bg-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]" />
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[var(--ds-border,var(--cp-bg-sunken))]" />
                     Not Run
                   </span>
                 </div>
@@ -806,17 +806,17 @@ export default function CommandCenterPage() {
                 <div className="h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={defectTrends || []}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, var(--cp-bg-sunken))" vertical={false} />
                       <XAxis 
                         dataKey="date" 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest)' }}
                       />
                       <YAxis 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest)' }}
                       />
                       <Tooltip contentStyle={{ fontSize: 'var(--ds-font-size-200)', borderRadius: 8 }} />
                       <Area 

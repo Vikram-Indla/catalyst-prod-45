@@ -8,19 +8,19 @@ import { cn } from '@/lib/utils';
 const timeFilters = ['24h', '7D', '30D', '90D'];
 
 const stats = [
-  { label: 'Critical Incidents', value: 3, className: 'text-[var(--ds-text-danger,#ef4444)]', trend: '↑ +2 from last week', trendUp: true },
-  { label: 'Open Incidents', value: 24, className: 'text-[var(--ds-text-warning,#f59e0b)]', trend: '↑ +5 from last week', trendUp: true },
-  { label: 'Resolved This Week', value: 18, className: 'text-[var(--ds-text-success,#0d9488)]', trend: '↑ +12 improvement', trendUp: false },
-  { label: 'Avg Resolution Time', value: '4.2h', className: 'text-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]', trend: '↓ -1.2h improvement', trendUp: false },
-  { label: 'SLA Compliance', value: '94%', className: 'text-[var(--ds-text-success,#0d9488)]', trend: '↑ +3% improvement', trendUp: false },
+  { label: 'Critical Incidents', value: 3, className: 'text-[var(--ds-text-danger)]', trend: '↑ +2 from last week', trendUp: true },
+  { label: 'Open Incidents', value: 24, className: 'text-[var(--ds-text-warning)]', trend: '↑ +5 from last week', trendUp: true },
+  { label: 'Resolved This Week', value: 18, className: 'text-[var(--ds-text-success)]', trend: '↑ +12 improvement', trendUp: false },
+  { label: 'Avg Resolution Time', value: '4.2h', className: 'text-[var(--ds-surface-raised,var(--cp-ink-1))]', trend: '↓ -1.2h improvement', trendUp: false },
+  { label: 'SLA Compliance', value: '94%', className: 'text-[var(--ds-text-success)]', trend: '↑ +3% improvement', trendUp: false },
 ];
 
 const statusData = [
-  { label: 'Open', count: 24, color: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
-  { label: 'In Progress', count: 15, color: 'bg-[var(--ds-text-warning,#f59e0b)]' },
-  { label: 'Pending', count: 8, color: 'bg-[var(--ds-text-warning,#f59e0b)]' },
-  { label: 'Resolved', count: 45, color: 'bg-[var(--ds-text-success,#0d9488)]' },
-  { label: 'Closed', count: 55, color: 'bg-[var(--ds-text-subtlest,#6b7280)]' },
+  { label: 'Open', count: 24, color: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]' },
+  { label: 'In Progress', count: 15, color: 'bg-[var(--ds-text-warning)]' },
+  { label: 'Pending', count: 8, color: 'bg-[var(--ds-text-warning)]' },
+  { label: 'Resolved', count: 45, color: 'bg-[var(--ds-text-success)]' },
+  { label: 'Closed', count: 55, color: 'bg-[var(--ds-text-subtlest)]' },
 ];
 
 const teamData = [
@@ -37,9 +37,9 @@ const matrixData = [
 ];
 
 const matrixColors = [
-  ['bg-[var(--ds-background-danger, rgba(239,68,68,0.1))] text-[var(--ds-text-danger,#ef4444)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]'],
-  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]'],
-  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]'],
+  ['bg-[var(--ds-background-danger, rgba(239,68,68,0.1))] text-[var(--ds-text-danger)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold))]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold))]'],
+  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold))]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold))]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success)]'],
+  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold))]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success)]'],
 ];
 
 const matrixLabels = [
@@ -89,15 +89,15 @@ export default function IncidentsDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-7">
         {stats.map((stat) => (
-          <Card key={stat.label} className="border-[var(--ds-border,#E8E8E8)]">
+          <Card key={stat.label} className="border-[var(--ds-border)]">
             <CardContent className="p-5">
-              <p className="text-[11px] uppercase text-[var(--ds-text-subtlest,#8C8C8C)] font-semibold mb-2">
+              <p className="text-[11px] uppercase text-[var(--ds-text-subtlest)] font-semibold mb-2">
                 {stat.label}
               </p>
               <p className={cn("text-[28px] font-bold mb-1", stat.className)}>
                 {stat.value}
               </p>
-              <p className={cn("text-[13px]", stat.trendUp ? "text-[var(--ds-text-danger,#ef4444)]" : "text-[var(--ds-text-success,#0d9488)]")}>
+              <p className={cn("text-[13px]", stat.trendUp ? "text-[var(--ds-text-danger)]" : "text-[var(--ds-text-success)]")}>
                 {stat.trend}
               </p>
             </CardContent>
@@ -110,8 +110,8 @@ export default function IncidentsDashboard() {
         {/* Left Column - 2/3 width */}
         <div className="lg:col-span-2 space-y-6">
           {/* Incident Trend Chart */}
-          <Card className="border-[var(--ds-border,#E8E8E8)]">
-            <CardHeader className="border-b border-[var(--ds-border,#E8E8E8)] py-4 px-5">
+          <Card className="border-[var(--ds-border)]">
+            <CardHeader className="border-b border-[var(--ds-border)] py-4 px-5">
               <CardTitle className="text-[15px] font-semibold">Incident Trend (7 Days)</CardTitle>
             </CardHeader>
             <CardContent className="p-5">
@@ -124,7 +124,7 @@ export default function IncidentsDashboard() {
                     </linearGradient>
                   </defs>
                   {[30, 60, 90, 120].map((y) => (
-                    <line key={y} x1="50" y1={y} x2="570" y2={y} stroke="var(--ds-border,#E8E8E8)" />
+                    <line key={y} x1="50" y1={y} x2="570" y2={y} stroke="var(--ds-border)" />
                   ))}
                   <path
                     d="M80,80 L155,60 L230,100 L305,70 L380,90 L455,50 L530,40 L530,150 L80,150 Z"
@@ -134,7 +134,7 @@ export default function IncidentsDashboard() {
                   <path
                     d="M80,80 L155,60 L230,100 L305,70 L380,90 L455,50 L530,40"
                     fill="none"
-                    stroke="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))"
+                    stroke="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))"
                     strokeWidth="2.5"
                   />
                   {[
@@ -146,10 +146,10 @@ export default function IncidentsDashboard() {
                     { cx: 455, cy: 50 },
                     { cx: 530, cy: 40 },
                   ].map((point, i) => (
-                    <circle key={i} cx={point.cx} cy={point.cy} r="4" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" />
+                    <circle key={i} cx={point.cx} cy={point.cy} r="4" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" />
                   ))}
                   {['Nov 30', 'Dec 1', 'Dec 2', 'Dec 3', 'Dec 4', 'Dec 5', 'Today'].map((label, i) => (
-                    <text key={label} x={80 + i * 75} y="170" fontSize="11" fill="var(--ds-text-subtlest,#8C8C8C)">
+                    <text key={label} x={80 + i * 75} y="170" fontSize="11" fill="var(--ds-text-subtlest)">
                       {label}
                     </text>
                   ))}
@@ -159,20 +159,20 @@ export default function IncidentsDashboard() {
           </Card>
 
           {/* Priority Matrix */}
-          <Card className="border-[var(--ds-border,#E8E8E8)]">
-            <CardHeader className="border-b border-[var(--ds-border,#E8E8E8)] py-4 px-5">
+          <Card className="border-[var(--ds-border)]">
+            <CardHeader className="border-b border-[var(--ds-border)] py-4 px-5">
               <CardTitle className="text-[15px] font-semibold">Priority Matrix (Impact × Urgency)</CardTitle>
             </CardHeader>
             <CardContent className="p-5">
               <div className="grid grid-cols-4 gap-0.5">
                 <div />
-                <div className="p-2 text-center text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest,#8C8C8C)]">High Urgency</div>
-                <div className="p-2 text-center text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest,#8C8C8C)]">Medium</div>
-                <div className="p-2 text-center text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest,#8C8C8C)]">Low Urgency</div>
+                <div className="p-2 text-center text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest)]">High Urgency</div>
+                <div className="p-2 text-center text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest)]">Medium</div>
+                <div className="p-2 text-center text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest)]">Low Urgency</div>
                 
                 {['High Impact', 'Medium', 'Low Impact'].map((rowLabel, rowIdx) => (
                   <>
-                    <div key={`label-${rowIdx}`} className="p-3 text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest,#8C8C8C)] flex items-center justify-center">
+                    <div key={`label-${rowIdx}`} className="p-3 text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest)] flex items-center justify-center">
                       <span className="[writing-mode:vertical-rl] rotate-180">{rowLabel}</span>
                     </div>
                     {matrixData[rowIdx].map((count, colIdx) => (
@@ -181,7 +181,7 @@ export default function IncidentsDashboard() {
                         className={cn("p-3.5 text-center rounded", matrixColors[rowIdx][colIdx])}
                       >
                         <div className="text-xl font-bold">{count}</div>
-                        <div className="text-[9px] text-[var(--ds-text-subtlest,#8C8C8C)] mt-0.5">{matrixLabels[rowIdx][colIdx]}</div>
+                        <div className="text-[9px] text-[var(--ds-text-subtlest)] mt-0.5">{matrixLabels[rowIdx][colIdx]}</div>
                       </div>
                     ))}
                   </>
@@ -194,8 +194,8 @@ export default function IncidentsDashboard() {
         {/* Right Column - 1/3 width */}
         <div className="space-y-6">
           {/* Status Distribution */}
-          <Card className="border-[var(--ds-border,#E8E8E8)]">
-            <CardHeader className="border-b border-[var(--ds-border,#E8E8E8)] py-4 px-5">
+          <Card className="border-[var(--ds-border)]">
+            <CardHeader className="border-b border-[var(--ds-border)] py-4 px-5">
               <CardTitle className="text-[15px] font-semibold">Status Distribution</CardTitle>
             </CardHeader>
             <CardContent className="p-5">
@@ -203,36 +203,36 @@ export default function IncidentsDashboard() {
                 {/* Donut Chart */}
                 <div className="relative w-[120px] h-[120px]">
                   <svg viewBox="0 0 120 120" className="w-full h-full">
-                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--ds-border,#E8E8E8)" strokeWidth="16" />
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--ds-border)" strokeWidth="16" />
                     <circle
-                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-background-information-bold,#1565C0)" strokeWidth="16"
+                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-background-information-bold)" strokeWidth="16"
                       strokeDasharray="51 263" strokeDashoffset="0"
                       transform="rotate(-90 60 60)"
                     />
                     <circle
-                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-text-discovery,#7B1FA2)" strokeWidth="16"
+                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-text-discovery)" strokeWidth="16"
                       strokeDasharray="32 282" strokeDashoffset="-51"
                       transform="rotate(-90 60 60)"
                     />
                     <circle
-                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-text-warning,#E65100)" strokeWidth="16"
+                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-text-warning)" strokeWidth="16"
                       strokeDasharray="17 297" strokeDashoffset="-83"
                       transform="rotate(-90 60 60)"
                     />
                     <circle
-                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-text-success,#2E7D32)" strokeWidth="16"
+                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-text-success)" strokeWidth="16"
                       strokeDasharray="96 218" strokeDashoffset="-100"
                       transform="rotate(-90 60 60)"
                     />
                     <circle
-                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-text-subtlest,#616161)" strokeWidth="16"
+                      cx="60" cy="60" r="50" fill="none" stroke="var(--ds-text-subtlest)" strokeWidth="16"
                       strokeDasharray="118 196" strokeDashoffset="-196"
                       transform="rotate(-90 60 60)"
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-2xl font-bold">{total}</span>
-                    <span className="text-[10px] text-[var(--ds-text-subtlest,#8C8C8C)]">Total</span>
+                    <span className="text-[10px] text-[var(--ds-text-subtlest)]">Total</span>
                   </div>
                 </div>
                 
@@ -251,8 +251,8 @@ export default function IncidentsDashboard() {
           </Card>
 
           {/* Team Performance */}
-          <Card className="border-[var(--ds-border,#E8E8E8)]">
-            <CardHeader className="border-b border-[var(--ds-border,#E8E8E8)] py-4 px-5">
+          <Card className="border-[var(--ds-border)]">
+            <CardHeader className="border-b border-[var(--ds-border)] py-4 px-5">
               <CardTitle className="text-[15px] font-semibold">Team Performance</CardTitle>
             </CardHeader>
             <CardContent className="p-5">
@@ -263,16 +263,16 @@ export default function IncidentsDashboard() {
                     className="flex items-center gap-3 p-3 rounded-lg"
                     style={{ backgroundColor: 'var(--ds-background-information, rgba(37, 99, 235, 0.1))' }}
                   >
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]">
                       {member.initials}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-[13px] truncate">{member.name}</div>
-                      <div className="text-[11px] text-[var(--ds-text-subtlest,#8C8C8C)]">{member.role}</div>
+                      <div className="text-[11px] text-[var(--ds-text-subtlest)]">{member.role}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-bold text-[var(--ds-text-success,#0d9488)]">{member.resolved}</div>
-                      <div className="text-[10px] text-[var(--ds-text-subtlest,#8C8C8C)]">Resolved</div>
+                      <div className="text-lg font-bold text-[var(--ds-text-success)]">{member.resolved}</div>
+                      <div className="text-[10px] text-[var(--ds-text-subtlest)]">Resolved</div>
                     </div>
                   </div>
                 ))}

@@ -183,9 +183,9 @@ function IncidentHealthSection({
                   }} 
                 />
                 <Legend wrapperStyle={{ fontSize: 'var(--ds-font-size-100)' }} />
-                <Line type="monotone" dataKey="logged" stroke="var(--ds-text-brand, #3b82f6)" strokeWidth={2} name="Logged" dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="closed" stroke="var(--ds-chart-teal-bold, #0d9488)" strokeWidth={2} name="Closed" dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="converted" stroke="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" strokeWidth={2} name="Converted" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="logged" stroke="var(--ds-text-brand)" strokeWidth={2} name="Logged" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="closed" stroke="var(--ds-chart-teal-bold)" strokeWidth={2} name="Closed" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="converted" stroke="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" strokeWidth={2} name="Converted" dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -268,9 +268,9 @@ function CAPEffectivenessSection({
   onDrillDown: (filter: string) => void;
 }) {
   const data = [
-    { name: 'Approved', value: effectiveness.approved, color: 'var(--ds-chart-teal-bold, #0d9488)' },
-    { name: 'Rejected', value: effectiveness.rejected, color: 'var(--ds-text-danger, #ef4444)' },
-    { name: 'Vetoed', value: effectiveness.vetoed, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
+    { name: 'Approved', value: effectiveness.approved, color: 'var(--ds-chart-teal-bold)' },
+    { name: 'Rejected', value: effectiveness.rejected, color: 'var(--ds-text-danger)' },
+    { name: 'Vetoed', value: effectiveness.vetoed, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' },
   ];
 
   const formatTime = (minutes: number) => {

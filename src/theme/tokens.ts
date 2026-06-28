@@ -35,9 +35,9 @@ export const spacing = {
 export const surface = {
   // App backgrounds (FIX A: Surface hierarchy)
   app: 'hsl(var(--background))',
-  sunken: 'hsl(var(--surface-sunken))',         // var(--ds-surface-sunken, #F7F8F9) - sunken containers
-  raised: 'hsl(var(--surface-raised))',         // var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) - raised cards
-  backdrop: 'hsl(var(--surface-backdrop))',     // var(--ds-background-neutral-subtle, #F7F8F9) - dense container backdrop
+  sunken: 'hsl(var(--surface-sunken))',         // var(--ds-surface-sunken) - sunken containers
+  raised: 'hsl(var(--surface-raised))',         // var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))) - raised cards
+  backdrop: 'hsl(var(--surface-backdrop))',     // var(--ds-background-neutral-subtle) - dense container backdrop
   overlay: 'hsl(var(--popover))',
   
   // Interactive surfaces
@@ -80,7 +80,7 @@ export const text = {
   link: 'hsl(var(--brand-primary))',
   linkHover: 'hsl(var(--brand-primary-hover))',
   // Atlaskit blue.bolder — replaces Golden Hour hsl(35 46% 50%)
-  linkPressed: 'var(--ds-link-pressed, #0747A6)',
+  linkPressed: 'var(--ds-link-pressed)',
   
   // Status text
   success: 'hsl(var(--success))',
@@ -95,7 +95,7 @@ export const text = {
 export const border = {
   // Structural borders
   default: 'hsl(var(--border))',
-  // Atlaskit color.border (N40 var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) @ 50% alpha — replaces hsl(218 14% 91% / 0.5)
+  // Atlaskit color.border (N40 var(--cp-lozenge-grey-bg, var(--cp-border-neutral))) @ 50% alpha — replaces hsl(218 14% 91% / 0.5)
   subtle: 'rgba(223, 225, 230, 0.5)',
   strong: 'hsl(var(--neutral-400))',
   
@@ -346,11 +346,11 @@ export const status = {
 // BLUE + TEAL CHART PALETTE
 // ============================================
 export const chartPalette = {
-  expert: 'var(--ds-link, #2563eb)',      // Blue - Level 5
-  advanced: 'var(--ds-chart-teal-bold, #0d9488)',    // Teal - Level 4
-  intermediate: 'var(--ds-text-subtlest, #626F86)', // Gray - Level 3
-  beginner: 'var(--ds-text-disabled, #8590A2)',    // Light gray - Level 2
-  none: 'var(--ds-border, #DFE1E6)',        // Cool grey - Level 1
+  expert: 'var(--ds-link)',      // Blue - Level 5
+  advanced: 'var(--ds-chart-teal-bold)',    // Teal - Level 4
+  intermediate: 'var(--ds-text-subtlest)', // Gray - Level 3
+  beginner: 'var(--ds-text-disabled)',    // Light gray - Level 2
+  none: 'var(--ds-border)',        // Cool grey - Level 1
 } as const;
 
 // ============================================
@@ -358,41 +358,41 @@ export const chartPalette = {
 // Use these for direct hex references in components
 // ============================================
 export const darkMode = {
-  pageBg: 'var(--ds-text, #172B4D)',
-  cardSurface: 'var(--ds-text, #172B4D)',
-  hoverSurface: 'var(--ds-text, #172B4D)',
-  activePressed: 'var(--ds-text, #172B4D)',
-  sidebarBg: 'var(--ds-text, #172B4D)',
-  modalOverlay: 'var(--ds-text, #172B4D)',
-  borderDefault: 'var(--ds-background-neutral, #F1F2F4)',
-  borderSubtle: 'var(--ds-text, #172B4D)',
-  borderMedium: 'var(--ds-text-subtle, #44546F)',
-  textPrimary: 'var(--ds-background-neutral, #F1F2F4)',
-  textSecondary: 'var(--ds-text-subtlest, #626F86)',
-  textMuted: 'var(--ds-text-subtlest, #626F86)',
-  textTertiary: 'var(--ds-text-subtlest, #626F86)',
-  placeholder: 'var(--ds-text-subtlest, #626F86)',
+  pageBg: 'var(--ds-text)',
+  cardSurface: 'var(--ds-text)',
+  hoverSurface: 'var(--ds-text)',
+  activePressed: 'var(--ds-text)',
+  sidebarBg: 'var(--ds-text)',
+  modalOverlay: 'var(--ds-text)',
+  borderDefault: 'var(--ds-background-neutral)',
+  borderSubtle: 'var(--ds-text)',
+  borderMedium: 'var(--ds-text-subtle)',
+  textPrimary: 'var(--ds-background-neutral)',
+  textSecondary: 'var(--ds-text-subtlest)',
+  textMuted: 'var(--ds-text-subtlest)',
+  textTertiary: 'var(--ds-text-subtlest)',
+  placeholder: 'var(--ds-text-subtlest)',
 } as const;
 
 // ============================================
 // CATALYST V12 LIGHT MODE — HEX PALETTE
 // ============================================
 export const catalyst = {
-  pageBg: 'var(--ds-surface, #FFFFFF)',
-  cardSurface: 'var(--ds-surface, #FFFFFF)',
-  bgOverlay: 'var(--ds-surface-sunken, #F8FAFC)',
-  bgInset: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))',
-  textPrimary: 'var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D)))',
-  textSecondary: 'var(--ds-text-subtle, #44546F)',
-  textMuted: 'var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2)))',
-  textDisabled: 'var(--ds-border, #DFE1E6)',
-  borderDefault: 'var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6)))',
-  borderStrong: 'var(--ds-border, #DFE1E6)',
-  borderFocus: 'var(--ds-link, #2563eb)',
-  primaryBlue: 'var(--ds-link, #2563eb)',
-  primaryBlueHover: 'var(--ds-link-pressed, #1d4ed8)',
-  aiPurple: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))',
-  aiTeal: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))',
+  pageBg: 'var(--ds-surface)',
+  cardSurface: 'var(--ds-surface)',
+  bgOverlay: 'var(--ds-surface-sunken)',
+  bgInset: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))',
+  textPrimary: 'var(--cp-ink-1, var(--cp-ink-1, var(--ds-text)))',
+  textSecondary: 'var(--ds-text-subtle)',
+  textMuted: 'var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled)))',
+  textDisabled: 'var(--ds-border)',
+  borderDefault: 'var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
+  borderStrong: 'var(--ds-border)',
+  borderFocus: 'var(--ds-link)',
+  primaryBlue: 'var(--ds-link)',
+  primaryBlueHover: 'var(--ds-link-pressed)',
+  aiPurple: 'var(--cp-purple-60, var(--ds-background-discovery-bold))',
+  aiTeal: 'var(--cp-teal-60, var(--ds-chart-teal-bold))',
 } as const;
 
 // ============================================
@@ -402,9 +402,9 @@ export const catalyst = {
 // Green = Done / Approved / Completed
 // ============================================
 export const statusLozenge = {
-  grey:  { lightBg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', lightText: 'var(--ds-text, #253858)', darkBg: 'var(--ds-background-neutral, #F1F2F4)', darkText: 'var(--ds-text-subtlest, #626F86)' },
-  blue:  { lightBg: 'var(--ds-background-information, #E9F2FF)', lightText: 'var(--ds-link-pressed, #0747A6)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))', darkText: 'var(--ds-background-information-bold, #0C66E4)' },
-  green: { lightBg: 'var(--ds-background-success, #DFFCF0)', lightText: 'var(--ds-text-success, #006644)', darkBg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))', darkText: 'var(--ds-background-success, #DFFCF0)' },
+  grey:  { lightBg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', lightText: 'var(--ds-text)', darkBg: 'var(--ds-background-neutral)', darkText: 'var(--ds-text-subtlest)' },
+  blue:  { lightBg: 'var(--ds-background-information)', lightText: 'var(--ds-link-pressed)', darkBg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))', darkText: 'var(--ds-background-information-bold)' },
+  green: { lightBg: 'var(--ds-background-success)', lightText: 'var(--ds-text-success)', darkBg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))', darkText: 'var(--ds-background-success)' },
 } as const;
 
 // ============================================

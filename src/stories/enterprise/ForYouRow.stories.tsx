@@ -39,7 +39,7 @@ export const BugRow: Story = { args: { item: MOCK_BUG, onSelect: () => {}, onTog
 
 export const MultipleRows: Story = {
   render: () => (
-    <div style={{ maxWidth: 800, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden' }}>
+    <div style={{ maxWidth: 800, border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden' }}>
       <ForYouRow item={MOCK_ITEM} onSelect={() => {}} onToggleStar={() => {}} />
       <ForYouRow item={MOCK_EPIC} onSelect={() => {}} onToggleStar={() => {}} />
       <ForYouRow item={MOCK_BUG} onSelect={() => {}} onToggleStar={() => {}} />

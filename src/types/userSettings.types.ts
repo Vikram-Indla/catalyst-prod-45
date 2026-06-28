@@ -143,7 +143,7 @@ export const DEFAULT_EMAIL_PREFERENCES: EmailPreferences = {
 
 export const DEFAULT_THEME_PREFERENCES: ThemePreferences = {
   themeMode: 'light',
-  accentColor: 'var(--cp-workstream-catalyst-primary, #2563eb)',
+  accentColor: 'var(--cp-workstream-catalyst-primary)',
   fontSize: 'medium',
   density: 'comfortable',
   sidebarDefault: 'expanded',
@@ -181,11 +181,11 @@ export const DEFAULT_APP_PREFERENCES: AppPreferences = {
 };
 
 export const ACCENT_COLOR_PRESETS = [
-  { name: 'Catalyst Blue', value: 'var(--cp-workstream-catalyst-primary, #2563eb)' },
-  { name: 'Teal', value: 'var(--ds-chart-teal-bold, #0d9488)' },
-  { name: 'Green', value: 'var(--ds-background-success-bold, #059669)' },
-  { name: 'Purple', value: 'var(--ds-background-discovery-bold, #8b5cf6)' },
-  { name: 'Red', value: 'var(--ds-background-danger-bold, #ef4444)' },
+  { name: 'Catalyst Blue', value: 'var(--cp-workstream-catalyst-primary)' },
+  { name: 'Teal', value: 'var(--ds-chart-teal-bold)' },
+  { name: 'Green', value: 'var(--ds-background-success-bold)' },
+  { name: 'Purple', value: 'var(--ds-background-discovery-bold)' },
+  { name: 'Red', value: 'var(--ds-background-danger-bold)' },
 ];
 
 export const TIME_ZONES = [

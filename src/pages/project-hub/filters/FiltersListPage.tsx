@@ -56,7 +56,7 @@ interface FiltersListPageProps {
 }
 
 
-const ICON_COLOR = 'var(--ds-icon, #44546F)';
+const ICON_COLOR = 'var(--ds-icon)';
 
 // ── Permission entry builders ───────────────────────────────────────────────
 // Build PermissionEntry[] from Jira share/edit permissions or Catalyst-native

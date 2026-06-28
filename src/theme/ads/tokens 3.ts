@@ -69,12 +69,12 @@ export interface AdsToken {
  */
 export const adsTokens = {
   bg: {
-    page:     { cp: '--cp-bg-page',     light: 'var(--ds-surface, #FFFFFF)', dark: 'var(--ds-surface, #FFFFFF)', atlaskit: 'color.background.neutral' } satisfies AdsToken,
+    page:     { cp: '--cp-bg-page',     light: 'var(--ds-surface)', dark: 'var(--ds-surface)', atlaskit: 'color.background.neutral' } satisfies AdsToken,
     /**
      * hubPage — outer page background for <AtlaskitPageShell>.
      *
      * Apr 19, 2026 (V3 — White Canvas):
-     *   Light mode moved from Jira-blue var(--ds-background-selected, #E9F2FE) to var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) on Vikram's
+     *   Light mode moved from Jira-blue var(--ds-background-selected) to var(--cp-bg-elevated, var(--cp-bg-elevated)) on Vikram's
      *   decision (dashboard read as a "grey/blue tint" next to backlog;
      *   backlog's mostly-white content had been masking the same frame).
      *   Decision: flatten project-hub surfaces to a single white canvas.
@@ -82,40 +82,40 @@ export const adsTokens = {
      *   scroll clipping and layout continue working — they just become
      *   white-on-white and visually invisible.
      *
-     *   Pre-V3 (historical): var(--ds-background-selected, #E9F2FE) — Jira BAU list DOM rgb(233,242,254)
+     *   Pre-V3 (historical): var(--ds-background-selected) — Jira BAU list DOM rgb(233,242,254)
      *   measured 2026-04-18.
      *
-     * Dark mode continues to mirror DARK MODE page bg var(--ds-text, #0A0A0A) (CLAUDE.md §18).
+     * Dark mode continues to mirror DARK MODE page bg var(--ds-text) (CLAUDE.md §18).
      */
-    hubPage:  { cp: '--cp-bg-hub-page', light: 'var(--ds-surface, #FFFFFF)', dark: 'var(--ds-surface, #FFFFFF)', atlaskit: '' } satisfies AdsToken,
-    surface:  { cp: '--cp-bg-surface',  light: 'var(--ds-surface, #FFFFFF)', dark: 'var(--ds-surface, #FFFFFF)', atlaskit: 'elevation.surface' } satisfies AdsToken,
-    overlay:  { cp: '--cp-bg-overlay',  light: 'var(--ds-surface-sunken, #F8FAFC)', dark: 'var(--ds-text, #172B4D)', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
-    inset:    { cp: '--cp-bg-inset',    light: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
-    hover:    { cp: '--cp-interact-hover',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.04))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
+    hubPage:  { cp: '--cp-bg-hub-page', light: 'var(--ds-surface)', dark: 'var(--ds-surface)', atlaskit: '' } satisfies AdsToken,
+    surface:  { cp: '--cp-bg-surface',  light: 'var(--ds-surface)', dark: 'var(--ds-surface)', atlaskit: 'elevation.surface' } satisfies AdsToken,
+    overlay:  { cp: '--cp-bg-overlay',  light: 'var(--ds-surface-sunken)', dark: 'var(--ds-text)', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
+    inset:    { cp: '--cp-bg-inset',    light: 'var(--cp-bg-sunken, var(--cp-bg-sunken))', dark: 'var(--ds-text)', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
+    hover:    { cp: '--cp-interact-hover',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.04))', dark: 'var(--ds-text, var(--ds-text))', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
     // 2026-05-01 — RCA fix for blue tint on Atlaskit Editor canvas in dark mode.
     // Previously dark = rgba(37,99,235,0.14) which painted Editor's "selected"
     // canvas state as a visible blue rectangle. ADS canonical dark value for
     // color.background.selected is #1C2B41 (atlassian.design — Jira parity).
     // Light kept at the original Catalyst tint per existing UI specs.
-    selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information, rgba(37,99,235,0.08))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.selected' } satisfies AdsToken,
-    pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.08))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
+    selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information, rgba(37,99,235,0.08))', dark: 'var(--ds-text, var(--ds-text))', atlaskit: 'color.background.selected' } satisfies AdsToken,
+    pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.08))', dark: 'var(--ds-text, var(--ds-text))', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
   },
   text: {
-    primary:   { cp: '--cp-text-primary',   light: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', dark: 'var(--ds-background-neutral, #F1F2F4)', atlaskit: 'color.text' } satisfies AdsToken,
-    secondary: { cp: '--cp-text-secondary', light: 'var(--ds-text-subtle, #44546F)', dark: 'var(--ds-text-subtlest, #626F86)', atlaskit: 'color.text.subtle' } satisfies AdsToken,
-    muted:     { cp: '--cp-text-muted',     light: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', dark: 'var(--ds-text-subtlest, #626F86)', atlaskit: 'color.text.subtlest' } satisfies AdsToken,
-    disabled:  { cp: '--cp-text-disabled',  light: 'var(--ds-border, #DFE1E6)', dark: 'var(--ds-text-subtlest, #626F86)', atlaskit: 'color.text.disabled' } satisfies AdsToken,
-    inverse:   { cp: '--cp-text-inverse',   light: 'var(--ds-surface, #FFFFFF)', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.text.inverse' } satisfies AdsToken,
+    primary:   { cp: '--cp-text-primary',   light: 'var(--cp-ink-1, var(--cp-ink-1))', dark: 'var(--ds-background-neutral)', atlaskit: 'color.text' } satisfies AdsToken,
+    secondary: { cp: '--cp-text-secondary', light: 'var(--ds-text-subtle)', dark: 'var(--ds-text-subtlest)', atlaskit: 'color.text.subtle' } satisfies AdsToken,
+    muted:     { cp: '--cp-text-muted',     light: 'var(--cp-ink-4, var(--cp-border-neutral-light))', dark: 'var(--ds-text-subtlest)', atlaskit: 'color.text.subtlest' } satisfies AdsToken,
+    disabled:  { cp: '--cp-text-disabled',  light: 'var(--ds-border)', dark: 'var(--ds-text-subtlest)', atlaskit: 'color.text.disabled' } satisfies AdsToken,
+    inverse:   { cp: '--cp-text-inverse',   light: 'var(--ds-surface)', dark: 'var(--ds-text)', atlaskit: 'color.text.inverse' } satisfies AdsToken,
   },
   border: {
-    default: { cp: '--cp-border-default', light: 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.border' } satisfies AdsToken,
-    subtle:  { cp: '--cp-border-subtle',  light: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.border.accent.gray' } satisfies AdsToken,
-    strong:  { cp: '--cp-border-strong',  light: 'var(--ds-border, #DFE1E6)', dark: 'var(--ds-text-subtle, #44546F)', atlaskit: 'color.border.bold' } satisfies AdsToken,
-    focus:   { cp: '--cp-border-focus',   light: 'var(--ds-link, #2563eb)', dark: 'var(--ds-link, #2563eb)', atlaskit: 'color.border.focused' } satisfies AdsToken,
+    default: { cp: '--cp-border-default', light: 'var(--cp-border, var(--cp-bg-sunken))', dark: 'var(--ds-text)', atlaskit: 'color.border' } satisfies AdsToken,
+    subtle:  { cp: '--cp-border-subtle',  light: 'var(--cp-bg-sunken, var(--cp-bg-sunken))', dark: 'var(--ds-text)', atlaskit: 'color.border.accent.gray' } satisfies AdsToken,
+    strong:  { cp: '--cp-border-strong',  light: 'var(--ds-border)', dark: 'var(--ds-text-subtle)', atlaskit: 'color.border.bold' } satisfies AdsToken,
+    focus:   { cp: '--cp-border-focus',   light: 'var(--ds-link)', dark: 'var(--ds-link)', atlaskit: 'color.border.focused' } satisfies AdsToken,
   },
   brand: {
-    primary:       { cp: '--cp-primary-60',       light: 'var(--ds-link, #2563eb)', dark: 'var(--ds-link, #2563eb)', atlaskit: 'color.background.brand.bold' } satisfies AdsToken,
-    primaryHover:  { cp: '--cp-primary-70',       light: 'var(--ds-link-pressed, #1d4ed8)', dark: 'var(--ds-link-pressed, #1d4ed8)', atlaskit: 'color.background.brand.bold.hovered' } satisfies AdsToken,
+    primary:       { cp: '--cp-primary-60',       light: 'var(--ds-link)', dark: 'var(--ds-link)', atlaskit: 'color.background.brand.bold' } satisfies AdsToken,
+    primaryHover:  { cp: '--cp-primary-70',       light: 'var(--ds-link-pressed)', dark: 'var(--ds-link-pressed)', atlaskit: 'color.background.brand.bold.hovered' } satisfies AdsToken,
   },
   /**
    * StatusLozenge — the 3-colour guardrail (CLAUDE.md §5).
@@ -123,26 +123,26 @@ export const adsTokens = {
    * in a StatusLozenge is a bug.
    */
   status: {
-    grey:  { bg: { cp: '--cp-lozenge-grey-bg',  light: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', dark: 'var(--ds-text, #172B4D)', atlaskit: '' } satisfies AdsToken,
-             fg: { cp: '--cp-lozenge-grey-fg',  light: 'var(--ds-text, #253858)', dark: 'var(--ds-background-neutral, #F1F2F4)', atlaskit: '' } satisfies AdsToken },
-    blue:  { bg: { cp: '--cp-lozenge-blue-bg',  light: 'var(--ds-background-information, #E9F2FF)', dark: '#1A3A6A', atlaskit: '' } satisfies AdsToken,
-             fg: { cp: '--cp-lozenge-blue-fg',  light: 'var(--ds-link-pressed, #0747A6)', dark: '#DDEBFF', atlaskit: '' } satisfies AdsToken },
-    green: { bg: { cp: '--cp-lozenge-green-bg', light: 'var(--ds-background-success, #DFFCF0)', dark: '#1C3D2E', atlaskit: '' } satisfies AdsToken,
-             fg: { cp: '--cp-lozenge-green-fg', light: 'var(--ds-text-success, #006644)', dark: '#B6F2D6', atlaskit: '' } satisfies AdsToken },
+    grey:  { bg: { cp: '--cp-lozenge-grey-bg',  light: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))', dark: 'var(--ds-text)', atlaskit: '' } satisfies AdsToken,
+             fg: { cp: '--cp-lozenge-grey-fg',  light: 'var(--ds-text)', dark: 'var(--ds-background-neutral)', atlaskit: '' } satisfies AdsToken },
+    blue:  { bg: { cp: '--cp-lozenge-blue-bg',  light: 'var(--ds-background-information)', dark: '#1A3A6A', atlaskit: '' } satisfies AdsToken,
+             fg: { cp: '--cp-lozenge-blue-fg',  light: 'var(--ds-link-pressed)', dark: '#DDEBFF', atlaskit: '' } satisfies AdsToken },
+    green: { bg: { cp: '--cp-lozenge-green-bg', light: 'var(--ds-background-success)', dark: '#1C3D2E', atlaskit: '' } satisfies AdsToken,
+             fg: { cp: '--cp-lozenge-green-fg', light: 'var(--ds-text-success)', dark: '#B6F2D6', atlaskit: '' } satisfies AdsToken },
   },
   /**
    * Work-item type icons (CLAUDE.md §11) — canonical SVG colours. NEVER use
    * these for anything else; they are structural identifiers.
    */
   workItemType: {
-    bug:         { cp: '--cp-wi-bug',         light: 'var(--ds-background-danger-bold, #C9372C)', dark: 'var(--ds-background-danger-bold, #C9372C)', atlaskit: '' } satisfies AdsToken,
-    story:       { cp: '--cp-wi-story',       light: 'var(--ds-background-success-bold, #1F845A)', dark: 'var(--ds-background-success-bold, #1F845A)', atlaskit: '' } satisfies AdsToken,
-    task:        { cp: '--cp-wi-task',        light: 'var(--ds-background-information-bold, #1D7AFC)', dark: 'var(--ds-background-information-bold, #1D7AFC)', atlaskit: '' } satisfies AdsToken,
-    epic:        { cp: '--cp-wi-epic',        light: 'var(--ds-background-discovery-bold, #904EE2)', dark: 'var(--ds-background-discovery-bold, #904EE2)', atlaskit: '' } satisfies AdsToken,
-    subtask:     { cp: '--cp-wi-subtask',     light: 'var(--ds-background-information-bold, #1D7AFC)', dark: 'var(--ds-background-information-bold, #1D7AFC)', atlaskit: '' } satisfies AdsToken,
-    newFeature:  { cp: '--cp-wi-new-feature', light: 'var(--ds-background-success-bold, #1F845A)', dark: 'var(--ds-background-success-bold, #1F845A)', atlaskit: '' } satisfies AdsToken,
-    improvement: { cp: '--cp-wi-improvement', light: 'var(--ds-background-information-bold, #1D7AFC)', dark: 'var(--ds-background-information-bold, #1D7AFC)', atlaskit: '' } satisfies AdsToken,
-    incident:    { cp: '--cp-wi-incident',    light: 'var(--ds-background-danger-bold, #C9372C)', dark: 'var(--ds-background-danger-bold, #C9372C)', atlaskit: '' } satisfies AdsToken,
+    bug:         { cp: '--cp-wi-bug',         light: 'var(--ds-background-danger-bold)', dark: 'var(--ds-background-danger-bold)', atlaskit: '' } satisfies AdsToken,
+    story:       { cp: '--cp-wi-story',       light: 'var(--ds-background-success-bold)', dark: 'var(--ds-background-success-bold)', atlaskit: '' } satisfies AdsToken,
+    task:        { cp: '--cp-wi-task',        light: 'var(--ds-background-information-bold)', dark: 'var(--ds-background-information-bold)', atlaskit: '' } satisfies AdsToken,
+    epic:        { cp: '--cp-wi-epic',        light: 'var(--ds-background-discovery-bold)', dark: 'var(--ds-background-discovery-bold)', atlaskit: '' } satisfies AdsToken,
+    subtask:     { cp: '--cp-wi-subtask',     light: 'var(--ds-background-information-bold)', dark: 'var(--ds-background-information-bold)', atlaskit: '' } satisfies AdsToken,
+    newFeature:  { cp: '--cp-wi-new-feature', light: 'var(--ds-background-success-bold)', dark: 'var(--ds-background-success-bold)', atlaskit: '' } satisfies AdsToken,
+    improvement: { cp: '--cp-wi-improvement', light: 'var(--ds-background-information-bold)', dark: 'var(--ds-background-information-bold)', atlaskit: '' } satisfies AdsToken,
+    incident:    { cp: '--cp-wi-incident',    light: 'var(--ds-background-danger-bold)', dark: 'var(--ds-background-danger-bold)', atlaskit: '' } satisfies AdsToken,
   },
 } as const;
 

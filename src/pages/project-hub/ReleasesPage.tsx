@@ -295,7 +295,7 @@ export function ReleasesPage() {
     border: 'none',
     background: 'transparent',
     borderRadius: 3,
-    color: 'var(--ds-text-subtle, #42526E)',
+    color: 'var(--ds-text-subtle)',
     cursor: 'pointer',
   };
 
@@ -388,12 +388,12 @@ export function ReleasesPage() {
             fontSize: 'var(--ds-font-size-400, 24px)',
             fontWeight: 600,
             margin: 0,
-            color: 'var(--ds-text, #292A2E)',
+            color: 'var(--ds-text)',
           }}
         >
           Releases
         </h1>
-        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #505258)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
           This space has {releases.filter((r) => productProjectIds.has(r.project_id)).length} releases
         </span>
       </div>
@@ -458,7 +458,7 @@ export function ReleasesPage() {
           style={{
             padding: '48px 24px',
             textAlign: 'center',
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest)',
           }}
         >
           No releases match this filter.

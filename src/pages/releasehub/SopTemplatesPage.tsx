@@ -17,10 +17,10 @@ import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  surface: 'var(--ds-surface)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
@@ -58,9 +58,9 @@ export default function SopTemplatesPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
         <button
           onClick={() => setShowCreate(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
         >
-          <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New template
+          <Plus size={14} style={{ color: 'var(--ds-text-inverse)' }} /> New template
         </button>
       </div>
 

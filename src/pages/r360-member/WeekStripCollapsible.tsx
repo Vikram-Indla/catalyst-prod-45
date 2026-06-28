@@ -45,7 +45,7 @@ export function WeekStripCollapsible({
   const dayCells = useMemo(() => periodType === 'weekly' ? getSaudiWorkDays(period.start) : getWeekCells(period.start), [periodType, period.start]);
 
   return (
-    <div style={{ padding: '10px 0', borderBottom: `1px solid ${'var(--ds-surface-sunken, #F8FAFC)'}` }}>
+    <div style={{ padding: '10px 0', borderBottom: `1px solid ${'var(--ds-surface-sunken)'}` }}>
       {/* Top toolbar: Toggle + Date + Mode Badge + Nav arrows */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' as const }}>
         {/* Prominent Period Toggle */}
@@ -54,25 +54,25 @@ export function WeekStripCollapsible({
           <button className={periodType === 'monthly' ? 'active' : ''} onClick={() => onPeriodTypeChange('monthly')}>Monthly</button>
         </div>
 
-        <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}><Calendar size={16} color="currentColor" /> {period.label}</span>
-        <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{period.range}</span>
+        <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' }} />
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}><Calendar size={16} color="currentColor" /> {period.label}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>{period.range}</span>
 
         {/* Mode Badge */}
         <span className={`r3-mode-badge ${isLive ? 'live' : 'snapshot'}`}>
           {isLive ? 'Live' : 'Snapshot'}
         </span>
 
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(-1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-surface)', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(-1)}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-surface)'; }}
         >{'\u2039'}</button>
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-surface)', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(1)}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-surface)'; }}
         >{'\u203A'}</button>
 
-        <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', margin: '0 4px' }} />
+        <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', margin: '0 4px' }} />
         {/* Status filter tabs */}
         {([
           { key: null, label: `All (${counts.all})` },
@@ -85,7 +85,7 @@ export function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all 120ms ease',
               background: isActive ? 'var(--ds-background-information, rgba(37,99,235,0.10))' : 'transparent',
-              color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--ds-text-subtlest, #626F86)'),
+              color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--ds-text-subtlest)'),
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}

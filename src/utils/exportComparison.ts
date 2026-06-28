@@ -108,18 +108,18 @@ async function exportAsPdf(releases: ComparedRelease[], generatedAt: string): Pr
       <title>Release Comparison Report</title>
       <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: var(--ds-text, #172B4D); border-bottom: 2px solid var(--ds-background-information-bold, #3b82f6); padding-bottom: 10px; }
-        .generated { color: var(--ds-text-subtlest, #626F86); font-size: 12px; margin-bottom: 20px; }
+        h1 { color: var(--ds-text); border-bottom: 2px solid var(--ds-background-information-bold); padding-bottom: 10px; }
+        .generated { color: var(--ds-text-subtlest); font-size: 12px; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: var(--ds-surface-sunken, #F7F8F9); color: var(--ds-text-subtle, #44546F); text-align: left; padding: 12px 8px; border: 1px solid var(--cp-bg-sunken, #e2e8f0); }
-        td { padding: 10px 8px; border: 1px solid var(--cp-bg-sunken, #e2e8f0); }
-        .health-healthy { background: var(--ds-background-success, #DFFCF0); color: var(--ds-text-success, #216E4E); }
-        .health-attention { background: var(--ds-background-warning, #FFF7D6); color: var(--ds-text-warning, #974F0C); }
-        .health-at_risk { background: var(--ds-background-warning, #FFF7D6); color: var(--ds-text-danger, #AE2A19); }
-        .health-critical { background: var(--ds-background-danger, #FFECEB); color: var(--ds-text-danger, #AE2A19); }
-        .metric-label { font-weight: 600; color: var(--ds-text-subtle, #44546F); }
+        th { background: var(--ds-surface-sunken); color: var(--ds-text-subtle); text-align: left; padding: 12px 8px; border: 1px solid var(--cp-bg-sunken); }
+        td { padding: 10px 8px; border: 1px solid var(--cp-bg-sunken); }
+        .health-healthy { background: var(--ds-background-success); color: var(--ds-text-success); }
+        .health-attention { background: var(--ds-background-warning); color: var(--ds-text-warning); }
+        .health-at_risk { background: var(--ds-background-warning); color: var(--ds-text-danger); }
+        .health-critical { background: var(--ds-background-danger); color: var(--ds-text-danger); }
+        .metric-label { font-weight: 600; color: var(--ds-text-subtle); }
         .section { margin-top: 30px; }
-        .section-title { font-size: 16px; font-weight: 600; color: var(--cp-ink-2, var(--cp-ink-2, #334155)); margin-bottom: 10px; }
+        .section-title { font-size: 16px; font-weight: 600; color: var(--cp-ink-2, var(--cp-ink-2)); margin-bottom: 10px; }
       </style>
     </head>
     <body>

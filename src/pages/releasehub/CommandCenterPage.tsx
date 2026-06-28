@@ -41,19 +41,19 @@ import { OwnerAlignmentStrip } from '@/components/releasehub/OwnerAlignmentStrip
 import { useReleasePortfolio } from '@/hooks/useReleasePortfolio';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  brand: 'var(--ds-background-brand-bold, #0C66E4)',
-  inverse: 'var(--ds-text-inverse, #FFFFFF)',
-  danger: 'var(--ds-text-danger, #AE2A19)',
-  success: 'var(--ds-text-success, #216E4E)',
-  warning: 'var(--ds-text-warning, #A54800)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  brand: 'var(--ds-background-brand-bold)',
+  inverse: 'var(--ds-text-inverse)',
+  danger: 'var(--ds-text-danger)',
+  success: 'var(--ds-text-success)',
+  warning: 'var(--ds-text-warning)',
   hover: 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))',
   mono: 'var(--ds-font-family-code, monospace)',
 };
@@ -258,7 +258,7 @@ export default function CommandCenterPage() {
                   const urgent = (a.role ?? '').toLowerCase().includes('emergency');
                   return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: urgent ? T.danger : T.subtlest }}>{shortWait(a.waitStartedAt)}</span>;
                 })()}
-                <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border-success, #4BCE97)`, borderRadius: 4, padding: '4px 8px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5 }}>Review</button>
+                <button onClick={() => canApprove && navigate('/release-hub/sign-off-queue')} disabled={!canApprove} title={canApprove ? undefined : PERMISSION_DENIED_TOOLTIP} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.success, background: 'transparent', border: `1px solid var(--ds-border-success)`, borderRadius: 4, padding: '4px 8px', cursor: canApprove ? 'pointer' : 'not-allowed', opacity: canApprove ? 1 : 0.5 }}>Review</button>
               </div>
             </div>
           ))}

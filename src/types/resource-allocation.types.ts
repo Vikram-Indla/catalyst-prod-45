@@ -221,35 +221,35 @@ export interface TimelineGridProps {
 
 // Assignment colors (cycle through for different projects)
 export const ASSIGNMENT_COLORS: string[] = [
-  'var(--cp-workstream-catalyst-primary, #2563eb)', // Blue
-  'var(--ds-chart-teal-bold, #0d9488)', // Teal
-  'var(--ds-background-discovery-bold, #7C3AED)', // Purple
-  'var(--ds-background-warning-bold, #E2B203)', // Orange
-  'var(--ds-background-accent-magenta-bolder, #BE185D)', // Pink
-  'var(--quality-high, #059669)', // Emerald
-  'var(--ds-background-discovery-bold, #8b5cf6)', // Violet
+  'var(--cp-workstream-catalyst-primary)', // Blue
+  'var(--ds-chart-teal-bold)', // Teal
+  'var(--ds-background-discovery-bold)', // Purple
+  'var(--ds-background-warning-bold)', // Orange
+  'var(--ds-background-accent-magenta-bolder)', // Pink
+  'var(--quality-high)', // Emerald
+  'var(--ds-background-discovery-bold)', // Violet
 ];
 
 // Named colors for legacy compat
 export const ASSIGNMENT_COLOR_MAP: Record<string, string> = {
-  primary: 'var(--cp-workstream-catalyst-primary, #2563eb)',
-  teal: 'var(--ds-chart-teal-bold, #0d9488)',
-  orange: 'var(--ds-background-warning-bold, #E2B203)',
-  purple: 'var(--ds-background-discovery-bold, #7C3AED)',
-  pink: 'var(--ds-background-accent-magenta-bolder, #BE185D)',
-  emerald: 'var(--quality-high, #059669)',
-  violet: 'var(--ds-background-discovery-bold, #8b5cf6)',
+  primary: 'var(--cp-workstream-catalyst-primary)',
+  teal: 'var(--ds-chart-teal-bold)',
+  orange: 'var(--ds-background-warning-bold)',
+  purple: 'var(--ds-background-discovery-bold)',
+  pink: 'var(--ds-background-accent-magenta-bolder)',
+  emerald: 'var(--quality-high)',
+  violet: 'var(--ds-background-discovery-bold)',
 };
 
 // Department gradients for avatars
 export const DEPARTMENT_GRADIENTS: Record<string, string> = {
-  Delivery: 'linear-gradient(145deg, var(--ds-background-information-bold, #3b82f6), var(--cp-workstream-catalyst-primary, #2563eb))',
-  Product: 'linear-gradient(145deg, var(--ds-background-discovery-bold, #8b5cf6), var(--ds-background-discovery-bold, #7C3AED))',
-  Operations: 'linear-gradient(145deg, var(--ds-background-warning-bold, #f97316), var(--ds-background-warning-bold, #E2B203))',
-  'Technical Support': 'linear-gradient(145deg, var(--ds-background-accent-teal-bolder, #14b8a6), var(--ds-chart-teal-bold, #0d9488))',
-  Support: 'linear-gradient(145deg, var(--ds-background-accent-teal-bolder, #14b8a6), var(--ds-chart-teal-bold, #0d9488))',
-  Engineering: 'linear-gradient(145deg, var(--ds-icon-information, #1D7AFC), var(--ds-link, #0C66E4))',
-  Design: 'linear-gradient(145deg, var(--ds-background-accent-magenta-bolder, #ec4899), var(--ds-background-accent-magenta-bolder, #BE185D))',
+  Delivery: 'linear-gradient(145deg, var(--ds-background-information-bold), var(--cp-workstream-catalyst-primary))',
+  Product: 'linear-gradient(145deg, var(--ds-background-discovery-bold), var(--ds-background-discovery-bold))',
+  Operations: 'linear-gradient(145deg, var(--ds-background-warning-bold), var(--ds-background-warning-bold))',
+  'Technical Support': 'linear-gradient(145deg, var(--ds-background-accent-teal-bolder), var(--ds-chart-teal-bold))',
+  Support: 'linear-gradient(145deg, var(--ds-background-accent-teal-bolder), var(--ds-chart-teal-bold))',
+  Engineering: 'linear-gradient(145deg, var(--ds-icon-information), var(--ds-link))',
+  Design: 'linear-gradient(145deg, var(--ds-background-accent-magenta-bolder), var(--ds-background-accent-magenta-bolder))',
 };
 
 // Get gradient for department (with fallback)

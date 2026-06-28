@@ -14,28 +14,28 @@ const TYPE_SCALE = [
 function TypographyScale() {
   return (
     <div style={{ padding: 24, fontFamily: 'Atlassian Sans, -apple-system, sans-serif' }}>
-      <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: '0 0 24px' }}>
+      <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text)', margin: '0 0 24px' }}>
         Type Scale
       </h1>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ borderBottom: '2px solid var(--ds-border, #DFE1E6)', textAlign: 'left' }}>
-            <th style={{ padding: '8px 16px 8px 0', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)' }}>Spec</th>
-            <th style={{ padding: '8px 16px 8px 0', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)' }}>Role</th>
-            <th style={{ padding: '8px 0', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)' }}>Sample</th>
+          <tr style={{ borderBottom: '2px solid var(--ds-border)', textAlign: 'left' }}>
+            <th style={{ padding: '8px 16px 8px 0', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle)' }}>Spec</th>
+            <th style={{ padding: '8px 16px 8px 0', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle)' }}>Role</th>
+            <th style={{ padding: '8px 0', fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle)' }}>Sample</th>
           </tr>
         </thead>
         <tbody>
           {TYPE_SCALE.map((row, i) => (
-            <tr key={i} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-              <td style={{ padding: '12px 16px 12px 0', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text-subtlest, #6B778C)', whiteSpace: 'nowrap' }}>
+            <tr key={i} style={{ borderBottom: '1px solid var(--ds-border)' }}>
+              <td style={{ padding: '12px 16px 12px 0', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
                 {row.size}px / {row.weight}
               </td>
-              <td style={{ padding: '12px 16px 12px 0', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #42526E)' }}>
+              <td style={{ padding: '12px 16px 12px 0', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                 {row.label}
               </td>
               <td style={{ padding: '12px 0' }}>
-                <span style={{ fontSize: row.size, fontWeight: row.weight, color: 'var(--ds-text, #172B4D)' }}>
+                <span style={{ fontSize: row.size, fontWeight: row.weight, color: 'var(--ds-text)' }}>
                   {row.sample}
                 </span>
               </td>

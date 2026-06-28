@@ -84,18 +84,18 @@ export interface DaySummary {
 
 // Status color mapping using Catalyst V5 colors
 export const STATUS_CALENDAR_COLORS: Record<CalendarEventStatus, { bg: string; border: string; text: string }> = {
-  passed: { bg: 'bg-[var(--ds-background-success, #DCFFF1)]', border: 'border-[var(--ds-chart-teal-bold, #0d9488)]', text: 'text-[var(--ds-chart-teal-bold, #0d9488)]' },
-  failed: { bg: 'bg-[var(--ds-background-danger, #FFECEB)]', border: 'border-[var(--ds-background-danger-bold, #ef4444)]', text: 'text-[var(--ds-background-danger-bold, #ef4444)]' },
-  blocked: { bg: 'bg-[var(--ds-background-warning, #FFF7D6)]', border: 'border-[var(--ds-background-warning-bold, #d97706)]', text: 'text-[var(--ds-background-warning-bold, #d97706)]' },
-  in_progress: { bg: 'bg-[var(--ds-background-information, #E9F2FF)]', border: 'border-[var(--cp-workstream-catalyst-primary, #2563eb)]', text: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]' },
-  not_started: { bg: 'bg-[var(--ds-surface-sunken, #F7F8F9)]', border: 'border-[var(--ds-border, #DFE1E6)]', text: 'text-[var(--ds-text-subtlest, #626F86)]' },
+  passed: { bg: 'bg-[var(--ds-background-success)]', border: 'border-[var(--ds-chart-teal-bold)]', text: 'text-[var(--ds-chart-teal-bold)]' },
+  failed: { bg: 'bg-[var(--ds-background-danger)]', border: 'border-[var(--ds-background-danger-bold)]', text: 'text-[var(--ds-background-danger-bold)]' },
+  blocked: { bg: 'bg-[var(--ds-background-warning)]', border: 'border-[var(--ds-background-warning-bold)]', text: 'text-[var(--ds-background-warning-bold)]' },
+  in_progress: { bg: 'bg-[var(--ds-background-information)]', border: 'border-[var(--cp-workstream-catalyst-primary)]', text: 'text-[var(--cp-workstream-catalyst-primary)]' },
+  not_started: { bg: 'bg-[var(--ds-surface-sunken)]', border: 'border-[var(--ds-border)]', text: 'text-[var(--ds-text-subtlest)]' },
 };
 
 export const PRIORITY_COLORS: Record<CalendarEventPriority, string> = {
-  critical: 'bg-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-background-danger-bold, #ef4444)]',
-  high: 'bg-[var(--ds-background-warning, #FFF7D6)] text-[var(--ds-background-warning-bold, #d97706)]',
-  medium: 'bg-[var(--ds-background-information, #E9F2FF)] text-[var(--cp-workstream-catalyst-primary, #2563eb)]',
-  low: 'bg-[var(--ds-surface-sunken, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)]',
+  critical: 'bg-[var(--ds-background-danger)] text-[var(--ds-background-danger-bold)]',
+  high: 'bg-[var(--ds-background-warning)] text-[var(--ds-background-warning-bold)]',
+  medium: 'bg-[var(--ds-background-information)] text-[var(--cp-workstream-catalyst-primary)]',
+  low: 'bg-[var(--ds-surface-sunken)] text-[var(--ds-text-subtlest)]',
 };
 
 export const DEFAULT_CALENDAR_FILTERS: CalendarFilters = {

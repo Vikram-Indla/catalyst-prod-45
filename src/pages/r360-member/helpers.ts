@@ -37,22 +37,22 @@ export function getMonthRange(offset: number) {
 // ── Priority dot color ──
 export function priorityDotColor(p: string) {
   const l = p?.toLowerCase();
-  if (l === 'highest' || l === 'critical') return 'var(--ds-text-danger, #EF4444)';
-  if (l === 'high') return 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #f97316))';
-  if (l === 'medium') return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+  if (l === 'highest' || l === 'critical') return 'var(--ds-text-danger)';
+  if (l === 'high') return 'var(--ds-background-warning-bold, var(--ds-background-warning-bold))';
+  if (l === 'medium') return 'var(--ds-text-warning, var(--cp-warning))';
+  return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
 }
 
 // ── Priority border color for board/ring cards (D-R7) ──
 export function priorityBorderColor(p: string): string {
   const l = (p || '').toLowerCase();
-  if (l === 'highest' || l === 'critical' || l === 'high') return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-  if (l === 'medium') return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+  if (l === 'highest' || l === 'critical' || l === 'high') return 'var(--ds-text-danger, var(--cp-danger))';
+  if (l === 'medium') return 'var(--ds-text-warning, var(--cp-warning))';
+  return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))';
 }
 
 // ── Mini Avatar color hashing ──
-export const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
+export const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-warning, var(--cp-warning))'];
 export function hashColor(name: string) {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);

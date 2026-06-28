@@ -140,7 +140,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
     display: 'block',
     fontSize: 'var(--ds-font-size-200)',
     fontWeight: 600,
-    color: 'var(--ds-text-subtle, #42526E)',
+    color: 'var(--ds-text-subtle)',
     marginBottom: 6,
     fontFamily: 'var(--ds-font-family-body)',
   };
@@ -151,13 +151,13 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    border: '1px solid var(--ds-border, #DFE1E6)',
+    border: '1px solid var(--ds-border)',
     borderRadius: 4,
     padding: '6px 10px',
     fontSize: 'var(--ds-font-size-400)',
     fontFamily: 'var(--ds-font-family-body)',
-    color: 'var(--ds-text, #172B4D)',
-    background: 'var(--ds-surface, #FFFFFF)',
+    color: 'var(--ds-text)',
+    background: 'var(--ds-surface)',
     boxSizing: 'border-box',
     outline: 'none',
   };
@@ -178,7 +178,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
         right: 0,
         width: 640,
         height: '100vh',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        background: 'var(--ds-surface-overlay)',
         boxShadow: '-4px 0 20px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
         zIndex: 400,
         display: 'flex',
@@ -190,7 +190,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
       <div
         style={{
           padding: '16px 24px',
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          borderBottom: '1px solid var(--ds-border)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -202,7 +202,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
             margin: 0,
             fontSize: 'var(--ds-font-size-600)',
             fontWeight: 600,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             fontFamily: 'var(--ds-font-family-body)',
           }}
         >
@@ -215,7 +215,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: 'var(--ds-text-subtle, #42526E)',
+            color: 'var(--ds-text-subtle)',
             padding: 4,
             display: 'flex',
             alignItems: 'center',
@@ -312,7 +312,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
       <div
         style={{
           padding: '16px 24px',
-          borderTop: '1px solid var(--ds-border, #DFE1E6)',
+          borderTop: '1px solid var(--ds-border)',
           display: 'flex',
           gap: 8,
           alignItems: 'center',
@@ -325,15 +325,15 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
               onClick={() => setVersionModalOpen(true)}
               style={{
                 padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
-                border: '1px solid var(--ds-border, #DFE1E6)',
-                background: 'var(--ds-surface, #FFFFFF)',
-                color: 'var(--ds-text-subtle, #42526E)', cursor: 'pointer',
+                border: '1px solid var(--ds-border)',
+                background: 'var(--ds-surface)',
+                color: 'var(--ds-text-subtle)', cursor: 'pointer',
               }}
             >
               New version
             </button>
             <span style={{
-              fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)',
+              fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)',
               marginRight: 'auto',
             }}>
               v{existingCase.current_version ?? existingCase.version ?? 1}

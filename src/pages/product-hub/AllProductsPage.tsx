@@ -821,12 +821,12 @@ export default function AllProductsPage() {
             </p>
           </div>
         ) : isLoading ? (
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)]">
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[var(--ds-surface)]">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16 }} className="animate-pulse">
-                  <div style={{ width: 24, height: 24, borderRadius: 3, background: 'var(--ds-background-neutral, var(--cp-bg-sunken, #F4F5F7))' }} />
-                  <div style={{ flex: 1, height: 14, borderRadius: 4, background: 'var(--ds-background-neutral, var(--cp-bg-sunken, #F4F5F7))', maxWidth: '60%' }} />
+                  <div style={{ width: 24, height: 24, borderRadius: 3, background: 'var(--ds-background-neutral, var(--cp-bg-sunken))' }} />
+                  <div style={{ flex: 1, height: 14, borderRadius: 4, background: 'var(--ds-background-neutral, var(--cp-bg-sunken))', maxWidth: '60%' }} />
                 </div>
               ))}
             </div>

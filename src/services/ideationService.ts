@@ -27,7 +27,7 @@ const TYPE_MAP: Record<string, IdeaType> = {
 };
 
 // ── Assignee color palette ────────────────────────────────────────
-const ASSIGNEE_COLORS = ['var(--cp-teal-60, #0D9488)', 'var(--ds-link, #2563eb)', 'var(--cp-warning, #D97706)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-danger-bold, #e11d48)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--cp-success, #16A34A)', 'var(--cp-purple-60, #7C3AED)'];
+const ASSIGNEE_COLORS = ['var(--cp-teal-60)', 'var(--ds-link)', 'var(--cp-warning)', 'var(--ds-background-discovery-bold)', 'var(--ds-background-danger-bold)', 'var(--ds-background-warning-bold)', 'var(--cp-success)', 'var(--cp-purple-60)'];
 function pickColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);

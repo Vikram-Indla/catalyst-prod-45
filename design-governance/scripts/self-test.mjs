@@ -47,19 +47,19 @@ const FIXTURES = [
     expect: [{ scanner: 'tokens', type: 'RAW_HEX' }],
   },
   {
-    name: 'hex-in-var-fallback (must NOT flag — ADS-canonical)',
+    name: 'hex-in-var-fallback (MUST flag — banned by CLAUDE.md)',
     code: `<div style={{ color: 'var(--ds-text, #292A2E)' }}>`,
-    expect: [],
+    expect: [{ scanner: 'tokens', type: 'RAW_HEX' }],
   },
   {
-    name: 'hex-in-nested-var-fallback (must NOT flag)',
+    name: 'hex-in-nested-var-fallback (MUST flag — banned by CLAUDE.md)',
     code: `<div style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>`,
-    expect: [],
+    expect: [{ scanner: 'tokens', type: 'RAW_HEX' }],
   },
   {
-    name: 'hex-in-token-fallback (must NOT flag — @atlaskit/tokens canonical)',
+    name: 'hex-in-token-fallback (MUST flag — no hex fallbacks)',
     code: `<div style={{ color: token('color.text', '#172B4D') }}>`,
-    expect: [],
+    expect: [{ scanner: 'tokens', type: 'RAW_HEX' }],
   },
 
   // ── Tailwind utilities (must flag) ──
@@ -172,9 +172,9 @@ const FIXTURES = [
     expect: [{ scanner: 'tokens', type: 'RAW_RGB_HSL' }],
   },
   {
-    name: 'rgb-in-var-fallback (must NOT flag)',
+    name: 'rgb-in-var-fallback (MUST flag — banned by CLAUDE.md)',
     code: `<div style={{ color: 'var(--ds-text, rgb(41, 42, 46))' }}>x</div>`,
-    expect: [],
+    expect: [{ scanner: 'tokens', type: 'RAW_RGB_HSL' }],
   },
   // Banned toast libraries. Only react-toastify is banned; sonner and
   // react-hot-toast are aliased to the ADS flag shim in vite.config.ts

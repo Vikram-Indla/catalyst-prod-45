@@ -53,77 +53,77 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
   backlog: {
     // neutral — StatusLozenge grey (§5)
     label: 'Backlog',
-    color: 'var(--ds-text-subtle, #42526E)',
-    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
-    textColor: 'var(--ds-text-subtle, #42526E)'
+    color: 'var(--ds-text-subtle)',
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
+    textColor: 'var(--ds-text-subtle)'
   },
   design: {
     // purple (was Golden Hour #896F58)
     label: 'Design',
-    color: 'var(--ds-text-discovery, #5243AA)',
-    bgColor: 'var(--ds-background-discovery, #EAE6FF)',
-    textColor: 'var(--ds-text-discovery, #403294)',
+    color: 'var(--ds-text-discovery)',
+    bgColor: 'var(--ds-background-discovery)',
+    textColor: 'var(--ds-text-discovery)',
     wipLimit: 3
   },
   ready_for_dev: {
     // information / StatusLozenge blue (§5)
     label: 'Ready for Dev',
-    color: 'var(--cp-primary-60, var(--ds-link, #0052CC))',
-    bgColor: 'var(--ds-background-information, #DEEBFF)',
-    textColor: 'var(--ds-background-information-bold, #0747A6)',
+    color: 'var(--cp-primary-60, var(--ds-link))',
+    bgColor: 'var(--ds-background-information)',
+    textColor: 'var(--ds-background-information-bold)',
     wipLimit: 5
   },
   in_development: {
     // warning / yellow (was Golden Hour #C79C6B)
     label: 'In Development',
-    color: 'var(--ds-text-warning, #FF991F)',
-    bgColor: 'var(--ds-background-warning, #FFF0B3)',
-    textColor: 'var(--ds-text, #974F0C)',
+    color: 'var(--ds-text-warning)',
+    bgColor: 'var(--ds-background-warning)',
+    textColor: 'var(--ds-text)',
     wipLimit: 4
   },
   qa_testing: {
     // warning
     label: 'QA Testing',
-    color: 'var(--ds-text-warning, #FFAB00)',
-    bgColor: 'var(--ds-background-warning, #FFF0B3)',
-    textColor: 'var(--ds-text, #974F0C)',
+    color: 'var(--ds-text-warning)',
+    bgColor: 'var(--ds-background-warning)',
+    textColor: 'var(--ds-text)',
     wipLimit: 3
   },
   uat_testing: {
     // warning (was Golden Hour #D4B996)
     label: 'UAT Testing',
-    color: 'var(--ds-text-warning, #FF991F)',
-    bgColor: 'var(--ds-background-warning, #FFF0B3)',
-    textColor: 'var(--ds-text, #974F0C)',
+    color: 'var(--ds-text-warning)',
+    bgColor: 'var(--ds-background-warning)',
+    textColor: 'var(--ds-text)',
     wipLimit: 2
   },
   in_beta: {
     // success (was Golden Hour #5B7B5B)
     label: 'In Beta',
-    color: 'var(--ds-text-success, #36B37E)',
-    bgColor: 'var(--ds-background-success, #E3FCEF)',
-    textColor: 'var(--ds-text-success, #006644)'
+    color: 'var(--ds-text-success)',
+    bgColor: 'var(--ds-background-success)',
+    textColor: 'var(--ds-text-success)'
   },
   ready_for_prod: {
     // success / StatusLozenge green (§5)
     label: 'Ready for Prod',
-    color: 'var(--ds-text-success, #00875A)',
-    bgColor: 'var(--ds-background-success, #E3FCEF)',
-    textColor: 'var(--ds-text-success, #006644)'
+    color: 'var(--ds-text-success)',
+    bgColor: 'var(--ds-background-success)',
+    textColor: 'var(--ds-text-success)'
   },
   in_production: {
     // success bolder
     label: 'In Production',
-    color: 'var(--ds-text-success, #006644)',
-    bgColor: 'var(--ds-background-success, #E3FCEF)',
-    textColor: 'var(--ds-text-success, #006644)'
+    color: 'var(--ds-text-success)',
+    bgColor: 'var(--ds-background-success)',
+    textColor: 'var(--ds-text-success)'
   },
   on_hold: {
     // neutral
     label: 'On Hold',
-    color: 'var(--ds-text-subtle, #42526E)',
-    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
-    textColor: 'var(--ds-text-subtle, #42526E)'
+    color: 'var(--ds-text-subtle)',
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
+    textColor: 'var(--ds-text-subtle)'
   }
 };
 
@@ -140,26 +140,26 @@ export const PRIORITY_CONFIG: Record<Priority, {
   critical: {
     // danger
     label: 'Critical',
-    color: 'var(--ds-text-danger, #BF2600)',
-    bgColor: 'var(--ds-background-danger, #FFBDAD)'
+    color: 'var(--ds-text-danger)',
+    bgColor: 'var(--ds-background-danger)'
   },
   high: {
     // warning
     label: 'High',
-    color: 'var(--ds-text, #974F0C)',
-    bgColor: 'var(--ds-background-warning, #FFF0B3)'
+    color: 'var(--ds-text)',
+    bgColor: 'var(--ds-background-warning)'
   },
   medium: {
     // information
     label: 'Medium',
-    color: 'var(--ds-background-information-bold, #0747A6)',
-    bgColor: 'var(--ds-background-information, #DEEBFF)'
+    color: 'var(--ds-background-information-bold)',
+    bgColor: 'var(--ds-background-information)'
   },
   low: {
     // neutral
     label: 'Low',
-    color: 'var(--ds-text-subtle, #42526E)',
-    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))'
+    color: 'var(--ds-text-subtle)',
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))'
   }
 };
 
@@ -180,24 +180,24 @@ export const WORK_ITEM_CONFIG: Record<WorkItemType, {
   icon: string;
 }> = {
   epic: {
-    // §11 Epic purple var(--ds-background-discovery-bold, #904EE2)
+    // §11 Epic purple var(--ds-background-discovery-bold)
     label: 'Epic',
-    color: 'var(--ds-text-discovery, #904EE2)',
-    bgColor: 'var(--ds-background-discovery, #EAE6FF)',
+    color: 'var(--ds-text-discovery)',
+    bgColor: 'var(--ds-background-discovery)',
     icon: 'Zap'
   },
   feature: {
     // information
     label: 'Feature',
-    color: 'var(--cp-primary-60, var(--ds-link, #0052CC))',
-    bgColor: 'var(--ds-background-information, #DEEBFF)',
+    color: 'var(--cp-primary-60, var(--ds-link))',
+    bgColor: 'var(--ds-background-information)',
     icon: 'Package'
   },
   story: {
     // §11 Story green #63BA3C (canonical story type colour)
     label: 'Story',
-    color: 'var(--ds-text-success, #63BA3C)',
-    bgColor: 'var(--ds-background-success, #E3FCEF)',
+    color: 'var(--ds-text-success)',
+    bgColor: 'var(--ds-background-success)',
     icon: 'FileText'
   }
 };
@@ -225,8 +225,8 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     // danger
     label: 'Blocks',
     description: 'This item blocks another',
-    color: 'var(--ds-text-danger, #BF2600)',
-    bgColor: 'var(--ds-background-danger, #FFBDAD)',
+    color: 'var(--ds-text-danger)',
+    bgColor: 'var(--ds-background-danger)',
     icon: 'Ban',
     inverse: 'blocked_by'
   },
@@ -234,8 +234,8 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     // warning
     label: 'Blocked By',
     description: 'This item is blocked by another',
-    color: 'var(--ds-text, #974F0C)',
-    bgColor: 'var(--ds-background-warning, #FFF0B3)',
+    color: 'var(--ds-text)',
+    bgColor: 'var(--ds-background-warning)',
     icon: 'AlertTriangle',
     inverse: 'blocks'
   },
@@ -243,8 +243,8 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     // information
     label: 'Relates To',
     description: 'Related work item',
-    color: 'var(--cp-primary-60, var(--ds-link, #0052CC))',
-    bgColor: 'var(--ds-background-information, #DEEBFF)',
+    color: 'var(--cp-primary-60, var(--ds-link))',
+    bgColor: 'var(--ds-background-information)',
     icon: 'Link2',
     inverse: 'relates_to'
   },
@@ -252,8 +252,8 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     // success (was Golden Hour #5B7B5B)
     label: 'Parent Of',
     description: 'This is the parent',
-    color: 'var(--ds-text-success, #006644)',
-    bgColor: 'var(--ds-background-success, #E3FCEF)',
+    color: 'var(--ds-text-success)',
+    bgColor: 'var(--ds-background-success)',
     icon: 'ChevronUp',
     inverse: 'child_of'
   },
@@ -261,8 +261,8 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     // purple (was Golden Hour #896F58)
     label: 'Child Of',
     description: 'This is a child item',
-    color: 'var(--ds-text-discovery, #5243AA)',
-    bgColor: 'var(--ds-background-discovery, #EAE6FF)',
+    color: 'var(--ds-text-discovery)',
+    bgColor: 'var(--ds-background-discovery)',
     icon: 'ChevronDown',
     inverse: 'parent_of'
   },
@@ -270,8 +270,8 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     // neutral
     label: 'Duplicates',
     description: 'Duplicate of another',
-    color: 'var(--ds-text-subtle, #42526E)',
-    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
+    color: 'var(--ds-text-subtle)',
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
     icon: 'Copy',
     inverse: 'duplicates'
   }
@@ -428,15 +428,15 @@ export interface StoryWithDetails {
 // -----------------------------------------------------
 export function getStatusColor(status: WorkflowStatus): string {
   // Neutral fallback (Atlaskit neutral.bold)
-  return STATUS_CONFIG[status]?.color || 'var(--ds-text-subtle, #42526E)';
+  return STATUS_CONFIG[status]?.color || 'var(--ds-text-subtle)';
 }
 
 export function getPriorityColor(priority: Priority): string {
-  return PRIORITY_CONFIG[priority]?.color || 'var(--ds-text-subtle, #42526E)';
+  return PRIORITY_CONFIG[priority]?.color || 'var(--ds-text-subtle)';
 }
 
 export function getLinkTypeColor(linkType: LinkType): string {
-  return LINK_TYPE_CONFIG[linkType]?.color || 'var(--ds-text-subtle, #42526E)';
+  return LINK_TYPE_CONFIG[linkType]?.color || 'var(--ds-text-subtle)';
 }
 
 export function calculateProgress(completed: number, total: number): number {
@@ -458,11 +458,11 @@ export const WORK_ITEM_PRIORITY_CONFIG: Record<WorkItemPriority, {
   icon: string;
   sortWeight: number;
 }> = {
-  critical: { label: 'Critical', color: 'var(--cp-danger, var(--ds-background-danger-bold, #dc2626))', bgColor: 'var(--ds-background-danger, #FEF2F2)', borderColor: 'var(--ds-border, #FECACA)', icon: 'AlertTriangle', sortWeight: 1 },
-  high:     { label: 'High',     color: 'var(--cp-warning, var(--ds-background-warning-bold, #d97706))', bgColor: 'var(--ds-background-warning, #FFFBEB)', borderColor: 'var(--ds-border, #FDE68A)', icon: 'ArrowUp',       sortWeight: 2 },
-  medium:   { label: 'Medium',   color: 'var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb))', bgColor: 'var(--ds-background-information, #EFF6FF)', borderColor: 'var(--ds-border, #BFDBFE)', icon: 'Minus',         sortWeight: 3 },
-  low:      { label: 'Low',      color: 'var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))', bgColor: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', borderColor: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', icon: 'ArrowDown',     sortWeight: 4 },
-  none:     { label: 'None',     color: 'var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2)))', bgColor: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', borderColor: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', icon: 'Minus',         sortWeight: 5 },
+  critical: { label: 'Critical', color: 'var(--cp-danger, var(--ds-background-danger-bold))', bgColor: 'var(--ds-background-danger)', borderColor: 'var(--ds-border)', icon: 'AlertTriangle', sortWeight: 1 },
+  high:     { label: 'High',     color: 'var(--cp-warning, var(--ds-background-warning-bold))', bgColor: 'var(--ds-background-warning)', borderColor: 'var(--ds-border)', icon: 'ArrowUp',       sortWeight: 2 },
+  medium:   { label: 'Medium',   color: 'var(--cp-workstream-catalyst-primary, var(--ds-link))', bgColor: 'var(--ds-background-information)', borderColor: 'var(--ds-border)', icon: 'Minus',         sortWeight: 3 },
+  low:      { label: 'Low',      color: 'var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest)))', bgColor: 'var(--bg-1, var(--ds-surface-sunken))', borderColor: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', icon: 'ArrowDown',     sortWeight: 4 },
+  none:     { label: 'None',     color: 'var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled)))', bgColor: 'var(--bg-1, var(--ds-surface-sunken))', borderColor: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border))))', icon: 'Minus',         sortWeight: 5 },
 };
 
 export interface WorkItemFull {

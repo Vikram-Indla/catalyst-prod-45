@@ -46,20 +46,20 @@
   /* END Cell Polish */
   --ra-end-pattern-polish: repeating-linear-gradient(
     -45deg,
-    var(--ds-surface-sunken, #f8fafc),
-    var(--ds-surface-sunken, #f8fafc) 4px,
-    var(--ds-surface-sunken, #f1f5f9) 4px,
-    var(--ds-surface-sunken, #f1f5f9) 8px
+    var(--ds-surface-sunken),
+    var(--ds-surface-sunken) 4px,
+    var(--ds-surface-sunken) 4px,
+    var(--ds-surface-sunken) 8px
   );
   --ra-end-text-bg: var(--ds-surface, rgba(255, 255, 255, 0.9));
   
   /* Project Gradients */
-  --ra-gradient-sectorial: linear-gradient(90deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 100%);
-  --ra-gradient-dataplatform: linear-gradient(90deg, var(--ds-background-success-bold, #059669) 0%, var(--quality-high, var(--ds-background-success-bold, #059669)) 100%);
-  --ra-gradient-senaei: linear-gradient(90deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%);
-  --ra-gradient-tahommena: linear-gradient(90deg, var(--ds-background-accent-magenta-bolder, #ec4899) 0%, var(--ds-background-accent-magenta-bolder, #BE185D) 100%);
-  --ra-gradient-inspection: linear-gradient(90deg, var(--ds-background-discovery-bold, #8b5cf6) 0%, var(--ds-background-discovery-bold, #7C3AED) 100%);
-  --ra-gradient-irplatform: linear-gradient(90deg, var(--ds-icon-information, #1D7AFC) 0%, var(--ds-link, #0C66E4) 100%);
+  --ra-gradient-sectorial: linear-gradient(90deg, var(--ds-text-brand) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 100%);
+  --ra-gradient-dataplatform: linear-gradient(90deg, var(--ds-background-success-bold) 0%, var(--quality-high, var(--ds-background-success-bold)) 100%);
+  --ra-gradient-senaei: linear-gradient(90deg, var(--ds-text-warning) 0%, var(--ds-text-warning) 100%);
+  --ra-gradient-tahommena: linear-gradient(90deg, var(--ds-background-accent-magenta-bolder) 0%, var(--ds-background-accent-magenta-bolder) 100%);
+  --ra-gradient-inspection: linear-gradient(90deg, var(--ds-background-discovery-bold) 0%, var(--ds-background-discovery-bold) 100%);
+  --ra-gradient-irplatform: linear-gradient(90deg, var(--ds-icon-information) 0%, var(--ds-link) 100%);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@
   box-shadow: var(--ra-card-shadow) !important;
   
   /* Smoother border */
-  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken)) !important;
   
   /* Increased height */
   min-height: 56px !important;
@@ -88,7 +88,7 @@
 .ra-polish [class*="alloc-inner"]:hover,
 .ra-polish [class*="alloc-card"]:hover {
   box-shadow: var(--ra-card-shadow-hover) !important;
-  border-color: var(--ds-text-disabled, #cbd5e1) !important;
+  border-color: var(--ds-text-disabled) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -100,7 +100,7 @@
 .ra-polish [class*="alloc-bar-track"] {
   height: var(--ra-bar-height-polish) !important;
   border-radius: var(--ra-bar-radius-polish) !important;
-  background: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  background: var(--ds-border, var(--cp-bg-sunken)) !important;
 }
 
 .ra-polish .allocation-bar > div,
@@ -161,7 +161,7 @@
 .ra-polish .allocation-cell .text-xs.font-semibold {
   font-size: var(--ra-text-percent-size-polish) !important;
   font-weight: 700 !important;
-  color: var(--ds-text, #172B4D) !important;
+  color: var(--ds-text) !important;
   letter-spacing: -0.01em !important;
 }
 
@@ -171,7 +171,7 @@
 .ra-polish .allocation-cell .text-\[9px\] {
   font-size: var(--ra-text-project-size-polish) !important;
   font-weight: 500 !important;
-  color: var(--ds-text-subtlest, #64748b) !important;
+  color: var(--ds-text-subtlest) !important;
   margin-top: 3px !important;
 }
 
@@ -183,7 +183,7 @@
 .ra-polish [class*="cell--end"],
 .ra-polish [data-status="end"] > div {
   background: var(--ra-end-pattern-polish) !important;
-  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken)) !important;
   box-shadow: none !important;
 }
 
@@ -200,7 +200,7 @@
 .ra-polish [data-status="end"] span {
   font-size: 10px !important;
   font-weight: 600 !important;
-  color: var(--ds-text-subtlest, #94a3b8) !important;
+  color: var(--ds-text-subtlest) !important;
   background: var(--ra-end-text-bg) !important;
   padding: 4px 12px !important;
   border-radius: 4px !important;
@@ -226,14 +226,14 @@
    ───────────────────────────────────────────────────────────── */
 .ra-polish tr:hover td:first-child,
 .ra-polish tr:hover .resource-cell {
-  background: var(--ds-surface-sunken, #f8fafc) !important;
+  background: var(--ds-surface-sunken) !important;
 }
 
 /* Resource name - bolder */
 .ra-polish .resource-name,
 .ra-polish [class*="resource-name"] {
   font-weight: 700 !important;
-  color: var(--ds-text, #172B4D) !important;
+  color: var(--ds-text) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -255,9 +255,9 @@
   font-size: 11px !important;
   font-weight: 700 !important;
   letter-spacing: 0.5px !important;
-  color: var(--ds-text-subtle, #475569) !important;
-  background: var(--ds-surface-sunken, #f8fafc) !important;
-  border-bottom: 2px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  color: var(--ds-text-subtle) !important;
+  background: var(--ds-surface-sunken) !important;
+  border-bottom: 2px solid var(--ds-border, var(--cp-bg-sunken)) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -269,9 +269,9 @@
   font-size: 11px !important;
   font-weight: 800 !important;
   letter-spacing: 0.75px !important;
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) !important;
   padding: 16px 16px 10px !important;
-  background: linear-gradient(180deg, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))) 0%, var(--ds-surface-sunken, #f8fafc) 100%) !important;
+  background: linear-gradient(180deg, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) 0%, var(--ds-surface-sunken) 100%) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -282,7 +282,7 @@
   font-size: 10px !important;
   font-weight: 600 !important;
   letter-spacing: 0.5px !important;
-  color: var(--ds-text-subtlest, #64748b) !important;
+  color: var(--ds-text-subtlest) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -294,17 +294,17 @@
 }
 
 .ra-polish::-webkit-scrollbar-track {
-  background: var(--ds-surface-sunken, #f1f5f9);
+  background: var(--ds-surface-sunken);
   border-radius: 4px;
 }
 
 .ra-polish::-webkit-scrollbar-thumb {
-  background: var(--ds-text-disabled, #cbd5e1);
+  background: var(--ds-text-disabled);
   border-radius: 4px;
 }
 
 .ra-polish::-webkit-scrollbar-thumb:hover {
-  background: var(--ds-text-subtlest, #94a3b8);
+  background: var(--ds-text-subtlest);
 }
 
 } /* END @layer ra-polish */
@@ -321,10 +321,10 @@
   /* END Cell — dark pattern */
   --ra-end-pattern-polish: repeating-linear-gradient(
     -45deg,
-    var(--ds-surface-overlay, #1F1F1F),
-    var(--ds-surface-overlay, #1F1F1F) 4px,
-    var(--ds-border, var(--cp-ink-1, #292929)) 4px,
-    var(--ds-border, var(--cp-ink-1, #292929)) 8px
+    var(--ds-surface-overlay),
+    var(--ds-surface-overlay) 4px,
+    var(--ds-border, var(--cp-ink-1)) 4px,
+    var(--ds-border, var(--cp-ink-1)) 8px
   );
-  --ra-end-text-bg: var(--ds-border, var(--cp-ink-1, #292929));
+  --ra-end-text-bg: var(--ds-border, var(--cp-ink-1));
 }

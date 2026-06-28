@@ -70,10 +70,10 @@ export interface WorkItem {
 
 // Hierarchy Configuration (single source of truth)
 export const HIERARCHY_LEVELS: HierarchyLevel[] = [
-  { id: 1, name: 'Epic',     color: 'var(--cp-workstream-catalyst-primary, #2563EB)', colorText: 'var(--ds-link-pressed, #1d4ed8)', icon: 'zap' },
-  { id: 2, name: 'Feature',  color: 'var(--cp-purple-60, #7C3AED)', colorText: 'var(--ds-background-discovery-bold, #6d28d9)', icon: 'puzzle' },
-  { id: 3, name: 'Story',    color: 'var(--cp-success, #16A34A)', colorText: 'var(--ds-background-success-bold, #1F845A)', icon: 'book-open' },
-  { id: 4, name: 'Sub-task', color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: 'var(--ds-text-subtle, #44546F)', icon: 'list-checks' },
+  { id: 1, name: 'Epic',     color: 'var(--cp-workstream-catalyst-primary)', colorText: 'var(--ds-link-pressed)', icon: 'zap' },
+  { id: 2, name: 'Feature',  color: 'var(--cp-purple-60)', colorText: 'var(--ds-background-discovery-bold)', icon: 'puzzle' },
+  { id: 3, name: 'Story',    color: 'var(--cp-success)', colorText: 'var(--ds-background-success-bold)', icon: 'book-open' },
+  { id: 4, name: 'Sub-task', color: 'var(--cp-ink-3, var(--cp-text-secondary))', colorText: 'var(--ds-text-subtle)', icon: 'list-checks' },
 ];
 
 // Flexible parenting rules

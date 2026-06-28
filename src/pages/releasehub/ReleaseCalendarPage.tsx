@@ -27,32 +27,32 @@ import { ReleasePredictorCard } from '@/components/releasehub/ReleasePredictorCa
 import { ReleasePeekPanel } from '@/components/releasehub/ReleasePeekPanel';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  selected: 'var(--ds-background-selected, #E9F2FE)',
-  info: 'var(--ds-border-information, #1868DB)',
-  freeze: 'var(--ds-icon-danger, #C9372C)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  selected: 'var(--ds-background-selected)',
+  info: 'var(--ds-border-information)',
+  freeze: 'var(--ds-icon-danger)',
 };
 
 const RAIL: Record<CalendarLane | 'sprint', string> = {
-  release: 'var(--ds-icon-information, #1868DB)',
-  change: 'var(--ds-icon-accent-teal, #1D9E75)',
-  prod: 'var(--ds-icon-success, #22A06B)',
-  freeze: 'var(--ds-icon-danger, #C9372C)',
-  sprint: 'var(--ds-icon-accent-purple, #8270DB)',
+  release: 'var(--ds-icon-information)',
+  change: 'var(--ds-icon-accent-teal)',
+  prod: 'var(--ds-icon-success)',
+  freeze: 'var(--ds-icon-danger)',
+  sprint: 'var(--ds-icon-accent-purple)',
 };
 const LANE_LABEL: Record<CalendarLane, string> = { release: 'Release', change: 'Change', freeze: 'Freeze', prod: 'Production' };
 const RISK_DOT: Record<PredictionRisk, string> = {
-  on_track: 'var(--ds-icon-success, #22A06B)',
-  at_risk: 'var(--ds-icon-warning, #E2B203)',
-  off_track: 'var(--ds-icon-danger, #C9372C)',
-  done: 'var(--ds-icon-success, #22A06B)',
-  no_data: 'var(--ds-icon-subtlest, #8590A2)',
+  on_track: 'var(--ds-icon-success)',
+  at_risk: 'var(--ds-icon-warning)',
+  off_track: 'var(--ds-icon-danger)',
+  done: 'var(--ds-icon-success)',
+  no_data: 'var(--ds-icon-subtlest)',
 };
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -173,13 +173,13 @@ export default function ReleaseCalendarPage() {
         {frozen && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: T.freeze, opacity: 0.55 }} />}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {isToday ? (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', background: T.info, borderRadius: 999, padding: '0 8px' }}>Today</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-inverse)', background: T.info, borderRadius: 999, padding: '0 8px' }}>Today</span>
           ) : (
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: inMonth ? T.subtle : T.subtlest }}>{format(day, 'd')}</span>
           )}
         </div>
         {conflict && !compact && (
-          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>Freeze conflict</div>
+          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-danger)', marginTop: 4 }}>Freeze conflict</div>
         )}
         {compact
           ? dayEvents.slice(0, 3).map((ev) => <span key={ev.id} title={ev.label} style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: RAIL[ev.lane], marginRight: 4, marginTop: 4 }} />)

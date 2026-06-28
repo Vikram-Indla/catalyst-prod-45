@@ -15,13 +15,13 @@ import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useReleaseConfig } from '@/hooks/releases/useReleaseConfig';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
 };
 
 function ChipList({ labels }: { labels: string[] }) {
@@ -64,10 +64,10 @@ export default function ReleaseSettingsPage() {
         <ProjectPageHeader projectKey="RELEASES" hubType="release" />
       </div>
 
-      <div style={{ background: 'var(--ds-background-information, #E9F2FE)', border: '1px solid var(--ds-border-information, #8FB8F6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
-        <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-information, #0055CC)', margin: 0 }}>
+      <div style={{ background: 'var(--ds-background-information)', border: '1px solid var(--ds-border-information)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
+        <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-information)', margin: 0 }}>
           These values are live from the module configuration. Edit them in the{' '}
-          <Link to="/admin/release-ops" style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 600 }}>Release Operations admin panel</Link>.
+          <Link to="/admin/release-ops" style={{ color: 'var(--ds-link)', fontWeight: 600 }}>Release Operations admin panel</Link>.
         </p>
       </div>
 

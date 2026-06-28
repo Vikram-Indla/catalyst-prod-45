@@ -24,14 +24,14 @@ td[data-ra-processed] {
   text-align: center !important;
   vertical-align: middle !important;
   font-size: 12px !important;
-  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))) !important;
   overflow: visible !important;
 }
 
 /* END cell styling */
 td[data-ra-processed="end"] {
-  color: var(--ds-text-subtlest, #94a3b8) !important;
+  color: var(--ds-text-subtlest) !important;
   font-size: 11px !important;
   font-weight: 500 !important;
 }
@@ -42,14 +42,14 @@ td[data-ra-processed="end"] {
 
 /* Processed avatar styling */
 [data-ra-avatar-processed="true"] {
-  background: var(--ds-text-subtlest, #64748b) !important;
-  background-color: var(--ds-text-subtlest, #64748b) !important;
+  background: var(--ds-text-subtlest) !important;
+  background-color: var(--ds-text-subtlest) !important;
 }
 
 /* Ring neutralization */
 [data-ra-avatar-processed="true"] {
-  --tw-ring-color: var(--ds-text-subtlest, #94a3b8) !important;
-  ring-color: var(--ds-text-subtlest, #94a3b8) !important;
+  --tw-ring-color: var(--ds-text-subtlest) !important;
+  ring-color: var(--ds-text-subtlest) !important;
 }
 
 /* ============================================================
@@ -64,7 +64,7 @@ td[data-ra-processed="end"] {
 .ra-enterprise-clean span[class*="bg-teal"] {
   background: transparent !important;
   background-color: transparent !important;
-  color: var(--ds-text-subtlest, #64748b) !important;
+  color: var(--ds-text-subtlest) !important;
   border: none !important;
 }
 
@@ -95,7 +95,7 @@ td {
 
 /* White cell backgrounds by default */
 .ra-enterprise-clean td {
-  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))) !important;
 }
 
 /* Dark mode support */
@@ -104,10 +104,10 @@ td {
 }
 
 .dark td[data-ra-processed] {
-  color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
+  color: var(--ds-border, var(--cp-bg-sunken)) !important;
   background: hsl(var(--card)) !important;
 }
 
 .dark td[data-ra-processed="end"] {
-  color: var(--ds-text-subtlest, #64748b) !important;
+  color: var(--ds-text-subtlest) !important;
 }

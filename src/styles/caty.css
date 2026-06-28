@@ -8,50 +8,50 @@
 
 .caty-panel {
   /* ==================== HEADER ==================== */
-  --caty-header-bg: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --caty-header-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  --caty-header-bg: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --caty-header-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   
   /* ==================== SURFACES ==================== */
-  --caty-surface-page: var(--ds-surface-sunken, #f8fafc);
-  --caty-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --caty-surface-hover: var(--ds-surface-sunken, #f1f5f9);
-  --caty-surface-input: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
-  --caty-surface-skeleton: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --caty-surface-user: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  --caty-surface-page: var(--ds-surface-sunken);
+  --caty-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --caty-surface-hover: var(--ds-surface-sunken);
+  --caty-surface-input: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  --caty-surface-skeleton: var(--ds-border, var(--cp-bg-sunken));
+  --caty-surface-user: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   
   /* ==================== TEXT ==================== */
-  --caty-text-primary: var(--ds-text, #0f172a);
-  --caty-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --caty-text-muted: var(--ds-text-subtlest, #64748b);
-  --caty-text-light: var(--ds-text-subtlest, #94a3b8);
-  --caty-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  --caty-text-primary: var(--ds-text);
+  --caty-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --caty-text-muted: var(--ds-text-subtlest);
+  --caty-text-light: var(--ds-text-subtlest);
+  --caty-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   
   /* ==================== STATUS ==================== */
-  --caty-status-critical: var(--ds-text-danger, #dc2626);
-  --caty-status-critical-bg: var(--ds-background-danger, #fef2f2);
-  --caty-status-warning: var(--ds-background-warning-bold, #E2B203);
-  --caty-status-warning-bg: var(--ds-background-warning, #FFF7D6);
-  --caty-status-safe: var(--quality-high, var(--ds-background-success-bold, #059669));
-  --caty-status-safe-bg: var(--ds-background-success, #DFFCF0);
-  --caty-status-total: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --caty-status-total-bg: var(--ds-background-selected, #eff6ff);
+  --caty-status-critical: var(--ds-text-danger);
+  --caty-status-critical-bg: var(--ds-background-danger);
+  --caty-status-warning: var(--ds-background-warning-bold);
+  --caty-status-warning-bg: var(--ds-background-warning);
+  --caty-status-safe: var(--quality-high, var(--ds-background-success-bold));
+  --caty-status-safe-bg: var(--ds-background-success);
+  --caty-status-total: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --caty-status-total-bg: var(--ds-background-selected);
   
   /* ==================== CAPACITY (Color-coded) ==================== */
-  --caty-capacity-safe: var(--ds-text-success, #22c55e);      /* 0-70% */
-  --caty-capacity-warning: var(--ds-text-warning, #f59e0b);   /* 71-85% */
-  --caty-capacity-danger: var(--ds-text-danger, #ef4444);    /* 86-100%+ */
+  --caty-capacity-safe: var(--ds-text-success);      /* 0-70% */
+  --caty-capacity-warning: var(--ds-text-warning);   /* 71-85% */
+  --caty-capacity-danger: var(--ds-text-danger);    /* 86-100%+ */
   
   /* ==================== DEPARTMENTS ==================== */
-  --caty-dept-product: var(--ds-background-discovery-bold, #8b5cf6);
-  --caty-dept-delivery: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
-  --caty-dept-operations: var(--ds-background-warning-bold, #E2B203);
-  --caty-dept-support: var(--ds-background-warning-bold, #f97316);
-  --caty-dept-governance: var(--ds-text-subtlest, #64748b);
+  --caty-dept-product: var(--ds-background-discovery-bold);
+  --caty-dept-delivery: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
+  --caty-dept-operations: var(--ds-background-warning-bold);
+  --caty-dept-support: var(--ds-background-warning-bold);
+  --caty-dept-governance: var(--ds-text-subtlest);
   
   /* ==================== BORDERS ==================== */
-  --caty-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
-  --caty-border-light: var(--ds-surface-sunken, #f1f5f9);
-  --caty-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  --caty-border: var(--ds-border, var(--cp-bg-sunken));
+  --caty-border-light: var(--ds-surface-sunken);
+  --caty-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   
   /* ==================== SPACING ==================== */
   --caty-space-1: 4px;
@@ -99,19 +99,19 @@
 /* ==================== DARK MODE ==================== */
 [data-theme="dark"] .caty-panel,
 .dark .caty-panel {
-  --caty-surface-page: var(--ds-text, #0f172a);
-  --caty-surface-card: var(--ds-text, #172B4D);
-  --caty-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --caty-surface-input: var(--ds-text, #172B4D);
-  --caty-surface-skeleton: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
+  --caty-surface-page: var(--ds-text);
+  --caty-surface-card: var(--ds-text);
+  --caty-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --caty-surface-input: var(--ds-text);
+  --caty-surface-skeleton: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
   
-  --caty-text-primary: var(--ds-surface-sunken, #f1f5f9);
-  --caty-text-secondary: var(--ds-text-disabled, #cbd5e1);
-  --caty-text-muted: var(--ds-text-subtlest, #94a3b8);
-  --caty-text-light: var(--ds-text-subtlest, #64748b);
+  --caty-text-primary: var(--ds-surface-sunken);
+  --caty-text-secondary: var(--ds-text-disabled);
+  --caty-text-muted: var(--ds-text-subtlest);
+  --caty-text-light: var(--ds-text-subtlest);
   
-  --caty-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))));
-  --caty-border-light: var(--ds-text, #172B4D);
+  --caty-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))));
+  --caty-border-light: var(--ds-text);
   
   --caty-status-critical-bg: var(--ds-background-danger-bold, rgba(220, 38, 38, 0.15));
   --caty-status-warning-bg: var(--ds-background-warning-bold, rgba(234, 88, 12, 0.15));
@@ -179,7 +179,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1d4ed8));
+  background: linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)), var(--ds-background-brand-bold-hovered));
   border: none;
   cursor: pointer;
   display: flex;
@@ -262,7 +262,7 @@
   position: absolute;
   inset: 0;
   background: 
-    radial-gradient(ellipse at 30% 0%, var(--ds-border-bold, #454545), transparent 50%),
+    radial-gradient(ellipse at 30% 0%, var(--ds-border-bold), transparent 50%),
     radial-gradient(ellipse at 70% 100%, var(--ds-shadow-raised, rgba(0,0,0,0.1)), transparent 50%);
   pointer-events: none;
 }
@@ -297,7 +297,7 @@
 .caty-status-dot {
   width: 6px;
   height: 6px;
-  background: var(--ds-text-success, #22c55e);
+  background: var(--ds-text-success);
   border-radius: 50%;
   animation: catyStatusPulse 2s ease-in-out infinite;
 }
@@ -366,11 +366,11 @@
 }
 
 .caty-message.ai .caty-message-avatar {
-  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)));
+  background: linear-gradient(135deg, var(--ds-text-brand), var(--ds-text-brand, var(--cp-workstream-catalyst-primary)));
 }
 
 .caty-message.user .caty-message-avatar {
-  background: linear-gradient(135deg, var(--ds-background-discovery-bold, #8b5cf6), var(--ds-background-discovery-bold, #7C3AED));
+  background: linear-gradient(135deg, var(--ds-background-discovery-bold), var(--ds-background-discovery-bold));
   color: white;
   order: 1;
 }
@@ -863,11 +863,11 @@
 }
 
 .caty-resource-avatar.contract-warning {
-  background: linear-gradient(135deg, var(--caty-status-critical), var(--ds-text-danger, #AE2A19));
+  background: linear-gradient(135deg, var(--caty-status-critical), var(--ds-text-danger));
 }
 
 .caty-resource-avatar.utilization-warning {
-  background: linear-gradient(135deg, var(--caty-status-warning), var(--ds-text-danger, #AE2A19));
+  background: linear-gradient(135deg, var(--caty-status-warning), var(--ds-text-danger));
 }
 
 .caty-resource-info {
@@ -1009,7 +1009,7 @@
 }
 
 .caty-send-btn:hover:not(.disabled) {
-  background: var(--ds-background-brand-bold-hovered, #1d4ed8);
+  background: var(--ds-background-brand-bold-hovered);
   transform: scale(1.05);
 }
 
@@ -1173,7 +1173,7 @@
 }
 
 .caty-error-retry:hover {
-  background: var(--ds-background-brand-bold-hovered, #1d4ed8);
+  background: var(--ds-background-brand-bold-hovered);
 }
 
 /* ==================== ACCESSIBILITY ==================== */
@@ -1223,7 +1223,7 @@
 
 .caty-enterprise-prose h1 {
   font-size: 15px;
-  border-bottom: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  border-bottom: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   padding-bottom: 6px;
   margin-bottom: 12px;
   margin-top: 16px;
@@ -1235,8 +1235,8 @@
 
 .caty-enterprise-prose h2 {
   font-size: 13.5px;
-  color: var(--ds-link-pressed, #1e40af);
-  border-left: 3px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--ds-link-pressed);
+  border-left: 3px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   padding-left: 10px;
   margin-top: 16px;
   margin-bottom: 8px;
@@ -1278,36 +1278,36 @@
 }
 
 .caty-enterprise-prose ul li::marker {
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 }
 
 .caty-enterprise-prose ol li::marker {
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   font-weight: 600;
 }
 
 /* Inline code */
 .caty-enterprise-prose code {
-  background: var(--ds-surface-sunken, #f1f5f9);
-  color: var(--ds-link-pressed, #1e40af);
+  background: var(--ds-surface-sunken);
+  color: var(--ds-link-pressed);
   padding: 1px 5px;
   border-radius: 4px;
   font-size: 12px;
   font-family: 'SF Mono', 'Fira Code', monospace;
-  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken));
 }
 
 /* Code blocks */
 .caty-enterprise-prose pre {
-  background: var(--ds-text, #0f172a);
-  color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  background: var(--ds-text);
+  color: var(--ds-border, var(--cp-bg-sunken));
   padding: 12px 16px;
   border-radius: 8px;
   overflow-x: auto;
   margin: 10px 0;
   font-size: 12px;
   line-height: 1.5;
-  border: 1px solid var(--ds-text, #172B4D);
+  border: 1px solid var(--ds-text);
 }
 
 .caty-enterprise-prose pre code {
@@ -1322,8 +1322,8 @@
 .caty-enterprise-prose blockquote {
   margin: 12px 0;
   padding: 10px 14px;
-  background: var(--ds-background-selected, #eff6ff);
-  border-left: 3px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  background: var(--ds-background-selected);
+  border-left: 3px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   border-radius: 0 8px 8px 0;
   color: var(--caty-text-secondary);
   font-size: 13px;
@@ -1339,13 +1339,13 @@
   border-collapse: collapse;
   margin: 10px 0;
   font-size: 12.5px;
-  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
   overflow: hidden;
 }
 
 .caty-enterprise-prose thead {
-  background: var(--ds-surface-sunken, #f8fafc);
+  background: var(--ds-surface-sunken);
 }
 
 .caty-enterprise-prose th {
@@ -1353,7 +1353,7 @@
   text-align: left;
   font-weight: 650;
   color: var(--caty-text-primary);
-  border-bottom: 2px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  border-bottom: 2px solid var(--ds-border, var(--cp-bg-sunken));
   font-size: 11.5px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -1361,25 +1361,25 @@
 
 .caty-enterprise-prose td {
   padding: 7px 12px;
-  border-bottom: 1px solid var(--ds-surface-sunken, #f1f5f9);
+  border-bottom: 1px solid var(--ds-surface-sunken);
   color: var(--caty-text-secondary);
 }
 
 .caty-enterprise-prose tbody tr:hover {
-  background: var(--ds-surface-sunken, #f8fafc);
+  background: var(--ds-surface-sunken);
 }
 
 /* Horizontal rules — section dividers */
 .caty-enterprise-prose hr {
   border: none;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ds-text-disabled, #cbd5e1), transparent);
+  background: linear-gradient(90deg, transparent, var(--ds-text-disabled), transparent);
   margin: 16px 0;
 }
 
 /* Links */
 .caty-enterprise-prose a {
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid transparent;
@@ -1387,5 +1387,5 @@
 }
 
 .caty-enterprise-prose a:hover {
-  border-bottom-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  border-bottom-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
 }

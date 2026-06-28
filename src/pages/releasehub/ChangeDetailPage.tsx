@@ -21,17 +21,17 @@ import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  brand: 'var(--ds-background-brand-bold, #0C66E4)',
-  success: 'var(--ds-background-success-bold, #1F845A)',
-  inverse: 'var(--ds-text-inverse, #FFFFFF)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  brand: 'var(--ds-background-brand-bold)',
+  success: 'var(--ds-background-success-bold)',
+  inverse: 'var(--ds-text-inverse)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
@@ -52,10 +52,10 @@ const TERMINAL: Record<string, string> = { failed: 'Failed', rolled_back: 'Rolle
 function RiskPill({ risk }: { risk: string | null }) {
   if (!risk) return null;
   const map: Record<string, { fg: string; bg: string }> = {
-    low: { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
-    medium: { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' },
-    high: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    critical: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    low: { fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
+    medium: { fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' },
+    high: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
+    critical: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
   };
   const m = map[risk.toLowerCase()] ?? { fg: T.subtle, bg: T.sunken };
   return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, textTransform: 'capitalize' }}>{risk}</span>;
@@ -151,7 +151,7 @@ export default function ChangeDetailPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {statusLabel ? (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
           ) : (
             <StatusLozenge status={c.status} />
           )}

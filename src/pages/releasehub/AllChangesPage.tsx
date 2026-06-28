@@ -25,25 +25,25 @@ import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  selectedBg: 'var(--ds-background-selected, #E9F2FE)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  selectedBg: 'var(--ds-background-selected)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
 function RiskPill({ risk }: { risk: string | null }) {
   if (!risk) return <span style={{ color: T.subtlest }}>—</span>;
   const map: Record<string, { fg: string; bg: string }> = {
-    low: { fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
-    medium: { fg: 'var(--ds-text-warning, #A54800)', bg: 'var(--ds-background-warning, #FFF7D6)' },
-    high: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    critical: { fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
+    low: { fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
+    medium: { fg: 'var(--ds-text-warning)', bg: 'var(--ds-background-warning)' },
+    high: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
+    critical: { fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
   };
   const m = map[risk.toLowerCase()] ?? { fg: T.subtle, bg: T.sunken };
   return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{risk}</span>;
@@ -117,7 +117,7 @@ export default function AllChangesPage() {
       cell: ({ row }) => {
         const external = row.source === 'external';
         return (
-          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: external ? 'var(--ds-text-information, #0055CC)' : T.subtle, background: external ? 'var(--ds-background-information, #E9F2FE)' : T.sunken, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: external ? 'var(--ds-text-information)' : T.subtle, background: external ? 'var(--ds-background-information)' : T.sunken, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>
             {external ? 'External' : 'Catalyst'}
           </span>
         );
@@ -180,9 +180,9 @@ export default function AllChangesPage() {
             onClick={() => canManage && openCreate('catalyst')}
             disabled={!canManage}
             title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
           >
-            <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New change
+            <Plus size={14} style={{ color: 'var(--ds-text-inverse)' }} /> New change
           </button>
         </div>
       </div>

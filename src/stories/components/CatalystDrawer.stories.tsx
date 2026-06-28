@@ -11,7 +11,7 @@ function DrawerDemo({ width }: { width?: 'narrow' | 'medium' | 'wide' | 'full' }
       <CatalystDrawer isOpen={open} onClose={() => setOpen(false)} label="Detail drawer" width={width}>
         <div style={{ padding: 24 }}>
           <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, margin: '0 0 16px 0' }}>Drawer content</h2>
-          <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #42526E)' }}>
+          <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
             This is a Catalyst drawer using @atlaskit/drawer with ADS tokens.
           </p>
         </div>

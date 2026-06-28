@@ -18,50 +18,50 @@
   /* Colors - Primary */
   --ph-primary: var(
     --ds-text-brand,
-    var(--cp-workstream-catalyst-primary, var(--ds-link, #2563eb))
+    var(--cp-workstream-catalyst-primary, var(--ds-link))
   );
-  --ph-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
-  --ph-primary-active: var(--ds-link-pressed, #1e40af);
+  --ph-primary-hover: var(--ds-background-brand-bold-hovered);
+  --ph-primary-active: var(--ds-link-pressed);
   --ph-primary-light: var(--ds-background-information, rgba(37, 99, 235, 0.08));
   --ph-primary-border: var(--ds-background-information, rgba(37, 99, 235, 0.2));
 
   /* Colors - Semantic */
-  --ph-success: var(--ds-background-success-bold, #059669);
+  --ph-success: var(--ds-background-success-bold);
   --ph-success-light: var(--ds-background-success-bold, rgba(16, 185, 129, 0.1));
-  --ph-warning: var(--ds-text-warning, #f59e0b);
+  --ph-warning: var(--ds-text-warning);
   --ph-warning-light: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1));
-  --ph-danger: var(--ds-text-danger, #ef4444);
+  --ph-danger: var(--ds-text-danger);
   --ph-danger-light: var(--ds-background-danger, rgba(239, 68, 68, 0.1));
-  --ph-teal: var(--ds-chart-teal-bold, #0d9488);
+  --ph-teal: var(--ds-chart-teal-bold);
   --ph-teal-light: var(--ds-background-success, rgba(13, 148, 136, 0.08));
-  --ph-purple: var(--ds-background-discovery-bold, #8b5cf6);
+  --ph-purple: var(--ds-background-discovery-bold);
   --ph-purple-light: var(--ds-background-discovery-bold, rgba(139, 92, 246, 0.1));
 
   /* Colors - Gray Scale */
   --ph-white: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))
+    var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))
   );
-  --ph-gray-50: var(--ds-surface-sunken, #F7F8F9);
-  --ph-gray-100: var(--ds-background-neutral-subtle, #F7F8F9);
-  --ph-gray-200: var(--ds-border, #e5e7eb);
-  --ph-gray-300: var(--ds-border, #DFE1E6);
-  --ph-gray-400: var(--ds-text-disabled, #8590A2);
-  --ph-gray-500: var(--ds-text-subtlest, #626F86);
-  --ph-gray-600: var(--ds-text-subtlest, #626F86);
-  --ph-gray-700: var(--ds-text-subtle, #44546F);
-  --ph-gray-800: var(--ds-text, #172B4D);
-  --ph-gray-900: var(--ds-text, #172B4D);
+  --ph-gray-50: var(--ds-surface-sunken);
+  --ph-gray-100: var(--ds-background-neutral-subtle);
+  --ph-gray-200: var(--ds-border);
+  --ph-gray-300: var(--ds-border);
+  --ph-gray-400: var(--ds-text-disabled);
+  --ph-gray-500: var(--ds-text-subtlest);
+  --ph-gray-600: var(--ds-text-subtlest);
+  --ph-gray-700: var(--ds-text-subtle);
+  --ph-gray-800: var(--ds-text);
+  --ph-gray-900: var(--ds-text);
 
   /* Surfaces */
-  --ph-bg: var(--ds-surface-sunken, #F7F8F9);
+  --ph-bg: var(--ds-surface-sunken);
   --ph-surface: var(
     --cp-bg-elevated,
-    var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))
+    var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))
   );
-  --ph-surface-hover: var(--ds-background-neutral-subtle, #F7F8F9);
-  --ph-border: var(--ds-border, #e5e7eb);
-  --ph-border-dark: var(--ds-border, #DFE1E6);
+  --ph-surface-hover: var(--ds-background-neutral-subtle);
+  --ph-border: var(--ds-border);
+  --ph-border-dark: var(--ds-border);
 
   /* Typography */
   --ph-font: var(--cp-font-body);
@@ -1100,7 +1100,7 @@
   border: 1px solid var(--ph-warning);
   border-radius: var(--ph-radius-md);
   padding: var(--ph-space-3) var(--ph-space-4);
-  color: var(--ds-text-warning, #974F0C);
+  color: var(--ds-text-warning);
   font-size: var(--ph-text-sm);
   font-weight: var(--ph-font-medium);
   margin-bottom: var(--ph-space-4);
@@ -1157,7 +1157,7 @@
 .planhub-module .ph-resource-skeleton-badge {
   font-size: var(--ph-text-xs);
   font-weight: var(--ph-font-medium);
-  color: var(--ds-text-warning, #974F0C);
+  color: var(--ds-text-warning);
   background: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.2));
   padding: 2px 6px;
   border-radius: var(--ph-radius-sm);
@@ -1459,24 +1459,24 @@
 [data-theme="dark"] .planhub-module,
 .dark .planhub-module {
   /* Surfaces */
-  --ph-bg: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
-  --ph-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --ph-surface-hover: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
+  --ph-bg: var(--cp-bg-page, var(--ds-surface));
+  --ph-surface: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --ph-surface-hover: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
   --ph-border: var(--ds-surface, rgba(255, 255, 255, 0.08));
   --ph-border-dark: var(--ds-surface, rgba(255, 255, 255, 0.12));
 
   /* Gray Scale (inverted for dark) */
-  --ph-white: var(--cp-bg-page, var(--ds-surface, #FFFFFF));
-  --ph-gray-50: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --ph-gray-100: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  --ph-gray-200: var(--ds-border, var(--cp-ink-1, #292929));
-  --ph-gray-300: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
-  --ph-gray-400: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
-  --ph-gray-500: var(--ds-text-subtlest, #a1a1a1);
-  --ph-gray-600: var(--ds-text-subtlest, #a1a1a1);
-  --ph-gray-700: var(--ds-text, var(--cp-bg-neutral, #ededed));
-  --ph-gray-800: var(--ds-text, var(--cp-bg-neutral, #ededed));
-  --ph-gray-900: var(--ds-text, var(--cp-bg-neutral, #ededed));
+  --ph-white: var(--cp-bg-page, var(--ds-surface));
+  --ph-gray-50: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --ph-gray-100: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  --ph-gray-200: var(--ds-border, var(--cp-ink-1));
+  --ph-gray-300: var(--ds-text-subtlest, var(--cp-text-secondary));
+  --ph-gray-400: var(--ds-text-subtlest, var(--cp-text-secondary));
+  --ph-gray-500: var(--ds-text-subtlest);
+  --ph-gray-600: var(--ds-text-subtlest);
+  --ph-gray-700: var(--ds-text, var(--cp-bg-neutral));
+  --ph-gray-800: var(--ds-text, var(--cp-bg-neutral));
+  --ph-gray-900: var(--ds-text, var(--cp-bg-neutral));
 
   /* Shadows (darker for dark mode) */
   --ph-shadow-sm: 0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.3));
@@ -1494,7 +1494,7 @@
   --ph-primary-border: var(--ds-background-information, rgba(37, 99, 235, 0.3));
 
   /* Base text color override */
-  color: var(--ds-text, var(--cp-bg-neutral, #ededed)) !important;
+  color: var(--ds-text, var(--cp-bg-neutral)) !important;
 }
 
 /* Dark mode: modal backdrop darker */
@@ -1508,40 +1508,40 @@
 /* Dark mode: AI chat bubble adjustments */
 [data-theme="dark"] .planhub-module .ph-ai-message.assistant .ph-ai-bubble,
 .dark .planhub-module .ph-ai-message.assistant .ph-ai-bubble {
-  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  color: var(--ds-text, var(--cp-bg-neutral, #ededed));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  color: var(--ds-text, var(--cp-bg-neutral));
 }
 
 /* Dark mode: resource warning text */
 [data-theme="dark"] .planhub-module .ph-resource-warning,
 .dark .planhub-module .ph-resource-warning {
-  color: var(--ds-background-warning, #FFF7D6);
+  color: var(--ds-background-warning);
 }
 
 [data-theme="dark"] .planhub-module .ph-resource-skeleton-badge,
 .dark .planhub-module .ph-resource-skeleton-badge {
-  color: var(--ds-background-warning, #FFF7D6);
+  color: var(--ds-background-warning);
 }
 
 /* Dark mode: AI input field */
 [data-theme="dark"] .planhub-module .ph-ai-input input,
 .dark .planhub-module .ph-ai-input input {
-  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  color: var(--ds-text, var(--cp-bg-neutral, #ededed));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  color: var(--ds-text, var(--cp-bg-neutral));
   border-color: var(--ds-surface, rgba(255, 255, 255, 0.08));
 }
 
 /* Dark mode: form inputs */
 [data-theme="dark"] .planhub-module .ph-form-input,
 .dark .planhub-module .ph-form-input {
-  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  color: var(--ds-text, var(--cp-bg-neutral, #ededed));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  color: var(--ds-text, var(--cp-bg-neutral));
   border-color: var(--ds-surface, rgba(255, 255, 255, 0.12));
 }
 
 [data-theme="dark"] .planhub-module .ph-select,
 .dark .planhub-module .ph-select {
-  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)));
-  color: var(--ds-text, var(--cp-bg-neutral, #ededed));
+  background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)));
+  color: var(--ds-text, var(--cp-bg-neutral));
   border-color: var(--ds-surface, rgba(255, 255, 255, 0.08));
 }

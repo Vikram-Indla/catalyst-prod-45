@@ -42,13 +42,13 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
 
   const taStyle: React.CSSProperties = {
     width: '100%',
-    border: '1px solid var(--ds-border, #DFE1E6)',
+    border: '1px solid var(--ds-border)',
     borderRadius: 4,
     padding: '6px 8px',
     fontSize: 'var(--ds-font-size-300)',
     fontFamily: 'var(--ds-font-family-body)',
-    color: 'var(--ds-text, #172B4D)',
-    background: 'var(--ds-surface, #FFFFFF)',
+    color: 'var(--ds-text)',
+    background: 'var(--ds-surface)',
     resize: 'vertical',
     minHeight: 56,
     outline: 'none',
@@ -58,22 +58,22 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
   return (
     <div>
       {steps.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)', margin: '0 0 12px' }}>No steps yet.</p>
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: '0 0 12px' }}>No steps yet.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 12 }}>
           {steps.map((step, i) => (
             <div key={i} style={{
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              border: '1px solid var(--ds-border)',
               borderRadius: 6,
               padding: 12,
-              background: 'var(--ds-surface-raised, #FFFFFF)',
+              background: 'var(--ds-surface-raised)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>Step {i + 1}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>Step {i + 1}</span>
                 <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={() => moveUp(i)} disabled={i === 0} style={smallBtn} title="Move up">↑</button>
                   <button onClick={() => moveDown(i)} disabled={i === steps.length - 1} style={smallBtn} title="Move down">↓</button>
-                  <button onClick={() => removeStep(i)} style={{ ...smallBtn, color: 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' }} title="Delete step">
+                  <button onClick={() => removeStep(i)} style={{ ...smallBtn, color: 'var(--ds-text-danger, var(--ds-text-danger))' }} title="Delete step">
                     <Trash2 size={12} />
                   </button>
                 </div>
@@ -109,10 +109,10 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
         gap: 6,
         padding: '6px 12px',
         background: 'none',
-        border: '1px dashed var(--ds-border, #DFE1E6)',
+        border: '1px dashed var(--ds-border)',
         borderRadius: 4,
         fontSize: 'var(--ds-font-size-300)',
-        color: 'var(--ds-text-subtle, #42526E)',
+        color: 'var(--ds-text-subtle)',
         cursor: 'pointer',
         width: '100%',
         justifyContent: 'center',
@@ -128,7 +128,7 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 'var(--ds-font-size-100)',
   fontWeight: 600,
-  color: 'var(--ds-text-subtle, #42526E)',
+  color: 'var(--ds-text-subtle)',
   marginBottom: 4,
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
@@ -138,7 +138,7 @@ const smallBtn: React.CSSProperties = {
   background: 'none',
   border: 'none',
   cursor: 'pointer',
-  color: 'var(--ds-text-subtlest, #6B778C)',
+  color: 'var(--ds-text-subtlest)',
   padding: '2px 4px',
   fontSize: 'var(--ds-font-size-200)',
   display: 'flex',

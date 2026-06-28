@@ -18,8 +18,8 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
   const isStale = mode === 'stale';
   const title = isStale ? 'Stale Items' : 'Open Items';
   const { isDark } = useTheme();
-  const accentColor = isStale ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
-  const accentBg = isStale ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-background-selected, #EFF6FF)';
+  const accentColor = isStale ? 'var(--ds-text-danger, var(--cp-danger))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))';
+  const accentBg = isStale ? 'var(--ds-background-danger)' : 'var(--ds-background-selected)';
 
   return (
     <>
@@ -32,11 +32,11 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
               <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, background: accentBg, color: accentColor, fontSize: 'var(--ds-font-size-400)', fontWeight: 700 }}>
                 {items.length}
               </span>
-              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{title}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))' }}>{title}</span>
             </div>
             <button className="r3-panel-close" onClick={onClose}><X size={14} /></button>
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
             {isStale ? 'Items with no activity for 14+ days' : 'All currently open items across all periods'}
           </div>
         </div>
@@ -44,7 +44,7 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
         {/* List */}
         <div className="r3-panel-body" style={{ padding: 0 }}>
           {items.length === 0 ? (
-            <div style={{ padding: 24, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 'var(--ds-font-size-300)' }}>
+            <div style={{ padding: 24, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))', fontSize: 'var(--ds-font-size-300)' }}>
               No {mode} items
             </div>
           ) : (
@@ -65,7 +65,7 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
                 {/* Key */}
                 <span className="r3-card-key r3-card-key--sm" style={{ flexShrink: 0, width: 80 }}>{item.item_key}</span>
                 {/* Title */}
-                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {item.title}
                 </span>
                 {/* Status */}

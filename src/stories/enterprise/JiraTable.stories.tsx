@@ -55,7 +55,7 @@ function Providers({ children }: { children: React.ReactNode }) {
 function Frame({ children }: { children: React.ReactNode }) {
   return (
     <Providers>
-      <div style={{ background: 'var(--ds-surface, #fff)', minHeight: 400 }}>
+      <div style={{ background: 'var(--ds-surface)', minHeight: 400 }}>
         {children}
       </div>
     </Providers>
@@ -355,14 +355,14 @@ export const BulkSelect: StoryObj = {
             density="compact"
           />
           {sel.size > 0 && (
-            <div style={{ padding: '8px 16px', background: 'var(--ds-surface-sunken, #F7F8F9)', borderTop: '1px solid var(--ds-border, #DFE1E6)', display: 'flex', alignItems: 'center', gap: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #42526E)' }}>
-              <strong style={{ color: 'var(--ds-text, #172B4D)' }}>{sel.size} selected</strong>
+            <div style={{ padding: '8px 16px', background: 'var(--ds-surface-sunken)', borderTop: '1px solid var(--ds-border)', display: 'flex', alignItems: 'center', gap: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
+              <strong style={{ color: 'var(--ds-text)' }}>{sel.size} selected</strong>
               <span>·</span>
-              <button onClick={() => setSel(new Set(SEED.map((r) => r.id)))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-link, #0052CC)', fontSize: 'var(--ds-font-size-300)' }}>
+              <button onClick={() => setSel(new Set(SEED.map((r) => r.id)))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-300)' }}>
                 Select all {SEED.length}
               </button>
               <span>·</span>
-              <button onClick={() => setSel(new Set())} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-300)' }}>
+              <button onClick={() => setSel(new Set())} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
                 Clear
               </button>
             </div>
@@ -482,7 +482,7 @@ export const Empty: StoryObj = {
         data={[]}
         getRowId={(r) => r.id}
         emptyView={
-          <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-400)' }}>
+          <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-400)' }}>
             No work items match your filters. Try clearing filters or adjusting the JQL.
           </div>
         }

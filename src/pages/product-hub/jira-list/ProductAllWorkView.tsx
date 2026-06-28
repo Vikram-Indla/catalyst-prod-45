@@ -124,7 +124,7 @@ function mapBrToWorkItem(
       name: dm.full_name ?? 'Unknown',
       avatarUrl: dm.avatar_url ?? null,
       initials: initials(dm.full_name),
-      color: 'var(--ds-background-accent-purple-subtle, #6554C0)',
+      color: 'var(--ds-background-accent-purple-subtle)',
     } : undefined,
     reporterId: (r as any).po_user_id ?? null,
     reporter: po ? { id: (r as any).po_user_id, name: po.full_name ?? 'Unknown' } : undefined,
@@ -261,23 +261,23 @@ export default function ProductAllWorkView({ productCode, productId, productName
   return (
     <div style={{
       flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden',
-      background: 'var(--cp-bg-elevated, #ffffff)',
+      background: 'var(--cp-bg-elevated)',
     }}>
       <ProjectPageHeader projectKey={productCode} hubType="product" />
 
       {/* Filter context banner */}
       {(activeFilter || isCreateMode) && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-background-information, #E9F2FF)', borderBottom: '1px solid var(--ds-border-information, #CCE0FF)', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-information, #0055CC)', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-background-information)', borderBottom: '1px solid var(--ds-border-information)', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-information)', flexShrink: 0 }}>
           {isCreateMode ? (
             <>
               <span style={{ fontWeight: 500 }}>Creating filter</span>
-              <span style={{ color: 'var(--ds-text-subtle, #42526E)' }}>— set your filters below, then click Save filter</span>
+              <span style={{ color: 'var(--ds-text-subtle)' }}>— set your filters below, then click Save filter</span>
             </>
           ) : activeFilter ? (
             <>
               <span>Filter:</span>
               <span style={{ fontWeight: 500 }}>{activeFilter.name}</span>
-              <button onClick={() => { setToolbarFilters(EMPTY_FILTERS); setSearchParams({}); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))', padding: '0 4px' }}>Clear filter</button>
+              <button onClick={() => { setToolbarFilters(EMPTY_FILTERS); setSearchParams({}); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, var(--ds-text-subtle))', padding: '0 4px' }}>Clear filter</button>
             </>
           ) : null}
         </div>
@@ -322,8 +322,8 @@ export default function ProductAllWorkView({ productCode, productId, productName
         {/* Left: navigator panel */}
         <div style={{
           width: isNarrow ? '100%' : 360, flexShrink: 0,
-          background: 'var(--cp-bg-elevated, #ffffff)',
-          borderRight: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'var(--cp-bg-elevated)',
+          borderRight: '1px solid var(--ds-border)',
           overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: 0,
         }}>
           <WorkListPanel
@@ -343,22 +343,22 @@ export default function ProductAllWorkView({ productCode, productId, productName
           {/* Footer count (mirrors ProjectAllWorkView pagination footer) */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '8px 8px', borderTop: '1px solid var(--ds-border, #DFE1E6)',
-            background: 'var(--cp-bg-sunken, #F6F7F8)', gap: 8, fontSize: 'var(--ds-font-size-200)',
-            color: 'var(--cp-text-secondary, #6B778C)', flexShrink: 0,
+            padding: '8px 8px', borderTop: '1px solid var(--ds-border)',
+            background: 'var(--cp-bg-sunken)', gap: 8, fontSize: 'var(--ds-font-size-200)',
+            color: 'var(--cp-text-secondary)', flexShrink: 0,
           }}>
             <span data-testid="product-allwork-count">
               {filteredItems.length}{filteredItems.length >= 1000 ? '+' : ''} items
             </span>
-            {brsLoading && <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Loading…</span>}
+            {brsLoading && <span style={{ color: 'var(--ds-text-subtlest)' }}>Loading…</span>}
           </div>
         </div>
 
         {/* Right: detail panel */}
         {!isNarrow && (
           activeItem ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, background: 'var(--cp-bg-elevated, #ffffff)', borderRadius: '0 10px 10px 0', overflow: 'hidden' }}>
-              <Suspense fallback={<div style={{ padding: 24, color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, background: 'var(--cp-bg-elevated)', borderRadius: '0 10px 10px 0', overflow: 'hidden' }}>
+              <Suspense fallback={<div style={{ padding: 24, color: 'var(--cp-text-tertiary)', fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>}>
                 <CatalystDetailRouter
                   isOpen={true}
                   onClose={() => selectItem(null)}
@@ -376,16 +376,16 @@ export default function ProductAllWorkView({ productCode, productId, productName
           ) : (
             <div data-testid="product-allwork-empty-state" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '0 32px', fontFamily: 'var(--cp-font-body)' }}>
               <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-                <rect x="8" y="16" width="64" height="48" rx="6" fill="var(--ds-background-neutral, #F7F8F9)" stroke="var(--ds-border, #DFE1E6)" strokeWidth="1.5"/>
-                <rect x="16" y="28" width="24" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
-                <rect x="16" y="38" width="36" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
-                <rect x="16" y="48" width="20" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
-                <circle cx="56" cy="52" r="14" fill="var(--ds-background-information, #E9F2FF)" stroke="var(--ds-border-information, #CCE0FF)" strokeWidth="1.5"/>
-                <path d="M56 46v6l4 2" stroke="var(--ds-icon-information, #1868DB)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <rect x="8" y="16" width="64" height="48" rx="6" fill="var(--ds-background-neutral)" stroke="var(--ds-border)" strokeWidth="1.5"/>
+                <rect x="16" y="28" width="24" height="4" rx="2" fill="var(--ds-background-neutral-pressed)"/>
+                <rect x="16" y="38" width="36" height="4" rx="2" fill="var(--ds-background-neutral-pressed)"/>
+                <rect x="16" y="48" width="20" height="4" rx="2" fill="var(--ds-background-neutral-pressed)"/>
+                <circle cx="56" cy="52" r="14" fill="var(--ds-background-information)" stroke="var(--ds-border-information)" strokeWidth="1.5"/>
+                <path d="M56 46v6l4 2" stroke="var(--ds-icon-information)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <div style={{ textAlign: 'center' }}>
-                <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: '20px' }}>Select a business request</p>
-                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtle, #44546F)', lineHeight: '20px', maxWidth: 280 }}>Choose a request from the list to view its details, comments, and related work.</p>
+                <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', lineHeight: '20px' }}>Select a business request</p>
+                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtle)', lineHeight: '20px', maxWidth: 280 }}>Choose a request from the list to view its details, comments, and related work.</p>
               </div>
             </div>
           )

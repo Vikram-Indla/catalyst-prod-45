@@ -64,10 +64,10 @@
      Caty brand colour while keeping a gradient AI signifier. */
   background: conic-gradient(
     from 0deg,
-    var(--ds-background-accent-magenta-bolder, #BE185D) 0deg,
+    var(--ds-background-accent-magenta-bolder) 0deg,
     #cd519d 120deg, /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-    var(--ds-background-discovery-bold, #6E5DC6) 240deg,
-    var(--ds-background-accent-magenta-bolder, #BE185D) 360deg
+    var(--ds-background-discovery-bold) 240deg,
+    var(--ds-background-accent-magenta-bolder) 360deg
   );
   pointer-events: none;
 }
@@ -79,7 +79,7 @@
      centre and leaves only the edge ring visible. */
   inset: 0.9px;
   border-radius: 6.5px;
-  background: var(--ds-surface, #ffffff);
+  background: var(--ds-surface);
   z-index: -1;
   pointer-events: none;
 }
@@ -103,7 +103,7 @@
 
 .ask-caty-divider {
   height: 1px;
-  background: var(--ds-border, #dfe1e6);
+  background: var(--ds-border);
   margin: 0;
   flex-shrink: 0;
 }
@@ -165,7 +165,7 @@
   font: inherit;
   font-size: 14px;
   line-height: 20px;
-  color: var(--ds-text, #292a2e);
+  color: var(--ds-text);
   appearance: none;
   -webkit-appearance: none;
   box-sizing: border-box;
@@ -184,7 +184,7 @@
 .ask-caty-row__input:-webkit-autofill:hover,
 .ask-caty-row__input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px transparent inset;
-  -webkit-text-fill-color: var(--ds-text, #292a2e);
+  -webkit-text-fill-color: var(--ds-text);
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -203,7 +203,7 @@
   min-width: 0;
   font-size: 14px;
   line-height: 20px;
-  color: var(--ds-text, #292a2e);
+  color: var(--ds-text);
   padding-left: 8px;
   white-space: nowrap;
   overflow: hidden;
@@ -217,7 +217,7 @@
   display: flex;
   align-items: center;
   pointer-events: none;
-  color: var(--ds-text-subtlest, #6b778c);
+  color: var(--ds-text-subtlest);
   font-size: 14px;
   line-height: 20px;
   white-space: nowrap;

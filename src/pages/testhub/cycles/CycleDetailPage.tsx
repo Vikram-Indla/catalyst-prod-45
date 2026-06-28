@@ -80,7 +80,7 @@ export default function CycleDetailPage() {
   }
 
   if (!cycle) {
-    return <div style={{ padding: 32, color: 'var(--ds-text-danger, #AE2A19)' }}>Cycle not found</div>;
+    return <div style={{ padding: 32, color: 'var(--ds-text-danger)' }}>Cycle not found</div>;
   }
 
   const total = cycle.total_cases ?? 0;
@@ -181,8 +181,8 @@ export default function CycleDetailPage() {
                   URL.revokeObjectURL(url);
                 }}
                 style={{
-                  padding: '6px 12px', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)',
+                  padding: '6px 12px', background: 'none', border: '1px solid var(--ds-border)',
+                  borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)',
                 }}
               >
                 Export CSV
@@ -193,8 +193,8 @@ export default function CycleDetailPage() {
                   disabled={startCycle.isPending}
                   style={{
                     padding: '8px 16px',
-                    background: 'var(--ds-background-brand-bold, #0052CC)',
-                    color: 'var(--ds-text-inverse, #FFFFFF)',
+                    background: 'var(--ds-background-brand-bold)',
+                    color: 'var(--ds-text-inverse)',
                     border: 'none',
                     borderRadius: 4,
                     cursor: startCycle.isPending ? 'not-allowed' : 'pointer',
@@ -215,8 +215,8 @@ export default function CycleDetailPage() {
                     onClick={() => navigate(`/testhub/${projectKey}/cycles/${cycle.id}/execute`)}
                     style={{
                       padding: '8px 16px',
-                      background: 'var(--ds-background-brand-bold, #0052CC)',
-                      color: 'var(--ds-text-inverse, #FFFFFF)',
+                      background: 'var(--ds-background-brand-bold)',
+                      color: 'var(--ds-text-inverse)',
                       border: 'none',
                       borderRadius: 4,
                       cursor: 'pointer',
@@ -235,11 +235,11 @@ export default function CycleDetailPage() {
                     style={{
                       padding: '8px 16px',
                       background: 'none',
-                      border: '1px solid var(--ds-border, #DFE1E6)',
+                      border: '1px solid var(--ds-border)',
                       borderRadius: 4,
                       cursor: completeCycle.isPending ? 'not-allowed' : 'pointer',
                       fontSize: 'var(--ds-font-size-300)',
-                      color: 'var(--ds-text, #172B4D)',
+                      color: 'var(--ds-text)',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 6,
@@ -262,27 +262,27 @@ export default function CycleDetailPage() {
           flex: 1,
           maxWidth: 320,
           height: 8,
-          background: 'var(--ds-background-neutral, #F1F2F4)',
+          background: 'var(--ds-background-neutral)',
           borderRadius: 4,
           overflow: 'hidden',
         }}>
           <div style={{
             height: '100%',
             width: `${pct}%`,
-            background: 'var(--ds-background-brand-bold, #0052CC)',
+            background: 'var(--ds-background-brand-bold)',
             borderRadius: 4,
           }} />
         </div>
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
           {pct}% — {executed}/{total} executed
         </span>
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-success, #006644)' }}>{passed} passed</span>
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)' }}>{failed} failed</span>
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning, #974F0C)' }}>{blocked} blocked</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-success)' }}>{passed} passed</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>{failed} failed</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning)' }}>{blocked} blocked</span>
       </div>
 
       {/* Tab bar */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border, #DFE1E6)', marginBottom: 16 }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border)', marginBottom: 16 }}>
         {(['scope', 'planning'] as const).map(tab => (
           <button
             key={tab}
@@ -291,12 +291,12 @@ export default function CycleDetailPage() {
               padding: '8px 16px',
               background: 'none',
               border: 'none',
-              borderBottom: activeTab === tab ? '2px solid var(--ds-link, #0052CC)' : '2px solid transparent',
+              borderBottom: activeTab === tab ? '2px solid var(--ds-link)' : '2px solid transparent',
               marginBottom: -2,
               cursor: 'pointer',
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: activeTab === tab ? 600 : 400,
-              color: activeTab === tab ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+              color: activeTab === tab ? 'var(--ds-link)' : 'var(--ds-text-subtle)',
             }}
           >
             {tab === 'scope' ? 'Scope' : 'Planning'}
@@ -317,7 +317,7 @@ export default function CycleDetailPage() {
 
       {/* Scope section header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+        <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', margin: 0 }}>
           {statusFilter === 'ALL'
             ? `Scope (${scopeItems.length} ${scopeItems.length === 1 ? 'case' : 'cases'})`
             : `Scope (${filteredItems.length} of ${scopeItems.length})`}
@@ -327,11 +327,11 @@ export default function CycleDetailPage() {
           style={{
             padding: '6px 12px',
             background: 'none',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border)',
             borderRadius: 4,
             cursor: 'pointer',
             fontSize: 'var(--ds-font-size-300)',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text)',
             display: 'flex',
             alignItems: 'center',
             gap: 6,
@@ -345,11 +345,11 @@ export default function CycleDetailPage() {
       {/* Bulk action bar */}
       {selectedIds.size > 0 && (
         <div style={{
-          background: 'var(--ds-background-selected, #E9F2FF)',
-          border: '1px solid var(--ds-border-selected, #4C9AFF)',
+          background: 'var(--ds-background-selected)',
+          border: '1px solid var(--ds-border-selected)',
           borderRadius: 6, padding: '8px 16px', marginBottom: 8,
           display: 'flex', alignItems: 'center', gap: 12, fontSize: 'var(--ds-font-size-300)',
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text)',
         }}>
           <span style={{ fontWeight: 500 }}>{selectedIds.size} case{selectedIds.size > 1 ? 's' : ''} selected</span>
           <button
@@ -357,7 +357,7 @@ export default function CycleDetailPage() {
               removeCases.mutate({ cycle_id: cycleId!, scope_ids: Array.from(selectedIds) });
               setSelectedIds(new Set());
             }}
-            style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}
+            style={{ background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}
           >
             Remove from scope
           </button>
@@ -382,7 +382,7 @@ export default function CycleDetailPage() {
           </DropdownMenu>
           <button
             onClick={() => setSelectedIds(new Set())}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #42526E)', marginLeft: 'auto' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', marginLeft: 'auto' }}
           >
             ✕ Clear
           </button>
@@ -401,9 +401,9 @@ export default function CycleDetailPage() {
               cursor: 'pointer',
               fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
-              border: statusFilter === pill.value ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
-              background: statusFilter === pill.value ? 'var(--ds-background-brand-bold, #0052CC)' : 'none',
-              color: statusFilter === pill.value ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--ds-text-subtle, #42526E)',
+              border: statusFilter === pill.value ? 'none' : '1px solid var(--ds-border)',
+              background: statusFilter === pill.value ? 'var(--ds-background-brand-bold)' : 'none',
+              color: statusFilter === pill.value ? 'var(--ds-text-inverse)' : 'var(--ds-text-subtle)',
             }}
           >
             {pill.label}
@@ -414,18 +414,18 @@ export default function CycleDetailPage() {
       {scopeLoading ? (
         <Spinner size="medium" />
       ) : scopeItems.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>
+        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>
           No cases in scope yet. Add cases to start executing.
         </div>
       ) : filteredItems.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>
+        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>
           No cases match the selected status filter.
         </div>
       ) : (
-        <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
+        <div style={{ border: '1px solid var(--ds-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
             <thead>
-              <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--ds-border)' }}>
                 <th style={{ ...thStyle, width: 36 }}>
                   <input
                     type="checkbox"
@@ -490,10 +490,10 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
       onClick={() => toggle(p)}
       title={label}
       style={{
-        background: panel === p ? 'var(--ds-background-selected, #E9F2FF)' : 'none',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        background: panel === p ? 'var(--ds-background-selected)' : 'none',
+        border: '1px solid var(--ds-border)',
         borderRadius: 4, cursor: 'pointer', padding: '2px 6px',
-        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel === p ? 'var(--ds-text-brand, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel === p ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
       }}
     >
       {emoji}
@@ -502,7 +502,7 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
 
   return (
     <>
-      <tr style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)', background: selected ? 'var(--ds-background-selected, #E9F2FF)' : undefined }}>
+      <tr style={{ borderBottom: '1px solid var(--ds-border)', background: selected ? 'var(--ds-background-selected)' : undefined }}>
         <td style={{ ...tdStyle, width: 36 }}>
           <input
             type="checkbox"
@@ -511,10 +511,10 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
             style={{ width: 16, height: 16, cursor: 'pointer' }}
           />
         </td>
-        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-200)' }}>
+        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>
           {item.test_case?.key ?? '—'}
         </td>
-        <td style={{ ...tdStyle, color: 'var(--ds-text, #172B4D)' }}>
+        <td style={{ ...tdStyle, color: 'var(--ds-text)' }}>
           {item.test_case?.title ?? '—'}
         </td>
         <td style={tdStyle}>
@@ -536,7 +536,7 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
         <td style={tdStyle}>
           <button
             onClick={onRemove}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', padding: 4 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', padding: 4 }}
             title="Remove from scope"
           >
             <Trash2 size={13} />
@@ -641,21 +641,21 @@ function RightPanel({ title, subtitle, onClose, children }: {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.25))' }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, width: 480, height: '100vh', zIndex: 8001,
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        background: 'var(--ds-surface-overlay)',
         boxShadow: '-4px 0 24px var(--ds-shadow-raised, rgba(9,30,66,0.2))',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
         {/* Header */}
         <div style={{
-          padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          padding: '16px 20px', borderBottom: '1px solid var(--ds-border)',
           display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-500)', color: 'var(--ds-text, #172B4D)' }}>{title}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{subtitle}</div>
+            <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-500)', color: 'var(--ds-text)' }}>{title}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>{subtitle}</div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-600)', color: 'var(--ds-text-subtle, #42526E)', padding: '0 4px' }}>✕</button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-600)', color: 'var(--ds-text-subtle)', padding: '0 4px' }}>✕</button>
         </div>
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
@@ -668,7 +668,7 @@ function RightPanel({ title, subtitle, onClose, children }: {
 }
 
 const NO_RUN_MSG = (
-  <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)', margin: 0 }}>
+  <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', margin: 0 }}>
     No execution run yet. Execute this case first.
   </p>
 );
@@ -723,10 +723,10 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
   };
 
   const SEVERITY_COLORS: Record<string, string> = {
-    critical: 'var(--ds-text-danger, #AE2A19)',
-    major: 'var(--ds-text-warning, #974F0C)',
-    minor: 'var(--ds-text-subtle, #42526E)',
-    trivial: 'var(--ds-text-subtlest, #6B778C)',
+    critical: 'var(--ds-text-danger)',
+    major: 'var(--ds-text-warning)',
+    minor: 'var(--ds-text-subtle)',
+    trivial: 'var(--ds-text-subtlest)',
   };
 
   return (
@@ -735,29 +735,29 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
         <>
           {/* Existing defects */}
           {isLoading ? <Spinner size="small" /> : defects.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)' }}>No defects logged.</p>
+            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No defects logged.</p>
           ) : (
             <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {defects.map((d: { id: string; defect_key: string; title: string; severity: string; status: string }) => (
                 <div key={d.id} style={{
                   padding: '10px 12px', borderRadius: 6,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  background: 'var(--ds-surface-sunken, #F7F8F9)',
+                  border: '1px solid var(--ds-border)',
+                  background: 'var(--ds-surface-sunken)',
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest, #6B778C)' }}>{d.defect_key}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest)' }}>{d.defect_key}</span>
                     <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: SEVERITY_COLORS[d.severity] ?? 'inherit' }}>{d.severity}</span>
                   </div>
-                  <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>{d.title}</div>
-                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{d.status}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', fontWeight: 500 }}>{d.title}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>{d.status}</div>
                 </div>
               ))}
             </div>
           )}
 
           {/* New defect form */}
-          <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)', paddingTop: 16 }}>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 10 }}>Log new defect</div>
+          <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 10 }}>Log new defect</div>
             <div style={{ marginBottom: 10 }}>
               <label style={labelStyle}>Title</label>
               <Textfield value={title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} placeholder="Describe the defect…" />
@@ -780,7 +780,7 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
               disabled={!title.trim() || saving}
               style={{
                 padding: '8px 16px', borderRadius: 4, border: 'none',
-                background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
                 cursor: (!title.trim() || saving) ? 'not-allowed' : 'pointer',
                 fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: saving ? 0.7 : 1,
               }}
@@ -844,25 +844,25 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
       {!runId ? NO_RUN_MSG : (
         <>
           {isLoading ? <Spinner size="small" /> : comments.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)' }}>No comments yet.</p>
+            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No comments yet.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
               {comments.map((c: { id: string; content: string; created_at: string; author: { full_name: string } | null }) => (
-                <div key={c.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)', paddingBottom: 12 }}>
+                <div key={c.id} style={{ borderBottom: '1px solid var(--ds-border-subtle)', paddingBottom: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)' }}>
                       {c.author?.full_name ?? 'Unknown'}
                     </span>
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                       {new Date(c.created_at).toLocaleString()}
                     </span>
                   </div>
-                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', lineHeight: 1.5 }}>{c.content}</p>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', lineHeight: 1.5 }}>{c.content}</p>
                 </div>
               ))}
             </div>
           )}
-          <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)', paddingTop: 16 }}>
+          <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
             <Textarea
               value={text}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value)}
@@ -874,7 +874,7 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
               disabled={!text.trim() || posting}
               style={{
                 marginTop: 8, padding: '7px 14px', borderRadius: 4, border: 'none',
-                background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
                 cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
                 fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: posting ? 0.7 : 1,
               }}
@@ -952,8 +952,8 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
             <label style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '7px 14px', borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
-              border: '1px solid var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #172B4D)',
-              background: uploading ? 'var(--ds-background-neutral, #F1F2F4)' : 'var(--ds-surface, #FFFFFF)',
+              border: '1px solid var(--ds-border)', color: 'var(--ds-text)',
+              background: uploading ? 'var(--ds-background-neutral)' : 'var(--ds-surface)',
             }}>
               {uploading ? <Spinner size="small" /> : '📎'}
               {uploading ? 'Uploading…' : 'Attach file'}
@@ -962,19 +962,19 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
           </div>
 
           {isLoading ? <Spinner size="small" /> : attachments.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)' }}>No evidence attached.</p>
+            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No evidence attached.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {attachments.map((a: { id: string; file_name: string; file_path: string; file_size: number; mime_type: string; created_at: string }) => (
                 <div key={a.id} style={{
                   padding: '10px 12px', borderRadius: 6,
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  background: 'var(--ds-surface-sunken, #F7F8F9)',
+                  border: '1px solid var(--ds-border)',
+                  background: 'var(--ds-surface-sunken)',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div>
-                    <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{a.file_name}</div>
-                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>{a.file_name}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>
                       {fmtSize(a.file_size)} · {a.mime_type}
                     </div>
                   </div>
@@ -982,7 +982,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
                     href={supabase.storage.from('tm-attachments').getPublicUrl(a.file_path).data.publicUrl}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
+                    style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link)', textDecoration: 'none' }}
                   >
                     Download
                   </a>
@@ -998,7 +998,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
 
 const labelStyle: React.CSSProperties = {
   display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
-  color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4,
+  color: 'var(--ds-text-subtle)', marginBottom: 4,
 };
 
 function AddCasesModal({
@@ -1203,7 +1203,7 @@ const thStyle: React.CSSProperties = {
   textAlign: 'left',
   fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
-  color: 'var(--ds-text-subtle, #42526E)',
+  color: 'var(--ds-text-subtle)',
 };
 
 const tdStyle: React.CSSProperties = { padding: '10px 12px' };

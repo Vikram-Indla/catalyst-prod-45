@@ -86,25 +86,25 @@ export interface ProjectInfo {
 export const STATUS_LOZENGE_MAP: Record<WorkItemStatus, {
   bg: string; text: string; label: string;
 }> = {
-  backlog:          { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: 'var(--ds-text, #253858)', label: 'BACKLOG' },
-  in_progress:      { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'IN PROGRESS' },
-  done:             { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'DONE' },
-  in_production:    { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'IN PRODUCTION' },
-  ready_for_qa:     { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'READY FOR QA' },
-  in_requirements:  { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: 'var(--ds-text, #253858)', label: 'IN REQUIREMENTS' },
-  in_uat:           { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'IN UAT' },
-  in_qa:            { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'IN QA' },
-  in_dev:           { bg: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #0747A6)', label: 'IN DEV' },
-  closed:           { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #006644)', label: 'CLOSED' },
+  backlog:          { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))', text: 'var(--ds-text)', label: 'BACKLOG' },
+  in_progress:      { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', label: 'IN PROGRESS' },
+  done:             { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'DONE' },
+  in_production:    { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'IN PRODUCTION' },
+  ready_for_qa:     { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'READY FOR QA' },
+  in_requirements:  { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))', text: 'var(--ds-text)', label: 'IN REQUIREMENTS' },
+  in_uat:           { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'IN UAT' },
+  in_qa:            { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', label: 'IN QA' },
+  in_dev:           { bg: 'var(--ds-background-information)', text: 'var(--ds-link-pressed)', label: 'IN DEV' },
+  closed:           { bg: 'var(--ds-background-success)', text: 'var(--ds-text-success)', label: 'CLOSED' },
 };
 
 // Work item type colour mapping (canonical SVG icons)
 export const WORK_ITEM_TYPE_COLOR: Record<WorkItemType, string> = {
-  epic:        'var(--ds-background-discovery-bold, #6554C0)',
-  story:       'var(--ds-background-success-bold, #1F845A)',
-  bug:         'var(--ds-background-danger-bold, #C9372C)',
-  task:        'var(--ds-link, #0C66E4)',
-  subtask:     'var(--ds-link, #0C66E4)',
-  feature:     'var(--ds-background-success-bold, #1F845A)',
-  improvement: 'var(--ds-background-success-bold, #1F845A)',
+  epic:        'var(--ds-background-discovery-bold)',
+  story:       'var(--ds-background-success-bold)',
+  bug:         'var(--ds-background-danger-bold)',
+  task:        'var(--ds-link)',
+  subtask:     'var(--ds-link)',
+  feature:     'var(--ds-background-success-bold)',
+  improvement: 'var(--ds-background-success-bold)',
 };

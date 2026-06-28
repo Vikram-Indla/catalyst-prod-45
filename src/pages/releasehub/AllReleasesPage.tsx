@@ -30,24 +30,24 @@ import { RH } from '@/constants/releasehub.design';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 const T = {
-  surface: 'var(--ds-surface, #FFFFFF)',
-  card: 'var(--ds-surface-raised, #FFFFFF)',
-  sunken: 'var(--ds-surface-sunken, #F7F8F9)',
-  border: 'var(--ds-border, #DFE1E6)',
-  text: 'var(--ds-text, #172B4D)',
-  subtle: 'var(--ds-text-subtle, #44546F)',
-  subtlest: 'var(--ds-text-subtlest, #626F86)',
-  link: 'var(--ds-link, #0C66E4)',
-  selectedBg: 'var(--ds-background-selected, #E9F2FE)',
+  surface: 'var(--ds-surface)',
+  card: 'var(--ds-surface-raised)',
+  sunken: 'var(--ds-surface-sunken)',
+  border: 'var(--ds-border)',
+  text: 'var(--ds-text)',
+  subtle: 'var(--ds-text-subtle)',
+  subtlest: 'var(--ds-text-subtlest)',
+  link: 'var(--ds-link)',
+  selectedBg: 'var(--ds-background-selected)',
   mono: 'var(--ds-font-family-code, monospace)',
 };
 
 function HealthPill({ health }: { health: string | null }) {
   if (!health) return <span style={{ color: T.subtlest }}>—</span>;
   const map: Record<string, { label: string; fg: string; bg: string }> = {
-    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger, #AE2A19)', bg: 'var(--ds-background-danger, #FFECEB)' },
-    on_track: { label: 'On track', fg: 'var(--ds-text-information, #0055CC)', bg: 'var(--ds-background-information, #E9F2FE)' },
-    done: { label: 'Done', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
+    at_risk: { label: 'At risk', fg: 'var(--ds-text-danger)', bg: 'var(--ds-background-danger)' },
+    on_track: { label: 'On track', fg: 'var(--ds-text-information)', bg: 'var(--ds-background-information)' },
+    done: { label: 'Done', fg: 'var(--ds-text-success)', bg: 'var(--ds-background-success)' },
   };
   const m = map[health] ?? { label: health, fg: T.subtle, bg: T.sunken };
   return (
@@ -176,10 +176,10 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       cell: ({ row }) => {
         if (row.readiness_pct == null) return <span style={{ color: T.subtlest }}>—</span>;
         const pct = Math.max(0, Math.min(100, row.readiness_pct));
-        const barColor = row.health === 'at_risk' ? 'var(--ds-background-danger-bold, #C9372C)' : 'var(--ds-background-brand-bold, #0C66E4)';
+        const barColor = row.health === 'at_risk' ? 'var(--ds-background-danger-bold)' : 'var(--ds-background-brand-bold)';
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ flex: 1, height: 6, borderRadius: 4, background: 'var(--ds-background-neutral, #F1F2F4)', overflow: 'hidden', minWidth: 48 }}>
+            <div style={{ flex: 1, height: 6, borderRadius: 4, background: 'var(--ds-background-neutral)', overflow: 'hidden', minWidth: 48 }}>
               <div style={{ width: `${pct}%`, height: '100%', background: barColor }} />
             </div>
             <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, minWidth: 28, textAlign: 'right' }}>{pct}%</span>
@@ -203,7 +203,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
     {
       id: 'signoff', label: 'Sign-off', width: 9, align: 'end',
       cell: ({ row }) => row.signoffProgress
-        ? <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', color: row.signoffProgress.approved === row.signoffProgress.total ? 'var(--ds-text-success, #216E4E)' : T.subtle }}>{row.signoffProgress.approved}/{row.signoffProgress.total}</span>
+        ? <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', color: row.signoffProgress.approved === row.signoffProgress.total ? 'var(--ds-text-success)' : T.subtle }}>{row.signoffProgress.approved}/{row.signoffProgress.total}</span>
         : <span style={{ color: T.subtlest }}>—</span>,
     },
     {
@@ -239,9 +239,9 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
           onClick={() => canManage && setShowCreate(true)}
           disabled={!canManage}
           title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
         >
-          <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New release
+          <Plus size={14} style={{ color: 'var(--ds-text-inverse)' }} /> New release
         </button>
       </div>
 

@@ -36,7 +36,7 @@ export default function HierarchyAllWorkPage() {
   if (!projectKey) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="font-body text-sm" style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>
+        <p className="font-body text-sm" style={{ color: 'var(--ds-text-subtlest)' }}>
           No project key provided.
         </p>
       </div>
