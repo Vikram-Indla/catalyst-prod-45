@@ -1,6 +1,6 @@
 import React from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { CatalystBreadcrumbs } from '@/components/ads';
+import { Breadcrumbs } from '@/components/ads';
 import { T } from '@/components/admin/ai-assistant/tokens';
 import { useAiCommandConsole } from '@/components/admin/ai-assistant/useAiCommandConsole';
 import { AiCommandComposer } from '@/components/admin/ai-assistant/AiCommandComposer';
@@ -13,9 +13,9 @@ export default function AiAccessPage() {
     <AdminGuard>
       <style>{CSS}</style>
       <div style={{ padding: '20px 32px 48px', minHeight: '100%' }}>
-        <CatalystBreadcrumbs items={[
-          { label: 'Administration', href: '/admin' },
-          { label: 'AI assistant' },
+        <Breadcrumbs items={[
+          { key: 'admin', text: 'Administration', href: '/admin' },
+          { key: 'ai-assistant', text: 'AI assistant', isCurrent: true },
         ]} />
 
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 20 }}>
