@@ -74,7 +74,7 @@ function BarButton({ children, onClick, title, style, isSquare }: {
         height: 32,
         minWidth: isSquare ? 32 : undefined,
         padding: isSquare ? 0 : '0 14px',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontFamily: 'var(--ds-font-family-body)',
         fontWeight: 400,
         color: T.text,
@@ -206,7 +206,7 @@ export function TimelineBottomBar({
                   style={{
                     height: 32,
                     padding: '0 14px',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontFamily: 'var(--ds-font-family-body)',
                     fontWeight: isActive ? 500 : 400,
                     color: isActive ? T.textSelected : T.text,

@@ -38,17 +38,17 @@ export function DangerZone({ projectId, projectName }: DangerZoneProps) {
         className="ph-card"
         style={{ borderLeft: '4px solid var(--sem-danger)' }}
       >
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--sem-danger)', fontFamily: 'var(--cp-font-heading)', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
+        <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--sem-danger)', fontFamily: 'var(--cp-font-heading)', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           Danger Zone
         </h3>
-        <p style={{ fontSize: 13, color: 'var(--fg-3)', maxWidth: 520 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', maxWidth: 520 }}>
           Archive this project. Archived projects are hidden from the project list but can be restored.
         </p>
         <button
           onClick={() => setConfirmOpen(true)}
           className="mt-4 transition-all"
           style={{
-            height: 34, padding: '0 14px', fontSize: 13, fontWeight: 500,
+            height: 34, padding: '0 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
             color: 'var(--sem-danger)', border: '1px solid var(--sem-danger)', borderRadius: 6,
             background: 'transparent', cursor: 'pointer',
           }}

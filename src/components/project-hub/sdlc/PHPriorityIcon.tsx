@@ -13,5 +13,5 @@ interface Props {
 export function PHPriorityIcon({ priority, showLabel }: Props) {
   // Map 'urgent' → 'critical' for canonical rendering
   const mapped = priority === 'urgent' ? 'critical' : priority;
-  return <PriorityIndicator priority={mapped} showLabel={showLabel} fontSize={10} />;
+  return <PriorityIndicator priority={mapped} showLabel={showLabel} fontSize={'var(--ds-font-size-50)'} />;
 }

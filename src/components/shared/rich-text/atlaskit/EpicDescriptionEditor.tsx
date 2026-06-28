@@ -871,7 +871,7 @@ function EpicDescriptionEditorImpl({
             <div
               style={{
                 padding: 12,
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -946,7 +946,7 @@ function EpicDescriptionEditorImpl({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               paddingTop: 4,
               paddingLeft: 2,
@@ -960,7 +960,7 @@ function EpicDescriptionEditorImpl({
         {!isDragOver && !uploading && !bodyOverlay && (
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               paddingTop: 4,
               paddingLeft: 2,

@@ -58,7 +58,7 @@ function MenuItemRow({
         role="presentation"
         style={{
           padding: '8px 16px 4px',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 653,
           color: 'var(--ds-text-subtle, #505258)',
           userSelect: 'none',
@@ -198,7 +198,7 @@ export function ColumnHeaderMenu({ isOpen, onClose, triggerRef, items }: ColumnH
         padding: '4px 0',
         minWidth: 220,
         zIndex: 9999,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: 'var(--ds-text, #292A2E)',
       }}
     >
@@ -248,7 +248,7 @@ function submenuStyle(triggerRect: DOMRect): React.CSSProperties {
     padding: '4px 0',
     minWidth: 180,
     zIndex: 10000,
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     color: 'var(--ds-text, #292A2E)',
   };
 }

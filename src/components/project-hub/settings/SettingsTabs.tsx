@@ -37,7 +37,7 @@ export function SettingsTabs({ active, onChange }: SettingsTabsProps) {
             style={{
               height: 40,
               padding: '0 16px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: isActive ? 600 : 500,
               color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)',
               borderBottom: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent',

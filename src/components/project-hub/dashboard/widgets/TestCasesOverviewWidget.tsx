@@ -62,8 +62,8 @@ function KpiTile({ label, value, color }: { label: string; value: number; color:
       borderRadius: 6,
       padding: 12,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 600, color }}>{value}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color }}>{value}</div>
     </div>
   );
 }

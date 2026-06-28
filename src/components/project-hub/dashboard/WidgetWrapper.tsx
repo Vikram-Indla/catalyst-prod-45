@@ -312,13 +312,13 @@ export default function WidgetWrapper({
           <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
             {/* 2026-06-09 Spec parity — semantic h2 + 16/600/var(--ds-text, #172B4D)
                 /-0.006em letter-spacing per Filter Results gadget spec. */}
-            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px', letterSpacing: '-0.006em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px', letterSpacing: '-0.006em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {title}
             </h2>
             {subtitle && (
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 400,
                   color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                   lineHeight: '16px',
@@ -516,7 +516,7 @@ export default function WidgetWrapper({
             alignItems: 'center',
             gap: 4,
             padding: `4px ${token('space.200', '16px')} 8px`,
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 400,
             color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
           }}

@@ -26,7 +26,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                   backgroundColor: isDone ? 'var(--sem-success)' : isActive ? 'var(--cp-blue)' : 'transparent',
                   border: isUpcoming ? '2px solid var(--divider)' : 'none',
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   fontFamily: 'var(--cp-font-body)',
                 }}
@@ -39,7 +39,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
               </div>
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: isActive ? 600 : 500,
                   color: isActive ? 'var(--fg-1)' : isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                   marginTop: 4,

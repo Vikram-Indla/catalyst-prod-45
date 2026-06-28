@@ -38,22 +38,22 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       <WorkItemTypeIcon type={icon} size={20} />
 
       {/* Name */}
-      <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>
+      <span className="flex-1 truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)' }}>
         {name}
       </span>
 
       {/* Level badge */}
       <span
         className="flex-shrink-0 rounded-full"
-        style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: ls.bg, color: ls.text }}
+        style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 10px', background: ls.bg, color: ls.text }}
       >
         {normalizedLevel}
       </span>
 
       {/* Item count or disabled label */}
-      <span className="flex-shrink-0 text-right" style={{ fontSize: 12, color: 'var(--fg-4)', minWidth: 100, fontFamily: isDisabledFeature ? 'var(--cp-font-body)' : 'var(--cp-font-mono)' }}>
+      <span className="flex-shrink-0 text-right" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', minWidth: 100, fontFamily: isDisabledFeature ? 'var(--cp-font-body)' : 'var(--cp-font-mono)' }}>
         {isDisabledFeature ? (
-          <span style={{ fontSize: 11, fontStyle: 'italic' }}>Disabled — enable Feature Layer</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontStyle: 'italic' }}>Disabled — enable Feature Layer</span>
         ) : (
           itemCount
         )}

@@ -56,7 +56,7 @@ function StatusChip({ status }: { status: string }) {
       display: 'inline-block',
       padding: '2px 8px',
       borderRadius: 3,
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
       lineHeight: '16px',
       background: bg,
@@ -353,7 +353,7 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0 }}>
           {hasSprints && (
             <span style={{
-              fontSize: 9,
+              fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
               flexShrink: 0,
               display: 'inline-block',
@@ -465,7 +465,7 @@ export default function ActiveSprintsWidget({
           border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           background: 'transparent',
           color: token('color.link', 'var(--ds-link, #0C66E4)'),
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           cursor: 'pointer',
           whiteSpace: 'nowrap',
@@ -539,7 +539,7 @@ export default function ActiveSprintsWidget({
                 left: `${todayPct}%`,
                 transform: 'translateX(-50%)',
                 whiteSpace: 'nowrap',
-                fontSize: 10,
+                fontSize: 'var(--ds-font-size-50)',
               }}>
                 ▼ Today
               </span>

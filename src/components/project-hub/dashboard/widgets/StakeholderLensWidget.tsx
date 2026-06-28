@@ -128,7 +128,7 @@ export default function StakeholderLensWidget({
                   <span
                     style={{
                       ...LABEL,
-                      fontSize: 10,
+                      fontSize: 'var(--ds-font-size-50)',
                       fontWeight: 700,
                       color: atRiskTotal > 0
                         ? 'var(--ds-text-accent-orange-bolder, #974F0C)'

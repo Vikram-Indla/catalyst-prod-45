@@ -62,7 +62,7 @@ export function ProjectToolbar({
             onChange={e => setLocalSearch(e.target.value)}
             placeholder="Search projects..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: textColor, fontFamily: 'var(--cp-font-body)' }}
+            style={{ fontSize: 'var(--ds-font-size-300)', color: textColor, fontFamily: 'var(--cp-font-body)' }}
           />
         </div>
 

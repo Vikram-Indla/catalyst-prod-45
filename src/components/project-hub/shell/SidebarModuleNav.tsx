@@ -30,14 +30,14 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       >
         <div
           className="flex items-center justify-center flex-shrink-0"
-          style={{ width: 28, height: 28, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-heading)', borderRadius: 6 }}
+          style={{ width: 28, height: 28, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, fontFamily: 'var(--cp-font-heading)', borderRadius: 6 }}
         >
           PH
         </div>
         {!collapsed && (
           <span
             className="flex-1 truncate text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
-            style={{ fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-heading)' }}
+            style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'var(--cp-font-heading)' }}
           >
             ProjectHub
           </span>
@@ -65,7 +65,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
           <>
             <div className="my-2 mx-2" style={{ height: 1, backgroundColor: 'var(--ds-border, #DFE1E6)' }} />
             <div className="pt-1">
-              <div className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
+              <div className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
                 Favorites
               </div>
               <div
@@ -73,7 +73,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
                 style={{ padding: '10px 12px' }}
               >
                 <Star size={14} className="text-[var(--ds-border, #DFE1E6)] dark:text-[var(--ds-text-subtlest, #626F86)] flex-shrink-0" />
-                <span className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 12 }}>
+                <span className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-200)' }}>
                   Star projects for quick access
                 </span>
               </div>

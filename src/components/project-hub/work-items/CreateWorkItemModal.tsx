@@ -307,7 +307,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                       outline: isSelected ? `1px solid ${hi.color}` : 'none',
                     }}
                   >
-                    <span style={{ color: hi.color, fontSize: 14, lineHeight: 1 }}>{hi.symbol}</span>
+                    <span style={{ color: hi.color, fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}>{hi.symbol}</span>
                     {wt.name}
                   </button>
                 );
@@ -584,7 +584,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setParentId(p.id); setParentOpen(false); setParentSearch(''); }}
                     >
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)', fontSize: 10 }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-50)' }}>
                         {p.item_key}
                       </span>
                       <span className="truncate">{p.title || p.summary}</span>

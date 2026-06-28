@@ -57,7 +57,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
               className="relative flex items-center h-full transition-colors duration-150"
               style={{
                 padding: '0 10px',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: isActive ? 600 : 500,
                 color: isActive ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'),
                 fontFamily: 'var(--cp-font-body)',
@@ -88,7 +88,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: 'none',
             borderRadius: 6,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
             cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)',
@@ -109,13 +109,13 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           }}
         >
           <Search size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" strokeWidth={2} />
-          <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 12, userSelect: 'none', whiteSpace: 'nowrap' }}>
+          <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-200)', userSelect: 'none', whiteSpace: 'nowrap' }}>
             Search anything...
           </span>
           <kbd
             className="bg-white dark:bg-transparent border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]"
             style={{
-              fontSize: 10,
+              fontSize: 'var(--ds-font-size-50)',
               fontWeight: 500,
               borderRadius: 4,
               padding: '1px 5px',

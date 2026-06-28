@@ -42,7 +42,7 @@ export function CatalystBulkActionBar({
         background: token('color.background.selected'),
         borderRadius: 3,
         marginBottom: 8,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: token('color.text'),
       }}
     >

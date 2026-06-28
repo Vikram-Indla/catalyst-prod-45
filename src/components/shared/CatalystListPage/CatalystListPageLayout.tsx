@@ -122,7 +122,7 @@ export function CatalystListPageLayout({
           <div
             style={{
               padding: '8px 4px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: token('color.text.subtlest'),
             }}
           >

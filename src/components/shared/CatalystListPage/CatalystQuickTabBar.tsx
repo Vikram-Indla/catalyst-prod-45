@@ -55,7 +55,7 @@ export function CatalystQuickTabBar({
                 ? `2px solid ${token('color.border.selected', 'var(--ds-link, #0052CC)')}`
                 : '2px solid transparent',
               padding: '8px 16px',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: isActive ? 600 : 400,
               color: isActive
                 ? token('color.text.selected', 'var(--ds-link, #0052CC)')

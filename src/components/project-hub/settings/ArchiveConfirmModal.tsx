@@ -35,7 +35,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} color="var(--sem-danger)" strokeWidth={2} />
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>
+            <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>
               Archive Project
             </h3>
           </div>
@@ -48,7 +48,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
           </button>
         </div>
 
-        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: 1.6 }}>
           Are you sure you want to archive <strong>{projectName}</strong>? This will hide it from the project list but it can be restored later.
         </p>
 
@@ -57,7 +57,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             onClick={onClose}
             className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
             style={{
-              height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500,
+              height: 50, padding: '0 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
               cursor: 'pointer',
             }}
@@ -69,7 +69,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             disabled={loading}
             className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--sem-danger)]"
             style={{
-              height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600,
+              height: 50, padding: '0 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6,
               cursor: loading ? 'default' : 'pointer',
             }}
