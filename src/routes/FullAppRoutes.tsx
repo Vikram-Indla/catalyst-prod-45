@@ -175,6 +175,9 @@ const TestHubProjectTestingStatusPage = lazy(() => import("../pages/testhub/repo
 const TestHubSprintTestingStatusPage = lazy(() => import("../pages/testhub/reports/SprintTestingStatusPage"));
 const TestHubTesterPerformancePage = lazy(() => import("../pages/testhub/reports/TesterPerformancePage"));
 const TestHubTeamPerformancePage = lazy(() => import("../pages/testhub/reports/TeamPerformancePage"));
+const TestHubDefectsIncidentsPage = lazy(() => import("../pages/testhub/reports/DefectsIncidentsPage"));
+const TestHubGovernancePage = lazy(() => import("../pages/testhub/reports/GovernancePage"));
+const TestHubProductStatusPage = lazy(() => import("../pages/testhub/reports/ProductStatusPage"));
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
@@ -693,6 +696,9 @@ export default function FullAppRoutes() {
         <Route path="/testhub/reports/sprint-status" element={<S><TestHubSprintTestingStatusPage /></S>} />
         <Route path="/testhub/reports/tester-status" element={<S><TestHubTesterPerformancePage /></S>} />
         <Route path="/testhub/reports/team-status" element={<S><TestHubTeamPerformancePage /></S>} />
+        <Route path="/testhub/reports/defects-incidents" element={<S><TestHubDefectsIncidentsPage /></S>} />
+        <Route path="/testhub/reports/governance" element={<S><TestHubGovernancePage /></S>} />
+        <Route path="/testhub/reports/product-status" element={<S><TestHubProductStatusPage /></S>} />
         <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
             Static segments BEFORE :id-style routes. */}
