@@ -49,13 +49,14 @@ const COLOR_PATTERNS = [
   /\bhsla?\s*\(\s*\d+[^)]*\)/gi,
 ];
 
-// Allowed patterns (CSS variable usage)
+// Allowed patterns — only raw color functions wrapping a CSS variable are OK,
+// e.g. hsl(var(--hue), 50%, 50%). A bare hex/rgb INSIDE a var() fallback is
+// NOT allowed: var(--ds-token, #hex) is explicitly banned by CLAUDE.md.
 const ALLOWED_PATTERNS = [
   /hsl\s*\(\s*var\s*\(/i,         // hsl(var(--...))
   /hsla\s*\(\s*var\s*\(/i,        // hsla(var(--...))
   /rgb\s*\(\s*var\s*\(/i,         // rgb(var(--...))
   /rgba\s*\(\s*var\s*\(/i,        // rgba(var(--...))
-  /var\s*\(\s*--/i,               // var(--...)
 ];
 
 // Context patterns that indicate the color is in a comment
@@ -139,16 +140,10 @@ function isInsideFallbackCall(line, matchIndex) {
 }
 
 function isAllowedUsage(line, match) {
-  // Check if the match is part of an allowed pattern (CSS variable usage)
+  // var(--ds-token, #hex) is explicitly BANNED — hex fallbacks inside var() are
+  // violations, not exemptions. Only raw color functions wrapping a CSS var()
+  // (e.g. hsl(var(--hue), 50%, 50%)) are allowed.
   const matchIndex = line.indexOf(match);
-
-  // Hex/rgb fallback inside a var()/token() call is ADS-compliant — allow it
-  // regardless of token-name length (the fixed-width context window below
-  // misses long token names, e.g. `var(--ds-very-long-name, #hex)`).
-  if (isInsideFallbackCall(line, matchIndex)) {
-    return true;
-  }
-
   const context = line.slice(Math.max(0, matchIndex - 20), matchIndex + match.length + 20);
 
   return ALLOWED_PATTERNS.some(pattern => pattern.test(context));
