@@ -25,7 +25,7 @@ import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozeng
 import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 import { toStatusCategory } from '@/components/ads';
-import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import { statusBg, statusFg } from './statusPalette';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -50,10 +50,10 @@ if (typeof document !== 'undefined') {
         border: none;
         cursor: pointer;
         font-family: inherit;
-        font-size: 14px;
-        font-weight: 500;
-        letter-spacing: normal;
-        text-transform: none;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
         outline: none;
         transition: filter 0.15s ease;
         background: var(--csp-bg);
@@ -62,7 +62,7 @@ if (typeof document !== 'undefined') {
       .${PILL_CLASS}[data-csp-compact="true"] {
         height: 24px;
         padding: 0 6px;
-        font-size: 12px;
+        font-size: 11px;
         gap: 3px;
       }
       .${PILL_CLASS}:hover,
@@ -185,12 +185,13 @@ export function CatalystStatusPill({
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  // Workflow-driven statuses from admin/workflows (ph_workflow_* tables)
+  // Workflow-driven statuses. Canonical ph_wf_* for migrated entities (Story);
+  // legacy ph_workflow_* delegate for everything else.
   const {
     statusGroups: workflowGroups,
     getAvailableStatuses,
     hasConfig,
-  } = useIssueTypeWorkflow(issueType);
+  } = useCanonicalIssueWorkflow(issueType);
 
   // Caller-injected options (e.g. from CreateStoryModal resolvedStatusOptions).
   // When provided, these take precedence and bypass transition filtering.
@@ -481,8 +482,9 @@ export function CatalystStatusPill({
                             padding: '0 8px',
                             borderRadius: 3,
                             fontSize: 11,
-                            fontWeight: 600,
-                            letterSpacing: '0.06em',
+                            fontWeight: 700,
+                            letterSpacing: '0.04em',
+                            textTransform: 'uppercase' as const,
                             background: bg,
                             color: fg,
                           }}
