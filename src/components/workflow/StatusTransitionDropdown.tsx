@@ -14,7 +14,7 @@ import DropdownMenu, {
   DropdownItemGroup,
 } from '@atlaskit/dropdown-menu';
 import Lozenge from '@atlaskit/lozenge';
-import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import { JiraStatusLozenge } from './JiraStatusLozenge';
 import { CatalystWorkflowModal } from '../catalyst-detail-views/shared/workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
@@ -47,7 +47,7 @@ export function StatusTransitionDropdown({
   size = 'default',
   lockWhenDone = true,
 }: StatusTransitionDropdownProps) {
-  const { statusGroups, getAvailableStatuses, isLoading } = useCanonicalIssueWorkflow(issueType);
+  const { statusGroups, getAvailableStatuses, isLoading } = useIssueTypeWorkflow(issueType);
   const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
 
   // Find the current status in the groups to get its category

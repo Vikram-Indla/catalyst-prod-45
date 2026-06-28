@@ -24,6 +24,7 @@ import DropdownMenu, {
 } from "@atlaskit/dropdown-menu";
 import { IssueHoverCard } from "@/components/shared/IssueHoverCard";
 import { CatalystStatusPill } from "@/components/catalyst-detail-views/shared/sections";
+import { useCanonicalIssueWorkflow } from "@/hooks/useCanonicalIssueWorkflow";
 import type { CellProps } from "./types";
 
 // ─── Checkbox Cell ─────────────────────────────────────────────────────────
@@ -255,7 +256,7 @@ export function makeCaretCell({
 // (digital-transformation.atlassian.net BAU list view, current production):
 //   - font-size:    14px
 //   - font-weight:  400
-//   - color:        color.link (var(--ds-link, #0C66E4)) — blue, underlined at rest
+//   - color:        color.link (#0C66E4) — blue, underlined at rest
 //   - text-decoration: underline at rest state (Jira parity confirmed visually)
 //
 // NOTE: 2026-04-26 comment claiming #505258/grey was stale — current Jira
@@ -501,6 +502,12 @@ export function makeStatusEditCell<T>(opts: {
   canEdit?: (row: T) => boolean;
   /** 2026-06-21 (Vikram canonical): once done, frozen. Default true. */
   lockWhenDone?: boolean;
+  /**
+   * Per-row issue type. When it resolves to a canonical-engine entity (Story),
+   * the editor sources options + labels from ph_wf_* (canonical transitions)
+   * instead of `options`. Non-canonical rows are unchanged.
+   */
+  getIssueType?: (row: T) => string | null;
 }) {
   return function StatusEditCell({ row }: CellProps<T>) {
     const [open, setOpen] = React.useState(false);
@@ -508,6 +515,15 @@ export function makeStatusEditCell<T>(opts: {
     const triggerRef = React.useRef<HTMLButtonElement>(null);
     const popupRef = React.useRef<HTMLDivElement>(null);
     const status = opts.getStatus(row);
+    const issueType = opts.getIssueType ? opts.getIssueType(row) : null;
+    const canonical = useCanonicalIssueWorkflow(issueType);
+    // Canonical (Story): options = allowed transitions; else caller options.
+    const effectiveOptions = canonical.isCanonical
+      ? canonical.getAvailableStatuses(status)
+      : opts.options;
+    const isUnmapped = canonical.isCanonical && !!status && !canonical.resolveStatusKey(status);
+    const displayLabel = (s: string | null): string =>
+      canonical.isCanonical ? canonical.labelForStatus(s) : (opts.labelFor && s ? opts.labelFor(s) : (s ?? ""));
     const callerEditable = opts.canEdit ? opts.canEdit(row) : true;
     const lockWhenDone = opts.lockWhenDone !== false;
     const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
@@ -562,7 +578,7 @@ export function makeStatusEditCell<T>(opts: {
         >
           {status ? (
             <CatalystStatusPill
-              status={opts.labelFor ? opts.labelFor(status) : status}
+              status={displayLabel(status)}
               interactive={false}
               compact={true}
             />
@@ -608,7 +624,21 @@ export function makeStatusEditCell<T>(opts: {
                 padding: "4px 0",
               }}
             >
-              {opts.options.map((s) => {
+              {isUnmapped && (
+                <div
+                  style={{
+                    padding: "4px 12px 8px",
+                    fontSize: 11,
+                    color: token("color.text.warning", "var(--ds-text-warning)"),
+                    borderBottom: `1px solid ${token("color.border", "var(--ds-border)")}`,
+                    marginBottom: 4,
+                  }}
+                >
+                  Legacy status “{status}” is not yet mapped to the canonical Story
+                  workflow — pick a canonical status to move it onto the workflow.
+                </div>
+              )}
+              {effectiveOptions.map((s) => {
                 const isActive = s === status;
                 return (
                   <button
@@ -649,7 +679,7 @@ export function makeStatusEditCell<T>(opts: {
                     }}
                   >
                     <CatalystStatusPill
-                      status={opts.labelFor ? opts.labelFor(s) : s}
+                      status={displayLabel(s)}
                       interactive={false}
                       compact={true}
                     />

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { usePhProjects } from '@/hooks/useProjects';
@@ -1180,6 +1181,22 @@ export default function WorkflowAdminPage() {
                 </button>
               ))}
             </div>
+            <Link
+              to="/admin/workflows/versions"
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: T.textBrand,
+                textDecoration: 'none',
+                padding: '4px 10px',
+                borderRadius: 4,
+                border: `1px solid ${T.border}`,
+                whiteSpace: 'nowrap',
+              }}
+              title="Open the versioned workflow engine (ph_wf_* foundation)"
+            >
+              Versioned engine →
+            </Link>
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', paddingTop: '4px' }}>
@@ -1269,7 +1286,7 @@ export default function WorkflowAdminPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '5px',
-                  padding: '3px 10px 3px 8px',
+                  padding: '4px 8px 4px 8px',
                   borderRadius: '20px',
                   border: `1px solid ${typeIdx === i ? T.iconBrand : T.border}`,
                   fontSize: '12px',

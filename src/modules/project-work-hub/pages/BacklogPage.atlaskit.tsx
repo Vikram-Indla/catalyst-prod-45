@@ -130,6 +130,7 @@ import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog
 // Shared with the AllWork toolbar so both surfaces read identically.
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { useProject } from '@/hooks/useProjects';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 // Apr 28, 2026 (carryover #9): Star/Unstar persisted via the canonical
 // starred_items table chokepoint. Replaces the prior local useState toggle
@@ -776,6 +777,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   }, [dbStatuses]);
   const STATUS_OPTIONS = dataSource?.statusOptions ?? (dbStatusOptions.length > 0 ? dbStatusOptions : DEFAULT_STATUS_OPTIONS);
   const ALL_BACKLOG_STATUSES = dataSource?.allStatuses ?? DEFAULT_ALL_BACKLOG_STATUSES;
+  // Story status filter options come from the canonical ph_wf_* workflow (18
+  // canonical labels), unioned with remaining legacy statuses so non-Story
+  // types stay filterable. Canonical labels are listed first.
+  const canonicalStoryWf = useCanonicalIssueWorkflow('Story');
+  const STATUS_FILTER_OPTIONS = useMemo(() => {
+    const canon = canonicalStoryWf.statusGroups.flatMap((g) => g.statuses);
+    return Array.from(new Set([...canon, ...ALL_BACKLOG_STATUSES]));
+  }, [canonicalStoryWf.statusGroups, ALL_BACKLOG_STATUSES]);
   const statusAppearance = dataSource?.statusAppearance ?? defaultStatusAppearance;
   const statusLabel = dataSource?.statusLabel ?? defaultStatusLabel;
   // Resolve the effective allowed-column-ids list. The dataSource adapter
@@ -2842,6 +2851,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // for future experiments once the upstream surface bug is root-caused.
       cell: makeStatusEditCell<BacklogItem>({
         getStatus: (r) => r.status,
+        // Per-row canonical routing: Story rows source options/labels from
+        // ph_wf_* (canonical transitions); all other types keep ALL_BACKLOG_STATUSES.
+        getIssueType: (r) => r.issue_type,
         options: ALL_BACKLOG_STATUSES,
         appearanceFor: (s) => statusAppearance(s) as LozengeAppearance,
         // 2026-06-01 (catalyst-clone): when an adapter provides statusLabel
@@ -2861,7 +2873,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       renderFilterMenu: (close) => (
         <ColumnFilterMultiSelect
           title="Status"
-          options={ALL_BACKLOG_STATUSES}
+          options={STATUS_FILTER_OPTIONS}
           selected={filterValue.status}
           onChange={(next) => setFilterValue((p) => ({ ...p, status: next }))}
           onClose={close}
