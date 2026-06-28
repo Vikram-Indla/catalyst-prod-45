@@ -13,8 +13,15 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 import { validateReleaseTransition } from '@/lib/release-ops/lifecycle';
+import { gateTransition, resolveCanonicalCategory } from '@/lib/workflow/canonical/runtime';
+import type { EntityKey } from '@/lib/workflow/canonical/contracts';
 import type { StatusCategory } from '../types';
 import type { KanbanMode } from './useKanbanData';
+
+// issue_type -> canonical entity_key (only entities on the canonical engine).
+// Enforcement (advisory|blocking) is resolved per project+entity from
+// ph_wf_enforcement_config inside gateTransition — never a global flag.
+const KANBAN_ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = { Story: 'story' };
 
 export interface NewIssueInput {
   projectKey: string;
@@ -125,9 +132,37 @@ export function useKanbanMutations(mode: KanbanMode = 'project'): KanbanMutation
       if (error) throw error;
       return;
     }
+    // Pre-fetch row context (incl. guard fields) for canonical Story gate.
+    const { data: before } = await supabase
+      .from('ph_issues')
+      .select('id, issue_type, status, project_key, description_text, assignee_account_id, assignee_display_name, reporter_account_id')
+      .eq('id', issueId)
+      .maybeSingle();
+    const entityKey = before?.issue_type ? KANBAN_ISSUE_TYPE_TO_ENTITY[before.issue_type] : undefined;
+
+    // Canonical gate BEFORE persistence. In BLOCKING mode a denied move throws
+    // → the board's onError reverts the card to its original column.
+    if (entityKey && before?.id) {
+      const gate = await gateTransition({
+        entityKey,
+        issueRow: before,
+        toStatusRaw: status,
+        sourceSurface: 'kanban_drag',
+      });
+      if (gate.blocked) {
+        throw new Error(gate.message ?? 'Move blocked by workflow.');
+      }
+    }
+
     const patch: Record<string, unknown> = { status };
     const jiraCat = categoryToJira(category);
     if (jiraCat) patch.status_category = jiraCat;
+    // Story: category from workflow config (not keyword/board column).
+    if (entityKey) {
+      const configCat = await resolveCanonicalCategory(entityKey, before?.project_key ?? null, status);
+      if (configCat) patch.status_category = configCat;
+    }
+
     const { error } = await supabase.from('ph_issues').update(patch).eq('id', issueId);
     if (error) throw error;
   }, [isProduct, isTasks, isRelease, isTest]);

@@ -8,6 +8,14 @@ import { catalystToast } from '@/lib/catalystToast';
 import {
   getStatusCategory,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
+import { gateTransition, resolveCanonicalCategory } from '@/lib/workflow/canonical/runtime';
+import type { EntityKey } from '@/lib/workflow/canonical/contracts';
+
+// ph_issues.issue_type -> canonical entity_key (only entities on the canonical
+// engine are mapped; others stay undefined -> advisory is a no-op for them).
+const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
+  Story: 'story',
+};
 
 export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
   const queryClient = useQueryClient();
@@ -17,11 +25,43 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
 
   const updateStatus = useMutation({
     mutationFn: async (newStatus: string) => {
-      const cat = getStatusCategory(newStatus);
+      // capture pre-update context (incl. guard fields) for canonical gate + audit
+      const { data: before } = await supabase
+        .from('ph_issues')
+        .select('id, issue_type, status, project_key, description_text, assignee_account_id, assignee_display_name, reporter_account_id')
+        .eq('issue_key', itemId)
+        .maybeSingle();
+
+      const entityKey = before?.issue_type ? ISSUE_TYPE_TO_ENTITY[before.issue_type] : undefined;
+
+      // Canonical gate (resolves advisory|blocking, evaluates role+guards, audits).
+      if (entityKey && before?.id) {
+        const gate = await gateTransition({
+          entityKey,
+          issueRow: before,
+          toStatusRaw: newStatus,
+          sourceSurface: 'catalyst_status_pill',
+        });
+        // BLOCKING mode + denied → do NOT persist; surface the tooltip basis.
+        if (gate.blocked) {
+          throw new Error(gate.message ?? 'Transition not allowed by workflow.');
+        }
+      }
+
+      // Story (canonical): category from workflow config; else keyword fallback.
+      let cat = getStatusCategory(newStatus);
+      if (entityKey) {
+        const configCat = await resolveCanonicalCategory(entityKey, before?.project_key ?? null, newStatus);
+        if (configCat) cat = configCat;
+      }
+
       await supabase
         .from('ph_issues')
         .update({ status: newStatus, status_category: cat })
         .eq('issue_key', itemId) /* F-iter9 PK fix */;
+    },
+    onError: (err: unknown) => {
+      catalystToast.error(err instanceof Error ? err.message : 'Status change blocked by workflow.');
     },
     onSuccess: invalidate,
   });
