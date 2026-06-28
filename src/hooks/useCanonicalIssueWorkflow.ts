@@ -23,6 +23,8 @@ const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
   release: 'release', Release: 'release',
   business_request: 'business_request', 'Business Request': 'business_request',
   product_milestone: 'product_milestone', 'Product Milestone': 'product_milestone',
+  task: 'task', Task: 'task',
+  sprint: 'sprint', Sprint: 'sprint',
 };
 
 export interface CanonicalWorkflowExtras {
