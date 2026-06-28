@@ -5,7 +5,6 @@ import AddIcon from "@atlaskit/icon/core/add";
 import { CreateStoryModal } from "@/components/workhub/create-story";
 import { CreateBusinessRequestModal } from "@/components/business-requests/CreateBusinessRequestModal";
 import { NewIncidentModal } from "@/pages/incidenthub/components/NewIncidentModal";
-import { CreateDefectModalG25 } from "@/components/defects/g25/CreateDefectModal";
 
 /**
  * "+ Create" button — opens the canonical create surface for the current
@@ -21,7 +20,7 @@ import { CreateDefectModalG25 } from "@/components/defects/g25/CreateDefectModal
  *   /product-hub/*   → CreateBusinessRequestModal (BRs live in business_requests)
  *   /tasks/*         → CreateStoryModal, default work type 'Task' (workstream + tasks table)
  *   /incident-hub/*  → NewIncidentModal (incidents table)
- *   /testhub/*       → CreateDefectModalG25 (defects table)
+ *   /testhub/*       → CreateStoryModal, default work type 'QA Bug' (tm_defects)
  *   everywhere else  → CreateStoryModal, default work type 'Story'
  *
  * The user can still switch work type inside the unified modal; selecting
@@ -37,7 +36,6 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const [storyOpen, setStoryOpen] = useState(false);
   const [brOpen, setBrOpen] = useState(false);
   const [incidentOpen, setIncidentOpen] = useState(false);
-  const [defectOpen, setDefectOpen] = useState(false);
   const [pendingWorkType, setPendingWorkType] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
   const params = useParams<{ key?: string }>();
@@ -61,7 +59,7 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
 
   const handleCreate = () => {
     if (isIncidentHub) { setIncidentOpen(true); return; }
-    if (isTestHub) { setDefectOpen(true); return; }
+    if (isTestHub) { setPendingWorkType('QA Bug'); setStoryOpen(true); return; }
     if (isProductHub) { setBrOpen(true); return; }
     setStoryOpen(true);
   };
@@ -94,8 +92,6 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
       />
 
       <NewIncidentModal open={incidentOpen} onClose={() => setIncidentOpen(false)} />
-
-      <CreateDefectModalG25 open={defectOpen} onClose={() => setDefectOpen(false)} />
     </>
   );
 }

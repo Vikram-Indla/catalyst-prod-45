@@ -100,6 +100,11 @@ import { useTaskWorkstreams } from '@/modules/tasks/hooks/useTaskWorkstreams';
 import { useCreateTaskMutation } from '@/modules/tasks/components/CreateTaskModal/hooks/useCreateTaskMutation';
 import { adfToPlainText } from '@/utils/adf';
 import type { TaskPriority } from '@/modules/tasks/types';
+// ── Defect (QA Bug) work type → tm_defects (TestHub) ──────────────────────────
+import { DatePicker } from '@atlaskit/datetime-picker';
+import { useProjects as useTmProjects } from '@/hooks/test-management/useProjects';
+import { useCreateDefect } from '@/hooks/test-management/useDefects';
+import type { DefectSeverity } from '@/types/test-management';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public API (callers' contract — DO NOT CHANGE)
@@ -203,6 +208,33 @@ const DEFAULT_STATUS_OPTIONS = [
   { value: 'In Progress', label: 'In Progress', color_category: 'in_progress' },
   { value: 'Done', label: 'Done', color_category: 'done' },
 ];
+
+// ── Defect (QA Bug) option sets — tm_defects enums (CAT-TESTHUB-DEFECT-CANONICAL) ──
+const DEFECT_STATUS_OPTIONS = [
+  { value: 'open', label: 'Open', color_category: 'todo' },
+  { value: 'in_progress', label: 'In progress', color_category: 'in_progress' },
+  { value: 'resolved', label: 'Resolved', color_category: 'done' },
+  { value: 'closed', label: 'Closed', color_category: 'done' },
+  { value: 'reopened', label: 'Reopened', color_category: 'todo' },
+];
+const DEFECT_SEVERITY_OPTIONS = [
+  { value: 'critical', label: 'Critical' },
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+];
+const DEFECT_ENVIRONMENT_OPTIONS = [
+  { value: 'QA', label: 'QA' },
+  { value: 'Staging', label: 'Staging' },
+  { value: 'Beta', label: 'Beta' },
+  { value: 'Prod', label: 'Prod' },
+];
+const DEFECT_SEVERITY_MAP: Record<string, DefectSeverity> = {
+  critical: 'CRITICAL',
+  high: 'MAJOR',
+  medium: 'MINOR',
+  low: 'TRIVIAL',
+};
 
 // Lozenge appearance buckets — Atlaskit gives us 5 named appearances and we
 // map to the 3-color status guardrail (CLAUDE.md §5):
@@ -489,6 +521,30 @@ export function CreateStoryModal({
     [taskStatuses],
   );
 
+  // ── Defect (QA Bug) work type — writes to tm_defects (TestHub) ────────────
+  const isDefect = workType === 'QA Bug';
+  const { data: tmProjects = [] } = useTmProjects();
+  const createDefect = useCreateDefect();
+  const [defectSeverity, setDefectSeverity] =
+    useState<'critical' | 'high' | 'medium' | 'low'>('medium');
+  const [defectComponent, setDefectComponent] = useState('');
+  const [defectEnvironment, setDefectEnvironment] = useState('');
+  const [defectDueDate, setDefectDueDate] = useState('');
+  const [defectExpectedAdf, setDefectExpectedAdf] = useState<unknown>(null);
+  const [defectActualAdf, setDefectActualAdf] = useState<unknown>(null);
+  const tmProjectOptions: IconOption[] = useMemo(
+    () => (tmProjects as any[]).map((p) => ({ value: p.id, label: p.name })),
+    [tmProjects],
+  );
+  const resetDefectState = useCallback(() => {
+    setDefectSeverity('medium');
+    setDefectComponent('');
+    setDefectEnvironment('');
+    setDefectDueDate('');
+    setDefectExpectedAdf(null);
+    setDefectActualAdf(null);
+  }, []);
+
   // Primary: admin/workflows (ph_workflow_* tables) — shared canonical source.
   const {
     initialStatus: phInitialStatus,
@@ -545,11 +601,19 @@ export function CreateStoryModal({
   // Canonical source: catalyst_workflow_schemes/_statuses via useWorkflowStatuses.
   // INITIAL_STATUS_BY_TYPE removed (Bucket B, 2026-05-09) — DB is the only authority.
   useEffect(() => {
-    if (isTask) return; // tasks default separately (Backlog) — see effect below
+    if (isTask || isDefect) return; // task/defect default separately — see effects below
     if (statusesLoading) return;
     const initial = dbInitialStatus ?? 'To Do';
     if (form.status !== initial) updateField('status', initial);
-  }, [isTask, workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isTask, isDefect, workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Defect initial status = 'open' (tm_defect_status). Set when entering defect
+  // mode or when the current status isn't a valid defect status.
+  useEffect(() => {
+    if (!isDefect) return;
+    const valid = DEFECT_STATUS_OPTIONS.some((o) => o.value === form.status);
+    if (!valid) updateField('status', 'open');
+  }, [isDefect, form.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Task initial status = the default task status (Backlog). Set when entering
   // task mode or when the current status isn't a valid task status.
@@ -705,6 +769,55 @@ export function CreateStoryModal({
         }
       } catch (err: any) {
         setFormError(err?.message ?? 'Failed to create task');
+      }
+      return;
+    }
+
+    // ── Defect (QA Bug) writes to tm_defects (not ph_issues) ──────────────
+    if (isDefect) {
+      if (!form.projectId) {
+        setFormError('Project is required');
+        return;
+      }
+      if (!form.summary.trim()) return; // Summary ErrorMessage renders inline
+      try {
+        const descAdf = form.descriptionAdf ?? null;
+        const sprintName = (form.sprintReleases ?? [])
+          .map((id) => sprintOptions.find((o) => o.value === id)?.label)
+          .filter(Boolean)[0] as string | undefined;
+        await createDefect.mutateAsync({
+          project_id: form.projectId,
+          title: form.summary.trim(),
+          description: descAdf ? adfToPlainText(descAdf as any) : undefined,
+          description_adf: descAdf ?? undefined,
+          severity: DEFECT_SEVERITY_MAP[defectSeverity] ?? 'MINOR',
+          priority: (form.priority || 'Medium').toLowerCase(),
+          component: defectComponent || undefined,
+          environment: defectEnvironment || undefined,
+          expected_result: defectExpectedAdf ? adfToPlainText(defectExpectedAdf as any) : undefined,
+          expected_result_adf: defectExpectedAdf ?? undefined,
+          actual_result: defectActualAdf ? adfToPlainText(defectActualAdf as any) : undefined,
+          actual_result_adf: defectActualAdf ?? undefined,
+          due_date: defectDueDate || undefined,
+          assigned_to: form.assigneeId || undefined,
+          parent_key: form.parentId || undefined,
+          sprint: sprintName,
+        });
+        flag.success('Defect created');
+        onSuccess?.('');
+        if (createAnother) {
+          reset(true);
+          resetDefectState();
+          setEditorKey((k) => k + 1);
+          setSubmitAttempted(false);
+        } else {
+          onClose();
+          reset();
+          resetDefectState();
+          setEditorKey((k) => k + 1);
+        }
+      } catch (err: any) {
+        setFormError(err?.message ?? 'Failed to create defect');
       }
       return;
     }
@@ -934,9 +1047,9 @@ export function CreateStoryModal({
                         isRequired={isRequired}
                         isDisabled={isDisabled}
                         inputId="cs-space"
-                        options={projectOptions}
+                        options={isDefect ? tmProjectOptions : projectOptions}
                         value={
-                          projectOptions.find(
+                          (isDefect ? tmProjectOptions : projectOptions).find(
                             (o) => o.value === form.projectId,
                           ) ?? null
                         }
@@ -963,17 +1076,19 @@ export function CreateStoryModal({
                 {() => (
                   <>
                     <div style={{ display: 'block', marginTop: 4 }}>
-                      {!isTask && statusesLoading ? (
+                      {!isTask && !isDefect && statusesLoading ? (
                         <Spinner size="small" />
                       ) : (
                         <CatalystStatusPill
-                          status={form.status || (isTask ? defaultTaskStatusName : 'To Do')}
+                          status={form.status || (isTask ? defaultTaskStatusName : isDefect ? 'open' : 'To Do')}
                           statusCategory={
-                            isTask
+                            isDefect
+                              ? (DEFECT_STATUS_OPTIONS.find((s) => s.value === form.status)?.color_category ?? null)
+                              : isTask
                               ? (taskStatuses.find((s) => s.name === form.status)?.slug ?? null)
                               : (workflowStatuses.find((s) => s.value === form.status)?.color_category ?? null)
                           }
-                          statusOptions={isTask ? taskStatusOptions : resolvedStatusOptions}
+                          statusOptions={isDefect ? DEFECT_STATUS_OPTIONS : isTask ? taskStatusOptions : resolvedStatusOptions}
                           onStatusChange={(newStatus) => updateField('status', newStatus)}
                           issueType={workType}
                         />
@@ -1025,9 +1140,9 @@ export function CreateStoryModal({
                 {({ fieldProps: { id, isDisabled } }) => (
                   <>
                     <AsyncSelect<IconOption>
-                      key={`parent-${isTask ? 'task' : resolvedKey || 'none'}`}
+                      key={`parent-${isTask || isDefect ? 'anyitem' : resolvedKey || 'none'}`}
                       id={id}
-                      isDisabled={isDisabled || (!isTask && !resolvedKey)}
+                      isDisabled={isDisabled || (!isTask && !isDefect && !resolvedKey)}
                       inputId="cs-parent"
                       defaultOptions
                       loadOptions={async (input: string) => {
@@ -1037,7 +1152,7 @@ export function CreateStoryModal({
                         // Slice 9B: a Task links to ANY work item EXCEPT sub-task
                         // (not project-scoped). The link is stored in
                         // task_work_item_links on create.
-                        if (isTask) {
+                        if (isTask || isDefect) {
                           let tq = supabase
                             .from('ph_issues')
                             .select('issue_key, summary, issue_type')
@@ -1098,7 +1213,7 @@ export function CreateStoryModal({
                         )
                       }
                       placeholder={
-                        isTask
+                        isTask || isDefect
                           ? 'Link a work item (optional)'
                           : resolvedKey
                             ? 'Select parent'
@@ -1166,6 +1281,106 @@ export function CreateStoryModal({
                   </div>
                 )}
               </Field>
+
+              {/* ── Defect-only fields (QA Bug → tm_defects) ──────────── */}
+              {isDefect && (
+                <>
+                  <Field name="severity" label="Severity">
+                    {({ fieldProps }) => (
+                      <Select<IconOption>
+                        {...fieldProps}
+                        inputId="cs-defect-severity"
+                        options={DEFECT_SEVERITY_OPTIONS}
+                        value={DEFECT_SEVERITY_OPTIONS.find((o) => o.value === defectSeverity) ?? null}
+                        onChange={(opt) =>
+                          setDefectSeverity(((opt as IconOption)?.value as any) ?? 'medium')
+                        }
+                        isSearchable={false}
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="function" label="Function">
+                    {({ fieldProps }) => (
+                      <Textfield
+                        {...(fieldProps as any)}
+                        placeholder="e.g. Authentication"
+                        value={defectComponent}
+                        onChange={(e) => setDefectComponent((e.target as HTMLInputElement).value)}
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="environment" label="Environment">
+                    {({ fieldProps }) => (
+                      <Select<IconOption>
+                        {...fieldProps}
+                        inputId="cs-defect-environment"
+                        options={DEFECT_ENVIRONMENT_OPTIONS}
+                        value={DEFECT_ENVIRONMENT_OPTIONS.find((o) => o.value === defectEnvironment) ?? null}
+                        onChange={(opt) => setDefectEnvironment((opt as IconOption)?.value ?? '')}
+                        placeholder="Select environment"
+                        isClearable
+                        isSearchable={false}
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="dueDate" label="Due date">
+                    {({ fieldProps }) => (
+                      <DatePicker
+                        {...(fieldProps as any)}
+                        inputId="cs-defect-due"
+                        value={defectDueDate}
+                        onChange={(v) => setDefectDueDate(v || '')}
+                        placeholder="dd/mm/yyyy"
+                      />
+                    )}
+                  </Field>
+
+                  <Field name="expectedResult" label="Expected result">
+                    {() => (
+                      <div className="cs-adf-desc-wrapper">
+                        <RichTextEditor
+                          key={`expected-${editorKey}`}
+                          initialAdf={null}
+                          hideActionButtons
+                          onSave={() => {}}
+                          onCancel={() => {}}
+                          onChange={(tiptapJson) => {
+                            try {
+                              setDefectExpectedAdf(tiptapToAdf(tiptapJson));
+                            } catch {
+                              setDefectExpectedAdf(null);
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                  </Field>
+
+                  <Field name="actualResult" label="Actual result">
+                    {() => (
+                      <div className="cs-adf-desc-wrapper">
+                        <RichTextEditor
+                          key={`actual-${editorKey}`}
+                          initialAdf={null}
+                          hideActionButtons
+                          onSave={() => {}}
+                          onCancel={() => {}}
+                          onChange={(tiptapJson) => {
+                            try {
+                              setDefectActualAdf(tiptapToAdf(tiptapJson));
+                            } catch {
+                              setDefectActualAdf(null);
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                  </Field>
+                </>
+              )}
 
               {/* ── Sprint ─────────────────────────────────────────────
                   2026-06-26 (revised): always render dropdown with ALL
@@ -1258,6 +1473,10 @@ export function CreateStoryModal({
                 )}
               </Field>
 
+              {/* Reporter + Labels are ph_issues-only; defects set reporter from
+                  the auth user in useCreateDefect and omit labels here. */}
+              {!isDefect && (
+              <>
               {/* ── Reporter — required, current user (ADS: disabled Select) ── */}
               <Field name="reporter" label="Reporter" isRequired>
                 {({ fieldProps }) => {
@@ -1316,6 +1535,8 @@ export function CreateStoryModal({
                   />
                 )}
               </Field>
+              </>
+              )}
 
 
             </Box>
@@ -1335,7 +1556,7 @@ export function CreateStoryModal({
               </Button>
               <Button
                 appearance="primary"
-                isLoading={isTask ? createTaskMutation.isPending : createMutation.isPending}
+                isLoading={isDefect ? createDefect.isPending : isTask ? createTaskMutation.isPending : createMutation.isPending}
                 onClick={handleSubmit}
               >
                 Create

@@ -401,6 +401,7 @@ export interface UpdateCycleInput extends Partial<CreateCycleInput> {
 export interface CreateDefectInput {
   title: string;
   description?: string;
+  description_adf?: unknown;
   severity: DefectSeverity;
   priority?: string;
   component?: string;
@@ -408,8 +409,12 @@ export interface CreateDefectInput {
   affects_version?: string;
   steps_to_reproduce?: string;
   expected_result?: string;
+  expected_result_adf?: unknown;
   actual_result?: string;
+  actual_result_adf?: unknown;
   due_date?: string;
+  parent_key?: string;
+  sprint?: string;
   assigned_to?: string;
   case_id?: string;
   run_id?: string;
