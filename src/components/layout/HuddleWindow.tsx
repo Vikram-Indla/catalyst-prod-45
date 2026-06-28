@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen, sendHuddleMarker, onHuddleMarker } from '@/store/huddleStore';
 import { Avatar } from '@/components/ads';
 import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
+import { useMessages } from '@/hooks/chat/useMessages';
+import { Composer } from '@/features/chat-v2/components/Composer/Composer';
 
 /**
  * HuddleWindow — large draggable + resizable Slack-style huddle surface.
@@ -30,6 +32,15 @@ export function HuddleWindow() {
   const [size] = useState<Size>(() => load(SIZE_KEY, { w: 900, h: 560 }));
   const wrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
+
+  const chatPanelOpen = useHuddleStore((s) => s.chatPanelOpen);
+  const { messages, sendMessage } = useMessages(active?.conversationId ?? null);
+  // huddle started this session — only show messages from now on, like Slack.
+  const sessionStartRef = useRef<string>(new Date().toISOString());
+  useEffect(() => { sessionStartRef.current = new Date().toISOString(); }, [active?.huddleId]);
+  const sessionMessages = messages.filter(
+    (m) => m.eventType !== 'huddle_summary' && m.createdAt >= sessionStartRef.current,
+  );
 
   // stage state
   const markerPen = useHuddleStore((s) => s.markerPen);
@@ -255,7 +266,35 @@ export function HuddleWindow() {
             </div>
           </div>
         </div>
-        {/* thread panel added in Task 8 */}
+        {chatPanelOpen && (
+          <div style={{ flex: '0 0 360px', minWidth: 0, display: 'flex', flexDirection: 'column',
+            borderLeft: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)' }}>
+            <div style={{ flex: '0 0 auto', padding: '10px 14px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              fontWeight: 700, fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Thread</div>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {sessionMessages.length === 0 ? (
+                <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, lineHeight: 1.5 }}>
+                  <strong style={{ color: 'var(--ds-text, #172B4D)' }}>Every huddle has a thread.</strong>
+                  {' '}Send messages, files, and links to everyone in the huddle. They are saved in this conversation, so you can read them after the huddle ends.
+                </div>
+              ) : (
+                sessionMessages.map((m) => (
+                  <div key={m.id} style={{ fontSize: 13 }}>
+                    <span style={{ fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>{m.authorName || 'You'}</span>
+                    <span style={{ marginLeft: 8, color: 'var(--ds-text, #172B4D)', whiteSpace: 'pre-wrap' }}>{m.bodyText}</span>
+                  </div>
+                ))
+              )}
+            </div>
+            <div style={{ flex: '0 0 auto', borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <Composer
+                placeholder="Message"
+                conversationId={active.conversationId}
+                onSend={(md) => { void sendMessage(md); }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* control bar added in Task 9 */}
