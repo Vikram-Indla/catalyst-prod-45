@@ -190,20 +190,3 @@ export interface SyncLogEntry {
   duration_ms?: number;
   triggered_by?: string;
 }
-
-export const whQueryKeys = {
-  all: ['workhub'] as const,
-  lists: () => [...whQueryKeys.all, 'list'] as const,
-  details: () => [...whQueryKeys.all, 'detail'] as const,
-  detail: (id: string) => [...whQueryKeys.details(), id] as const,
-  comments: (itemId: string) => [...whQueryKeys.all, 'comments', itemId] as const,
-  worklogs: (itemId: string) => [...whQueryKeys.all, 'worklogs', itemId] as const,
-  attachments: (itemId: string) => [...whQueryKeys.all, 'attachments', itemId] as const,
-  history: (itemId: string) => [...whQueryKeys.all, 'history', itemId] as const,
-  links: (itemId: string) => [...whQueryKeys.all, 'links', itemId] as const,
-  stats: () => [...whQueryKeys.all, 'stats'] as const,
-  statuses: () => [...whQueryKeys.all, 'statuses'] as const,
-  workTypes: () => [...whQueryKeys.all, 'work-types'] as const,
-  sprintReleases: () => [...whQueryKeys.all, 'sprint-releases'] as const,
-  labels: () => [...whQueryKeys.all, 'labels'] as const,
-};

@@ -22991,6 +22991,932 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_wf_admin_audit: {
+        Row: {
+          action: string
+          actor: string | null
+          at: string
+          diff_json: Json
+          id: string
+          target_ids: string[] | null
+          target_kind: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          at?: string
+          diff_json?: Json
+          id?: string
+          target_ids?: string[] | null
+          target_kind?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          at?: string
+          diff_json?: Json
+          id?: string
+          target_ids?: string[] | null
+          target_kind?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_admin_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_admin_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_admin_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_admin_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_admin_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_admin_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_admin_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      ph_wf_audit: {
+        Row: {
+          actor: string | null
+          actor_role: string | null
+          allowed_roles: string[] | null
+          at: string
+          bypass_required: boolean
+          entity_id: string
+          entity_key: string
+          from_status_key: string | null
+          guard_results: Json
+          id: string
+          missing_guard: string | null
+          mode: string
+          project_id: string | null
+          reason_code: string | null
+          reason_text: string | null
+          role_decision: string
+          source_surface: string | null
+          to_status_key: string
+          tooltip_basis: string | null
+          version_id: string | null
+          would_block: boolean | null
+        }
+        Insert: {
+          actor?: string | null
+          actor_role?: string | null
+          allowed_roles?: string[] | null
+          at?: string
+          bypass_required?: boolean
+          entity_id: string
+          entity_key: string
+          from_status_key?: string | null
+          guard_results?: Json
+          id?: string
+          missing_guard?: string | null
+          mode?: string
+          project_id?: string | null
+          reason_code?: string | null
+          reason_text?: string | null
+          role_decision?: string
+          source_surface?: string | null
+          to_status_key: string
+          tooltip_basis?: string | null
+          version_id?: string | null
+          would_block?: boolean | null
+        }
+        Update: {
+          actor?: string | null
+          actor_role?: string | null
+          allowed_roles?: string[] | null
+          at?: string
+          bypass_required?: boolean
+          entity_id?: string
+          entity_key?: string
+          from_status_key?: string | null
+          guard_results?: Json
+          id?: string
+          missing_guard?: string | null
+          mode?: string
+          project_id?: string | null
+          reason_code?: string | null
+          reason_text?: string | null
+          role_decision?: string
+          source_surface?: string | null
+          to_status_key?: string
+          tooltip_basis?: string | null
+          version_id?: string | null
+          would_block?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_audit_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_field_requirements: {
+        Row: {
+          created_at: string
+          field_key: string
+          id: string
+          requirement: string
+          scope: string
+          status_key: string | null
+          transition_id: string | null
+          updated_at: string
+          version_id: string
+        }
+        Insert: {
+          created_at?: string
+          field_key: string
+          id?: string
+          requirement: string
+          scope: string
+          status_key?: string | null
+          transition_id?: string | null
+          updated_at?: string
+          version_id: string
+        }
+        Update: {
+          created_at?: string
+          field_key?: string
+          id?: string
+          requirement?: string
+          scope?: string
+          status_key?: string | null
+          transition_id?: string | null
+          updated_at?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_field_requirements_transition_id_fkey"
+            columns: ["transition_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_version_transitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_field_requirements_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_reason_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          requires_free_text: boolean
+          transition_type: string | null
+          updated_at: string
+          version_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          requires_free_text?: boolean
+          transition_type?: string | null
+          updated_at?: string
+          version_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          requires_free_text?: boolean
+          transition_type?: string | null
+          updated_at?: string
+          version_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_reason_codes_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_scheme_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          created_at: string
+          id: string
+          project_id: string
+          scheme_id: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          project_id: string
+          scheme_id: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          project_id?: string
+          scheme_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_assignments_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_schemes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_scheme_entries: {
+        Row: {
+          created_at: string
+          entity_key: string
+          id: string
+          scheme_id: string
+          updated_at: string
+          version_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_key: string
+          id?: string
+          scheme_id: string
+          updated_at?: string
+          version_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_key?: string
+          id?: string
+          scheme_id?: string
+          updated_at?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_scheme_entries_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_scheme_entries_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_schemes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_default: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_schemes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_schemes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_schemes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_schemes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_schemes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_schemes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_schemes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      ph_wf_status_remaps: {
+        Row: {
+          created_at: string
+          entity_key: string
+          from_version_id: string | null
+          id: string
+          new_status_key: string
+          note: string | null
+          old_status_key: string
+          to_version_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entity_key: string
+          from_version_id?: string | null
+          id?: string
+          new_status_key: string
+          note?: string | null
+          old_status_key: string
+          to_version_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entity_key?: string
+          from_version_id?: string | null
+          id?: string
+          new_status_key?: string
+          note?: string | null
+          old_status_key?: string
+          to_version_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_status_remaps_from_version_id_fkey"
+            columns: ["from_version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_status_remaps_to_version_id_fkey"
+            columns: ["to_version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_transition_guards: {
+        Row: {
+          created_at: string
+          guard_type: string
+          id: string
+          is_blocking: boolean
+          params: Json
+          sort_order: number
+          transition_id: string
+          updated_at: string
+          waiver_allowed: boolean
+        }
+        Insert: {
+          created_at?: string
+          guard_type: string
+          id?: string
+          is_blocking?: boolean
+          params?: Json
+          sort_order?: number
+          transition_id: string
+          updated_at?: string
+          waiver_allowed?: boolean
+        }
+        Update: {
+          created_at?: string
+          guard_type?: string
+          id?: string
+          is_blocking?: boolean
+          params?: Json
+          sort_order?: number
+          transition_id?: string
+          updated_at?: string
+          waiver_allowed?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_transition_guards_transition_id_fkey"
+            columns: ["transition_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_version_transitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_transition_roles: {
+        Row: {
+          allow_assignee: boolean
+          allow_reporter: boolean
+          allow_super_admin_bypass: boolean
+          bypass_requires_reason: boolean
+          created_at: string
+          id: string
+          role_group: string
+          transition_id: string
+          updated_at: string
+        }
+        Insert: {
+          allow_assignee?: boolean
+          allow_reporter?: boolean
+          allow_super_admin_bypass?: boolean
+          bypass_requires_reason?: boolean
+          created_at?: string
+          id?: string
+          role_group: string
+          transition_id: string
+          updated_at?: string
+        }
+        Update: {
+          allow_assignee?: boolean
+          allow_reporter?: boolean
+          allow_super_admin_bypass?: boolean
+          bypass_requires_reason?: boolean
+          created_at?: string
+          id?: string
+          role_group?: string
+          transition_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_transition_roles_transition_id_fkey"
+            columns: ["transition_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_version_transitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_version_statuses: {
+        Row: {
+          category: string
+          color_token: string
+          created_at: string
+          display_label: string
+          id: string
+          is_exception: boolean
+          is_initial: boolean
+          is_terminal: boolean
+          lifecycle_group: string | null
+          requires_reason: boolean
+          sort_order: number
+          status_key: string
+          supports_reopen: boolean
+          updated_at: string
+          version_id: string
+        }
+        Insert: {
+          category: string
+          color_token: string
+          created_at?: string
+          display_label: string
+          id?: string
+          is_exception?: boolean
+          is_initial?: boolean
+          is_terminal?: boolean
+          lifecycle_group?: string | null
+          requires_reason?: boolean
+          sort_order?: number
+          status_key: string
+          supports_reopen?: boolean
+          updated_at?: string
+          version_id: string
+        }
+        Update: {
+          category?: string
+          color_token?: string
+          created_at?: string
+          display_label?: string
+          id?: string
+          is_exception?: boolean
+          is_initial?: boolean
+          is_terminal?: boolean
+          lifecycle_group?: string | null
+          requires_reason?: boolean
+          sort_order?: number
+          status_key?: string
+          supports_reopen?: boolean
+          updated_at?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_version_statuses_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_version_transitions: {
+        Row: {
+          created_at: string
+          from_status_key: string | null
+          id: string
+          requires_comment: boolean
+          requires_reason: boolean
+          sort_order: number
+          to_status_key: string
+          transition_type: string
+          updated_at: string
+          version_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_status_key?: string | null
+          id?: string
+          requires_comment?: boolean
+          requires_reason?: boolean
+          sort_order?: number
+          to_status_key: string
+          transition_type?: string
+          updated_at?: string
+          version_id: string
+        }
+        Update: {
+          created_at?: string
+          from_status_key?: string | null
+          id?: string
+          requires_comment?: boolean
+          requires_reason?: boolean
+          sort_order?: number
+          to_status_key?: string
+          transition_type?: string
+          updated_at?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_version_transitions_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "ph_wf_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_wf_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          effective_at: string | null
+          entity_key: string
+          id: string
+          lifecycle: string
+          notes: string | null
+          published_at: string | null
+          published_by: string | null
+          template_id: string
+          updated_at: string
+          version_no: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          effective_at?: string | null
+          entity_key: string
+          id?: string
+          lifecycle?: string
+          notes?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          template_id: string
+          updated_at?: string
+          version_no: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          effective_at?: string | null
+          entity_key?: string
+          id?: string
+          lifecycle?: string
+          notes?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          template_id?: string
+          updated_at?: string
+          version_no?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_wf_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_wf_versions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "ph_workflow_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_work_item_labels: {
         Row: {
           label_id: string
@@ -57864,6 +58790,17 @@ export type Database = {
         Args: { p_project_id: string }
         Returns: undefined
       }
+      ph_wf_is_admin: { Args: never; Returns: boolean }
+      ph_wf_migration_preview: {
+        Args: { p_entity: string }
+        Returns: {
+          item_count: number
+          legacy_status: string
+          mapped: boolean
+          proposed_key: string
+        }[]
+      }
+      ph_wf_write_audit: { Args: { payload: Json }; Returns: string }
       planhub_create_version: {
         Args: {
           plan_uuid: string
