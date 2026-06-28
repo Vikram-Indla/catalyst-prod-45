@@ -185,6 +185,20 @@ export async function writeAdvisoryAudit(input: {
   } catch (err) { console.warn('[canonical-workflow] audit threw', err); return null; }
 }
 
+/**
+ * Bridged entities (Defect/Incident): resolve the canonical status key for a
+ * raw status (enum value / label / legacy) via the published version + remaps.
+ */
+export async function resolveBridgedKey(
+  entityKey: EntityKey, projectKey: string | null | undefined, rawStatus: string | null | undefined,
+): Promise<string | null> {
+  try {
+    const version = await resolveCanonicalVersion(entityKey, projectKey);
+    if (!version) return null;
+    return resolveKeyInVersion(version, rawStatus);
+  } catch { return null; }
+}
+
 // ── Enforcement (advisory|blocking) + real role/guard evaluation ─────────────
 export type EnforcementMode = WorkflowMode;
 

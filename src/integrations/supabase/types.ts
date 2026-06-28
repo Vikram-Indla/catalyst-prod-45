@@ -11948,6 +11948,7 @@ export type Database = {
           updated_at: string
           updated_by: string | null
           urgency: Database["public"]["Enums"]["urgency_level"] | null
+          workflow_status_key: string | null
         }
         Insert: {
           assignee_id?: string | null
@@ -11995,6 +11996,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           urgency?: Database["public"]["Enums"]["urgency_level"] | null
+          workflow_status_key?: string | null
         }
         Update: {
           assignee_id?: string | null
@@ -12042,6 +12044,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           urgency?: Database["public"]["Enums"]["urgency_level"] | null
+          workflow_status_key?: string | null
         }
         Relationships: [
           {

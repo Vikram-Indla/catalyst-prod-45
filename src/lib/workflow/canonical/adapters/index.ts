@@ -28,7 +28,17 @@ export const DOMAIN_ADAPTER_CONFIGS: Record<EntityKey, DomainAdapterConfig> = {
       reopened: 'reopened',
     },
   },
-  incident: { entityKey: 'incident', table: 'incidents', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
+  incident: {
+    entityKey: 'incident', table: 'incidents', statusColumn: 'status',
+    workflowKeyColumn: 'workflow_status_key', storageOption: 'A',
+    // canonical key -> nearest SAFE existing incident_status enum value.
+    enumCompatMap: {
+      reported: 'open', acknowledged: 'triage', triage: 'triage', major_declared: 'triage',
+      workaround: 'in_progress', in_resolution: 'in_progress', fix_ready: 'in_progress',
+      deploying_fix: 'in_progress', monitoring: 'in_progress', resolved: 'resolved', rca_pending: 'resolved',
+      closed: 'closed', duplicate: 'closed', canceled: 'closed', reopened: 'open',
+    },
+  },
   release: { entityKey: 'release', table: 'rh_releases', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
   test_case: { entityKey: 'test_case', table: 'tm_test_cases', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },
   test_plan: { entityKey: 'test_plan', table: 'tm_test_plans', statusColumn: 'status', workflowKeyColumn: 'workflow_status_key', storageOption: 'A', enumCompatMap: {} },

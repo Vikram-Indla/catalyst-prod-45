@@ -4,6 +4,7 @@
 // ============================================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { resolveBridgedKey, recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   TMDefect, 
@@ -497,8 +498,16 @@ export function useUpdateDefect() {
       if (severity !== undefined) {
         updates.severity = severityToDb(severity);
       }
+      let prevEnum: string | null = null;
       if (status !== undefined) {
-        updates.status = statusToDb(status);
+        // capture prior enum status for the bridged audit
+        const { data: cur } = await supabase.from('tm_defects').select('status').eq('id', id).maybeSingle();
+        prevEnum = (cur as any)?.status ?? null;
+        updates.status = statusToDb(status); // enum preserved (compat field)
+        // Bridged canonical key (Option A): workflow_status_key is the canonical
+        // status; the enum is never widened, only the existing value is written.
+        const wfKey = await resolveBridgedKey('defect', null, updates.status);
+        if (wfKey) updates.workflow_status_key = wfKey;
         if (status === 'FIXED' || status === 'CLOSED' || status === 'VERIFIED') {
           updates.resolved_at = new Date().toISOString();
         }
@@ -515,6 +524,14 @@ export function useUpdateDefect() {
         .single();
 
       if (error) throw error;
+
+      // Advisory canonical audit for the Defect transition (ph_wf_audit).
+      if (status !== undefined && prevEnum !== updates.status) {
+        await recordAdvisoryStatusChange({
+          entityKey: 'defect', entityId: id, projectKey: null,
+          fromStatusRaw: prevEnum, toStatusRaw: updates.status as string, sourceSurface: 'defect_list',
+        });
+      }
       return { ...mapDbRowToTMDefect(data), project_id };
     },
     onSuccess: (data) => {
