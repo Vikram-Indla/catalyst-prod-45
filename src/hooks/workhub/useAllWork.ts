@@ -5,7 +5,7 @@
  */
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { workhubService } from '@/services/workhub';
-import { whQueryKeys } from '@/types/workhub.ts';
+import { whQueryKeys } from '@/types/workhub.types';
 import { catalystToast } from '@/lib/catalystToast';
 
 // ════════════════════════════════════════════════════════════════

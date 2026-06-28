@@ -68,3 +68,20 @@ export function toStatusCategory(raw: string | null | undefined): StatusCategory
   }
   return 'todo';
 }
+
+/**
+ * isTerminalStatus — superset of done-category for FREEZE purposes only.
+ * Done category drives colour. Terminal-status drives "cannot be changed".
+ * Includes won't-do/rejected/cancelled outcomes that are NOT visually "done"
+ * but ARE final — user cannot transition out. Kept separate from
+ * toStatusCategory so colour mapping is untouched.
+ */
+export function isTerminalStatus(raw: string | null | undefined): boolean {
+  if (toStatusCategory(raw) === 'done') return true;
+  const v = (raw ?? '').trim().toLowerCase().replace(/_/g, ' ');
+  return [
+    'rejected', 'declined', 'cancelled', 'canceled',
+    "won't do", "won't fix", 'wont do', 'wont fix',
+    'denied', 'withdrawn', 'duplicate',
+  ].includes(v);
+}
