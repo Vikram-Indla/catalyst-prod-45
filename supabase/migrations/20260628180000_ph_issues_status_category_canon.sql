@@ -13,3 +13,8 @@ alter table ph_issues
   drop constraint if exists ph_issues_status_category_chk,
   add constraint ph_issues_status_category_chk
     check (status_category in ('todo','in_progress','done'));
+
+-- Column default was 'To Do' (Title-case) which violates the lowercase
+-- constraint on any insert that omits status_category (e.g. the create flow).
+-- Align the default to canon.
+alter table ph_issues alter column status_category set default 'todo';
