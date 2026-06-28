@@ -298,6 +298,9 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     // that sit beyond page 1 of useNotificationsQuery. When the deduped event notification
     // has no actor (e.g. only the empty read-receipt row was in page 1), enrich it here.
     const syncActorMap = new Map<string, { name: string; avatarUrl: string | null; userId: string | null }>();
+    // jira_updated_at from ph_issues — use as the canonical event time for trigger-created
+    // notifications whose created_at is the cron-sync fire time, not the actual Jira event time.
+    const syncDateMap = new Map<string, string>();
     for (const s of (syncItems ?? [])) {
       const meta = s.metadata as Record<string, unknown> | null;
       const name = (meta?.actor_display_name as string | null | undefined)?.trim();
@@ -308,22 +311,34 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
           userId: s.actor_user_id,
         });
       }
+      if (s.created_at) syncDateMap.set(s.entity_id, s.created_at);
     }
 
     const ASSIGNMENT_FAMILY = new Set([
       'assigned', 'assigned_work_item', 'assigned_story', 'tester_assigned',
     ]);
 
-    // Enrich actor-less assignment events with actor data from the sync items
+    // Enrich actor-less assignment events with actor data from the sync items.
+    // Also backdate trigger-created notifications: the trigger fires at cron-sync time
+    // (NOW()), not at actual Jira event time. Use jira_updated_at from ph_issues when
+    // it is earlier than the notification's created_at — that's the real event time.
     const enriched = deduplicatedEventNotifications.map(n => {
-      if (!ASSIGNMENT_FAMILY.has(n.notification_type)) return n;
       const meta = n.metadata as Record<string, unknown> | undefined;
-      const alreadyHasActor = !!(n.actor_user_id || meta?.actor_display_name || meta?.actor_name);
-      if (alreadyHasActor) return n;
-      const syncActor = syncActorMap.get(n.entity_id);
-      if (!syncActor) return n;
+      // Use jira_updated_at (sync item date) when it pre-dates the notification insert.
+      // Trigger fires at cron-sync time (NOW()), not the actual Jira event time — backdate
+      // to jira_updated_at regardless of is_jira_sync flag.
+      const jiraDate = syncDateMap.get(n.entity_id);
+      const displayDate =
+        jiraDate && jiraDate < n.created_at ? jiraDate : n.created_at;
+      const dated = displayDate !== n.created_at ? { ...n, created_at: displayDate } : n;
+
+      if (!ASSIGNMENT_FAMILY.has(dated.notification_type)) return dated;
+      const alreadyHasActor = !!(dated.actor_user_id || meta?.actor_display_name || meta?.actor_name);
+      if (alreadyHasActor) return dated;
+      const syncActor = syncActorMap.get(dated.entity_id);
+      if (!syncActor) return dated;
       return {
-        ...n,
+        ...dated,
         actor_user_id: syncActor.userId,
         metadata: {
           ...(meta ?? {}),
