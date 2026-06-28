@@ -21,7 +21,7 @@ import type { KanbanMode } from './useKanbanData';
 // issue_type -> canonical entity_key (only entities on the canonical engine).
 // Enforcement (advisory|blocking) is resolved per project+entity from
 // ph_wf_enforcement_config inside gateTransition — never a global flag.
-const KANBAN_ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = { Story: 'story', Epic: 'epic' };
+const KANBAN_ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = { Story: 'story', Epic: 'epic', Feature: 'feature', 'Sub-task': 'subtask' };
 
 export interface NewIssueInput {
   projectKey: string;

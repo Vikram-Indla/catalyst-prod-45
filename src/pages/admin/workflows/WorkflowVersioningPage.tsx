@@ -127,8 +127,10 @@ function TransitionsList({ versionId }: { versionId: string }) {
   return <DynamicTable head={head} rows={rows} isFixedSize rowsPerPage={20} defaultPage={1} />;
 }
 
+const PREVIEW_ENTITIES = ['story', 'epic', 'feature', 'subtask'] as const;
 function MigrationPreviewTab() {
-  const { data, isLoading } = useMigrationPreview('story');
+  const [entity, setEntity] = useState<string>('story');
+  const { data, isLoading } = useMigrationPreview(entity);
   if (isLoading) return <Loading />;
   const rows = data ?? [];
   const mappedItems = rows.filter((r) => r.mapped).reduce((a, r) => a + Number(r.item_count), 0);
@@ -141,8 +143,16 @@ function MigrationPreviewTab() {
     { key: 'flag', content: r.mapped ? <Lozenge appearance="success">mapped</Lozenge> : <Lozenge appearance="removed">unmapped — needs review</Lozenge> } ] }));
   return (
     <Panel>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ fontSize: 12, color: 'var(--ds-text-subtle)' }}>Entity:&nbsp;
+          <select value={entity} onChange={(e) => setEntity(e.target.value)}
+            style={{ height: 30, minWidth: 140, padding: '0 8px', border: '1px solid var(--ds-border)', borderRadius: 4, background: 'var(--ds-surface)', color: 'var(--ds-text)', fontSize: 13 }}>
+            {PREVIEW_ENTITIES.map((en) => <option key={en} value={en}>{en}</option>)}
+          </select>
+        </label>
+      </div>
       <div style={{ display: 'flex', gap: 16, marginBottom: 16, fontSize: 13, color: 'var(--ds-text-subtle)', flexWrap: 'wrap' }}>
-        <span>Entity: <strong style={{ color: 'var(--ds-text)' }}>story</strong></span>
+        <span>Entity: <strong style={{ color: 'var(--ds-text)' }}>{entity}</strong></span>
         <span>Mapped items: <strong style={{ color: 'var(--ds-text)' }}>{mappedItems}</strong></span>
         <span>Unmapped items: <strong style={{ color: 'var(--ds-text)' }}>{unmappedItems}</strong> across {unmappedRows.length} status{unmappedRows.length === 1 ? '' : 'es'}</span>
         <span>{canProceed ? <Lozenge appearance="success">can proceed</Lozenge> : <Lozenge appearance="moved">cannot proceed — resolve unmapped first</Lozenge>}</span>

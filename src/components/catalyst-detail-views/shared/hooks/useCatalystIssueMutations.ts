@@ -16,6 +16,8 @@ import type { EntityKey } from '@/lib/workflow/canonical/contracts';
 const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
   Story: 'story',
   Epic: 'epic',
+  Feature: 'feature',
+  'Sub-task': 'subtask',
 };
 
 export function useCatalystIssueMutations(itemId: string, onClose: () => void) {

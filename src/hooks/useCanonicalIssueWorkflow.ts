@@ -14,7 +14,12 @@ import type { StatusCategory } from '@/constants/statusCategoryColors';
 import type { EntityKey } from '@/lib/workflow/canonical/contracts';
 import { resolveCanonicalVersion, resolveKeyInVersion, availableTransitions, type ResolvedVersion } from '@/lib/workflow/canonical/runtime';
 
-const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = { story: 'story', Story: 'story', epic: 'epic', Epic: 'epic' };
+const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
+  story: 'story', Story: 'story',
+  epic: 'epic', Epic: 'epic',
+  feature: 'feature', Feature: 'feature',
+  subtask: 'subtask', 'sub-task': 'subtask', 'Sub-task': 'subtask',
+};
 
 export interface CanonicalWorkflowExtras {
   isCanonical: boolean;
