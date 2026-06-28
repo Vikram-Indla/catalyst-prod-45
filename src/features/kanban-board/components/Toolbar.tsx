@@ -36,7 +36,7 @@ function InsightsBars({ issues }: { issues: BoardIssue[] }) {
     if (i.issueType) byType[i.issueType] = (byType[i.issueType] || 0) + 1;
   }
   const max = Math.max(1, ...Object.values(cat));
-  const colors: Record<string, string> = { 'To Do': token('color.background.neutral.bold', 'var(--ds-icon, #44546F)'), 'In Progress': token('color.background.information.bold', 'var(--ds-link, #0C66E4)'), Done: token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)') };
+  const colors: Record<string, string> = { 'To Do': token('color.background.neutral.bold', 'var(--ds-icon, #44546F)'), 'In Progress': token('color.background.information.bold', 'var(--ds-link, var(--ds-link, #0C66E4))'), Done: token('color.background.success.bold', 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))') };
   const topTypes = Object.entries(byType).sort((a, b) => b[1] - a[1]).slice(0, 5);
   return (
     <div style={{ padding: '8px 12px', width: 260 }}>
@@ -104,7 +104,7 @@ function triggerStyle(active: boolean): React.CSSProperties {
     display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 14, fontWeight: 500,
     fontFamily: 'inherit', flexShrink: 0,
     background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
-    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))'),
   };
 }
 
@@ -211,7 +211,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
       {standupActive && (
         <button onClick={onEndStandup}
           style={{ height: 32, padding: '0 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, fontFamily: 'inherit', flexShrink: 0,
-            background: token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.selected', 'var(--ds-link, #0C66E4)') }}>End standup</button>
+            background: token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.selected', 'var(--ds-link, var(--ds-link, #0C66E4))') }}>End standup</button>
       )}
 
       <PortalMenu ariaLabel="Board insights" align="right" minWidth={260} trigger={() => (

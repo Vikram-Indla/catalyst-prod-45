@@ -510,11 +510,9 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
         {projectChips ? (
           projectChips.length <= 3 ? (
             projectChips.map(p => (
-// TODO: ads-unmapped — #0369A1 context unclear
               <span key={p} style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '4px', background: 'var(--ds-background-information, #E9F2FF)', color: '#0369A1', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>{p}</span>
             ))
           ) : (
-// TODO: ads-unmapped — #0369A1 context unclear
             <span style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '4px', background: 'var(--ds-background-information, #E9F2FF)', color: '#0369A1', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>{projectChips.length} projects</span>
           )
         ) : (

@@ -28,19 +28,19 @@ describe('canonical status palette', () => {
   it('pins each status to its ADS subtle background token', () => {
     expect(STATUS_BG.success).toBe('var(--ds-background-success, #DFFCF0)');
     expect(statusBg('success')).toBe('var(--ds-background-success, #DFFCF0)');
-    expect(STATUS_TEXT).toBe('var(--ds-text, #172B4D)');
+    expect(STATUS_TEXT).toBe('var(--ds-text, var(--ds-text, #172B4D))');
   });
 
   it('maps each category to its canonical ADS subtle bg', () => {
     expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success, #DFFCF0)');
-    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information, #E9F2FF)');
-    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral, #F1F2F4)');
+    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information, var(--ds-background-information, #E9F2FF))');
+    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))');
   });
 
   it('pairs each status bg with its matching ADS text token (WCAG in both themes)', () => {
-    expect(statusFg('success')).toBe('var(--ds-text-success, #216E4E)');
+    expect(statusFg('success')).toBe('var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))');
     expect(statusFg('inprogress')).toBe('var(--ds-text-information, #0055CC)');
-    expect(statusFg('default')).toBe('var(--ds-text, #172B4D)');
+    expect(statusFg('default')).toBe('var(--ds-text, var(--ds-text, #172B4D))');
   });
 });
 

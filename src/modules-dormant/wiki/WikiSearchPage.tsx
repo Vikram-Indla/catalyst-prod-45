@@ -33,7 +33,7 @@ function highlightText(text: string, query: string, isDark: boolean) {
   const parts = text.split(regex);
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} style={{ background: isDark ? 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))' : 'var(--ds-background-warning, #FFF7D6)', padding: '0 1px', borderRadius: 4, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>{part}</mark>
+      <mark key={i} style={{ background: isDark ? 'var(--ds-background-warning-bold, rgba(251,191,36,0.2))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', padding: '0 1px', borderRadius: 4, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>{part}</mark>
     ) : part
   );
 }
@@ -92,10 +92,8 @@ export default function WikiSearchPage() {
 
   const aiAnswer = aiResults?.answer;
   const aiSources = aiResults?.sources ?? [];
-
-// TODO: ads-unmapped — #9A5402 context unclear
-  const confColor = (c: number) => c >= 90 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : c >= 70 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : isDark ? 'var(--ds-background-warning, #FFF7D6)' : '#9A5402';
-  const confBg = (c: number) => c >= 90 ? 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))' : c >= 70 ? 'var(--ds-link, #0C66E4)' : isDark ? 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))' : 'var(--ds-background-warning, #FFF7D6)';
+  const confColor = (c: number) => c >= 90 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : c >= 70 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : isDark ? 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))' : '#9A5402';
+  const confBg = (c: number) => c >= 90 ? 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))' : c >= 70 ? 'var(--ds-link, var(--ds-link, #0C66E4))' : isDark ? 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))';
 
   const borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))';
 
@@ -199,7 +197,6 @@ export default function WikiSearchPage() {
         {isLoading && debouncedQuery.length >= 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '8px 0' }}>
             {mode === 'ai' && (
-// TODO: ads-unmapped — #FAFAFE context unclear
               <div style={{ borderLeft: '3px solid var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', padding: '16px 20px', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : '#FAFAFE', borderRadius: '0 6px 6px 0', marginBottom: 8 }}>
                 <Sk w={120} h={14} style={{ marginBottom: 12 }} isDark={isDark} />
                 <Sk w="100%" h={14} style={{ marginBottom: 6 }} isDark={isDark} />
@@ -224,7 +221,6 @@ export default function WikiSearchPage() {
             {aiAnswer && (
               <div style={{
                 borderLeft: '3px solid var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', padding: '16px 20px', marginBottom: 24,
-// TODO: ads-unmapped — #FAFAFE context unclear
                 background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : '#FAFAFE', borderRadius: '0 6px 6px 0',
               }}>
                 <span style={{

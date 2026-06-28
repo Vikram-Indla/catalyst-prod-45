@@ -203,7 +203,6 @@ export function RoadmapDependencyLines({
         >
           <path 
             d="M 0 0 L 10 5 L 0 10 z" 
-// TODO: ads-unmapped — #A1A1AA context unclear
             fill="#a1a1aa"
           />
         </marker>
@@ -229,7 +228,6 @@ export function RoadmapDependencyLines({
           <path
             d={path.pathD}
             fill="none"
-// TODO: ads-unmapped — #A1A1AA context unclear
             stroke={path.isCritical ? 'var(--ds-text-subtle, #44546F)' : '#a1a1aa'}
             strokeWidth={path.isCritical ? 2 : 1.5}
             strokeDasharray={path.isCritical ? 'none' : 'none'}
@@ -240,7 +238,6 @@ export function RoadmapDependencyLines({
             cx={path.startX}
             cy={path.startY}
             r={path.isCritical ? 4 : 3}
-// TODO: ads-unmapped — #A1A1AA context unclear
             fill={path.isCritical ? 'var(--ds-text-subtle, #44546F)' : '#a1a1aa'}
           />
         </g>

@@ -85,7 +85,7 @@ function PhaseIndicator({ phase, errorMessage }: { phase: string; errorMessage: 
   }
   if (phase === 'fallback') {
     return (
-      <div style={{ background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
+      <div style={{ background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
         <div style={{ fontSize: 13, fontWeight: 500, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>AI generation failed</div>
         <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginTop: 2 }}>
           Showing a count-based fallback. Edit below or retry.
@@ -96,7 +96,6 @@ function PhaseIndicator({ phase, errorMessage }: { phase: string; errorMessage: 
   }
   if (phase === 'error') {
     return (
-// TODO: ads-unmapped — #E34935 context unclear
       <div style={{ background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), border: `1px solid ${token('color.border.danger', '#E34935')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
         <div style={{ fontSize: 13, fontWeight: 500, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
           {errorMessage ?? 'Something went wrong'}

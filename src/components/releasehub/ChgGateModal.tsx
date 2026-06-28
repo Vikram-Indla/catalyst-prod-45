@@ -61,7 +61,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
                   className="w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px]" />
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setMode('choose')} className="flex-1 h-9 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px] font-medium text-[var(--ds-text-subtle,#475569)]">Back</button>
+                <button onClick={() => setMode('choose')} className="flex-1 h-9 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle, #44546F))]">Back</button>
                 <button onClick={handleLink} disabled={!workItemKey || !workItemTitle || linkWorkItem.isPending}
                   className="flex-1 h-9 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[13px] font-semibold disabled:opacity-50">
                   {linkWorkItem.isPending ? 'Linking...' : 'Link & Continue'}

@@ -137,7 +137,7 @@ export default function WorkstreamProgressWidget({ collapsed, onToggleCollapse }
                       alignItems: 'center',
                       gap: 8,
                       ...SMALL,
-                      color: isNone ? token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                      color: isNone ? token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                       fontStyle: isNone ? 'italic' : 'normal',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',

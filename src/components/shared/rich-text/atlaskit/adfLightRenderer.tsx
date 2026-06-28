@@ -467,7 +467,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
         tip:     { bg: token('color.background.success.subtle', 'var(--ds-background-success, #DFFCF0)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '💡' },
         success: { bg: token('color.background.success.subtle', 'var(--ds-background-success, #DFFCF0)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '✓' },
         warning: { bg: token('color.background.warning.subtle', 'var(--ds-background-warning, #FFF7D6)'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '⚠' },
-        error:   { bg: token('color.background.danger.subtle', 'var(--ds-background-danger, #FFECEB)'),  border: token('color.border.danger', 'var(--ds-background-danger-bold, #C9372C)'), icon: '✕' },
+        error:   { bg: token('color.background.danger.subtle', 'var(--ds-background-danger, #FFECEB)'),  border: token('color.border.danger', 'var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))'), icon: '✕' },
       };
       const style = panelStyles[panelType] ?? panelStyles.info;
       return (
@@ -656,7 +656,6 @@ const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
         aria-hidden="true"
         className="catalyst-code-block-gutter"
         style={{
-// TODO: ads-unmapped — #E4E6EA context unclear
           background: token('color.background.neutral', '#E4E6EA'),
           color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
           padding: '8px 10px',

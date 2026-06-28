@@ -180,7 +180,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                   <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }} />
                   <span style={{ flex: 1, fontSize: 12, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.file.name}</span>
                   <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}>{(f.file.size / 1024 / 1024).toFixed(1)} MB</span>
-                  <button onClick={() => removeFile(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}><X size={12} /></button>
+                  <button onClick={() => removeFile(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--cp-text-muted)' }}><X size={12} /></button>
                 </div>
               ))}
             </>
@@ -299,7 +299,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
         {/* Footer */}
         {step < 4 && (
           <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            {step > 1 && <button onClick={() => setStep(s => s - 1)} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', cursor: 'pointer' }}>Back</button>}
+            {step > 1 && <button onClick={() => setStep(s => s - 1)} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', cursor: 'pointer' }}>Back</button>}
             <button
               disabled={step === 1 && files.length === 0}
               onClick={() => { if (step === 3) { setStep(4); handleProcess(); } else setStep(s => s + 1); }}

@@ -39,9 +39,7 @@ export const WORKFLOW_STATUSES: WorkflowStatus[] = [
  * `token('color.*', <hex>)` without changing the config shape.
  *
  * Apr 20 2026: converted from raw HSL (§L38). Four values previously
-// TODO: ads-unmapped — #896F58 context unclear
  * decoded to banned Golden Hour palette (§7): design #896F58,
-// TODO: ads-unmapped — #D4B996 context unclear
  * in_development #C79C6B, uat_testing #D4B996, in_beta #5B7B5B —
  * all replaced with Atlaskit canonical palette.
  */
@@ -60,7 +58,6 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
     textColor: 'var(--ds-text-subtle, #42526E)'
   },
   design: {
-// TODO: ads-unmapped — #896F58 context unclear
     // purple (was Golden Hour #896F58)
     label: 'Design',
     color: 'var(--ds-text-discovery, #5243AA)',
@@ -77,7 +74,6 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
     wipLimit: 5
   },
   in_development: {
-// TODO: ads-unmapped — #C79C6B context unclear
     // warning / yellow (was Golden Hour #C79C6B)
     label: 'In Development',
     color: 'var(--ds-text-warning, #FF991F)',
@@ -94,7 +90,6 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
     wipLimit: 3
   },
   uat_testing: {
-// TODO: ads-unmapped — #D4B996 context unclear
     // warning (was Golden Hour #D4B996)
     label: 'UAT Testing',
     color: 'var(--ds-text-warning, #FF991F)',
@@ -103,7 +98,6 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
     wipLimit: 2
   },
   in_beta: {
-// TODO: ads-unmapped — #5B7B5B context unclear
     // success (was Golden Hour #5B7B5B)
     label: 'In Beta',
     color: 'var(--ds-text-success, #36B37E)',
@@ -176,9 +170,7 @@ export type WorkItemType = 'epic' | 'feature' | 'story';
 
 /**
  * WORK_ITEM_CONFIG — colours match the canonical work-item-type SVG palette
-// TODO: ads-unmapped — #5B7B5B context unclear
  * (§11). Epic = purple (was Golden Hour #5B7B5B), Feature = blue,
-// TODO: ads-unmapped — #896F58 context unclear
  * Story = green (was Golden Hour #896F58).
  */
 export const WORK_ITEM_CONFIG: Record<WorkItemType, {
@@ -202,7 +194,6 @@ export const WORK_ITEM_CONFIG: Record<WorkItemType, {
     icon: 'Package'
   },
   story: {
-// TODO: ads-unmapped — #63BA3C context unclear
     // §11 Story green #63BA3C (canonical story type colour)
     label: 'Story',
     color: 'var(--ds-text-success, #63BA3C)',
@@ -258,7 +249,6 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     inverse: 'relates_to'
   },
   parent_of: {
-// TODO: ads-unmapped — #5B7B5B context unclear
     // success (was Golden Hour #5B7B5B)
     label: 'Parent Of',
     description: 'This is the parent',
@@ -268,7 +258,6 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     inverse: 'child_of'
   },
   child_of: {
-// TODO: ads-unmapped — #896F58 context unclear
     // purple (was Golden Hour #896F58)
     label: 'Child Of',
     description: 'This is a child item',

@@ -52,7 +52,6 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
       <div
         style={{
           padding: '6px 10px',
-// TODO: ads-unmapped — #1D1D1F context unclear
           background: '#1D1D1F',
           color: 'var(--ds-text-inverse, #FFFFFF)',
           borderRadius: 6,
@@ -69,7 +68,6 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
         <div
           style={{
             padding: '2px 8px',
-// TODO: ads-unmapped — #1D1D1F context unclear
             background: '#1D1D1F',
             color: 'var(--ds-text-inverse, #FFFFFF)',
             borderRadius: 4,

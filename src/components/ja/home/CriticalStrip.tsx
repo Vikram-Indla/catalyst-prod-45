@@ -145,7 +145,6 @@ export function CriticalStrip({
                     // Highest severity - subtle gold emphasis
                     ? "bg-[var(--brand-gold)]/5 border-[var(--brand-gold)]/30 hover:bg-[var(--brand-gold)]/10 hover:border-[var(--brand-gold)]"
                     // Normal state - improved contrast in dark mode
-// TODO: ads-unmapped — #1C1C1C context unclear
                     : "bg-white dark:bg-[#1c1c1c] border-gray-200 dark:border-[#2c2c2c] hover:bg-gray-50 dark:hover:bg-[var(--ds-text, #172B4D)] hover:border-[var(--brand-gold)]/50"
             )}
           >

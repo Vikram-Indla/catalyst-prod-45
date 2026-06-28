@@ -126,7 +126,7 @@ export const CardContextMenu: React.FC<Props> = (p) => {
                   <button key={lt} onClick={() => setLinkType(lt)}
                     style={{ height: 22, padding: '0 8px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit',
                       background: linkType === lt ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral', '#091E420F'),
-                      color: linkType === lt ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)') }}>{lt}</button>
+                      color: linkType === lt ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}>{lt}</button>
                 ))}
               </div>
               <input autoFocus placeholder="Search work items…" value={query} onChange={(e) => setQuery(e.target.value)} style={searchInputStyle} />
@@ -148,7 +148,7 @@ export const CardContextMenu: React.FC<Props> = (p) => {
               <MenuItem variant="plain" onClick={() => { p.onArchive(issue); close(); }}>Archive</MenuItem>
               <button role="menuitem" onClick={() => { p.onDelete(issue); close(); }}
                 style={{ width: '100%', height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', border: 'none', background: 'transparent', color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), fontSize: 14, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'); }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>Delete</button>
             </>
           );

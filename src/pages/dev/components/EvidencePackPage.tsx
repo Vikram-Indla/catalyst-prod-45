@@ -480,12 +480,12 @@ function GenerateSection({ onGenerateEpics }: { onGenerateEpics: () => void }) {
               transition: 'all 0.2s',
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--ds-link, #0052CC)';
+              (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--ds-link, var(--ds-link, #0C66E4))';
               (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-background-success, #DFFCF0)';
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--ds-border, #DFE1E6)';
-              (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, #F7F8F9)';
+              (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))';
             }}
             onClick={option.title === 'Generate Epics' ? onGenerateEpics : () => {}}
           >

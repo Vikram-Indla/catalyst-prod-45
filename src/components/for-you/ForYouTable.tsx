@@ -272,7 +272,6 @@ export function CatalystTable({
                         style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
                         title={item.starred ? 'Unstar' : 'Star'}
                       >
-// TODO: ads-unmapped — #FACC15 context unclear
                         <Star size={16} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--ds-text-disabled, #CBD5E1)'} strokeWidth={2} />
                       </button>
                     </div>
@@ -345,7 +344,6 @@ export function CatalystTable({
                 style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
                 title={item.starred ? 'Unstar' : 'Star'}
               >
-// TODO: ads-unmapped — #FACC15 context unclear
                 <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--ds-text-disabled, #CBD5E1)'} strokeWidth={2} />
               </button>
             </div>

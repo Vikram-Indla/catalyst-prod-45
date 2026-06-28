@@ -289,7 +289,6 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
           <div
             style={{
               padding: token('space.150', '12px'),
-// TODO: ads-unmapped — #1D9BF0 context unclear
               borderLeft: `3px solid ${token('color.border.information', '#1D9BF0')}`,
               background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
               borderRadius: '0 4px 4px 0',

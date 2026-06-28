@@ -377,7 +377,7 @@ export default function TimeInStatusFullscreenModal({
                       <tr
                         key={r.issue_key}
                         style={{ height: ROW_HEIGHT }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                       >
                         <td
@@ -492,7 +492,6 @@ export default function TimeInStatusFullscreenModal({
                                   )}
                                 </Tooltip>
                               ) : (
-// TODO: ads-unmapped — #B3B9C4 context unclear
                                 <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
                               )}
                             </td>
@@ -525,7 +524,6 @@ export default function TimeInStatusFullscreenModal({
             <span
               style={{
                 ...SMALL,
-// TODO: ads-unmapped — #505258 context unclear
                 color: token('color.text.subtle', '#505258'),
                 marginRight: 'auto',
               }}

@@ -24,7 +24,6 @@ export const WorkListLoadingState = memo(function WorkListLoadingState() {
         style={{
           width: '32px',
           height: '32px',
-// TODO: ads-unmapped — #E6EDFA context unclear
           border: '3px solid #E6EDFA',
           borderTop: '3px solid var(--ds-link, #0C66E4)',
           borderRadius: '50%',

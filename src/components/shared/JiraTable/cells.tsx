@@ -258,7 +258,6 @@ export function makeCaretCell({
 //   - color:        color.link (var(--ds-link, #0C66E4)) — blue, underlined at rest
 //   - text-decoration: underline at rest state (Jira parity confirmed visually)
 //
-// TODO: ads-unmapped — #505258 context unclear
 // NOTE: 2026-04-26 comment claiming #505258/grey was stale — current Jira
 // production renders keys as blue+underlined links in rest state.
 export function makeKeyCell(
@@ -754,7 +753,6 @@ export function makeParentCell(
       );
     const display = p.key ? `${p.key} — ${p.label}` : p.label;
     // Measured directly from Jira production DOM 2026-04-18:
-// TODO: ads-unmapped — #227D9B context unclear
     //   bg #227D9B, white text, 2px 4px padding, 3px radius.
     return (
       // Re-measured 2026-04-26 (Jira list view, Epic parent ref like
@@ -762,12 +760,9 @@ export function makeParentCell(
       // Atlaskit lozenge with appearance="success" — soft mint green bg,
       // dark text, with the parent's type icon (purple lightning for
       // Epic) prepended in its native color. NOT the previous teal
-// TODO: ads-unmapped — #227D9B context unclear
       // (#227D9B/white) which was a Catalyst opinion.
       //
-// TODO: ads-unmapped — #B3DF72 context unclear
       //   bg: #B3DF72 (matches StatusPill 'success' family)
-// TODO: ads-unmapped — #292A2E context unclear
       //   color: #292A2E (primary text)
       //   font-size: 12px / weight 500 / line-height 16px
       //   padding: 2px 6px / radius 3px
@@ -923,12 +918,10 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
     const level = idx >= 0 ? PRIORITY_ORDER.length - idx : 0;
     const color =
       level >= 4
-// TODO: ads-unmapped — #E5484D context unclear
         ? token("color.icon.danger", "#E5484D")
         : level >= 3
           ? token("color.icon.warning", "var(--cp-amber, #F59E0B)")
           : level >= 1
-// TODO: ads-unmapped — #22C55E context unclear
             ? token("color.icon.success", "#22C55E")
             : token(
                 "color.border",
@@ -1019,7 +1012,6 @@ export function makeDateCell(
 // ─── Labels Cell ─────────────────────────────────────────────────────────────
 // Renders label tags as Jira-style outlined chips. Measured from Jira live DOM:
 //   bg transparent, border 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)), borderRadius 4px, padding 0px 4px,
-// TODO: ads-unmapped — #292A2E context unclear
 //   fontSize 14px, fontWeight 400, color #292A2E.
 export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
   return function LabelsCell({ row }: CellProps<any>) {

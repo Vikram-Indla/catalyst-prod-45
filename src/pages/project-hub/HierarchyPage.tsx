@@ -424,7 +424,7 @@ export default function HierarchyPage() {
           style={{
             height: 34, padding: `0 ${token('space.150', '12px')}`, display: 'flex', alignItems: 'center', gap: token('space.075', '6px'),
             fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-            color: activeFilterCount > 0 ? token('color.text.brand', 'var(--ds-link, #2563eb)') : token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
+            color: activeFilterCount > 0 ? token('color.text.brand', 'var(--ds-link, #2563eb)') : token('color.text.subtle', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))'),
             background: activeFilterCount > 0 ? token('color.background.selected', 'var(--cp-interact-selected)') : token('elevation.surface', 'var(--cp-bg-elevated)'),
             border: `1px solid ${activeFilterCount > 0 ? token('color.border.selected', 'var(--ds-link, #2563eb)') : token('color.border', 'var(--cp-border-default)')}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',

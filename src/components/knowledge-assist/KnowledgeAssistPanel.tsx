@@ -259,7 +259,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           <div
             style={{
               display: 'flex', alignItems: 'flex-end', gap: 8,
-// TODO: ads-unmapped — #ECEEF2 context unclear
               background: 'var(--bg-1)', border: '1.5px solid #ECEEF2',
               borderRadius: 12, padding: '12px 16px', minHeight: 52,
               transition: 'border-color 200ms, box-shadow 200ms',
@@ -285,7 +284,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             >
-// TODO: ads-unmapped — #CF1322 context unclear
               <Mic size={18} strokeWidth={2} color={isListening ? '#CF1322' : 'var(--ds-icon-subtle, #8B8FA3)'} />
             </button>
             <textarea

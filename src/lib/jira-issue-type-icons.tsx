@@ -13,45 +13,25 @@
  *
  * PROTECTED ICON REGISTRY (from Jira project type configuration):
  * ─────────────────────────────────────────────────────────────────
-// TODO: ads-unmapped — #2684FF context unclear
  *   API Requirement   → #2684FF  Blue     → task SVG
-// TODO: ads-unmapped — #2684FF context unclear
  *   Backend           → #2684FF  Blue     → subtask SVG       [SUB-TASK]
-// TODO: ads-unmapped — #FF5630 context unclear
  *   Bug / QA Bug      → #FF5630  Red      → bug SVG (filled circle)
-// TODO: ads-unmapped — #6554C0 context unclear
  *   Business Gap      → #6554C0  Purple   → delta (Δ) SVG
-// TODO: ads-unmapped — #FFAB00 context unclear
  *   Change Request    → #FFAB00  Amber    → changes SVG (arrows)
-// TODO: ads-unmapped — #6554C0 context unclear
  *   Epic              → #6554C0  Purple   → epic SVG (lightning bolt)
-// TODO: ads-unmapped — #36B37E context unclear
  *   Feature           → #36B37E  Green    → new-feature SVG (plus)
-// TODO: ads-unmapped — #2684FF context unclear
  *   Figma             → #2684FF  Blue     → subtask SVG       [SUB-TASK]
-// TODO: ads-unmapped — #2684FF context unclear
  *   Frontend          → #2684FF  Blue     → subtask SVG       [SUB-TASK]
-// TODO: ads-unmapped — #36B37E context unclear
  *   Improvement       → #36B37E  Green    → improvement SVG (up arrow)
-// TODO: ads-unmapped — #FF5630 context unclear
  *   Incident          → #FF5630  Red      → incident SVG (beacon)
-// TODO: ads-unmapped — #2684FF context unclear
  *   Integration       → #2684FF  Blue     → subtask SVG       [SUB-TASK]
-// TODO: ads-unmapped — #2684FF context unclear
  *   Issue             → #2684FF  Blue     → issue SVG (checkmark square)
-// TODO: ads-unmapped — #36B37E context unclear
  *   New Feature       → #36B37E  Green    → new-feature SVG (plus)
-// TODO: ads-unmapped — #FF5630 context unclear
  *   Problem           → #FF5630  Red      → problem SVG (circle slash)
-// TODO: ads-unmapped — #FF5630 context unclear
  *   Prod. Incident    → #FF5630  Red      → incident SVG
-// TODO: ads-unmapped — #6554C0 context unclear
  *   Question          → #6554C0  Purple   → question SVG (circle ?)
-// TODO: ads-unmapped — #36B37E context unclear
  *   Story             → #36B37E  Green    → story SVG (bookmark)
-// TODO: ads-unmapped — #2684FF context unclear
  *   Sub-task          → #2684FF  Blue     → subtask SVG       [SUB-TASK]
-// TODO: ads-unmapped — #2684FF context unclear
  *   Task              → #2684FF  Blue     → task SVG (empty square)
  *
  * FILES THAT DELEGATE TO THIS MODULE (guardrail chain):
@@ -240,7 +220,6 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
   // ── Release: teal stopwatch ──
   release: {
     label: 'Release',
-// TODO: ads-unmapped — #0C7A6D context unclear
     color: '#0C7A6D',
     iconFile: 'release',
   },

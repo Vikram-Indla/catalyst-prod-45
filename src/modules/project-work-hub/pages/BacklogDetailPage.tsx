@@ -155,7 +155,6 @@ export default function BacklogDetailPage() {
   if (!issue) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)', gap: 12 }}>
-// TODO: ads-unmapped — #344054 context unclear
         <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Issue not found</span>
         <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)' }}>{issueKey} could not be found or has been deleted.</span>
         {debugInfo && (

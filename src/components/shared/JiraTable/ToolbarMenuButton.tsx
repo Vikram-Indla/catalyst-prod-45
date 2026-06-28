@@ -208,7 +208,6 @@ export function ToolbarMenuButton({
                         ? token('color.background.neutral.subtle.hovered', '#091E4208')
                         : 'transparent',
                       color: item.isDisabled
-// TODO: ads-unmapped — #A6A7AA context unclear
                         ? token('color.text.disabled', '#A6A7AA')
                         : token('color.text', 'var(--ds-text, #172B4D)'),
                       fontSize: 14,

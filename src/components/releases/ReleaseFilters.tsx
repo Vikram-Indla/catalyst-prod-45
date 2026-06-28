@@ -690,7 +690,7 @@ export function ProductSelect({
               cursor: 'pointer',
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
               (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #292A2E)';
             }}
             onMouseLeave={(e) => {

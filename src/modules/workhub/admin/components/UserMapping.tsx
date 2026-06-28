@@ -273,7 +273,7 @@ export function UserMapping() {
               {departmentFilter !== 'all' && (
                 <span style={{
                   fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
-                  background: 'rgba(146,64,14,0.08)', color: 'var(--ds-text-warning, #974F0C)',
+                  background: 'rgba(146,64,14,0.08)', color: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))',
                 }}>
                   {departments.find(d => d.id === departmentFilter)?.name || 'Filtered'}
                 </span>
@@ -412,7 +412,6 @@ export function UserMapping() {
                 return (
                   <tr key={profile.id} style={{
                     borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))',
-// TODO: ads-unmapped — #FEFCE8 context unclear
                     background: isMapped ? 'var(--ds-surface, #fff)' : '#FEFCE8',
                   }}>
                     {/* # */}

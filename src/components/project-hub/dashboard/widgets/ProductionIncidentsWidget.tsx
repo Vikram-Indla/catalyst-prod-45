@@ -108,7 +108,6 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         fontWeight: 500,
         textTransform: 'none',
         letterSpacing: '0.04em',
-// TODO: ads-unmapped — #292A2E context unclear
         color: token('color.text', '#292A2E'),
       }}
     >

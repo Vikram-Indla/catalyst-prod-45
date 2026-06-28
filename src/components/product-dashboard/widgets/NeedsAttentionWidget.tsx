@@ -137,7 +137,7 @@ function AttentionRow({
         borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         cursor: 'pointer',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
     >
       <span

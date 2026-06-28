@@ -343,7 +343,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
             <span style={{
               width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
               background: (() => {
-                if (!data.generatedAt) return token('color.icon.disabled', 'var(--ds-text-disabled, #8590A2)');
+                if (!data.generatedAt) return token('color.icon.disabled', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))');
                 const ageMs = Date.now() - new Date(data.generatedAt).getTime();
                 return ageMs < 2 * 3_600_000
                   ? token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)')

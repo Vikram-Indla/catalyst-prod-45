@@ -489,7 +489,6 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                       >
                         <div style={{
                           width: 28, height: 28, borderRadius: '50%',
-// TODO: ads-unmapped — #CCE0FF context unclear
                           background: token('color.background.accent.blue.subtler', '#CCE0FF'),
                           color: token('color.text', 'var(--ds-text, #172B4D)'),
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

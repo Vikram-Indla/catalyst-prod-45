@@ -84,7 +84,7 @@ const STATUS_DISPLAY: Record<string, { dot: string; bg: string; text: string; la
   development: { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: 'var(--ds-background-information, rgba(37,99,235,0.1))', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', label: 'Development' },
   staging:  { dot: 'var(--ds-text-discovery, #8b5cf6)', bg: 'var(--ds-background-discovery-bold, rgba(139,92,246,0.1))', text: 'var(--ds-text-discovery, #8b5cf6)', label: 'Staging' },
   testing:  { dot: 'var(--ds-text-warning, #d97706)', bg: 'var(--ds-background-warning, rgba(217,119,6,0.1))', text: 'var(--ds-text-warning, #d97706)', label: 'Testing' },
-  uat:      { dot: 'var(--ds-text-warning, #f97316)', bg: 'rgba(249,115,22,0.1)', text: 'var(--ds-text-warning, #f97316)', label: 'UAT' },
+  uat:      { dot: 'var(--ds-text-warning, #f97316)', bg: 'rgba(249,115,22,0.1)', text: 'var(--ds-text-warning, var(--ds-background-warning-bold, #f97316))', label: 'UAT' },
   released: { dot: 'var(--ds-text-success, #0d9488)', bg: 'var(--ds-background-success, rgba(13,148,136,0.1))', text: 'var(--ds-text-success, #0d9488)', label: 'Released' },
 };
 

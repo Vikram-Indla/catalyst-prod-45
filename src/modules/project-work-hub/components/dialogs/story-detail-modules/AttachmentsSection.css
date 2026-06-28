@@ -318,7 +318,7 @@
 .dark .att-download-btn:hover { background-color: var(--ds-surface, rgba(255, 255, 255, 0.08)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .att-delete-btn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .att-delete-btn:hover { color: var(--ds-background-danger-bold, #C9372C); background-color: rgba(255, 86, 48, 0.12); }
-.dark .att-drop-overlay { background: var(--ds-background-information, rgba(37, 99, 235, 0.10)); color: var(--ds-background-information-bold, #0C66E4); }
+.dark .att-drop-overlay { background: var(--ds-background-information, rgba(37, 99, 235, 0.10)); color: var(--ds-background-information-bold, var(--ds-link, #0C66E4)); }
 
 /* ─── CARD GRID (Jira parity) ───────────────────────────
    Replaces the row-based table with a horizontal grid of cards.

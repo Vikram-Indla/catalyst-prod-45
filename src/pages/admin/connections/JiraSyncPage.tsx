@@ -312,7 +312,6 @@ const TH = { padding: '12px 16px', textAlign: 'left' as const, fontSize: 12, fon
 const TD = { padding: '12px 16px', fontSize: 13, fontFamily: FB, color: C.text };
 
 // Neutral-enterprise status pill (Vikram 2026-06-24): no green/lime anywhere in the Jira
-// TODO: ads-unmapped — #EFFFD6 context unclear
 // integration — Atlaskit's stock success Lozenge resolves to lime (#EFFFD6/#4C6B1F). Status
 // reads as restrained ADS neutral; red is reserved strictly for errors/danger. Labels stay
 // sentence-case (ADS typography rule — never all-caps).

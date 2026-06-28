@@ -79,7 +79,7 @@ function EditKebabMenu({
     <button
       type="button"
       onClick={() => { fn(); setOpen(false); }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
       style={itemStyle}
     >
@@ -506,7 +506,7 @@ useEffect(() => {
         style={elevatedBtnStyle}
         onClick={() => setIsFullScreen(true)}
         data-testid="dashboard-fullscreen"
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'); }}
       >
         <Maximize2 size={13} />
@@ -517,7 +517,7 @@ useEffect(() => {
         style={elevatedBtnStyle}
         onClick={enterEditMode}
         data-testid="dashboard-edit-layout"
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'); }}
       >
         <EditIcon size={13} />
@@ -574,7 +574,7 @@ useEffect(() => {
               color: token('color.text', 'var(--ds-text, #172B4D)'),
             }}
             onClick={() => setIsFullScreen(false)}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'); }}
           >
             <Minimize2 size={13} />

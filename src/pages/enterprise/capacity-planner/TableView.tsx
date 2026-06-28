@@ -292,14 +292,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
 
         // Department-specific colors from style guide
         const deptStyles: Record<string, { bg: string; text: string }> = {
-          'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, #216E4E)' },
-          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, #6d28d9)' },
-// TODO: ads-unmapped — #0E7490 context unclear
+          'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))' },
+          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #6d28d9))' },
           'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
           'SUPPORT': { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))', text: 'var(--quality-high, #059669)' },
         };
 
-        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest, rgba(100,116,139,0.12))', text: 'var(--ds-text-subtle, #475569)' };
+        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest, rgba(100,116,139,0.12))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #44546F))' };
 
         return (
           <span
@@ -342,7 +341,6 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             : `Expired ${Math.abs(daysRemaining)} days ago`;
 
         // Calculate status based on days remaining - Catalyst V1 style guide
-// TODO: ads-unmapped — #B91C1C context unclear
         // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))))
         const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
         const textColors: Record<string, string> = {

@@ -120,7 +120,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'box-shadow 150ms ease',
           }}
-          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1D4ED8) 0%, var(--ds-link-pressed, #0747A6) 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px var(--ds-background-information, rgba(37,99,235,0.45))'; } }}
+          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1D4ED8) 0%, var(--ds-link-pressed, var(--ds-link-pressed, #0747A6)) 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px var(--ds-background-information, rgba(37,99,235,0.45))'; } }}
           onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px var(--ds-background-information, rgba(37,99,235,0.35))'; } }}
         >
           {syncingAll ? (

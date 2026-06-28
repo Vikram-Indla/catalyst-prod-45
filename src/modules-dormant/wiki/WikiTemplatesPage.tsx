@@ -14,7 +14,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
   return (
     <div style={{
       padding: '12px 16px', borderRadius: 6, marginBottom: 16,
-      background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, #FFF7D6)',
+      background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))',
       border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
       display: 'flex', alignItems: 'flex-start', gap: 10,
     }}>
@@ -28,7 +28,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
             <span style={{
               fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700,
               padding: '1px 5px', borderRadius: 4,
-              background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.2))' : 'var(--ds-background-warning, #FFF7D6)',
+              background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.2))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))',
               color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
             }}>{Math.round((d.similarity ?? 0.8) * 100)}%</span>
             <span
@@ -194,7 +194,7 @@ export default function WikiTemplatesPage() {
           <button onClick={() => createArticleFromTemplate(pendingTemplate)} style={{
             fontSize: 11, fontWeight: 650, padding: '6px 16px', borderRadius: 4,
             border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
-            background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, #FFF7D6)',
+            background: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))',
             color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
             cursor: 'pointer',
           }}>Proceed Anyway</button>

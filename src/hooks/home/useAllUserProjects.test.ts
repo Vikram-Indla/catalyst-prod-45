@@ -6,14 +6,12 @@ describe('buildAllUserProjects', () => {
     { id: 'u1', key: 'BAU', name: 'Senaei BAU', avatar_url: null, color: 'var(--ds-text, #172B4D)' },
     { id: 'u2', key: 'IP', name: 'IP Implementation', avatar_url: '/ip.png', color: null },
   ];
-// TODO: ads-unmapped — #222222 context unclear
   const phIcons = [{ key: 'BAU', icon: 'rocket', color: '#222' }];
   const jiraNames = [{ project_key: 'MWR', name: 'MWR Project' }];
 
   it('maps catalyst projects and overlays ph_projects icon/color', () => {
     const out = buildAllUserProjects({ catalystProjects, phIcons, jiraNames, userIssueProjectKeys: [] });
     const bau = out.find(p => p.key === 'BAU')!;
-// TODO: ads-unmapped — #222222 context unclear
     expect(bau).toMatchObject({ id: 'u1', name: 'Senaei BAU', icon: 'rocket', color: '#222' });
   });
 

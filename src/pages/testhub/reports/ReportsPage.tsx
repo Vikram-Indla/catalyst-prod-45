@@ -141,7 +141,7 @@ function ReportTileCard({ tile, projectKey }: { tile: ReportTile; projectKey: st
         transition: 'background 0.1s',
         boxSizing: 'border-box',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
     >
       <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: 1.3 }}>

@@ -91,15 +91,14 @@ export const adsTokens = {
     surface:  { cp: '--cp-bg-surface',  light: 'var(--ds-surface, #FFFFFF)', dark: 'var(--ds-surface, #FFFFFF)', atlaskit: 'elevation.surface' } satisfies AdsToken,
     overlay:  { cp: '--cp-bg-overlay',  light: 'var(--ds-surface-sunken, #F8FAFC)', dark: 'var(--ds-text, #172B4D)', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
     inset:    { cp: '--cp-bg-inset',    light: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
-    hover:    { cp: '--cp-interact-hover',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.04))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
+    hover:    { cp: '--cp-interact-hover',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.04))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
     // 2026-05-01 — RCA fix for blue tint on Atlaskit Editor canvas in dark mode.
     // Previously dark = rgba(37,99,235,0.14) which painted Editor's "selected"
     // canvas state as a visible blue rectangle. ADS canonical dark value for
-// TODO: ads-unmapped — #1C2B41 context unclear
     // color.background.selected is #1C2B41 (atlassian.design — Jira parity).
     // Light kept at the original Catalyst tint per existing UI specs.
-    selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information, rgba(37,99,235,0.08))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.selected' } satisfies AdsToken,
-    pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.08))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
+    selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information, rgba(37,99,235,0.08))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.selected' } satisfies AdsToken,
+    pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.08))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
   },
   text: {
     primary:   { cp: '--cp-text-primary',   light: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', dark: 'var(--ds-background-neutral, #F1F2F4)', atlaskit: 'color.text' } satisfies AdsToken,
@@ -126,13 +125,9 @@ export const adsTokens = {
   status: {
     grey:  { bg: { cp: '--cp-lozenge-grey-bg',  light: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', dark: 'var(--ds-text, #172B4D)', atlaskit: '' } satisfies AdsToken,
              fg: { cp: '--cp-lozenge-grey-fg',  light: 'var(--ds-text, #253858)', dark: 'var(--ds-background-neutral, #F1F2F4)', atlaskit: '' } satisfies AdsToken },
-// TODO: ads-unmapped — #1A3A6A context unclear
     blue:  { bg: { cp: '--cp-lozenge-blue-bg',  light: 'var(--ds-background-information, #E9F2FF)', dark: '#1A3A6A', atlaskit: '' } satisfies AdsToken,
-// TODO: ads-unmapped — #DDEBFF context unclear
              fg: { cp: '--cp-lozenge-blue-fg',  light: 'var(--ds-link-pressed, #0747A6)', dark: '#DDEBFF', atlaskit: '' } satisfies AdsToken },
-// TODO: ads-unmapped — #1C3D2E context unclear
     green: { bg: { cp: '--cp-lozenge-green-bg', light: 'var(--ds-background-success, #DFFCF0)', dark: '#1C3D2E', atlaskit: '' } satisfies AdsToken,
-// TODO: ads-unmapped — #B6F2D6 context unclear
              fg: { cp: '--cp-lozenge-green-fg', light: 'var(--ds-text-success, #006644)', dark: '#B6F2D6', atlaskit: '' } satisfies AdsToken },
   },
   /**

@@ -101,7 +101,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
           onClick={() => setShowDue((v) => !v)}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 2, border: 'none', background: dueDate ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent', borderRadius: 3, padding: 2, cursor: 'pointer' }}
         >
-          <CalendarIcon label="" size="small" primaryColor={dueDate ? token('color.icon.selected', 'var(--ds-link, #0C66E4)') : token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)')} />
+          <CalendarIcon label="" size="small" primaryColor={dueDate ? token('color.icon.selected', 'var(--ds-link, #0C66E4)') : token('color.icon.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))')} />
           {dueDate && <span style={{ fontSize: 11, color: token('color.text.selected', 'var(--ds-link, #0C66E4)') }}>{dueDate.slice(5)}</span>}
         </button>
         {showDue && (

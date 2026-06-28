@@ -251,7 +251,6 @@ export function SidebarBase({
   // Source of truth: @atlaskit/navigation-system side-nav.compiled.css and
   // @atlaskit/side-navigation button-item.compiled.css. Drift fixed:
   //   - Surface: was --ds-background-neutral (page bg), now --ds-surface (rail bg)
-// TODO: ads-unmapped — #38414A context unclear
   //   - Border: was opaque #38414A, now translucent --ds-border
   //   - Inactive text: was --ds-text (loud), now --ds-text-subtle (ADS spec)
   //   - Hover: ADS does NOT promote text color on hover; only bg changes

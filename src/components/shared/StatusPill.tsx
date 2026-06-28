@@ -19,7 +19,6 @@ export function StatusPill({ value, label }: StatusPillProps) {
   }
   const displayLabel = label || (value || '').replace(/_/g, ' ');
   const appearance = statusToLozenge(value);
-// TODO: ads-unmapped — #94C748 context unclear
   // Canonical palette (statusPalette.ts) — local pale map drifted from #94C748.
   const bg = statusBg(appearance);
   return (

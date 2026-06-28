@@ -212,7 +212,7 @@ export function GroupByPopover<K extends string>({
             : isHovered
               ? hover
               : T.surface,
-          border: `1px solid ${(open || isFocused || isActive) ? 'var(--ds-border-selected, #0C66E4)' : T.border}`,
+          border: `1px solid ${(open || isFocused || isActive) ? 'var(--ds-border-selected, var(--ds-link, #0C66E4))' : T.border}`,
           boxShadow: (open || isFocused || isActive)
             ? '0 0 0 1px var(--ds-border-selected, #0C66E4)'
             : 'none',

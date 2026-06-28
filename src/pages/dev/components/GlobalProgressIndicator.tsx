@@ -106,7 +106,6 @@ export function GlobalProgressIndicator({
         style={{
           width: 120,
           height: 4,
-// TODO: ads-unmapped — #BCDFFB context unclear
           backgroundColor: '#BCDFFB',
           borderRadius: 2,
           overflow: 'hidden',

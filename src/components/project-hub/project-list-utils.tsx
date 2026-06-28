@@ -63,7 +63,6 @@ export function StatusBadge({ status }: { status: string }) {
  */
 const HEALTH_STYLES: Record<string, { bg: string; color: string; dot: string }> = {
   on_track:  { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #006644)', dot: 'var(--ds-text-success, #006644)' },
-// TODO: ads-unmapped — #FFF7E6 context unclear
   at_risk:   { bg: '#FFF7E6', color: 'var(--ds-text-warning, #974F0C)', dot: 'var(--ds-text-warning, #974F0C)' },
   off_track: { bg: 'var(--ds-background-danger, #FFECEB)', color: 'var(--ds-text-danger, #AE2A19)', dot: 'var(--ds-text-danger, #AE2A19)' },
 };
@@ -96,8 +95,6 @@ export function HealthBadge({ health }: { health: string | null }) {
     </span>
   );
 }
-
-// TODO: ads-unmapped — #0369A1 context unclear
 const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--quality-high, #059669)', '#0369A1', 'var(--ds-background-accent-magenta-bolder, #be185d)'];
 
 function getInitials(name: string): string {

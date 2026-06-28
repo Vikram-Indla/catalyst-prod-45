@@ -91,7 +91,6 @@ export function MessagePanelHeader({
             background: 'transparent',
             border: 'none',
             borderRadius: 'var(--cv2-radius-sm)',
-// TODO: ads-unmapped — #E8A87C context unclear
             color: isStarred ? '#E8A87C' : 'var(--cv2-text-subtle)',
             cursor: 'pointer',
             display: 'inline-flex',

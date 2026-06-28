@@ -498,7 +498,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         style={{
           border: `2px dashed ${dragOver ? token('color.border.brand', 'var(--ds-link, #1868DB)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           borderRadius: 4, padding: '24px 16px', textAlign: 'center', cursor: 'pointer',
-          background: dragOver ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
+          background: dragOver ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.input', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'),
           transition: 'border-color 120ms, background 120ms',
         }}
       >

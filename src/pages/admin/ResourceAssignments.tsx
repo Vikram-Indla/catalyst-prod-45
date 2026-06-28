@@ -150,8 +150,8 @@ function SortableRow({
     <tr
       ref={setNodeRef}
       style={{ ...style, borderTop: '1px solid var(--ds-border, #DCDFE4)', opacity: !assignment.is_active ? 0.5 : isDragging ? 0.7 : 1 }}
-      onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, #F7F8F9)' : ''; }}
+      onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, var(--ds-background-neutral-subtle, #F7F8F9))' : ''; }}
     >
       <td style={{ padding: '12px 16px', cursor: 'grab', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }} className="active:cursor-grabbing" {...attributes} {...listeners}>
         <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
@@ -361,7 +361,7 @@ function SortableRow({
             onClick={() => onEdit(assignment)}
             className="w-8 h-8 rounded flex items-center justify-center transition-colors"
             style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
           >
             <EditIcon label="" size="small" />
@@ -836,8 +836,8 @@ export default function ResourceAssignmentsPage() {
                 onClick={() => toggleGroup(group.type)}
                 className="w-full flex items-center gap-3 px-4 py-3 transition-colors"
                 style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F7F8F9)')}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))')}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral-subtle, #F7F8F9))')}
               >
                 {isCollapsed ? (
                   <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><ChevronRightIcon label="" size="small" /></span>
@@ -1239,7 +1239,7 @@ export default function ResourceAssignmentsPage() {
                         key={resource.id}
                         className="flex items-center px-4 py-3 rounded-lg transition-colors"
                         style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' }}
-                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
+                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))')}
                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))')}
                       >
                         <div className="w-16">

@@ -220,7 +220,7 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
           <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title"
             className="w-full h-8 px-2 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[12px]" />
           <div className="flex gap-2">
-            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[11px] text-[var(--ds-text-subtle,#475569)]">Cancel</button>
+            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[11px] text-[var(--ds-text-subtle,var(--ds-text-subtle, #44546F))]">Cancel</button>
             <button onClick={handleLink} disabled={!key || !title || linkWorkItem.isPending}
               className="h-7 px-3 rounded bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[11px] font-bold disabled:opacity-50">
               {linkWorkItem.isPending ? 'Linking...' : 'Link'}
@@ -228,7 +228,7 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[var(--ds-background-information, #E9F2FF)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">
+        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[var(--ds-background-information, var(--ds-background-information, #E9F2FF))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">
           + Link Work Item
         </button>
       )}

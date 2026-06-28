@@ -15,7 +15,6 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'QA Bug':
       return { level: 3, name: 'QA Bug', color: 'var(--cp-danger, #DC2626)', colorText: 'var(--ds-text-danger, #AE2A19)' };
     case 'Frontend':
-// TODO: ads-unmapped — #0E7490 context unclear
       return { level: 3, name: 'Frontend', color: 'var(--ds-link, #0C66E4)', colorText: '#0E7490' };
     case 'Backend':
       return { level: 3, name: 'Backend', color: 'var(--cp-purple-60, #7C3AED)', colorText: 'var(--ds-background-discovery-bold, #6d28d9)' };

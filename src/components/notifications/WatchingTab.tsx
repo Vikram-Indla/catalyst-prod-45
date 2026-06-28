@@ -164,7 +164,6 @@ function EmptyState({ isDark }: { isDark: boolean }) {
         fontFamily: 'var(--cp-font-body)',
         fontSize: 14,
         fontWeight: 600,
-// TODO: ads-unmapped — #292A2E context unclear
         color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E'),
       }}>
         Nothing watched yet

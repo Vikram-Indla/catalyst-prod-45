@@ -257,11 +257,11 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
           border: 'none',
           textAlign: 'left',
           fontSize: 14,
-          color: disabled ? token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)') : token('color.text', 'var(--ds-text, #172B4D)'),
+          color: disabled ? token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
           cursor: disabled ? 'not-allowed' : 'pointer',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+        onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
       >
         {label}
@@ -763,7 +763,7 @@ const isOwner = filter.user_id === currentUserId || filter.owner_id === currentU
                   Access follows the filter &mdash; anyone who can see the filter can see this board.
                 </p>
                 {filterProjectMismatch && (
-                  <p style={{ margin: 0, fontSize: 12, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), borderRadius: 4, padding: '8px 12px' }}>
+                  <p style={{ margin: 0, fontSize: 12, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), background: token('color.background.warning', 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))'), borderRadius: 4, padding: '8px 12px' }}>
                     This filter is scoped to project <strong>{jqlProjectKey}</strong> but you&rsquo;re
                     in <strong>{projectKey?.toUpperCase()}</strong>. The board will use{' '}
                     <strong>{projectKey?.toUpperCase()}</strong> columns — cards from{' '}

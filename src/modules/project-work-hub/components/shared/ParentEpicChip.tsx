@@ -9,7 +9,6 @@ interface ParentEpicChipProps {
 
 /**
  * ParentEpicChip — Jira-parity parent chip
-// TODO: ads-unmapped — #DEEBFF context unclear
  * Purple lightning icon + "KEY Summary" in light blue (#DEEBFF) chip
  */
 export const ParentEpicChip: React.FC<ParentEpicChipProps> = ({ epicId, epicKey, epicName }) => {

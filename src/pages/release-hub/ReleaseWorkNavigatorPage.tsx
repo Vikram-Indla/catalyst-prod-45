@@ -636,7 +636,6 @@ function MultiChip({
         {active && (
           <span style={{
             minWidth: 20, height: 20, padding: '0 6px', borderRadius: 3,
-// TODO: ads-unmapped — #8FB8F6 context unclear
             background: '#8FB8F6',
             color: 'var(--ds-text, #172B4D)',
             fontSize: 11, fontWeight: 700, lineHeight: '20px',

@@ -319,7 +319,7 @@ const PragmaticCard = memo(function PragmaticCard({
                 fontSize: 14, lineHeight: '20px',
                 color: item.danger ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               {item.label}
@@ -893,7 +893,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               tabIndex={showCreate ? 0 : -1}
               aria-hidden={!showCreate}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, #F1F2F4)';
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))';
                 (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
               }}
               onMouseLeave={(e) => {
@@ -1053,7 +1053,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
             tabIndex={showCreate ? 0 : -1}
             aria-hidden={!showCreate}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, #F1F2F4)';
+              (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))';
               (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
             }}
             onMouseLeave={(e) => {

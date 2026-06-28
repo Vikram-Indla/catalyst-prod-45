@@ -313,7 +313,7 @@ export function ReleaseDetailPage({
                 opacity: canSaveTitle ? 1 : 0.6,
               }}
               onMouseEnter={(e) => {
-                if (canSaveTitle) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+                if (canSaveTitle) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
               }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
             >
@@ -337,7 +337,7 @@ export function ReleaseDetailPage({
                 background: 'var(--ds-surface, #FFFFFF)',
                 color: 'var(--ds-text-subtle, #505258)',
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
             >
               <CrossIcon label="" size="medium" />
@@ -461,7 +461,7 @@ export function ReleaseDetailPage({
             boxShadow: '0 1px 2px rgba(9,30,66,0.08)',
             zIndex: 1,
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
         >
           {sidebarCollapsed ? <ChevronLeftIcon label="" size="small" /> : <ChevronRightIcon label="" size="small" />}

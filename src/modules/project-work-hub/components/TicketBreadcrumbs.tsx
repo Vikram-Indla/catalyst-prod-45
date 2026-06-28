@@ -177,8 +177,7 @@ export function TicketBreadcrumbs({
       <style>{`
         .tk-breadcrumbs {
           /* Scoped token override — Jira-canonical breadcrumb color (CLAUDE.md 2026-05-12: 14px/400/var(--ds-text-subtle, #42526E)).
-// TODO: ads-unmapped — #505258 context unclear
-             ADS deploys --ds-text-subtle as #505258 (neutral grey); Jira uses var(--ds-text-subtle, #42526E) (blue-grey, more visual
+             ADS deploys --ds-text-subtle as #505258 (neutral grey); Jira uses var(--ds-text-subtle, var(--ds-text-subtle, #42526E)) (blue-grey, more visual
              weight). Overriding the token here means all var(--ds-text-subtle) children resolve correctly. */
           --ds-text-subtle: var(--ds-text-subtle, #42526E);
         }

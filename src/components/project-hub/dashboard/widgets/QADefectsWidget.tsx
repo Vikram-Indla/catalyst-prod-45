@@ -110,7 +110,6 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         fontWeight: 500,
         textTransform: 'none',
         letterSpacing: '0.04em',
-// TODO: ads-unmapped — #292A2E context unclear
         color: token('color.text', '#292A2E'),
       }}
     >
@@ -254,9 +253,9 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
             const isDone = ['closed', 'resolved', 'done', 'fixed', 'verified'].includes((d.status || '').toLowerCase());
             if (isDone) return <span />;
             const raw = d.created_at ?? d.jira_created_at ?? null;
-            if (!raw) return <span style={{ ...BODY, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>—</span>;
+            if (!raw) return <span style={{ ...BODY, color: token('color.text.subtle', 'var(--ds-text-subtle, var(--ds-icon, #44546F))') }}>—</span>;
             const dt = new Date(raw);
-            if (Number.isNaN(dt.getTime())) return <span style={{ ...BODY, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>—</span>;
+            if (Number.isNaN(dt.getTime())) return <span style={{ ...BODY, color: token('color.text.subtle', 'var(--ds-text-subtle, var(--ds-icon, #44546F))') }}>—</span>;
             const days = Math.max(0, Math.floor((Date.now() - dt.getTime()) / (1000 * 60 * 60 * 24)));
             const label = days === 0 ? 'today' : `${days}d`;
             return (

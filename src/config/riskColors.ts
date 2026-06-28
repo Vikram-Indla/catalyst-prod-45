@@ -11,17 +11,13 @@ export type RiskSeverity = 'critical' | 'high' | 'medium' | 'low';
  * Standard risk colors - Catalyst brand aligned
  * 
  * Visual meaning:
-// TODO: ads-unmapped — #922B21 context unclear
  * - Critical (#922b21) – "Stop everything, fix immediately"
-// TODO: ads-unmapped — #CB4335 context unclear
  * - High (#cb4335) – "Needs immediate attention"  
  * - Medium (var(--ds-background-warning-bold, #f59e0b)) – "Monitor closely, plan mitigation" (Amber)
  * - Low (var(--ds-chart-teal-bold, #0d9488)) – "Manageable, track over time" (Teal)
  */
 export const RISK_COLORS = {
-// TODO: ads-unmapped — #922B21 context unclear
   critical: '#922b21',
-// TODO: ads-unmapped — #CB4335 context unclear
   high: '#cb4335',
   medium: 'var(--ds-background-warning-bold, #f59e0b)',
   low: 'var(--ds-chart-teal-bold, #0d9488)',

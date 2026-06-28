@@ -55,14 +55,12 @@ export const APPROVAL_STATUS_CONFIG = {
     // token('color.text.success.bolder') / bg: token('color.background.success.hovered')
     label: 'Approved',
     color: 'var(--ds-text-success, #006644)',
-// TODO: ads-unmapped — #ABF5D1 context unclear
     bgColor: '#ABF5D1',
   },
   rejected: {
     // token('color.text.danger.bolder') / bg: token('color.background.danger.subtler')
     label: 'Rejected',
     color: 'var(--ds-text-danger, #AE2A19)',
-// TODO: ads-unmapped — #FFBDAD context unclear
     bgColor: '#FFBDAD',
   },
   waiting: {
@@ -82,9 +80,7 @@ export const APPROVAL_STATUS_CONFIG = {
 /**
  * WORKFLOW_STATUSES — 10-stage Catalyst workflow. Each color is an Atlaskit
  * semantic-token fallback hex. Eliminates the four Golden Hour palette
-// TODO: ads-unmapped — #896F58 context unclear
  * collisions previously baked into the HSL form (design=#896F58,
-// TODO: ads-unmapped — #D4B996 context unclear
  * in_dev=#C79C6B, uat=#D4B996, beta=#5B7B5B — all banned per §7).
  */
 export const WORKFLOW_STATUSES = [
@@ -105,5 +101,5 @@ export function getStatusLabel(statusId: string): string {
 }
 
 export function getStatusColor(statusId: string): string {
-  return WORKFLOW_STATUSES.find(s => s.id === statusId)?.color || 'var(--ds-text-subtle, #42526E)';
+  return WORKFLOW_STATUSES.find(s => s.id === statusId)?.color || 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))';
 }

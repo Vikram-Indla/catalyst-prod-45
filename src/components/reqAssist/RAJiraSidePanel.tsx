@@ -269,9 +269,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   ];
 
   const getStageLozenge = () => {
-    if (!stage) return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)', label: 'PENDING' };
+    if (!stage) return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))', label: 'PENDING' };
     if (stage === 'complete') return { bg: 'var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', label: 'COMPLETE' };
-    if (stage === 'failed') return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, #42526E)', label: 'FAILED' };
+    if (stage === 'failed') return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))', label: 'FAILED' };
     return { bg: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', label: stage.toUpperCase() };
   };
   const lozenge = getStageLozenge();
@@ -360,7 +360,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         {brdData.rawTextSource === 'title_only' && (
           <div style={{
             margin: '0 20px', marginTop: 12, padding: '8px 12px', borderRadius: 6,
-            background: 'var(--cp-warning-light, var(--ds-background-warning, #FFF7D6))', border: isDark ? '0.75px solid var(--ds-background-warning, rgba(217,119,6,0.25))' : '0.75px solid var(--ds-background-warning, #FFF7D6)',
+            background: 'var(--cp-warning-light, var(--ds-background-warning, #FFF7D6))', border: isDark ? '0.75px solid var(--ds-background-warning, rgba(217,119,6,0.25))' : '0.75px solid var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))',
             fontSize: 12, color: 'var(--cp-warning-text, var(--ds-text-warning, #92400E))', fontFamily: 'var(--cp-font-body)',
             display: 'flex', alignItems: 'center', gap: 6,
           }}>

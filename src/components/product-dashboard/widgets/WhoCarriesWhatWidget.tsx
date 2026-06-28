@@ -44,7 +44,6 @@ function WorkloadRow({
   const barColor = isHeavy
     ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
     : isMedium
-// TODO: ads-unmapped — #F5A623 context unclear
     ? '#F5A623'
     : 'var(--ds-chart-purple-bold, #8A7CFF)';
 

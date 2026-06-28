@@ -611,7 +611,7 @@ export function CatalystWorkflowBuilder({
                 border: 'none',
                 borderRadius: 3,
                 cursor: newStatusName.trim() ? 'pointer' : 'not-allowed',
-                background: newStatusName.trim() ? 'var(--ds-link, #0C66E4)' : DARK.border,
+                background: newStatusName.trim() ? 'var(--ds-link, var(--ds-link, #0C66E4))' : DARK.border,
                 color: 'var(--ds-text-inverse, #FFFFFF)',
                 fontFamily: 'inherit',
               }}

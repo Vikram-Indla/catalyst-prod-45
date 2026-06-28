@@ -91,7 +91,6 @@ export default function DirectNotificationRow({
 
   const text1 = isDark
     ? "var(--ds-text, var(--cp-bg-neutral, #EDEDED))"
-// TODO: ads-unmapped — #292A2E context unclear
     : token("color.text", "#292A2E");
   const text2 = isDark
     ? "var(--ds-text-subtlest, #A1A1A1)"
@@ -100,7 +99,6 @@ export default function DirectNotificationRow({
     ? "var(--ds-text-subtlest, var(--cp-text-secondary, #878787))"
     : token("color.text.subtlest", "var(--ds-text-disabled, #8590A2)");
   const linkClr = isDark
-// TODO: ads-unmapped — #6698FF context unclear
     ? "#6698FF"
     : token("color.link", "var(--ds-link, #0C66E4)");
   const dotColor =

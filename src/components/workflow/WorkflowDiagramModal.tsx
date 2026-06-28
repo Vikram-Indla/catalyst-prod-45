@@ -26,11 +26,8 @@ const CATEGORY_BG: Record<StatusCategory, string> = {
   default:    'var(--ds-border, #DFE1E6)',
   inprogress: 'var(--ds-background-information, #E9F2FF)',
   success:    'var(--ds-background-success-bold, #6A9A23)',
-// TODO: ads-unmapped — #FD9891 context unclear
   removed:    '#FD9891',
-// TODO: ads-unmapped — #D8A0F7 context unclear
   new:        '#D8A0F7',
-// TODO: ads-unmapped — #F9C84E context unclear
   moved:      '#F9C84E',
 };
 

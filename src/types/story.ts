@@ -38,7 +38,6 @@ export const SUBTASK_TYPES = [
   { type: 'frontend' as const, label: 'Frontend', icon: 'Palette', color: 'var(--ds-background-information-bold, #3b82f6)', bgColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.1))' },
   { type: 'backend' as const, label: 'Backend', icon: 'Server', color: 'var(--ds-chart-teal-bold, #0d9488)', bgColor: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))' },
   { type: 'integration' as const, label: 'Integration', icon: 'Plug', color: 'var(--ds-background-warning-bold, #f59e0b)', bgColor: 'var(--ds-background-warning-bold, rgba(245, 158, 11, 0.1))' },
-// TODO: ads-unmapped — #A259FF context unclear
   { type: 'figma' as const, label: 'Figma', icon: 'Figma', color: '#a259ff', bgColor: 'rgba(162, 89, 255, 0.12)' },
 ] as const;
 

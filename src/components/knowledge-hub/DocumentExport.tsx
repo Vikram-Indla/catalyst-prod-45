@@ -46,18 +46,13 @@ export function DocumentExport({ title, content }: DocumentExportProps) {
     h1 { border-bottom: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); padding-bottom: 10px; }
     h2, h3 { color: var(--ds-surface-raised, #1a1a1a); }
     blockquote { border-left: 4px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); margin: 1em 0; padding-left: 1em; color: var(--ds-text-subtlest, #666); }
-// TODO: ads-unmapped — #F4F4F4 context unclear
     code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
     pre { background: var(--ds-surface-raised, #1a1a1a); color: var(--ds-surface-sunken, #F7F8F9); padding: 16px; border-radius: 6px; overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; margin: 1em 0; }
     th, td { border: 1px solid var(--ds-border, #DFE1E6); padding: 8px 12px; text-align: left; }
-// TODO: ads-unmapped — #F4F4F4 context unclear
     th { background: #f4f4f4; }
-// TODO: ads-unmapped — #E3F2FD context unclear
     .info-panel { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 16px; margin: 1em 0; }
-// TODO: ads-unmapped — #FF9800 context unclear
     .warning-panel { background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 1em 0; }
-// TODO: ads-unmapped — #F3E5F5 context unclear
     .note-panel { background: #f3e5f5; border-left: 4px solid #9c27b0; padding: 12px 16px; margin: 1em 0; }
   </style>
 </head>

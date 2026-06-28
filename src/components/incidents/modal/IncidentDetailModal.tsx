@@ -162,19 +162,19 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]">
-                <DropdownMenuItem onClick={() => handleMenuAction('flag')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
+                <DropdownMenuItem onClick={() => handleMenuAction('flag')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))]">
                   <Flag className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Add flag
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('clone')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
+                <DropdownMenuItem onClick={() => handleMenuAction('clone')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))]">
                   <Copy className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Clone
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('move')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
+                <DropdownMenuItem onClick={() => handleMenuAction('move')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))]">
                   <Move className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Move
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('archive')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
+                <DropdownMenuItem onClick={() => handleMenuAction('archive')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))]">
                   <Archive className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Archive
                 </DropdownMenuItem>
@@ -183,15 +183,15 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
                   Delete
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]" />
-                <DropdownMenuItem onClick={() => handleMenuAction('print')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
+                <DropdownMenuItem onClick={() => handleMenuAction('print')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))]">
                   <Printer className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Print
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('excel')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
+                <DropdownMenuItem onClick={() => handleMenuAction('excel')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))]">
                   <FileSpreadsheet className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Export Excel
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('word')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
+                <DropdownMenuItem onClick={() => handleMenuAction('word')} className="text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))]">
                   <FileText className="w-4 h-4 mr-2 text-[var(--ds-text-subtle, #42526E)]" />
                   Export Word
                 </DropdownMenuItem>

@@ -788,9 +788,9 @@ export function CatalystViewBase({
                 isDraggingRef.current = true;
                 document.body.style.cursor = 'col-resize';
                 document.body.style.userSelect = 'none';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link, #1868DB))';
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)'; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link, #1868DB))'; }}
               onMouseLeave={e => { if (!isDraggingRef.current) (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
               style={{
                 position: 'absolute',

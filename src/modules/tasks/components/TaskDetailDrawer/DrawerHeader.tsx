@@ -309,7 +309,6 @@ function getAvatarColor(name: string): string {
     'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky
     'var(--ds-chart-yellow-bold, #FAC814)',  // Amber
     'var(--ds-chart-purple-bold, #BB36D3)',  // Fuchsia
-// TODO: ads-unmapped — #1DAFA1 context unclear
     '#1DAFA1',  // Cyan
   ];
   let hash = 0;

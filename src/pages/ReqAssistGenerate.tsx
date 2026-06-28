@@ -302,7 +302,7 @@ export default function ReqAssistGenerate() {
               <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-success, #DCFCE7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="var(--ds-text-success, var(--cp-success, #16A34A))" /></div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
-                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: 'var(--ds-text-success, #216E4E)', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
+                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
                 <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86))))', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
                   Domain: {qualifyResult.domain_detected} · ~{qualifyResult.requirement_count_estimate} requirements · {qualifyResult.language.toUpperCase()}
                 </p>

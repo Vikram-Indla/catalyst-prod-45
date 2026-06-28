@@ -69,7 +69,7 @@ const AddColumnSlot: React.FC<{ onAdd: (name: string) => void }> = ({ onAdd }) =
       ) : (
         <button
           aria-label="Create column" onClick={() => setAdding(true)}
-          style={{ width: 40, height: 40, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token('color.background.neutral', 'rgba(5,21,36,0.06)'), color: token('color.icon.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 20, lineHeight: 1 }}
+          style={{ width: 40, height: 40, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token('color.background.neutral', 'rgba(5,21,36,0.06)'), color: token('color.icon.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))'), fontSize: 20, lineHeight: 1 }}
           onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(5,21,36,0.10)'); }}
           onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'rgba(5,21,36,0.06)'); }}
         >+</button>

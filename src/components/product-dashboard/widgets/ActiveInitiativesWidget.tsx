@@ -74,12 +74,12 @@ function stepToStatus(step: string | null): BrStatus {
 // ─── Status chip ──────────────────────────────────────────────────────────────
 
 const CHIP_STYLE: Record<BrStatus, { bg: string; color: string }> = {
-  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, #0C66E4)') },
+  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, var(--ds-link, #0C66E4))') },
   'In Review':{ bg: token('color.background.discovery', 'var(--ds-background-discovery, #F3F0FF)'), color: token('color.text.discovery', 'var(--ds-background-discovery-bold, #6E5DC6)') },
-  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') },
-  Done:      { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, #216E4E)') },
-  Planned:   { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') },
-  'On Hold': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') },
+  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))') },
+  Done:      { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
+  Planned:   { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))') },
+  'On Hold': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') },
 };
 
 function StatusChip({ status }: { status: BrStatus }) {
@@ -178,8 +178,6 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
   const left  = pct(s, rangeStart, totalMs);
   const right = pct(e, rangeStart, totalMs);
   const hasBar = s && e && totalMs > 0;
-
-// TODO: ads-unmapped — #CCE0FF context unclear
   const barBg     = token('color.background.accent.blue.subtle', '#CCE0FF');
   const barBorder = token('color.border.accent.blue', 'var(--ds-link, #0C66E4)');
 

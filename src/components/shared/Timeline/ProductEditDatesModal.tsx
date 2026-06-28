@@ -222,7 +222,7 @@ function DayCell({
   let color: string = inMonth ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-disabled, #A5ADBA)';
   if (disabled) color = 'var(--ds-text-disabled, #A5ADBA)';
   if (inRange) bg = 'var(--ds-background-selected, #E9F2FE)';
-  if (selected) { bg = 'var(--ds-background-selected-bold, #0052CC)'; color = 'var(--ds-text-inverse, #FFFFFF)'; }
+  if (selected) { bg = 'var(--ds-background-selected-bold, var(--ds-link, #0C66E4))'; color = 'var(--ds-text-inverse, #FFFFFF)'; }
   if (hover && !disabled && !selected) bg = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
   return (
     <button

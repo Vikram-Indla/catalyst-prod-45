@@ -41,7 +41,6 @@ export function getInitials(name?: string | null): string {
 }
 
 export function getAvatarColor(id: string): string {
-// TODO: ads-unmapped — #00B8D9 context unclear
   const colors = ['var(--cp-primary-60, #0052CC)', 'var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-warning-bold, #E2B203)', '#00B8D9', 'var(--ds-text-success, #216E4E)', 'var(--ds-text-accent-orange, #9E4C00)'];
   let hash = 0;
   for (let i = 0; i < id.length; i++) {

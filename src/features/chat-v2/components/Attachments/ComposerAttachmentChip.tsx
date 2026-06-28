@@ -107,7 +107,6 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
             width: 22,
             height: 22,
             borderRadius: '50%',
-// TODO: ads-unmapped — #1A1D21 context unclear
             background: '#1A1D21',
             color: 'var(--ds-text-inverse, #FFFFFF)',
             border: '2px solid var(--cv2-bg-panel)',

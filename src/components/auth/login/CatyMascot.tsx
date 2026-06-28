@@ -2,9 +2,7 @@
 /**
  * CATY mascot — round cat face.
  * variant:
-// TODO: ads-unmapped — #23222B context unclear
  *   'light'    → #23222B body, white details  (for light/white backgrounds)
-// TODO: ads-unmapped — #F4F1EA context unclear
  *   'dark'     → #F4F1EA body, dark details   (for dark backgrounds)
  *   'default'  → inherits currentColor body
  */

@@ -46,7 +46,6 @@ import { useWidgetEditState } from './widget-edit-context';
 
 /** Jira-parity highlight colors for the gadget top border bar. */
 // 2026-06-09 Spec parity — ADS B400 var(--ds-link, #0052CC) for the blue accent (was
-// TODO: ads-unmapped — #2684FF context unclear
 // #2684FF B200). Other category colors aligned to ADS canonical palette.
 const HIGHLIGHT_COLORS: Record<string, string> = {
   blue: 'var(--ds-link, #0052CC)',

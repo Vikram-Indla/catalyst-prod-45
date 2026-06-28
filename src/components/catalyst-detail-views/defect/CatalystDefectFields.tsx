@@ -6,7 +6,6 @@
  *   Environment, Found in build, Fix in build, Root Cause, Resolution — as
  *   a stacked `FieldBlock` with a 16/700 heading and an italic "None"
  *   placeholder. Jira instead folds the short enum/lozenge fields into
-// TODO: ads-unmapped — #505258 context unclear
  *   the compact `Key details` block (14/500/#505258 labels, 96 px label
  *   column, space.250 gap) and keeps only the long-form fields
  *   (Steps to Reproduce, Environment) as below-the-fold blocks.

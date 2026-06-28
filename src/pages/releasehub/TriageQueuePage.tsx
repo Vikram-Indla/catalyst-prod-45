@@ -119,7 +119,7 @@ export default function TriageQueuePage() {
                           <TriageLinkDropdown releases={releases} onLink={(releaseId) => linkChangeToRelease(c.id, releaseId)} />
                         )}
                         <button onClick={() => ignoreTriageItem(c.id)}
-                          className="h-7 px-3 rounded text-[11px] font-medium border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:text-[var(--ds-text-subtle,#475569)]">
+                          className="h-7 px-3 rounded text-[11px] font-medium border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:text-[var(--ds-text-subtle,var(--ds-text-subtle, #44546F))]">
                           Ignore
                         </button>
                       </div>

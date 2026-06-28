@@ -186,7 +186,6 @@ export function RoadmapSidePanel({
               <div style={{
                 padding: '10px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)',
                 color: 'var(--bg-app)', fontSize: 13, fontWeight: 650, textAlign: 'center',
-// TODO: ads-unmapped — #B7EBD1 context unclear
                 border: '1px solid #B7EBD1',
               }}>
                 ✓ Already converted to Request

@@ -128,13 +128,10 @@ function statusCategoryToAppearance(cat: string | null | undefined): LozengeAppe
 
 function priorityColor(p: string | null | undefined): string {
   const v = (p || '').toLowerCase();
-  if (v.includes('highest') || v.includes('blocker')) return 'var(--ds-background-danger-bold, #C9372C)';
-  if (v.includes('high')) return 'var(--ds-background-danger-bold, #C9372C)';
-// TODO: ads-unmapped — #D04A02 context unclear
+  if (v.includes('highest') || v.includes('blocker')) return 'var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))';
+  if (v.includes('high')) return 'var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))';
   if (v.includes('medium')) return '#D04A02';
-// TODO: ads-unmapped — #2C8540 context unclear
   if (v.includes('low')) return '#2C8540';
-// TODO: ads-unmapped — #1F7344 context unclear
   if (v.includes('lowest')) return '#1F7344';
   return 'var(--ds-text-subtlest, #6B6E76)';
 }

@@ -60,8 +60,6 @@ const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> =
   task: { border: 'var(--ds-border, #DFE1E6)', text: 'var(--fg-3)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
   incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
-
-// TODO: ads-unmapped — #52C41A context unclear
 const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)', '#13C2C2', '#F5222D'];
 
 function getHubType(issueType: string): string {

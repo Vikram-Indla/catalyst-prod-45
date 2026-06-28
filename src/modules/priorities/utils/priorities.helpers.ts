@@ -79,7 +79,7 @@ export const WORKSTREAM_CONFIG: Record<PriWorkstream, { label: string; color: st
 };
 
 export function getWorkstreamColor(ws: PriWorkstream | null): string {
-  if (!ws) return 'var(--ds-text-subtlest, #626F86)';
+  if (!ws) return 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))';
   return WORKSTREAM_CONFIG[ws]?.color ?? 'var(--ds-text-subtlest, #626F86)';
 }
 

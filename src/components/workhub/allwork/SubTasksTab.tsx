@@ -59,7 +59,6 @@ export function useSubTasks(parentKey: string | null) {
 }
 
 /* ── Avatar ── */
-// TODO: ads-unmapped — #52C41A context unclear
 const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)', '#13C2C2', '#2F54EB'];
 function MiniAvatar({ name }: { name: string }) {
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -201,7 +200,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         {/* Progress bar */}
         <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 4, overflow: 'hidden', backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
           {doneTasks.length > 0 && (
-            <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-background-success-bold, #1F845A)', transition: 'width 0.3s ease' }} />
+            <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', transition: 'width 0.3s ease' }} />
           )}
           {progressTasks.length > 0 && (
             <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: 'var(--ds-link, #0065FF)', transition: 'width 0.3s ease' }} />

@@ -126,7 +126,6 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                 const isPending = cat !== 'done';
                 const sc = cat === 'todo' ? T.todo : cat === 'progress' ? T.progress : T.done;
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
-// TODO: ads-unmapped — #FAF8F5 context unclear
                 const bg = showPendingOnly && isPending ? T.pendHl : idx % 2 === 0 ? T.surface : '#FAF8F5';
                 const isExpanded = expandedId === item.work_item_id;
                 const hc = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
@@ -139,7 +138,6 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                       background: bg, borderBottom: `1px solid ${T.border}`, borderLeft: `4px solid ${sc}`,
                       cursor: 'pointer', transition: 'background .1s',
                     }}
-// TODO: ads-unmapped — #EDE7E0 context unclear
                       onMouseEnter={e => { e.currentTarget.style.background = '#EDE7E0'; }} onMouseLeave={e => { e.currentTarget.style.background = bg; }}>
                       <ExpandChevron expanded={isExpanded} onClick={e => { e.stopPropagation(); toggleExpand(item.work_item_id); }} />
                       {/* Key + Hub */}

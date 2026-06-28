@@ -211,7 +211,6 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
         'sm:max-w-[600px] max-h-[90vh] p-0 flex flex-col overflow-hidden',
-// TODO: ads-unmapped — #141414 context unclear
         'bg-white dark:bg-[#141414] rounded-lg shadow-xl',
         'border border-gray-200 dark:border-[var(--ds-text, #172B4D)] [&>button]:hidden'
       )}>

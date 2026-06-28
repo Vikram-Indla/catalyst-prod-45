@@ -70,14 +70,12 @@ export const Card: React.FC<CardProps> = ({
   };
   if (issue.isFlagged) {
     base.borderLeft = `${SIZES.CARD_FLAG_BORDER}px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`;
-// TODO: ads-unmapped — #FFFBF0 context unclear
     base.background = token('color.background.warning', '#FFFBF0');
     base.paddingLeft = SIZES.CARD_PADDING - SIZES.CARD_FLAG_BORDER;
     base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}, 0 1px 1px #091E4240, 0 0 1px #091E424F`;
   }
   if (hover && !isDragging) {
     base.background = issue.isFlagged
-// TODO: ads-unmapped — #F8E6A0 context unclear
       ? token('color.background.warning.hovered', '#F8E6A0')
       : token('elevation.surface.raised.hovered', 'var(--ds-background-neutral, #F1F2F4)');
   }
@@ -128,7 +126,7 @@ export const Card: React.FC<CardProps> = ({
           onKeyDown={(e) => { e.stopPropagation(); if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitEdit(); } if (e.key === 'Escape') { setEditing(false); } }}
           onBlur={commitEdit}
           rows={2}
-          style={{ width: '100%', resize: 'none', border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold, #0C66E4)')}`, borderRadius: 4, padding: 4, fontSize: 14, lineHeight: '20px', fontFamily: 'inherit', color: token('color.text', 'var(--ds-text, #172B4D)'), outline: 'none' }}
+          style={{ width: '100%', resize: 'none', border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold, #0C66E4)')}`, borderRadius: 4, padding: 4, fontSize: 14, lineHeight: '20px', fontFamily: 'inherit', color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'), outline: 'none' }}
         />
       ) : (
         <p
@@ -168,9 +166,8 @@ export const Card: React.FC<CardProps> = ({
         <div>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, height: 18, padding: '0 6px', borderRadius: 3,
-// TODO: ads-unmapped — #E2483D context unclear
             border: `1px solid ${due.overdue ? token('color.border.danger', '#E2483D') : token('color.border', '#091E4224')}`,
-            color: due.overdue ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+            color: due.overdue ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') : token('color.text.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))'),
             fontSize: 11, fontWeight: 500,
           }}>
             {due.overdue ? '⚠ ' : ''}{due.label}
@@ -230,7 +227,7 @@ export const Card: React.FC<CardProps> = ({
           )}
           {visibleFields.estimate && issue.storyPoints != null && (
             <Tooltip content={`Story point estimate: ${issue.storyPoints}`} delay={SIZES.TOOLTIP_DELAY}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: SIZES.POINTS_HEIGHT, height: SIZES.POINTS_HEIGHT, padding: '0 6px', borderRadius: SIZES.POINTS_RADIUS, background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), fontSize: 12, fontWeight: 600 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: SIZES.POINTS_HEIGHT, height: SIZES.POINTS_HEIGHT, padding: '0 6px', borderRadius: SIZES.POINTS_RADIUS, background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtlest', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))'), fontSize: 12, fontWeight: 600 }}>
                 {issue.storyPoints}
               </span>
             </Tooltip>

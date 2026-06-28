@@ -1,7 +1,6 @@
 /**
  * CustomDateRangeDialog — modal for picking a custom summarize date range.
  * Two side-by-side calendar months (current + next), start/end inputs,
-// TODO: ads-unmapped — #220077 context unclear
  * future dates disabled. Mirrors Slack AI's range picker (images #207-208).
  */
 import React, { useEffect, useMemo, useState } from 'react';
@@ -288,7 +287,6 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
                 if (start && end) onSubmit({ start: toISO(start), end: toISO(end) });
               }}
               style={{
-// TODO: ads-unmapped — #007A5A context unclear
                 background: canSubmit ? '#007A5A' : 'var(--ds-surface, rgba(255,255,255,0.08))',
                 color: canSubmit ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
                 border: 'none',

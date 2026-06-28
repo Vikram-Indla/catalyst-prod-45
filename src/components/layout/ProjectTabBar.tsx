@@ -7,9 +7,7 @@
  * Lane A measurements (testid navigation-kit-ui-tab.ui.link-tab on
  * https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/...):
  *   container: <ul> · height 32px · gap 4px · padding 0 12px · no border-bottom
-// TODO: ads-unmapped — #505258 context unclear
  *   inactive tab: <a> · 14px / 500 / color #505258
-// TODO: ads-unmapped — #1558BC context unclear
  *   active tab:   <span> · 14px / 500 / color #1558BC (Atlaskit blue 700)
  *
  * Catalyst routes mounted as tabs (existing surfaces):

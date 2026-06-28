@@ -4,8 +4,6 @@ import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
-
-// TODO: ads-unmapped — #F5A623 context unclear
 const PHASE_APPROVAL = '#F5A623';
 const PHASE_PAUSED   = 'var(--ds-text-subtlest, #6B778C)';
 
@@ -47,7 +45,7 @@ function InterventionCard({
         cursor: 'pointer',
         transition: 'background 120ms',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)'); }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
@@ -133,7 +131,7 @@ function ApprovalCard({
         cursor: 'pointer',
         transition: 'background 120ms',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)'); }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>

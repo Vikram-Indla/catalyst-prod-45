@@ -1213,7 +1213,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
                 borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}` : 'none',
                 borderRadius: '3px 0 0 3px',
                 background: 'transparent',
-                color: filterMode === 'basic' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                color: filterMode === 'basic' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                 cursor: 'pointer',
               }}
             >
@@ -1227,7 +1227,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
                 border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 borderRadius: '0 3px 3px 0',
                 background: 'transparent',
-                color: filterMode === 'jql' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                color: filterMode === 'jql' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                 cursor: 'pointer',
               }}
             >

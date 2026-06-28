@@ -1,6 +1,5 @@
 /**
  * KanbanColumn — Fixed-width column with header + droppable area (memoized)
-// TODO: ads-unmapped — #F8F8F8 context unclear
  * Jira parity: 267px width, #F8F8F8 surface, 48px header with 6px top radius,
  * column name 12px / weight 500 / no letter-spacing, count as plain text.
  */
@@ -94,7 +93,6 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
     <div
       className="flex flex-col flex-shrink-0"
       style={{
-// TODO: ads-unmapped — #F8F8F8 context unclear
         /* Jira parity: 267px fixed column, #F8F8F8 surface, no dividing border */
         width: 267,
         minWidth: 267,

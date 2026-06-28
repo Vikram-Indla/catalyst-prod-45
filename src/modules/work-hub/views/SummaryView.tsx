@@ -46,7 +46,6 @@ function StatusOverview() {
     { status: 'In Production', count: 2, color: 'var(--ds-background-warning-bold, #E2B203)' },
     { status: 'Hold', count: 6, color: 'var(--ds-background-success-bold, #1F845A)' },
     { status: 'Production Ready', count: 1, color: 'var(--ds-background-discovery-bold, #6554C0)' },
-// TODO: ads-unmapped — #8777D9 context unclear
     { status: 'On Hold', count: 7, color: '#8777D9' },
     { status: 'Backlog', count: 44, color: 'var(--ds-background-danger-bold, #FF7452)' },
     { status: 'In Development', count: 4, color: 'var(--ds-link, #0C66E4)' },

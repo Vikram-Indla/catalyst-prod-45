@@ -88,12 +88,9 @@ if (typeof document !== 'undefined') {
  *
  * THREE tiers exist for Jira status colors:
  *   BOLD    color.background.success.bold  var(--ds-background-success-bold, #1F845A)  dark, white text  ← BAU-5774 flagged WRONG
-// TODO: ads-unmapped — #DCFFF1 context unclear
  *   SUBTLE  color.background.success       #DCFFF1  very light        ← too washed out vs Jira
-// TODO: ads-unmapped — #94C748 context unclear
  *   JIRA    (no ADS token)                 #94C748  medium pastel     ← DOM-probed, used here
  *
-// TODO: ads-unmapped — #292A2E context unclear
  * Text is ALWAYS dark (#292A2E) — Jira never uses white on status buttons.
  * WCAG AA ratios: success 7.23:1, inprogress 6.84:1, moved 10.91:1,
  *                 new 6.52:1, removed 5.67:1, default 10.36:1
@@ -446,7 +443,7 @@ export function CatalystStatusPill({
                         data-testid={`catalyst-status-option-${st}`}
                         onClick={() => pick(st)}
                         onFocus={(e) => {
-                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.background = isSelected
@@ -454,7 +451,7 @@ export function CatalystStatusPill({
                             : 'transparent';
                         }}
                         onMouseEnter={(e) => {
-                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
                         }}
                         onMouseLeave={(e) => {
                           const isFocused = e.currentTarget === document.activeElement;
@@ -517,9 +514,9 @@ export function CatalystStatusPill({
               setIsOpen(false);
               setWorkflowViewerOpen(true);
             }}
-            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
             onBlur={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
             onMouseLeave={(e) => {
               if (e.currentTarget !== document.activeElement) e.currentTarget.style.background = 'transparent';
             }}
@@ -551,9 +548,9 @@ export function CatalystStatusPill({
             tabIndex={-1}
             data-testid="catalyst-status-explain-workflow"
             onClick={() => close(true)}
-            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
             onBlur={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
             onMouseLeave={(e) => {
               if (e.currentTarget !== document.activeElement) e.currentTarget.style.background = 'transparent';
             }}

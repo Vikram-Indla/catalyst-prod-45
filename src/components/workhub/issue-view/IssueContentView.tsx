@@ -123,11 +123,11 @@ function StatusPill({ status, statusCategory, issueId, issueType, onStatusChange
   const cat = (statusCategory ?? '').toLowerCase();
   let bg = 'var(--ds-text-subtle, #44546F)';
   const color = 'var(--ds-text-inverse, #fff)';
-  if (cat.includes('done') || cat === 'complete') { bg = 'var(--ds-background-success-bold, #1F845A)'; }
-  else if (cat.includes('progress') || cat === 'indeterminate') { bg = 'var(--ds-background-information-bold, #0C66E4)'; }
-  else if (status.toLowerCase().includes('beta')) { bg = 'var(--ds-background-success-bold, #1F845A)'; }
-  else if (status.toLowerCase().includes('done') || status.toLowerCase().includes('complete')) { bg = 'var(--ds-background-success-bold, #1F845A)'; }
-  else if (status.toLowerCase().includes('progress') || status.toLowerCase().includes('implementation') || status.toLowerCase().includes('review') || status.toLowerCase().includes('requirement')) { bg = 'var(--ds-background-information-bold, #0C66E4)'; }
+  if (cat.includes('done') || cat === 'complete') { bg = 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))'; }
+  else if (cat.includes('progress') || cat === 'indeterminate') { bg = 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))'; }
+  else if (status.toLowerCase().includes('beta')) { bg = 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))'; }
+  else if (status.toLowerCase().includes('done') || status.toLowerCase().includes('complete')) { bg = 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))'; }
+  else if (status.toLowerCase().includes('progress') || status.toLowerCase().includes('implementation') || status.toLowerCase().includes('review') || status.toLowerCase().includes('requirement')) { bg = 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))'; }
 
   useEffect(() => {
     if (!open) return;
@@ -888,7 +888,7 @@ export function IssueContentView({
                     sprintReleaseNames.map((v, i) => (
                       <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, padding: '4px 8px', borderRadius: 3, background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-text-information, #0747A6)' }}>
                         {v}
-                        <button onClick={e => { e.stopPropagation(); handleToggleSprintRelease(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--ds-text-information, #0747A6)' }}>
+                        <button onClick={e => { e.stopPropagation(); handleToggleSprintRelease(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--ds-text-information, var(--ds-link-pressed, #0747A6))' }}>
                           <X size={10} />
                         </button>
                       </span>
@@ -917,8 +917,8 @@ export function IssueContentView({
                             {filtered.map(v => {
                               const isSel = sprintReleaseNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleSprintRelease(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
-                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                                <div key={v.name} onClick={() => handleToggleSprintRelease(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F4F5F7))'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent'; }}
                                 >
                                   <span>{v.name}</span>
@@ -938,8 +938,8 @@ export function IssueContentView({
                             {filtered.map(v => {
                               const isSel = sprintReleaseNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleSprintRelease(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
-                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                                <div key={v.name} onClick={() => handleToggleSprintRelease(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F4F5F7))'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent'; }}
                                 >
                                   <span>{v.name}</span>
@@ -984,7 +984,7 @@ export function IssueContentView({
                       <Avatar name={item.reporter_name} url={resolveAvatarUrl(item.reporter_name)} size={28} />
                       <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400 }}>{item.reporter_name}</span>
                     </>
-                  ) : <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 14 }}>—</span>}
+                  ) : <span style={{ color: 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))', fontSize: 14 }}>—</span>}
                 </div>
               </div>
 

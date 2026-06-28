@@ -272,7 +272,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setDeleteModal(false); setDeleteConfirm(''); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
+                border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-page, var(--ds-surface, #FFFFFF))' : 'var(--bg-app)',
                 color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Cancel</button>
               <button onClick={handleDelete}
@@ -317,7 +317,7 @@ function Chip({ children, bg, color }: { children: React.ReactNode; bg: string; 
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
       borderRadius: 12, fontSize: 11, fontWeight: 500,
-      background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
+      background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
       fontFamily: 'var(--cp-font-body)',
     }}>{children}</span>
   );

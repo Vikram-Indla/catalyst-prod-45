@@ -207,7 +207,7 @@ export function ModuleAccessMatrix() {
                     verticalAlign: 'bottom', cursor: r.bypass ? 'default' : 'pointer', minWidth: 44,
                   }}
                 >
-                  <div style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontSize: 11, fontWeight: r.tier === 'system' ? 600 : 400, color: r.tier === 'system' ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #44546F)', whiteSpace: 'nowrap', height: 84, margin: '0 auto' }}>
+                  <div style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontSize: 11, fontWeight: r.tier === 'system' ? 600 : 400, color: r.tier === 'system' ? 'var(--ds-text, var(--ds-text, #172B4D))' : 'var(--ds-text-subtle, var(--ds-icon, #44546F))', whiteSpace: 'nowrap', height: 84, margin: '0 auto' }}>
                     {r.name}
                   </div>
                 </th>

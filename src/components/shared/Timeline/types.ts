@@ -98,21 +98,13 @@ export const DEFAULT_WORK_ITEM_TYPES = [
 ];
 
 export const JIRA_EPIC_COLORS = [
-// TODO: ads-unmapped — #8869AC context unclear
   { label: 'Purple',  hex: '#8869AC' },
-// TODO: ads-unmapped — #3C6FBB context unclear
   { label: 'Blue',    hex: '#3C6FBB' },
-// TODO: ads-unmapped — #3BAF85 context unclear
   { label: 'Teal',    hex: '#3BAF85' },
-// TODO: ads-unmapped — #65C170 context unclear
   { label: 'Green',   hex: '#65C170' },
-// TODO: ads-unmapped — #F0C43F context unclear
   { label: 'Yellow',  hex: '#F0C43F' },
-// TODO: ads-unmapped — #F79231 context unclear
   { label: 'Orange',  hex: '#F79231' },
-// TODO: ads-unmapped — #F04D44 context unclear
   { label: 'Red',     hex: '#F04D44' },
-// TODO: ads-unmapped — #E74A8E context unclear
   { label: 'Pink',    hex: '#E74A8E' },
 ];
 

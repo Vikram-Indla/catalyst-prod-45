@@ -210,7 +210,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
                 cursor: 'pointer',
                 transition: 'border-color 150ms',
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, #0052CC)'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, var(--ds-link, #0C66E4))'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
             />
             {errors.startsAt && <div style={errorStyle}>{errors.startsAt}</div>}
@@ -239,7 +239,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
                 cursor: 'pointer',
                 transition: 'border-color 150ms',
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, #0052CC)'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, var(--ds-link, #0C66E4))'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
             />
             {errors.endsAt && <div style={errorStyle}>{errors.endsAt}</div>}

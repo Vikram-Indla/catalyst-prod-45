@@ -92,7 +92,6 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
     //   selector `[data-theme~="dark:dark"]` stopped matching. Result: 460
     //   --ds-* CSS rules existed in stylesheets but applied to no element.
     //   --ds-text resolved to "unset" everywhere, every Atlaskit @compiled
-// TODO: ads-unmapped — #292A2E context unclear
     //   class painted its static fallback hex (#292A2E light) onto every
     //   <Heading>, regardless of the colorMode attribute.
     //

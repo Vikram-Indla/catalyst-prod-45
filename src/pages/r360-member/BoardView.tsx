@@ -66,7 +66,7 @@ function BoardCard({ item, onSelect }: { item: R360WorkItem; onSelect: (i: R360W
       }}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.boxShadow = token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px 0 var(--ds-shadow-raised, rgba(9,30,66,0.31))');
-        (e.currentTarget as HTMLElement).style.borderColor = token('color.border.focused', 'var(--ds-border-focused, #388BFF)');
+        (e.currentTarget as HTMLElement).style.borderColor = token('color.border.focused', 'var(--ds-border-focused, var(--ds-border-focused, #388BFF))');
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLElement).style.boxShadow = 'none';

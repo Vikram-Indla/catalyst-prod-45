@@ -22,8 +22,8 @@ import { EmptyState } from '@/components/ads';
 import { LABEL, SMALL, STRONG, H_NUM } from '../dashboardTypography';
 
 function confidenceColor(score: number): string {
-  if (score >= 80) return 'var(--ds-text-accent-green-bolder, #216E4E)';
-  if (score >= 50) return 'var(--ds-text-accent-orange-bolder, #974F0C)';
+  if (score >= 80) return 'var(--ds-text-accent-green-bolder, var(--ds-chart-green-bold, #216E4E))';
+  if (score >= 50) return 'var(--ds-text-accent-orange-bolder, var(--ds-text-warning, #974F0C))';
   return 'var(--ds-text-accent-red-bolder, #AE2A19)';
 }
 
@@ -34,7 +34,7 @@ function confidenceBg(score: number): string {
 }
 
 function confidenceBar(score: number): string {
-  if (score >= 80) return 'var(--ds-background-accent-green-bolder, #1F845A)';
+  if (score >= 80) return 'var(--ds-background-accent-green-bolder, var(--ds-background-success-bold, #1F845A))';
   if (score >= 50) return 'var(--ds-background-accent-orange-bolder, #C25100)';
   return 'var(--ds-background-accent-red-bolder, #C9372C)';
 }
@@ -217,7 +217,6 @@ export default function ReleaseConfidenceWidget({
                   style={{
                     ...H_NUM,
                     lineHeight: 1.1,
-// TODO: ads-unmapped — #292A2E context unclear
                     color: cell.accent ?? token('color.text', '#292A2E'),
                     fontVariantNumeric: 'tabular-nums',
                   }}

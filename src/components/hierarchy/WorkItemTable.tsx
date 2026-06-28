@@ -273,7 +273,7 @@ function DueDateCell({ date }: { date?: string }) {
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let color = 'var(--fg-1)';
   if (dDate < today) color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-  else if (dDate.getTime() === today.getTime()) color = 'var(--ds-link, #0284c7)';
+  else if (dDate.getTime() === today.getTime()) color = 'var(--ds-link, var(--ds-link, #0284c7))';
   return (
     <span style={{ fontSize: 12, color }}>
       {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

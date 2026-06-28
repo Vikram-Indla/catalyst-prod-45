@@ -59,7 +59,6 @@ const PAD_Y = 32;
 const LANE_GAP = 24;
 const LINK = 'var(--ds-link, #0C66E4)';
 // Edge colours (Vikram 2026-06-25):
-// TODO: ads-unmapped — #505258 context unclear
 //  • IDLE  = neutral grey #505258 (ADS --ds-text-subtle).
 //  • ACTIVE = Atlassian link blue — applied on edge hover, on a clicked/selected
 //    edge (persists), and on every edge connected to a clicked card.
@@ -853,7 +852,7 @@ function ChipSelect<T extends string>({
           opacity: disabled ? 0.6 : 1,
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={(e) => { if (!disabled && !active) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+        onMouseEnter={(e) => { if (!disabled && !active) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
         onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
       >
         {text}
@@ -1455,7 +1454,7 @@ function DiagramInner({ projectKey, projectName, projectColor, dependencies, iss
             fontWeight: 500,
             cursor: 'pointer',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
         >
           <Plus size={16} />

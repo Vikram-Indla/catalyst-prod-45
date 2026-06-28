@@ -683,7 +683,7 @@ export default function UserAccessPage() {
                 <div className="w-full rounded-full h-2" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <div
                     className="h-2 rounded-full transition-all"
-                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%`, background: 'var(--ds-background-brand-bold, #0C66E4)' }}
+                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%`, background: 'var(--ds-background-brand-bold, var(--ds-link, #0C66E4))' }}
                   />
                 </div>
                 {bulkProgress.errors.length > 0 && (

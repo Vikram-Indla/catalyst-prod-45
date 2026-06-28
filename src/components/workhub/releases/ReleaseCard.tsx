@@ -18,9 +18,9 @@ function formatDate(dateStr: string): string {
 
 /** Derive a status from the data */
 function deriveStatus(r: JiraRelease): { label: string; bg: string; fg: string; dot: string } {
-  if (r.totalItems > 0 && r.doneItems === r.totalItems) return { label: 'Completed', bg: 'var(--ds-background-success, #DFFCF0)', fg: 'var(--ds-background-success-bold, #1F845A)', dot: 'var(--ds-text-success, #16a34a)' };
-  if (r.blockedItems > 0) return { label: 'At Risk', bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #991b1b)', dot: 'var(--ds-text-danger, #ef4444)' };
-  if (r.inProgressItems > 0 || r.inReviewItems > 0) return { label: 'Active', bg: 'var(--ds-background-information, #E9F2FF)', fg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' };
+  if (r.totalItems > 0 && r.doneItems === r.totalItems) return { label: 'Completed', bg: 'var(--ds-background-success, #DFFCF0)', fg: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', dot: 'var(--ds-text-success, #16a34a)' };
+  if (r.blockedItems > 0) return { label: 'At Risk', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))', fg: 'var(--ds-text-danger, #991b1b)', dot: 'var(--ds-text-danger, #ef4444)' };
+  if (r.inProgressItems > 0 || r.inReviewItems > 0) return { label: 'Active', bg: 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))', fg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' };
   return { label: 'Planned', bg: 'var(--ds-surface-sunken, #f1f5f9)', fg: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, #94a3b8)' };
 }
 

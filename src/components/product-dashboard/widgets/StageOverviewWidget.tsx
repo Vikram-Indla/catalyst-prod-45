@@ -245,7 +245,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                   transition: 'background 120ms, border-color 120ms',
                 }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)');
+                  (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))');
                 }}
                 onMouseLeave={e => {
                   (e.currentTarget as HTMLDivElement).style.background = token('elevation.surface', 'var(--ds-surface, #FFFFFF)');

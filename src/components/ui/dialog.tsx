@@ -40,7 +40,6 @@ const dialogContentVariants = cva(
     // Light mode: white bg, subtle border
     "bg-background border border-border/60",
     // Dark mode: surface elevation, NO visible border, shadow for depth
-// TODO: ads-unmapped — #212121 context unclear
     "dark:bg-[#212121] dark:border-0 dark:shadow-2xl dark:shadow-black/50",
     "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
     "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",

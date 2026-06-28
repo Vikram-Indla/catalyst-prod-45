@@ -14,7 +14,6 @@ interface SkillColumn {
 
 const PROFICIENCY_COLORS: Record<number, string> = {
   1: 'rgba(115,115,115,0.3)',
-// TODO: ads-unmapped — #7B2FCC context unclear
   2: '#7B2FCC',
   3: 'var(--sem-warning)',
   4: 'var(--sem-info)',

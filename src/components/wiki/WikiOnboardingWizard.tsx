@@ -99,7 +99,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
               cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bd-zone)'), color: active ? 'var(--ds-link-pressed, #0747A6)' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)') }}>{d.code}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bd-zone)'), color: active ? 'var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)') }}>{d.code}</span>
               <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
               {active && <Check size={12} style={{ color: 'var(--cp-blue)' }} />}
             </button>
@@ -170,7 +170,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28 }}>
           {step > 0 ? (
-            <button onClick={() => setStep(s => s - 1)} style={{ background: 'none', border: 'none', fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', cursor: 'pointer', fontWeight: 500 }}>Back</button>
+            <button onClick={() => setStep(s => s - 1)} style={{ background: 'none', border: 'none', fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--fg-3)', cursor: 'pointer', fontWeight: 500 }}>Back</button>
           ) : <span />}
           {step < 2 ? (
             <button onClick={() => setStep(s => s + 1)} disabled={!canNext} style={{

@@ -352,7 +352,7 @@ export default function DemandSummaryPage() {
             </button>
             <div className={cn("flex bg-muted rounded-lg p-0.5", isDark && "bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]")}>
               {periodOptions.map((p) => (
-                <button key={p.key} onClick={() => setActivePeriod(p.key)} className={cn('px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p.key ? (isDark ? 'bg-[var(--ds-surface,#0A0A0A)] text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'bg-brand-dark text-white') : (isDark ? 'text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-border,var(--cp-ink-1, #292929))]' : 'text-muted-foreground hover:bg-border'))}>{p.label}</button>
+                <button key={p.key} onClick={() => setActivePeriod(p.key)} className={cn('px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p.key ? (isDark ? 'bg-[var(--ds-surface,#0A0A0A)] text-[var(--ds-text,var(--cp-bg-neutral, var(--ds-background-neutral, #F1F2F4)))]' : 'bg-brand-dark text-white') : (isDark ? 'text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-border,var(--cp-ink-1, #292929))]' : 'text-muted-foreground hover:bg-border'))}>{p.label}</button>
               ))}
             </div>
           </div>

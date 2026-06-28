@@ -241,7 +241,7 @@ export const StandupHistoryPanel: React.FC<Props> = ({ projectKey, open, onClose
               <div key={label} style={{ marginBottom: 16 }}>
                 <button type="button" onClick={() => toggleDay(label)}
                   style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', border: 'none', background: 'transparent', padding: '4px 0 8px', cursor: label === 'Today' ? 'default' : 'pointer', fontFamily: 'inherit' }}>
-                  {label !== 'Today' && (isCollapsed(label) ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} /> : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, #44546F)')} />)}
+                  {label !== 'Today' && (isCollapsed(label) ? <ChevronRightIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))')} /> : <ChevronDownIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))')} />)}
                   <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>{label}</span>
                   <span style={{ flex: 1, height: 1, background: token('color.border', '#091E4224'), marginLeft: 8 }} />
                 </button>

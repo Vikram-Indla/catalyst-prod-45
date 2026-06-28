@@ -98,7 +98,6 @@ export function HuddleScreenView() {
       autoPlay
       playsInline
       muted
-// TODO: ads-unmapped — #000000 context unclear
       style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }}
     />
   );
@@ -142,7 +141,6 @@ export function HuddleScreenView() {
         style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(9,30,66,.75)',
           display: 'flex', flexDirection: 'column', padding: 24 }}>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0,
-// TODO: ads-unmapped — #000000 context unclear
           background: '#000', borderRadius: 12, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}>
           {titleBar}
           {videoEl}
@@ -161,7 +159,6 @@ export function HuddleScreenView() {
         position: 'fixed', top: pos.top, left: pos.left, zIndex: 65,
         width: size.w, height: size.h, minWidth: 240, minHeight: 160,
         resize: 'both', overflow: 'hidden',
-// TODO: ads-unmapped — #000000 context unclear
         background: '#000', borderRadius: 12,
         border: '1.5px solid var(--ds-border, #DFE1E6)',
         boxShadow: '0 12px 34px rgba(9,30,66,.28)',

@@ -342,9 +342,7 @@ export const UWVRow = React.memo(function UWVRow({
   onToggleExpand,
   onClick,
 }: UWVRowProps) {
-// TODO: ads-unmapped — #E4E6EA context unclear
   const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 #E4E6EA';
-// TODO: ads-unmapped — #E4E6EA context unclear
   const restShadow = 'inset 0 -1px 0 0 #E4E6EA';
 
   return (
@@ -362,7 +360,7 @@ export const UWVRow = React.memo(function UWVRow({
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, #F7F8F9)';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))';
         }
       }}
       onMouseLeave={(e) => {

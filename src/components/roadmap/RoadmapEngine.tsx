@@ -1094,7 +1094,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                     ) : (
                                       <span style={{ color: 'var(--ds-chart-yellow-bolder, #D4CABC)' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
                                     )}
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? 'var(--ds-background-success-bold, #1F845A)' : ms.state === 'current' ? 'var(--ds-chart-orange-bold, #CCB27A)' : 'var(--ds-chart-yellow-bold, #B5A48A)' }}>
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))' : ms.state === 'current' ? 'var(--ds-chart-orange-bold, #CCB27A)' : 'var(--ds-chart-yellow-bold, #B5A48A)' }}>
                                       {isEpicMarker ? (milestoneData.epicStatus || 'proposed').replace('_', ' ') :
                                        isFeatureMarker ? (milestoneData.featureStatus || 'funnel').replace('_', ' ') :
                                        (ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending')}

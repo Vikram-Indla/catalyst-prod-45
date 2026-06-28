@@ -145,9 +145,7 @@ export function countActiveFilters(v: JiraFilterValue): number {
 // ─── Priority fixed vocabulary (Jira canonical) ───────────────────────────
 
 const PRIORITY_LEVELS: Array<{ level: PriorityLevel; label: string; icon: React.ReactNode; color: string }> = [
-// TODO: ads-unmapped — #E5484D context unclear
   { level: 'highest', label: 'Highest', icon: <HighestPriIcon label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
-// TODO: ads-unmapped — #E5484D context unclear
   { level: 'high',    label: 'High',    icon: <HighPriIcon    label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
   { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', 'var(--ds-background-warning-bold, #f59e0b)') },
   { level: 'low',     label: 'Low',     icon: <LowPriIcon     label="" size="small" />, color: token('color.icon.information', 'var(--ds-link, #0065FF)') },
@@ -236,7 +234,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           borderRadius: 3,
           border: `1px solid ${isOpen ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           background: isOpen ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-          color: isOpen ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+          color: isOpen ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
           fontSize: 13,
           fontWeight: 500,
           fontFamily: 'inherit',
@@ -357,7 +355,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
                       cursor: 'pointer',
                     }}
                     onMouseEnter={(e) => {
-                      if (!selected) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+                      if (!selected) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
                     }}
                     onMouseLeave={(e) => {
                       if (!selected) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -709,8 +707,8 @@ function WorkTypeChipGrid({
               padding: '6px 12px',
               borderRadius: 16,
               border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'),
+              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
               fontSize: 13,
               cursor: 'pointer',
               fontFamily: 'inherit',
@@ -795,8 +793,8 @@ function PillChipGrid({
               padding: compact ? '4px 10px' : '6px 12px',
               borderRadius: 16,
               border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : 'transparent'}`,
-              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'),
+              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))'),
               fontSize: compact ? 12 : 13,
               cursor: 'pointer',
               fontFamily: 'inherit',

@@ -201,7 +201,7 @@ export function RecentReleasesWidget() {
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={e => {
                     Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(
-                      td => { (td as HTMLTableCellElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); },
+                      td => { (td as HTMLTableCellElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); },
                     );
                   }}
                   onMouseLeave={e => {

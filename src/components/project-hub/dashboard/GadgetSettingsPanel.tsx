@@ -544,7 +544,6 @@ export default function GadgetSettingsPanel({
             </div>
             <div
               style={{
-// TODO: ads-unmapped — #97A0AF context unclear
                 fontSize: 11, color: token('color.text.subtlest', '#97A0AF'),
                 fontStyle: 'italic',
               }}
@@ -859,7 +858,7 @@ function MultiSelectGeneric({
                   color: 'var(--ds-text, #172B4D)',
                 }}
                 onMouseEnter={(e) => {
-                  if (!sel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
+                  if (!sel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F4F5F7))';
                 }}
                 onMouseLeave={(e) => {
                   if (!sel) e.currentTarget.style.background = 'transparent';
@@ -1570,7 +1569,7 @@ function ColumnsSection({
                         color: 'var(--ds-text, #172B4D)',
                         cursor: 'pointer',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F4F5F7))'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                     >
                       {col.label}

@@ -925,7 +925,7 @@ export default function AtlaskitStoryBacklogPage({
               position: 'relative',
               zIndex: 10,
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))')}
             onMouseLeave={(e) => { if (!isDraggingPanel.current) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             <div style={{ width: 2, height: 40, borderRadius: 1, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
@@ -1256,7 +1256,7 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
           transition: 'background 100ms, border-color 100ms, color 100ms',
           outline: 'none',
         }}
-        onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+        onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
         onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
       >
         {iconBefore}
@@ -1352,7 +1352,7 @@ function MenuItem({
         borderRadius: 3,
         outline: 'none',
       }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {icon && <span style={{ display: 'inline-flex', width: 16, color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{icon}</span>}

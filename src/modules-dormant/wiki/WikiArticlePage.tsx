@@ -31,12 +31,12 @@ function StatusLozenge({ status }: { status: string }) {
   const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
   const s = (status || '').toLowerCase();
   const map: Record<string, { bg: [string, string]; color: [string, string]; label: string }> = {
-    published:    { bg: ['var(--ds-background-success, #DFFCF0)', 'var(--ds-background-success-bold, rgba(74,222,128,0.10))'], color: ['var(--ds-text-success, #006644)', 'var(--ds-background-success, #DFFCF0)'], label: 'PUBLISHED' },
-    done:         { bg: ['var(--ds-background-success, #DFFCF0)', 'var(--ds-background-success-bold, rgba(74,222,128,0.10))'], color: ['var(--ds-text-success, #006644)', 'var(--ds-background-success, #DFFCF0)'], label: 'DONE' },
-    verified:     { bg: ['var(--ds-background-success, #DFFCF0)', 'var(--ds-background-success-bold, rgba(74,222,128,0.10))'], color: ['var(--ds-text-success, #006644)', 'var(--ds-background-success, #DFFCF0)'], label: 'VERIFIED' },
-    'in progress':{ bg: ['var(--ds-background-information, #E9F2FF)', 'var(--ds-background-information-bold, rgba(59,130,246,0.10))'], color: ['var(--ds-link-pressed, #0747A6)', 'var(--ds-background-information-bold, #0C66E4)'], label: 'IN PROGRESS' },
-    review:       { bg: ['var(--ds-background-information, #E9F2FF)', 'var(--ds-background-information-bold, rgba(59,130,246,0.10))'], color: ['var(--ds-link-pressed, #0747A6)', 'var(--ds-background-information-bold, #0C66E4)'], label: 'IN REVIEW' },
-    needs_review: { bg: ['var(--ds-background-information, #E9F2FF)', 'var(--ds-background-information-bold, rgba(59,130,246,0.10))'], color: ['var(--ds-link-pressed, #0747A6)', 'var(--ds-background-information-bold, #0C66E4)'], label: 'NEEDS REVIEW' },
+    published:    { bg: ['var(--ds-background-success, #DFFCF0)', 'var(--ds-background-success-bold, rgba(74,222,128,0.10))'], color: ['var(--ds-text-success, var(--ds-text-success, #006644))', 'var(--ds-background-success, #DFFCF0)'], label: 'PUBLISHED' },
+    done:         { bg: ['var(--ds-background-success, #DFFCF0)', 'var(--ds-background-success-bold, rgba(74,222,128,0.10))'], color: ['var(--ds-text-success, var(--ds-text-success, #006644))', 'var(--ds-background-success, #DFFCF0)'], label: 'DONE' },
+    verified:     { bg: ['var(--ds-background-success, #DFFCF0)', 'var(--ds-background-success-bold, rgba(74,222,128,0.10))'], color: ['var(--ds-text-success, var(--ds-text-success, #006644))', 'var(--ds-background-success, #DFFCF0)'], label: 'VERIFIED' },
+    'in progress':{ bg: ['var(--ds-background-information, #E9F2FF)', 'var(--ds-background-information-bold, rgba(59,130,246,0.10))'], color: ['var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))', 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))'], label: 'IN PROGRESS' },
+    review:       { bg: ['var(--ds-background-information, #E9F2FF)', 'var(--ds-background-information-bold, rgba(59,130,246,0.10))'], color: ['var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))', 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))'], label: 'IN REVIEW' },
+    needs_review: { bg: ['var(--ds-background-information, #E9F2FF)', 'var(--ds-background-information-bold, rgba(59,130,246,0.10))'], color: ['var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))', 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))'], label: 'NEEDS REVIEW' },
     draft:        { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'DRAFT' },
     archived:     { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'ARCHIVED' },
   };
@@ -65,7 +65,6 @@ const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }
   incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'IncidentHub' },
   release: { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--quality-high, var(--ds-background-success-bold, #059669))', label: 'ReleaseHub' },
   requirement: { bg: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Requirements' },
-// TODO: ads-unmapped — #F0F9FF context unclear
   wiki: { bg: '#F0F9FF', color: 'var(--ds-link, #0284c7)', label: 'WikiHub' },
 };
 
@@ -361,7 +360,6 @@ export default function WikiArticlePage() {
   const refs = page.references || [];
   const title = page.title || pageSlug?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Article';
   const conf = Math.round((page.ai_confidence ?? 0) * 100);
-// TODO: ads-unmapped — #9A5402 context unclear
   const confColor = conf >= 90 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : conf >= 70 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : '#9A5402';
   const verStatus = (page as any).verification_status || 'unverified';
   const verBadge = verStatus === 'verified'
@@ -468,7 +466,7 @@ export default function WikiArticlePage() {
               )}
               <button onClick={handleBookmark} style={{
                 fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
-                border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: bookmarked ? (isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, #FFF7D6)') : 'transparent',
+                border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: bookmarked ? (isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))') : 'transparent',
                 color: bookmarked ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
                 <Star size={12} fill={bookmarked ? 'currentColor' : 'none'} /> {bookmarked ? 'Saved' : 'Save'}
@@ -531,7 +529,6 @@ export default function WikiArticlePage() {
             {/* ── TL;DR ── */}
             <div style={{
               borderLeft: '3px solid var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', padding: '12px 16px', marginBottom: 24,
-// TODO: ads-unmapped — #FAFAFE context unclear
               background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.06))' : '#FAFAFE', borderRadius: '0 6px 6px 0',
             }}>
               <span style={{

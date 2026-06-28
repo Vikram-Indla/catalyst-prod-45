@@ -216,11 +216,8 @@ function fmtDuration(ms: number | undefined): string {
 // JiraTable cells.tsx, alpha-mixed to ~20% so the cell bg reads as a
 // soft hint, NOT as a vivid pill). Mirrors the same hue family the pills
 // use so the column reads as "lighter version of the status pill".
-// TODO: ads-unmapped — #8FB8F6 context unclear
 //   in_progress  pill #8FB8F6 → cell bg rgba(143,184,246,0.22)
-// TODO: ads-unmapped — #B3DF72 context unclear
 //   done         pill #B3DF72 → cell bg rgba(179,223,114,0.30)
-// TODO: ads-unmapped — #DDDEE1 context unclear
 //   todo         pill #DDDEE1 → cell bg rgba(221,222,225,0.55)
 function categoryBg(category: 'todo' | 'in_progress' | 'done' | undefined, ms: number): string {
   if (!ms || ms <= 0) return 'transparent';
@@ -461,7 +458,6 @@ export default function TimeInStatusWidget({
                     fontWeight: 500,
                     textTransform: 'none',
                     letterSpacing: '0.04em',
-// TODO: ads-unmapped — #292A2E context unclear
                     color: token('color.text', '#292A2E'),
                   }}
                 >
@@ -517,7 +513,7 @@ export default function TimeInStatusWidget({
                     })
                   }
                   style={{ height: ROW_HEIGHT, cursor: 'pointer' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
                   {/* Frozen left cell */}
@@ -584,7 +580,6 @@ export default function TimeInStatusWidget({
                           background: categoryBg(s.category, ms),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           ...LABEL,
-// TODO: ads-unmapped — #292A2E context unclear
                           color: token('color.text', '#292A2E'),
                         }}
                       >
@@ -651,7 +646,6 @@ export default function TimeInStatusWidget({
                             );
                           })()
                         ) : (
-// TODO: ads-unmapped — #B3B9C4 context unclear
                           <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
                         )}
                       </td>
@@ -666,7 +660,6 @@ export default function TimeInStatusWidget({
                       borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                       ...SMALL_STRONG,
-// TODO: ads-unmapped — #292A2E context unclear
                       color: token('color.text', '#292A2E'),
                       background: totalBg(r.totalMs, totalMax),
                       position: 'sticky', right: 0,
@@ -692,7 +685,6 @@ export default function TimeInStatusWidget({
               borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
               ...LABEL,
-// TODO: ads-unmapped — #505258 context unclear
               color: token('color.text.subtle', '#505258'),
             }}
           >

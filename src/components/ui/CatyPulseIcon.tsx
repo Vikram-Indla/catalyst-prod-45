@@ -24,7 +24,6 @@ export function CatyPulseIcon({ size = 16, title }: { size?: number; title?: str
       {title ? <title>{title}</title> : null}
       <path
         d="M1 8h3l2-5 3 10 2-5h4"
-// TODO: ads-unmapped — #CD519D context unclear
         stroke={token('color.icon.accent.magenta', '#CD519D')}
         strokeWidth="1.6"
         strokeLinecap="round"

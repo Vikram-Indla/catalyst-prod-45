@@ -302,7 +302,6 @@ function KpiCell({
         style={{
           ...H_NUM,
           lineHeight: 1.1,
-// TODO: ads-unmapped — #292A2E context unclear
           color: accent ?? token('color.text', '#292A2E'),
         }}
       >

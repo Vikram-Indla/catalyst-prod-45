@@ -1,7 +1,6 @@
 /**
  * StatusBadge — V12 Pale Lozenge 3-colour guardrail (ABSOLUTE)
  * GREY  (var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) bg, var(--ds-text, #253858) text) = not started / waiting
-// TODO: ads-unmapped — #DEEBFF context unclear
  * BLUE  (#DEEBFF bg, var(--ds-link-pressed, #0747A6) text) = in progress / active
  * GREEN (var(--ds-background-success, #E3FCEF) bg, var(--ds-text-success, #006644) text) = done / resolved
  */
@@ -71,7 +70,7 @@ const STATUS_STYLES_LIGHT: Record<StatusCategory, { background: string; color: s
 
 const STATUS_STYLES_DARK: Record<StatusCategory, { background: string; color: string }> = {
   grey:  { background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', color: 'var(--ds-text-subtlest, #A1A1A1)' },
-  blue:  { background: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))', color: 'var(--ds-background-information-bold, #0C66E4)' },
+  blue:  { background: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))', color: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
   green: { background: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))', color: 'var(--ds-background-success, #DFFCF0)' },
 };
 

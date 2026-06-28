@@ -212,14 +212,14 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
               width: '100%',
               padding: '8px 16px',
               fontSize: 13,
-              color: (item as { danger?: boolean }).danger ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
+              color: (item as { danger?: boolean }).danger ? 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' : tk.textPrimary,
               background: 'none',
               border: 'none',
               textAlign: 'left',
               cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover || 'var(--ds-surface-sunken, #F7F8F9)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover || 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             {item.label}

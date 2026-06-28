@@ -165,7 +165,6 @@ export function CatalystHeader() {
                 fontSize: '16px',
                 fontWeight: 500,
                 fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
-// TODO: ads-unmapped — #CECFD2 context unclear
                 color: isDark ? '#CECFD2' : '#101214',
                 letterSpacing: '-0.4px'
               }}>

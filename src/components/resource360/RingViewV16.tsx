@@ -19,7 +19,6 @@ const T = {
   ink1: 'var(--fg-1)', ink2: 'var(--fg-2)', ink3: 'var(--fg-3)', ink4: 'var(--fg-4)',
   border: 'var(--divider)', borderLt: 'var(--bg-3)',
   accent: 'var(--cp-blue)',
-// TODO: ads-unmapped — #0E8A5F context unclear
   todo: 'var(--ds-text, #172B4D)', progress: 'var(--cp-blue)', done: '#0E8A5F',
   danger: 'var(--sem-danger)', warning: 'var(--sem-warning)', success: 'var(--sem-success)',
   mono: "var(--ds-font-family-code)",
@@ -50,11 +49,10 @@ function getJiraIconForType(typeStr: string) {
 // ─── JIRA TYPE BADGE STYLES (DEF-05) ───
 function getTypeBadgeStyle(typeStr: string): { bg: string; color: string } {
   const lower = (typeStr || '').toLowerCase();
-  if (lower.includes('bug')) return { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #AE2A19)' };
-// TODO: ads-unmapped — #4C1D95 context unclear
+  if (lower.includes('bug')) return { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' };
   if (lower.includes('epic')) return { bg: 'var(--ds-background-discovery, #F3F0FF)', color: '#4C1D95' };
-  if (lower.includes('story')) return { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #216E4E)' };
-  if (lower.includes('sub')) return { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #216E4E)' };
+  if (lower.includes('story')) return { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))' };
+  if (lower.includes('sub')) return { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))' };
   return { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text, #172B4D)' };
 }
 
@@ -179,15 +177,15 @@ function smartDue(item: WorkItem): { date: string; source: 'ticket' | 'release' 
 function slaBadge(dueStr: string): { label: string; bg: string; color: string } {
   const diff = daysBetween(NOW, new Date(dueStr));
   if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, bg: 'var(--ds-background-danger, #FEF2F2)', color: T.danger };
-  if (diff === 0) return { label: 'Due today', bg: 'var(--ds-background-warning, #FFF7D6)', color: T.warning };
-  if (diff <= 3) return { label: `${diff}d left`, bg: 'var(--ds-background-warning, #FFF7D6)', color: T.warning };
+  if (diff === 0) return { label: 'Due today', bg: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', color: T.warning };
+  if (diff <= 3) return { label: `${diff}d left`, bg: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', color: T.warning };
   return { label: `${diff}d left`, bg: 'var(--ds-background-success, #DFFCF0)', color: T.success };
 }
 
 function ageHeatColor(age: number): string {
   if (age <= 7) return T.success;
   if (age <= 14) return T.warning;
-  if (age <= 21) return 'var(--ds-background-warning-bold, #E2B203)';
+  if (age <= 21) return 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))';
   return T.danger;
 }
 

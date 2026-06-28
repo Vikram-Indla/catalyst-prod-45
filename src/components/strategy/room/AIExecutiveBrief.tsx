@@ -5,13 +5,9 @@
  * Color: BLUE-DOMINANT. Semantic status colors only on severity badges.
  *
  * TEXT COLOR CHEAT SHEET:
-// TODO: ads-unmapped — #09090B context unclear
  * #09090B  --sri-ink     → Headlines, titles, grade numbers
-// TODO: ads-unmapped — #18181B context unclear
  * #18181B  --sri-ink-2   → Body prose, narratives, rationale, task text
-// TODO: ads-unmapped — #3F3F46 context unclear
  * #3F3F46  --sri-ink-3   → Descriptions, explanations, notes, subtitles, footer
-// TODO: ads-unmapped — #71717A context unclear
  * #71717A  --sri-ink-m   → ONLY: unit suffixes, micro-labels, timestamps, scale ranges
  */
 import React, { useState, useEffect, useCallback } from 'react';
@@ -30,11 +26,8 @@ const TOKENS = `
   --sri-bdr:var(--ds-border, #DFE1E6); --sri-bdr-s:var(--ds-border, #DFE1E6);
   --sri-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --sri-ai-d:var(--ds-link-pressed, #0747A6); --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
   --sri-ai-bg2:var(--ds-background-information, #E9F2FF); --sri-ai-bdr:var(--ds-background-information-bold, #0C66E4); --sri-ai-m:var(--ds-text-brand, #3B82F6);
-// TODO: ads-unmapped — #11853D context unclear
   --sri-green:var(--ds-text-success, var(--cp-success, #16A34A)); --sri-green-t:#11853D; --sri-green-bg:var(--ds-background-success, #DFFCF0);
-// TODO: ads-unmapped — #0A8277 context unclear
   --sri-teal-t:#0A8277;
-// TODO: ads-unmapped — #D92525 context unclear
   --sri-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger, #FEF2F2);
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;
   font-family: var(--cp-font-body); color:var(--sri-ink);

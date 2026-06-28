@@ -125,7 +125,7 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    color: isUnassigned ? token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                    color: isUnassigned ? token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                     fontStyle: isUnassigned ? 'italic' : 'normal',
                   }}
                 >

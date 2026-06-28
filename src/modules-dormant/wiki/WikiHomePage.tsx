@@ -120,7 +120,7 @@ export default function WikiHomePage() {
 
       {/* Pending Acknowledgments Banner */}
       {pendingAcks.length > 0 && (
-        <div style={{ margin: '0 28px', padding: '10px 16px', background: isDark ? 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))' : 'var(--ds-background-warning, #FFF7D6)', border: isDark ? '0.75px solid var(--ds-background-warning-bold, rgba(251,191,36,0.2))' : '0.75px solid var(--ds-background-warning, #FFF7D6)', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: isDark ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-text-warning, #974F0C)', fontWeight: 500 }}>
+        <div style={{ margin: '0 28px', padding: '10px 16px', background: isDark ? 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', border: isDark ? '0.75px solid var(--ds-background-warning-bold, rgba(251,191,36,0.2))' : '0.75px solid var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: isDark ? 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))' : 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', fontWeight: 500 }}>
           <ShieldCheck size={14} />
           <span>{pendingAcks.length} article{pendingAcks.length !== 1 ? 's' : ''} require your acknowledgment</span>
         </div>
@@ -158,14 +158,14 @@ export default function WikiHomePage() {
                 return (
                   <button key={c.label} onClick={() => setActiveChip(c.label)} style={{
                     fontSize: 11, fontWeight: active ? 650 : 500, padding: '5px 12px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                    border: active ? '1.5px solid var(--ds-link, #2563EB)' : isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))'), color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), transition: 'all 120ms',
+                    border: active ? '1.5px solid var(--ds-link, #2563EB)' : isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))'), color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), transition: 'all 120ms',
                   }}>{c.icon} {c.label}</button>
                 );
               })}
             </div>
 
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Upload size={14} /> Upload Document
               </button>
             </div>
@@ -211,7 +211,6 @@ export default function WikiHomePage() {
           background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '0.75px solid var(--ds-background-information, rgba(37,99,235,0.2))', marginBottom: 40, flexWrap: 'wrap',
           cursor: 'pointer', transition: 'border-color 150ms, background 150ms',
         }}
-// TODO: ads-unmapped — #F0F5FF context unclear
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : '#F0F5FF'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ds-background-information, rgba(37,99,235,0.2))'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))'; }}
         >
@@ -315,7 +314,6 @@ StatCard.displayName = 'StatCard';
 /* ── Domain color map for quick ref icons ── */
 const DOMAIN_COLORS: Record<string, { bg: string; fg: string }> = {
   D1: { bg: 'var(--ds-background-information, #E9F2FF)', fg: 'var(--ds-link-pressed, #1e40af)' },   // blue
-// TODO: ads-unmapped — #0E7490 context unclear
   D2: { bg: '#CFFAFE', fg: '#0E7490' },   // cyan
   D3: { bg: 'var(--ds-background-warning, #FFF7D6)', fg: 'var(--ds-text-warning, #974F0C)' },   // amber
   D4: { bg: 'var(--ds-background-success, #DCFCE7)', fg: 'var(--ds-text-success, #216E4E)' },   // green
@@ -404,7 +402,7 @@ const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate
   const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
   const diffColor = p.difficulty === 'beginner' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : p.difficulty === 'intermediate' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   return (
-    <div onClick={() => navigate(`/wiki/learning-paths/${p.id}`)} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', transition: 'border-color 120ms, box-shadow 120ms', cursor: 'pointer' }}
+    <div onClick={() => navigate(`/wiki/learning-paths/${p.id}`)} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: isDark ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', transition: 'border-color 120ms, box-shadow 120ms', cursor: 'pointer' }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 2px 8px var(--ds-background-information, rgba(37,99,235,0.08))'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))'; e.currentTarget.style.boxShadow = 'none'; }}
     >
@@ -433,7 +431,7 @@ LearningPathCard.displayName = 'LearningPathCard';
 /* ── Article Row ── */
 const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDark }: { a: any; navigate: any; bookmarked: boolean; onToggleBookmark: () => void; isDark?: boolean }) => {
   const formatIcon = a.format === 'pdf'
-    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.15))' : 'var(--ds-background-danger, #FFECEB)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span>
+    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.15))' : 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span>
     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />;
 
   const verStatus = a.verification_status || 'unverified';
@@ -441,7 +439,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
     ? { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.08))', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Verified' }
     : verStatus === 'needs_review'
     ? { bg: 'var(--ds-background-warning, rgba(217,119,6,0.08))', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Needs Review' }
-    : { bg: isDark ? 'rgba(107,101,96,0.15)' : 'var(--ds-text-subtlest, rgba(100,116,139,0.08))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', label: 'Unverified' };
+    : { bg: isDark ? 'rgba(107,101,96,0.15)' : 'var(--ds-text-subtlest, rgba(100,116,139,0.08))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', label: 'Unverified' };
 
   const conf = Math.round((a.ai_confidence ?? 0) * 100);
   const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';

@@ -467,7 +467,7 @@ export function ImproveIssueDropdown({
             lineHeight: 1,
             transition: 'background 0.15s',
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)'; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9))'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
           {catyIsImproving ? (
@@ -515,7 +515,7 @@ export function ImproveIssueDropdown({
               data-testid="catalyst-improve-issue-dropdown.improve-description"
               onClick={handleStartImproveDescription}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               <WandIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
@@ -528,7 +528,7 @@ export function ImproveIssueDropdown({
               data-testid="catalyst-improve-issue-dropdown.summarize-comments"
               onClick={handleStartSummarize}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               <CommentIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
@@ -542,7 +542,7 @@ export function ImproveIssueDropdown({
                 data-testid="catalyst-improve-issue-dropdown.suggest-child-issues"
                 onClick={() => openMode('children')}
                 style={itemStyle}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 <ListBulletedIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
@@ -562,7 +562,7 @@ export function ImproveIssueDropdown({
                   opacity: (subtaskGen.isDisabled || isSubtaskGenerating || isSubtaskCreating) ? 0.5 : 1,
                   cursor: (subtaskGen.isDisabled || isSubtaskGenerating || isSubtaskCreating) ? 'not-allowed' : 'pointer',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 <ChildIssuesIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
@@ -577,7 +577,7 @@ export function ImproveIssueDropdown({
                 data-testid="catalyst-improve-issue-dropdown.plan-work-items"
                 onClick={handlePlanWorkItems}
                 style={itemStyle}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 <PageIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
@@ -600,7 +600,7 @@ export function ImproveIssueDropdown({
                 }
               }}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               <SearchIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
@@ -619,7 +619,7 @@ export function ImproveIssueDropdown({
                   opacity: (storyGen.isDisabled || storyGen.maxGenerationsReached) ? 0.5 : 1,
                   cursor: (storyGen.isDisabled || storyGen.maxGenerationsReached) ? 'not-allowed' : 'pointer',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 <PageIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />

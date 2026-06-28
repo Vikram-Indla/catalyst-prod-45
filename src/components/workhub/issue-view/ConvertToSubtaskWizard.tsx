@@ -259,9 +259,9 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                         {parentCandidates.length > 0 ? parentCandidates.map((p: any) => {
                           const cat = (p.status_category ?? '').toLowerCase();
                           const lozBg = cat.includes('done') ? 'var(--ds-background-success, #E3FCEF)' : cat.includes('progress') ? 'var(--ds-background-information, #DEEBFF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
-                          const lozColor = cat.includes('done') ? 'var(--ds-text-success, #006644)' : cat.includes('progress') ? 'var(--ds-background-information-bold, #0747A6)' : 'var(--ds-text, #253858)';
+                          const lozColor = cat.includes('done') ? 'var(--ds-text-success, var(--ds-text-success, #006644))' : cat.includes('progress') ? 'var(--ds-background-information-bold, var(--ds-link-pressed, #0747A6))' : 'var(--ds-text, var(--ds-text, #253858))';
                           return (
-                            <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, borderBottom: `1px solid var(--ds-background-neutral, #F4F5F7)` }}
+                            <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, borderBottom: `1px solid var(--ds-background-neutral, var(--ds-background-neutral-subtle, #F4F5F7))` }}
                               onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                               onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                             >
@@ -291,7 +291,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                       onMouseOver={e => { if (subtaskType !== t) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                       onMouseOut={e => { if (subtaskType !== t) e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <input type="radio" name="subtask-type" checked={subtaskType === t} onChange={() => setSubtaskType(t)} style={{ accentColor: 'var(--ds-link, #0C66E4)' }} />
+                      <input type="radio" name="subtask-type" checked={subtaskType === t} onChange={() => setSubtaskType(t)} style={{ accentColor: 'var(--ds-link, var(--ds-link, #0C66E4))' }} />
                       <JiraIssueTypeIcon type={t} size={16} />
                       <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{t}</span>
                     </label>
@@ -366,7 +366,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {/* Navigation buttons */}
           <div style={{ display: 'flex', gap: 8, marginTop: 20, borderTop: `1px solid var(--ds-border, #EBECF0)`, paddingTop: 16 }}>
             {step > 0 && (
-              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 Back
               </button>
             )}
@@ -376,7 +376,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                 disabled={step === 0 ? !canProceedStep0 : step === 1 ? !canProceedStep1 : false}
                 style={{
                   padding: '7px 16px', borderRadius: 4, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: 'none',
-                  background: (step === 0 ? canProceedStep0 : true) ? 'var(--ds-link, #0C66E4)' : 'var(--ds-border, #A5ADBA)',
+                  background: (step === 0 ? canProceedStep0 : true) ? 'var(--ds-link, var(--ds-link, #0C66E4))' : 'var(--ds-border, #A5ADBA)',
                   color: 'var(--ds-surface, #fff)', opacity: (step === 0 && !canProceedStep0) ? 0.6 : 1,
                 }}
               >

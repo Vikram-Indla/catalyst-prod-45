@@ -27,11 +27,8 @@ function getAvatarColor(name: string): string {
   const colors = [
     'var(--ds-link, #2A6DF4)',  // Blue
     'var(--ds-background-discovery-bold, #7C3BED)',  // Purple
-// TODO: ads-unmapped — #EC4699 context unclear
     '#EC4699',  // Pink
-// TODO: ads-unmapped — #E54D2E context unclear
     '#E54D2E',  // Red-Orange
-// TODO: ads-unmapped — #F2960D context unclear
     '#F2960D',  // Orange
     'var(--ds-background-success-bold, #25A777)',  // Teal
     'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky Blue

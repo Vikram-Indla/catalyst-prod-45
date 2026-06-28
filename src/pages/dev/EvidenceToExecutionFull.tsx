@@ -536,7 +536,6 @@ export default function EvidenceToExecutionFull() {
                       {source.included && <span>✓</span>}
                       <span style={{ flex: 1, fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>{source.name}</span>
                       {source.lang && (
-// TODO: ads-unmapped — #E3F2FD context unclear
                         <span style={{ fontSize: '11px', backgroundColor: '#E3F2FD', color: 'var(--ds-link, #0052CC)', padding: '2px 6px', borderRadius: '3px', fontWeight: 500 }}>
                           {source.lang}
                         </span>
@@ -734,7 +733,6 @@ export default function EvidenceToExecutionFull() {
                       <strong style={{ flex: 1 }}>{item.title}</strong>
                       <span
                         style={{
-// TODO: ads-unmapped — #E3F2FD context unclear
                           backgroundColor: '#E3F2FD',
                           color: 'var(--ds-link, #0052CC)',
                           padding: '2px 8px',

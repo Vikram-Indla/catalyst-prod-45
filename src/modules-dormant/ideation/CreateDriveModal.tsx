@@ -366,7 +366,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cp-text-secondary, #475569)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cp-text-secondary, var(--ds-text-subtle, #44546F))'; }}
           >
             Cancel
           </button>
@@ -377,7 +377,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             style={{
               padding: '10px 24px', fontSize: '14px', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              background: (!isValid || createMutation.isPending) ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+              background: (!isValid || createMutation.isPending) ? 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',

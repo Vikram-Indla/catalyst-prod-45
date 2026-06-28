@@ -346,7 +346,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
                   { label: 'Comments', val: copyComments, set: setCopyComments },
                 ].map(({ label, val, set }) => (
                   <label key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={val} onChange={() => set(!val)} style={{ accentColor: 'var(--ds-link, #0C66E4)' }} />
+                    <input type="checkbox" checked={val} onChange={() => set(!val)} style={{ accentColor: 'var(--ds-link, var(--ds-link, #0C66E4))' }} />
                     {label}
                   </label>
                 ))}

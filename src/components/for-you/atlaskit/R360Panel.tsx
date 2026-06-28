@@ -103,7 +103,7 @@ function SidebarMemberRow({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           fontSize: 13, fontWeight: active ? 600 : 400,
-          color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, #172B4D)'),
+          color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {name}
@@ -203,7 +203,7 @@ function SidebarRoster({
             marginTop: 8,
             padding: '4px 8px',
             fontSize: 12,
-            border: `2px solid ${focused ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border.input', 'var(--ds-text-disabled, #8590A2)')}`,
+            border: `2px solid ${focused ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border.input', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))')}`,
             borderRadius: 3,
             background: token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
             color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -305,7 +305,7 @@ function MemberPill({
         cursor: 'pointer', transition: 'all 120ms ease', gap: 0,
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, #172B4D)'), whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'), whiteSpace: 'nowrap' }}>
         {label}
       </span>
       {sublabel && (
@@ -469,7 +469,7 @@ export default function R360Panel() {
       ) : null}
 
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)') }}>
-        <CatyWorkloadRisk teamMembers={(teamResources.length > 0 ? teamResources : myResourceId ? [{ id: myResourceId, profile_id: '', name: 'You', role_name: null, avatar_url: null }] : []).map(r => ({ userId: r.id, name: r.name, allocationPct: 80, allocationColor: 'var(--ds-background-success-bold, #1F845A)', isYou: r.id === myResourceId, projectBreakdown: [] }))} />
+        <CatyWorkloadRisk teamMembers={(teamResources.length > 0 ? teamResources : myResourceId ? [{ id: myResourceId, profile_id: '', name: 'You', role_name: null, avatar_url: null }] : []).map(r => ({ userId: r.id, name: r.name, allocationPct: 80, allocationColor: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', isYou: r.id === myResourceId, projectBreakdown: [] }))} />
         <R360MemberDetail
           resourceId={activeResourceId}
           embedded

@@ -5421,7 +5421,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         >
           {/* Header — warning appearance (icon + title in warning color). */}
           <div style={{ padding: '24px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
-// TODO: ads-unmapped — #946F00 context unclear
             <span style={{ color: token('color.icon.warning', '#946F00'), display: 'inline-flex' }}>
               <AkWarningIcon label="" size="medium" />
             </span>
@@ -5917,9 +5916,9 @@ function GroupByControl({
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
-          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
-          background: (isOpen || value !== 'none') ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-          color: (isOpen || value !== 'none') ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', 'var(--ds-link, var(--ds-link, #0C66E4))') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
+          background: (isOpen || value !== 'none') ? token('color.background.selected', 'var(--ds-background-selected, var(--ds-background-information, #E9F2FF))') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          color: (isOpen || value !== 'none') ? token('color.text.selected', 'var(--ds-link, var(--ds-link, #0C66E4))') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
           fontSize: 13,
           fontWeight: 500,
           fontFamily: 'inherit',
@@ -5981,7 +5980,7 @@ function GroupByControl({
                     : focused
                       ? token('color.background.neutral.subtle.hovered', '#091E4208')
                       : 'transparent',
-                  color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                  color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                   fontWeight: active ? 500 : 400,
                   fontSize: 14,
                   fontFamily: 'inherit',
@@ -6551,7 +6550,7 @@ function InlineGroupCreateRow({
                     // selected AND hovered/focused states (Jira parity). boxShadow
                     // inset doesn't shift layout, so content alignment is preserved.
                     boxShadow: highlight ? 'inset 3px 0 0 0 var(--ds-border-focused, #0C66E4)' : undefined,
-                    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                     fontWeight: active ? 500 : 400,
                     fontSize: 14,
                     fontFamily: 'inherit',
@@ -6894,7 +6893,7 @@ function InlineGroupCreateRow({
                           fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
                           cursor: 'pointer', borderRadius: 3,
                         }}
-                        onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
+                        onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
                         onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                       >
                         <Avatar size="xsmall" src={m.src} name={m.name} />
@@ -6933,8 +6932,8 @@ function InlineGroupCreateRow({
           cursor: canSubmit ? 'pointer' : 'not-allowed',
           flexShrink: 0,
         }}
-        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', 'var(--ds-link, #0C66E4)'); }}
-        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'); }}
+        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', 'var(--ds-link, var(--ds-link, #0C66E4))'); }}
+        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', 'var(--ds-link, var(--ds-link, #0C66E4))'); }}
       >
         <span>{isSubmitting ? 'Creating…' : 'Create'}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -7283,7 +7282,7 @@ function InlineCreateRow({
           cursor: 'pointer', fontFamily: 'inherit',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
           (e.currentTarget as HTMLElement).style.borderColor = token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))');
         }}
         onMouseLeave={(e) => {
@@ -7724,8 +7723,7 @@ function DetailNavIconButton({
         justifyContent: 'center',
         border: 'none',
         background: 'transparent',
-// TODO: ads-unmapped — #C1C7D0 context unclear
-        color: isDisabled ? token('color.text.disabled', '#C1C7D0') : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+        color: isDisabled ? token('color.text.disabled', '#C1C7D0') : token('color.text.subtle', 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))'),
         cursor: isDisabled ? 'default' : 'pointer',
         borderRadius: 3,
       }}
@@ -7759,7 +7757,7 @@ function BulkMenuItem({ onClick, children }: { onClick: () => void; children: Re
         fontFamily: 'inherit',
         borderRadius: 3,
       }}
-      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
     >
       {children}

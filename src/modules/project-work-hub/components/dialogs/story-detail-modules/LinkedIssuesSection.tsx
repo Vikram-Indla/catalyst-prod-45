@@ -77,7 +77,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
                 cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 background: opt === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
               onMouseLeave={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span>{opt}</span>
@@ -511,7 +511,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
           <div style={{ border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, overflow: 'hidden' }}>
             {(typeLinks as any[]).map((link: any) => {
               const target = link.target;
-              const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : 'var(--ds-text-disabled, #8590A2)';
+              const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))';
               // §20 / L41 — pill colour resolved from the Atlaskit helper.
               const issueIcon = WORK_ITEM_ICONS[target.issue_type?.toLowerCase()] ?? WORK_ITEM_ICONS.story;
               return (

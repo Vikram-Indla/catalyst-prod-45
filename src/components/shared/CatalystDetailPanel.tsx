@@ -173,7 +173,7 @@ export function CatalystDetailPanel(props: CatalystDetailPanelProps) {
               onResizeCommit?.(next);
             }
           }}
-          onMouseEnter={(e) => { if (!resizing) e.currentTarget.style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)'; }}
+          onMouseEnter={(e) => { if (!resizing) e.currentTarget.style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link, #1868DB))'; }}
           onMouseLeave={(e) => { if (!resizing) e.currentTarget.style.boxShadow = 'none'; }}
           style={{
             position: 'absolute', top: 0, left: -2, bottom: 0, width: 6,
@@ -311,7 +311,7 @@ function PhIssuePanelBody({
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', minHeight: 36, flexShrink: 0, borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, fontSize: 13, color: SUBTLE }}>
           {effectiveType && <JiraIssueTypeIcon type={effectiveType as any} size={14} />}
-          <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, #0C66E4)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+          <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link, #0C66E4))', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             {projectName}
           </a>
           <span>/</span>
@@ -331,7 +331,7 @@ function PhIssuePanelBody({
             />
           )}
           {issue?.parent_key && (
-            <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, #0C66E4)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link, #0C66E4))', textDecoration: 'none', whiteSpace: 'nowrap' }}>
               {issue.parent_key}
             </a>
           )}
@@ -358,7 +358,7 @@ function PhIssuePanelBody({
             background: moreOpen ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
             cursor: 'pointer', padding: 0, flexShrink: 0, color: SUBTLE,
           }}
-          onMouseEnter={(e) => { if (!moreOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+          onMouseEnter={(e) => { if (!moreOpen) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
           onMouseLeave={(e) => { if (!moreOpen) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
         >
           <MoreIcon label="" size="small" primaryColor="currentColor" />
@@ -622,7 +622,7 @@ function ChromeRow({
           background: 'transparent', cursor: 'pointer', padding: 0, flexShrink: 0,
           color: SUBTLE, transition: 'background-color 100ms ease',
         }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       >
         <CloseIcon label="Close" color="currentColor" />
@@ -648,7 +648,7 @@ function IconButton({
         cursor: 'pointer', padding: 0, flexShrink: 0, color: SUBTLE,
         transition: 'background-color 100ms ease',
       }}
-      onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+      onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
       onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {children}

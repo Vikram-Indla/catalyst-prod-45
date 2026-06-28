@@ -124,7 +124,7 @@ export function CreateSopTemplateModal({ onClose }: Props) {
                 <Toggle id={`sop-step-mand-${i}`} isChecked={s.mandatory} onChange={() => updateStep(i, { mandatory: !s.mandatory })} />
                 <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)' }}>Required</span>
               </div>
-              <button onClick={() => removeStep(i)} aria-label="Remove step" style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #626F86)', padding: 4 }}>
+              <button onClick={() => removeStep(i)} aria-label="Remove step" style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))', padding: 4 }}>
                 <X size={14} style={{ color: 'var(--ds-text-subtlest, #626F86)' }} />
               </button>
             </div>

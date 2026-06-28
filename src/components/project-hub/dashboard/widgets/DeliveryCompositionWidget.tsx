@@ -229,7 +229,6 @@ export default function DeliveryCompositionWidget({
                   style={{
                     ...SMALL,
                     textAlign: 'right',
-// TODO: ads-unmapped — #292A2E context unclear
                     color: token('color.text', '#292A2E'),
                     fontVariantNumeric: 'tabular-nums',
                   }}

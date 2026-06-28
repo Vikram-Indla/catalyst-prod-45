@@ -917,8 +917,8 @@
 /* Dark status badges */
 .dark .statusDevelopment , [data-theme="dark"] .statusDevelopment { background: var(--ds-background-information-bold, rgba(59,130,246,0.12)); color: var(--ds-text-brand, #60A5FA); }
 .dark .statusStaging , [data-theme="dark"] .statusStaging { background: rgba(20,184,166,0.12); color: var(--ds-background-success, #DCFFF1); }
-.dark .statusTesting , [data-theme="dark"] .statusTesting { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, #FFF7D6); }
-.dark .statusUat , [data-theme="dark"] .statusUat { background: var(--ds-background-warning-bold, rgba(234,88,12,0.12)); color: var(--ds-background-warning-bold, #E2B203); }
+.dark .statusTesting , [data-theme="dark"] .statusTesting { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, var(--ds-background-warning, #FFF7D6)); }
+.dark .statusUat , [data-theme="dark"] .statusUat { background: var(--ds-background-warning-bold, rgba(234,88,12,0.12)); color: var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203)); }
 .dark .statusReleased , [data-theme="dark"] .statusReleased { background: var(--ds-background-success-bold, rgba(74,222,128,0.12)); color: var(--ds-background-success, #DFFCF0); }
 .dark .statusPlanned .statusDot , [data-theme="dark"] .statusPlanned .statusDot { background: var(--fg-4, rgba(237,237,237,0.30)); }
 /* Dark filter chip active */

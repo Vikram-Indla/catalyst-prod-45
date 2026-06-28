@@ -9,18 +9,12 @@ const lozengeVariants = cva(
       appearance: {
         default: 'bg-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] text-[var(--ds-text,#253858)] dark:bg-[var(--ds-border-bold,#454545)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
         info: 'bg-[var(--ds-background-information, #E9F2FF)] text-[var(--ds-link-pressed, #0747A6)] dark:bg-[var(--ds-background-information, #1C3A5C)] dark:text-[var(--ds-background-information, #E9F2FF)]',
-// TODO: ads-unmapped — #1C3D2E context unclear
         success: 'bg-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-text-success, #006644)] dark:bg-[#1C3D2E] dark:text-[var(--ds-background-success, #DFFCF0)]',
-// TODO: ads-unmapped — #4A3B1A context unclear
         warning: 'bg-[var(--ds-background-warning, #FFF7D6)] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:bg-[#4A3B1A] dark:text-[var(--ds-background-warning, #FFF7D6)]',
-// TODO: ads-unmapped — #4A1A1A context unclear
         danger: 'bg-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-text-danger, #AE2A19)] dark:bg-[#4A1A1A] dark:text-[var(--ds-background-danger, #FFECEB)]',
         inprogress: 'bg-[var(--ds-background-information, #E9F2FF)] text-[var(--ds-link-pressed, #0747A6)] dark:bg-[var(--ds-background-information, #1C3A5C)] dark:text-[var(--ds-background-information, #E9F2FF)]',
-// TODO: ads-unmapped — #1C3D2E context unclear
         new: 'bg-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-text-success, #006644)] dark:bg-[#1C3D2E] dark:text-[var(--ds-background-success, #DFFCF0)]',
-// TODO: ads-unmapped — #4A3B1A context unclear
         moved: 'bg-[var(--ds-background-warning, #FFF7D6)] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:bg-[#4A3B1A] dark:text-[var(--ds-background-warning, #FFF7D6)]',
-// TODO: ads-unmapped — #4A1A1A context unclear
         removed: 'bg-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-text-danger, #AE2A19)] dark:bg-[#4A1A1A] dark:text-[var(--ds-background-danger, #FFECEB)]',
       },
       isBold: {

@@ -28,7 +28,6 @@ const LABEL_COLORS: Record<string, { bg: string; text: string; hex: string }> = 
   yellow: { bg: 'bg-yellow-500', text: 'text-black', hex: 'var(--ds-background-warning-bold, #E2B203)' },
   green: { bg: 'bg-green-500', text: 'text-white', hex: 'var(--ds-text-success, #22c55e)' },
   blue: { bg: 'bg-blue-500', text: 'text-white', hex: 'var(--ds-text-brand, #3b82f6)' },
-// TODO: ads-unmapped — #A855F7 context unclear
   purple: { bg: 'bg-purple-500', text: 'text-white', hex: '#a855f7' },
   pink: { bg: 'bg-pink-500', text: 'text-white', hex: 'var(--ds-background-accent-magenta-bolder, #BE185D)' },
   gray: { bg: 'bg-gray-500', text: 'text-white', hex: 'var(--ds-text-subtlest, #626F86)' },
@@ -115,11 +114,8 @@ function getAvatarColor(name: string): string {
     'var(--ds-background-warning-bold, #F97015)',  // Orange
     'var(--ds-chart-green-bold, #21C45D)',  // Green
     'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky Blue
-// TODO: ads-unmapped — #FAC814 context unclear
     '#FAC814',  // Yellow
-// TODO: ads-unmapped — #BB36D3 context unclear
     '#BB36D3',  // Violet
-// TODO: ads-unmapped — #1DAFA1 context unclear
     '#1DAFA1',  // Cyan
   ];
   let hash = 0;

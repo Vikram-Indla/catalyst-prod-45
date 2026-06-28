@@ -470,7 +470,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         {(status === 'canonical' || status === 'observed') && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, #172B4D)') }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
             onClick={() => setPanel(panel === 'deprecate' ? null : 'deprecate')}
           >
             Deprecate →
@@ -479,7 +479,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         {(status === 'deprecated' || status === 'banned') && (
           <button
             type="button"
-            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, #172B4D)') }}
+            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
             onClick={() => setPanel(panel === 'restore' ? null : 'restore')}
           >
             Restore ↑
@@ -499,7 +499,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       {/* Inline action panels — expand below buttons, no portal needed */}
 
       {panel === 'ban' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), border: `1px solid ${token('color.border.danger', 'var(--ds-background-danger, #FFECEB)')}` }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), border: `1px solid ${token('color.border.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))')}` }}>
           <div style={{ fontWeight: 600, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'), marginBottom: 8 }}>
             Ban {entry.name}
           </div>
@@ -534,7 +534,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       )}
 
       {panel === 'deprecate' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}` }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), border: `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))')}` }}>
           <div style={{ fontWeight: 600, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'), marginBottom: 8 }}>
             Deprecate {entry.name}
           </div>
@@ -565,7 +565,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       )}
 
       {panel === 'mark-canonical' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), border: `1px solid ${token('color.border.success', 'var(--ds-background-success-bold, #1F845A)')}` }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), border: `1px solid ${token('color.border.success', 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))')}` }}>
           <div style={{ fontWeight: 600, color: token('color.text.success', 'var(--ds-text-success, #216E4E)'), marginBottom: 8 }}>
             Mark {entry.name} as canonical
           </div>
@@ -584,7 +584,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
       )}
 
       {panel === 'restore' && (
-        <div style={{ ...PANEL_BASE, background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'), border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}` }}>
+        <div style={{ ...PANEL_BASE, background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'), border: `1px solid ${token('color.border', 'var(--ds-border-disabled, var(--ds-border-disabled, #DCDFE4))')}` }}>
           <div style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
             Restore {entry.name}
           </div>
@@ -1703,7 +1703,7 @@ function AiRecommendationsPane() {
                 )}
                 <button
                   type="button"
-                  style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, #172B4D)') }}
+                  style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
                   onClick={() => setExpandedRec(isExpanded ? null : rec.id)}
                 >
                   {isExpanded ? 'Less' : 'Details'}
@@ -1711,7 +1711,7 @@ function AiRecommendationsPane() {
                 {!isApplied && (
                   <button
                     type="button"
-                    style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, #172B4D)') }}
+                    style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
                     onClick={() => setAppliedRecs((prev) => new Set([...prev, rec.id]))}
                   >
                     Mark done

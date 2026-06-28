@@ -388,7 +388,7 @@ function GroupSection({
             role="menuitem"
             onClick={() => { onEdit(menuOption); setMenuState(null); }}
             style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 14, color: T.text, border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left' }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
           >
             Edit

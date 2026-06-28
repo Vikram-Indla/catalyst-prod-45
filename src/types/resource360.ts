@@ -500,8 +500,7 @@ export type StatusCategory = 'all' | 'todo' | 'progress' | 'done';
 export function getStaleIndicator(ageDays: number, status: string, statusCategory?: string): { icon: string; color: string; label: string } | null {
   const cat = getStatusCategory(status, statusCategory);
   if (cat === 'done') return null;
-  if (ageDays > 21) return { icon: '⚠️', color: 'var(--ds-text-warning, #974F0C)', label: 'Critically stale (>21d)' };
-// TODO: ads-unmapped — #E23636 context unclear
+  if (ageDays > 21) return { icon: '⚠️', color: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', label: 'Critically stale (>21d)' };
   if (ageDays > 14) return { icon: '🔴', color: '#E23636', label: 'Stale (>14d)' };
   return null;
 }

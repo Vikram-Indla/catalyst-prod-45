@@ -41,12 +41,12 @@ interface ReleaseGroup {
 // ─── Status chip ──────────────────────────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, #0C66E4)') },
-  'At Risk': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') },
-  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') },
-  Upcoming:  { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') },
-  Completed: { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, #216E4E)') },
-  'On Track':{ bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, #216E4E)') },
+  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, var(--ds-link, #0C66E4))') },
+  'At Risk': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') },
+  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))') },
+  Upcoming:  { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))') },
+  Completed: { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
+  'On Track':{ bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
 };
 
 function StatusChip({ status }: { status: string }) {
@@ -86,17 +86,13 @@ function fmtShort(s: string | null): string {
 // ─── Gantt bar ────────────────────────────────────────────────────────────────
 
 const BAR_BG: Record<SprintStatus, string> = {
-// TODO: ads-unmapped — #CCE0FF context unclear
   Active:    token('color.background.accent.blue.subtle', '#CCE0FF'),
-// TODO: ads-unmapped — #FFE2BD context unclear
   'At Risk': token('color.background.accent.orange.subtle', '#FFE2BD'),
   Upcoming:  token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
-// TODO: ads-unmapped — #BAF3DB context unclear
   Completed: token('color.background.accent.green.subtle', '#BAF3DB'),
 };
 const BAR_BORDER: Record<SprintStatus, string> = {
   Active:    token('color.border.accent.blue', 'var(--ds-link, #0C66E4)'),
-// TODO: ads-unmapped — #D97008 context unclear
   'At Risk': token('color.border.accent.orange', '#D97008'),
   Upcoming:  token('color.border', 'var(--ds-border, #DFE1E6)'),
   Completed: token('color.border.accent.green', 'var(--ds-background-success-bold, #1F845A)'),

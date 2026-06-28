@@ -73,7 +73,7 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
                 <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={() => moveUp(i)} disabled={i === 0} style={smallBtn} title="Move up">↑</button>
                   <button onClick={() => moveDown(i)} disabled={i === steps.length - 1} style={smallBtn} title="Move down">↓</button>
-                  <button onClick={() => removeStep(i)} style={{ ...smallBtn, color: 'var(--ds-text-danger, #AE2A19)' }} title="Delete step">
+                  <button onClick={() => removeStep(i)} style={{ ...smallBtn, color: 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' }} title="Delete step">
                     <Trash2 size={12} />
                   </button>
                 </div>

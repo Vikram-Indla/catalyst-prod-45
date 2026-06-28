@@ -196,7 +196,7 @@ function FieldMenu({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection
               cursor: (field.is_pinned || field.is_required) ? 'default' : 'pointer',
               fontSize: 14, color: (field.is_pinned || field.is_required) ? T.textSubtlest : T.danger,
             }}
-            onMouseEnter={e => { if (!field.is_pinned && !field.is_required) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-danger-hovered, #FFECEB)'; }}
+            onMouseEnter={e => { if (!field.is_pinned && !field.is_required) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-danger-hovered, var(--ds-background-danger, #FFECEB))'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             Remove field

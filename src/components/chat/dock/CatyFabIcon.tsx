@@ -1,7 +1,6 @@
 /**
  * CatyFabIcon — inline Ask Caty gradient SVG.
  * Inline (not <img>) so CSS breathing + hover/active animations work.
-// TODO: ads-unmapped — #F79357 context unclear
  * Gradient fills (#F79357→#CC1E9A) are visible on both light and dark backgrounds.
  * Dark detail fills use var(--caty-fg) so they adapt if dark mode is ever enabled.
  */
@@ -25,15 +24,12 @@ export function CatyFabIcon({ size = 56, isDragging = false }: { size?: number; 
           {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
           <linearGradient id="askdg" x1="256" y1="40" x2="256" y2="470" gradientUnits="userSpaceOnUse">
             {/* ads-scanner:ignore-next-line */}
-// TODO: ads-unmapped — #F79357 context unclear
             <stop stopColor="#F79357" />
             {/* ads-scanner:ignore-next-line */}
             <stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
             {/* ads-scanner:ignore-next-line */}
-// TODO: ads-unmapped — #B41572 context unclear
             <stop offset=".75" stopColor="#B41572" />
             {/* ads-scanner:ignore-next-line */}
-// TODO: ads-unmapped — #CC1E9A context unclear
             <stop offset="1" stopColor="#CC1E9A" />
           </linearGradient>
         </defs>

@@ -131,9 +131,7 @@ function Favicon({ domain }: { domain: string }) {
 
 // Stable accent color per domain — uses a tiny hash to pick from a fixed palette.
 const ACCENT_PALETTE = [
-// TODO: ads-unmapped — #1D8DDA context unclear
   'var(--ds-link, #0065FF)', '#1D8DDA', '#36C5F0', '#2EB67D',
-// TODO: ads-unmapped — #7B61FF context unclear
   '#7B61FF', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-warning-bold, #E2B203)', '#9333EA',
 ];
 function accentColorFor(domain: string): string {

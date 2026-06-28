@@ -288,7 +288,7 @@
     var(--cp-bg-elevated, var(--ds-surface, #ffffff))
   );
   /* ADS canonical subtle success tokens (light) — spec 2026-05-29.
-     bg = color.background.success (var(--ds-background-success, #DFFCF0)), text = color.text.success (var(--ds-text-success, #216E4E)). */
+     bg = color.background.success (var(--ds-background-success, #DFFCF0)), text = color.text.success (var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))). */
   --cp-lozenge-green-bg: var(--ds-background-success, #dffcf0);
   --cp-lozenge-green-text: var(--ds-text-success, #216e4e);
 
@@ -830,10 +830,10 @@ html:has(body[data-scroll-locked]) {
     ); /* var(--ds-surface-sunken, #F8FAFC) - page background */
     --surface-2: hsl(
       0 0% 97%
-    ); /* var(--ds-surface-sunken, #F8F8F7) - subtle sections */
+    ); /* var(--ds-surface-sunken, var(--ds-surface-sunken, #F8F8F7)) - subtle sections */
     --surface-3: hsl(
       0 0% 95%
-    ); /* var(--ds-background-neutral-subtle, #F7F8F9) - muted containers */
+    ); /* var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9)) - muted containers */
     --surface-elevated: hsl(
       0 0% 100%
     ); /* var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))) - popovers, dropdowns */
@@ -1777,15 +1777,15 @@ html:has(body[data-scroll-locked]) {
     --info-foreground: 0 0% 100%;
 
     /* === SURFACE TOKEN ALIASES (Neutral dark) ===
-       Jira-parity ADS pairing (2026-04-30): canvas = var(--ds-surface-sunken, #F7F8F9) (background.neutral),
+       Jira-parity ADS pairing (2026-04-30): canvas = var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9)) (background.neutral),
        elevated chrome = var(--ds-surface, #FFFFFF) (elevation.surface). Stored as complete hsl()
        so bare var(--surface-N) callers render valid CSS. */
     --surface-0: hsl(
       210 11% 13%
-    ); /* var(--ds-surface-sunken, #F7F8F9) — page canvas */
+    ); /* var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9)) — page canvas */
     --surface-1: hsl(
       210 11% 13%
-    ); /* var(--ds-surface-sunken, #F7F8F9) — page canvas */
+    ); /* var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9)) — page canvas */
     --surface-2: hsl(
       210 9% 15%
     ); /* var(--ds-surface, #FFFFFF) — elevated chrome */

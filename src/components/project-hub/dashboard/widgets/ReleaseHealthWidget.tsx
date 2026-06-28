@@ -282,7 +282,6 @@ function KpiCell({
         style={{
           ...H_NUM,
           lineHeight: 1.1,
-// TODO: ads-unmapped — #292A2E context unclear
           color: accent ?? token('color.text', '#292A2E'),
         }}
       >
@@ -369,7 +368,6 @@ function ReleaseRow({ release: rel }: { release: any }) {
             textAlign: 'right',
             color: atRisk
               ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
-// TODO: ads-unmapped — #292A2E context unclear
               : token('color.text', '#292A2E'),
             fontVariantNumeric: 'tabular-nums',
           }}
@@ -390,7 +388,6 @@ function ReleaseRow({ release: rel }: { release: any }) {
         }}
       >
         <span>
-// TODO: ads-unmapped — #292A2E context unclear
           <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
             {rel.done}
           </span>{' '}

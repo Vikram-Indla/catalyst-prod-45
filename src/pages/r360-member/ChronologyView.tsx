@@ -12,7 +12,7 @@ import { getFromTagClass, getFromTagPrefix } from './helpers';
 import { toStatusCategory } from '@/components/ads';
 
 const STATUS_COLORS: Record<string, { background: string; color: string }> = {
-  todo: { background: token('color.background.neutral', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'), color: token('color.text.subtle', 'var(--ds-icon, #44546F)') },
+  todo: { background: token('color.background.neutral', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'), color: token('color.text.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))') },
   inProgress: { background: token('color.background.information.bold', 'var(--ds-link, #0C66E4)'), color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)') },
   done: { background: token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)'), color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)') },
 };

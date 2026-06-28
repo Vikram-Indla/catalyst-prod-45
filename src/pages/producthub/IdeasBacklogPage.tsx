@@ -259,7 +259,6 @@ export default function IdeasBacklogPage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <StatusBadge status={idea.status} />
                           {isConverted && idea.linked_initiative_key && (
-// TODO: ads-unmapped — #11853D context unclear
                             <span style={{ fontSize: '11px', fontWeight: 600, color: '#11853D', fontFamily: 'var(--cp-font-mono)' }}>
                               → {idea.linked_initiative_key}
                             </span>
@@ -350,8 +349,8 @@ function StatusBadge({ status }: { status: string }) {
   const darkColors: Record<string, { bg: string; text: string }> = {
     'Draft':                    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
     'Submitted':                { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
-    'Under Review':             { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, #0C66E4)' },
-    'Approved':                 { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, #0C66E4)' },
+    'Under Review':             { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
+    'Approved':                 { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', text: 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' },
     'Rejected':                 { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-surface, rgba(255,255,255,0.72))' },
     'Converted':                { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success, #DFFCF0)' },
     'Converted to Request':  { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.15))', text: 'var(--ds-background-success, #DFFCF0)' },

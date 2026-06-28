@@ -61,7 +61,7 @@ const HUB_PRESETS: Array<{ label: string; route: string; color: string }> = [
   { label: 'Home',      route: '/for-you',      color: 'var(--ds-background-success-bold, #1F845A)' },
   { label: 'Incidents', route: '/incidents',    color: 'var(--ds-text-danger, #AE2A19)' },
   { label: 'Admin',     route: '/admin',        color: 'var(--ds-icon-subtle, #626F86)' },
-  { label: 'Global (all routes)', route: '', color: 'var(--ds-icon, #44546F)' },
+  { label: 'Global (all routes)', route: '', color: 'var(--ds-icon, var(--ds-icon, #44546F))' },
 ];
 
 // ─── PublishTab ───────────────────────────────────────────────────────────────

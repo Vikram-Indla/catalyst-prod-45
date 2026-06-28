@@ -893,7 +893,7 @@ function SettingsPopupBody({
     <div style={{ width: 300, padding: 12 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ font: token('font.heading.small'), color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <span style={{ font: token('font.heading.small'), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}>
           Gadget Settings
         </span>
         <IconButton
@@ -1183,7 +1183,7 @@ function DemandRowItem({
           transition: 'background 120ms',
           cursor: 'pointer',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'))}
+        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
         {/* Chevron */}
@@ -1443,7 +1443,7 @@ function DemandRowItem({
                   <span
                     style={{
                       ...BODY,
-                      color: storyDue ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                      color: storyDue ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))'),
                       whiteSpace: 'nowrap',
                     }}
                     title={storyDue ? `Due ${storyDue}` : 'No due date'}
@@ -1645,7 +1645,7 @@ function DemandRowItem({
                           <span
                             style={{
                               ...BODY,
-                              color: storyDue ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
+                              color: storyDue ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))'),
                               whiteSpace: 'nowrap',
                             }}
                             title={storyDue ? `Due ${storyDue}` : 'No due date'}

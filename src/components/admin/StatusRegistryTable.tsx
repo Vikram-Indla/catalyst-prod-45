@@ -152,7 +152,7 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
       background: 'var(--ds-surface, #FFFFFF)',
       transition: 'background 120ms ease',
     }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F7F8F9)'; }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
     >
       {/* Status name */}
@@ -165,7 +165,7 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
             cursor: 'pointer',
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, #0C66E4)';
+            (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, var(--ds-link, #0C66E4))';
             (e.currentTarget as HTMLElement).style.textDecoration = 'underline';
           }}
           onMouseLeave={(e) => {

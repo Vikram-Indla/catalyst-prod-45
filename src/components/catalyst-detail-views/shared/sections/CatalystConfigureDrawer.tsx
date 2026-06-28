@@ -221,7 +221,7 @@ function FieldConfigRow({
         transition: 'background 0.1s',
       }}
       onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.hovered', 'var(--ds-border, #DFE1E6)'); }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
     >
       <span style={{
         fontSize: 14,

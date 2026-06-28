@@ -18,7 +18,6 @@ export const SectionHeader = ({ icon: Icon, title, className }: SectionHeaderPro
     <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)]">
       {title}
     </span>
-// TODO: ads-unmapped — #242424 context unclear
     <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-[#242424] to-transparent" />
   </div>
 );

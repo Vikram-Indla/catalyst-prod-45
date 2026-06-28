@@ -89,10 +89,10 @@ function SeverityBadge({ severity }: { severity: string }) {
     switch (severity) {
       case 'SEV1':
         // Dark red background, light red text for dark mode
-        return "bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger,#ef4444)] dark:bg-[var(--ds-text-danger, #AE2A19)] dark:text-[var(--ds-border-danger,#fca5a5)] dark:border dark:border-[var(--ds-text-danger,#991b1b)]";
+        return "bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger,#ef4444)] dark:bg-[var(--ds-text-danger, var(--ds-text-danger, #AE2A19))] dark:text-[var(--ds-border-danger,#fca5a5)] dark:border dark:border-[var(--ds-text-danger,#991b1b)]";
       case 'SEV2':
         // Amber variant for dark mode
-        return "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)] dark:bg-[var(--ds-text-warning, #974F0C)] dark:text-[var(--ds-background-warning, #FFF7D6)] dark:border dark:border-[var(--ds-text-warning, #974F0C)]";
+        return "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)] dark:bg-[var(--ds-text-warning, var(--ds-text-warning, #974F0C))] dark:text-[var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))] dark:border dark:border-[var(--ds-text-warning, var(--ds-text-warning, #974F0C))]";
       case 'SEV3':
       case 'SEV4':
       default:
@@ -194,7 +194,6 @@ export const KanbanCard = memo(function KanbanCard({
             <span className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold",
               "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)]",
-// TODO: ads-unmapped — #431407 context unclear
               "dark:bg-[#431407] dark:text-[var(--ds-background-warning, #FFF7D6)] dark:border dark:border-[var(--ds-text-danger, #7c2d12)]"
             )}>
               <AlertTriangle className="h-2.5 w-2.5" />

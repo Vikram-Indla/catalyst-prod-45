@@ -289,7 +289,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
           <Heading size="large">{boardConfig.boardName === 'Board' ? 'Kanban' : boardConfig.boardName}</Heading>
           {boards.length > 0 && (
             <PortalMenu ariaLabel="Switch board" minWidth={220} trigger={({ open }) => (
-              <button style={{ height: 28, padding: '0 8px', borderRadius: 3, border: `1px solid ${token('color.border', '#091E4224')}`, background: open ? token('color.background.neutral.subtle.hovered', '#091E420F') : 'transparent', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
+              <button style={{ height: 28, padding: '0 8px', borderRadius: 3, border: `1px solid ${token('color.border', '#091E4224')}`, background: open ? token('color.background.neutral.subtle.hovered', '#091E420F') : 'transparent', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', color: token('color.text.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))') }}>
                 Switch board ▾
               </button>
             )}>

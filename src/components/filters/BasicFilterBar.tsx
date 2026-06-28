@@ -271,7 +271,7 @@ function CheckRow({
         color: token('color.text', 'var(--ds-text, #172B4D)'),
       }}
       onMouseEnter={e => {
-        if (!isChecked) (e.currentTarget as HTMLElement).style.background = `var(--ds-background-neutral-subtle-hovered, #F4F5F7)`;
+        if (!isChecked) (e.currentTarget as HTMLElement).style.background = `var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral-subtle, #F4F5F7))`;
       }}
       onMouseLeave={e => {
         if (!isChecked) (e.currentTarget as HTMLElement).style.background = 'transparent';

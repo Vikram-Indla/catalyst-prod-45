@@ -262,7 +262,7 @@ function TasksGroupByControl({
                     : focused
                       ? token('color.background.neutral.subtle.hovered', '#091E4208')
                       : 'transparent',
-                  color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                  color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                   fontWeight: active ? 500 : 400,
                   fontSize: 14,
                   fontFamily: 'inherit',
@@ -433,7 +433,6 @@ function TasksSavedFiltersControl({
               style={{
                 display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
                 background: 'transparent', border: 'none', cursor: hasCurrent ? 'pointer' : 'not-allowed',
-// TODO: ads-unmapped — #9B9DA1 context unclear
                 color: hasCurrent ? token('color.text', 'var(--ds-text, #172B4D)') : token('color.text.disabled', '#9B9DA1'),
                 fontSize: 13, fontFamily: 'inherit',
               }}
@@ -853,14 +852,14 @@ function TasksInlineCreateRow({
                     outline: 'none',
                     background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
                     boxShadow: active ? 'inset 3px 0 0 0 var(--ds-border-focused, #0C66E4)' : undefined,
-                    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                     fontWeight: active ? 500 : 400,
                     fontSize: 14,
                     fontFamily: 'inherit',
                     textAlign: 'left',
                     cursor: 'pointer',
                   }}
-                  onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
+                  onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
                   onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {w.color && <span style={{ width: 8, height: 8, borderRadius: '50%', background: w.color, flexShrink: 0 }} />}
@@ -1174,7 +1173,7 @@ function TasksInlineCreateRow({
                       fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
                       cursor: 'pointer', borderRadius: 3,
                     }}
-                    onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
+                    onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
                     onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <Avatar size="xsmall" src={m.src} name={m.name} />
@@ -1213,8 +1212,8 @@ function TasksInlineCreateRow({
           cursor: canSubmit ? 'pointer' : 'not-allowed',
           flexShrink: 0,
         }}
-        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', 'var(--ds-link, #0C66E4)'); }}
-        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'); }}
+        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', 'var(--ds-link, var(--ds-link, #0C66E4))'); }}
+        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', 'var(--ds-link, var(--ds-link, #0C66E4))'); }}
       >
         <span>{isSubmitting ? 'Creating…' : 'Create'}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

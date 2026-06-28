@@ -491,11 +491,9 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
             background: 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1d4ed8), var(--cp-blue))', padding: '14px 16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-// TODO: ads-unmapped — #D6E4F0 context unclear
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#D6E4F0" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
               <span style={{ color: 'var(--ds-surface, #fff)', fontSize: 14, fontWeight: 700 }}>Export Work Items</span>
             </div>
-// TODO: ads-unmapped — #D6E4F0 context unclear
             <div style={{ color: '#D6E4F0', fontSize: 11, marginLeft: 26 }}>Select months · Sheet 1 = Resources</div>
           </div>
 
@@ -517,7 +515,6 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     background: checked ? (dk ? 'var(--ds-background-success-bold, rgba(74, 222, 128, 0.06))' : 'var(--ds-background-success, #DFFCF0)') : 'transparent',
                     border: `1.5px solid ${checked ? 'var(--sem-success)' : 'transparent'}`,
                   }}
-// TODO: ads-unmapped — #F8F9FA context unclear
                   onMouseEnter={e => { if (!checked) e.currentTarget.style.background = dk ? 'var(--ds-surface-overlay, #1F1F1F)' : '#f8f9fa'; }}
                   onMouseLeave={e => { if (!checked) e.currentTarget.style.background = 'transparent'; }}
                 >
@@ -546,7 +543,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   {opt.isFuture && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, color: dk ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-background-warning-bold, #E2B203)',
-                      background: dk ? 'var(--ds-background-warning-bold, rgba(251, 191, 36, 0.10))' : 'var(--ds-background-warning, #FFF7D6)', borderRadius: 4, padding: '2px 7px',
+                      background: dk ? 'var(--ds-background-warning-bold, rgba(251, 191, 36, 0.10))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', borderRadius: 4, padding: '2px 7px',
                     }}>UPCOMING</span>
                   )}
                 </label>

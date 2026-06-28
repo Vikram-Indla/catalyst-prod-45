@@ -306,7 +306,7 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
               <div style={{ width: 180 }}>
                 <Select inputId={`appr-role-${i}`} options={APPROVAL_ROLES} value={APPROVAL_ROLES.find((o) => o.value === a.role) ?? null} onChange={(v) => updateApprover(i, { role: (v as Opt)?.value ?? '' })} placeholder="Role" spacing="compact" menuPosition="fixed" />
               </div>
-              <button onClick={() => removeApprover(i)} aria-label="Remove approver" style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #626F86)', padding: 4 }}>
+              <button onClick={() => removeApprover(i)} aria-label="Remove approver" style={{ display: 'flex', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))', padding: 4 }}>
                 <X size={14} style={{ color: 'var(--ds-text-subtlest, #626F86)' }} />
               </button>
             </div>

@@ -125,7 +125,7 @@ function SessionRow({ s, onOpenTicket }: { s: StandupSession; onOpenTicket: (key
                   cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
                   fontSize: 13, color: token('color.text', 'var(--ds-text, #172B4D)'),
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)'); }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               >
                 <JiraIssueTypeIcon type={t.type} size={16} />

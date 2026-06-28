@@ -64,7 +64,6 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (lower === 'in review' || lower === 'in qa' || lower === 'ready for qa' || lower === 'retest')
     return { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'started' };
   if (lower === 'in uat' || lower === 'uat ready')
-// TODO: ads-unmapped — #4C1D95 context unclear
     return { dot: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-background-discovery, #F3F0FF)', text: '#4C1D95', category: 'started' };
   if (lower === 'done' || lower === 'closed' || lower === 'resolved' || lower === 'ready for production' || lower === 'beta ready')
     return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'completed' };

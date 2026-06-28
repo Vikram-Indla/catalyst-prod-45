@@ -31,7 +31,6 @@ const Cell = ({ value, highlight }: { value: any; highlight?: boolean }) => {
 const SectionCard = ({ title, children, loading, error }: { title: string; children: React.ReactNode; loading: boolean; error: string | null }) => (
   <div style={{ background: "var(--bg-2, #1a1a1a)", borderRadius: 8, padding: "16px 20px", marginBottom: 16 }}>
     <h3 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 700, color: "var(--fg-1, #e5e5e5)", textTransform: "uppercase", letterSpacing: 1 }}>{title}</h3>
-// TODO: ads-unmapped — #888888 context unclear
     {loading ? <p style={{ color: "#888", fontSize: 13 }}>Loading…</p> : error ? <p style={{ color: "var(--ds-text-danger, #EF4444)", fontSize: 13 }}>{error}</p> : children}
   </div>
 );

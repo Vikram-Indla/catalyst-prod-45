@@ -61,8 +61,6 @@ function statusCategory(raw: string | null): 'done' | 'in_progress' | 'todo' {
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
-
-// TODO: ads-unmapped — #00B8D9 context unclear
 const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-link, #0C66E4)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-warning-bold, #E2B203)', '#00B8D9'];
 function hashColor(id: string): string {
   let h = 0;

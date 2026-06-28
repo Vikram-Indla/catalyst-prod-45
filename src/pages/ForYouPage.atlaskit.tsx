@@ -497,7 +497,7 @@ export default function ForYouPageAtlaskit() {
                   color: 'var(--ds-text-subtle, #505258)',
                   transition: 'background-color 100ms ease',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -526,7 +526,7 @@ export default function ForYouPageAtlaskit() {
                 color: 'var(--ds-text-subtle, #505258)',
                 transition: 'background-color 100ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">

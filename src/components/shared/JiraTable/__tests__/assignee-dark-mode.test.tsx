@@ -1,13 +1,11 @@
 /**
  * Regression test for assignee cell dark mode visibility bug (2026-06-19).
  *
-// TODO: ads-unmapped — #292A2E context unclear
  * Bug: Avatar name span had hardcoded dark text #292A2E rgb(41, 42, 46)
  * which became invisible on dark backgrounds in dark mode.
  * Fix: Use token('color.text', 'var(--ds-text, #172B4D)') for theme-aware color.
  *
  * This test verifies that the assignee name span does NOT use hardcoded
-// TODO: ads-unmapped — #292A2E context unclear
  * dark colors (#292A2E, rgb(41, 42, 46)) and instead uses theme tokens.
  */
 
@@ -38,14 +36,12 @@ describe('assignee cell dark mode', () => {
     );
 
     expect(nameSpan).toBeDefined();
-
-// TODO: ads-unmapped — #292A2E context unclear
     // Check the computed style to ensure it's using a token (not hardcoded #292A2E)
     const style = window.getComputedStyle(nameSpan!);
     const color = style.color;
 
     // Hardcoded dark text that was breaking dark mode
-    const BROKEN_DARK_COLOR = 'var(--ds-text, rgb(41, 42, 46))'; // var(--ds-text, #172B4D)
+    const BROKEN_DARK_COLOR = 'var(--ds-text, rgb(41, 42, 46))'; // var(--ds-text, var(--ds-text, #172B4D))
 
     expect(color).not.toBe(BROKEN_DARK_COLOR);
 
@@ -74,9 +70,8 @@ describe('assignee cell dark mode', () => {
     expect(nameSpan).toBeDefined();
 
     const inlineStyle = (nameSpan as HTMLElement).getAttribute('style');
-// TODO: ads-unmapped — #292A2E context unclear
     // Should reference token() or --ds-text variable, not hardcoded #292A2E or rgb(41, 42, 46)
     expect(inlineStyle).toMatch(/token.*color\.text|--ds-text/);
-    expect(inlineStyle).not.toMatch(/var(--ds-text, #172B4D)|41.*42.*46/);
+    expect(inlineStyle).not.toMatch(/var(--ds-text, var(--ds-text, #172B4D))|41.*42.*46/);
   });
 });

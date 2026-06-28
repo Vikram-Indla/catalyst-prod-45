@@ -92,7 +92,6 @@ const ReleaseManagementPage: React.FC = () => {
       {/* Table */}
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
         <thead>
-// TODO: ads-unmapped — #FAFBFC context unclear
           <tr style={{ borderBottom: '1px solid var(--ds-background-neutral, #EBECF0)', background: '#FAFBFC' }}>
             <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>Release</th>
             <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: '12px' }}>Status</th>
@@ -107,7 +106,7 @@ const ReleaseManagementPage: React.FC = () => {
           {filteredReleases.map((release) => (
             <tr key={release.id} style={{ borderBottom: '1px solid var(--ds-background-neutral, #EBECF0)', background: 'var(--ds-surface, #FFFFFF)', hover: { background: 'var(--ds-surface-sunken, #F7F8F9)' } as any }}>
               <td style={{ padding: '12px 16px' }}>
-                <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, #0052CC)', textDecoration: 'underline' }}>{release.name}</a>
+                <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link, #0C66E4))', textDecoration: 'underline' }}>{release.name}</a>
               </td>
               <td style={{ padding: '12px 16px' }}>
                 <span style={{ display: 'inline-block', padding: '2px 8px', background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-text-subtlest, #626F86)', borderRadius: '3px', fontSize: '12px', fontWeight: 600 }}>
@@ -120,12 +119,12 @@ const ReleaseManagementPage: React.FC = () => {
                 ) : (
                   <div style={{ display: 'flex', gap: 0, height: '8px', borderRadius: '4px', overflow: 'hidden', background: 'var(--ds-background-neutral, #EBECF0)', width: '100px' }}>
                     <div style={{ flex: release.progress?.completed || 0, background: 'var(--ds-text-success, #216E4E)' }} />
-                    <div style={{ flex: (release.progress?.total || 0) - (release.progress?.completed || 0), background: 'var(--ds-background-neutral, #EBECF0)' }} />
+                    <div style={{ flex: (release.progress?.total || 0) - (release.progress?.completed || 0), background: 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' }} />
                   </div>
                 )}
               </td>
               <td style={{ padding: '12px 16px', color: 'var(--ds-text, #172B4D)' }}>{release.startDate || ''}</td>
-              <td style={{ padding: '12px 16px', color: release.releaseDate && new Date(release.releaseDate) < new Date('2026-06-26') ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #172B4D)' }}>
+              <td style={{ padding: '12px 16px', color: release.releaseDate && new Date(release.releaseDate) < new Date('2026-06-26') ? 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' : 'var(--ds-text, var(--ds-text, #172B4D))' }}>
                 {release.releaseDate}
               </td>
               <td style={{ padding: '12px 16px' }}>

@@ -84,7 +84,6 @@ export const SIZES = {
 
 /** Jira label bar palette (cosmetic; labels carry no color in data). */
 export const LABEL_COLORS = [
-// TODO: ads-unmapped — #FFC400 context unclear
   'var(--ds-background-information-bold, #0C66E4)', '#00C7E6', 'var(--ds-background-success-bold, #1F845A)', '#FFC400', 'var(--ds-background-danger-bold, #C9372C)',
   'var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-text, #172B4D)',
 ] as const;

@@ -76,7 +76,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
                 cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 background: opt.key === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+              onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
               onMouseLeave={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
@@ -153,7 +153,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
                       cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                       background: isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <span style={{ flex: 1 }}>{s}</span>
@@ -205,7 +205,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
   onClickKey: (id: string) => void;
 }) {
   const isDone = item.status_category === 'done';
-  const avatarColor = item.assignee_display_name ? getAvatarColor(item.assignee_display_name) : 'var(--ds-text-disabled, #8590A2)';
+  const avatarColor = item.assignee_display_name ? getAvatarColor(item.assignee_display_name) : 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))';
   const avatarInitial = item.assignee_display_name?.charAt(0).toUpperCase() ?? '?';
 
   return (

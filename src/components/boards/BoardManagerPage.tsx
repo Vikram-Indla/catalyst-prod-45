@@ -384,7 +384,7 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
           cursor: 'pointer', opacity: 0, transition: 'opacity 120ms ease, background 100ms ease',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
           (e.currentTarget as HTMLElement).style.opacity = '1';
         }}
         onMouseLeave={(e) => {
@@ -429,7 +429,7 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
                 textAlign: 'left', fontSize: 14,
                 color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               {label}
@@ -448,7 +448,7 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
               textAlign: 'left', fontSize: 14,
               color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
             Delete

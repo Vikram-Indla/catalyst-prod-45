@@ -37,9 +37,9 @@ const matrixData = [
 ];
 
 const matrixColors = [
-  ['bg-[var(--ds-background-danger, rgba(239,68,68,0.1))] text-[var(--ds-text-danger,#ef4444)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]'],
-  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]'],
-  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,#b45309)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]'],
+  ['bg-[var(--ds-background-danger, rgba(239,68,68,0.1))] text-[var(--ds-text-danger,#ef4444)]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]'],
+  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]', 'bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]'],
+  ['bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.1))] text-[var(--ds-text-warning,var(--ds-background-warning-bold, #b45309))]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]', 'bg-[var(--ds-background-success, rgba(13,148,136,0.1))] text-[var(--ds-text-success,#0d9488)]'],
 ];
 
 const matrixLabels = [

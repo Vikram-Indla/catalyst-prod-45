@@ -137,7 +137,6 @@ export function statusToLozenge(
     // specials (Blocked → red, On Hold → yellow, Awaiting Info → blue).
     // This prevents name-table entries like 'in requirements': 'inprogress'
     // from overriding an explicit "to do" category from Jira.
-// TODO: ads-unmapped — #8FB8F6 context unclear
     // jira-compare 2026-05-29: "In Requirements" was showing blue (#8FB8F6)
     // on For You panel despite Jira statusCategory = "to do" (grey expected).
     if (c === 'to do' || c === 'todo' || c === 'new') {

@@ -277,7 +277,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
             <>
               <span>Filter:</span>
               <span style={{ fontWeight: 500 }}>{activeFilter.name}</span>
-              <button onClick={() => { setToolbarFilters(EMPTY_FILTERS); setSearchParams({}); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', padding: '0 4px' }}>Clear filter</button>
+              <button onClick={() => { setToolbarFilters(EMPTY_FILTERS); setSearchParams({}); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))', padding: '0 4px' }}>Clear filter</button>
             </>
           ) : null}
         </div>

@@ -455,7 +455,6 @@ export default function EpicDescriptionEditorPreview() {
           fontSize: 12,
           color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
           padding: `${token('space.150', '12px')} ${token('space.200', '16px')}`,
-// TODO: ads-unmapped — #DEEBF7 context unclear
           backgroundColor: token('color.background.information.subtle', '#DEEBF7'),
           borderRadius: 3,
         }}

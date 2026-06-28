@@ -32,7 +32,6 @@ const LAYER = {
   goal:       { color: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', badgeBg: 'var(--ds-background-success, #DFFCF0)', badgeText: 'var(--ds-text-success, #216E4E)', border: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
   kr:         { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-information, #E9F2FF)', badgeText: 'var(--ds-link-pressed, #1e40af)', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   initiative: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', badgeBg: 'var(--ds-background-warning, #FFF7D6)', badgeText: 'var(--ds-text-warning, #974F0C)', border: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-// TODO: ads-unmapped — #EEF2FF context unclear
   epic:       { color: 'var(--ds-background-discovery-bold, #6E5DC6)', badgeBg: '#EEF2FF', badgeText: 'var(--ds-background-discovery-bold, #3730a3)', border: 'var(--ds-background-discovery-bold, #6E5DC6)' },
 } as const;
 
@@ -808,7 +807,6 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           <span>delivered through</span>
           <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-text-warning, #974F0C)', background: 'var(--ds-background-warning, #FFF7D6)', borderColor: 'var(--ds-background-warning, #FFF7D6)' }}>● Requests</span>
           <span>executed as</span>
-// TODO: ads-unmapped — #C7D2FE context unclear
           <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-background-discovery-bold, #3730a3)', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</span>
         </div>
       </div>

@@ -455,7 +455,7 @@ export default function UserProfile() {
                   )}
                   readView={() => (
                     <div style={{ ...fieldValue, padding: '4px 0', minHeight: 24 }}>
-                      {(profile as any)?.nickname || <span style={{ color: token('color.text.disabled', 'var(--ds-text-subtlest, #626F86)') }}>Click to add</span>}
+                      {(profile as any)?.nickname || <span style={{ color: token('color.text.disabled', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>Click to add</span>}
                     </div>
                   )}
                   onConfirm={(value) => {
@@ -498,7 +498,7 @@ export default function UserProfile() {
                   )}
                   readView={() => (
                     <div style={{ ...fieldValue, padding: '4px 0', minHeight: 24 }}>
-                      {(profile as any)?.country || <span style={{ color: token('color.text.disabled', 'var(--ds-text-subtlest, #626F86)') }}>Click to add</span>}
+                      {(profile as any)?.country || <span style={{ color: token('color.text.disabled', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>Click to add</span>}
                     </div>
                   )}
                   onConfirm={(value) => {
@@ -516,7 +516,7 @@ export default function UserProfile() {
                   )}
                   readView={() => (
                     <div style={{ ...fieldValue, padding: '4px 0', minHeight: 24 }}>
-                      {(profile as any)?.location || <span style={{ color: token('color.text.disabled', 'var(--ds-text-subtlest, #626F86)') }}>Click to add</span>}
+                      {(profile as any)?.location || <span style={{ color: token('color.text.disabled', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>Click to add</span>}
                     </div>
                   )}
                   onConfirm={(value) => {

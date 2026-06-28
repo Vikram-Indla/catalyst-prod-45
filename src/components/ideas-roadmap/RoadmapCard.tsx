@@ -165,11 +165,11 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         {MILESTONE_CONFIGS.map(m => {
           const isSet = !!idea.milestones[m.key];
           const CHIP_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-            req:  { bg: 'var(--cp-primary-light, #DBEAFE)', text: 'var(--cp-primary-hover, #1D4ED8)', border: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' : 'var(--ds-background-information, #E9F2FF)' },
+            req:  { bg: 'var(--cp-primary-light, #DBEAFE)', text: 'var(--cp-primary-hover, #1D4ED8)', border: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.25))' : 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))' },
             des:  { bg: 'var(--cp-purple-5, #EDE9FE)', text: 'var(--cp-purple-60, #5B21B6)', border: isDark ? 'var(--ds-background-discovery-bold, rgba(139,92,246,0.25))' : 'var(--ds-background-discovery, #F3F0FF)' },
             dev:  { bg: 'var(--cp-success-light, #DCFCE7)', text: 'var(--cp-success, #15803D)', border: 'var(--cp-success, #86EFAC)' },
-            uat:  { bg: 'var(--cp-warning-light, #FEF3C7)', text: 'var(--cp-warning-text, #92400E)', border: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.25))' : 'var(--ds-background-warning, #FFF7D6)' },
-            beta: { bg: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.15))' : 'var(--ds-background-success, #DCFFF1)', text: 'var(--cp-teal-60, #0F766E)', border: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.25))' : 'var(--ds-background-success, #DCFFF1)' },
+            uat:  { bg: 'var(--cp-warning-light, #FEF3C7)', text: 'var(--cp-warning-text, #92400E)', border: isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.25))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))' },
+            beta: { bg: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.15))' : 'var(--ds-background-success, #DCFFF1)', text: 'var(--cp-teal-60, var(--ds-chart-teal-bolder, #0f766e))', border: isDark ? 'var(--ds-background-success, rgba(13,148,136,0.25))' : 'var(--ds-background-success, #DCFFF1)' },
             prod: { bg: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.15))' : 'var(--ds-background-success, #DFFCF0)', text: 'var(--cp-success-text, #065F46)', border: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : 'var(--ds-background-success, #DFFCF0)' },
           };
           const unsetStyle = { bg: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-border-strong, #CBD5E1)', border: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' };
@@ -195,7 +195,6 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           borderRadius: 4,
           background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))',
           color: isDark ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-app)',
-// TODO: ads-unmapped — #B7EBD1 context unclear
           border: `1px solid ${isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : '#B7EBD1'}`,
           fontSize: 10, fontWeight: 700,
           fontFamily: 'var(--cp-font-body)',

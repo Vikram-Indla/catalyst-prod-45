@@ -31,13 +31,13 @@ function getCellStyle(avgPct: number, isDark = false) {
   if (isDark) {
     if (avgPct >= 80) return { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.20))', text: 'var(--ds-background-success, #DFFCF0)', border: 'none' };
     if (avgPct >= 60) return { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.12))', text: 'var(--ds-background-success, #DFFCF0)', border: 'none' };
-    if (avgPct >= 40) return { bg: 'var(--ds-background-warning, rgba(217,119,6,0.12))', text: 'var(--ds-background-warning-bold, #E2B203)', border: '3px solid var(--ds-background-warning, rgba(217,119,6,0.3))' };
+    if (avgPct >= 40) return { bg: 'var(--ds-background-warning, rgba(217,119,6,0.12))', text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))', border: '3px solid var(--ds-background-warning, rgba(217,119,6,0.3))' };
     if (avgPct >= 20) return { bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))', text: 'var(--ds-border-danger, #FCA5A5)', border: '3px solid var(--ds-background-danger, rgba(239,68,68,0.3))' };
     return { bg: 'var(--ds-background-danger, rgba(239,68,68,0.20))', text: 'var(--ds-border-danger, #FCA5A5)', border: '3px solid var(--ds-background-danger, rgba(239,68,68,0.4))' };
   }
-  if (avgPct >= 80) return { bg: 'var(--ds-background-success-bold, rgba(22, 163, 74, 0.20))', text: 'var(--ds-background-success-bold, #1F845A)', border: 'none' };
+  if (avgPct >= 80) return { bg: 'var(--ds-background-success-bold, rgba(22, 163, 74, 0.20))', text: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', border: 'none' };
   if (avgPct >= 60) return { bg: 'var(--ds-background-success-bold, rgba(22, 163, 74, 0.12))', text: 'var(--ds-text-success, var(--cp-success, #16A34A))', border: 'none' };
-  if (avgPct >= 40) return { bg: 'var(--ds-background-warning, rgba(217, 119, 6, 0.12))', text: 'var(--ds-background-warning-bold, #b45309)', border: '3px solid var(--ds-background-warning, rgba(217,119,6,0.3))' };
+  if (avgPct >= 40) return { bg: 'var(--ds-background-warning, rgba(217, 119, 6, 0.12))', text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #b45309))', border: '3px solid var(--ds-background-warning, rgba(217,119,6,0.3))' };
   if (avgPct >= 20) return { bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.12))', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: '3px solid var(--ds-background-danger, rgba(239,68,68,0.3))' };
   return { bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.20))', text: 'var(--ds-text-danger, #991B1B)', border: '3px solid var(--ds-background-danger, rgba(239,68,68,0.4))' };
 }

@@ -594,7 +594,7 @@ export default function FeatureFlagsPage() {
                 cursor: allEnabled ? 'not-allowed' : 'pointer',
                 transition: 'background 120ms ease',
               }}
-              onMouseEnter={(e) => { if (!allEnabled) (e.currentTarget.style.background = 'var(--ds-background-success-bold, #1F845A)'); }}
+              onMouseEnter={(e) => { if (!allEnabled) (e.currentTarget.style.background = 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))'); }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-text-success, var(--cp-success, #16A34A))'; }}
             >
               {bulkMutation.isPending ? <Spinner size="small" /> : <CheckMarkIcon label="" size="small" />}
@@ -617,7 +617,7 @@ export default function FeatureFlagsPage() {
                 cursor: noneEnabled ? 'not-allowed' : 'pointer',
                 transition: 'background 120ms ease',
               }}
-              onMouseEnter={(e) => { if (!noneEnabled) (e.currentTarget.style.background = 'var(--cp-danger-light, var(--ds-background-danger, #FFECEB))'); }}
+              onMouseEnter={(e) => { if (!noneEnabled) (e.currentTarget.style.background = 'var(--cp-danger-light, var(--ds-background-danger, var(--ds-background-danger, #FFECEB)))'); }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               <CrossIcon label="" size="small" />

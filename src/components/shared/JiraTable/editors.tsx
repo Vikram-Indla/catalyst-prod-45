@@ -164,7 +164,7 @@ function MenuItemBtn({
         borderRadius: 3,
         outline: 'none',
       }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {children}
@@ -230,7 +230,7 @@ export function makeStatusEditCell<T>({
     const editable = callerEditable && !frozen;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>—</span>;
+    if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
 
     const lozenge = status ? (
       <StatusPill appearance={appearanceFor(status)}>
@@ -347,7 +347,7 @@ function StatusPopupCell<T>({
 }: StatusPopupCellProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>—</span>;
+  if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
   if (!editable && lozenge) return <>{lozenge}</>;
 
   return (
@@ -684,7 +684,7 @@ export function makeSummaryInlineEditCell<T>({
                     color: 'var(--ds-text-subtle, #505258)',
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
                     (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
                   }}
                   onMouseLeave={(e) => {
@@ -737,7 +737,7 @@ export function makeSummaryInlineEditCell<T>({
                     color: 'var(--ds-text-subtle, #505258)',
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
                     (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
                   }}
                   onMouseLeave={(e) => {
@@ -896,9 +896,7 @@ export function makeAssigneeEditCell<T>({
 // Jira-parity priority display: icon + text label.
 // Measured from digital-transformation.atlassian.net BAU list 2026-05-04:
 //   Priority cell shows icon (16px) + label text at 14px, inline-flex, gap 4px.
-// TODO: ads-unmapped — #E5484D context unclear
 //   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=var(--cp-warning, #D97706),
-// TODO: ads-unmapped — #0065FF context unclear
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
   critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: 'var(--ds-text-danger, #E5484D)', label: 'Critical'  },
@@ -1016,7 +1014,6 @@ export interface ParentChoice {
 // Chip style used for the selected parent AND for options in the dropdown.
 // Measured directly from Jira's production list view on
 // digital-transformation.atlassian.net on 2026-04-18:
-// TODO: ads-unmapped — #227D9B context unclear
 //   background: rgb(34, 125, 155)  // #227D9B — Jira's "epic parent" teal
 //   color:      var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))
 //   padding:    2px 4px
@@ -1097,7 +1094,7 @@ export function makeParentEditCell<T>({
     const filledDisplay = current ? <ParentChip choice={current} /> : null;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>—</span>;
+    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
     if (!editable && filledDisplay) return filledDisplay;
 
     return (
@@ -1259,7 +1256,7 @@ export function makeWorkstreamEditCell<T>({
     const filledDisplay = current ? <WorkstreamChip choice={current} /> : null;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>—</span>;
+    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
     if (!editable && filledDisplay) return filledDisplay;
 
     return (
@@ -1388,7 +1385,7 @@ export function makeRowActionsCell<T>({
               opacity: 1,
               transition: 'background 100ms',
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
           >
             <AkMoreIcon label="" size="small" />
@@ -1434,7 +1431,7 @@ export function makeRowActionsCell<T>({
                       fontFamily: 'inherit',
                       borderRadius: 3,
                     }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'))}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))'))}
                     onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                   >
                     {a.icon}
@@ -1547,7 +1544,7 @@ export function makeDateEditCell<T>({
                   textAlign: 'left',
                   borderRadius: 3,
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 Clear date

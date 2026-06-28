@@ -33,11 +33,10 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Top bar */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12,
-        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderBottom: '1px solid var(--ds-text, #172B4D)',
+        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderBottom: '1px solid var(--ds-text, var(--ds-text, #172B4D))',
         flexShrink: 0,
       }}>
         <div style={{
-// TODO: ads-unmapped — #0D2242 context unclear
           width: 36, height: 24, borderRadius: 4, background: '#0D2242',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'var(--bg-app)', fontSize: 9, fontWeight: 800,
@@ -71,7 +70,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Navigation */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexShrink: 0,
-        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderTop: '1px solid var(--ds-text, #172B4D)',
+        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderTop: '1px solid var(--ds-text, var(--ds-text, #172B4D))',
       }}>
         <button onClick={() => setSlide(s => Math.max(0, s - 1))} disabled={slide === 0}
           style={{

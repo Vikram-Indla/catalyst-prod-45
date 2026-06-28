@@ -15,7 +15,6 @@ export const STATUS_CHART_COLORS: Record<string, string> = {
 export const TYPE_CHART_COLORS: Record<string, string> = {
   'Epic':     'var(--ds-link-pressed, #1e40af)',
   'Story':    'var(--ds-text-success, #216E4E)',
-// TODO: ads-unmapped — #312E81 context unclear
   'Subtask':  '#312e81',
   'Bug':      'var(--ds-background-danger-bold, #dc2626)',
   'Task':     'var(--ds-text-subtle, #44546F)',

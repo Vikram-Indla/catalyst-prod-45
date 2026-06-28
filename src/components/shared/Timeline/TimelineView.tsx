@@ -187,7 +187,6 @@ export default function TimelineView(props: TimelineViewProps) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
   /* Which row has its inline-create open — the gantt inserts a matching
-// TODO: ads-unmapped — #DDDEE1 context unclear
      #dddee1 row after it so both panels stay aligned. */
   const [inlineCreateKey, setInlineCreateKey] = useState<string | null>(null);
   const handleInlineCreateChange = useCallback((key: string, open: boolean) => {
@@ -995,7 +994,6 @@ export default function TimelineView(props: TimelineViewProps) {
   /* Zebra by top-level stripe unit — each epic/feature (depth 0) AND each
      standalone story directly under the orphan "Story" bucket counts as one
      stripe; its WHOLE subtree shares that stripe's colour. Even stripes
-// TODO: ads-unmapped — #F0F1F2 context unclear
      (1-based) get #F0F1F2, odd none. Group/bucket rows themselves stay clear. */
   const stripedKeys = useMemo(() => {
     const colored = new Set<string>();
@@ -2951,8 +2949,6 @@ export default function TimelineView(props: TimelineViewProps) {
                     }}
                   />
                 )}
-
-// TODO: ads-unmapped — #DDDEE1 context unclear
                 {/* inline-create row in the gantt — #dddee1, shorter band centered in the slot. */}
                 {inlineInsertIdx >= 0 && (
                   <div

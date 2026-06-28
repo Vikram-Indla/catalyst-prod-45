@@ -90,7 +90,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
           <div className="shrink-0 rounded-full" style={{ width: 12, height: 12, background: theme.color }} />
           <h2 className="truncate flex-1" style={{ fontSize: 16, fontWeight: 700, color: t1 }}>{theme.title}</h2>
           <button onClick={() => onEdit(theme)} style={{ fontSize: 12, color: linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Edit</button>
-          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? 'var(--ds-background-danger, #FFECEB)' : 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
+          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))' : 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
           <button onClick={onClose} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: 'none', background: 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}

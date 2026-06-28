@@ -250,7 +250,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
                     <button
                       onClick={e => { e.stopPropagation(); removeMember.mutate(m.user_id); }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md flex-shrink-0 bg-[var(--ds-background-danger,#FEF2F2)] dark:bg-[var(--ds-background-danger-bold, rgba(220,38,38,0.10))] border border-[var(--ds-background-danger, #FFECEB)] dark:border-[var(--ds-background-danger-bold, rgba(220,38,38,0.20))]"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-md flex-shrink-0 bg-[var(--ds-background-danger,#FEF2F2)] dark:bg-[var(--ds-background-danger-bold, rgba(220,38,38,0.10))] border border-[var(--ds-background-danger, var(--ds-background-danger, #FFECEB))] dark:border-[var(--ds-background-danger-bold, rgba(220,38,38,0.20))]"
                       style={{ width: 28, height: 28, cursor: 'pointer' }}
                       title="Remove member"
                     >

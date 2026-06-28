@@ -387,7 +387,6 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
             {/* ── Profile Header ── */}
             <div className="r3-profile">
               <div className="r3-profile-top">
-// TODO: ads-unmapped — #1D9AAA context unclear
                 <div className="r3-profile-avatar" style={{ background: `linear-gradient(135deg, ${deptColor}, ${token('color.icon.accent.teal', '#1D9AAA')})` }}>
                   {overview.avatar_url ? (
                     <img src={overview.avatar_url} alt={overview.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
@@ -537,11 +536,11 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                     }}
                     onMouseEnter={e => {
                       if (bannerOpenCount > 0) {
-                        (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
+                        (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))');
                       }
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)');
+                      (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))');
                     }}
                   >
                     <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
@@ -571,7 +570,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), borderLeft: `3px solid ${token('color.border.warning', 'var(--cp-warning, #D97706)')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), borderLeft: `3px solid ${token('color.border.warning', 'var(--cp-warning, #D97706)')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}
@@ -658,12 +657,11 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
-                      border: 'none', background: token('color.background.brand.subtlest', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'),
+                      border: 'none', background: token('color.background.brand.subtlest', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.brand', 'var(--cp-primary-60, var(--ds-link, #0C66E4))'),
                       cursor: 'pointer', transition: 'all 80ms ease',
                     }}
-// TODO: ads-unmapped — #CCE0FF context unclear
                     onMouseOver={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest.hovered', '#CCE0FF'); }}
-                    onMouseOut={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest', 'var(--ds-background-selected, #E9F2FF)'); }}
+                    onMouseOut={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest', 'var(--ds-background-selected, var(--ds-background-information, #E9F2FF))'); }}
                   >
                     <Calendar size={13} />
                     Jump to last activity

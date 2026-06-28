@@ -4,7 +4,6 @@
  * kanban, and the filter-preview pages.
  *
  * Canonical contract (2026-06-18 unification):
-// TODO: ads-unmapped — #CD519D context unclear
  *   - Leading mark is ALWAYS CatyPulseIcon (magenta #CD519D) — the single AI
  *     signifier across the app. No chat-bubble / spark variants.
  *   - A muted "ghost" predictive query sits in the empty box. Enter / Tab / →

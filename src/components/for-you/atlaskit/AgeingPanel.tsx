@@ -138,9 +138,7 @@ function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
 // fontWeight 653 matches Jira section headers (CLAUDE.md 2026-05-12 re-probe).
 const BRACKET_ACCENT: Record<AgeBracket, string> = {
   needsAttention: token('color.border.success', 'var(--ds-background-success-bold, #1F845A)'),
-// TODO: ads-unmapped — #CF9F02 context unclear
   coolingDown:    token('color.border.warning', '#CF9F02'),
-// TODO: ads-unmapped — #FF991F context unclear
   archivingSoon:  token('color.border.warning', '#FF991F'),
   thirtySixty:    token('color.border.information', 'var(--ds-background-information-bold, #1D7AFC)'),
   sixtyNinety:    token('color.border.bold', 'var(--ds-text-subtle, #44546F)'),
@@ -309,7 +307,6 @@ function ActiveAgeingRow({ item, onSelect, isArchivingSoon, actions }: {
   return (
     <div style={{
       borderLeft: isArchivingSoon
-// TODO: ads-unmapped — #FF991F context unclear
         ? `3px solid ${token('color.border.warning', '#FF991F')}`
         : undefined,
     }}>
@@ -322,7 +319,6 @@ function ActiveAgeingRow({ item, onSelect, isArchivingSoon, actions }: {
         <span style={{
           fontSize: 11, fontWeight: 500,
           color: item.daysOpen >= 53
-// TODO: ads-unmapped — #FF991F context unclear
             ? token('color.text.warning', '#FF991F')
             : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
         }}>

@@ -256,7 +256,6 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
         <Spinner size="small" />
       ) : (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-// TODO: ads-unmapped — #CD519D context unclear
           <path d="M1 8h3l2-5 3 10 2-5h4" stroke={token('color.icon.accent.magenta', '#CD519D')} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )}

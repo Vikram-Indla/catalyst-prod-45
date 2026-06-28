@@ -25,8 +25,8 @@ function daysAgo(iso: string | null): number {
 }
 
 function slaColor(days: number): string {
-  if (days <= 7) return token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)');
-  if (days <= 21) return token('color.background.warning.bold', 'var(--ds-background-warning-bold, #E2B203)');
+  if (days <= 7) return token('color.background.success.bold', 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))');
+  if (days <= 21) return token('color.background.warning.bold', 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))');
   return token('color.background.danger.bold', 'var(--ds-text-danger, #AE2A19)');
 }
 

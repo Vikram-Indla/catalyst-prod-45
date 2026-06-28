@@ -87,7 +87,6 @@ function Item({ children, danger, onClick }: { children: React.ReactNode; danger
         padding: '8px 16px',
         textAlign: 'left',
         background: 'transparent',
-// TODO: ads-unmapped — #E66E76 context unclear
         color: danger ? '#E66E76' : 'var(--cv2-text)',
         border: 'none',
         cursor: 'pointer',

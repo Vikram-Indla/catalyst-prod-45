@@ -170,9 +170,7 @@ export function EvidencePackModal({
       text: 'var(--ds-link, #0052CC)',
       attachment: 'var(--ds-text-warning, #974F0C)',
       screenshot: 'var(--ds-text-success, #216E4E)',
-// TODO: ads-unmapped — #9F8FEF context unclear
       figma: '#9F8FEF',
-// TODO: ads-unmapped — #E2622D context unclear
       comment: '#E2622D',
       linked: 'var(--ds-icon-subtle, #626F86)',
     };

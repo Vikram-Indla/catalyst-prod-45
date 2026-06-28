@@ -363,7 +363,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'; }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 <span style={{ flex: '0 0 16px', display: 'inline-flex' }}>

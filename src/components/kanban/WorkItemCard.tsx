@@ -29,12 +29,9 @@ import { catalystToast } from '@/lib/catalystToast';
 
 const PRIORITY_COLORS: Record<string, string> = {
   highest: 'var(--ds-background-danger-bold, #C9372C)',
-// TODO: ads-unmapped — #E97F33 context unclear
   high:    '#E97F33',
   medium:  'var(--ds-background-warning-bold, #E2B203)',
-// TODO: ads-unmapped — #2D8738 context unclear
   low:     '#2D8738',
-// TODO: ads-unmapped — #57A55A context unclear
   lowest:  '#57A55A',
 };
 
@@ -150,8 +147,8 @@ function SubtaskStrip({ subtasks, tk }: { subtasks: BoardIssue[]; tk: KanbanThem
               userSelect: 'none',
               transition: 'background 120ms ease',
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #DCDFE4)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F1F2F4)'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-border-disabled, #DCDFE4))'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
           >
             <JiraIssueTypeIcon type={st.issueType} size={12} />
             <span>{st.issueKey}</span>

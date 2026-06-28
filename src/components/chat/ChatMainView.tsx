@@ -378,7 +378,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                           cursor: 'pointer',
                           fontSize: 13,
                         }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)'; }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9))'; }}
                         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                       >
                         <span style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)', marginRight: 8 }}>{r.message.authorName}</span>
@@ -578,8 +578,8 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
               color: 'var(--ds-text-subtle, #44546F)',
               fontWeight: 500,
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, #0052CC)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, var(--ds-link, #0C66E4))'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--ds-icon, #44546F))'; }}
           >
             <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={2.5}>
               <polyline points="15 18 9 12 15 6" />

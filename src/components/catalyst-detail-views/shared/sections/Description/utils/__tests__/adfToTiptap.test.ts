@@ -163,7 +163,7 @@ describe('adfToTiptap — marks', () => {
       }],
     };
     const text = adfToTiptap(adf).content?.[0].content?.[0];
-    expect(text?.marks).toEqual([{ type: 'textStyle', attrs: { color: 'var(--ds-text-danger, #FF0000)' } }]);
+    expect(text?.marks).toEqual([{ type: 'textStyle', attrs: { color: 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' } }]);
   });
 });
 
@@ -483,7 +483,7 @@ describe('tiptapToAdf — marks reverse', () => {
         }],
       }],
     });
-    expect(result.content?.[0].content?.[0].marks).toEqual([{ type: 'textColor', attrs: { color: 'var(--ds-text-danger, #FF0000)' } }]);
+    expect(result.content?.[0].content?.[0].marks).toEqual([{ type: 'textColor', attrs: { color: 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))' } }]);
   });
 
   it('drops unsupported marks (e.g. smallText) but keeps the text', () => {

@@ -137,7 +137,7 @@ function LevelConfigPanel({
             const on = currentParents.includes(p.level)
             return (
               <label key={p.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: on ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #42526E)' }}>
-                <input type="checkbox" checked={on} onChange={() => onToggleParent(l.level, p.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, #0052CC)' }} />
+                <input type="checkbox" checked={on} onChange={() => onToggleParent(l.level, p.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link, #0C66E4))' }} />
                 <JiraIssueTypeIcon type={p.jiraTypes[0] ?? p.name} size={12} />
                 <span style={{ fontWeight: on ? 600 : 400 }}>{p.level}. {p.name}</span>
               </label>
@@ -154,14 +154,14 @@ function LevelConfigPanel({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {currentChildren.map(c => (
             <label key={c.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
-              <input type="checkbox" checked={true} onChange={() => onToggleChild(l.level, c.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, #0052CC)' }} />
+              <input type="checkbox" checked={true} onChange={() => onToggleChild(l.level, c.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link, #0C66E4))' }} />
               <JiraIssueTypeIcon type={c.jiraTypes[0] ?? c.name} size={12} />
               <span style={{ fontWeight: 600 }}>{c.level}. {c.name}</span>
             </label>
           ))}
           {potentialChildren.map(c => (
             <label key={c.level} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
-              <input type="checkbox" checked={false} onChange={() => onToggleChild(l.level, c.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, #0052CC)' }} />
+              <input type="checkbox" checked={false} onChange={() => onToggleChild(l.level, c.level)} style={{ cursor: 'pointer', accentColor: 'var(--ds-border-brand, var(--ds-link, #0C66E4))' }} />
               <JiraIssueTypeIcon type={c.jiraTypes[0] ?? c.name} size={12} />
               <span style={{ fontWeight: 400 }}>{c.level}. {c.name}</span>
             </label>

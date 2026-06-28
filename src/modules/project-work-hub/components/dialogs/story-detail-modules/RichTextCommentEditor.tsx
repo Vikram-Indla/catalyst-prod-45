@@ -328,7 +328,7 @@ export function RichTextCommentEditor({
             background: isEmpty || isSubmitting ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', color: isEmpty || isSubmitting ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-surface, #FFF)',
             fontSize: 14, fontWeight: 600, transition: 'background 0.15s',
           }}
-          onMouseEnter={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #0747A6)'; }}
+          onMouseEnter={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, var(--ds-link-pressed, #0747A6))'; }}
           onMouseLeave={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))'; }}
         >Save</button>
         <button

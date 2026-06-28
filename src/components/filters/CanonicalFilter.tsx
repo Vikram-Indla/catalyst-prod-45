@@ -1287,7 +1287,7 @@ function FieldItem({
                 type="button"
                 aria-label={pinned ? 'Unpin field' : 'Pin field'}
                 onClick={(e) => { e.stopPropagation(); onTogglePin(); }}
-                style={{ ...iconBtnStyle(), color: token('color.text', 'var(--ds-text, #172B4D)') }}
+                style={{ ...iconBtnStyle(), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
               >
                 <TinyIcon>
                   {pinned
@@ -2284,7 +2284,7 @@ function ClauseChip({
 
   // Background: white idle, gray on hover, blue-tinted when active.
   let chipBg: string = surface;
-  if (isActive) chipBg = token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)');
+  if (isActive) chipBg = token('color.background.selected', 'var(--ds-background-selected, var(--ds-background-information, #E9F2FF))');
   else if (hover) chipBg = hoverNeutral;
 
   return (

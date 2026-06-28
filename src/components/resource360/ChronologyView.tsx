@@ -4,11 +4,8 @@ import { HUB_COLORS, HUB_SHORT } from '@/constants/resource360';
 import { getStatusCategory } from '@/utils/statusCategory';
 
 const T = {
-// TODO: ads-unmapped — #1A1A2E context unclear
   bg: '#F5F0EB', surface: 'var(--bg-app)', text1: 'var(--fg-1)', text2: '#1A1A2E',
-// TODO: ads-unmapped — #3D3D56 context unclear
   text3: '#3D3D56', text4: 'var(--fg-3)', border: 'var(--divider)', borderStrong: 'var(--divider)',
-// TODO: ads-unmapped — #0E8A5F context unclear
   todo: '#E23636', progress: 'var(--cp-blue)', done: '#0E8A5F',
   pendingHighlight: 'var(--ds-background-warning, #FFF7D6)',
   shadow: '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,.12))',

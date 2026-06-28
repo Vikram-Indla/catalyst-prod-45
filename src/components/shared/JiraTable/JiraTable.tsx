@@ -825,7 +825,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            Catalyst's previous UPPERCASE / wide-tracked / muted-grey
            treatment was a Catalyst opinion. Matching Jira's actual list
            view here for parity. Apr 27 2026 jira-compare regression
-           (D-005 + D-006): fontWeight 700 → 653, color var(--ds-text-subtle, #44546F) → var(--ds-text-subtlest, #6B6E76).
+           (D-005 + D-006): fontWeight 700 → 653, color var(--ds-text-subtle, var(--ds-icon, #44546F)) → var(--ds-text-subtlest, var(--ds-text-subtlest, #6B6E76)).
            Jira spec (measured 2026-05-12): 12px/653/var(--ds-text-subtle, rgb(80,82,88)) — NOT 14px/400.
            14px/400 is body text. Headers must be bold and smaller.
            May 12 2026 (design-intelligence RCA): line-height 18px → 16px
@@ -1233,7 +1233,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         ) : (
           <span
             // Header label — Jira parity (2026-04-26 re-probe from
-// TODO: ads-unmapped — #505258 context unclear
             // BAU list view "Summary"): 12px / 700 / #505258 /
             // textTransform none / letterSpacing normal. NO uppercase.
             // 2026-06-23: flex:1 + min-width:0 + overflow ellipsis lets the
@@ -2649,7 +2648,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     border: 'none',
                     background: 'transparent',
                     // Apr 28, 2026 (jira-compare cycle 3 typography sweep):
-// TODO: ads-unmapped — #292A2E context unclear
                     // legacy var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))) → --ds-text fallback #292A2E to match
                     // the rest of the table's body-text token swap.
                     color: a.danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #292A2E)',
@@ -2660,7 +2658,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     fontFamily: 'inherit',
                     borderRadius: 3,
                   }}
-                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? 'var(--ds-background-danger-hovered, #FFEBE6)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? 'var(--ds-background-danger-hovered, #FFEBE6)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {a.icon}
@@ -2957,9 +2955,9 @@ function ColumnManagerTrigger<TRow>({
           outline: 'none',
           boxShadow: 'none',
         }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F1F2F4)')}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
-        onFocus={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F1F2F4)')}
+        onFocus={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')}
         onBlur={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
       >
         {/* 2026-06-09 Jira parity: Jira's column-picker icon is a bordered
@@ -3107,7 +3105,7 @@ function ColumnManagerTrigger<TRow>({
                     fontSize: 14,
                     color: 'var(--ds-text, #292A2E)',
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))')}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   <AkCheckbox

@@ -268,7 +268,6 @@ export const WORK_TYPE_REGISTRY: Record<WorkItemType, WorkTypeMeta> = {
   'figma':               { id: 'figma',               label: 'Figma',               color: 'var(--ds-text, #292A2E)',           light: figmaLight,               dark: figmaDark },
   'brd-task':            { id: 'brd-task',            label: 'BRD Task',            color: 'var(--ds-text-discovery, #6554C0)', light: brdTaskLight,             dark: brdTaskDark },
   'uat-finding':         { id: 'uat-finding',         label: 'UAT Finding',         color: 'var(--ds-text-discovery, #6554C0)', light: uatFindingLight,          dark: uatFindingDark },
-// TODO: ads-unmapped — #0C7A6D context unclear
   'release':             { id: 'release',             label: 'Release',             color: '#0C7A6D',                            light: releaseLight,             dark: releaseLight },
   'test-case':           { id: 'test-case',           label: 'Test Case',           color: 'var(--ds-text-success, #1F845A)',   light: testCaseLight,            dark: testCaseLight },
 };

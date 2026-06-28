@@ -40,7 +40,6 @@ import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './Ca
 
 /* Jira-parity: right-rail field chips (probe 2026-06-16).
    Idle: invisible 2px transparent border (zero layout shift on hover).
-// TODO: ads-unmapped — #4688EC context unclear
    Hover: 2px border appears + bg tint. Focus: inset 2px blue ring (#4688EC = actual
    --ds-border-focused resolved value on Jira MDT-818).
    :focus-within handles the blue ring so each editable component doesn't need
@@ -640,7 +639,7 @@ export function CatalystSidebarDetails({
       >
         <div
           onClick={() => setDetailsCollapsed(c => !c)}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #F1F2F4)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0,

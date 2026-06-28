@@ -32,9 +32,7 @@ function BugTypeIcon() {
 
 // ── Severity Lozenge (V12 bordered muted — intentional inline hex) ──
 const SEVERITY_MAP: Record<string, { label: string; bg: string; text: string; border: string }> = {
-// TODO: ads-unmapped — #FFECEC context unclear
   critical: { label: 'CRITICAL', bg: '#FFECEC', text: 'var(--ds-text-danger, #AE2A19)', border: '#FFBDAD' },
-// TODO: ads-unmapped — #FFD2A7 context unclear
   high:     { label: 'HIGH',     bg: '#FFF4EC', text: 'var(--ds-text-warning, #974F0C)', border: '#FFD2A7' },
   medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', text: 'var(--ds-text-subtle, #42526E)', border: 'var(--ds-border-disabled, #C1C7D0)' },
   low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', text: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
@@ -95,7 +93,7 @@ function JiraBadge() {
 // ── Status dot color for parent items ──
 function getStatusDotColor(statusCategory: string | null): string {
   const cat = (statusCategory || '').toLowerCase();
-  if (cat === 'done' || cat === 'closed' || cat === 'resolved') return 'var(--ds-background-success-bold, #1F845A)';
+  if (cat === 'done' || cat === 'closed' || cat === 'resolved') return 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))';
   if (cat === 'in progress' || cat === 'indeterminate' || cat === 'active') return 'var(--ds-link, #0065FF)';
   return 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
 }

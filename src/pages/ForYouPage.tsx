@@ -141,7 +141,6 @@ export default function ForYouPage() {
   // Build filter categories for JiraBasicFilter panel
   const filterCategories = React.useMemo<FilterCategory[]>(() => {
     const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-// TODO: ads-unmapped — #E2631E context unclear
     const PALETTE = ['var(--ds-link, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold, #6E5DC6)', '#1B3459', '#0D7C66', '#B34D00', '#943A79', 'var(--ds-link, #0C66E4)'];
     const pickColor = (name: string) => { let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h); return PALETTE[Math.abs(h) % PALETTE.length]; };
     const HUB_ICONS: Record<string, React.ReactNode> = {

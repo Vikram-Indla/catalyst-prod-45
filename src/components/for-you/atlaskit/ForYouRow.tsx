@@ -284,7 +284,6 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               (right-edge, marginLeft:auto) per /jira/for-you DOM. */}
           {!isJiraAssigned && item.status && (
             // Canonical status pill (statusPalette.ts) — was @atlaskit/lozenge
-// TODO: ads-unmapped — #94C748 context unclear
             // which rendered a pale ADS green diverging from #94C748. Unified
             // 2026-06-17 so both For You variants share one canonical pill.
             <JiraForYouLozenge status={item.status} statusCategory={item.statusCategory} />
@@ -433,7 +432,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
               ? `0 0 0 2px ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`
               : 'none',
           }}
-          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -476,7 +475,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                 fontSize: 14, textAlign: 'left', cursor: 'pointer',
                 fontFamily: 'inherit', borderRadius: 3, outline: 'none',
               }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
             >
               {a.icon}
@@ -499,7 +498,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                     fontSize: 14, textAlign: 'left', cursor: 'pointer',
                     fontFamily: 'inherit', borderRadius: 3, outline: 'none',
                   }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'))}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))'))}
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   {a.icon}
@@ -521,13 +520,11 @@ export default memo(ForYouRowImpl);
 // ─── Jira For You Lozenge ────────────────────────────────────────────────────
 // Canonical inline status pill for For You rows. Backgrounds come from the
 // shared canonical palette (statusPalette.ts) so the done-green matches the
-// TODO: ads-unmapped — #94C748 context unclear
 // #94C748 used by Recommended/detail/table surfaces. Inner text is Jira's
 // `653 11px/16px Atlassian Sans` UPPERCASE, ls 0.165px two-span structure.
 export function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
   const ap = statusToAppearance(status, statusCategory);
   // Canonical palette — single source of truth (statusPalette.ts). The local
-// TODO: ads-unmapped — #94C748 context unclear
   // pale done-green drifted from the canonical #94C748 that Recommended/detail/
   // table surfaces use; unified 2026-06-17.
   return (

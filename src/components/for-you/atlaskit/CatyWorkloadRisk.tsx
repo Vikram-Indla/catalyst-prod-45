@@ -50,8 +50,8 @@ export function CatyWorkloadRisk({ teamMembers }: CatyWorkloadRiskProps) {
   if (teamMembers.length === 0) return null;
 
   const trendArrow = (trend: MemberSignal['closureTrend'], rate: number) => {
-    if (trend === 'up') return <span style={{ color: token('color.text.success', 'var(--ds-text-success, #216E4E)') }}>↑ {rate}%</span>;
-    if (trend === 'down') return <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>↓ {rate}%</span>;
+    if (trend === 'up') return <span style={{ color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') }}>↑ {rate}%</span>;
+    if (trend === 'down') return <span style={{ color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))') }}>↓ {rate}%</span>;
     return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>→ {rate}%</span>;
   };
 

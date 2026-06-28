@@ -51,8 +51,7 @@ function StarredSkeletonLine({ width = '100%', height = 12 }: { width?: string |
         width,
         height,
         borderRadius: 4,
-// TODO: ads-unmapped — #E4E5E7 context unclear
-        background: `linear-gradient(90deg, ${token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)')} 25%, ${token('color.background.neutral', '#E4E5E7')} 50%, ${token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)')} 75%)`,
+        background: `linear-gradient(90deg, ${token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)')} 25%, ${token('color.background.neutral', '#E4E5E7')} 50%, ${token('color.background.neutral.subtle', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')} 75%)`,
         backgroundSize: '200% 100%',
         animation: 'catalyst-shimmer 1.4s infinite',
       }}
@@ -82,13 +81,11 @@ function StarredPanelSkeleton() {
               paddingBlock: 12,
             }}
           >
-// TODO: ads-unmapped — #E4E5E7 context unclear
             <div style={{ width: 20, height: 20, borderRadius: 4, background: token('color.background.neutral', '#E4E5E7'), flexShrink: 0 }} />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
               <StarredSkeletonLine width="60%" height={14} />
               <StarredSkeletonLine width="35%" height={10} />
             </div>
-// TODO: ads-unmapped — #E4E5E7 context unclear
             <div style={{ width: 24, height: 24, borderRadius: '50%', background: token('color.background.neutral', '#E4E5E7') }} />
           </div>
         ))}

@@ -40,7 +40,6 @@ function formatRelative(date: string | null): string {
 function AvatarSmall({ name, isDark }: { name: string; isDark: boolean }) {
   const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-// TODO: ads-unmapped — #52C41A context unclear
   const colors = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
   return (
     <div

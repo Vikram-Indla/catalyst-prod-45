@@ -9,7 +9,6 @@
  * 3 colours only (Jira subtask panel uses only these three status categories):
  *   todo        → near-transparent grey  rgba(5,21,36,0.06)
  *   in_progress → medium blue            var(--ds-chart-blue-bold, #669DF1)
-// TODO: ads-unmapped — #94C748 context unclear
  *   done        → lime green             #94C748
  */
 import React from 'react';

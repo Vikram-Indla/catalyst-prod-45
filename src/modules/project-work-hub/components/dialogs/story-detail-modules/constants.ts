@@ -32,7 +32,6 @@ export const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   done:        { bg: 'var(--ds-background-success, #E3FCEF)', text: 'var(--ds-text-success, #006644)' },
   blocked:     { bg: 'var(--ds-background-danger, #FFEBE6)', text: 'var(--ds-text-danger, #BF2600)' },
   on_hold:     { bg: 'var(--ds-background-warning, #FFF0B3)', text: 'var(--ds-text-warning, #974F0C)' },
-// TODO: ads-unmapped — #00B8D9 context unclear
   in_uat:      { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' }, // was #00B8D9 cyan — now Atlaskit inprogress-blue
   in_beta:     { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' },
   in_prod:     { bg: 'var(--ds-background-success, #E3FCEF)', text: 'var(--ds-text-success, #006644)' },
@@ -127,7 +126,6 @@ const jiraIconImg = (file: string, label: string) =>
  *
  * 2026-04-20 fix: "Business Request" used to alias to the Story SVG (green
  * bookmark). It now uses its OWN `business-request` SVG — the amber
-// TODO: ads-unmapped — #FFAB00 context unclear
  * (#FFAB00) lightbulb per Jira canonical. "Business Gap" was likewise
  * de-aliased from Incident (the canonical glyph is red lightning, distinct
  * from the incident beacon).
