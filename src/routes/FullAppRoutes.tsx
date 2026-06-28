@@ -538,7 +538,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/timeline/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductTimelineDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
         <Route path="/product-hub/:key/dependencies" element={<MG k="producthub" t="ProductHub"><S><ProductDependenciesPageLazy /></S></MG>} />
-        <Route path="/product-hub/:key/releases" element={<MG k="producthub" t="ProductHub"><S><ReleasesPageWrapperLazy /></S></MG>} />
+        <Route path="/product-hub/:key/releases" element={<MG k="producthub" t="ProductHub"><S><ReleasesPageLazy /></S></MG>} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />

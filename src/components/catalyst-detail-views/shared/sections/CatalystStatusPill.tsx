@@ -24,8 +24,8 @@ import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dial
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
-import { toStatusCategory } from '@/components/ads';
-import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
+import { toStatusCategory, isTerminalStatus } from '@/components/ads';
+import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
 import { statusBg, statusFg } from './statusPalette';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -167,6 +167,10 @@ interface CatalystStatusPillProps {
   /** 2026-06-21 (Vikram canonical): freeze the pill once status category =
    *  done. Default true. */
   lockWhenDone?: boolean;
+  /** 2026-06-28: optional trailing icon rendered INSIDE the pill (e.g. the
+   *  EditorPopover chevron in table cells). Suppressed automatically when
+   *  the pill is frozen (done-category). */
+  trailingIcon?: React.ReactNode;
 }
 
 export function CatalystStatusPill({
@@ -178,6 +182,7 @@ export function CatalystStatusPill({
   interactive = true,
   compact = false,
   lockWhenDone = true,
+  trailingIcon,
 }: CatalystStatusPillProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
@@ -191,7 +196,7 @@ export function CatalystStatusPill({
     statusGroups: workflowGroups,
     getAvailableStatuses,
     hasConfig,
-  } = useCanonicalIssueWorkflow(issueType);
+  } = useIssueTypeWorkflow(issueType);
 
   // Caller-injected options (e.g. from CreateStoryModal resolvedStatusOptions).
   // When provided, these take precedence and bypass transition filtering.
@@ -208,6 +213,11 @@ export function CatalystStatusPill({
 
   const pillBg = getStatusBg(appearance);
   const pillFg = getStatusFg(appearance);
+
+  /* Canonical "done = frozen" gate. When the current status maps to
+     category `done` the dropdown will not open AND the trailing chevron
+     icon is suppressed in static-pill mode too. */
+  const isFrozen = lockWhenDone && status ? isTerminalStatus(status) : false;
 
   // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -284,10 +294,6 @@ export function CatalystStatusPill({
 
   // ── Toggle ──────────────────────────────────────────────────────────────
 
-  /* Canonical "done = frozen" gate. When the current status maps to
-     category `done` the dropdown will not open. */
-  const isFrozen = lockWhenDone && status ? toStatusCategory(status) === 'done' : false;
-
   const toggle = () => {
     if (isFrozen) return;
     if (!isOpen && triggerRef.current) {
@@ -338,6 +344,7 @@ export function CatalystStatusPill({
         }
       >
         {display}
+        {trailingIcon && !isFrozen ? trailingIcon : null}
       </span>
     );
   }

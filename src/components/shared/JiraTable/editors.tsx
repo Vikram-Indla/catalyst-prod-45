@@ -20,7 +20,7 @@ import { createPortal } from 'react-dom';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import Avatar from '@atlaskit/avatar';
-import { UnassignedAvatar, ProfilePicker, toStatusCategory, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { UnassignedAvatar, ProfilePicker, toStatusCategory, isTerminalStatus, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
@@ -59,23 +59,58 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
 
   const close = useCallback(() => setIsOpen(false), []);
 
-  // Compute popover position when opening / on resize / scroll.
+  // Position the popover. We attach scroll listeners to EVERY scrollable
+   // ancestor of the trigger (not just window) — JiraTable's body scrolls
+   // inside its own .jira-table-viewport, which doesn't fire a window scroll.
+   // Plus a RAF loop guarantees tracking during virtualizer re-renders.
   useLayoutEffect(() => {
     if (!isOpen) return;
-    const update = () => {
+    const getScrollParents = (node: HTMLElement | null): (HTMLElement | Window)[] => {
+      const out: (HTMLElement | Window)[] = [window];
+      let el: HTMLElement | null = node?.parentElement ?? null;
+      while (el) {
+        const cs = getComputedStyle(el);
+        const oy = cs.overflowY;
+        const ox = cs.overflowX;
+        if (/(auto|scroll|overlay)/.test(oy + ox)) out.push(el);
+        el = el.parentElement;
+      }
+      return out;
+    };
+    let raf = 0;
+    let lastTop = NaN;
+    let lastLeft = NaN;
+    let lastRight = NaN;
+    const apply = () => {
+      raf = 0;
       const t = triggerRef.current;
       if (!t) return;
       const r = t.getBoundingClientRect();
-      setAnchor({ top: r.bottom + 4, left: r.left, right: window.innerWidth - r.right });
+      const top = r.bottom + 4;
+      const left = r.left;
+      const right = window.innerWidth - r.right;
+      if (top === lastTop && left === lastLeft && right === lastRight) return;
+      lastTop = top; lastLeft = left; lastRight = right;
+      const p = popRef.current;
+      if (p) {
+        p.style.top = `${top}px`;
+        if (align === 'end') { p.style.right = `${right}px`; p.style.left = 'auto'; }
+        else { p.style.left = `${left}px`; p.style.right = 'auto'; }
+      } else {
+        setAnchor({ top, left, right });
+      }
     };
-    update();
-    const ro = window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(apply); };
+    apply();
+    const parents = getScrollParents(triggerRef.current);
+    parents.forEach(p => p.addEventListener('scroll', schedule, { passive: true }));
+    window.addEventListener('resize', schedule);
     return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
+      if (raf) cancelAnimationFrame(raf);
+      parents.forEach(p => p.removeEventListener('scroll', schedule));
+      window.removeEventListener('resize', schedule);
     };
-  }, [isOpen]);
+  }, [isOpen, align]);
 
   // Outside-click + Esc.
   useEffect(() => {
@@ -89,10 +124,6 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
       if (document.querySelector('.atlaskit-portal-container')?.contains(target)) return;
       setIsOpen(false);
     };
-    // Capture-phase so Escape closes the popover before any parent modal's
-    // bubble-phase Escape handler fires (prevents CatalystViewBase modal
-    // or @atlaskit/modal-dialog from closing when user dismisses popover).
-    // Per CLAUDE.md 2026-05-08 WatchersChip lesson.
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setIsOpen(false); } };
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey, true);
@@ -226,14 +257,29 @@ export function makeStatusEditCell<T>({
   return function StatusEditCell({ row }: CellProps<T>) {
     const status = getStatus(row);
     const callerEditable = canEdit ? canEdit(row) : true;
-    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    // 2026-06-28: freeze on done-category OR any terminal outcome
+     // (rejected / declined / cancelled / won't do, etc). Colour mapping is
+     // unchanged — only the lock + chevron suppression broadens.
+    const frozen = lockWhenDone && !!status && isTerminalStatus(status);
     const editable = callerEditable && !frozen;
 
     // Non-editable + empty: just a dash, no affordance.
     if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
 
+    // 2026-06-28: chevron lives INSIDE the pill (trailingIcon) so it inherits
+     // the pill's bg/colour. CatalystStatusPill suppresses trailingIcon when
+     // status maps to the done category — frozen pills never show a chevron.
+    const chevron = (
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.7 }}>
+        <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+
     const lozenge = status ? (
-      <StatusPill appearance={appearanceFor(status)}>
+      <StatusPill
+        appearance={appearanceFor(status)}
+        trailingIcon={editable ? chevron : undefined}
+      >
         {labelFor ? labelFor(status) : status}
       </StatusPill>
     ) : null;
@@ -283,10 +329,6 @@ export function makeStatusEditCell<T>({
                 Set status
               </span>
             )}
-            {/* status chevron ▾ — Jira parity */}
-            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
-              <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
           </button>
         )}
       >
@@ -444,7 +486,10 @@ export function makeStatusEditCellAkPopup<T>({
   return function StatusEditCellAkPopupCell({ row }: CellProps<T>) {
     const status = getStatus(row);
     const callerEditable = canEdit ? canEdit(row) : true;
-    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    // 2026-06-28: freeze on done-category OR any terminal outcome
+     // (rejected / declined / cancelled / won't do, etc). Colour mapping is
+     // unchanged — only the lock + chevron suppression broadens.
+    const frozen = lockWhenDone && !!status && isTerminalStatus(status);
     const editable = callerEditable && !frozen;
     const lozenge = status ? (
       <StatusPill appearance={appearanceFor(status)}>

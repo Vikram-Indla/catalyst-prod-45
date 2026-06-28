@@ -11,7 +11,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Avatar from "@atlaskit/avatar";
-import { UnassignedAvatar, toStatusCategory } from "@/components/ads";
+import { UnassignedAvatar, toStatusCategory, isTerminalStatus } from "@/components/ads";
 import CommentIcon from "@atlaskit/icon/glyph/comment";
 import DragHandleIcon from "@atlaskit/icon/glyph/drag-handler";
 import MoreIcon from "@atlaskit/icon/glyph/more";
@@ -326,28 +326,35 @@ export function makeKeyCell(
           cursor: "pointer",
           textDecoration: "underline",
         };
+    // 2026-06-28: keyNode is a plain <span> — no <a href>, no navigation
+     // semantics. Click opens the modal via onOpen. Previously used <a> with
+     // preventDefault, but some downstream handler still triggered navigation.
+     // Removing the anchor element entirely guarantees no nav can fire.
     let keyNode: React.ReactNode;
     if (onOpen) {
-      const href = getHref ? getHref(row) : "#";
       keyNode = (
-        <a
-          data-jira-table-row-open
-          href={href}
+        <span
+          role="button"
+          tabIndex={0}
           onClick={(e) => {
-            // Middle-click or modifier click → let browser open in new tab.
-            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
-            e.preventDefault();
             e.stopPropagation();
             onOpen(row);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              onOpen(row);
+            }
           }}
           style={sharedStyle}
         >
           {key || "—"}
-        </a>
+        </span>
       );
     } else {
       keyNode = (
-        <span data-jira-table-row-open style={sharedStyle}>
+        <span style={sharedStyle}>
           {key || "—"}
         </span>
       );
@@ -437,9 +444,11 @@ export type LozengeAppearance =
 export function StatusPill({
   appearance,
   children,
+  trailingIcon,
 }: {
   appearance: LozengeAppearance;
   children: React.ReactNode;
+  trailingIcon?: React.ReactNode;
 }) {
   // Map LozengeAppearance back to a statusCategory for CatalystStatusPill
   const appearanceToCategory: Record<LozengeAppearance, string | undefined> = {
@@ -458,6 +467,7 @@ export function StatusPill({
       statusCategory={category}
       interactive={false}
       compact={true}
+      trailingIcon={trailingIcon}
     />
   );
 }
@@ -526,7 +536,9 @@ export function makeStatusEditCell<T>(opts: {
       canonical.isCanonical ? canonical.labelForStatus(s) : (opts.labelFor && s ? opts.labelFor(s) : (s ?? ""));
     const callerEditable = opts.canEdit ? opts.canEdit(row) : true;
     const lockWhenDone = opts.lockWhenDone !== false;
-    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    // 2026-06-28: freeze on done category OR any terminal outcome
+     // (rejected / declined / cancelled / won't do, etc).
+    const frozen = lockWhenDone && !!status && isTerminalStatus(status);
     const editable = callerEditable && !frozen;
 
     React.useEffect(() => {
@@ -544,15 +556,59 @@ export function makeStatusEditCell<T>(opts: {
       return () => document.removeEventListener("mousedown", handler);
     }, [open]);
 
+    // 2026-06-28: dropdown tracks trigger 1:1 on scroll. Walk DOM up from
+     // trigger, attach scroll listener to every scrollable ancestor (table
+     // viewport, virtualized rows, page) — window-only capture misses inner
+     // table scrolls. RAF-coalesced; imperative DOM mutation on popupRef.
+    React.useLayoutEffect(() => {
+      if (!open) return;
+      const getScrollParents = (node: HTMLElement | null): (HTMLElement | Window)[] => {
+        const out: (HTMLElement | Window)[] = [window];
+        let el: HTMLElement | null = node?.parentElement ?? null;
+        while (el) {
+          const cs = getComputedStyle(el);
+          if (/(auto|scroll|overlay)/.test(cs.overflowY + cs.overflowX)) out.push(el);
+          el = el.parentElement;
+        }
+        return out;
+      };
+      let raf = 0;
+      let lastTop = NaN;
+      let lastLeft = NaN;
+      const apply = () => {
+        raf = 0;
+        const t = triggerRef.current;
+        if (!t) return;
+        const r = t.getBoundingClientRect();
+        const top = r.bottom + 4;
+        const left = r.left;
+        if (top === lastTop && left === lastLeft) return;
+        lastTop = top; lastLeft = left;
+        const p = popupRef.current;
+        if (p) {
+          p.style.top = `${top}px`;
+          p.style.left = `${left}px`;
+        } else {
+          setPos({ top, left });
+        }
+      };
+      const schedule = () => { if (!raf) raf = requestAnimationFrame(apply); };
+      apply();
+      const parents = getScrollParents(triggerRef.current);
+      parents.forEach(p => p.addEventListener('scroll', schedule, { passive: true }));
+      window.addEventListener('resize', schedule);
+      return () => {
+        if (raf) cancelAnimationFrame(raf);
+        parents.forEach(p => p.removeEventListener('scroll', schedule));
+        window.removeEventListener('resize', schedule);
+      };
+    }, [open]);
+
     const handleOpen = (e: React.MouseEvent) => {
       if (!editable) return;
       e.stopPropagation();
       const rect = triggerRef.current?.getBoundingClientRect();
-      if (rect)
-        setPos({
-          top: rect.bottom + window.scrollY + 4,
-          left: rect.left + window.scrollX,
-        });
+      if (rect) setPos({ top: rect.bottom + 4, left: rect.left });
       setOpen((o) => !o);
     };
 
@@ -581,27 +637,27 @@ export function makeStatusEditCell<T>(opts: {
               status={displayLabel(status)}
               interactive={false}
               compact={true}
+              trailingIcon={editable ? (
+                <svg
+                  width="8"
+                  height="8"
+                  viewBox="0 0 8 8"
+                  fill="none"
+                  aria-hidden
+                  style={{ flexShrink: 0, opacity: 0.7 }}
+                >
+                  <path
+                    d="M1 2.5L4 5.5L7 2.5"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : undefined}
             />
           ) : (
             <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>—</span>
-          )}
-          {editable && (
-            <svg
-              width="8"
-              height="8"
-              viewBox="0 0 8 8"
-              fill="none"
-              aria-hidden
-              style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}
-            >
-              <path
-                d="M1 2.5L4 5.5L7 2.5"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
           )}
         </button>
         {open &&
@@ -610,7 +666,7 @@ export function makeStatusEditCell<T>(opts: {
             <div
               ref={popupRef}
               style={{
-                position: "absolute",
+                position: "fixed",
                 top: pos.top,
                 left: pos.left,
                 zIndex: 9999,

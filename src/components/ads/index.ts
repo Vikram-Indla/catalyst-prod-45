@@ -23,7 +23,7 @@ export type {
   LegacyBadgeProps,
   LegacyBadgeVariant,
 } from './Lozenge';
-export { toStatusCategory } from './internal/status';
+export { toStatusCategory, isTerminalStatus } from './internal/status';
 
 export { Avatar, AvatarItem, AvatarGroup } from './Avatar';
 export { UnassignedAvatar } from './UnassignedAvatar';
