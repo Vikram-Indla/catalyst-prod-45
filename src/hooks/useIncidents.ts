@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { resolveBridgedKey, recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 import type { Incident, IncidentFormData, IncidentFilters, IncidentComment, CommentType } from '@/types/incident';
 
 // Fetch all incidents with optional filters
@@ -145,10 +146,15 @@ export function useCreateIncident() {
     mutationFn: async (data: IncidentFormData) => {
       const { data: { user } } = await supabase.auth.getUser();
       
+      // Canonical Incident workflow initial status (bridged Option A): enum
+      // status stays whatever the form set (compat); workflow_status_key starts
+      // on the real track. Only seeded when the caller didn't set one.
+      const initial = (data as any)?.workflow_status_key ?? 'reported';
       const { data: incident, error } = await supabase
         .from('incidents')
         .insert({
           ...data as any,
+          workflow_status_key: initial,
           reporter_id: user?.id,
           created_by: user?.id,
           updated_by: user?.id,
@@ -173,17 +179,35 @@ export function useUpdateIncident() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<IncidentFormData> & Record<string, unknown> }) => {
       const { data: { user } } = await supabase.auth.getUser();
 
+      // Bridged canonical (Option A): when status changes, also write the
+      // canonical workflow_status_key. The enum `status` stays as-is (compat),
+      // never widened. Mirrors the Defect adapter path.
+      const updates: Record<string, unknown> = { ...data, updated_by: user?.id };
+      let prevStatus: string | null = null;
+      const nextStatus = (data as any)?.status as string | undefined;
+      if (nextStatus !== undefined) {
+        const { data: cur } = await supabase
+          .from('incidents').select('status').eq('id', id).maybeSingle();
+        prevStatus = (cur as any)?.status ?? null;
+        const wfKey = await resolveBridgedKey('incident', null, nextStatus);
+        if (wfKey) updates.workflow_status_key = wfKey;
+      }
+
       const { data: incident, error } = await supabase
         .from('incidents')
-        .update({
-          ...data as any,
-          updated_by: user?.id,
-        })
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
+
+      if (nextStatus !== undefined && prevStatus !== nextStatus) {
+        await recordAdvisoryStatusChange({
+          entityKey: 'incident', entityId: id, projectKey: null,
+          fromStatusRaw: prevStatus, toStatusRaw: nextStatus, sourceSurface: 'incident_detail',
+        });
+      }
       return incident;
     },
     onSuccess: (_, { id }) => {
