@@ -6,7 +6,7 @@ export const VOICE_FLOW_CONFIG = {
   /** Max recording duration before auto-stop (3 minutes). */
   maxDurationMs: 180_000,
   /** Auto-stop after this much true silence (amplitude-based via AnalyserNode). */
-  silenceAutoStopMs: 1_800,
+  silenceAutoStopMs: 1800,
   /** Run Gemini cleanup/polish pass on final result. */
   cleanupEnabled: true,
   /** Auto-commit result without user confirmation step. */
