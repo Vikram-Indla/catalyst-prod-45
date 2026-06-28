@@ -1,0 +1,2310 @@
+🔍 Scanning for hard-coded colors...
+
+❌ Found 688 hard-coded color violation(s):
+
+📁 src/components/PreviewRecoveryBanner.tsx
+   Line 87: #7C2D12
+   Context: background: "#7C2D12",
+
+   Line 110: #7C2D12
+   Context: color: "#7C2D12",
+
+📁 src/components/WorkListPanel/CreateButton.tsx
+   Line 30: #0044A3
+   Context: e.currentTarget.style.backgroundColor = '#0044A3';
+
+📁 src/components/WorkListPanel/CreateForm.tsx
+   Line 95: #0044A3
+   Context: e.currentTarget.style.backgroundColor = '#0044A3';
+
+📁 src/components/WorkListPanel/CreateModal.tsx
+   Line 112: #DCDFE6
+   Context: e.currentTarget.style.backgroundColor = '#DCDFE6';
+
+📁 src/components/WorkListPanel/IssueTypeSelector.tsx
+   Line 81: #B6C2CF
+   Context: e.currentTarget.style.borderColor = '#B6C2CF';
+
+📁 src/components/WorkListPanel/WorkCard.tsx
+   Line 31: #669DF1
+   Context: inprogress: '#669DF1', // Blue
+
+📁 src/components/WorkListPanel/WorkListItem.tsx
+   Line 98: #E6EDFA
+   Context: backgroundColor: '#E6EDFA',
+
+📁 src/components/WorkListPanel/WorkListStates.tsx
+   Line 27: #E6EDFA
+   Context: border: '3px solid #E6EDFA',
+
+   Line 92: #0044A3
+   Context: e.currentTarget.style.backgroundColor = '#0044A3';
+
+📁 src/components/admin/WorkflowTypePanel.tsx
+   Line 26: #F3D664
+   Context: moved:      '#F3D664',
+
+   Line 27: #B8ACF6
+   Context: new:        '#B8ACF6',
+
+   Line 28: #FD9891
+   Context: removed:    '#FD9891',
+
+📁 src/components/backlog/CatalystThemeDrawer.tsx
+   Line 131: rgba(38,166,154,0.12)
+   Context: bg: 'rgba(38,166,154,0.12)',
+
+   Line 133: rgba(38,166,154,0.3)
+   Context: border: 'rgba(38,166,154,0.3)',
+
+📁 src/components/boards/BoardCard.tsx
+   Line 117: rgba(0,135,90,0.08)
+   Context: ? 'rgba(0,135,90,0.08)' : 'rgba(0,82,204,0.08)',
+
+   Line 117: rgba(0,82,204,0.08)
+   Context: ? 'rgba(0,135,90,0.08)' : 'rgba(0,82,204,0.08)',
+
+   Line 185: rgba(0,82,204,0.15)
+   Context: background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid r
+
+   Line 185: rgba(0,82,204,0.06)
+   Context: background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid r
+
+   Line 185: rgba(0,82,204,0.30)
+   Context: background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid r
+
+   Line 185: rgba(0,82,204,0.18)
+   Context: background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid r
+
+📁 src/components/capacity/resource360/HierarchyTreeView.tsx
+   Line 49: #4d8b4d
+   Context: bg: 'bg-[#4d8b4d]'
+
+📁 src/components/capacity/timeline/Timeline.module.css
+   Line 50: rgba(250, 250, 250, 0.97)
+   Context: background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%);
+
+   Line 50: rgba(245, 245, 245, 0.97)
+   Context: background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%);
+
+   Line 71: rgba(250, 250, 250, 0.97)
+   Context: background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%);
+
+   Line 71: rgba(245, 245, 245, 0.97)
+   Context: background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%);
+
+   Line 771: rgba(107, 114, 128, 0.9)
+   Context: background: rgba(107, 114, 128, 0.9);
+
+   Line 1201: rgba(115, 115, 115, 0.15)
+   Context: rgba(115, 115, 115, 0.15) 0px,
+
+   Line 1202: rgba(115, 115, 115, 0.15)
+   Context: rgba(115, 115, 115, 0.15) 4px,
+
+   Line 1203: rgba(115, 115, 115, 0.05)
+   Context: rgba(115, 115, 115, 0.05) 4px,
+
+   Line 1204: rgba(115, 115, 115, 0.05)
+   Context: rgba(115, 115, 115, 0.05) 8px
+
+📁 src/components/capacity-heatmap/EnhancedHeatmapGrid.tsx
+   Line 210: #be123c
+   Context: critical: 'ring-[#be123c] animate-pulse',
+
+📁 src/components/capacity-heatmap/EnhancedHeatmapLegend.tsx
+   Line 36: #be123c
+   Context: color="#be123c"
+
+📁 src/components/catalyst-detail-views/incident/__tests__/CatalystViewIncident.parity.test.ts
+   Line 17: #FFF5F5
+   Context: it('severity banner background must use DS token, not raw #FFF5F5', () => {
+
+   Line 18: #FFF5F5
+   Context: expect(SRC).not.toMatch(/background:\s*'#FFF5F5'/);
+
+📁 src/components/catalyst-detail-views/shared/sections/CatalystDescriptionSection.tsx
+   Line 830: rgb(80,82,88)
+   Context: /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88).
+
+📁 src/components/catalyst-detail-views/shared/sections/Description/_components/ColumnResizeHandles/ColumnResizeHandles.tsx
+   Line 330: #85B8FF
+   Context: background: '#85B8FF',
+
+📁 src/components/catalyst-detail-views/shared/sections/Description/_components/EditorView/editorStyles.ts
+   Line 238: #B65C02
+   Context: color: #B65C02;
+
+   Line 411: rgba(130,112,219,0.30)
+   Context: 0 0 14px 3px rgba(130,112,219,0.30);
+
+   Line 415: #E56910
+   Context: 0 0 0 2px #E56910,
+
+   Line 416: rgba(229,105,16,0.30)
+   Context: 0 0 14px 3px rgba(229,105,16,0.30);
+
+   Line 508: rgba(135, 184, 255, 0.18)
+   Context: background: rgba(135, 184, 255, 0.18) !important;
+
+   Line 509: #85B8FF
+   Context: outline: 1px solid #85B8FF !important;
+
+   Line 517: rgba(255, 86, 48, 0.18)
+   Context: background: rgba(255, 86, 48, 0.18) !important;
+
+   Line 592: rgba(135, 184, 255, 0.18)
+   Context: background: rgba(135, 184, 255, 0.18) !important;
+
+   Line 593: #85B8FF
+   Context: outline: 1px solid #85B8FF !important;
+
+📁 src/components/catalyst-detail-views/shared/sections/Description/_components/SlashMenu/SlashMenu.tsx
+   Line 60: #E56910
+   Context: orange: '#E56910',
+
+📁 src/components/catalyst-detail-views/shared/sections/Description/_components/SlashMenu/ViewMoreModal.tsx
+   Line 83: #E56910
+   Context: orange: '#E56910',
+
+   Line 87: #E774BB
+   Context: pink: '#E774BB',
+
+📁 src/components/catalyst-detail-views/shared/sections/Description/_components/TableInteractions/BackgroundPickerItem.tsx
+   Line 33: #FFEFD6
+   Context: { name: 'Subtle orange', value: '#FFEFD6' },
+
+   Line 37: #E6FCFF
+   Context: { name: 'Light teal', value: '#E6FCFF' },
+
+   Line 40: #FFE5F2
+   Context: { name: 'Light pink', value: '#FFE5F2' },
+
+   Line 43: #B8DAFF
+   Context: { name: 'Medium blue', value: '#B8DAFF' },
+
+   Line 44: #C0B6F2
+   Context: { name: 'Medium violet', value: '#C0B6F2' },
+
+   Line 45: #FFB8E6
+   Context: { name: 'Medium magenta', value: '#FFB8E6' },
+
+   Line 46: #B8E8C9
+   Context: { name: 'Medium mint', value: '#B8E8C9' },
+
+📁 src/components/catalyst-detail-views/shared/sections/Description/_components/TableInteractions/TableInteractions.tsx
+   Line 79: #85B8FF
+   Context: const GRIP_BG = '#85B8FF';
+
+📁 src/components/catalyst-detail-views/shared/sections/Description/_components/Toolbar/buttons/TextColorPicker.tsx
+   Line 12: #57D9A3
+   Context: 'var(--ds-text-subtlest, #626F86)', 'var(--ds-link, #0C66E4)', '#57D9A3', '#FFC400', 'var(--ds-backg
+
+   Line 13: #79F2C0
+   Context: 'var(--ds-text-disabled, #8590A2)', 'var(--ds-background-information-bold, #0C66E4)', '#79F2C0', '#F
+
+📁 src/components/catalyst-detail-views/shared/sections/Description/utils/__tests__/adfToTiptap.test.ts
+   Line 161: #FF0000
+   Context: marks: [{ type: 'textColor', attrs: { color: '#FF0000' } }],
+
+   Line 166: #FF0000
+   Context: expect(text?.marks).toEqual([{ type: 'textStyle', attrs: { color: '#FF0000' } }]);
+
+   Line 482: #FF0000
+   Context: marks: [{ type: 'textStyle', attrs: { color: '#FF0000' } }],
+
+   Line 486: #FF0000
+   Context: expect(result.content?.[0].content?.[0].marks).toEqual([{ type: 'textColor', attrs: { color: '#FF000
+
+📁 src/components/catalyst-detail-views/shared/sections/statusPalette.ts
+   Line 77: #8FB8F6
+   Context: in_progress: STATUS_BG.inprogress, // #8FB8F6 periwinkle blue
+
+   Line 78: #94C748
+   Context: done:        STATUS_BG.success,    // #94C748 lime green
+
+📁 src/components/catalyst-roadmap/RoadmapDependencyLines.tsx
+   Line 206: #a1a1aa
+   Context: fill="#a1a1aa"
+
+📁 src/components/caty-ai/CatyOverrides.css
+   Line 427: rgba(180,83,9,0.3)
+   Context: border-color: rgba(180,83,9,0.3) !important;
+
+   Line 432: rgba(5,150,105,0.3)
+   Context: border-color: rgba(5,150,105,0.3) !important;
+
+📁 src/components/chat/ChatNotificationExample.tsx
+   Line 182: #ccc
+   Context: border: `1px solid ${r.reactedByMe ? 'blue' : '#ccc'}`,
+
+📁 src/components/chat/dock/DockDirectory.tsx
+   Line 103: rgb(148, 199, 72)
+   Context: success:    'rgb(148, 199, 72)',   // lime green
+
+   Line 105: rgb(243, 214, 100)
+   Context: moved:      'rgb(243, 214, 100)',  // yellow
+
+   Line 107: rgb(184, 172, 246)
+   Context: new:        'rgb(184, 172, 246)',  // purple
+
+📁 src/components/chat/main/__tests__/TicketKeyChip.status.test.tsx
+   Line 17: rgba(148,199,72,0.18)
+   Context: expect(statusBackground('done')).toBe('rgba(148,199,72,0.18)');
+
+   Line 20: rgba(102,157,241,0.18)
+   Context: expect(statusBackground('inprogress')).toBe('rgba(102,157,241,0.18)');
+
+📁 src/components/chat/main/message-search.css
+   Line 154: #fff59d
+   Context: background: #fff59d;
+
+📁 src/components/evidence/annotation/canvasUtils.ts
+   Line 144: rgba(128, 128, 128, 0.7)
+   Context: ctx.fillStyle = 'rgba(128, 128, 128, 0.7)';
+
+📁 src/components/executive-roadmap/RoadmapLegend.tsx
+   Line 81: #B8944F
+   Context: style={{ background: 'linear-gradient(90deg, #B8944F, #C9B584)' }}
+
+   Line 81: #C9B584
+   Context: style={{ background: 'linear-gradient(90deg, #B8944F, #C9B584)' }}
+
+📁 src/components/for-you/ForYouInlineFilters.tsx
+   Line 20: #6b7a8d
+   Context: const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b",
+
+   Line 20: #7a8b6b
+   Context: const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b",
+
+   Line 20: #8b7a6b
+   Context: const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b",
+
+   Line 20: #6b6b8b
+   Context: const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b",
+
+   Line 20: #6b8b8b
+   Context: const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b",
+
+   Line 20: #8b6b7a
+   Context: const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b",
+
+   Line 20: #7a6b8b
+   Context: const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b",
+
+   Line 20: #6b8b7a
+   Context: const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b",
+
+📁 src/components/for-you/JiraBasicFilter.css
+   Line 35: rgb(233, 242, 254)
+   Context: background-color: rgb(233, 242, 254);
+
+   Line 134: rgb(233, 242, 254)
+   Context: background-color: rgb(233, 242, 254);
+
+   Line 209: rgb(233, 242, 254)
+   Context: background-color: rgb(233, 242, 254);
+
+   Line 307: rgb(140, 143, 151)
+   Context: border: 0.556px solid rgb(140, 143, 151);
+
+   Line 328: rgb(94, 108, 132)
+   Context: color: rgb(94, 108, 132);
+
+   Line 438: rgb(107, 110, 118)
+   Context: .jf-option-label-extra { color: rgb(107, 110, 118); font-size: 14px; font-weight: 400; }
+
+   Line 442: rgb(94, 108, 132)
+   Context: color: rgb(94, 108, 132);
+
+   Line 454: rgb(248, 248, 248)
+   Context: background-color: rgb(248, 248, 248);
+
+📁 src/components/for-you/atlaskit/caty-button.css
+   Line 73: #C0177A
+   Context: background: #C0177A;
+
+📁 src/components/goals/GoalDetailDrawer.tsx
+   Line 79: #CFFAFE
+   Context: 'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
+
+   Line 79: #155E75
+   Context: 'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
+
+📁 src/components/goals/GoalsListView.tsx
+   Line 25: #CFFAFE
+   Context: 'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
+
+   Line 25: #155E75
+   Context: 'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
+
+📁 src/components/home/hooks/useProjectBriefing.ts
+   Line 174: #8B8FA3
+   Context: projectColor: PROJECT_COLORS[projectKey] || '#8B8FA3',
+
+📁 src/components/icons/icons.registry.ts
+   Line 271: #0C7A6D
+   Context: 'release':             { id: 'release',             label: 'Release',             color: '#0C7A6D', 
+
+📁 src/components/ideas-roadmap/PresentationModal.tsx
+   Line 40: #0D2242
+   Context: width: 36, height: 24, borderRadius: 4, background: '#0D2242',
+
+📁 src/components/ideas-roadmap/RoadmapDatesTable.tsx
+   Line 133: #B7EBD1
+   Context: border: '1px solid #B7EBD1', padding: '2px 6px', borderRadius: 4,
+
+📁 src/components/ideas-roadmap/RoadmapSidePanel.tsx
+   Line 189: #B7EBD1
+   Context: border: '1px solid #B7EBD1',
+
+📁 src/components/incidents/IncidentAttachments.tsx
+   Line 108: #5C5C5C
+   Context: <p className="text-sm text-[#5C5C5C]">
+
+📁 src/components/incidents/SlackIntegrationPanel.tsx
+   Line 22: #5C5C5C
+   Context: <span className="text-sm font-medium text-[#5C5C5C]">{incident.slackChannel}</span>
+
+📁 src/components/incidents/modal/IncidentActivitySection.tsx
+   Line 33: #5243AA
+   Context: const colors = ['bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', 'bg-[#52
+
+   Line 33: #00A3BF
+   Context: const colors = ['bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', 'bg-[#52
+
+📁 src/components/industry/CatalystEnterpriseTable.tsx
+   Line 669: #232323
+   Context: "dark:border-b dark:border-[#232323]",
+
+   Line 696: #232323
+   Context: "dark:border-b dark:border-[#232323]",
+
+   Line 765: #232323
+   Context: "dark:border-b dark:border-[#232323]",
+
+   Line 802: #232323
+   Context: "dark:border-b dark:border-[#232323]",
+
+📁 src/components/industry/enterprise-table/components/PrintableTable.tsx
+   Line 134: #666
+   Context: color: #666;
+
+   Line 184: #666
+   Context: color: #666;
+
+📁 src/components/items/epics/drawer/EpicStatusDropdown.tsx
+   Line 26: rgba(${r}, ${g}, ${b}, 0.12)
+   Context: bg: `rgba(${r}, ${g}, ${b}, 0.12)`,
+
+   Line 29: rgba(${r}, ${g}, ${b}, 0.25)
+   Context: border: `rgba(${r}, ${g}, ${b}, 0.25)`,
+
+📁 src/components/ja/CatalystHeader.tsx
+   Line 168: #CECFD2
+   Context: color: isDark ? '#CECFD2' : '#101214',
+
+   Line 168: #101214
+   Context: color: isDark ? '#CECFD2' : '#101214',
+
+📁 src/components/ja/icons/WorkItemIcon.tsx
+   Line 16: #904EE2
+   Context: epic: '#904EE2',       // Purple
+
+   Line 34: #9c8466
+   Context: 'business-request': '#9c8466',
+
+   Line 35: #a060f0
+   Context: epic: '#a060f0',
+
+📁 src/components/ja/icons/WorkItemTypeIcon.tsx
+   Line 11: #904EE2
+   Context: epic: '#904EE2', // Purple - represents large scope
+
+📁 src/components/kanban/KanbanColumn.tsx
+   Line 30: #A54800
+   Context: c === 'moved'                             ? '#A54800' :  // Atlaskit "moved"
+
+📁 src/components/kanban/WorkItemCard.tsx
+   Line 32: #E97F33
+   Context: high:    '#E97F33',
+
+   Line 34: #2D8738
+   Context: low:     '#2D8738',
+
+   Line 35: #57A55A
+   Context: lowest:  '#57A55A',
+
+📁 src/components/kanban/adapters/portfolioBoardAdapter.tsx
+   Line 139: #904EE2
+   Context: const EPIC_ICON_COLOR = '#904EE2';
+
+📁 src/components/kanban/overflow-menu/LabelEditorPanel.tsx
+   Line 12: #FF7452
+   Context: const LABEL_COLORS = ['var(--ds-background-information-bold, #0C66E4)', '#00B8D9', 'var(--ds-backgro
+
+   Line 12: #57D9A3
+   Context: const LABEL_COLORS = ['var(--ds-background-information-bold, #0C66E4)', '#00B8D9', 'var(--ds-backgro
+
+   Line 12: #FFC400
+   Context: const LABEL_COLORS = ['var(--ds-background-information-bold, #0C66E4)', '#00B8D9', 'var(--ds-backgro
+
+📁 src/components/knowledge-assist/KnowledgeAssistPanel.tsx
+   Line 268: rgba(76,110,245,0.12)
+   Context: e.currentTarget.style.boxShadow = '0 0 0 3px rgba(76,110,245,0.12)';
+
+   Line 283: rgba(207,19,34,0.10)
+   Context: border: 'none', background: isListening ? 'rgba(207,19,34,0.10)' : 'transparent',
+
+📁 src/components/knowledge-hub/DocumentExport.tsx
+   Line 49: #f4f4f4
+   Context: code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+
+   Line 53: #f4f4f4
+   Context: th { background: #f4f4f4; }
+
+   Line 54: #e3f2fd
+   Context: .info-panel { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 16px; margin: 1em 0
+
+   Line 54: #2196f3
+   Context: .info-panel { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 16px; margin: 1em 0
+
+   Line 55: #fff3e0
+   Context: .warning-panel { background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 1e
+
+   Line 55: #ff9800
+   Context: .warning-panel { background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 1e
+
+   Line 56: #f3e5f5
+   Context: .note-panel { background: #f3e5f5; border-left: 4px solid #9c27b0; padding: 12px 16px; margin: 1em 0
+
+   Line 56: #9c27b0
+   Context: .note-panel { background: #f3e5f5; border-left: 4px solid #9c27b0; padding: 12px 16px; margin: 1em 0
+
+📁 src/components/layout/HomeSidebar.tsx
+   Line 481: #4A7FE0
+   Context: home:     '#4A7FE0',
+
+   Line 484: #38BDF8
+   Context: product:  '#38BDF8',
+
+📁 src/components/layout/HubSwitcher.tsx
+   Line 351: rgba(9, 30, 66, 0.08)
+   Context: boxShadow: '0 1px 3px rgba(9, 30, 66, 0.08)',
+
+📁 src/components/layout/HuddleFab.tsx
+   Line 204: rgba(9,30,66,.18)
+   Context: boxShadow: '0 8px 28px rgba(9,30,66,.18), 0 2px 6px rgba(9,30,66,.12)',
+
+   Line 204: rgba(9,30,66,.12)
+   Context: boxShadow: '0 8px 28px rgba(9,30,66,.18), 0 2px 6px rgba(9,30,66,.12)',
+
+   Line 319: #FFFFFF
+   Context: style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', '#FFFFFF')}
+
+📁 src/components/layout/HuddleIncoming.tsx
+   Line 109: rgba(9,30,66,.20)
+   Context: boxShadow: '0 8px 28px rgba(9,30,66,.20), 0 2px 6px rgba(9,30,66,.12)',
+
+   Line 109: rgba(9,30,66,.12)
+   Context: boxShadow: '0 8px 28px rgba(9,30,66,.20), 0 2px 6px rgba(9,30,66,.12)',
+
+   Line 151: #FFFFFF
+   Context: background: bg, color: '#FFFFFF', flex: '0 0 auto',
+
+📁 src/components/layout/HuddleScreenView.tsx
+   Line 101: #000
+   Context: style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 
+
+   Line 141: rgba(9,30,66,.75)
+   Context: style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(9,30,66,.75)',
+
+   Line 144: #000
+   Context: background: '#000', borderRadius: 12, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}
+
+   Line 144: rgba(0,0,0,.5)
+   Context: background: '#000', borderRadius: 12, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}
+
+   Line 162: #000
+   Context: background: '#000', borderRadius: 12,
+
+   Line 164: rgba(9,30,66,.28)
+   Context: boxShadow: '0 12px 34px rgba(9,30,66,.28)',
+
+📁 src/components/layout/HuddleTicketsModal.tsx
+   Line 121: rgba(9,30,66,.28)
+   Context: boxShadow: '0 12px 34px rgba(9,30,66,.28)',
+
+📁 src/components/notifications/NotificationPanel.tsx
+   Line 128: #1D2125
+   Context: panelBg: isDark ? "#1D2125" : "#FFFFFF",
+
+   Line 128: #FFFFFF
+   Context: panelBg: isDark ? "#1D2125" : "#FFFFFF",
+
+   Line 129: #1D2125
+   Context: surfaceBg: isDark ? "#1D2125" : "#FFFFFF",
+
+   Line 129: #FFFFFF
+   Context: surfaceBg: isDark ? "#1D2125" : "#FFFFFF",
+
+   Line 130: #EDEDED
+   Context: text1: isDark ? "#EDEDED" : "#0F172A",
+
+   Line 130: #0F172A
+   Context: text1: isDark ? "#EDEDED" : "#0F172A",
+
+   Line 131: #A1A1A1
+   Context: text2: isDark ? "#A1A1A1" : "#42526E",
+
+   Line 131: #42526E
+   Context: text2: isDark ? "#A1A1A1" : "#42526E",
+
+   Line 132: #878787
+   Context: text3: isDark ? "#878787" : "#6B778C",
+
+   Line 132: #6B778C
+   Context: text3: isDark ? "#878787" : "#6B778C",
+
+   Line 133: #2E2E2E
+   Context: border: isDark ? "#2E2E2E" : "rgba(15,23,42,0.15)", // Direct values, not CSS vars
+
+   Line 133: rgba(15,23,42,0.15)
+   Context: border: isDark ? "#2E2E2E" : "rgba(15,23,42,0.15)", // Direct values, not CSS vars
+
+   Line 134: #454545
+   Context: borderStrong: isDark ? "#454545" : "rgba(15,23,42,0.20)",
+
+   Line 134: rgba(15,23,42,0.20)
+   Context: borderStrong: isDark ? "#454545" : "rgba(15,23,42,0.20)",
+
+   Line 135: rgba(255,255,255,0.06)
+   Context: hover: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.04)",
+
+   Line 135: rgba(15,23,42,0.04)
+   Context: hover: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.04)",
+
+   Line 136: rgba(255,255,255,0.10)
+   Context: press: isDark ? "rgba(255,255,255,0.10)" : "rgba(15,23,42,0.08)",
+
+   Line 136: rgba(15,23,42,0.08)
+   Context: press: isDark ? "rgba(255,255,255,0.10)" : "rgba(15,23,42,0.08)",
+
+   Line 143: #3B82F6
+   Context: checkStroke: isDark ? "#3B82F6" : "#0052CC",
+
+   Line 143: #0052CC
+   Context: checkStroke: isDark ? "#3B82F6" : "#0052CC",
+
+📁 src/components/product-dashboard/widgets/ActiveInterventionsWidget.tsx
+   Line 8: #F5A623
+   Context: const PHASE_APPROVAL = '#F5A623';
+
+📁 src/components/product-dashboard/widgets/WhoCarriesWhatWidget.tsx
+   Line 47: #F5A623
+   Context: ? '#F5A623'
+
+📁 src/components/product-hub/roadmap/constants/roadmap.constants.ts
+   Line 19: #8A6700
+   Context: hover: '#8A6700',
+
+📁 src/components/producthub/timeline/TimelineBarTooltip.tsx
+   Line 175: #a1a1aa
+   Context: <span style={{ color: '#a1a1aa' }}>·</span>
+
+📁 src/components/producthub/timeline/TimelineGrid.tsx
+   Line 196: rgba(250,250,250,0.5)
+   Context: backgroundColor: idx % 2 === 1 ? 'rgba(250,250,250,0.5)' : undefined,
+
+📁 src/components/project-hub/dashboard/GadgetSettingsPanel.tsx
+   Line 261: rgba(76,154,255,.25)
+   Context: boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none',
+
+📁 src/components/releasehub/ChgDrawer.tsx
+   Line 56: #080E1D
+   Context: <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
+
+📁 src/components/releasehub/ChgGateModal.tsx
+   Line 29: #080E1D
+   Context: <div className="absolute inset-0 bg-[#080E1D]/50 backdrop-blur-[2px]" />
+
+📁 src/components/releasehub/ReleaseDrawer.tsx
+   Line 177: #080E1D
+   Context: <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
+
+📁 src/components/releases/ReleaseFilters.tsx
+   Line 141: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 141: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 176: rgba(24,104,219,0.2)
+   Context: boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+
+   Line 642: rgba(24,104,219,0.2)
+   Context: boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+
+📁 src/components/releases/ReleasesTable.tsx
+   Line 249: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 249: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+📁 src/components/releases/ShareFeedbackModal.tsx
+   Line 142: rgba(24,104,219,0.2)
+   Context: boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+
+   Line 171: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 171: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+📁 src/components/releases/detail/AddWorkItemsModal.tsx
+   Line 234: rgba(24,104,219,0.2)
+   Context: boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+
+   Line 326: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 326: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+📁 src/components/releases/detail/EditableSectionName.tsx
+   Line 94: rgba(24,104,219,0.2)
+   Context: boxShadow: '0 0 0 1px rgba(24,104,219,0.2)',
+
+📁 src/components/releases/detail/ReleaseSidePanel.tsx
+   Line 754: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 754: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 978: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 978: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 1200: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 1200: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+📁 src/components/releases/detail/WorkItemsSection.tsx
+   Line 606: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 606: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 682: rgba(24,104,219,0.2)
+   Context: boxShadow: focused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+
+   Line 849: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 849: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 971: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 971: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 1027: rgba(24,104,219,0.2)
+   Context: boxShadow: active ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+
+   Line 1225: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 1225: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+📁 src/components/reqAssist/RAStatsBar.tsx
+   Line 157: #F0F9FF
+   Context: <div style={{ ...iconContainerStyle, background: '#F0F9FF' }}>
+
+📁 src/components/resource-allocation/TimelineGrid.tsx
+   Line 305: #a7f3d0
+   Context: border: '1px solid #a7f3d0',
+
+📁 src/components/resource360/ChronologyView.tsx
+   Line 197: #FAF8F5
+   Context: const baseBg = idx % 2 === 0 ? T.surface : '#FAF8F5';
+
+   Line 218: #EDE7E0
+   Context: onMouseEnter={e => { e.currentTarget.style.background = '#EDE7E0'; }}
+
+📁 src/components/resource360/ClaimDrillInPanel.tsx
+   Line 41: #6b7a8d
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 41: #7a8b6b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 41: #8b7a6b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 41: #6b6b8b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 41: #6b8b8b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 41: #8b6b7a
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 41: #7a6b8b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 41: #6b8b7a
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+📁 src/components/resource360/DepartmentIntelligenceOverlay.tsx
+   Line 17: #6b7a8d
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 17: #7a8b6b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 17: #8b7a6b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 17: #6b6b8b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 17: #6b8b8b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 17: #8b6b7a
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 17: #7a6b8b
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+   Line 17: #6b8b7a
+   Context: const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", 
+
+📁 src/components/resource360/R360ChronologyView.tsx
+   Line 49: #904EE2
+   Context: const EpicIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" 
+
+📁 src/components/resource360/R360RingView.tsx
+   Line 57: #904EE2
+   Context: <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill
+
+📁 src/components/resource360/Resource360Chronology.tsx
+   Line 8: #3D3D56
+   Context: text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
+
+   Line 8: #6B6B80
+   Context: text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
+
+   Line 8: #D9D2C9
+   Context: text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
+
+   Line 8: #C5BDB3
+   Context: text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
+
+   Line 129: #FAF8F5
+   Context: const bg = showPendingOnly && isPending ? T.pendHl : idx % 2 === 0 ? T.surface : '#FAF8F5';
+
+   Line 141: #EDE7E0
+   Context: onMouseEnter={e => { e.currentTarget.style.background = '#EDE7E0'; }} onMouseLeave={e => { e.current
+
+📁 src/components/resource360/Resource360Shared.tsx
+   Line 12: #FEF08A
+   Context: <mark style={{ background: '#FEF08A', padding: '0 1px', borderRadius: 2 }}>
+
+📁 src/components/resource360/Toolbar.tsx
+   Line 110: #1A1A2E
+   Context: background: active ? '#1A1A2E' : 'transparent',
+
+📁 src/components/resource360/r360-helpers.ts
+   Line 100: #BE123C
+   Context: case 'critical': return '#BE123C';
+
+   Line 104: #57534E
+   Context: case 'low': return '#57534E';
+
+📁 src/components/resource360/r360-tokens.css
+   Line 153: #FAF8F5
+   Context: background: #FAF8F5;
+
+📁 src/components/resources/ExportWorkItems.tsx
+   Line 494: #D6E4F0
+   Context: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18"
+
+   Line 494: #D6E4F0
+   Context: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18"
+
+   Line 497: #D6E4F0
+   Context: <div style={{ color: '#D6E4F0', fontSize: 11, marginLeft: 26 }}>Select months · Sheet 1 = Resources<
+
+📁 src/components/risks/RiskBadge.tsx
+   Line 67: #c8e6c9
+   Context: border: '1px solid #c8e6c9',
+
+📁 src/components/roadmap/RoadmapEngine.tsx
+   Line 1040: rgba(184,148,79,0.6)
+   Context: <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${todayPosition}%`, wid
+
+   Line 1061: rgba(166,144,94,0.15)
+   Context: <div className="flex items-center gap-2 py-2 px-3 rounded-md mb-3" style={{ backgroundColor: 'rgba(1
+
+📁 src/components/shared/CatalystAvatar.tsx
+   Line 56: #206A83
+   Context: '#206A83', // teal.bold
+
+📁 src/components/shared/CatalystDetailPanel.tsx
+   Line 463: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 463: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+📁 src/components/shared/IssueHoverCard.tsx
+   Line 133: #D04A02
+   Context: if (v.includes('medium')) return '#D04A02';
+
+   Line 134: #2C8540
+   Context: if (v.includes('low')) return '#2C8540';
+
+   Line 135: #1F7344
+   Context: if (v.includes('lowest')) return '#1F7344';
+
+📁 src/components/shared/JiraTable/JiraTable.tsx
+   Line 1956: rgba(76,154,255,0.10)
+   Context: `background:rgba(76,154,255,0.10)`,
+
+📁 src/components/shared/MentionTextarea.tsx
+   Line 28: #2A6DF4
+   Context: '#2A6DF4',  // Blue
+
+   Line 29: #7C3BED
+   Context: '#7C3BED',  // Purple
+
+   Line 30: #EC4699
+   Context: '#EC4699',  // Pink
+
+   Line 31: #E54D2E
+   Context: '#E54D2E',  // Red-Orange
+
+   Line 32: #F2960D
+   Context: '#F2960D',  // Orange
+
+   Line 33: #25A777
+   Context: '#25A777',  // Teal
+
+   Line 34: #0DA2E7
+   Context: '#0DA2E7',  // Sky Blue
+
+   Line 35: #21C45D
+   Context: '#21C45D',  // Green
+
+   Line 263: #2A6DF4
+   Context: backgroundColor: isSelected ? '#2A6DF4' : undefined,
+
+📁 src/components/shared/ResourceModal.tsx
+   Line 462: #d4b896
+   Context: <div className="w-8 h-8 rounded-full bg-[#d4b896] flex items-center justify-center text-xs font-semi
+
+   Line 462: #4a3f35
+   Context: <div className="w-8 h-8 rounded-full bg-[#d4b896] flex items-center justify-center text-xs font-semi
+
+📁 src/components/shared/Timeline/TimelineView.tsx
+   Line 2369: rgba(11,18,14,0.14)
+   Context: border: "1px solid rgba(11,18,14,0.14)",
+
+📁 src/components/shared/Timeline/types.ts
+   Line 101: #8869AC
+   Context: { label: 'Purple',  hex: '#8869AC' },
+
+   Line 102: #3C6FBB
+   Context: { label: 'Blue',    hex: '#3C6FBB' },
+
+   Line 103: #3BAF85
+   Context: { label: 'Teal',    hex: '#3BAF85' },
+
+   Line 104: #65C170
+   Context: { label: 'Green',   hex: '#65C170' },
+
+   Line 105: #F0C43F
+   Context: { label: 'Yellow',  hex: '#F0C43F' },
+
+   Line 106: #F79231
+   Context: { label: 'Orange',  hex: '#F79231' },
+
+   Line 107: #F04D44
+   Context: { label: 'Red',     hex: '#F04D44' },
+
+   Line 108: #E74A8E
+   Context: { label: 'Pink',    hex: '#E74A8E' },
+
+📁 src/components/shared/jira-description-editor/Toolbar.tsx
+   Line 21: #00B8D9
+   Context: { label: 'Teal', value: '#00B8D9' },
+
+📁 src/components/shared/jira-description-editor/styles.css
+   Line 59: rgba(76, 154, 255, 0.15)
+   Context: background: rgba(76, 154, 255, 0.15) !important;
+
+   Line 439: rgba(76,154,255,.15)
+   Context: background: rgba(76,154,255,.15);
+
+   Line 448: rgba(76,154,255,.08)
+   Context: background: rgba(76,154,255,.08);
+
+   Line 501: rgba(76,154,255,.25)
+   Context: background: rgba(76,154,255,.25);
+
+📁 src/components/skills-inventory/SkillGapAnalysis.tsx
+   Line 185: #F8F6F3
+   Context: <thead style={{ background: '#F8F6F3' }}>
+
+   Line 186: #F8F6F3
+   Context: <tr style={{ background: '#F8F6F3' }}>
+
+   Line 187: #F8F6F3
+   Context: <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider b
+
+   Line 190: #F8F6F3
+   Context: <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider b
+
+   Line 193: #F8F6F3
+   Context: <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider b
+
+   Line 196: #F8F6F3
+   Context: <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider b
+
+   Line 199: #F8F6F3
+   Context: <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider b
+
+📁 src/components/skills-inventory/SkillsInventoryReport.tsx
+   Line 46: #7B2FCC
+   Context: { level: 'Beginner', count: 37, percentage: 15, colorClass: '#7B2FCC' },
+
+📁 src/components/skills-inventory/SkillsMatrixHeatmap.tsx
+   Line 16: rgba(115,115,115,0.3)
+   Context: 1: 'rgba(115,115,115,0.3)',
+
+   Line 17: #7B2FCC
+   Context: 2: '#7B2FCC',
+
+   Line 138: #F8F6F3
+   Context: <thead className="sticky top-0 z-10" style={{ background: '#F8F6F3' }}>
+
+   Line 139: #F8F6F3
+   Context: <tr style={{ background: '#F8F6F3' }}>
+
+   Line 140: #F8F6F3
+   Context: <th className="w-[200px] text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracki
+
+   Line 147: #F8F6F3
+   Context: style={{ background: '#F8F6F3' }}
+
+📁 src/components/strategy/widgets/StrategyPyramid.tsx
+   Line 41: rgba(30,58,95,0.20)
+   Context: goals: 'rgba(30,58,95,0.20)',
+
+   Line 42: rgba(30,58,95,0.20)
+   Context: krs: 'rgba(30,58,95,0.20)',
+
+📁 src/components/timeline/TimelineSidebar.tsx
+   Line 48: rgba(200, 204, 208, 0.15)
+   Context: ? 'rgba(200, 204, 208, 0.15)'
+
+📁 src/components/ui/catalyst/SectionHeader.tsx
+   Line 21: #242424
+   Context: <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-[#242424] to-transparent" />
+
+📁 src/components/ui/checkbox.tsx
+   Line 20: hsl(217,91%,53%)
+   Context: "data-[state=checked]:bg-[hsl(217,91%,53%)] data-[state=checked]:text-white data-[state=checked]:bor
+
+   Line 20: hsl(217,91%,53%)
+   Context: "data-[state=checked]:bg-[hsl(217,91%,53%)] data-[state=checked]:text-white data-[state=checked]:bor
+
+   Line 21: hsl(217,91%,53%)
+   Context: "data-[state=indeterminate]:bg-[hsl(217,91%,53%)] data-[state=indeterminate]:text-white data-[state=
+
+   Line 21: hsl(217,91%,53%)
+   Context: "data-[state=indeterminate]:bg-[hsl(217,91%,53%)] data-[state=indeterminate]:text-white data-[state=
+
+📁 src/components/ui/dialog.tsx
+   Line 43: #212121
+   Context: "dark:bg-[#212121] dark:border-0 dark:shadow-2xl dark:shadow-black/50",
+
+📁 src/components/universal-work-view/UWVRow.tsx
+   Line 345: #E4E6EA
+   Context: const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 #E4E6EA';
+
+   Line 346: #E4E6EA
+   Context: const restShadow = 'inset 0 -1px 0 0 #E4E6EA';
+
+📁 src/components/workflow/WorkflowDiagramModal.tsx
+   Line 29: #FD9891
+   Context: removed:    '#FD9891',
+
+   Line 30: #D8A0F7
+   Context: new:        '#D8A0F7',
+
+   Line 31: #F9C84E
+   Context: moved:      '#F9C84E',
+
+📁 src/components/workhub/allwork/AllWorkTable.tsx
+   Line 64: #FA8C16
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+   Line 64: #52C41A
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+   Line 64: #13C2C2
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+   Line 64: #F5222D
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+📁 src/components/workhub/allwork/AllWorkToolbar.tsx
+   Line 107: #FA8C16
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+   Line 107: #52C41A
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+📁 src/components/workhub/allwork/SubTasksTab.tsx
+   Line 62: #FA8C16
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+   Line 62: #52C41A
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+   Line 62: #13C2C2
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+   Line 62: #2F54EB
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+📁 src/components/workhub/issue-view/IssueViewShell.tsx
+   Line 72: #1B3459
+   Context: const PALETTE = ['var(--ds-text-selected, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold,
+
+   Line 72: #0D7C66
+   Context: const PALETTE = ['var(--ds-text-selected, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold,
+
+   Line 72: #B34D00
+   Context: const PALETTE = ['var(--ds-text-selected, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold,
+
+📁 src/components/workhub/issue-view/activity/ActivityPanelPilot.tsx
+   Line 41: #FA8C16
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+   Line 41: #52C41A
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F9
+
+📁 src/components/workhub/issue-view/sections/ActivitySection.tsx
+   Line 43: #FA8C16
+   Context: const colors = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'va
+
+   Line 43: #52C41A
+   Context: const colors = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'va
+
+📁 src/components/workhub/releases/ReleasesPage.tsx
+   Line 121: #f0f9ff
+   Context: background: checked ? '#f0f9ff' : 'transparent',
+
+📁 src/components/workhub/themes/ThemeItemLinker.tsx
+   Line 163: #f0f9ff
+   Context: background: selected.has(item.item_key) ? '#f0f9ff' : 'transparent',
+
+📁 src/components/workhub/workitems/WorkItemFilters.tsx
+   Line 171: #f0f7ff
+   Context: backgroundColor: isSelected ? '#f0f7ff' : 'transparent',
+
+   Line 178: #f0f7ff
+   Context: e.currentTarget.style.backgroundColor = isSelected ? '#f0f7ff' : 'transparent';
+
+   Line 364: #ecfeff
+   Context: <FilterChip key={`s-${s}`} label={s} color="var(--ds-link, #0C66E4)" bgColor="#ecfeff" borderColor="
+
+   Line 364: #a5f3fc
+   Context: <FilterChip key={`s-${s}`} label={s} color="var(--ds-link, #0C66E4)" bgColor="#ecfeff" borderColor="
+
+   Line 367: #a7f3d0
+   Context: <FilterChip key={`r-${r}`} label={r} color="var(--quality-high, #059669)" bgColor="var(--ds-backgrou
+
+📁 src/config/riskColors.ts
+   Line 20: #922b21
+   Context: critical: '#922b21',
+
+   Line 21: #cb4335
+   Context: high: '#cb4335',
+
+📁 src/constants/users.ts
+   Line 12: #0369a1
+   Context: '#0369a1', // Sky-dark
+
+📁 src/contexts/HierarchyConfigContext.tsx
+   Line 37: #00B8D9
+   Context: color: '#00B8D9',
+
+📁 src/features/all-releases/components/TimelineView.tsx
+   Line 30: rgba(249,115,22,0.35)
+   Context: at_risk: 'rgba(249,115,22,0.35)',
+
+   Line 31: rgba(234,179,8,0.35)
+   Context: attention: 'rgba(234,179,8,0.35)',
+
+📁 src/features/chat-v2/components/Attachments/ComposerAttachmentChip.tsx
+   Line 110: #1A1D21
+   Context: background: '#1A1D21',
+
+📁 src/features/chat-v2/components/Attachments/DropzoneOverlay.tsx
+   Line 72: #7E57C2
+   Context: background: '#7E57C2',
+
+   Line 94: #4FC3F7
+   Context: background: '#4FC3F7',
+
+   Line 122: #AED581
+   Context: background: 'linear-gradient(180deg, #AED581 0%, #66BB6A 100%)',
+
+   Line 122: #66BB6A
+   Context: background: 'linear-gradient(180deg, #AED581 0%, #66BB6A 100%)',
+
+   Line 134: #FFD54F
+   Context: background: '#FFD54F',
+
+📁 src/features/chat-v2/components/Composer/Composer.tsx
+   Line 244: rgba(224, 30, 90, 0.12)
+   Context: background: 'rgba(224, 30, 90, 0.12)',
+
+   Line 245: rgba(224, 30, 90, 0.45)
+   Context: border: '1px solid rgba(224, 30, 90, 0.45)',
+
+📁 src/features/chat-v2/components/Later/LaterRow.tsx
+   Line 84: rgba(155, 89, 182, 0.25)
+   Context: background: 'rgba(155, 89, 182, 0.25)',
+
+   Line 85: #C9A4F0
+   Context: color: '#C9A4F0',
+
+📁 src/features/chat-v2/components/LinkPreviews/LinkPreviewList.tsx
+   Line 134: #1D8DDA
+   Context: 'var(--ds-link, #0065FF)', '#1D8DDA', '#36C5F0', '#2EB67D',
+
+   Line 134: #36C5F0
+   Context: 'var(--ds-link, #0065FF)', '#1D8DDA', '#36C5F0', '#2EB67D',
+
+   Line 134: #2EB67D
+   Context: 'var(--ds-link, #0065FF)', '#1D8DDA', '#36C5F0', '#2EB67D',
+
+   Line 135: #9333EA
+   Context: '#7B61FF', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-warning-bold, #E2B203)'
+
+📁 src/features/chat-v2/components/MessagePanel/ChannelEmptyState.tsx
+   Line 99: #4A154B
+   Context: background="linear-gradient(180deg, #4A154B 0%, #3F0E40 100%)"
+
+   Line 99: #3F0E40
+   Context: background="linear-gradient(180deg, #4A154B 0%, #3F0E40 100%)"
+
+   Line 105: #0F4C56
+   Context: background="linear-gradient(180deg, #0F4C56 0%, #073B43 100%)"
+
+   Line 105: #073B43
+   Context: background="linear-gradient(180deg, #0F4C56 0%, #073B43 100%)"
+
+   Line 216: #F2C8A2
+   Context: <circle cx="22" cy="22" r="20" fill="#F2C8A2" />
+
+   Line 217: #3F704D
+   Context: <path d="M2 50C2 38 12 30 22 30c10 0 20 8 20 20v18H2z" fill="#3F704D" />
+
+   Line 220: #E0AC8B
+   Context: <circle cx="22" cy="22" r="20" fill="#E0AC8B" />
+
+   Line 224: #2D5BAB
+   Context: <path d="M2 50C2 38 12 30 22 30c10 0 20 8 20 20v18H2z" fill="#2D5BAB" />
+
+   Line 227: #F8B4A0
+   Context: <circle cx="26" cy="26" r="22" fill="#F8B4A0" />
+
+   Line 228: #FB7BA4
+   Context: <path d="M4 26C4 14 14 4 26 4c12 0 22 10 22 22v6H4z" fill="#FB7BA4" />
+
+   Line 229: #F9C04A
+   Context: <path d="M2 80C2 64 14 52 26 52c12 0 24 12 24 28v6H2z" fill="#F9C04A" />
+
+   Line 239: #F2EAD3
+   Context: <rect x="0" y="0" width="70" height="92" rx="4" fill="#F2EAD3" />
+
+   Line 240: #7C8A8E
+   Context: <rect x="10" y="14" width="20" height="3" fill="#7C8A8E" />
+
+   Line 241: #C7D3D6
+   Context: <rect x="10" y="24" width="46" height="2" fill="#C7D3D6" />
+
+   Line 242: #C7D3D6
+   Context: <rect x="10" y="30" width="40" height="2" fill="#C7D3D6" />
+
+   Line 243: #C7D3D6
+   Context: <rect x="10" y="36" width="44" height="2" fill="#C7D3D6" />
+
+   Line 244: #1F8553
+   Context: <path d="M14 58l8 8 16-16" stroke="#1F8553" strokeWidth="4" fill="none" strokeLinecap="round" stroke
+
+   Line 247: #E0AC8B
+   Context: <path d="M20 80c0-16 12-32 30-32 18 0 22 14 22 26 0 14-14 30-26 30S20 96 20 80z" fill="#E0AC8B" />
+
+   Line 248: #B68360
+   Context: <path d="M40 64c4-2 10 0 12 6" stroke="#B68360" strokeWidth="1.4" fill="none" strokeLinecap="round" 
+
+📁 src/features/chat-v2/components/MessagePanel/DeleteMessageDialog.tsx
+   Line 144: rgba(224,30,90,0.30)
+   Context: boxShadow: '0 0 0 3px rgba(224,30,90,0.30)',
+
+📁 src/features/chat-v2/components/MessagePanel/MessageBubble.tsx
+   Line 151: rgba(236, 178, 46, 0.08)
+   Context: ? 'rgba(236, 178, 46, 0.08)'
+
+📁 src/features/chat-v2/components/MessagePanel/MessageMoreMenu.tsx
+   Line 221: rgba(224,30,90,0.12)
+   Context: ? 'rgba(224,30,90,0.12)'
+
+📁 src/features/chat-v2/components/MessagePanel/PinnedBanner.tsx
+   Line 32: rgba(236, 178, 46, 0.08)
+   Context: background: 'rgba(236, 178, 46, 0.08)',
+
+   Line 45: rgba(236, 178, 46, 0.14)
+   Context: (e.currentTarget as HTMLElement).style.background = 'rgba(236, 178, 46, 0.14)';
+
+   Line 48: rgba(236, 178, 46, 0.08)
+   Context: (e.currentTarget as HTMLElement).style.background = 'rgba(236, 178, 46, 0.08)';
+
+📁 src/features/chat-v2/components/Search/WorkspaceSearchModal.tsx
+   Line 482: rgba(255, 196, 0, 0.35)
+   Context: <mark style={{ background: 'rgba(255, 196, 0, 0.35)', color: 'inherit', padding: 0, borderRadius: 2 
+
+📁 src/features/chat-v2/components/Search/WorkspaceSearchResultsPanel.tsx
+   Line 228: rgba(255, 196, 0, 0.35)
+   Context: background: 'rgba(255, 196, 0, 0.35)',
+
+📁 src/features/chat-v2/components/Summarize/CustomDateRangeDialog.tsx
+   Line 109: rgba(8, 9, 12, 0.55)
+   Context: background: 'rgba(8, 9, 12, 0.55)',
+
+   Line 535: rgba(29, 155, 209, 0.18)
+   Context: if (isInRange && !isEndpoint) cellFill = 'rgba(29, 155, 209, 0.18)';
+
+📁 src/features/chat-v2/components/Summarize/SummaryPanel.tsx
+   Line 533: rgba(29, 155, 209, 0.18)
+   Context: background: 'rgba(29, 155, 209, 0.18)',
+
+📁 src/features/chat-v2/components/shared/ActionTooltip.tsx
+   Line 55: #1D1D1F
+   Context: background: '#1D1D1F',
+
+   Line 71: #1D1D1F
+   Context: background: '#1D1D1F',
+
+📁 src/features/chat-v2/components/shared/PresenceAvatar.tsx
+   Line 91: #E8A87C
+   Context: ? '#E8A87C'
+
+📁 src/features/chat-v2/tokens.css
+   Line 259: rgba(38, 132, 255, 0.16)
+   Context: background: rgba(38, 132, 255, 0.16);
+
+   Line 263: rgba(255, 159, 64, 0.18)
+   Context: background: rgba(255, 159, 64, 0.18);
+
+📁 src/features/kanban-board/components/Card.tsx
+   Line 75: #091E4240
+   Context: base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', 'var(--ds-background-warning-bold,
+
+   Line 75: #091E424F
+   Context: base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', 'var(--ds-background-warning-bold,
+
+📁 src/features/notifications/components/DirectNotificationRow.tsx
+   Line 102: #6698FF
+   Context: ? "#6698FF"
+
+📁 src/features/voice-flow/VoiceFloatingCapsule.tsx
+   Line 44: rgba(16, 20, 36, 0.82)
+   Context: background: rgba(16, 20, 36, 0.82);
+
+   Line 56: rgba(40, 20, 0, 0.85)
+   Context: background: rgba(40, 20, 0, 0.85);
+
+   Line 57: rgba(247, 144, 9, 0.5)
+   Context: border-color: rgba(247, 144, 9, 0.5);
+
+   Line 78: #E040FB
+   Context: background: #E040FB;
+
+   Line 146: #F87168
+   Context: color: #F87168;
+
+   Line 149: #F79009
+   Context: color: #F79009;
+
+   Line 168: rgba(206, 147, 216, 0.12)
+   Context: background: rgba(206, 147, 216, 0.12);
+
+   Line 169: rgba(206, 147, 216, 0.25)
+   Context: border: 1px solid rgba(206, 147, 216, 0.25);
+
+   Line 174: #CE93D8
+   Context: color: #CE93D8;
+
+   Line 221: #F79009
+   Context: background: #F79009;
+
+📁 src/hooks/__tests__/useR360ForYouPanel.test.ts
+   Line 20: #00B8D9
+   Context: { projectId: 'p2', name: 'Data Analytics', key: 'DA', color: '#00B8D9', role: 'member' },
+
+📁 src/hooks/home/useAllUserProjects.test.ts
+   Line 9: #222
+   Context: const phIcons = [{ key: 'BAU', icon: 'rocket', color: '#222' }];
+
+   Line 15: #222
+   Context: expect(bau).toMatchObject({ id: 'u1', name: 'Senaei BAU', icon: 'rocket', color: '#222' });
+
+📁 src/hooks/useProjectListItems.ts
+   Line 65: #00B8D9
+   Context: const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-link, #0C66E4)', 'v
+
+📁 src/hooks/useResourceProfiles.ts
+   Line 70: #be123c
+   Context: color: '#be123c', // Rose - matches Catalyst danger
+
+   Line 71: #be123c
+   Context: ringColor: 'ring-[#be123c]',
+
+   Line 73: #be123c
+   Context: textColor: 'text-[#be123c]',
+
+📁 src/lib/capacity/utils.ts
+   Line 77: rgba(249, 115, 22, 0.15)
+   Context: return { bg: 'rgba(249, 115, 22, 0.15)', text: BRAND_COLORS.orangeDark };
+
+📁 src/lib/capacity/work-item-tokens.ts
+   Line 7: #4d8b4d
+   Context: enterprise: { border: '#4d8b4d', bg: 'rgba(77, 139, 77, 0.08)', text: '#4d8b4d' },
+
+   Line 7: #4d8b4d
+   Context: enterprise: { border: '#4d8b4d', bg: 'rgba(77, 139, 77, 0.08)', text: '#4d8b4d' },
+
+   Line 7: rgba(77, 139, 77, 0.08)
+   Context: enterprise: { border: '#4d8b4d', bg: 'rgba(77, 139, 77, 0.08)', text: '#4d8b4d' },
+
+   Line 14: #4d8b4d
+   Context: theme: { bg: 'rgba(77, 139, 77, 0.12)', text: '#4d8b4d', ring: '#4d8b4d' },
+
+   Line 14: #4d8b4d
+   Context: theme: { bg: 'rgba(77, 139, 77, 0.12)', text: '#4d8b4d', ring: '#4d8b4d' },
+
+   Line 14: rgba(77, 139, 77, 0.12)
+   Context: theme: { bg: 'rgba(77, 139, 77, 0.12)', text: '#4d8b4d', ring: '#4d8b4d' },
+
+   Line 16: #d4b896
+   Context: key_result: { bg: 'rgba(212, 184, 150, 0.12)', text: '#d4b896', ring: '#d4b896' },
+
+   Line 16: #d4b896
+   Context: key_result: { bg: 'rgba(212, 184, 150, 0.12)', text: '#d4b896', ring: '#d4b896' },
+
+   Line 16: rgba(212, 184, 150, 0.12)
+   Context: key_result: { bg: 'rgba(212, 184, 150, 0.12)', text: '#d4b896', ring: '#d4b896' },
+
+📁 src/lib/capacity-heatmap/utils.ts
+   Line 41: #7dd3fc
+   Context: if (percentage <= 70) return { bg: 'rgba(56, 189, 248, 0.25)', text: '#7dd3fc', pulse: false };  // 
+
+   Line 41: rgba(56, 189, 248, 0.25)
+   Context: if (percentage <= 70) return { bg: 'rgba(56, 189, 248, 0.25)', text: '#7dd3fc', pulse: false };  // 
+
+📁 src/lib/catalystFlag.tsx
+   Line 126: rgba(9,30,66,0.18)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.18), 0 2px 6px rgba(9,30,66,0.10)',
+
+   Line 126: rgba(9,30,66,0.10)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.18), 0 2px 6px rgba(9,30,66,0.10)',
+
+📁 src/lib/jira-issue-type-icons.tsx
+   Line 223: #0C7A6D
+   Context: color: '#0C7A6D',
+
+📁 src/lib/workhub/chartConfig.ts
+   Line 18: #312e81
+   Context: 'Subtask':  '#312e81',
+
+📁 src/main.tsx
+   Line 130: #666
+   Context: <pre style="white-space:pre-wrap;word-break:break-all;font-size:12px;color:#666">${String(err?.stack
+
+📁 src/modules/product-roadmap/components/RoadmapScoreTab.tsx
+   Line 176: #a1a1aa
+   Context: <div style={{ fontSize: '11px', fontWeight: 600, color: '#a1a1aa', textTransform: 'uppercase', lette
+
+📁 src/modules/product-roadmap/lib/design-tokens.ts
+   Line 54: rgba(107, 114, 128, 0.15)
+   Context: bg: 'rgba(107, 114, 128, 0.15)',
+
+   Line 62: rgba(200, 204, 208, 0.15)
+   Context: bg: 'rgba(200, 204, 208, 0.15)',
+
+📁 src/modules/program-epics/components/CreateEpicDialog.tsx
+   Line 407: #141414
+   Context: "bg-white dark:bg-[#141414]",
+
+📁 src/modules/program-epics/components/EditEpicDialog.tsx
+   Line 214: #141414
+   Context: 'bg-white dark:bg-[#141414] rounded-lg shadow-xl',
+
+📁 src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanel.css
+   Line 368: rgba(0, 82, 204, 0.25)
+   Context: box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+
+   Line 415: rgba(0, 82, 204, 0.25)
+   Context: box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+
+   Line 423: #137
+   Context: /* 2026-06-23 — Inline summary editor (Jira parity, image #137):
+
+   Line 490: rgba(0, 82, 204, 0.25)
+   Context: box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+
+   Line 1230: rgba(255,99,89,0.6)
+   Context: border-color: rgba(255,99,89,0.6);
+
+   Line 1234: rgba(255,99,89,0.15)
+   Context: background: rgba(255,99,89,0.15);
+
+📁 src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2.css
+   Line 65: rgba(0, 82, 204, 0.25)
+   Context: box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+
+📁 src/modules/project-work-hub/components/SubtasksPanel/cells/StatusCell.tsx
+   Line 24: #669DF1
+   Context: case 'inprogress': return { bg: '#669DF1',                fg }; // In Progress — medium blue
+
+📁 src/modules/project-work-hub/components/TicketBreadcrumbs.tsx
+   Line 179: #42526E
+   Context: /* Scoped token override — Jira-canonical breadcrumb color (CLAUDE.md 2026-05-12: 14px/400/#42526E).
+
+📁 src/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.css
+   Line 181: rgb(97, 99, 103)
+   Context: color: rgb(97, 99, 103);
+
+   Line 215: rgba(8, 15, 33, 0.29)
+   Context: color: rgba(8, 15, 33, 0.29);
+
+   Line 251: rgba(8, 15, 33, 0.55)
+   Context: .att-delete-btn { color: rgba(8, 15, 33, 0.55); }
+
+   Line 312: #1E2027
+   Context: .dark .att-upload-row { background: #1E2027; }
+
+   Line 436: rgba(30, 32, 39, 0.92)
+   Context: .dark .att-card__actions { background: rgba(30, 32, 39, 0.92); }
+
+📁 src/modules/project-work-hub/components/linked-work-items/linked-work-items.css
+   Line 68: #292A2E
+   Context: /* jira-compare 2026-05-11 re-probe: 16/653/20px / #292A2E is canonical Jira spec
+
+   Line 562: #3B1F1C
+   Context: .dark .lwi-error { background: #3B1F1C; color: #FFB9B0; }
+
+   Line 562: #FFB9B0
+   Context: .dark .lwi-error { background: #3B1F1C; color: #FFB9B0; }
+
+📁 src/modules/project-work-hub/pages/AllWorkDetailPage.tsx
+   Line 105: #344054
+   Context: <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Issue not found</span>
+
+📁 src/modules/project-work-hub/pages/BacklogDetailPage.tsx
+   Line 158: #344054
+   Context: <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Issue not found</span>
+
+📁 src/modules/project-work-hub/utils/backlog.utils.ts
+   Line 39: #FACC15
+   Context: moved:      { bg: 'rgba(234,179,8,0.10)',   text: '#FACC15' },
+
+   Line 39: rgba(234,179,8,0.10)
+   Context: moved:      { bg: 'rgba(234,179,8,0.10)',   text: '#FACC15' },
+
+   Line 275: #CF7B00
+   Context: case 'medium':  return '#CF7B00';
+
+   Line 323: #FFE2FE
+   Context: { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' },
+
+   Line 323: #6B0089
+   Context: { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' },
+
+   Line 323: #D084FF
+   Context: { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' },
+
+   Line 326: #E6FCFF
+   Context: { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
+
+   Line 326: #006884
+   Context: { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
+
+   Line 326: #00C7E6
+   Context: { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
+
+📁 src/modules/task10/components/landing/T10AssigneeFilter.tsx
+   Line 16: #2A6DF4
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 16: #7C3BED
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 16: #25A777
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 16: #E92063
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 16: #F97015
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 17: #21C45D
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+   Line 17: #0DA2E7
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+   Line 17: #FAC814
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+   Line 17: #BB36D3
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+   Line 17: #1DAFA1
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+📁 src/modules/task10/components/panel/T10AssigneeFieldNew.tsx
+   Line 17: #2A6DF4
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 17: #7C3BED
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 17: #25A777
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 17: #E92063
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 17: #F97015
+   Context: '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+
+   Line 18: #21C45D
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+   Line 18: #0DA2E7
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+   Line 18: #FAC814
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+   Line 18: #BB36D3
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+   Line 18: #1DAFA1
+   Context: '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+
+📁 src/modules/task10/components/panel/T10EnterpriseSidePanel.tsx
+   Line 62: #a855f7
+   Context: { name: 'Purple', value: '#a855f7' },
+
+📁 src/modules/task10/types/index.ts
+   Line 42: #a855f7
+   Context: { name: 'Purple', value: '#a855f7' },
+
+📁 src/modules/tasks/components/TaskDetailDrawer/DrawerHeader.tsx
+   Line 303: #2A6DF4
+   Context: '#2A6DF4',  // Blue
+
+   Line 304: #7C3BED
+   Context: '#7C3BED',  // Purple
+
+   Line 305: #25A777
+   Context: '#25A777',  // Teal
+
+   Line 306: #E92063
+   Context: '#E92063',  // Pink
+
+   Line 307: #F97015
+   Context: '#F97015',  // Orange
+
+   Line 308: #21C45D
+   Context: '#21C45D',  // Green
+
+   Line 309: #0DA2E7
+   Context: '#0DA2E7',  // Sky
+
+   Line 310: #FAC814
+   Context: '#FAC814',  // Amber
+
+   Line 311: #BB36D3
+   Context: '#BB36D3',  // Fuchsia
+
+   Line 312: #1DAFA1
+   Context: '#1DAFA1',  // Cyan
+
+📁 src/modules/tasks/components/TaskDetailDrawer/SidebarFields.tsx
+   Line 31: #a855f7
+   Context: purple: { bg: 'bg-purple-500', text: 'text-white', hex: '#a855f7' },
+
+   Line 110: #2A6DF4
+   Context: '#2A6DF4',  // Blue
+
+   Line 111: #7C3BED
+   Context: '#7C3BED',  // Purple
+
+   Line 112: #25A777
+   Context: '#25A777',  // Teal
+
+   Line 113: #E92063
+   Context: '#E92063',  // Magenta
+
+   Line 114: #F97015
+   Context: '#F97015',  // Orange
+
+   Line 115: #21C45D
+   Context: '#21C45D',  // Green
+
+   Line 116: #0DA2E7
+   Context: '#0DA2E7',  // Sky Blue
+
+   Line 117: #FAC814
+   Context: '#FAC814',  // Yellow
+
+   Line 118: #BB36D3
+   Context: '#BB36D3',  // Violet
+
+   Line 119: #1DAFA1
+   Context: '#1DAFA1',  // Cyan
+
+📁 src/modules/tasks/components/insights/MonthlyChronicleView.tsx
+   Line 110: #1a2744
+   Context: <div className="relative px-14 py-12 bg-gradient-to-br from-slate-900 to-[#1a2744] text-white overfl
+
+📁 src/modules/tasks/hooks/__tests__/useTasksTableData.test.ts
+   Line 26: #ff0000
+   Context: teamColor: '#ff0000',
+
+📁 src/modules/tasks/styles/timeline-enterprise.css
+   Line 443: rgba(51, 65, 85, 0.3)
+   Context: background-color: rgba(51, 65, 85, 0.3) !important;
+
+   Line 541: rgb(14, 165, 233)
+   Context: [style*="background: rgb(14, 165, 233)"],
+
+   Line 542: rgb(253, 164, 175)
+   Context: [style*="background: rgb(253, 164, 175)"] {
+
+📁 src/modules/work-hub/types.ts
+   Line 173: #FF7452
+   Context: HIGH: { label: 'High', color: '#FF7452', icon: 'chevron-up' },
+
+📁 src/modules/work-hub/views/SummaryView.tsx
+   Line 49: #8777D9
+   Context: { status: 'On Hold', count: 7, color: '#8777D9' },
+
+   Line 50: #FF7452
+   Context: { status: 'Backlog', count: 44, color: '#FF7452' },
+
+   Line 198: #FF7452
+   Context: { label: 'High', count: 5, color: '#FF7452' },
+
+📁 src/modules/workhub/admin/components/UserMapping.tsx
+   Line 461: #A7F3D0
+   Context: border: '1px solid #A7F3D0',
+
+📁 src/modules-dormant/wiki/WikiHomePage.tsx
+   Line 317: #CFFAFE
+   Context: D2: { bg: '#CFFAFE', fg: '#0E7490' },   // cyan
+
+   Line 317: #0E7490
+   Context: D2: { bg: '#CFFAFE', fg: '#0E7490' },   // cyan
+
+📁 src/modules-dormant/wiki/WikiTemplatesPage.tsx
+   Line 18: rgba(217,119,6,${isDark ? '0.25' : '0.3'})
+   Context: border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
+
+   Line 196: rgba(217,119,6,${isDark ? '0.25' : '0.3'})
+   Context: border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
+
+📁 src/pages/ForYouPage.tsx
+   Line 144: #1B3459
+   Context: const PALETTE = ['var(--ds-link, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold, #6E5DC6)
+
+   Line 144: #0D7C66
+   Context: const PALETTE = ['var(--ds-link, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold, #6E5DC6)
+
+   Line 144: #B34D00
+   Context: const PALETTE = ['var(--ds-link, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold, #6E5DC6)
+
+📁 src/pages/ProductRoadmapPage.tsx
+   Line 327: #C25100
+   Context: <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: '#C2
+
+📁 src/pages/ResourceListingPage.tsx
+   Line 63: #6b7a8d
+   Context: const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 
+
+   Line 63: #7a8b6b
+   Context: const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 
+
+   Line 63: #8b7a6b
+   Context: const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 
+
+   Line 63: #6b6b8b
+   Context: const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 
+
+   Line 63: #6b8b8b
+   Context: const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 
+
+   Line 63: #8b6b7a
+   Context: const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 
+
+   Line 63: #7a6b8b
+   Context: const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 
+
+   Line 63: #6b8b7a
+   Context: const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', 
+
+📁 src/pages/admin/AdminAccessPage.tsx
+   Line 215: #25D366
+   Context: <path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.1
+
+   Line 1402: rgba(0,0,0,0.45)
+   Context: background: 'rgba(0,0,0,0.45)',
+
+📁 src/pages/admin/AdminStorybookPage.tsx
+   Line 112: rgba(76, 154, 73, 0.1)
+   Context: <div style={{ padding: '12px', background: 'rgba(76, 154, 73, 0.1)', borderLeft: '4px solid rgb(76, 
+
+   Line 112: rgb(76, 154, 73)
+   Context: <div style={{ padding: '12px', background: 'rgba(76, 154, 73, 0.1)', borderLeft: '4px solid rgb(76, 
+
+   Line 113: rgb(76, 154, 73)
+   Context: <p style={{ fontWeight: 600, color: 'rgb(76, 154, 73)', margin: '0 0 8px 0' }}>✓ Do's</p>
+
+   Line 122: rgba(225, 42, 25, 0.1)
+   Context: <div style={{ padding: '12px', background: 'rgba(225, 42, 25, 0.1)', borderLeft: '4px solid rgb(225,
+
+   Line 122: rgb(225, 42, 25)
+   Context: <div style={{ padding: '12px', background: 'rgba(225, 42, 25, 0.1)', borderLeft: '4px solid rgb(225,
+
+   Line 123: rgb(225, 42, 25)
+   Context: <p style={{ fontWeight: 600, color: 'rgb(225, 42, 25)', margin: '0 0 8px 0' }}>✗ Don'ts</p>
+
+   Line 177: #FF0000
+   Context: 'Use hardcoded hex colors (#FF0000)',
+
+📁 src/pages/admin/CapacityDepartments.tsx
+   Line 192: rgba(202,53,33,0.1)
+   Context: onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.c
+
+📁 src/pages/admin/FeatureFlagsPage.tsx
+   Line 838: rgba(113,113,122,0.4)
+   Context: <span style={{ color: 'rgba(113,113,122,0.4)' }}>•</span>
+
+📁 src/pages/admin/GovernanceSettings.tsx
+   Line 158: rgba(31, 132, 90, 0.04)
+   Context: ? 'rgba(31, 132, 90, 0.04)'
+
+   Line 159: rgba(212, 53, 28, 0.04)
+   Context: : 'rgba(212, 53, 28, 0.04)',
+
+📁 src/pages/admin/ResourceAssignments.tsx
+   Line 373: rgba(202,53,33,0.1)
+   Context: onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.c
+
+📁 src/pages/admin/components/UserDrawer.tsx
+   Line 786: rgba(87,157,255,0.20)
+   Context: box-shadow: 0 0 0 3px rgba(87,157,255,0.20) !important;
+
+📁 src/pages/admin/connections/JiraSyncPageMockup.tsx
+   Line 230: rgba(7,71,166,0.1)
+   Context: <strong>MDT</strong> (Master Data Management) always syncs to <strong>Investor Journey</strong> Prod
+
+📁 src/pages/dev/EvidenceToExecutionFull.tsx
+   Line 727: #4CE97
+   Context: border: '1px solid #4CE97',
+
+   Line 736: #E3F2FD
+   Context: backgroundColor: '#E3F2FD',
+
+   Line 799: #4CE97
+   Context: border: '1px solid #4CE97',
+
+📁 src/pages/dev/components/EvidencePackModal.tsx
+   Line 173: #9F8FEF
+   Context: figma: '#9F8FEF',
+
+   Line 174: #E2622D
+   Context: comment: '#E2622D',
+
+📁 src/pages/dev/components/GenerateEpicsModal.tsx
+   Line 321: #4CE97
+   Context: border: '1px solid #4CE97',
+
+📁 src/pages/dev/components/GlobalProgressIndicator.tsx
+   Line 109: #BCDFFB
+   Context: backgroundColor: '#BCDFFB',
+
+📁 src/pages/enterprise/capacity-planner/LevelingView.tsx
+   Line 255: #d4b896
+   Context: <div className="w-10 h-10 rounded-lg bg-[#d4b896]/20 flex items-center justify-center shrink-0">
+
+📁 src/pages/enterprise/capacity-planner/TableView.tsx
+   Line 61: #be123c
+   Context: critical: 'ring-[#be123c]',
+
+   Line 297: #0e7490
+   Context: 'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
+
+   Line 297: rgba(14,116,144,0.12)
+   Context: 'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
+
+📁 src/pages/items/EpicsPage.tsx
+   Line 459: #666
+   Context: .card-key { color: #666; font-size: 14px; }
+
+📁 src/pages/jira-clone/ReleaseManagementPage.tsx
+   Line 49: #EBECF0
+   Context: <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', borderBottom: '1px solid #EBECF0' 
+
+   Line 50: #626F86
+   Context: <button style={{ padding: '8px 12px', background: 'none', border: 'none', color: '#626F86', cursor: 
+
+   Line 51: #0052CC
+   Context: <button style={{ padding: '8px 12px', background: 'none', border: 'none', color: '#0052CC', borderBo
+
+   Line 51: #0052CC
+   Context: <button style={{ padding: '8px 12px', background: 'none', border: 'none', color: '#0052CC', borderBo
+
+   Line 61: #DFE1E6
+   Context: style={{ width: '180px', padding: '6px 12px', border: '1px solid #DFE1E6', borderRadius: '3px', font
+
+   Line 67: #DFE1E6
+   Context: style={{ padding: '6px 12px', border: '1px solid #DFE1E6', borderRadius: '3px', fontSize: '14px', cu
+
+   Line 74: #626F86
+   Context: <span style={{ color: '#626F86', fontSize: '13px' }}>This space has 47 releases</span>
+
+   Line 79: #DFE1E6
+   Context: style={{ padding: '6px 16px', background: 'none', border: '1px solid #DFE1E6', borderRadius: '3px', 
+
+   Line 85: #0052CC
+   Context: style={{ padding: '6px 16px', background: '#0052CC', color: 'white', border: 'none', borderRadius: '
+
+   Line 95: #EBECF0
+   Context: <tr style={{ borderBottom: '1px solid #EBECF0', background: '#FAFBFC' }}>
+
+   Line 95: #FAFBFC
+   Context: <tr style={{ borderBottom: '1px solid #EBECF0', background: '#FAFBFC' }}>
+
+   Line 107: #EBECF0
+   Context: <tr key={release.id} style={{ borderBottom: '1px solid #EBECF0', background: '#FFFFFF', hover: { bac
+
+   Line 107: #FFFFFF
+   Context: <tr key={release.id} style={{ borderBottom: '1px solid #EBECF0', background: '#FFFFFF', hover: { bac
+
+   Line 107: #F7F8F9
+   Context: <tr key={release.id} style={{ borderBottom: '1px solid #EBECF0', background: '#FFFFFF', hover: { bac
+
+   Line 109: #0052CC
+   Context: <a href="#" onClick={(e) => e.preventDefault()} style={{ color: '#0052CC', textDecoration: 'underlin
+
+   Line 112: #FFFFFF
+   Context: <span style={{ display: 'inline-block', padding: '2px 8px', background: '#FFFFFF', border: '1px soli
+
+   Line 112: #626F86
+   Context: <span style={{ display: 'inline-block', padding: '2px 8px', background: '#FFFFFF', border: '1px soli
+
+   Line 118: #626F86
+   Context: <span style={{ fontStyle: 'italic', color: '#626F86', fontSize: '13px' }}>No work items</span>
+
+   Line 120: #EBECF0
+   Context: <div style={{ display: 'flex', gap: 0, height: '8px', borderRadius: '4px', overflow: 'hidden', backg
+
+   Line 121: #216E4E
+   Context: <div style={{ flex: release.progress?.completed || 0, background: '#216E4E' }} />
+
+   Line 122: #EBECF0
+   Context: <div style={{ flex: (release.progress?.total || 0) - (release.progress?.completed || 0), background:
+
+   Line 126: #172B4D
+   Context: <td style={{ padding: '12px 16px', color: '#172B4D' }}>{release.startDate || ''}</td>
+
+   Line 127: #AE2A19
+   Context: <td style={{ padding: '12px 16px', color: release.releaseDate && new Date(release.releaseDate) < new
+
+   Line 127: #172B4D
+   Context: <td style={{ padding: '12px 16px', color: release.releaseDate && new Date(release.releaseDate) < new
+
+   Line 137: #0052CC
+   Context: style={{ padding: '4px 12px', background: '#0052CC', color: 'white', border: 'none', borderRadius: '
+
+   Line 158: rgba(9, 30, 66, 0.5)
+   Context: <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(9, 30, 66, 
+
+   Line 159: rgba(9, 30, 66, 0.25)
+   Context: <div style={{ background: 'white', borderRadius: '3px', padding: '24px', maxWidth: '500px', width: '
+
+   Line 165: #DFE1E6
+   Context: style={{ width: '100%', padding: '8px 12px', border: '1px solid #DFE1E6', borderRadius: '3px', fontS
+
+   Line 170: #DFE1E6
+   Context: style={{ padding: '6px 16px', background: 'none', border: '1px solid #DFE1E6', borderRadius: '3px', 
+
+   Line 179: #0052CC
+   Context: style={{ padding: '6px 16px', background: '#0052CC', color: 'white', border: 'none', borderRadius: '
+
+   Line 190: rgba(9, 30, 66, 0.5)
+   Context: <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(9, 30, 66, 
+
+   Line 191: rgba(9, 30, 66, 0.25)
+   Context: <div style={{ background: 'white', borderRadius: '3px', padding: '24px', maxWidth: '500px', width: '
+
+   Line 193: #172B4D
+   Context: <p style={{ margin: '0 0 24px 0', color: '#172B4D' }}>Are you sure you want to release this?</p>
+
+   Line 200: #DFE1E6
+   Context: style={{ padding: '6px 16px', background: 'none', border: '1px solid #DFE1E6', borderRadius: '3px', 
+
+   Line 206: #AE2A19
+   Context: style={{ padding: '6px 16px', background: '#AE2A19', color: 'white', border: 'none', borderRadius: '
+
+   Line 224: #0052CC
+   Context: background: '#0052CC',
+
+   Line 230: rgba(9, 30, 66, 0.15)
+   Context: boxShadow: '0 8px 12px rgba(9, 30, 66, 0.15)',
+
+📁 src/pages/project/FeatureViewPage.module.css
+   Line 226: rgba(38, 132, 255, 0.12)
+   Context: background: rgba(38, 132, 255, 0.12);
+
+   Line 228: rgba(38, 132, 255, 0.24)
+   Context: border-color: rgba(38, 132, 255, 0.24);
+
+   Line 304: #E6A62A
+   Context: background: #E6A62A;
+
+   Line 380: rgba(246, 97, 12, 0.12)
+   Context: background: rgba(246, 97, 12, 0.12);
+
+   Line 381: #F6610C
+   Context: color: #F6610C;
+
+   Line 671: #F6610C
+   Context: color: #F6610C;
+
+   Line 714: rgba(38, 132, 255, 0.12)
+   Context: background: rgba(38, 132, 255, 0.12);
+
+   Line 843: #957E50
+   Context: background: linear-gradient(135deg, #957E50 0%, #74623E 100%);
+
+   Line 843: #74623E
+   Context: background: linear-gradient(135deg, #957E50 0%, #74623E 100%);
+
+   Line 1277: rgba(38, 132, 255, 0.15)
+   Context: background: rgba(38, 132, 255, 0.15);
+
+   Line 1306: rgba(230, 166, 42, 0.1)
+   Context: background: rgba(230, 166, 42, 0.1);
+
+   Line 1307: #E6A62A
+   Context: color: #E6A62A;
+
+   Line 1308: rgba(230, 166, 42, 0.2)
+   Context: border: 1px solid rgba(230, 166, 42, 0.2);
+
+   Line 1424: #957E50
+   Context: background: linear-gradient(135deg, #957E50 0%, #74623E 100%) !important;
+
+   Line 1424: #74623E
+   Context: background: linear-gradient(135deg, #957E50 0%, #74623E 100%) !important;
+
+   Line 1430: #B89968
+   Context: background: linear-gradient(135deg, #B89968 0%, #8C7349 100%) !important;
+
+   Line 1430: #8C7349
+   Context: background: linear-gradient(135deg, #B89968 0%, #8C7349 100%) !important;
+
+📁 src/pages/project-hub/jira-list/components/ask-caty-input.css
+   Line 68: #cd519d
+   Context: #cd519d 120deg,
+
+📁 src/pages/release/IncidentCommandCenter.tsx
+   Line 162: #0088FE
+   Context: const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+
+   Line 162: #00C49F
+   Context: const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+
+   Line 162: #FFBB28
+   Context: const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+
+📁 src/pages/release/IncidentViewPage.tsx
+   Line 192: #f5f7fa
+   Context: <div className="h-full flex flex-col bg-[#f5f7fa]">
+
+📁 src/pages/release-hub/ReleaseDetailPage.tsx
+   Line 461: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 1px 2px rgba(9,30,66,0.08)',
+
+📁 src/pages/release-hub/ReleaseWorkNavigatorPage.tsx
+   Line 639: #8FB8F6
+   Context: background: '#8FB8F6',
+
+   Line 658: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 658: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 669: rgba(24,104,219,0.2)
+   Context: boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+
+   Line 859: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 859: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 893: rgba(9,30,66,0.16)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 893: rgba(9,30,66,0.08)
+   Context: boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+
+   Line 910: rgba(24,104,219,0.2)
+   Context: boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+
+📁 src/pages/releasehub/ReleaseComparePage.tsx
+   Line 90: #F4F7FA
+   Context: <tr className="bg-[#F4F7FA] border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #
+
+📁 src/stories/enterprise/CatySVGAssets.stories.tsx
+   Line 57: #2A2832
+   Context: {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={askCatyDark} alt="Ask Caty light" />)}
+
+   Line 73: #2A2832
+   Context: {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyDark} alt="Caty light" />)}
+
+   Line 88: #2A2832
+   Context: { label: 'light (dark bg)', src: askCatyDark, bg: '#2A2832', textColor: '#F6F4EF' },
+
+   Line 88: #F6F4EF
+   Context: { label: 'light (dark bg)', src: askCatyDark, bg: '#2A2832', textColor: '#F6F4EF' },
+
+   Line 101: #2A2832
+   Context: { label: 'light (dark bg)', src: catyDark, bg: '#2A2832', textColor: '#F6F4EF' },
+
+   Line 101: #F6F4EF
+   Context: { label: 'light (dark bg)', src: catyDark, bg: '#2A2832', textColor: '#F6F4EF' },
+
+   Line 118: #2A2832
+   Context: {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAIBg} alt="Caty AI with bg" />)}
+
+   Line 122: #2A2832
+   Context: {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAI} alt="Caty AI on dark" />)}
+
+   Line 128: #1E2A3A
+   Context: {sizes.map(s => <SizeChip key={s} size={s} bg="#1E2A3A" src={logoMarkDark} alt="Logo mark dark" />)}
+
+   Line 139: #2A2832
+   Context: { label: 'Caty AI BG', src: catyAIBg, bg: '#2A2832', textColor: '#F6F4EF' },
+
+   Line 139: #F6F4EF
+   Context: { label: 'Caty AI BG', src: catyAIBg, bg: '#2A2832', textColor: '#F6F4EF' },
+
+   Line 142: #1E2A3A
+   Context: { label: 'Logo Mark Dark', src: logoMarkDark, bg: '#1E2A3A', textColor: '#F6F4EF' },
+
+   Line 142: #F6F4EF
+   Context: { label: 'Logo Mark Dark', src: logoMarkDark, bg: '#1E2A3A', textColor: '#F6F4EF' },
+
+   Line 179: #2A2832
+   Context: <div style={{ background: '#2A2832', borderRadius: 12, padding: 16 }}>
+
+   Line 190: #F79357
+   Context: <stop stopColor="#F79357" /><stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" 
+
+   Line 191: #B41572
+   Context: <stop offset=".75" stopColor="#B41572" /><stop offset="1" stopColor="#CC1E9A" />
+
+   Line 191: #CC1E9A
+   Context: <stop offset=".75" stopColor="#B41572" /><stop offset="1" stopColor="#CC1E9A" />
+
+   Line 239: #2A2832
+   Context: { label: 'Ask Caty Light', src: askCatyDark, bg: '#2A2832' },
+
+📁 src/stories/enterprise/ForYouRow.stories.tsx
+   Line 10: #0C66E4
+   Context: assignee: { id: '1', name: 'Vikram Indla', initials: 'VI', avatarColor: '#0C66E4' },
+
+📁 src/stories/enterprise/WorkItemHierarchyTree.stories.tsx
+   Line 33: #4688EC
+   Context: node('3', 'BAU-5957', 'Update product details survey', 3, 'Story', '#4688EC', 'Story', 'Ready for De
+
+   Line 34: #4688EC
+   Context: node('4', 'BAU-5958', 'Add price field validation rule', 4, 'Sub-task', '#4688EC', 'Sub-task', 'In P
+
+   Line 36: #4688EC
+   Context: node('5', 'BAU-5872', 'Add production-quantity validation', 3, 'Story', '#4688EC', 'Story', 'Done', 
+
+📁 src/stories/pages/ProductHubRoadmap.stories.tsx
+   Line 87: #0052CC
+   Context: ownerName: 'Vikram Indla', ownerInitials: 'VI', ownerColor: '#0052CC', starred: false,
+
+   Line 92: #ef4444
+   Context: key: 'p0', label: 'P0 — Critical', color: '#ef4444', isExpanded: true,
+
+   Line 99: #f59e0b
+   Context: key: 'p1', label: 'P1 — High', color: '#f59e0b', isExpanded: true,
+
+📁 src/stories/pages/TaskDetailComponents.stories.tsx
+   Line 32: #0052CC
+   Context: teamColor: '#0052CC',
+
+📁 src/stories/pages/TasksBoardsDashboard.stories.tsx
+   Line 77: #00B8D9
+   Context: { id: 'w2', name: 'Frontend', color: '#00B8D9' },
+
+📁 src/stories/pages/TasksModule.stories.tsx
+   Line 30: #0052CC
+   Context: teamColor: '#0052CC',
+
+📁 src/styles/boards.css
+   Line 708: rgba(234, 179, 8, 0.15)
+   Context: background-color: rgba(234, 179, 8, 0.15);
+
+📁 src/styles/capacity-module.css
+   Line 589: #D4B896
+   Context: .capacity-module [style*="#D4B896"],
+
+   Line 590: #d4b896
+   Context: .capacity-module [style*="#d4b896"] {
+
+📁 src/styles/catalyst-colors.css
+   Line 7: #964AC0
+   Context: /* Locate-in-timeline accents (Vikram 2026-06-25). #964AC0 is not an ADS token,
+
+📁 src/styles/goals-dark.css
+   Line 75: rgb(30, 41, 59)
+   Context: [data-theme="dark"] [data-goals-page] [style*="color: rgb(30, 41, 59)"],
+
+   Line 81: rgb(51, 65, 85)
+   Context: [data-theme="dark"] [data-goals-page] [style*="color: rgb(51, 65, 85)"],
+
+   Line 203: rgba(248,113,113,0.10)
+   Context: background: rgba(248,113,113,0.10) !important;
+
+   Line 219: rgb(245, 243, 255)
+   Context: [data-theme="dark"] [data-goals-page] span[style*="background: rgb(245, 243, 255)"] {
+
+📁 src/styles/product-kanban.css
+   Line 379: #A1A1AA
+   Context: .pk-empty-hint { font-size: 12px; color: #A1A1AA; }
+
+📁 src/styles/resource-allocation-enterprise.css
+   Line 362: #a7f3d0
+   Context: border-color: #a7f3d0 !important;
+
+📁 src/styles/roadmap-ringfenced.css
+   Line 321: #EDF2F7
+   Context: .roadmap-group-header:hover { background: #EDF2F7; }
+
+📁 src/theme/tokens.ts
+   Line 48: rgba(76, 154, 255, 0.12)
+   Context: selectedHovered: 'rgba(76, 154, 255, 0.12)',
+
+   Line 52: rgba(76, 154, 255, 0.08)
+   Context: brandSubtle: 'rgba(76, 154, 255, 0.08)',
+
+   Line 99: rgba(223, 225, 230, 0.5)
+   Context: subtle: 'rgba(223, 225, 230, 0.5)',
+
+   Line 127: rgba(26, 26, 26, 0.08)
+   Context: drawer: '-4px 0 20px rgba(26, 26, 26, 0.08)',
+
+📁 src/types/approval.ts
+   Line 58: #ABF5D1
+   Context: bgColor: '#ABF5D1',
+
+   Line 64: #FFBDAD
+   Context: bgColor: '#FFBDAD',
+
+   Line 88: #5243AA
+   Context: { id: 'design', name: 'Design', color: '#5243AA' },              // purple.bolder
+
+📁 src/types/producthub/request.ts
+   Line 75: #A855F7
+   Context: technical_validation:    { label: 'Technical Validation',   color: '#A855F7', bg: 'rgba(168,85,247,0
+
+   Line 75: rgba(168,85,247,0.15)
+   Context: technical_validation:    { label: 'Technical Validation',   color: '#A855F7', bg: 'rgba(168,85,247,0
+
+   Line 75: rgba(168,85,247,0.40)
+   Context: technical_validation:    { label: 'Technical Validation',   color: '#A855F7', bg: 'rgba(168,85,247,0
+
+   Line 78: #0EA5E9
+   Context: analysis:                { label: 'Analysis',               color: '#0EA5E9', bg: 'rgba(14,165,233,0
+
+   Line 78: rgba(14,165,233,0.15)
+   Context: analysis:                { label: 'Analysis',               color: '#0EA5E9', bg: 'rgba(14,165,233,0
+
+   Line 78: rgba(14,165,233,0.40)
+   Context: analysis:                { label: 'Analysis',               color: '#0EA5E9', bg: 'rgba(14,165,233,0
+
+📁 src/types/resource360.ts
+   Line 504: #E23636
+   Context: if (ageDays > 14) return { icon: '🔴', color: '#E23636', label: 'Stale (>14d)' };
+
+📁 src/types/story.ts
+   Line 41: #a259ff
+   Context: { type: 'figma' as const, label: 'Figma', icon: 'Figma', color: '#a259ff', bgColor: 'rgba(162, 89, 2
+
+   Line 41: rgba(162, 89, 255, 0.12)
+   Context: { type: 'figma' as const, label: 'Figma', icon: 'Figma', color: '#a259ff', bgColor: 'rgba(162, 89, 2
+
+📁 src/types/subtask.ts
+   Line 58: #a259ff
+   Context: color: '#a259ff',
+
+   Line 59: rgba(162, 89, 255, 0.12)
+   Context: bgColor: 'rgba(162, 89, 255, 0.12)',
+
+   Line 67: rgba(200, 204, 208, 0.15)
+   Context: bgColor: 'rgba(200, 204, 208, 0.15)',
+
+📁 src/types/workhub.ts
+   Line 340: #8c8f96
+   Context: Lowest:  { bars: 0, color: '#8c8f96', label: 'Lowest' },
+
+
+💡 Fix: Replace hard-coded colors with design system tokens.
+   Examples:
+   - Use: text-text-primary, bg-surface-0, border-border-default
+   - Use: c-title, c-kpi, c-body for typography
+   - Add missing tokens to src/index.css if needed
+
