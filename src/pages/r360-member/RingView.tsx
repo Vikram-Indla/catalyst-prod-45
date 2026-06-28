@@ -315,11 +315,11 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     {/* Compact header: icon + key + project + age */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4, minWidth: 0 }}>
                       {getJiraIcon(item.item_type)}
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
-                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: item.age_days > 30 ? T.textWarning() : T.textSubtlest(), fontFamily: MONO }}>since {item.age_days} days</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.item_key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle(), flexShrink: 0 }}>{item.project_key}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: item.age_days > 30 ? T.textWarning() : T.textSubtlest(), fontFamily: MONO, flexShrink: 0 }}>{item.age_days}d</span>
                     </div>
                     {/* Title */}
                     <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', marginBottom: 4 }}>{item.title}</div>
