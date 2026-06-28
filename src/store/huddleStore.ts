@@ -37,6 +37,12 @@ interface HuddleStore {
   /** Is MY annotation pen enabled (lets me draw on the shared screen)? */
   markerPen: boolean;
   setMarkerPen: (on: boolean) => void;
+  /** Big huddle-window display mode. 'minimized' shows the compact FAB instead. */
+  windowState: 'open' | 'minimized' | 'maximized';
+  setWindowState: (m: 'open' | 'minimized' | 'maximized') => void;
+  /** Is the in-window Thread panel open? */
+  chatPanelOpen: boolean;
+  toggleChatPanel: () => void;
   enter: (args: EnterArgs) => Promise<void>;
   leave: () => void;
   toggleMute: () => void;
@@ -58,6 +64,7 @@ let remoteScreenStream: MediaStream | null = null;
 let selfIdRef: string | null = null;
 let huddleIdRef: string | null = null;
 let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+let huddleStartedAt: number | null = null;
 
 /** Bump my participant row so the huddle reads as live. A dropped client stops
  *  beating → its row goes stale → the UI stops showing a phantom "Rejoin". */
@@ -136,6 +143,25 @@ async function markLeft(huddleId: string | null, userId: string | null) {
   } catch { /* best-effort */ }
 }
 
+/** Post one "A huddle happened" event row into the conversation thread.
+ *  Idempotent: the partial unique index on (event_meta->>'huddle_id') rejects a
+ *  duplicate from the other peer — we swallow that error. */
+async function postHuddleSummary(
+  conversationId: string | null, huddleId: string | null,
+  authorId: string | null, withName: string, startedAt: number | null,
+) {
+  if (!conversationId || !huddleId || !authorId) return;
+  const durationSeconds = startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : 0;
+  const { error } = await db.from('chat_messages').insert({
+    conversation_id: conversationId,
+    author_id: authorId,
+    body_text: 'A huddle happened',
+    event_type: 'huddle_summary',
+    event_meta: { huddle_id: huddleId, duration_seconds: durationSeconds, with_name: withName },
+  });
+  void error; // duplicate summary from the other peer is expected & ignored
+}
+
 export const useHuddleStore = create<HuddleStore>((set, get) => ({
   active: null,
   screenWindow: 'normal',
@@ -146,6 +172,10 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
   markTicketsAutoOpened: () => set({ ticketsAutoOpened: true }),
   markerPen: false,
   setMarkerPen: (on) => set({ markerPen: on }),
+  windowState: 'open',
+  setWindowState: (m) => set({ windowState: m }),
+  chatPanelOpen: false,
+  toggleChatPanel: () => set((s) => ({ chatPanelOpen: !s.chatPanelOpen })),
 
   enter: async ({ conversationId, huddleId, conversationName, selfId }) => {
     // Tear down any existing call first (one huddle at a time).
@@ -170,12 +200,15 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     });
     selfIdRef = selfId;
     huddleIdRef = huddleId;
+    huddleStartedAt = Date.now();
     set({
       active: { conversationId, huddleId, conversationName, micMuted: false, connectionState: 'new', screenSharing: false, remoteSharing: false },
       screenWindow: 'normal',
       ticketsWindow: 'closed',
       ticketsAutoOpened: false,
       markerPen: false,
+      windowState: 'open',
+      chatPanelOpen: false,
     });
     await connection.start();
     void setOnCall(selfId, huddleId);
@@ -193,11 +226,14 @@ export const useHuddleStore = create<HuddleStore>((set, get) => ({
     detachRemote();
     localScreenStream = null;
     remoteScreenStream = null;
+    const a = get().active;
     void markLeft(huddleIdRef, selfIdRef);
     void setOnCall(selfIdRef, null);
+    void postHuddleSummary(a?.conversationId ?? null, huddleIdRef, selfIdRef, a?.conversationName ?? '', huddleStartedAt);
     selfIdRef = null;
     huddleIdRef = null;
-    set({ active: null, screenWindow: 'normal', ticketsWindow: 'closed', ticketsAutoOpened: false, markerPen: false });
+    huddleStartedAt = null;
+    set({ active: null, screenWindow: 'normal', windowState: 'open', chatPanelOpen: false, ticketsWindow: 'closed', ticketsAutoOpened: false, markerPen: false });
   },
 
   toggleMute: () => {
