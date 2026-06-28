@@ -49,7 +49,7 @@ export function WorkspaceSearchResultsPanel({
           <div
             style={{
               fontFamily: 'var(--cv2-font)',
-              fontSize: 15,
+              fontSize: 'var(--ds-font-size-500)',
               fontWeight: 800,
               color: 'var(--cv2-text-strong)',
               whiteSpace: 'nowrap',
@@ -62,7 +62,7 @@ export function WorkspaceSearchResultsPanel({
           <div
             style={{
               fontFamily: 'var(--cv2-font)',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cv2-text-muted)',
             }}
           >
@@ -119,6 +119,7 @@ export function WorkspaceSearchResultsPanel({
                     textAlign: 'left',
                     color: 'inherit',
                     fontFamily: 'var(--cv2-font)',
+                    fontSize: 'var(--ds-font-size-400)',
                   }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)';
@@ -143,7 +144,7 @@ export function WorkspaceSearchResultsPanel({
                     >
                       <span
                         style={{
-                          fontSize: 13,
+                          fontSize: 'var(--ds-font-size-300)',
                           fontWeight: 700,
                           color: 'var(--cv2-text-strong)',
                           whiteSpace: 'nowrap',
@@ -155,7 +156,7 @@ export function WorkspaceSearchResultsPanel({
                       </span>
                       <span
                         style={{
-                          fontSize: 11,
+                          fontSize: 'var(--ds-font-size-100)',
                           color: 'var(--cv2-text-muted)',
                           whiteSpace: 'nowrap',
                           flex: '0 0 auto',
@@ -166,7 +167,7 @@ export function WorkspaceSearchResultsPanel({
                     </div>
                     <div
                       style={{
-                        fontSize: 11,
+                        fontSize: 'var(--ds-font-size-100)',
                         color: 'var(--cv2-text-muted)',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
@@ -194,7 +195,7 @@ function Snippet({ body, query }: { body: string; query: string }) {
       <p
         style={{
           margin: '4px 0 0',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--cv2-text)',
           display: '-webkit-box',
           WebkitLineClamp: 2,
@@ -214,7 +215,7 @@ function Snippet({ body, query }: { body: string; query: string }) {
     <p
       style={{
         margin: '4px 0 0',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--cv2-text)',
         display: '-webkit-box',
         WebkitLineClamp: 2,
@@ -245,7 +246,7 @@ function Empty({ message }: { message: string }) {
         padding: '40px 20px',
         textAlign: 'center',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--cv2-text-muted)',
       }}
     >

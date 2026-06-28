@@ -137,7 +137,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Forward this private message
           </div>
           <button
@@ -178,7 +178,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               <SuggestRow key={c.id} recipient={c} onAdd={() => handleAdd(c)} />
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: 14, fontSize: 13, color: 'var(--cv2-text-muted)' }}>
+              <div style={{ padding: 14, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)' }}>
                 No matches.
               </div>
             )}
@@ -200,7 +200,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               resize: 'vertical',
               outline: 'none',
               boxSizing: 'border-box',
@@ -220,7 +220,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               background: 'transparent', color: 'var(--cv2-text)',
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
-              fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'inherit', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, cursor: 'pointer',
             }}
           >
             <CopyLinkIcon size={14} />
@@ -245,7 +245,7 @@ export function ForwardModal({ message, onClose, onForward }: ForwardModalProps)
               style={{
                 padding: '0 16px', height: 36,
                 background: 'transparent', color: 'inherit', border: 'none',
-                fontFamily: 'inherit', fontSize: 14, fontWeight: 700,
+                fontFamily: 'inherit', fontSize: 'var(--ds-font-size-400)', fontWeight: 700,
                 cursor: canForward ? 'pointer' : 'not-allowed',
               }}
             >
@@ -312,7 +312,7 @@ function RecipientField({
         <span
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 22, height: 22, fontSize: 11, fontWeight: 700,
+            width: 22, height: 22, fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
             background: 'var(--cv2-accent)', color: 'var(--ds-surface, #FFFFFF)',
             borderRadius: 11,
           }}
@@ -392,7 +392,7 @@ function SuggestRow({
         width: '100%', padding: '8px 12px',
         background: 'transparent', color: 'var(--cv2-text)',
         border: 'none', cursor: 'pointer',
-        fontFamily: 'inherit', fontSize: 14, textAlign: 'left',
+        fontFamily: 'inherit', fontSize: 'var(--ds-font-size-400)', textAlign: 'left',
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
@@ -420,12 +420,12 @@ function SourceMessagePreview({ message }: { message: ChatMessage }) {
     >
       <PresenceAvatar name={message.authorName} size={28} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, color: 'var(--cv2-text-strong)', fontSize: 13 }}>
+        <div style={{ fontWeight: 700, color: 'var(--cv2-text-strong)', fontSize: 'var(--ds-font-size-300)' }}>
           {message.authorName}
         </div>
         <div
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cv2-text)',
             wordBreak: 'break-word',
             whiteSpace: 'pre-wrap',

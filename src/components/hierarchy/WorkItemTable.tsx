@@ -877,8 +877,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
-        .hi-table-row.checked { background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
+        .hi-table-row:hover { background: var(--ds-background-neutral-hovered) !important; border-left-color: var(--ds-border-focused); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
+        .hi-table-row.checked { background: var(--ds-background-selected) !important; border-left-color: var(--ds-border-focused); }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }

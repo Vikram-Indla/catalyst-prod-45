@@ -186,7 +186,7 @@ function Input({
           border: 'none',
           outline: 'none',
           fontFamily: 'inherit',
-          fontSize: 16,
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 500,
         }}
       />
@@ -239,7 +239,7 @@ function EmptyState({
         <div
           style={{
             padding: '14px 18px 20px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cv2-text-muted)',
           }}
         >
@@ -257,7 +257,7 @@ function EmptyState({
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 <ClockIcon size={16} style={{ color: 'var(--cv2-text-subtle)' }} />
-                <span style={{ flex: 1, fontSize: 14, color: 'var(--cv2-text)' }}>{q}</span>
+                <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--cv2-text)' }}>{q}</span>
               </button>
             </li>
           ))}
@@ -309,7 +309,7 @@ function TypingState({
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       >
         <SearchIcon size={16} style={{ color: 'var(--cv2-text-subtle)' }} />
-        <span style={{ flex: 1, fontSize: 14 }}>
+        <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)' }}>
           Show results for:{' '}
           <span style={{ color: 'var(--cv2-text-strong)', fontWeight: 700 }}>{query}</span>
         </span>
@@ -358,7 +358,7 @@ function PeopleRow({
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = primary ? 'var(--cv2-bg-row-hover)' : 'transparent'; }}
       >
         <PresenceAvatar name={hit.name} size={20} />
-        <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: 'var(--cv2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--cv2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <HighlightedText text={hit.name} query={query} bold />
           {hit.subName && hit.subName !== hit.name && (
             <span style={{ color: 'var(--cv2-text-muted)' }}>
@@ -404,17 +404,17 @@ function MessageRow({
         <PresenceAvatar name={hit.authorName} size={22} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cv2-text-strong)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--cv2-text-strong)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {hit.authorName}
             </span>
-            <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
               in {hit.conversationTitle}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--cv2-text-muted)', whiteSpace: 'nowrap', flex: '0 0 auto' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cv2-text-muted)', whiteSpace: 'nowrap', flex: '0 0 auto' }}>
               {formatActivityTime(hit.createdAt)}
             </span>
           </div>
-          <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--cv2-text)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             <HighlightedText text={hit.body} query={query} />
           </p>
         </div>
@@ -441,7 +441,7 @@ function ScopeRow({
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       <SearchIcon size={16} style={{ color: 'var(--cv2-text-subtle)' }} />
-      <span style={{ flex: 1, fontSize: 14, color: 'var(--cv2-text)', display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--cv2-text)', display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
         Search in
         <span
           style={{
@@ -452,7 +452,7 @@ function ScopeRow({
             background: 'var(--cv2-bg-row-active)',
             color: 'var(--cv2-text-link)',
             borderRadius: 4,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
             maxWidth: 360,
             overflow: 'hidden',
@@ -498,7 +498,7 @@ function EnterChip() {
         color: 'var(--cv2-text-strong)',
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 4,
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
       }}
     >
@@ -512,7 +512,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <div
       style={{
         padding: '14px 18px 6px',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         color: 'var(--cv2-text-muted)',
       }}
@@ -552,7 +552,7 @@ function pillBtnStyle(): React.CSSProperties {
     border: 'none',
     cursor: 'pointer',
     fontFamily: 'inherit',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontWeight: 600,
     padding: '4px 8px',
   };
@@ -576,7 +576,7 @@ function iconBtnStyle(): React.CSSProperties {
 function emptyHintStyle(): React.CSSProperties {
   return {
     padding: '14px 18px 22px',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     color: 'var(--cv2-text-muted)',
   };
 }

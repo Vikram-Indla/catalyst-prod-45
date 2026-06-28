@@ -196,6 +196,7 @@ export const CatyFabIconStory: StoryObj = {
                 <defs>
                   <linearGradient id="askdg-sb" x1="256" y1="40" x2="256" y2="470" gradientUnits="userSpaceOnUse">
                     <stop stopColor="#F79357" /><stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
+                    {/* ads-scanner:ignore-line — Storybook gradient asset, not design system */}
                     <stop offset=".75" stopColor="#B41572" /><stop offset="1" stopColor="#CC1E9A" />
                   </linearGradient>
                 </defs>
@@ -244,7 +245,7 @@ export const InteractivePreview: StoryObj = {
         { label: 'Ask Caty Gradient', src: askCatyGradient, bg: 'var(--ds-surface, #FFFFFF)' },
         { label: 'Caty Gradient', src: catyGradient, bg: 'var(--ds-surface, #FFFFFF)' },
         { label: 'Ask Caty Dark', src: askCatyLight, bg: 'var(--ds-surface, #FFFFFF)' },
-        { label: 'Ask Caty Light', src: askCatyDark, bg: '#2A2832' },
+        { label: 'Ask Caty Light', src: askCatyDark, bg: '#2A2832' }, // ads-scanner:ignore-line — Storybook design demo
       ].map(({ label, src, bg }) => (
         <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
           <div style={{ background: bg, borderRadius: 12, padding: 16 }}>

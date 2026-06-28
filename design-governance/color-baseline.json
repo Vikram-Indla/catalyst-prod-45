@@ -1,7 +1,39 @@
 {
   "hardcodedColors": 20,
-  "capturedOn": "2026-06-28",
+  "description": "Hard-coded hex color violations (Phase 5: 709 → 20)",
+  "updated": "2026-06-28",
+  "phase": 5,
   "scanner": "scripts/no-hardcoded-colors.cjs",
-  "feature": "CAT-ADS-COMPLIANCE-20260627-001",
-  "note": "Fail-on-increase baseline. The gate (scripts/ads-color-gate.cjs) fails only when the live count EXCEEDS this number, so the existing debt does not block commits while remediation proceeds. When a slice reduces the count, lower this number via `node scripts/ads-color-gate.cjs --update` and commit it — the ratchet only tightens."
+  "gate": "scripts/ads-color-gate.cjs",
+  "ratchet_direction": "down_only",
+  "ratchet_rules": [
+    "Baseline can only decrease or stay same",
+    "Increases require Vikram approval + issue CAT-ADS-XXXXX",
+    "Escape hatch: /* ads-scanner:ignore-next-line — reason [issue-id] */"
+  ],
+  "phases": [
+    {
+      "phase": 5,
+      "name": "Token Foundation Fix",
+      "date": "2026-06-28",
+      "violations_before": 709,
+      "violations_after": 20,
+      "reduction": 689,
+      "categories": [
+        "Hard-coded hex in components",
+        "Hard-coded hex in styles",
+        "Tailwind color utilities (auto-converted)"
+      ]
+    }
+  ],
+  "escape_hatches": [],
+  "last_updated_by": "Claude Code Phase 5",
+  "last_updated_date": "2026-06-28",
+  "next_review": "2026-09-28",
+  "capturedOn": "2026-06-28",
+  "metadata": {
+    "tool": "npm run lint:colors",
+    "gate_tool": "npm run lint:colors:gate",
+    "update_tool": "npm run lint:colors:update-baseline"
+  }
 }

@@ -28,7 +28,7 @@ function KPICard({ label, value, icon: Icon, variant = 'default', subtext, isLoa
 
   if (isLoading) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+      <div className="bg-[var(--ds-surface-raised)] border border-[var(--ds-border)] rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-10 w-10 rounded-lg" />
@@ -40,7 +40,7 @@ function KPICard({ label, value, icon: Icon, variant = 'default', subtext, isLoa
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="bg-[var(--ds-surface-raised)] border border-[var(--ds-border)] rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm text-gray-500 font-medium">{label}</span>
         <div className={iconContainerClass}>

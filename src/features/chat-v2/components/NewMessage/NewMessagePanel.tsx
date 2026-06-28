@@ -152,7 +152,7 @@ export function NewMessagePanel({
           style={{
             padding: '8px 16px',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: 'var(--ds-text-danger, #AE2A19)',
             background: 'var(--cv2-bg-panel)',
           }}
@@ -187,7 +187,7 @@ function Header({ onClose }: { onClose: () => void }) {
         <div
           style={{
             fontFamily: 'var(--cv2-font)',
-            fontSize: 15,
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 800,
             color: 'var(--cv2-text-strong)',
           }}
@@ -197,7 +197,7 @@ function Header({ onClose }: { onClose: () => void }) {
         <div
           style={{
             fontFamily: 'var(--cv2-font)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: 'var(--cv2-text-muted)',
           }}
         >
@@ -256,7 +256,7 @@ function RecipientPicker({
       <span
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 600,
           color: 'var(--cv2-text-subtle)',
           marginRight: 4,
@@ -290,7 +290,7 @@ function RecipientPicker({
           background: 'transparent',
           color: 'var(--cv2-text)',
           fontFamily: 'var(--cv2-font)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           padding: '4px 0',
         }}
       />
@@ -320,7 +320,7 @@ function RecipientChip({
         border: '1px solid var(--cv2-border-strong, rgba(255,255,255,0.16))',
         borderRadius: 4,
         fontFamily: 'var(--cv2-font)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--cv2-text)',
       }}
     >
@@ -342,7 +342,7 @@ function RecipientChip({
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
           }}
         >
@@ -415,7 +415,7 @@ function Dropdown({
             background: 'transparent',
             color: 'var(--cv2-text)',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             textAlign: 'left',
             cursor: 'pointer',
           }}
@@ -444,7 +444,7 @@ function Dropdown({
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 700,
                 flex: 'none',
               }}

@@ -75,8 +75,8 @@ export function CycleCard({ cycle, onEdit, onDuplicate, onDelete }: CycleCardPro
   };
 
   return (
-    <div 
-      className="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer"
+    <div
+      className="bg-[var(--ds-surface-raised)] border border-[var(--ds-border)] rounded-lg p-5 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Header */}

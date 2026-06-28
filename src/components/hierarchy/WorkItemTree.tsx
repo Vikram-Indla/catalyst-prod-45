@@ -536,11 +536,12 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
           onDragEnd={handleDragEnd} onDrop={handleDrop} rowRefs={rowRefs} />
       </div>
       <style>{`
-        .hi-tree-row:hover { background: var(--bg-1) !important; }
-        .hi-tree-row[aria-selected="true"]:hover { background: var(--cp-primary-5) !important; }
+        .hi-tree-row:hover { background: var(--ds-background-neutral-hovered) !important; }
+        .hi-tree-row[aria-selected="true"] { background: var(--ds-background-selected) !important; }
+        .hi-tree-row[aria-selected="true"]:hover { background: var(--ds-background-selected) !important; }
         .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
         .hi-tree-row:hover .hi-row-action { opacity: 1; }
-        .hi-tree-row:focus-visible { box-shadow: inset 0 0 0 2px var(--cp-blue); }
+        .hi-tree-row:focus-visible { box-shadow: inset 0 0 0 2px var(--ds-border-focused); }
       `}</style>
     </div>
   );

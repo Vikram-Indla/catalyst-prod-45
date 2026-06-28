@@ -25,7 +25,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
           style={{
             margin: 0,
             fontFamily: 'var(--cv2-font)',
-            fontSize: 28,
+            fontSize: 'var(--ds-font-size-800)',
             fontWeight: 800,
             color: 'var(--cv2-text-strong)',
             display: 'flex',
@@ -36,7 +36,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
           <span
             aria-hidden="true"
             style={{
-              fontSize: 26,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 400,
               color: 'var(--cv2-text-subtle)',
             }}
@@ -49,7 +49,7 @@ export function ChannelEmptyState({ conversation, onAddPeople, onEditDescription
           style={{
             margin: '6px 0 0',
             fontFamily: 'var(--cv2-font)',
-            fontSize: 15,
+            fontSize: 'var(--ds-font-size-500)',
             color: 'var(--cv2-text-subtle)',
             lineHeight: 1.5,
           }}
@@ -139,7 +139,7 @@ function PillButton({ onClick, children }: { onClick?: () => void; children: Rea
         borderRadius: 6,
         cursor: 'pointer',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 700,
       }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
@@ -187,7 +187,7 @@ function ActionCard({
         borderRadius: 10,
         textAlign: 'left',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 15,
+        fontSize: 'var(--ds-font-size-500)',
         fontWeight: 700,
         cursor: onClick ? 'pointer' : 'default',
         overflow: 'hidden',

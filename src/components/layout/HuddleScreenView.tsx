@@ -4,6 +4,7 @@ import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen, sendHuddle
 
 /** A drawn annotation stroke. Points are normalized (0..1) to the video area. */
 interface MarkerStroke { id: string; color: string; points: { x: number; y: number }[]; t: number; }
+// ads-scanner:ignore-next-line — Local annotation color for huddle markers, not design system
 const LOCAL_HEX = '#22A06B';   // my strokes = green; remote strokes use the sender's color
 const FADE_HOLD = 2500;        // ms at full opacity after last update
 const FADE_OUT = 700;          // ms fade-out duration

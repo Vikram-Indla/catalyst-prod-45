@@ -140,7 +140,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             padding: '20px 24px 16px',
           }}
         >
-          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Summarize custom date range
           </div>
           <button
@@ -256,7 +256,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
               background: 'transparent',
               border: 'none',
               color: !start && !end ? 'var(--cv2-text-muted)' : 'var(--ds-link, #0C66E4)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               cursor: !start && !end ? 'default' : 'pointer',
             }}
@@ -273,7 +273,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
                 border: '1px solid var(--cv2-border-strong)',
                 borderRadius: 6,
                 padding: '8px 18px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 700,
                 cursor: 'pointer',
               }}
@@ -292,7 +292,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
                 border: 'none',
                 borderRadius: 6,
                 padding: '8px 18px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 700,
                 cursor: canSubmit ? 'pointer' : 'default',
               }}
@@ -354,7 +354,7 @@ function DateInput({
           border: 'none',
           outline: 'none',
           color: 'var(--cv2-text)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontFamily: 'var(--cv2-font)',
         }}
       />
@@ -421,7 +421,7 @@ function CalendarMonth({
       <div
         style={{
           textAlign: 'center',
-          fontSize: 15,
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 700,
           padding: '6px 0 10px',
           color: 'var(--cv2-text-strong)',
@@ -436,7 +436,7 @@ function CalendarMonth({
           gap: 0,
           paddingBottom: 6,
           color: 'var(--cv2-text-muted)',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
           textAlign: 'center',
         }}
@@ -580,7 +580,7 @@ function DayCell({
           color: buttonColor,
           border: buttonBorder,
           borderRadius: buttonRadius,
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: isEndpoint || isToday ? 700 : 500,
           cursor: isFuture ? 'not-allowed' : 'pointer',
           opacity: isFuture ? 0.45 : 1,

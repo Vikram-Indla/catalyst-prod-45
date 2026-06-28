@@ -40,7 +40,7 @@ export function BoardCard({
       onDragStart={(e) => onDragStart(e, feature.id)}
       onClick={onClick}
       className={cn(
-        'board-card relative bg-white dark:bg-gray-800 rounded-lg p-3 mb-2 border cursor-grab',
+        'board-card relative bg-[var(--ds-surface-raised)] dark:bg-[var(--ds-surface-raised)] rounded-lg p-3 mb-2 border border-[var(--ds-border)] cursor-grab',
         'transition-all hover:shadow-md hover:-translate-y-0.5',
         'hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
         'active:cursor-grabbing'

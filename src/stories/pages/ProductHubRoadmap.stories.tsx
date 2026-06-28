@@ -80,6 +80,7 @@ export const ToolbarDefault: StoryObj = {
 
 // ─── RoadmapRequestList ────────────────────────────────────────────────────
 
+// ads-scanner:ignore-next-line — Storybook mock data with test colors
 const mockRequest = (id: string, title: string, priority: string, status: string): RoadmapRequest => ({
   id, initiativeKey: `MDT-${id}`, title, titleAr: title, titleEn: title,
   type: 'business_request', priority: priority as any, status: status as any,
@@ -87,6 +88,7 @@ const mockRequest = (id: string, title: string, priority: string, status: string
   ownerName: 'Vikram Indla', ownerInitials: 'VI', ownerColor: '#0052CC', starred: false,
 } as any);
 
+// ads-scanner:ignore-next-line — Storybook mock data with test colors
 const groups: RoadmapGroup[] = [
   {
     key: 'p0', label: 'P0 — Critical', color: '#ef4444', isExpanded: true,

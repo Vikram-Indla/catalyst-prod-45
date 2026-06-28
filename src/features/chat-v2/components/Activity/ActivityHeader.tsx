@@ -244,7 +244,7 @@ function Toolbar(props: ActivityHeaderProps) {
                     border: 'none',
                     color: 'var(--cv2-text-link, #1D9BD1)',
                     fontFamily: 'inherit',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 600,
                     cursor: 'pointer',
                     padding: '0 4px',
@@ -408,7 +408,7 @@ function ActionPillButton({
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 6,
         fontFamily: 'inherit',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         cursor: 'pointer',
       }}
@@ -469,7 +469,7 @@ function FilterButton({
         borderRadius: 6,
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 600,
       }}
       onMouseEnter={e => {
@@ -481,7 +481,7 @@ function FilterButton({
     >
       <FilterIcon size={13} />
       {count > 0 && (
-        <span style={{ fontSize: 12, fontWeight: 700 }}>({count})</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700 }}>({count})</span>
       )}
       <ChevronDownIcon size={10} />
     </button>
@@ -528,7 +528,7 @@ function ToolbarSearchInput({
           outline: 'none',
           color: 'var(--cv2-text)',
           fontFamily: 'inherit',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
         }}
       />
       <button
@@ -994,7 +994,7 @@ function TabBtn({
         borderBottom: active ? '2px solid var(--cv2-accent)' : '2px solid transparent',
         marginBottom: -1,
         fontFamily: 'inherit',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 600,
         cursor: 'pointer',
       }}

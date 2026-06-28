@@ -116,7 +116,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Reminder
           </div>
           <button type="button" onClick={onCancel} aria-label="Close" style={closeBtnStyle()}>
@@ -161,7 +161,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
         <div style={{ marginTop: 20 }}>
           <div
             style={{
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 700,
               color: 'var(--cv2-text-strong)',
               marginBottom: 6,
@@ -214,7 +214,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
                 minHeight: 80,
                 padding: '10px 12px',
                 fontFamily: 'inherit',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: 'var(--cv2-text)',
                 outline: 'none',
               }}
@@ -273,7 +273,7 @@ function Divider() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ flex: 1, position: 'relative' }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cv2-text-strong)', marginBottom: 6 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--cv2-text-strong)', marginBottom: 6 }}>
         {label}
       </div>
       {children}
@@ -306,7 +306,7 @@ function PickerButton({
         borderRadius: 'var(--cv2-radius-sm)',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
       }}
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -368,7 +368,7 @@ function CalendarPopover({
             <ChevronLeftIcon size={14} />
           </NavBtn>
         </div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
           {MONTH_LABELS[viewMonth]} {viewYear}
         </div>
         <div style={{ display: 'inline-flex', gap: 4 }}>
@@ -386,7 +386,7 @@ function CalendarPopover({
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0, marginBottom: 4 }}>
         {WEEKDAY_LABELS.map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: 11, color: 'var(--cv2-text-muted)', fontWeight: 600, padding: '4px 0' }}>
+          <div key={d} style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: 'var(--cv2-text-muted)', fontWeight: 600, padding: '4px 0' }}>
             {d}
           </div>
         ))}
@@ -438,7 +438,7 @@ function CalendarPopover({
                       ? '2px solid var(--cv2-accent)'
                       : '2px solid transparent',
                   borderRadius: isSel ? 6 : isToday ? '50%' : 6,
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: isSel || isToday ? 700 : 400,
                   cursor: allowed ? 'pointer' : 'not-allowed',
                   transition: 'background var(--cv2-transition-fast)',
@@ -546,7 +546,7 @@ function TimeDropdown({ value, onSelect, onClose }: { value: string; onSelect: (
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
             }}
           >
             {sel && '✓ '}{s.label}
@@ -571,7 +571,7 @@ function PrimaryBtn({ onClick, disabled, children }: { onClick: () => void; disa
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}
@@ -594,7 +594,7 @@ function SecondaryBtn({ onClick, children }: { onClick: () => void; children: Re
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         cursor: 'pointer',
       }}
