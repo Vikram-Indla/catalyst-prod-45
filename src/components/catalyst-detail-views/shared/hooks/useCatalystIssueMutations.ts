@@ -15,6 +15,7 @@ import type { EntityKey } from '@/lib/workflow/canonical/contracts';
 // engine are mapped; others stay undefined -> advisory is a no-op for them).
 const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
   Story: 'story',
+  Epic: 'epic',
 };
 
 export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
