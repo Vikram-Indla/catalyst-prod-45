@@ -143,7 +143,7 @@ export default function BrPulseMapWidget({
                   key={s}
                   style={{
                     flex: 1,
-                    padding: '10px 12px',
+                    padding: '8px 12px',
                     borderRadius: token('border.radius', '4px'),
                     background: palette.bg,
                     border: `1px solid ${palette.border}`,

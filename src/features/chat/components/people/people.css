@@ -15,7 +15,7 @@
 .c-people__search {
   flex: none;
   padding: 8px 16px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
 }
 
 .c-people__search-input {
@@ -28,7 +28,7 @@
   background: var(--c-chat-surface-sunken);
   font-size: 13px;
   color: var(--c-chat-text);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .c-people__search-input:focus {

@@ -25,7 +25,7 @@ function PropTypeChip({ type }: { type: string }) {
         fontFamily: 'var(--ds-font-family-code)',
         background: token('color.background.neutral', '#091E420F'),
         color: token('color.text', 'var(--ds-text)'),
-        padding: '1px 6px',
+        padding: '0px 6px',
         borderRadius: 3,
         whiteSpace: 'nowrap' as const,
       }}
@@ -180,7 +180,7 @@ function CodeBlock({ code }: { code: string }) {
         style={{
           margin: 0,
           padding: token('space.200', '16px'),
-          paddingRight: 80,
+          paddingRight: 48,
           background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
           border: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
           borderRadius: 6,
@@ -232,7 +232,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
             <code
               style={{
                 fontSize: 'var(--ds-font-size-100)',
-                padding: '2px 8px',
+                padding: '0px 8px',
                 borderRadius: 3,
                 background: token('color.background.neutral', '#091E420F'),
                 color: token('color.text.subtle', 'var(--ds-icon)'),
@@ -343,13 +343,13 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
                 style={{
                   display: 'flex',
                   alignItems: 'flex-start',
-                  gap: 10,
+                  gap: 8,
                   padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
                   borderTop: i > 0 ? `1px solid ${token('color.border.warning', 'var(--ds-background-warning-bold)')}` : undefined,
                   background: token('color.background.warning', 'var(--ds-background-warning)'),
                 }}
               >
-                <span style={{ fontSize: 'var(--ds-font-size-400)', flexShrink: 0, marginTop: 1 }}>⚠</span>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', flexShrink: 0, marginTop: 0 }}>⚠</span>
                 <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: '20px', color: token('color.text.warning', 'var(--ds-text-warning)') }}>
                   {c}
                 </span>

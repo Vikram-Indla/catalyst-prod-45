@@ -101,7 +101,7 @@ export default function WikiSubscriptionsPage() {
   return (
     <div style={{ fontFamily: F.inter, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', background: isDark ? 'var(--cp-bg-page)' : 'var(--ds-surface-sunken)', minHeight: '100%', padding: '24px 40px 60px' }}>
       {/* Breadcrumb */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
         <span style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontWeight: 600 }}>Subscriptions</span>
@@ -120,12 +120,12 @@ export default function WikiSubscriptionsPage() {
               key={d.code}
               onClick={() => toggleSub.mutate({ entityType: 'domain', entityId: d.code })}
               style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
+                display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px',
                 borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `0.75px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : border}`,
                 cursor: 'pointer', transition: 'all 120ms', textAlign: 'left',
               }}
             >
-              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.15))' : 'var(--ds-background-information, var(--ds-background-information))') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'), color: active ? (isDark ? 'var(--ds-background-information, var(--ds-background-information))' : 'var(--ds-link-pressed, var(--ds-link-pressed))') : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))') }}>{d.code}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0px 6px', borderRadius: 4, background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.15))' : 'var(--ds-background-information, var(--ds-background-information))') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'), color: active ? (isDark ? 'var(--ds-background-information, var(--ds-background-information))' : 'var(--ds-link-pressed, var(--ds-link-pressed))') : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))') }}>{d.code}</span>
               <span style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', flex: 1 }}>{d.name}</span>
               <div style={{
                 width: 36, height: 20, borderRadius: 12,
@@ -134,7 +134,7 @@ export default function WikiSubscriptionsPage() {
               }}>
                 <div style={{
                   width: 16, height: 16, borderRadius: '50%', background: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-                  position: 'absolute', top: 2,
+                  position: 'absolute', top: 0,
                   left: active ? 18 : 2, transition: 'left 150ms',
                   boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
                 }} />
@@ -146,7 +146,7 @@ export default function WikiSubscriptionsPage() {
 
       {/* ═══ TAG SUBSCRIPTIONS ═══ */}
       <SectionLabel icon={<Tag size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />} label="Tag Subscriptions" isDark={isDark} />
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
         {tagSubs.map((tag: string) => (
           <span key={tag} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px',
@@ -185,7 +185,7 @@ export default function WikiSubscriptionsPage() {
       <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', overflow: 'hidden' }}>
         {subArticles.length > 0 ? subArticles.map((a: any) => (
           <div key={a.id} style={{
-            display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px',
+            display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px',
             borderBottom: `0.75px solid ${border}`, transition: 'background 80ms',
           }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.04))'}
@@ -193,7 +193,7 @@ export default function WikiSubscriptionsPage() {
           >
             <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', flexShrink: 0 }} />
             <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, var(--ds-background-neutral)))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', cursor: 'pointer', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{a.domain_code}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '0px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{a.domain_code}</span>
             <button
               onClick={() => toggleSub.mutate({ entityType: 'article', entityId: a.id })}
               style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, var(--cp-danger))', fontWeight: 500 }}
@@ -213,7 +213,7 @@ export default function WikiSubscriptionsPage() {
 
 function SectionLabel({ icon, label, isDark }: { icon: React.ReactNode; label: string; isDark?: boolean }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
       {icon}
       <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>{label}</span>
     </div>

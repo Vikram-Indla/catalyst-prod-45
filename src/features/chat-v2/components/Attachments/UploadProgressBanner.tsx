@@ -11,8 +11,8 @@ export function UploadProgressBanner({ label = 'Processing uploaded file…' }: 
       aria-live="polite"
       style={{
         position: 'absolute',
-        top: 6,
-        left: '50%',
+        top: 4,
+        left: '48%',
         transform: 'translateX(-50%)',
         minWidth: 280,
         maxWidth: 'min(480px, 80%)',

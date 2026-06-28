@@ -29,7 +29,7 @@
   border-radius: 8px;
   /* The padding establishes the visible border thickness — the inner
      ::after mask sits inside this padding box. */
-  padding: 1.5px;
+  padding: 0.5px;
   /* Critical: clips the oversized rotating gradient layer to the
      rounded rectangle. Without this the gradient spills past the
      corners and looks like a square glow. */
@@ -47,8 +47,8 @@
      so any rotation angle still fully covers the visible area. */
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 50%;
-  left: 50%;
+  top: 48%;
+  left: 48%;
   /* `translate` centres the square; `rotate` is animated. Both must
      live in the same `transform` so the animation can drive the
      rotation without losing the centring. */
@@ -71,7 +71,7 @@
   position: absolute;
   /* Sits inside the 1.5px padding so it hides everything except the
      ring at the edge. */
-  inset: 1.5px;
+  inset: 0.5px;
   border-radius: 6.5px;
   background: var(--ds-surface);
   z-index: -1;
@@ -89,7 +89,7 @@
 .als-bouncing-dots {
   display: inline-flex;
   align-items: flex-end;
-  gap: 3px;
+  gap: 4px;
   height: 14px;
 }
 
@@ -132,7 +132,7 @@
   width: 1px;
   height: 14px;
   background: var(--ds-text-subtlest);
-  margin-left: 2px;
+  margin-left: 0px;
   vertical-align: middle;
   animation: als-blink 1s steps(2) infinite;
 }

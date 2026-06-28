@@ -42,7 +42,7 @@ export const FileItem: React.FC<FileItemProps> = ({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '14px',
+        gap: '12px',
         padding: '16px 18px',
         backgroundColor: COLORS.surfaceCard,
         border: `1px solid ${isHovered ? COLORS.borderDefault : COLORS.borderLight}`,

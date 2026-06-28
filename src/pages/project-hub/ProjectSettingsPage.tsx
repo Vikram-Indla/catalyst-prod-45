@@ -47,10 +47,10 @@ export default function ProjectSettingsPageNew() {
     return (
       <div className="ph-content-wrapper" style={{ fontFamily: 'var(--cp-font-body)' }}>
         <div className="ph-inner-content">
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 16 }}>
             <div className="ph-skeleton rounded" style={{ height: 20, width: 200, marginBottom: 12 }} />
-            <div className="ph-skeleton rounded" style={{ height: 28, width: 180, marginBottom: 20 }} />
-            <div className="ph-skeleton rounded" style={{ height: 40, width: '100%', marginBottom: 20 }} />
+            <div className="ph-skeleton rounded" style={{ height: 28, width: 180, marginBottom: 16 }} />
+            <div className="ph-skeleton rounded" style={{ height: 40, width: '100%', marginBottom: 16 }} />
           </div>
           <SkeletonTable rows={6} />
         </div>

@@ -176,7 +176,7 @@ export function AskCatyInlineBar({
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 6,
+        gap: 4,
         padding: "8px 12px",
         borderBottom: "1px solid var(--ds-border)",
         background: "transparent",
@@ -245,7 +245,7 @@ export function AskCatyInlineBar({
                     color: "var(--ds-text-subtlest)",
                     border: "0.5px solid var(--ds-border)",
                     borderRadius: 4,
-                    padding: "1px 6px",
+                    padding: "0px 6px",
                   }}
                 >
                   Tab
@@ -264,7 +264,7 @@ export function AskCatyInlineBar({
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: 6,
+                    gap: 4,
                     padding: "4px 10px",
                     border: "none",
                     borderRadius: 4,
@@ -336,7 +336,7 @@ export function AskCatyInlineBar({
                       margin: 0,
                       padding: 0,
                       border: 0,
-                      outline: 0,
+                      outline: 2px solid var(--ds-border-focused),
                       background: "transparent",
                       boxShadow: "none",
                       font: "inherit",
@@ -474,7 +474,7 @@ export function AskCatyInlineBar({
                     border: "none",
                     background: "transparent",
                     cursor: "pointer",
-                    padding: 2,
+                    padding: 0,
                     display: "inline-flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -497,7 +497,7 @@ export function AskCatyInlineBar({
                     border: "none",
                     background: "transparent",
                     cursor: "pointer",
-                    padding: 2,
+                    padding: 0,
                     display: "inline-flex",
                     alignItems: "center",
                     justifyContent: "center",

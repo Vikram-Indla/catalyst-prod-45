@@ -73,7 +73,7 @@ export function ProposalTable({
           <span style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 2,
+            gap: 0,
             overflow: 'hidden',
           }}>
             <span style={{
@@ -122,7 +122,7 @@ export function ProposalTable({
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          padding: '6px 8px',
+          padding: '4px 8px',
           background: token('color.background.selected', 'var(--ds-background-selected)'),
           borderRadius: 3,
           marginBottom: 8,
@@ -158,7 +158,7 @@ export function ProposalTable({
                 }}
                 onMouseDown={(e) => e.stopPropagation()}
               >
-                <div style={{ padding: '6px 8px' }}>
+                <div style={{ padding: '4px 8px' }}>
                   <input
                     autoFocus
                     placeholder="Search people…"
@@ -182,7 +182,7 @@ export function ProposalTable({
                   onClick={() => { onBulkAssign(null); setBulkAssignOpen(false); }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
-                    width: '100%', padding: '6px 12px', border: 'none',
+                    width: '100%', padding: '4px 12px', border: 'none',
                     background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
                     color: token('color.text', 'var(--ds-text)'),
                   }}
@@ -199,7 +199,7 @@ export function ProposalTable({
                     onClick={() => { onBulkAssign(opt); setBulkAssignOpen(false); }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
-                      width: '100%', padding: '6px 12px', border: 'none',
+                      width: '100%', padding: '4px 12px', border: 'none',
                       background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
                       color: token('color.text', 'var(--ds-text)'),
                     }}

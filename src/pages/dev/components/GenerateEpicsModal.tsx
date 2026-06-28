@@ -295,7 +295,7 @@ export function GenerateEpicsModal({
                       <strong style={{ flex: 1 }}>{item.title}</strong>
                       <Badge appearance="default">{item.confidence}%</Badge>
                     </div>
-                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)', marginLeft: 30 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)', marginLeft: 32 }}>
                       <strong>Source:</strong> {item.sourceReferences.join(' • ')}
                     </div>
                   </div>
@@ -310,7 +310,7 @@ export function GenerateEpicsModal({
               <Heading as="h3" level="h500" style={{ marginBottom: 8 }}>
                 Ready to Create
               </Heading>
-              <p style={{ color: 'var(--ds-icon-subtle)', marginBottom: 20 }}>
+              <p style={{ color: 'var(--ds-icon-subtle)', marginBottom: 16 }}>
                 {approvedCount} draft work items would be created in {selectedProject?.label}.
               </p>
               <div

@@ -170,7 +170,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               className="absolute"
               title={m.title}
               style={{
-                left: `${mPos}%`, top: '50%',
+                left: `${mPos}%`, top: '48%',
                 width: 7, height: 7, marginTop: -3.5, marginLeft: -3.5,
                 background: m.completed ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : barColor,
                 border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 1,
@@ -194,7 +194,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
             fontFamily: FONT.body,
           }}
         >
-          <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: ink[1], marginBottom: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: ink[1], marginBottom: 4 }}>
             {item.initiativeKey}: {item.titleEn}
           </div>
           <div className="flex items-center gap-1.5" style={{ fontSize: 'var(--ds-font-size-200)', color: ink[3], marginBottom: 4 }}>

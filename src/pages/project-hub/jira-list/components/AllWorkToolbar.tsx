@@ -986,7 +986,7 @@ export function FilterChip({
                     cursor: "pointer",
                     color: "var(--ds-link)",
                     fontSize: 'var(--ds-font-size-100)',
-                    padding: "2px 4px",
+                    padding: "0px 4px",
                     fontFamily: "inherit",
                   }}
                 >

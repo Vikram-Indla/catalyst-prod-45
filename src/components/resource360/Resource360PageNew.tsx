@@ -77,9 +77,9 @@ export default function Resource360PageNew() {
   if (isInitialLoad) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--cp-font-body)' }}>
-        <div style={{ height: 66, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)' }}>
+        <div style={{ height: 66, display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--divider)' }} />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
             <div style={{ width: 120, height: 14, borderRadius: 4, background: 'var(--divider)' }} />
             <div style={{ width: 180, height: 10, borderRadius: 4, background: 'var(--bg-3)' }} />
           </div>
@@ -141,7 +141,7 @@ export default function Resource360PageNew() {
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', borderRadius: 20,
             padding: '0 16px', height: 32, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
             letterSpacing: '0.3px', cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', gap: 4,
             transition: 'all 200ms ease',
             fontFamily: 'var(--cp-font-body)',
           }}

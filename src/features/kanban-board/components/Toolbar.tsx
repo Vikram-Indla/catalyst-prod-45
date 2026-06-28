@@ -40,7 +40,7 @@ function InsightsBars({ issues }: { issues: BoardIssue[] }) {
   const topTypes = Object.entries(byType).sort((a, b) => b[1] - a[1]).slice(0, 5);
   return (
     <div style={{ padding: '8px 12px', width: 260 }}>
-      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginBottom: 6 }}>Status</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginBottom: 4 }}>Status</div>
       {Object.entries(cat).map(([k, v]) => (
         <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <span style={{ width: 84, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-icon)') }}>{k}</span>
@@ -50,9 +50,9 @@ function InsightsBars({ issues }: { issues: BoardIssue[] }) {
           <span style={{ width: 28, textAlign: 'right', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>{v}</span>
         </div>
       ))}
-      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), margin: '10px 0 6px' }}>Top types</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), margin: '8px 0 6px' }}>Top types</div>
       {topTypes.map(([k, v]) => (
-        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--ds-font-size-200)', color: token('color.text', 'var(--ds-text)'), marginBottom: 2 }}>
+        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--ds-font-size-200)', color: token('color.text', 'var(--ds-text)'), marginBottom: 0 }}>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{k}</span><span style={{ fontWeight: 600 }}>{v}</span>
         </div>
       ))}
@@ -181,7 +181,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
           placeholder={STRINGS.SEARCH_PLACEHOLDER}
           aria-label={STRINGS.SEARCH_PLACEHOLDER}
           isCompact
-          elemBeforeInput={<span style={{ paddingLeft: 6, display: 'inline-flex' }}><SearchIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} /></span>}
+          elemBeforeInput={<span style={{ paddingLeft: 4, display: 'inline-flex' }}><SearchIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon-subtle)')} /></span>}
         />
       </div>
 
@@ -229,7 +229,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
       )}>
         {() => (
           <>
-            <div style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>Card fields</div>
+            <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>Card fields</div>
             {FIELD_LABELS.map((f) => (
               <MenuItem key={f.key} selected={visibleFields[f.key]} onClick={() => onToggleField(f.key)}>{f.label}</MenuItem>
             ))}

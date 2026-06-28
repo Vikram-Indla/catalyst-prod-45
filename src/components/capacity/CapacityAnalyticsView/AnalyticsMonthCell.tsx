@@ -182,7 +182,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
               padding: '0 4px',
-              marginTop: '3px',
+              marginTop: '4px',
               zIndex: 10,
             }}>
               {primarySegment.assignment.name}
@@ -195,8 +195,8 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
               style={{
                 position: 'absolute',
                 bottom: '4px',
-                left: '6px',
-                right: '6px',
+                left: '4px',
+                right: '4px',
                 height: '5px',
                 borderRadius: '2.5px',
                 // Track color is ring-fenced by CSS; keep a safe fallback.

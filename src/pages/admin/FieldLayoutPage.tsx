@@ -123,7 +123,7 @@ function FieldMenu({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection
           }}
         >
           {/* Reorder within section */}
-          <div style={{ padding: '6px 16px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textSubtlest, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <div style={{ padding: '4px 16px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textSubtlest, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Reorder within section
           </div>
           {[
@@ -151,7 +151,7 @@ function FieldMenu({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection
           ))}
 
           <div style={{ margin: '4px 0', borderTop: `1px solid ${T.borderSubtle}` }} />
-          <div style={{ padding: '6px 16px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textSubtlest, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <div style={{ padding: '4px 16px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textSubtlest, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Move to section
           </div>
           <button
@@ -226,7 +226,7 @@ function FieldRow({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection,
       className="field-row"
       style={{
         display: 'flex', alignItems: 'center',
-        padding: '10px 12px',
+        padding: '8px 12px',
         borderBottom: `1px solid ${T.borderSubtle}`,
         gap: 8, cursor: 'default',
         background: T.surface,
@@ -251,10 +251,10 @@ function FieldRow({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection,
           fontWeight: field.is_required ? 600 : 400,
         }}>
           {field.field_label}
-          {field.is_required && <span style={{ color: T.danger, marginLeft: 2 }}>*</span>}
+          {field.is_required && <span style={{ color: T.danger, marginLeft: 0 }}>*</span>}
           {field.is_pinned && (
             <span style={{
-              marginLeft: 6, fontSize: 'var(--ds-font-size-50)', padding: '1px 5px',
+              marginLeft: 4, fontSize: 'var(--ds-font-size-50)', padding: '0px 5px',
               background: T.bgNeutral, borderRadius: 3,
               color: T.textSubtlest, verticalAlign: 'middle',
             }}>
@@ -266,7 +266,7 @@ function FieldRow({ field, sectionFields, onMoveUp, onMoveDown, onMoveToSection,
           {field.field_type}
           {!field.is_system_field && (
             <span style={{
-              marginLeft: 6, fontSize: 'var(--ds-font-size-50)', padding: '1px 5px',
+              marginLeft: 4, fontSize: 'var(--ds-font-size-50)', padding: '0px 5px',
               background: 'var(--ds-background-information)',
               borderRadius: 3, color: T.brand,
             }}>
@@ -320,7 +320,7 @@ function LayoutSection({
         borderBottom: `1px solid ${T.border}`,
       }}>
         <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{title}</div>
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle, marginTop: 2 }}>{description}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle, marginTop: 0 }}>{description}</div>
       </div>
       {fields.length === 0 ? (
         <div style={{ padding: 24, textAlign: 'center', color: T.textSubtlest, fontSize: 'var(--ds-font-size-300)' }}>
@@ -382,7 +382,7 @@ function AvailableFieldsPanel({ allLayoutFields, customFields = [], issueType, o
         borderBottom: `1px solid ${T.border}`,
       }}>
         <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>Available fields</div>
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle, marginTop: 2 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle, marginTop: 0 }}>
           Click to add to description or context section.
         </div>
       </div>
@@ -440,7 +440,7 @@ function AvailableFieldsPanel({ allLayoutFields, customFields = [], issueType, o
               <div>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.text }}>
                   {cf.name}
-                  <span style={{ marginLeft: 6, fontSize: 'var(--ds-font-size-50)', padding: '1px 5px', background: 'var(--ds-background-information)', borderRadius: 3, color: T.brand }}>custom</span>
+                  <span style={{ marginLeft: 4, fontSize: 'var(--ds-font-size-50)', padding: '0px 5px', background: 'var(--ds-background-information)', borderRadius: 3, color: T.brand }}>custom</span>
                 </div>
                 <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>{cf.field_type}</div>
               </div>
@@ -602,7 +602,7 @@ export default function FieldLayoutPage() {
       <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Top bar */}
         <div style={{
-          padding: '20px 32px 0',
+          padding: '16px 32px 0',
           background: T.surface,
           borderBottom: `1px solid ${T.border}`,
           flexShrink: 0,
@@ -610,7 +610,7 @@ export default function FieldLayoutPage() {
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
             <div>
               <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: T.text, lineHeight: '28px' }}>Field layouts</h1>
-              <p style={{ margin: '6px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
+              <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
                 Manage which fields appear on work items and how they're arranged. Master layouts apply to all projects unless a project override exists.
               </p>
             </div>
@@ -619,7 +619,7 @@ export default function FieldLayoutPage() {
                 <button
                   onClick={handleDiscard}
                   style={{
-                    padding: '7px 16px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
+                    padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
                     border: `1px solid ${T.border}`, background: T.surface,
                     color: T.text, cursor: 'pointer',
                   }}
@@ -631,7 +631,7 @@ export default function FieldLayoutPage() {
                 onClick={handleSave}
                 disabled={!dirty || saving}
                 style={{
-                  padding: '7px 16px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4, fontWeight: 500,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4, fontWeight: 500,
                   border: 'none', background: dirty ? T.brand : T.bgNeutral,
                   color: dirty ? 'var(--ds-text-inverse)' : T.textSubtle,
                   cursor: (!dirty || saving) ? 'not-allowed' : 'pointer',
@@ -655,8 +655,8 @@ export default function FieldLayoutPage() {
                     setSelectedType(t);
                   }}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '10px 16px', border: 'none', background: 'transparent',
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '8px 16px', border: 'none', background: 'transparent',
                     cursor: 'pointer', fontSize: 'var(--ds-font-size-400)',
                     color: active ? T.brand : T.textSubtle,
                     fontWeight: active ? 600 : 400,
@@ -676,7 +676,7 @@ export default function FieldLayoutPage() {
         {/* Content area */}
         <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
           {/* Project selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
             <span style={{ fontSize: 'var(--ds-font-size-400)', color: T.textSubtle, fontWeight: 500 }}>Layout for:</span>
             <select
               value={selectedProject ?? ''}
@@ -685,7 +685,7 @@ export default function FieldLayoutPage() {
                 setSelectedProject(e.target.value || null);
               }}
               style={{
-                padding: '6px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text,
+                padding: '4px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text,
                 border: `1px solid ${T.border}`, borderRadius: 4,
                 background: T.surface, cursor: 'pointer',
               }}
@@ -697,7 +697,7 @@ export default function FieldLayoutPage() {
             </select>
             {selectedProject && (
               <span style={{
-                fontSize: 'var(--ds-font-size-200)', padding: '2px 8px',
+                fontSize: 'var(--ds-font-size-200)', padding: '0px 8px',
                 background: 'var(--ds-background-information)',
                 border: `1px solid var(--ds-border-information)`,
                 borderRadius: 12, color: T.brand,
@@ -709,7 +709,7 @@ export default function FieldLayoutPage() {
 
           {saveError && (
             <div style={{
-              marginBottom: 16, padding: '10px 14px',
+              marginBottom: 16, padding: '8px 14px',
               background: 'var(--ds-background-danger)',
               borderRadius: 4, color: T.danger, fontSize: 'var(--ds-font-size-400)',
             }}>

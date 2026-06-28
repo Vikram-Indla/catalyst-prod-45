@@ -10,7 +10,7 @@ interface RoadmapFiltersProps {
 export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: RoadmapFiltersProps) {
   return (
     <div style={{
-      height: 44, display: 'flex', alignItems: 'center', gap: 6,
+      height: 44, display: 'flex', alignItems: 'center', gap: 4,
       padding: '0 24px', background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--divider)',
     }}>
       {teams.map(t => (

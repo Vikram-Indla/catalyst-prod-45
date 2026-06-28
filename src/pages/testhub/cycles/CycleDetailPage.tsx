@@ -181,7 +181,7 @@ export default function CycleDetailPage() {
                   URL.revokeObjectURL(url);
                 }}
                 style={{
-                  padding: '6px 12px', background: 'none', border: '1px solid var(--ds-border)',
+                  padding: '4px 12px', background: 'none', border: '1px solid var(--ds-border)',
                   borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)',
                 }}
               >
@@ -201,7 +201,7 @@ export default function CycleDetailPage() {
                     fontSize: 'var(--ds-font-size-300)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 4,
                     opacity: startCycle.isPending ? 0.7 : 1,
                   }}
                 >
@@ -223,7 +223,7 @@ export default function CycleDetailPage() {
                       fontSize: 'var(--ds-font-size-300)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 6,
+                      gap: 4,
                     }}
                   >
                     <Play size={13} />
@@ -242,7 +242,7 @@ export default function CycleDetailPage() {
                       color: 'var(--ds-text)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 6,
+                      gap: 4,
                       opacity: completeCycle.isPending ? 0.7 : 1,
                     }}
                   >
@@ -325,7 +325,7 @@ export default function CycleDetailPage() {
         <button
           onClick={() => setShowAddCases(true)}
           style={{
-            padding: '6px 12px',
+            padding: '4px 12px',
             background: 'none',
             border: '1px solid var(--ds-border)',
             borderRadius: 4,
@@ -334,7 +334,7 @@ export default function CycleDetailPage() {
             color: 'var(--ds-text)',
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
           }}
         >
           <Plus size={13} />
@@ -390,13 +390,13 @@ export default function CycleDetailPage() {
       )}
 
       {/* Status filter pills */}
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
         {STATUS_PILLS.map(pill => (
           <button
             key={pill.value}
             onClick={() => setStatusFilter(pill.value)}
             style={{
-              padding: '5px 12px',
+              padding: '4px 12px',
               borderRadius: 16,
               cursor: 'pointer',
               fontSize: 'var(--ds-font-size-300)',
@@ -492,7 +492,7 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
       style={{
         background: panel === p ? 'var(--ds-background-selected)' : 'none',
         border: '1px solid var(--ds-border)',
-        borderRadius: 4, cursor: 'pointer', padding: '2px 6px',
+        borderRadius: 4, cursor: 'pointer', padding: '0px 6px',
         fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel === p ? 'var(--ds-text-brand)' : 'var(--ds-text-subtle)',
       }}
     >
@@ -653,7 +653,7 @@ function RightPanel({ title, subtitle, onClose, children }: {
         }}>
           <div>
             <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-500)', color: 'var(--ds-text)' }}>{title}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>{subtitle}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 0 }}>{subtitle}</div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-600)', color: 'var(--ds-text-subtle)', padding: '0 4px' }}>✕</button>
         </div>
@@ -737,10 +737,10 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
           {isLoading ? <Spinner size="small" /> : defects.length === 0 ? (
             <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}>No defects logged.</p>
           ) : (
-            <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {defects.map((d: { id: string; defect_key: string; title: string; severity: string; status: string }) => (
                 <div key={d.id} style={{
-                  padding: '10px 12px', borderRadius: 6,
+                  padding: '8px 12px', borderRadius: 6,
                   border: '1px solid var(--ds-border)',
                   background: 'var(--ds-surface-sunken)',
                 }}>
@@ -749,7 +749,7 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
                     <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: SEVERITY_COLORS[d.severity] ?? 'inherit' }}>{d.severity}</span>
                   </div>
                   <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', fontWeight: 500 }}>{d.title}</div>
-                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>{d.status}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 0 }}>{d.status}</div>
                 </div>
               ))}
             </div>
@@ -757,8 +757,8 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
 
           {/* New defect form */}
           <div style={{ borderTop: '1px solid var(--ds-border)', paddingTop: 16 }}>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 10 }}>Log new defect</div>
-            <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: 8 }}>Log new defect</div>
+            <div style={{ marginBottom: 8 }}>
               <label style={labelStyle}>Title</label>
               <Textfield value={title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} placeholder="Describe the defect…" />
             </div>
@@ -873,7 +873,7 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
               onClick={handlePost}
               disabled={!text.trim() || posting}
               style={{
-                marginTop: 8, padding: '7px 14px', borderRadius: 4, border: 'none',
+                marginTop: 8, padding: '8px 14px', borderRadius: 4, border: 'none',
                 background: 'var(--ds-background-brand-bold)', color: 'var(--ds-surface)',
                 cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
                 fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: posting ? 0.7 : 1,
@@ -950,8 +950,8 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
           {/* Upload button */}
           <div style={{ marginBottom: 16 }}>
             <label style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '7px 14px', borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '8px 14px', borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
               border: '1px solid var(--ds-border)', color: 'var(--ds-text)',
               background: uploading ? 'var(--ds-background-neutral)' : 'var(--ds-surface)',
             }}>
@@ -967,14 +967,14 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {attachments.map((a: { id: string; file_name: string; file_path: string; file_size: number; mime_type: string; created_at: string }) => (
                 <div key={a.id} style={{
-                  padding: '10px 12px', borderRadius: 6,
+                  padding: '8px 12px', borderRadius: 6,
                   border: '1px solid var(--ds-border)',
                   background: 'var(--ds-surface-sunken)',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div>
                     <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>{a.file_name}</div>
-                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 0 }}>
                       {fmtSize(a.file_size)} · {a.mime_type}
                     </div>
                   </div>
@@ -1080,8 +1080,8 @@ function AddCasesModal({
       />
       <div style={{
         position: 'fixed',
-        top: '50%',
-        left: '50%',
+        top: '48%',
+        left: '48%',
         transform: 'translate(-50%, -50%)',
         width: 620,
         maxHeight: '80vh',
@@ -1093,7 +1093,7 @@ function AddCasesModal({
         flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border)' }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border)' }}>
           <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text)' }}>
             Add cases to scope
           </h2>
@@ -1118,7 +1118,7 @@ function AddCasesModal({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 10,
+                    gap: 8,
                     padding: '8px 0',
                     borderBottom: '1px solid var(--ds-border)',
                   }}
@@ -1206,4 +1206,4 @@ const thStyle: React.CSSProperties = {
   color: 'var(--ds-text-subtle)',
 };
 
-const tdStyle: React.CSSProperties = { padding: '10px 12px' };
+const tdStyle: React.CSSProperties = { padding: '8px 12px' };

@@ -165,7 +165,7 @@
 /* ── Density: Comfortable (default) ── */
 .strategy-room,
 .strategy-room[data-density="comfortable"] {
-  --catalyst-density-padding-card: 20px;
+  --catalyst-density-padding-card: 16px;
   --catalyst-density-gap: 12px;
   --catalyst-density-row-height: 36px;
   --catalyst-density-font-size: 14px;

@@ -100,15 +100,15 @@ export const Card: React.FC<CardProps> = ({
       style={base}
     >
       {menuSlot && (
-        <div style={{ position: 'absolute', top: 6, right: 6, opacity: hover ? 1 : 0, transition: 'opacity 100ms ease', zIndex: 1 }}>
+        <div style={{ position: 'absolute', top: 4, right: 4, opacity: hover ? 1 : 0, transition: 'opacity 100ms ease', zIndex: 1 }}>
           {menuSlot}
         </div>
       )}
 
       {/* Drag handle (left side, hover-only) */}
       {hover && !isDragging && (
-        <div style={{ position: 'absolute', left: 2, top: '50%', transform: 'translateY(-50%)', opacity: 0.3, transition: 'opacity 100ms ease' }}>
-          <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 1 }}>
+        <div style={{ position: 'absolute', left: 0, top: '48%', transform: 'translateY(-50%)', opacity: 0.3, transition: 'opacity 100ms ease' }}>
+          <span style={{ display: 'inline-flex', flexDirection: 'column', gap: 0 }}>
             {[0, 1, 2].map((i) => (
               <span key={i} style={{ width: 12, height: 1.5, background: token('color.icon.subtle', 'var(--ds-icon-subtle)'), borderRadius: 1 }} />
             ))}
@@ -203,7 +203,7 @@ export const Card: React.FC<CardProps> = ({
 
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: SIZES.AVATAR_CARD, gap: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1, minWidth: 0 }}>
           <Tooltip content={issue.issueType || 'Work item'} delay={SIZES.TOOLTIP_DELAY}>
             <span style={{ display: 'inline-flex' }}><IssueTypeIcon issueType={issue.issueType} size={SIZES.ICON_CARD} /></span>
           </Tooltip>
@@ -219,7 +219,7 @@ export const Card: React.FC<CardProps> = ({
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {visibleFields.priority && issue.priority && (
             <Tooltip content={`${issue.priority} priority`} delay={SIZES.TOOLTIP_DELAY}>
               <span style={{ display: 'inline-flex' }}><PriorityIcon priority={issue.priority} size={SIZES.ICON_CARD} /></span>
@@ -238,7 +238,7 @@ export const Card: React.FC<CardProps> = ({
                 onClick={(e) => { if (onAvatarClick) { e.stopPropagation(); onAvatarClick(issue, e.currentTarget as HTMLElement); } }}
                 style={{
                   display: 'inline-flex', cursor: onAvatarClick ? 'pointer' : 'default',
-                  borderRadius: 3, padding: 2, transition: 'background-color 100ms ease',
+                  borderRadius: 3, padding: 0, transition: 'background-color 100ms ease',
                   ...(hover ? { background: token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))') } : {}),
                 }}
               >

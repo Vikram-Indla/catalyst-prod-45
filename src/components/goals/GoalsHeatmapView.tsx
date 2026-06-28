@@ -89,7 +89,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
 
       {/* Current quarter legend */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 16px', fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t3 : 'var(--fg-4)' }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)', marginRight: 6 }} />
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)', marginRight: 4 }} />
         Current quarter
       </div>
 
@@ -154,7 +154,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
                   }}
                 >
                   <span style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: style.text, lineHeight: 1.2 }}>{avgPct}%</span>
-                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 0 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
                 </div>
               );
             })}

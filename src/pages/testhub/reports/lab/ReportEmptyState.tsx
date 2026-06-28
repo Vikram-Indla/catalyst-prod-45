@@ -16,8 +16,8 @@ export default function ReportEmptyState({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '64px 32px',
-        gap: 10,
+        padding: '48px 32px',
+        gap: 8,
         textAlign: 'center',
       }}
     >

@@ -19,7 +19,7 @@ export function ForYouLightBulkBar({
   if (selectedCount === 0) return null;
 
   const actionBtn: React.CSSProperties = {
-    display: 'flex', alignItems: 'center', gap: 6,
+    display: 'flex', alignItems: 'center', gap: 4,
     height: 32, padding: '0 14px',
     backgroundColor: 'transparent', border: 'none', borderRadius: 8,
     cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-t2)',
@@ -28,8 +28,8 @@ export function ForYouLightBulkBar({
 
   return (
     <div style={{
-      position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-      display: 'flex', alignItems: 'center', gap: 2,
+      position: 'fixed', bottom: 24, left: '48%', transform: 'translateX(-50%)',
+      display: 'flex', alignItems: 'center', gap: 0,
       height: 48, padding: '0 8px',
       backgroundColor: 'var(--cp-float)', border: '1px solid var(--cp-bd)',
       borderRadius: 12,

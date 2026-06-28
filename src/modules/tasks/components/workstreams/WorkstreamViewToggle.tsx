@@ -17,7 +17,7 @@ export const ViewToggleButton: React.FC<{
     style={{
       display: 'flex',
       alignItems: 'center',
-      gap: '6px',
+      gap: '4px',
       padding: '8px 14px',
       backgroundColor: isActive ? COLORS.surfaceWhite : 'transparent',
       border: 'none',

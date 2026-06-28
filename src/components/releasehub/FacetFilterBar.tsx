@@ -82,7 +82,7 @@ function FacetDropdown({ facet, selected, onChange }: {
         aria-haspopup="listbox"
         aria-expanded={open}
         style={{
-          display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 8px', borderRadius: 6, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px', borderRadius: 6, cursor: 'pointer',
           fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
           border: `1px solid ${count > 0 ? T.link : T.border}`,
           background: count > 0 ? T.selectedBg : T.card,

@@ -39,7 +39,7 @@ export function PanelOverviewTab({ project, members }: Props) {
         <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>Project Details</div>
         <div className="space-y-0">
           {details.map(d => (
-            <div key={d.label} className="flex items-center justify-between" style={{ padding: '6px 0', borderBottom: '1px solid var(--cp-bd-zone)' }}>
+            <div key={d.label} className="flex items-center justify-between" style={{ padding: '4px 0', borderBottom: '1px solid var(--cp-bd-zone)' }}>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>{d.label}</span>
               <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: d.label === 'Key' || d.label === 'Progress' ? 'var(--cp-font-mono)' : 'inherit' }}>
                 {d.value}

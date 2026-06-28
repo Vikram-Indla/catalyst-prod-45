@@ -207,7 +207,7 @@ export function EmptyRowAdd({ rowTop, addLeft, onAdd }: { rowTop: number; addLef
 export function InlineEmptyOverlay({ projectKey, onDismiss }: { projectKey: string; onDismiss: () => void }) {
   return (
     <div style={{
-      position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+      position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: 32,
       background: 'var(--ds-surface-overlay)',
       border: '1px solid var(--ds-border)', borderRadius: 8,
@@ -392,14 +392,14 @@ export function TimelineBarPopover({ issue, disabled, children }: {
             fontFamily: 'var(--ds-font-family-body)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
             <JiraIssueTypeIcon type={issue.issueType} size={14} />
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code, monospace)', flexShrink: 0 }}>
               {issue.issueKey}
             </span>
           </div>
           <div style={{
-            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.4, marginBottom: 10,
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.4, marginBottom: 8,
             overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
           }}>
             {issue.summary}
@@ -413,7 +413,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
             )}
           </div>
           {issue.assigneeDisplayName && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>{issue.assigneeDisplayName}</span>
             </div>

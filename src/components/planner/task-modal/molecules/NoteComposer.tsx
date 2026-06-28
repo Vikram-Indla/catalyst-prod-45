@@ -36,7 +36,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
       }}
     >
       {/* BODY */}
-      <div style={{ display: 'flex', gap: '14px', padding: '18px' }}>
+      <div style={{ display: 'flex', gap: '12px', padding: '16px' }}>
         <Avatar initials={userInitials} color={userColor} size="md" />
         <textarea
           value={content}
@@ -62,7 +62,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
         style={{
           display: 'flex',
           justifyContent: 'flex-end',
-          padding: '14px 18px',
+          padding: '12px 18px',
           backgroundColor: COLORS.surfacePage,
           borderTop: `1px solid ${COLORS.borderLight}`
         }}
@@ -73,7 +73,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            padding: '10px 20px',
+            padding: '8px 20px',
             backgroundColor: COLORS.accent,
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
             border: 'none',

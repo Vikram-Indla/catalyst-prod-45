@@ -150,7 +150,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                   </div>
                 )}
                 {/* Footer per conflict */}
-                <div className="flex items-center justify-between" style={{ marginTop: 10 }}>
+                <div className="flex items-center justify-between" style={{ marginTop: 8 }}>
                   <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>
                     Detected {relativeTime(conflict.detectedAt)}
                   </span>

@@ -162,7 +162,7 @@ export const WORK_ITEM_ICONS: Record<string, string> = Object.fromEntries(
 // menu items per issue type.
 
 export const menuItemStyle: React.CSSProperties = {
-  display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',
+  display: 'flex', alignItems: 'center', gap: 4, width: '100%', padding: '8px 14px',
   background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtle)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
   textAlign: 'left',
 };
@@ -172,5 +172,5 @@ export const detailLabelStyle: React.CSSProperties = {
 };
 
 export const detailValueStyle: React.CSSProperties = {
-  fontSize: 13, color: 'var(--ds-text)', padding: '6px 0',
+  fontSize: 13, color: 'var(--ds-text)', padding: '4px 0',
 };

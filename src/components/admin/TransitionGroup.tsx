@@ -79,12 +79,12 @@ export function TransitionGroup({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '6px 12px',
+              padding: '4px 12px',
               borderBottom: '1px solid var(--ds-border)',
               gap: 8,
             }}
           >
-            <span style={{ fontSize: 13, color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 13, color: 'var(--ds-text)', display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ color: 'var(--ds-text-subtlest)' }}>→</span>
               {toStatus?.name ?? t.to_status_id}
             </span>
@@ -109,9 +109,9 @@ export function TransitionGroup({
       })}
 
       {/* Add transition */}
-      <div style={{ padding: '6px 12px' }}>
+      <div style={{ padding: '4px 12px' }}>
         {showPicker ? (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {available.length === 0 ? (
               <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
                 All available statuses already have transitions from here.

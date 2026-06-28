@@ -26,9 +26,9 @@
 .jde-toolbar {
   display: flex;
   align-items: center;
-  gap: 1px;
+  gap: 0px;
   padding: 4px 6px;
-  border-bottom: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
+  border-bottom: 0px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   flex-wrap: wrap;
   border-radius: 2px 2px 0 0;
@@ -159,7 +159,7 @@
 .jde-dropdown-item {
   display: block;
   width: 100%;
-  padding: 6px 8px;
+  padding: 4px 8px;
   border: none;
   border-radius: 3px;
   background: transparent;
@@ -235,7 +235,7 @@
   border-radius: 3px;
   font-size: 13px;
   color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   box-sizing: border-box;
 }
 
@@ -286,7 +286,7 @@
   padding: 8px;
   display: grid;
   grid-template-columns: repeat(5, 32px);
-  gap: 2px;
+  gap: 0px;
 }
 
 .jde-emoji-btn {
@@ -311,7 +311,7 @@
 }
 
 .jde-content .ProseMirror {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-size: 14px;
   line-height: 1.714;
   color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
@@ -329,11 +329,11 @@
 
 /* Headings — Atlassian sizing */
 .jde-content .ProseMirror h1 { font-size: 24px; font-weight: 600; line-height: 1.333; margin: 16px 0 8px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
-.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 14px 0 6px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
+.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 12px 0 6px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
 .jde-content .ProseMirror h3 { font-size: 16px; font-weight: 600; line-height: 1.5; margin: 12px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
-.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
-.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
-.jde-content .ProseMirror h6 { font-size: 11px; font-weight: 700; line-height: 1.455; margin: 10px 0 4px; color: var(--ds-text-subtle); text-transform: uppercase; }
+.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 8px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
+.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 8px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))); }
+.jde-content .ProseMirror h6 { font-size: 11px; font-weight: 700; line-height: 1.455; margin: 8px 0 4px; color: var(--ds-text-subtle); text-transform: uppercase; }
 
 /* Paragraph */
 .jde-content .ProseMirror p { margin: 0 0 8px; }
@@ -342,18 +342,18 @@
 /* Lists */
 .jde-content .ProseMirror ul,
 .jde-content .ProseMirror ol { padding-left: 24px; margin: 4px 0 8px; }
-.jde-content .ProseMirror li { margin: 2px 0; }
+.jde-content .ProseMirror li { margin: 0px 0; }
 .jde-content .ProseMirror li > p { margin: 0; }
 
 /* Task list */
 .jde-content .ProseMirror ul[data-type="taskList"] { padding-left: 4px; list-style: none; }
-.jde-content .ProseMirror ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 8px; padding: 2px 0; }
-.jde-content .ProseMirror ul[data-type="taskList"] li > label { margin-top: 2px; flex-shrink: 0; }
+.jde-content .ProseMirror ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 8px; padding: 0px 0; }
+.jde-content .ProseMirror ul[data-type="taskList"] li > label { margin-top: 0px; flex-shrink: 0; }
 .jde-content .ProseMirror ul[data-type="taskList"] li > div { flex: 1; }
 
 /* Blockquote */
 .jde-content .ProseMirror blockquote {
-  border-left: 3px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
+  border-left: 4px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   padding-left: 12px;
   margin: 8px 0;
   color: var(--ds-text-subtle);
@@ -363,7 +363,7 @@
 .jde-content .ProseMirror code {
   background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   border-radius: 2px;
-  padding: 1px 5px;
+  padding: 0px 5px;
   font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', Menlo, monospace;
   font-size: 0.875em;
   color: var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)));
@@ -373,7 +373,7 @@
 .jde-content .ProseMirror pre {
   background: var(--cp-bg-sunken, var(--ds-background-neutral-subtle));
   border-radius: 3px;
-  padding: 10px 14px;
+  padding: 8px 14px;
   margin: 8px 0;
   overflow-x: auto;
 }
@@ -388,7 +388,7 @@
 /* HR */
 .jde-content .ProseMirror hr {
   border: none;
-  border-top: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
+  border-top: 0px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)));
   margin: 16px 0;
 }
 
@@ -461,7 +461,7 @@
 .jde-content .ProseMirror .jde-panel::before {
   font-size: 16px;
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 0px;
 }
 
 .jde-content .ProseMirror .jde-panel--info    { background: var(--ds-background-information); border-left: 4px solid var(--cp-primary-60, var(--ds-link)); }
@@ -493,7 +493,7 @@
 }
 
 .jde-content .ProseMirror .jde-expand__content {
-  padding: 10px 14px;
+  padding: 8px 14px;
 }
 
 /* ── Selection ─────────────────────────────────────────── */

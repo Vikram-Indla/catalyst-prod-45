@@ -38,16 +38,16 @@ function LinkPreviewCard({ preview }: { preview: LinkPreviewRow }) {
         textDecoration: 'none',
         color: 'inherit',
         borderLeft: `3px solid ${accent}`,
-        paddingLeft: 10,
+        paddingLeft: 8,
         background: 'transparent',
       }}
     >
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 0 }}>
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             fontSize: 'var(--ds-font-size-200)',
             color: 'var(--cv2-text-subtle)',
           }}
@@ -63,7 +63,7 @@ function LinkPreviewCard({ preview }: { preview: LinkPreviewRow }) {
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
               color: 'var(--cv2-link, var(--cv2-accent))',
-              marginTop: 1,
+              marginTop: 0,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
@@ -80,7 +80,7 @@ function LinkPreviewCard({ preview }: { preview: LinkPreviewRow }) {
             style={{
               fontSize: 'var(--ds-font-size-300)',
               color: 'var(--cv2-text)',
-              marginTop: 2,
+              marginTop: 0,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',

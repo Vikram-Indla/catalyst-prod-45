@@ -61,7 +61,7 @@ export function MessageEditInPlace({ initialMarkdown, onCancel, onSave }: Messag
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 8,
-          padding: '6px 10px',
+          padding: '4px 10px',
           borderTop: '1px solid var(--cv2-border)',
         }}
       >

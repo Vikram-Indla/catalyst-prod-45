@@ -127,7 +127,7 @@ export default function TestCaseTypesPage() {
 
       {showAdd && (
         <div style={{
-          border: '1px solid var(--ds-border)', borderRadius: 8, padding: 20, marginBottom: 20,
+          border: '1px solid var(--ds-border)', borderRadius: 8, padding: 16, marginBottom: 16,
           background: 'var(--ds-surface-overlay)', boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
         }}>
           <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600, color: 'var(--ds-text)' }}>New case type</h3>
@@ -187,9 +187,9 @@ export default function TestCaseTypesPage() {
               </tr>
             ) : types.map(t => (
               <tr key={t.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                <td style={{ padding: '10px 12px', width: 80 }}>
+                <td style={{ padding: '8px 12px', width: 80 }}>
                   {editingId === t.id ? (
-                    <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                       {ICONS.map(ic => (
                         <button
                           key={ic}
@@ -208,7 +208,7 @@ export default function TestCaseTypesPage() {
                     <span style={{ fontSize: 20 }}>{t.icon ?? '⚙️'}</span>
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {editingId === t.id ? (
                     <Textfield
                       value={editName}
@@ -219,10 +219,10 @@ export default function TestCaseTypesPage() {
                     <span style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{t.name}</span>
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {t.is_default ? (
                     <span style={{
-                      display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
+                      display: 'inline-block', padding: '0px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600,
                       background: 'var(--ds-background-accent-blue-subtler)', color: 'var(--ds-text-accent-blue)',
                     }}>Default</span>
                   ) : (
@@ -234,14 +234,14 @@ export default function TestCaseTypesPage() {
                     </button>
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {editingId === t.id ? (
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 4 }}>
                       <Button appearance="primary" spacing="compact" onClick={() => saveEdit(t)}>Save</Button>
                       <Button appearance="subtle" spacing="compact" onClick={() => setEditingId(null)}>Cancel</Button>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 4 }}>
                       <Button appearance="subtle" spacing="compact" onClick={() => startEdit(t)}>Edit</Button>
                       <Button appearance="subtle" spacing="compact" onClick={() => handleDelete(t)}>Delete</Button>
                     </div>

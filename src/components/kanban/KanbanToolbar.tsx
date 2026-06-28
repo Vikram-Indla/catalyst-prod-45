@@ -93,7 +93,7 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
         <DropdownPanel width={360} tk={tk}>
           <div style={{ padding: 8, borderBottom: `1px solid ${tk.border}` }}>
             <div style={{ position: 'relative' }}>
-              <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: tk.textMuted }} />
+              <Search size={14} style={{ position: 'absolute', left: 8, top: '48%', transform: 'translateY(-50%)', color: tk.textMuted }} />
               <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics..." autoFocus
                 style={{
                   width: '100%', height: 36, paddingLeft: 32, paddingRight: q ? 32 : 8,
@@ -107,7 +107,7 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
               />
               {q && (
                 <button onClick={() => setQ('')} style={{
-                  position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                  position: 'absolute', right: 8, top: '48%', transform: 'translateY(-50%)',
                   background: 'none', border: 'none', cursor: 'pointer', padding: 4,
                   color: tk.textMuted, display: 'flex',
                 }}>

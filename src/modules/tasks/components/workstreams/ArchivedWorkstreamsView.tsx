@@ -135,7 +135,7 @@ export function ArchivedWorkstreamsView({
             <p style={{
               fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-subtlest)',
-              marginTop: '2px',
+              marginTop: '0px',
               margin: 0,
             }}>
               {filteredWorkstreams.length} archived workstream{filteredWorkstreams.length !== 1 ? 's' : ''}

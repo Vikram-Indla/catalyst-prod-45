@@ -579,7 +579,7 @@ export default function AllReleasesPage() {
 
       {/* ═══ STAT STRIP (48px) ═══ */}
       <div className="flex items-center px-6" style={{ height: '48px', flexShrink: 0 }}>
-        <div className="flex items-center justify-between w-full" style={{ border: '1px solid var(--ds-border)', borderRadius: '8px', background: 'var(--bg-app, var(--ds-surface))', padding: '6px 16px' }}>
+        <div className="flex items-center justify-between w-full" style={{ border: '1px solid var(--ds-border)', borderRadius: '8px', background: 'var(--bg-app, var(--ds-surface))', padding: '4px 16px' }}>
           <div className="flex items-center" style={{ gap: '16px' }}>
             <StatItem number={statCounts.total} label="Total" />
             <StatItem number={statCounts.planning} label="Planning" dotColor="var(--ds-text-subtlest)" />
@@ -864,7 +864,7 @@ export default function AllReleasesPage() {
               </div>
               {detailRelease.description && (
                 <div className="mt-6">
-                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '6px' }}>DESCRIPTION</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '4px' }}>DESCRIPTION</div>
                   <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', lineHeight: '1.6' }}>{detailRelease.description}</p>
                 </div>
               )}
@@ -909,7 +909,7 @@ export default function AllReleasesPage() {
                       <div className="mt-0.5">{INSIGHT_ICONS[insight.iconType]}</div>
                       <div>
                         <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>{insight.title}</div>
-                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '2px', lineHeight: '1.5' }}>{insight.desc}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '0px', lineHeight: '1.5' }}>{insight.desc}</div>
                       </div>
                     </div>
                   </div>
@@ -935,9 +935,9 @@ export default function AllReleasesPage() {
           <div className="fixed inset-0 z-50" style={{ background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))' }} onClick={() => setDeleteConfirm(false)} />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '400px', background: 'var(--bg-app, var(--ds-surface))', borderRadius: '12px', boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.15))', padding: '24px' }}>
             <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', marginBottom: '8px' }}>Archive {selectedIds.size} releases?</h3>
-            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)', marginBottom: '20px' }}>These releases will be archived and hidden from the list. They can be restored later.</p>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)', marginBottom: '16px' }}>These releases will be archived and hidden from the list. They can be restored later.</p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setDeleteConfirm(false)} style={{ padding: '4px 16px', borderRadius: '6px', border: '1px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer' }}>Cancel</button>
               <button
                 onClick={handleBulkDelete}
                 disabled={bulkDeleteMutation.isPending}
@@ -1040,13 +1040,13 @@ const closeBtnStyle: React.CSSProperties = {
   color: 'var(--ds-text-subtlest)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-600)',
 };
 const primaryBtnStyle: React.CSSProperties = {
-  padding: '6px 16px', borderRadius: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, border: 'none', cursor: 'pointer',
+  padding: '4px 16px', borderRadius: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, border: 'none', cursor: 'pointer',
 };
 
 
 function StatItem({ number, label, dotColor }: { number: number; label: string; dotColor?: string }) {
   return (
-    <div className="flex items-center gap-1.5" style={{ gap: '6px' }}>
+    <div className="flex items-center gap-1.5" style={{ gap: '4px' }}>
       {dotColor && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor }} />}
       <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>{number}</span>
       <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>{label}</span>
@@ -1114,7 +1114,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
         />
       </td>
       <td style={{ ...cellStyle, minWidth: '280px' }}>
-        <span style={{ display: 'inline-block', padding: '2px 6px', background: 'var(--ds-surface-sunken)', color: 'var(--ds-text-subtlest)', border: '1px solid var(--ds-border)', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', marginRight: '6px', verticalAlign: 'middle' }}>{r.version}</span>
+        <span style={{ display: 'inline-block', padding: '0px 6px', background: 'var(--ds-surface-sunken)', color: 'var(--ds-text-subtlest)', border: '1px solid var(--ds-border)', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', marginRight: '4px', verticalAlign: 'middle' }}>{r.version}</span>
         <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)' }}>{r.name}</span>
       </td>
       <td style={{ ...cellStyle, width: '100px' }}><StatusPill status={r.status} /></td>
@@ -1187,7 +1187,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
 
 function CheckboxRow({ checked, label, onChange }: { checked: boolean; label: string; onChange: () => void }) {
   return (
-    <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken)]" style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
+    <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken)]" style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
       {label}
     </label>
@@ -1236,14 +1236,14 @@ function MetricBox({ value, label, color }: { value: number | string; label: str
   return (
     <div className="flex-1 text-center" style={{ padding: '12px', border: '1px solid var(--ds-border)', borderRadius: '8px' }}>
       <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color }}>{value}</div>
-      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest)', marginTop: '2px' }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest)', marginTop: '0px' }}>{label}</div>
     </div>
   );
 }
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between" style={{ padding: '6px 0', borderBottom: '1px solid var(--ds-background-neutral)' }}>
+    <div className="flex items-center justify-between" style={{ padding: '4px 0', borderBottom: '1px solid var(--ds-background-neutral)' }}>
       <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>{label}</span>
       <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>{value}</span>
     </div>
@@ -1308,7 +1308,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken))' }}>
-          <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} style={{ padding: '4px 16px', borderRadius: '6px', border: '1px solid var(--ds-border)', background: 'var(--bg-app)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={handleSubmit}
             disabled={isCreating}
@@ -1367,9 +1367,9 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 onMouseLeave={e => { if (!selected) e.currentTarget.style.opacity = '0'; }}
               />
               <div className="flex items-center gap-1.5 mb-2">
-                <span style={{ padding: '1px 6px', background: 'var(--ds-surface-sunken)', color: 'var(--ds-text-subtle)', border: '1px solid var(--ds-border)', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>{r.version}</span>
+                <span style={{ padding: '0px 6px', background: 'var(--ds-surface-sunken)', color: 'var(--ds-text-subtle)', border: '1px solid var(--ds-border)', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>{r.version}</span>
                 <span className="flex-1 truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>{r.name}</span>
-                <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, background: hBadge.bg, color: hBadge.text, flexShrink: 0 }}>
+                <span style={{ padding: '0px 8px', borderRadius: '12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, background: hBadge.bg, color: hBadge.text, flexShrink: 0 }}>
                   {getHealthDisplay(r.health)}
                 </span>
               </div>
@@ -1383,7 +1383,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 <StatusPill status={r.status} />
                 <span style={{ color: 'var(--ds-text-subtlest)' }}><Calendar className="w-3 h-3 inline-block mr-0.5" style={{ verticalAlign: 'middle' }} /> {r.targetDate}</span>
                 {r.overdue && (
-                  <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger, rgba(239,68,68,0.1))', borderRadius: '8px', padding: '1px 6px' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-danger)', background: 'var(--ds-background-danger, rgba(239,68,68,0.1))', borderRadius: '8px', padding: '0px 6px' }}>
                     {r.daysRemaining}d overdue
                   </span>
                 )}
@@ -1464,7 +1464,7 @@ function TimelineView({ releases, onBarClick }: {
         <div />
         <div className="flex items-center gap-4">
           {LEGEND_ITEMS.map(l => (
-            <div key={l.label} className="flex items-center" style={{ gap: '6px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>
+            <div key={l.label} className="flex items-center" style={{ gap: '4px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>
               {l.shape === 'circle' ? (
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: l.color }} />
               ) : (
@@ -1507,7 +1507,7 @@ function TimelineView({ releases, onBarClick }: {
 
           {/* Today marker */}
           <div className="absolute" style={{ left: `${todayPos}%`, top: '32px', bottom: 0, width: '2px', background: 'var(--ds-text-danger)', zIndex: 5 }}>
-            <span style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger)', whiteSpace: 'nowrap' }}>Today</span>
+            <span style={{ position: 'absolute', top: '-18px', left: '48%', transform: 'translateX(-50%)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger)', whiteSpace: 'nowrap' }}>Today</span>
           </div>
 
           {releases.map((r, i) => {
@@ -1522,7 +1522,7 @@ function TimelineView({ releases, onBarClick }: {
                   className="absolute cursor-pointer"
                   style={{
                     left: `${r.barLeft}%`, width: `${r.barWidth}%`,
-                    height: '24px', top: '6px', borderRadius: '4px',
+                    height: '24px', top: '4px', borderRadius: '4px',
                     background: isPlanned ? 'transparent' : barColor,
                     border: isPlanned ? `1.5px dashed var(--ds-border)` : 'none',
                     animation: 'barGrow 0.4s ease-out both',
@@ -1561,12 +1561,12 @@ function TimelineView({ releases, onBarClick }: {
         >
           <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>{hoveredRelease.name}</div>
           <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '4px' }}>Status: {getStatusConfig(hoveredRelease.status).label}</div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', marginTop: '2px' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', marginTop: '0px' }}>
             <span style={{ color: 'var(--ds-text-subtlest)' }}>Health: </span>
             <span style={{ color: getHealthColor(hoveredRelease.health), fontWeight: 600 }}>{hoveredRelease.health} ({getHealthDisplay(hoveredRelease.health)})</span>
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '2px' }}>Progress: {hoveredRelease.progress}%</div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '2px' }}>Target: {hoveredRelease.targetDate}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '0px' }}>Progress: {hoveredRelease.progress}%</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: '0px' }}>Target: {hoveredRelease.targetDate}</div>
         </div>
       )}
     </div>

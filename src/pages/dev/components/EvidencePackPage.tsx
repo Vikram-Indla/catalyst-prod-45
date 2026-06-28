@@ -222,7 +222,7 @@ function DetailedSummarySection() {
               </p>
             )}
             {section.items && (
-              <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
+              <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
                 {section.items.map((item) => (
                   <li key={item}>{item}</li>
                 ))}

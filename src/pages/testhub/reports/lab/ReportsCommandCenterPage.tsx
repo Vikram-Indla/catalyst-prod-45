@@ -56,7 +56,7 @@ export default function ReportsCommandCenterPage() {
         style={{
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
-          padding: '3px 8px',
+          padding: '4px 8px',
           borderRadius: 4,
           background: 'var(--ds-background-warning)',
           color: 'var(--ds-text-warning)',
@@ -71,7 +71,7 @@ export default function ReportsCommandCenterPage() {
         onClick={handleRefresh}
         style={{
           fontSize: 'var(--ds-font-size-200)',
-          padding: '5px 10px',
+          padding: '4px 10px',
           background: 'var(--ds-surface)',
           border: '1px solid var(--ds-border)',
           borderRadius: 4,
@@ -142,7 +142,7 @@ export default function ReportsCommandCenterPage() {
               </h1>
               <p
                 style={{
-                  margin: '3px 0 0',
+                  margin: '4px 0 0',
                   fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtlest)',
                   lineHeight: 1.3,

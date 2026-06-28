@@ -217,7 +217,7 @@ function StepsList({ steps }: { steps: string | string[] }) {
       style={{
         ...BODY_STYLE,
         margin: '4px 0 0',
-        paddingLeft: 20,
+        paddingLeft: 16,
         listStyleType: 'decimal',
       }}
     >
@@ -244,7 +244,7 @@ export function CatalystDefectLongFields({
   return (
     <section
       aria-label="Defect narrative fields"
-      style={{ marginBottom: 24, paddingLeft: 20 }}
+      style={{ marginBottom: 24, paddingLeft: 16 }}
     >
       {hasSteps && (
         <div style={{ marginBottom: 16 }}>

@@ -55,7 +55,7 @@ if (typeof document !== 'undefined') {
         font-weight: 700;
         letter-spacing: 0.04em;
         text-transform: uppercase;
-        outline: none;
+        outline: 2px solid var(--ds-border-focused);
         transition: filter 0.15s ease;
         background: var(--csp-bg);
         color: var(--csp-fg);
@@ -64,7 +64,7 @@ if (typeof document !== 'undefined') {
         height: 24px;
         padding: 0 6px;
         font-size: 11px;
-        gap: 3px;
+        gap: 4px;
       }
       .${PILL_CLASS}:hover,
       .${PILL_CLASS}[aria-expanded="true"] {
@@ -76,7 +76,7 @@ if (typeof document !== 'undefined') {
           0 0 0 4px var(--ds-border-focused);
       }
       [data-csp-item]:focus {
-        outline: none;
+        outline: 2px solid var(--ds-border-focused);
         background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) !important;
       }
     `;

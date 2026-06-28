@@ -40,7 +40,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
     borderLeftWidth: card.isBlocked ? 3 : 0.75,
     borderLeftColor: card.isBlocked ? 'var(--sem-danger)' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
     borderRadius: 6,
-    padding: '10px 11px 9px',
+    padding: '8px 11px 9px',
     cursor: isDragging ? 'grabbing' : 'grab',
     boxShadow: isDragging
       ? '0 8px 24px var(--ds-shadow-overlay, rgba(15,23,42,0.18))'
@@ -73,7 +73,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
       }}
     >
       {/* Header row: TypeIcon | Key | SourceBadge | ⋯ */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
         <JiraIssueTypeIcon type={card.type} size={16} />
         <span style={{
           fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
@@ -81,7 +81,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         }}>{card.key || '—'}</span>
         {/* Source badge */}
         <span style={{
-          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '1px 5px', borderRadius: 4,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '0px 5px', borderRadius: 4,
           background: source === 'JIRA' ? '#E3F0FF' : 'var(--cp-bd-zone)',
           color: source === 'JIRA' ? 'var(--cp-primary-60)' : 'var(--fg-3)',
           fontFamily: 'var(--cp-font-body)',
@@ -140,7 +140,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         marginTop: 8,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {/* Priority dot (8px) */}
           {card.priority && (
             <span style={{
@@ -161,7 +161,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {/* Release pill */}
           {card.release && (
             <span style={{

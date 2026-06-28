@@ -258,7 +258,7 @@ export function CommentToolbar({
         display: 'inline-flex',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: 6,
+        gap: 4,
         marginTop: 4,
       }}
     >
@@ -422,7 +422,7 @@ function MenuItem({ icon, onClick, children }: MenuItemProps) {
         width: '100%',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         padding: '8px 12px',
         border: 'none',
         background: hover

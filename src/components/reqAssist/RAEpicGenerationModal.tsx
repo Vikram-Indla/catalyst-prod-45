@@ -226,16 +226,16 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
       {/* Modal */}
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
         width: 480, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70,
-        padding: 28, border: '0.75px solid var(--divider)',
+        padding: 24, border: '0.75px solid var(--divider)',
         fontFamily: 'var(--cp-font-body)',
       }}>
 
         {/* ── SUCCESS STATE ── */}
         {done && (
           <>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 16 }}>
               <div style={{
                 width: 64, height: 64, borderRadius: '50%', background: 'var(--ds-background-success)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -251,9 +251,9 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             {/* All steps green */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 16 }}>
               {STEPS.map((s, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 0' }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0' }}>
                   <div style={{
                     width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-background-success)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -266,7 +266,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             {/* Progress full green */}
-            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 20, overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 16, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: '100%', borderRadius: 999, background: 'var(--sem-success)', transition: 'width 0.4s ease' }} />
             </div>
 
@@ -304,7 +304,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
         {/* ── ERROR STATE ── */}
         {hasFailed && (
           <>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <div style={{
                 width: 56, height: 56, borderRadius: '50%', background: 'var(--ds-background-danger)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -318,7 +318,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
             <div style={{
               background: 'var(--ds-background-danger)', border: '1.5px solid var(--cp-danger)', borderRadius: 6,
-              padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
+              padding: '12px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
                 fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger)', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
@@ -333,7 +333,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </p>
 
             {/* Progress bar red */}
-            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 20, overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 16, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${Math.max(progress, 10)}%`, borderRadius: 999, background: 'var(--sem-danger)', transition: 'width 0.4s ease' }} />
             </div>
 
@@ -364,7 +364,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
         {!done && !hasFailed && (
           <>
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <div style={{
                 width: 48, height: 48, borderRadius: 8, background: 'var(--cp-primary-5)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -375,22 +375,22 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
                   Generating Epic Statements
                 </h3>
-                <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', margin: '2px 0 0' }}>
+                <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', margin: '0px 0 0' }}>
                   From: {doc.title}
                 </p>
               </div>
             </div>
 
-            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', margin: '8px 0 16px', paddingLeft: 42 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', margin: '8px 0 16px', paddingLeft: 40 }}>
               This typically takes ~2 minutes. You can leave this screen.
             </p>
 
             {/* Progress bar */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)', fontWeight: 600 }}>{progress}%</span>
             </div>
-            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 20, overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle)', marginBottom: 16, overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 999, background: 'var(--cp-blue)',
                 width: `${Math.max(progress, 8)}%`,
@@ -399,12 +399,12 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             {/* Steps */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 16 }}>
               {STEPS.map((s, i) => {
                 const state = getStepState(i);
                 return (
                   <div key={i}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -428,7 +428,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                     </div>
                     {i < STEPS.length - 1 && (
                       <div style={{
-                        width: 2, height: 10, marginLeft: 13,
+                        width: 2, height: 10, marginLeft: 12,
                         background: state === 'done' ? 'var(--ds-background-success)' : 'var(--divider)',
                       }} />
                     )}
@@ -439,7 +439,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
             {/* Info strip */}
             <div style={{
-              background: 'var(--cp-primary-5)', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
+              background: 'var(--cp-primary-5)', borderRadius: 6, padding: '8px 12px', marginBottom: 16,
             }}>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-brand-bold-hovered)' }}>
                 ⏱ Estimated: ~2 minutes · You'll be notified when done

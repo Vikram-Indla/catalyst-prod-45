@@ -165,8 +165,8 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 12px',
+                    gap: '8px',
+                    padding: '8px 12px',
                     borderRadius: '8px',
                     cursor: 'pointer',
                     backgroundColor: isSelected ? COLORS.accentLight : 'transparent',
@@ -197,7 +197,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
                       fontWeight: 500,
                       color: COLORS.textMuted,
                       backgroundColor: COLORS.surfaceHover,
-                      padding: '2px 8px',
+                      padding: '0px 8px',
                       borderRadius: '12px',
                       minWidth: '24px',
                       textAlign: 'center'

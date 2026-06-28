@@ -65,7 +65,7 @@ function ConsumersCell({ consumers }: ConsumersCellProps) {
           fontSize: 'var(--ds-font-size-300)',
           color: 'var(--ds-text-subtle)',
           borderBottom: '1px dashed var(--ds-border-bold)',
-          paddingBottom: 1,
+          paddingBottom: 0,
           cursor: 'default',
         }}
       >
@@ -111,7 +111,7 @@ function TypeChips({ types }: { types: string[] }) {
     return (
       <span style={{
         display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
-        border: '1px solid transparent', borderRadius: 3, padding: '1px 6px',
+        border: '1px solid transparent', borderRadius: 3, padding: '0px 6px',
         background: 'var(--ds-background-neutral)',
         color: 'var(--ds-text-subtle)', whiteSpace: 'nowrap',
       }}>All types</span>
@@ -120,12 +120,12 @@ function TypeChips({ types }: { types: string[] }) {
   const shown = types.slice(0, 2);
   const extra = types.slice(2);
   return (
-    <span style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 4px', alignItems: 'center' }}>
+    <span style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 4px', alignItems: 'center' }}>
       {shown.map((t) => (
         <span key={t} style={{
           display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
           border: '1px solid var(--ds-border)', borderRadius: 3,
-          padding: '1px 6px', background: 'var(--ds-surface-sunken)',
+          padding: '0px 6px', background: 'var(--ds-surface-sunken)',
           color: 'var(--ds-text-subtle)', whiteSpace: 'nowrap',
         }}>{t}</span>
       ))}
@@ -135,7 +135,7 @@ function TypeChips({ types }: { types: string[] }) {
             <span {...p} style={{
               display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
               border: '1px solid var(--ds-border)', borderRadius: 3,
-              padding: '1px 6px', background: 'var(--ds-surface-sunken)',
+              padding: '0px 6px', background: 'var(--ds-surface-sunken)',
               color: 'var(--ds-text-subtle)', whiteSpace: 'nowrap', cursor: 'default',
             }}>+{extra.length}</span>
           )}
@@ -161,7 +161,7 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
           onClick={() => onEdit(status)}
           style={{
             fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text)',
-            padding: '2px 4px', marginLeft: -4, borderRadius: 3, background: 'none', border: 'none',
+            padding: '0px 4px', marginLeft: -4, borderRadius: 3, background: 'none', border: 'none',
             cursor: 'pointer',
           }}
           onMouseEnter={(e) => {
@@ -179,7 +179,7 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
 
       {/* Color */}
       <td style={{ fontSize: 'var(--ds-font-size-400)', padding: '0 12px', height: 40, borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{
             width: 16, height: 16, borderRadius: 3, background: status.color, flexShrink: 0,
             border: '1px solid var(--ds-border)', display: 'inline-block', verticalAlign: 'middle',
@@ -205,7 +205,7 @@ function StatusRow({ status, consumers, onEdit, onDelete }: StatusRowProps) {
             fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
             color: 'var(--ds-text-brand)',
             background: 'var(--ds-background-selected)',
-            borderRadius: 3, padding: '2px 6px', whiteSpace: 'nowrap',
+            borderRadius: 3, padding: '0px 6px', whiteSpace: 'nowrap',
           }}>
             Default
           </span>

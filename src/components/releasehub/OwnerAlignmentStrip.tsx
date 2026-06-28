@@ -85,7 +85,7 @@ export function OwnerAlignmentStrip() {
             <div
               key={r.id}
               style={{
-                display: 'inline-flex', flexDirection: 'column', gap: 6,
+                display: 'inline-flex', flexDirection: 'column', gap: 4,
                 padding: '8px 12px', borderRadius: 6,
                 border: `1px solid ${TIER_BORDER[tier]}`,
                 background: TIER_BG[tier],

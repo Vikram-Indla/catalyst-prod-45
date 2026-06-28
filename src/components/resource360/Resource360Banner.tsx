@@ -13,8 +13,8 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
   if (isLoading || !summary) {
     return (
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 14,
-        padding: '20px 24px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '16px 24px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
       }}>
         <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--divider)' }} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -83,7 +83,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 16,
-      padding: '20px 24px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
+      padding: '16px 24px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
       flexShrink: 0, fontFamily: 'var(--cp-font-body)',
     }}>
       {/* Avatar */}
@@ -113,14 +113,14 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
           {summary.role}{summary.department ? ` · ${summary.department}` : ''}
         </span>
         {releaseChips.length > 0 && (
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 0 }}>
             {releaseChips.map(chip => (
               <span
                 key={chip.name}
                 title={`${chip.name} · ${chip.count} active item${chip.count === 1 ? '' : 's'}${chip.daysLabel ? ` · ${chip.daysLabel}` : ''}`}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 5,
-                  padding: '2px 8px', borderRadius: 12,
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  padding: '0px 8px', borderRadius: 12,
                   background: chip.overdue ? 'var(--cp-danger-light)' : 'var(--ds-background-selected)',
                   border: `1px solid ${chip.overdue ? 'var(--sem-danger)' : 'var(--ds-border-selected)'}`,
                   fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
@@ -157,7 +157,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
               color: k.color, lineHeight: 1.2, fontVariantNumeric: 'tabular-nums',
             }}>{k.value}</div>
             <div style={{
-              fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontWeight: 700, marginTop: 2,
+              fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontWeight: 700, marginTop: 0,
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}>{k.label}</div>
           </div>

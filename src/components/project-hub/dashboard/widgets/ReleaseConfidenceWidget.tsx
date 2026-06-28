@@ -118,7 +118,7 @@ export default function ReleaseConfidenceWidget({
               border: `1px solid ${confidenceBar(stats.score)}`,
               display: 'flex',
               alignItems: 'center',
-              gap: 20,
+              gap: 16,
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -197,8 +197,8 @@ export default function ReleaseConfidenceWidget({
                   flex: 1,
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 2,
-                  padding: '10px 10px',
+                  gap: 0,
+                  padding: '8px 10px',
                   borderRight: i < arr.length - 1 ? `1px solid ${token('color.border', 'var(--ds-border)')}` : 'none',
                   minWidth: 0,
                 }}

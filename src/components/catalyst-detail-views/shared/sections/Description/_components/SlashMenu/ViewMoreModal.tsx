@@ -245,7 +245,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
           style={{
             display: 'flex',
             justifyContent: 'flex-end',
-            padding: '10px 12px 0',
+            padding: '8px 12px 0',
             flexShrink: 0,
           }}
         >
@@ -399,7 +399,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                 style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 10,
+                  gap: 8,
                 }}
               >
                 {items.map((el) => {
@@ -419,8 +419,8 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                         position: 'relative',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 10,
-                        padding: '10px 12px',
+                        gap: 8,
+                        padding: '8px 12px',
                         paddingLeft: active ? 13 : 12,
                         border: 'none',
                         borderRadius: 4,
@@ -514,7 +514,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               type="button"
               onClick={onClose}
               style={{
-                padding: '6px 12px',
+                padding: '4px 12px',
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 border: 'none',
@@ -531,7 +531,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               disabled={!selected}
               onClick={handleInsert}
               style={{
-                padding: '6px 14px',
+                padding: '4px 14px',
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 border: 'none',

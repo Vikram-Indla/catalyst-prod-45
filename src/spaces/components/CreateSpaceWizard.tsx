@@ -231,7 +231,7 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
       <div
         style={{
           display: 'flex',
-          gap: 6,
+          gap: 4,
           paddingBottom: 16,
           paddingTop: 8,
         }}
@@ -286,7 +286,7 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
             isDisabled={submitting}
           >
             {submitting ? (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <Spinner size="small" /> Next
               </span>
             ) : 'Next'}
@@ -298,7 +298,7 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
             isDisabled={submitting}
           >
             {submitting ? (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <Spinner size="small" /> Creating…
               </span>
             ) : 'Create project'}

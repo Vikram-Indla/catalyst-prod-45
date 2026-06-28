@@ -56,7 +56,7 @@ export function HuddlePanel({ conversation }: { conversation: ChatConversation }
           onClick={() => setScreenWindow('normal')}
           title="View shared screen"
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', gap: 4,
             border: '1px solid var(--ds-border-success)', cursor: 'pointer',
             background: 'var(--ds-background-success)', color: 'var(--ds-text)',
             borderRadius: 999, padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,

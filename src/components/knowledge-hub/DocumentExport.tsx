@@ -43,23 +43,23 @@ export function DocumentExport({ title, content }: DocumentExportProps) {
   <title>${title}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; line-height: 1.6; }
-    h1 { border-bottom: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); padding-bottom: 10px; }
+    h1 { border-bottom: 0px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); padding-bottom: 8px; }
     h2, h3 { color: var(--ds-surface-raised); }
-    blockquote { border-left: 4px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); margin: 1em 0; padding-left: 1em; color: var(--ds-text-subtlest); }
-    code { background: var(--ds-surface-sunken); padding: 2px 6px; border-radius: 3px; }
+    blockquote { border-left: 4px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); margin: 0em 0; padding-left: 0em; color: var(--ds-text-subtlest); }
+    code { background: var(--ds-surface-sunken); padding: 0px 6px; border-radius: 3px; }
     pre { background: var(--ds-surface-raised); color: var(--ds-surface-sunken); padding: 16px; border-radius: 6px; overflow-x: auto; }
-    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    table { border-collapse: collapse; width: 100%; margin: 0em 0; }
     th, td { border: 1px solid var(--ds-border); padding: 8px 12px; text-align: left; }
     th { background: var(--ds-surface-sunken); }
-    .info-panel { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 16px; margin: 1em 0; } // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    .warning-panel { background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 1em 0; } // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-    .note-panel { background: #f3e5f5; border-left: 4px solid #9c27b0; padding: 12px 16px; margin: 1em 0; } // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    .info-panel { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 16px; margin: 0em 0; } // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    .warning-panel { background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 0em 0; } // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+    .note-panel { background: #f3e5f5; border-left: 4px solid #9c27b0; padding: 12px 16px; margin: 0em 0; } // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   </style>
 </head>
 <body>
   <h1>${title}</h1>
   ${content}
-  <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--ds-border); color: var(--ds-text-subtlest); font-size: 12px;">
+  <footer style="margin-top: 40px; padding-top: 16px; border-top: 0px solid var(--ds-border); color: var(--ds-text-subtlest); font-size: 12px;">
     Exported from Catalyst Knowledge Hub on ${new Date().toLocaleDateString()}
   </footer>
 </body>

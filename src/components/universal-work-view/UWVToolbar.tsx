@@ -175,7 +175,7 @@ export function UWVToolbar({
                 color: 'var(--ds-text-subtle)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                marginBottom: 6,
+                marginBottom: 4,
               }}
             >
               {group.label}
@@ -269,7 +269,7 @@ export function UWVToolbar({
             style={{
               padding: '8px 16px',
               display: 'flex',
-              gap: 6,
+              gap: 4,
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral))',
               flexShrink: 0,
@@ -286,7 +286,7 @@ export function UWVToolbar({
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 4,
                     height: 26,
                     padding: '0 10px',
                     borderRadius: 13,
@@ -400,7 +400,7 @@ export function UWVToolbar({
               color: 'var(--ds-text-subtle)',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               minWidth: 220,
             }}
           >

@@ -366,7 +366,7 @@ function StageCard({
     >
       <div
         style={{
-          padding: '10px 16px',
+          padding: '8px 16px',
           background: ST_BG[status],
           borderBottom: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.08))',
           display: 'flex',
@@ -399,10 +399,10 @@ function StageCard({
             <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)', lineHeight: '16px' }}>
               {title}
             </div>
-            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 1 }}>{subtitle}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 0 }}>{subtitle}</div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
           {status === 'running' && cardLoading !== false ? (
             <Spinner size="small" />
           ) : (
@@ -421,7 +421,7 @@ function StageCard({
         </div>
       </div>
 
-      <div style={{ padding: '12px 16px', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ padding: '12px 16px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {rows.map((r) => (
           <div key={r.label}>
             <div
@@ -431,7 +431,7 @@ function StageCard({
                 color: 'var(--ds-text-subtlest)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                marginBottom: 3,
+                marginBottom: 4,
               }}
             >
               {r.label}
@@ -459,7 +459,7 @@ function StageCard({
       {footer && (
         <div
           style={{
-            padding: '10px 16px',
+            padding: '8px 16px',
             borderTop: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.08))',
           }}
         >
@@ -492,7 +492,7 @@ function PipelineConnector({ active, label }: { active?: boolean; label?: string
             color: 'var(--ds-text-subtlest)',
             whiteSpace: 'nowrap',
             textAlign: 'center',
-            marginBottom: 2,
+            marginBottom: 0,
           }}
         >
           {label}
@@ -511,7 +511,7 @@ function PipelineConnector({ active, label }: { active?: boolean; label?: string
 function RunStatusBadge({ status, conclusion }: { status: string; conclusion: string | null }) {
   if (status === 'in_progress' || status === 'queued' || status === 'waiting') {
     return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         <Spinner size="small" />
         <Lozenge appearance="inprogress">Running</Lozenge>
       </span>
@@ -595,7 +595,7 @@ function LiveProgress({
         border: '2px solid var(--ds-border-brand)',
         borderRadius: 4,
         padding: '16px 20px',
-        marginBottom: 20,
+        marginBottom: 16,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
@@ -604,7 +604,7 @@ function LiveProgress({
           <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>
             Deploying to production
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 0 }}>
             <code
               style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)' }}
             >
@@ -639,7 +639,7 @@ function LiveProgress({
       {visibleSteps.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }}>
           {visibleSteps.map((step) => (
-            <div key={step.number} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div key={step.number} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div
                 style={{
                   width: 16,
@@ -782,7 +782,7 @@ function SmartPromotePanel({
     background: 'var(--ds-surface)',
     border: '1px solid var(--ds-border)',
     borderRadius: 3,
-    padding: '5px 10px',
+    padding: '4px 10px',
     fontFamily: FONT,
     cursor: 'pointer',
     minWidth: 200,
@@ -805,13 +805,13 @@ function SmartPromotePanel({
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
         overflow: 'hidden',
-        marginBottom: 20,
+        marginBottom: 16,
         background: 'var(--ds-surface)',
       }}
     >
       <div
         style={{
-          padding: '14px 20px',
+          padding: '12px 20px',
           background: 'var(--ds-surface-sunken)',
           borderBottom: '1px solid var(--ds-border)',
         }}
@@ -821,12 +821,12 @@ function SmartPromotePanel({
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 600,
             color: 'var(--ds-text)',
-            marginBottom: 10,
+            marginBottom: 8,
           }}
         >
           Promote branch to production
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', whiteSpace: 'nowrap' }}>
             Source:
           </span>
@@ -865,7 +865,7 @@ function SmartPromotePanel({
       {!gateEnabled && (
         <div
           style={{
-            padding: '10px 20px',
+            padding: '8px 20px',
             background: 'var(--ds-background-warning-subtle)',
             fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-warning)',
@@ -893,7 +893,7 @@ function SmartPromotePanel({
       )}
 
       {loadingSummary && (
-        <div style={{ padding: '20px', display: 'flex', gap: 10, alignItems: 'center' }}>
+        <div style={{ padding: '16px', display: 'flex', gap: 8, alignItems: 'center' }}>
           <Spinner size="small" />
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
             Analysing branch…
@@ -933,7 +933,7 @@ function SmartPromotePanel({
                       fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       color: 'var(--ds-text-information)',
-                      marginBottom: 6,
+                      marginBottom: 4,
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                     }}
@@ -967,12 +967,12 @@ function SmartPromotePanel({
                       fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 600,
                       color: 'var(--ds-text-danger)',
-                      marginBottom: 6,
+                      marginBottom: 4,
                     }}
                   >
                     ⚠ Database changes included — cannot be automatically undone
                   </div>
-                  <ul style={{ margin: 0, paddingLeft: 18 }}>
+                  <ul style={{ margin: 0, paddingLeft: 16 }}>
                     {summary.migration_files.map((f) => (
                       <li
                         key={f}
@@ -980,7 +980,7 @@ function SmartPromotePanel({
                           fontSize: 'var(--ds-font-size-200)',
                           color: 'var(--ds-text-subtle)',
                           fontFamily: 'var(--ds-font-family-code)',
-                          marginBottom: 2,
+                          marginBottom: 0,
                         }}
                       >
                         {f}
@@ -1013,7 +1013,7 @@ function SmartPromotePanel({
                       color: 'var(--ds-text-subtle)',
                       background: 'var(--ds-background-neutral)',
                       borderRadius: 3,
-                      padding: '2px 8px',
+                      padding: '0px 8px',
                     }}
                   >
                     {g.emoji} {g.label} {g.count}
@@ -1027,15 +1027,15 @@ function SmartPromotePanel({
               </button>
 
               {showCommits && (
-                <div style={{ marginTop: 10, marginBottom: 8 }}>
+                <div style={{ marginTop: 8, marginBottom: 8 }}>
                   {summary.commits.slice(0, 25).map((c, i) => (
                     <div
                       key={c.sha}
                       style={{
                         display: 'flex',
                         alignItems: 'flex-start',
-                        gap: 10,
-                        padding: '6px 0',
+                        gap: 8,
+                        padding: '4px 0',
                         borderBottom:
                           i < Math.min(summary.commits.length, 25) - 1
                             ? '1px solid var(--ds-border-subtle, rgba(11,18,14,0.06))'
@@ -1048,7 +1048,7 @@ function SmartPromotePanel({
                           color: 'var(--ds-link)',
                           fontFamily: 'var(--ds-font-family-code)',
                           flexShrink: 0,
-                          marginTop: 1,
+                          marginTop: 0,
                           minWidth: 48,
                         }}
                       >
@@ -1070,7 +1070,7 @@ function SmartPromotePanel({
                           style={{
                             fontSize: 'var(--ds-font-size-100)',
                             color: 'var(--ds-text-subtlest)',
-                            marginTop: 1,
+                            marginTop: 0,
                           }}
                         >
                           {c.author} · {fmtRelative(c.date)}
@@ -1120,7 +1120,7 @@ function SmartPromotePanel({
                       margin: '0 0 16px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 6,
+                      gap: 4,
                     }}
                   >
                     <li
@@ -1230,7 +1230,7 @@ function SmartPromotePanel({
                         style={{
                           fontSize: 'var(--ds-font-size-300)',
                           color: 'var(--ds-text)',
-                          marginBottom: 6,
+                          marginBottom: 4,
                         }}
                       >
                         Type <strong>deploy</strong> to confirm:
@@ -1249,7 +1249,7 @@ function SmartPromotePanel({
                           background: 'var(--ds-surface)',
                           border: '1px solid var(--ds-border)',
                           borderRadius: 3,
-                          padding: '7px 10px',
+                          padding: '8px 10px',
                           width: '100%',
                           boxSizing: 'border-box',
                           outline: 'none',
@@ -1304,7 +1304,7 @@ function ConfigPanel({
   const tokenRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 560 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 560 }}>
       <div>
         <div
           style={{
@@ -1323,7 +1323,7 @@ function ConfigPanel({
           style={{
             fontSize: 'var(--ds-font-size-100)',
             color: 'var(--ds-text-subtlest)',
-            marginBottom: 6,
+            marginBottom: 4,
           }}
         >
           Needs <code>actions:write</code> scope — for run history, diff, and triggering deploys
@@ -1354,7 +1354,7 @@ function ConfigPanel({
           style={{
             fontSize: 'var(--ds-font-size-100)',
             color: 'var(--ds-text-subtlest)',
-            marginBottom: 6,
+            marginBottom: 4,
           }}
         >
           From vercel.com → Settings → Tokens
@@ -1390,7 +1390,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
         fontSize: 'var(--ds-font-size-200)',
         fontWeight: 653,
         color: 'var(--ds-text-subtle)',
-        padding: '20px 0 8px',
+        padding: '16px 0 8px',
         borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
         marginBottom: 12,
       }}
@@ -1414,7 +1414,7 @@ const TH: React.CSSProperties = {
 const TD: React.CSSProperties = {
   fontSize: 'var(--ds-font-size-400)',
   color: 'var(--ds-text)',
-  padding: '10px 12px 10px 0',
+  padding: '8px 12px 10px 0',
   borderBottom: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.08))',
   verticalAlign: 'middle',
 };
@@ -1685,7 +1685,7 @@ export default function VercelConnectionPage() {
                         style={{
                           display: 'block',
                           fontSize: 'var(--ds-font-size-100)',
-                          marginTop: 2,
+                          marginTop: 0,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
@@ -1763,7 +1763,7 @@ export default function VercelConnectionPage() {
                         style={{
                           display: 'block',
                           fontSize: 'var(--ds-font-size-100)',
-                          marginTop: 2,
+                          marginTop: 0,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
@@ -1855,7 +1855,7 @@ export default function VercelConnectionPage() {
                           style={{
                             display: 'block',
                             fontSize: 'var(--ds-font-size-100)',
-                            marginTop: 2,
+                            marginTop: 0,
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -1873,7 +1873,7 @@ export default function VercelConnectionPage() {
                           display: 'block',
                           fontSize: 'var(--ds-font-size-100)',
                           color: 'var(--ds-text-subtlest)',
-                          marginTop: 2,
+                          marginTop: 0,
                         }}
                       >
                         {fmtRelative(
@@ -1930,7 +1930,7 @@ export default function VercelConnectionPage() {
         />
 
         {!config.vercel_token_set && (
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 16 }}>
             <SectionMessage appearance="warning" title="VERCEL_TOKEN not configured">
               Deploys will fail. Add it below then set as a{' '}
               <a
@@ -1953,7 +1953,7 @@ export default function VercelConnectionPage() {
             border: `1px solid ${gate.production_deploy_enabled ? 'var(--ds-border-success)' : 'var(--ds-border)'}`,
             borderRadius: 4,
             padding: '16px 20px',
-            marginBottom: 20,
+            marginBottom: 16,
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
@@ -2005,7 +2005,7 @@ export default function VercelConnectionPage() {
               alignItems: 'center',
               gap: 8,
               flexShrink: 0,
-              paddingTop: 2,
+              paddingTop: 0,
             }}
           >
             <span
@@ -2135,7 +2135,7 @@ export default function VercelConnectionPage() {
                   color: 'var(--ds-text-subtlest)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  marginBottom: 6,
+                  marginBottom: 4,
                 }}
               >
                 {s.label}
@@ -2460,7 +2460,7 @@ export default function VercelConnectionPage() {
               padding: 0,
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               fontFamily: FONT,
             }}
           >

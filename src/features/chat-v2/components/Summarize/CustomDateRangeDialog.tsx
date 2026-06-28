@@ -137,10 +137,10 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '20px 24px 16px',
+            padding: '16px 24px 16px',
           }}
         >
-          <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Summarize custom date range
           </div>
           <button
@@ -255,7 +255,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
             style={{
               background: 'transparent',
               border: 'none',
-              color: !start && !end ? 'var(--cv2-text-muted)' : 'var(--ds-link)',
+              color: !start && !end ? 'var(--cv2-text-muted)' : 'var(--ds-link, #0C66E4)',
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               cursor: !start && !end ? 'default' : 'pointer',
@@ -263,7 +263,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
           >
             Clear selection
           </button>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
             <button
               type="button"
               onClick={onClose}
@@ -288,7 +288,7 @@ export function CustomDateRangeDialog({ onClose, onSubmit }: CustomDateRangeDial
               }}
               style={{
                 background: canSubmit ? '#007A5A' : 'var(--ds-surface, rgba(255,255,255,0.08))',
-                color: canSubmit ? 'var(--ds-text-inverse)' : 'var(--cv2-text-muted)',
+                color: canSubmit ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text-muted)',
                 border: 'none',
                 borderRadius: 6,
                 padding: '8px 18px',
@@ -332,7 +332,7 @@ function DateInput({
         gap: 8,
         height: 40,
         padding: '0 12px',
-        border: `1px solid ${showRing ? 'var(--ds-link)' : 'var(--cv2-border-strong)'}`,
+        border: `1px solid ${showRing ? 'var(--ds-link, #0C66E4)' : 'var(--cv2-border-strong)'}`,
         borderRadius: 6,
         background: 'transparent',
       }}
@@ -370,7 +370,7 @@ function CalendarNavButton({ side, onClick }: { side: 'left' | 'right'; onClick:
       aria-label={side === 'left' ? 'Previous month' : 'Next month'}
       style={{
         position: 'absolute',
-        top: 6,
+        top: 4,
         [side]: 24,
         width: 28,
         height: 28,
@@ -421,9 +421,9 @@ function CalendarMonth({
       <div
         style={{
           textAlign: 'center',
-          fontSize: 'var(--ds-font-size-400)',
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 700,
-          padding: '6px 0 10px',
+          padding: '4px 0 10px',
           color: 'var(--cv2-text-strong)',
         }}
       >
@@ -434,7 +434,7 @@ function CalendarMonth({
           display: 'grid',
           gridTemplateColumns: 'repeat(7, 1fr)',
           gap: 0,
-          paddingBottom: 6,
+          paddingBottom: 4,
           color: 'var(--cv2-text-muted)',
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
@@ -542,13 +542,13 @@ function DayCell({
   let buttonRadius: string | number = 6;
 
   if (isEndpoint) {
-    buttonBackground = 'var(--ds-link)';
-    buttonColor = 'var(--ds-surface)';
-    buttonBorder = '2px solid var(--ds-link)';
+    buttonBackground = 'var(--ds-link, #0065FF)';
+    buttonColor = 'var(--ds-surface, #FFFFFF)';
+    buttonBorder = '2px solid var(--ds-link, #0C66E4)';
     buttonRadius = 6;
   } else if (isToday) {
-    buttonBorder = '2px solid var(--ds-link)';
-    buttonColor = 'var(--ds-link)';
+    buttonBorder = '2px solid var(--ds-link, #0C66E4)';
+    buttonColor = 'var(--ds-link, #0C66E4)';
     buttonRadius = '50%';
   } else if (isInRange) {
     buttonColor = 'var(--cv2-text-strong)';
@@ -572,7 +572,7 @@ function DayCell({
         aria-label={`${date.toDateString()}${isFuture ? ' (future, disabled)' : ''}`}
         style={{
           position: 'absolute',
-          inset: 3,
+          inset: 4,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',

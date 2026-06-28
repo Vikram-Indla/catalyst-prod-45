@@ -158,7 +158,7 @@ export default function AuditTrailPage() {
           <button
             onClick={() => navigate('/cleanup')}
             style={{
-              display: 'flex', alignItems: 'center', gap: 2,
+              display: 'flex', alignItems: 'center', gap: 0,
               background: 'none', border: 'none', cursor: 'pointer',
               fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', fontFamily: 'var(--cp-font-body)',
               marginBottom: 4,
@@ -170,13 +170,13 @@ export default function AuditTrailPage() {
           <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>
             Audit Trail
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginTop: 0 }}>
             AI Cleanup governance log
           </div>
         </div>
         <Button
           variant="outline"
-          style={{ height: 36, fontSize: 'var(--ds-font-size-300)', display: 'flex', alignItems: 'center', gap: 6 }}
+          style={{ height: 36, fontSize: 'var(--ds-font-size-300)', display: 'flex', alignItems: 'center', gap: 4 }}
           onClick={handleExport}
         >
           <Download size={14} />
@@ -218,7 +218,7 @@ export default function AuditTrailPage() {
           </SelectContent>
         </Select>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>From</span>
           <input
             type="date"
@@ -273,7 +273,7 @@ export default function AuditTrailPage() {
             </div>
             <div style={{
               fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))',
-              textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 2,
+              textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 0,
             }}>
               {cell.label}
             </div>
@@ -292,7 +292,7 @@ export default function AuditTrailPage() {
               <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken))' }}>
                 {['ITEM', 'CATEGORY', 'CLOSED BY', 'CLOSED', 'REASON', 'RESTORE STATUS', 'RESTORED BY'].map(h => (
                   <th key={h} style={{
-                    padding: '10px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+                    padding: '8px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                     textTransform: 'uppercase', letterSpacing: '0.05em',
                     color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                     whiteSpace: 'nowrap',
@@ -333,7 +333,7 @@ export default function AuditTrailPage() {
                         {entry.item_key}
                       </div>
                       <div style={{
-                        fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginTop: 2,
+                        fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginTop: 0,
                         maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                       }}>
@@ -348,7 +348,7 @@ export default function AuditTrailPage() {
 
                     {/* CLOSED BY */}
                     <td style={{ padding: '8px 12px', verticalAlign: 'top' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <div style={{
                           width: 24, height: 24, borderRadius: '50%',
                           background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', display: 'flex',
@@ -372,7 +372,7 @@ export default function AuditTrailPage() {
                       }}>
                         {relativeTime(entry.closed_at)}
                       </div>
-                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginTop: 2 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginTop: 0 }}>
                         {formatDate(entry.closed_at)}
                       </div>
                     </td>
@@ -393,7 +393,7 @@ export default function AuditTrailPage() {
                       <span style={{
                         display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                         textTransform: 'uppercase', borderRadius: 3,
-                        padding: '2px 8px', background: rs.bg, color: rs.color,
+                        padding: '0px 8px', background: rs.bg, color: rs.color,
                         border: `1px solid ${rs.border}`, whiteSpace: 'nowrap',
                       }}>
                         {rs.label}
@@ -404,7 +404,7 @@ export default function AuditTrailPage() {
                     <td style={{ padding: '8px 12px', verticalAlign: 'top' }}>
                       {entry.restored_by_name ? (
                         <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <div style={{
                               width: 24, height: 24, borderRadius: '50%',
                               background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', display: 'flex',
@@ -419,7 +419,7 @@ export default function AuditTrailPage() {
                             </span>
                           </div>
                           {entry.restored_at && (
-                            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginTop: 2, paddingLeft: 30 }}>
+                            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginTop: 0, paddingLeft: 32 }}>
                               {formatDate(entry.restored_at)}
                             </div>
                           )}

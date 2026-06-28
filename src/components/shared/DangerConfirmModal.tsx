@@ -222,7 +222,7 @@ export function DangerConfirmModal({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: 80,
+        paddingTop: 48,
       }}
     >
       <div
@@ -329,7 +329,7 @@ export function DangerConfirmModal({
                   fontSize: 12,
                   fontWeight: 600,
                   color: token('color.text', 'var(--ds-text)'),
-                  marginBottom: 6,
+                  marginBottom: 4,
                 }}
               >
                 Type <strong>{confirmPhrase}</strong> to continue

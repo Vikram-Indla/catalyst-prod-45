@@ -535,7 +535,7 @@ export default function FeatureFlagsPage() {
         <div
           className="flex items-center mb-4"
           style={{
-            padding: '10px 16px',
+            padding: '8px 16px',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
             borderRadius: 6,
             background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken))))',
@@ -551,7 +551,7 @@ export default function FeatureFlagsPage() {
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled))))', fontVariantNumeric: 'tabular-nums' }}>
               {stats.total}
             </span>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest))', marginLeft: 2 }}>modules enabled</span>
+            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest))', marginLeft: 0 }}>modules enabled</span>
           </div>
 
           {/* Divider */}

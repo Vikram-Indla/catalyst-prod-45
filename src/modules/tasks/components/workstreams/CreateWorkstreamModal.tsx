@@ -193,7 +193,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
         </div>
 
         {/* Stepper */}
-        <div className="ws-stepper" style={{ padding: '1rem 1.25rem 0' }}>
+        <div className="ws-stepper" style={{ padding: '0rem 1.25rem 0' }}>
           <div className="ws-stepper-step">
             <div className={`ws-stepper-circle ${step >= 1 ? 'active' : 'pending'}`}>
               {step > 1 ? <Check className="w-4 h-4" strokeWidth={2} /> : '1'}
@@ -210,7 +210,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
         </div>
 
         {/* Body */}
-        <div className="ws-modal-body" style={{ padding: '1.25rem', maxHeight: '420px', overflowY: 'auto' }}>
+        <div className="ws-modal-body" style={{ padding: '0.25rem', maxHeight: '420px', overflowY: 'auto' }}>
           {step === 1 && (
             <>
               {/* Name */}
@@ -529,7 +529,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
         <div 
           className="flex items-center justify-end gap-3"
           style={{ 
-            padding: '1rem 1.25rem', 
+            padding: '0rem 1.25rem', 
             borderTop: '1px solid var(--ds-background-neutral-subtle)',
             background: 'var(--ds-surface-sunken)'
           }}

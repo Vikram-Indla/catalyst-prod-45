@@ -273,7 +273,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   >
                     <span
                       className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm"
-                      style={{ left: 22 }}
+                      style={{ left: 24 }}
                     />
                   </button>
                 </div>

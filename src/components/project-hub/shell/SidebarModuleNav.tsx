@@ -70,7 +70,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
               </div>
               <div
                 className="flex items-center gap-2 mx-2 my-1 rounded-[6px] border border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))] dark:border-[var(--ds-border-bold)]"
-                style={{ padding: '10px 12px' }}
+                style={{ padding: '8px 12px' }}
               >
                 <Star size={14} className="text-[var(--ds-border)] dark:text-[var(--ds-text-subtlest)] flex-shrink-0" />
                 <span className="text-[var(--ds-text-subtlest,var(--cp-text-secondary))] dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-200)' }}>

@@ -125,7 +125,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
                       <div style={{ width: 138, flexShrink: 0 }}>
                         {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
                       </div>
-                      <div style={{ width: 158, flexShrink: 0, fontSize: 'var(--ds-font-size-200)', color: tk.t3, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 158, flexShrink: 0, fontSize: 'var(--ds-font-size-200)', color: tk.t3, display: 'flex', alignItems: 'center', gap: 4 }}>
                         <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: tk.t2, flexShrink: 0 }}>{getInitials(null)}</div>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Unassigned</span>
                       </div>

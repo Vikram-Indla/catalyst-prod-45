@@ -102,7 +102,7 @@ export function IconPickerGrid({
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: 6,
+              padding: 4,
               borderRadius: 8,
               cursor: 'pointer',
               background: selected

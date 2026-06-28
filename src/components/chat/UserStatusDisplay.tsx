@@ -45,7 +45,7 @@ export function UserStatusDisplay({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '6px',
+        gap: '4px',
         whiteSpace: 'nowrap',
       }}
       title={title}

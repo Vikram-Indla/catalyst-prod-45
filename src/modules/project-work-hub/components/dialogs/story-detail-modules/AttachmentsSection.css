@@ -61,14 +61,14 @@
    text node of "Subtasks" / "Linked work items" / "Activity" across
    BAU-5814 (Story) and BAU-5824 / BAU-5751 (QA Bug). Atomic CSS classes
    match @atlaskit/heading size="small".
-   Corrects the 2026-05-04 D3 measurement (14/500/var(--ds-text-subtle)) and the
-   2026-05-08 K.11 lesson (14/600/var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text)))) — both had measured layout
+   Corrects the 2026-05-04 D3 measurement (14/500/var(--ds-text-subtle, #44546F)) and the
+   2026-05-08 K.11 lesson (14/600/var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)))) — both had measured layout
    wrappers or inner field labels, not the canonical section heading. */
 .att-heading-label {
   display: block;
   font-size: 16px;
-  font-weight: 653;
-  color: var(--ds-text);
+  font-weight: 600;
+  color: var(--ds-text, #292A2E);
   line-height: 20px;
   user-select: none;
   font-family: var(--cp-font-body);
@@ -83,7 +83,7 @@
 .att-badge {
   display: inline;
   background: none;
-  color: var(--ds-text-subtlest);
+  color: var(--ds-text-subtlest, #626F86);
   font-size: 14px;
   font-weight: 400;
   margin-left: 4px;
@@ -104,7 +104,7 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  padding: 2px 0;
+  padding: 0px 0;
   background: transparent;
   border: none;
   border-radius: 3px;
@@ -126,9 +126,9 @@
 .att-more-menu {
   position: absolute;
   right: 0;
-  top: 28px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  top: 24px;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
   box-shadow: 0 4px 16px var(--ds-shadow-raised, rgba(9, 30, 66, 0.18));
   padding: 4px 0;
@@ -148,21 +148,21 @@
   text-align: left;
   cursor: pointer;
   font-size: 14px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: var(--cp-font-body);
   transition: background 0.1s ease;
 }
 
 .att-menu-item:hover {
-  background: var(--ds-surface-sunken, var(--cp-bg-sunken));
+  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
 }
 
 .att-menu-badge {
-  background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
-  color: var(--ds-text-subtle);
+  background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  color: var(--ds-text-subtle, #42526E);
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 6px;
+  padding: 0px 6px;
   border-radius: 3px;
   margin-left: 8px;
 }
@@ -202,7 +202,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  padding: 6px 0;
+  padding: 4px 0;
   background: transparent;
   border: none;
   border-radius: 3px;
@@ -231,7 +231,7 @@
 
 /* ─── DRAG / DROP ─── */
 .att-section { position: relative; }
-.att-section--dragging { outline: 2px dashed var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); outline-offset: -2px; border-radius: 4px; }
+.att-section--dragging { outline: 2px dashed var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); outline-offset: -2px; border-radius: 4px; }
 
 .att-drop-overlay {
   position: absolute;
@@ -240,7 +240,7 @@
   align-items: center;
   justify-content: center;
   background: var(--ds-background-information, rgba(37, 99, 235, 0.06));
-  color: var(--ds-background-brand-bold-hovered);
+  color: var(--ds-background-brand-bold-hovered, #1D4ED8);
   font-size: 13px;
   font-weight: 600;
   border-radius: 4px;
@@ -249,7 +249,7 @@
 }
 
 .att-delete-btn { color: rgba(8, 15, 33, 0.55); } /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-.att-delete-btn:hover { color: var(--ds-text-danger); background-color: rgba(222, 53, 11, 0.08); }
+.att-delete-btn:hover { color: var(--ds-text-danger, #DE350B); background-color: rgba(222, 53, 11, 0.08); }
 
 /* ─── UPLOAD PROGRESS ─── */
 .att-upload-list { display: flex; flex-direction: column; gap: 4px; padding: 4px 0; }
@@ -258,21 +258,21 @@
   grid-template-columns: minmax(0, 1fr) 120px 50px;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
+  padding: 4px 8px;
   font-size: 13px;
   border-radius: 3px;
-  background: var(--ds-surface-sunken);
+  background: var(--ds-surface-sunken, #F8FAFC);
 }
 .att-upload-row--error { background: rgba(222, 53, 11, 0.06); }
-.att-upload-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ds-text); }
-.att-upload-bar { height: 6px; background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))); border-radius: 3px; overflow: hidden; }
-.att-upload-bar-fill { height: 100%; background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); transition: width 0.2s ease; }
-.att-upload-pct { font-size: 11px; color: var(--ds-text-accent-gray); text-align: right; font-variant-numeric: tabular-nums; }
-.att-upload-error { color: var(--ds-text-danger); font-size: 12px; grid-column: 2 / span 2; }
+.att-upload-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ds-text, #292A2E); }
+.att-upload-bar { height: 6px; background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); border-radius: 3px; overflow: hidden; }
+.att-upload-bar-fill { height: 100%; background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); transition: width 0.2s ease; }
+.att-upload-pct { font-size: 11px; color: var(--ds-text-accent-gray, #505258); text-align: right; font-variant-numeric: tabular-nums; }
+.att-upload-error { color: var(--ds-text-danger, #DE350B); font-size: 12px; grid-column: 2 / span 2; }
 .att-upload-retry {
   grid-column: 3;
   background: transparent; border: none; padding: 0;
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); font-size: 12px; cursor: pointer;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); font-size: 12px; cursor: pointer;
 }
 .att-upload-retry:hover { text-decoration: underline; }
 
@@ -286,39 +286,39 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 28px 16px;
+  padding: 24px 16px;
   text-align: center;
 }
 .att-empty-text { color: var(--ds-text-subtle, rgb(80, 82, 88)); font-size: 13px; }
 .att-empty-cta {
-  background: transparent; border: 1px dashed var(--ds-text-disabled);
+  background: transparent; border: 1px dashed var(--ds-text-disabled, #CBD5E1);
   padding: 8px 14px; border-radius: 4px;
-  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); font-size: 12px; font-weight: 600; cursor: pointer;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); font-size: 12px; font-weight: 600; cursor: pointer;
 }
-.att-empty-cta:hover { background: var(--ds-background-information, rgba(37, 99, 235, 0.04)); border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); }
+.att-empty-cta:hover { background: var(--ds-background-information, rgba(37, 99, 235, 0.04)); border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 
 /* ─── DARK MODE (ECLIPSE DARK MODE) ─── */
-.dark .att-heading-label { color: var(--ds-text, var(--cp-bg-neutral)); }
-.dark .att-badge { background: none; color: var(--ds-text-subtlest); }
-.dark .att-icon-btn { color: var(--ds-text-subtlest); }
-.dark .att-icon-btn:hover { background-color: var(--ds-surface, rgba(255, 255, 255, 0.06)); color: var(--ds-text, var(--cp-bg-neutral)); }
-.dark .att-empty-text { color: var(--ds-text-subtlest); }
-.dark .att-empty-cta { border-color: var(--ds-border-bold); color: var(--ds-text-brand); }
-.dark .att-empty-cta:hover { background: var(--ds-background-information-bold, rgba(96, 165, 250, 0.06)); border-color: var(--ds-text-brand); }
-.dark .att-more-menu { background: #1E2027; border-color: var(--ds-border, var(--cp-ink-1)); box-shadow: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4)); }
-.dark .att-menu-item { color: var(--ds-text, var(--cp-bg-neutral)); }
-.dark .att-menu-item:hover { background: var(--ds-border, var(--cp-ink-1)); }
-.dark .att-menu-badge { background: var(--ds-border, var(--cp-ink-1)); color: var(--ds-text-subtlest); }
+.dark .att-heading-label { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .att-badge { background: none; color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-icon-btn { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-icon-btn:hover { background-color: var(--ds-surface, rgba(255, 255, 255, 0.06)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .att-empty-text { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-empty-cta { border-color: var(--ds-border-bold, #454545); color: var(--ds-text-brand, #60A5FA); }
+.dark .att-empty-cta:hover { background: var(--ds-background-information-bold, rgba(96, 165, 250, 0.06)); border-color: var(--ds-text-brand, #60A5FA); }
+.dark .att-more-menu { background: #1E2027; border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); box-shadow: 0 4px 16px var(--ds-shadow-raised, rgba(0, 0, 0, 0.4)); }
+.dark .att-menu-item { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .att-menu-item:hover { background: var(--ds-border, var(--cp-ink-1, #292929)); }
+.dark .att-menu-badge { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .att-upload-row { background: #1E2027; } /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
 .dark .att-upload-row--error { background: rgba(222, 53, 11, 0.12); }
-.dark .att-upload-name { color: var(--ds-text, var(--cp-bg-neutral)); }
-.dark .att-upload-bar { background: var(--ds-border, var(--cp-ink-1)); }
-.dark .att-upload-pct { color: var(--ds-text-subtlest); }
-.dark .att-download-btn { color: var(--ds-text-subtlest); }
-.dark .att-download-btn:hover { background-color: var(--ds-surface, rgba(255, 255, 255, 0.08)); color: var(--ds-text, var(--cp-bg-neutral)); }
-.dark .att-delete-btn { color: var(--ds-text-subtlest); }
-.dark .att-delete-btn:hover { color: var(--ds-background-danger-bold); background-color: rgba(255, 86, 48, 0.12); }
-.dark .att-drop-overlay { background: var(--ds-background-information, rgba(37, 99, 235, 0.10)); color: var(--ds-background-information-bold, var(--ds-link)); }
+.dark .att-upload-name { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .att-upload-bar { background: var(--ds-border, var(--cp-ink-1, #292929)); }
+.dark .att-upload-pct { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-download-btn { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-download-btn:hover { background-color: var(--ds-surface, rgba(255, 255, 255, 0.08)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .att-delete-btn { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-delete-btn:hover { color: var(--ds-background-danger-bold, #C9372C); background-color: rgba(255, 86, 48, 0.12); }
+.dark .att-drop-overlay { background: var(--ds-background-information, rgba(37, 99, 235, 0.10)); color: var(--ds-background-information-bold, var(--ds-link, #0C66E4)); }
 
 /* ─── CARD GRID (Jira parity) ───────────────────────────
    Replaces the row-based table with a horizontal grid of cards.
@@ -334,8 +334,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--ds-surface);
-  border: 1px solid var(--ds-border);
+  background: var(--ds-surface, #FFFFFF);
+  border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
@@ -345,21 +345,21 @@
 
 .att-card:hover,
 .att-card:focus-visible {
-  border-color: var(--ds-border-bold);
+  border-color: var(--ds-border-bold, #B3BAC5);
   box-shadow: 0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08));
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .att-card:focus-visible {
-  border-color: var(--ds-border-focused);
-  box-shadow: 0 0 0 2px var(--ds-border-focused);
+  border-color: var(--ds-border-focused, #1868DB);
+  box-shadow: 0 0 0 2px var(--ds-border-focused, #1868DB);
 }
 
 .att-card__thumb {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
-  background: var(--ds-surface-sunken);
+  background: var(--ds-surface-sunken, #F4F5F7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -379,7 +379,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-text-subtle);
+  color: var(--ds-text-subtle, #42526E);
 }
 
 .att-card__actions {
@@ -392,7 +392,7 @@
   transition: opacity 0.1s ease;
   background: var(--ds-surface, rgba(255, 255, 255, 0.92));
   border-radius: 3px;
-  padding: 2px;
+  padding: 0px;
 }
 
 .att-card:hover .att-card__actions,
@@ -406,7 +406,7 @@
   padding: 8px 10px 2px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text);
+  color: var(--ds-text, #292A2E);
   line-height: 18px;
   white-space: nowrap;
   overflow: hidden;
@@ -417,7 +417,7 @@
   padding: 0 10px 10px;
   font-size: 12px;
   font-weight: 400;
-  color: var(--ds-text-subtle);
+  color: var(--ds-text-subtle, #505258);
   line-height: 16px;
   white-space: nowrap;
   overflow: hidden;
@@ -425,12 +425,12 @@
 }
 
 .dark .att-card {
-  background: var(--cp-bg-surface);
-  border-color: var(--ds-border);
+  background: var(--cp-bg-surface, #1E2027);
+  border-color: var(--ds-border, #2E2E2E);
 }
-.dark .att-card:hover { border-color: var(--ds-border-bold); }
-.dark .att-card__thumb { background: var(--ds-surface-sunken); }
-.dark .att-card__thumb-fallback { color: var(--ds-text-subtlest); }
-.dark .att-card__name { color: var(--ds-text); }
-.dark .att-card__date { color: var(--ds-text-subtlest); }
+.dark .att-card:hover { border-color: var(--ds-border-bold, #454545); }
+.dark .att-card__thumb { background: var(--ds-surface-sunken, #242528); }
+.dark .att-card__thumb-fallback { color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .att-card__name { color: var(--ds-text, #EDEDED); }
+.dark .att-card__date { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .att-card__actions { background: rgba(30, 32, 39, 0.92); } /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */

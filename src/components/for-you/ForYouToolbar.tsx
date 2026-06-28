@@ -41,7 +41,7 @@ export function ForYouToolbar({
         </span>
         {/* ⌘K hint hidden below sm — saves ~44px on narrow phones */}
         <span className="hidden sm:inline-flex" style={{
-          padding: '2px 6px',
+          padding: '0px 6px',
           background: 'var(--cp-bd-zone)',
           border: '1px solid var(--cp-bd)',
           borderRadius: 4,

@@ -56,7 +56,7 @@ function SetTypePill({ type }: { type: SetType }) {
   return (
     <span style={{
       display: 'inline-block',
-      padding: '2px 8px',
+      padding: '0px 8px',
       borderRadius: 3,
       fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
@@ -324,7 +324,7 @@ export default function TestSetsPage() {
         <div style={{
           border: '1px solid var(--ds-border)',
           borderRadius: 8,
-          padding: 20,
+          padding: 16,
           marginBottom: 24,
           background: 'var(--ds-surface-overlay)',
           boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
@@ -398,7 +398,7 @@ export default function TestSetsPage() {
       {/* Sets list */}
       {sets.length === 0 ? (
         <div style={{
-          textAlign: 'center', padding: '64px 32px',
+          textAlign: 'center', padding: '48px 32px',
           color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)',
           border: '1px dashed var(--ds-border)', borderRadius: 8,
         }}>
@@ -414,7 +414,7 @@ export default function TestSetsPage() {
           </Button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: 1 }}>
+        <div style={{ display: 'grid', gap: 0 }}>
           {/* Header row */}
           <div style={{
             display: 'grid',
@@ -457,7 +457,7 @@ export default function TestSetsPage() {
                   {set.name}
                 </div>
                 {set.description && (
-                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', marginTop: 0 }}>
                     {set.description}
                   </div>
                 )}
@@ -483,7 +483,7 @@ export default function TestSetsPage() {
                   <span style={{
                     display: 'block', width: 14, height: 14, borderRadius: '50%',
                     background: 'var(--ds-surface)',
-                    position: 'absolute', top: 3,
+                    position: 'absolute', top: 4,
                     left: set.is_active ? 19 : 3,
                     transition: 'left 200ms',
                   }} />

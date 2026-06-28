@@ -24,10 +24,10 @@ import { R360DetailPanel } from '@/components/resource360/R360DetailPanel';
 /** Skeleton loader for profile section */
 const ProfileSkeleton = () => (
   <div className="r3-profile-card" style={{ minHeight: 120 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <div className="r3-skeleton" style={{ width: 48, height: 48, borderRadius: '50%' }} />
       <div>
-        <div className="r3-skeleton" style={{ width: 160, height: 18, marginBottom: 6 }} />
+        <div className="r3-skeleton" style={{ width: 160, height: 18, marginBottom: 4 }} />
         <div className="r3-skeleton" style={{ width: 100, height: 13 }} />
       </div>
     </div>
@@ -38,7 +38,7 @@ const ProfileSkeleton = () => (
 const CardsSkeleton = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
     {[1, 2, 3, 4].map(i => (
-      <div key={i} style={{ background: 'var(--ds-surface)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8, padding: '14px 16px', height: 64 }}>
+      <div key={i} style={{ background: 'var(--ds-surface)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8, padding: '12px 16px', height: 64 }}>
         <div className="r3-skeleton" style={{ width: '60%', height: 12, marginBottom: 8 }} />
         <div className="r3-skeleton" style={{ width: '40%', height: 10 }} />
       </div>
@@ -145,13 +145,13 @@ const Resource360MemberDetail: React.FC = () => {
       <div style={{ maxWidth: 1440, margin: '0 auto', padding: '16px 20px' }}>
         {/* Member nav pills — from DB */}
         {allMembers && (allMembers as any[]).length > 0 && (
-          <nav style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }} aria-label="Team members">
+          <nav style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }} aria-label="Team members">
             {(allMembers as any[]).map((m: any) => (
               <Link
                 key={m.id}
                 to={`/resource360/members/${m.id}`}
                 style={{
-                  fontSize: 'var(--ds-font-size-100)', padding: '3px 10px', borderRadius: 6, textDecoration: 'none',
+                  fontSize: 'var(--ds-font-size-100)', padding: '4px 10px', borderRadius: 6, textDecoration: 'none',
                   background: m.id === memberId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
                   color: m.id === memberId ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
                   fontWeight: m.id === memberId ? 600 : 400,
@@ -168,10 +168,10 @@ const Resource360MemberDetail: React.FC = () => {
         {hasError && (
           <div style={{ textAlign: 'center', padding: 40, background: 'var(--ds-background-danger)', border: '1px solid var(--ds-background-danger)', borderRadius: 12, marginBottom: 12 }} role="alert">
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-danger)', marginBottom: 4 }}>Failed to load data</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)', marginBottom: 10 }}>{(memberError || chronoError)?.message}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)', marginBottom: 8 }}>{(memberError || chronoError)?.message}</div>
             <button
               onClick={() => window.location.reload()}
-              style={{ fontSize: 'var(--ds-font-size-200)', padding: '6px 16px', borderRadius: 6, border: '1px solid var(--ds-background-danger)', background: 'var(--ds-surface)', color: 'var(--ds-text-danger)', cursor: 'pointer' }}
+              style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 16px', borderRadius: 6, border: '1px solid var(--ds-background-danger)', background: 'var(--ds-surface)', color: 'var(--ds-text-danger)', cursor: 'pointer' }}
             >
               Retry
             </button>

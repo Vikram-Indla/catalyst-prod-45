@@ -96,8 +96,8 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
       >
         <div style={{ height: 4, background: board.color, flexShrink: 0 }} />
 
-        <div style={{ padding: '14px 14px 12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+        <div style={{ padding: '12px 14px 12px', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
             <div style={{
               width: 34, height: 34, borderRadius: 8,
               background: board.color + '18',
@@ -112,7 +112,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               }}>{board.name}</div>
               <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{
-                  padding: '1px 6px', borderRadius: 3, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
+                  padding: '0px 6px', borderRadius: 3, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                   background: board.boardType === 'scrum'
                     ? 'rgba(0,135,90,0.08)' : 'rgba(0,82,204,0.08)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                   color: board.boardType === 'scrum'
@@ -125,7 +125,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           </div>
 
           {/* ⋯ overflow menu trigger */}
-          <div ref={menuRef} style={{ position: 'absolute', top: 52, right: 42 }}>
+          <div ref={menuRef} style={{ position: 'absolute', top: 48, right: 40 }}>
             <button onClick={e => { e.stopPropagation(); setMenuOpen(!menuOpen); }} style={{
               width: 26, height: 26, borderRadius: 4, border: 'none',
               background: 'transparent', cursor: 'pointer',
@@ -136,7 +136,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             </button>
             {menuOpen && (
               <div style={{
-                position: 'absolute', top: 28, right: 0,
+                position: 'absolute', top: 24, right: 0,
                 width: 172, background: 'var(--cp-float)',
                 border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
                 borderRadius: 6, boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
@@ -158,7 +158,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
           {/* Star button */}
           <button onClick={handleStar} style={{
-            position: 'absolute', top: 52, right: 12,
+            position: 'absolute', top: 48, right: 12,
             width: 28, height: 28, borderRadius: 4,
             border: 'none', background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -171,7 +171,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             }
           </button>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
             {board.isPersonal && <Chip bg={'var(--cp-primary-light)'} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
@@ -205,7 +205,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            borderTop: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', paddingTop: 10,
+            borderTop: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', paddingTop: 8,
             fontSize: 11.5, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -224,7 +224,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
         }}>
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
-            display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',
+            display: 'flex', alignItems: 'center', gap: 4, height: 30, padding: '0 10px',
             background: isDark ? 'var(--cp-bg-page)' : 'var(--bg-app)', border: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
             borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
             color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
@@ -232,7 +232,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <SettingsIcon label="" size="small" /> Settings
           </button>
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
-            display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
+            display: 'flex', alignItems: 'center', gap: 4, height: 30, padding: '8px 12px',
             background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
             fontSize: 11.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontFamily: 'var(--cp-font-body)',
           }}>
@@ -247,7 +247,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <div style={{ position: 'fixed', inset: 0, background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.50))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.30))', zIndex: 80 }}
             onClick={() => setDeleteModal(false)} />
           <div style={{
-            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
             width: 420, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
             padding: 24, border: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
           }} onClick={e => e.stopPropagation()}>
@@ -299,7 +299,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
   return (
     <button onClick={onClick} style={{
       display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-      padding: '7px 12px', border: 'none', background: 'transparent',
+      padding: '8px 12px', border: 'none', background: 'transparent',
       cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
       color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
       fontFamily: 'var(--cp-font-body)', textAlign: 'left',

@@ -240,7 +240,7 @@ function ImageToolbarInner({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 2,
+        gap: 0,
         padding: 4,
         borderRadius: 4,
         background: T.surface,
@@ -558,7 +558,7 @@ function SubmenuRow({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '6px 12px',
+        padding: '4px 12px',
         fontSize: 'var(--ds-font-size-400)',
         color: T.textBold,
         background: hovered ? T.hoverBg : 'transparent',
@@ -585,9 +585,9 @@ function ColorSwatches({
       style={{
         position: 'absolute',
         top: 0,
-        left: '100%',
+        left: '48%',
         marginLeft: 4,
-        padding: 6,
+        padding: 4,
         display: 'flex',
         gap: 4,
         background: T.surface,
@@ -638,9 +638,9 @@ function SizeDots({
       style={{
         position: 'absolute',
         top: 0,
-        left: '100%',
+        left: '48%',
         marginLeft: 4,
-        padding: 6,
+        padding: 4,
         display: 'flex',
         gap: 4,
         background: T.surface,
@@ -918,7 +918,7 @@ function AddLinkPanel({
                   cursor: 'pointer',
                   display: 'flex',
                   width: '100%',
-                  padding: '6px 12px',
+                  padding: '4px 12px',
                   fontSize: 'var(--ds-font-size-300)',
                   color: T.textBold,
                   boxSizing: 'border-box',
@@ -1037,14 +1037,14 @@ function AddAltPanel({
           }}
         />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8, gap: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8, gap: 4 }}>
         <button
           type="button"
           onClick={onClose}
           style={{
             all: 'unset',
             cursor: 'pointer',
-            padding: '6px 10px',
+            padding: '4px 10px',
             fontSize: 'var(--ds-font-size-300)',
             color: T.textSubtle,
             borderRadius: 3,
@@ -1058,7 +1058,7 @@ function AddAltPanel({
           style={{
             all: 'unset',
             cursor: 'pointer',
-            padding: '6px 10px',
+            padding: '4px 10px',
             fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-inverse)',
             background: T.activeText,

@@ -43,7 +43,7 @@ function statusBadge(status: string) {
   };
   const s = map[status] || map.draft;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: s.text, background: s.bg, borderRadius: 99, whiteSpace: 'nowrap' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: s.text, background: s.bg, borderRadius: 99, whiteSpace: 'nowrap' }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot }} />
       {s.label}
     </span>
@@ -169,12 +169,12 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
           position: 'sticky', top: 0, zIndex: 10,
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', height: 56,
-          display: 'flex', alignItems: 'center', gap: 10,
+          display: 'flex', alignItems: 'center', gap: 8,
         }}>
           {/* Status dot */}
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusDotColor, flexShrink: 0 }} />
           {/* Goal key badge */}
-          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, fontFamily: 'ui-monospace, monospace', flexShrink: 0 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-bd-zone)', padding: '0px 8px', borderRadius: 4, fontFamily: 'ui-monospace, monospace', flexShrink: 0 }}>
             {goal?.goal_key}
           </span>
           {/* Title */}
@@ -218,13 +218,13 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
 
         {/* Fix 2: Sticky Tab bar */}
         <div style={{
-          position: 'sticky', top: 56, zIndex: 10,
+          position: 'sticky', top: 48, zIndex: 10,
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', display: 'flex', gap: 0,
         }}>
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              padding: '10px 16px', fontSize: 'var(--ds-font-size-300)',
+              padding: '8px 16px', fontSize: 'var(--ds-font-size-300)',
               fontWeight: activeTab === tab ? 600 : 500,
               color: activeTab === tab ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--fg-3)',
               background: 'none', border: 'none',
@@ -240,7 +240,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         </div>
 
         {/* Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
           {!goal ? (
             <div style={{ color: 'var(--fg-4)', textAlign: 'center', padding: 40 }}>Goal not found</div>
           ) : activeTab === 'Overview' ? (
@@ -304,7 +304,7 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
   const [quarter, setQuarter] = useState(goal.fiscal_quarter || '');
   const [bsc, setBsc] = useState(goal.bsc_perspective || '');
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)' };
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -335,7 +335,7 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
           <label style={LABEL_STYLE}>Theme</label>
           <Select value={themeId} onValueChange={setThemeId}>
             <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
-            <SelectContent>{themes.map(t => <SelectItem key={t.id} value={t.id}><div style={{ display:'flex', alignItems:'center', gap:6 }}><span style={{ width:8,height:8,borderRadius:2,background:t.color }} />{t.title}</div></SelectItem>)}</SelectContent>
+            <SelectContent>{themes.map(t => <SelectItem key={t.id} value={t.id}><div style={{ display:'flex', alignItems:'center', gap:4 }}><span style={{ width:8,height:8,borderRadius:2,background:t.color }} />{t.title}</div></SelectItem>)}</SelectContent>
           </Select>
         </div>
         <div>
@@ -358,11 +358,11 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
         </Select>
       </div>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', paddingTop: 8, borderTop: '1px solid var(--divider)' }}>
-        <button onClick={onCancel} style={{ padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+        <button onClick={onCancel} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
         <button
           onClick={() => onSave({ title, description: description || undefined, status, priority, theme_id: themeId, start_date: startDate || undefined, target_date: targetDate || undefined, fiscal_quarter: quarter || undefined, bsc_perspective: (bsc as BSCPerspective) || undefined })}
           disabled={isPending}
-          style={{ padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', background: isPending ? 'var(--ds-background-information-bold)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: isPending ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
+          style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', background: isPending ? 'var(--ds-background-information-bold)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: isPending ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}
         >
           <Save size={13} /> {isPending ? 'Saving...' : 'Save'}
         </button>
@@ -396,12 +396,12 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
     { label: 'Priority', value: <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, textTransform: 'capitalize' as const, color: 'var(--fg-1)' }}>{goal.priority}</span> },
-    { label: 'Theme', value: theme ? (<div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 4, background: theme.color }} /><span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-1)' }}>{theme.title}</span></div>) : '—' },
+    { label: 'Theme', value: theme ? (<div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 8, height: 8, borderRadius: 4, background: theme.color }} /><span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-1)' }}>{theme.title}</span></div>) : '—' },
     { label: 'Owner', value: ownerDisplay },
     { label: 'Start Date', value: <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-1)' }}>{formatDate(goal.start_date)}</span> },
     { label: 'Target Date', value: <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-1)' }}>{formatDate(goal.target_date)}</span> },
     { label: 'Fiscal Quarter', value: <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-1)' }}>{goal.fiscal_quarter || '—'}</span> },
-    { label: 'BSC Perspective', value: goal.bsc_perspective ? (<span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)', border: '1px solid var(--divider)', borderRadius: 99, padding: '2px 8px' }}>{goal.bsc_perspective}</span>) : '—' },
+    { label: 'BSC Perspective', value: goal.bsc_perspective ? (<span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)', border: '1px solid var(--divider)', borderRadius: 99, padding: '0px 8px' }}>{goal.bsc_perspective}</span>) : '—' },
     { label: 'Confidence', value: <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: confColor }}>{confPct}%</span> },
     { label: 'Weight', value: <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-1)' }}>{goal.weight}</span> },
     { label: 'Key Results', value: <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-1)' }}>{krs.length} total</span> },
@@ -417,7 +417,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   return (
     <div>
       {/* Progress section */}
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 16 }}>
         <div style={LABEL_STYLE}>Progress</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
           <div style={{ flex: 1 }}>{progressBar(pct)}</div>
@@ -426,7 +426,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
       </div>
 
       {/* 2-col metadata */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: 16 }}>
         {fields.map(f => (
           <div key={f.label}>
             <div style={LABEL_STYLE}>{f.label}</div>
@@ -436,19 +436,19 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
       </div>
 
       {goal.description && (
-        <div style={{ borderTop: '1px solid var(--divider)', paddingTop: 14, marginBottom: 20 }}>
-          <div style={{ ...LABEL_STYLE, marginBottom: 6 }}>Description</div>
+        <div style={{ borderTop: '1px solid var(--divider)', paddingTop: 12, marginBottom: 16 }}>
+          <div style={{ ...LABEL_STYLE, marginBottom: 4 }}>Description</div>
           <p style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1.6, color: 'var(--fg-2)', margin: 0 }}>{goal.description}</p>
         </div>
       )}
 
       {/* AI Health Score — purple branded */}
       <div style={{ background: 'var(--ds-background-information)', border: '1px solid var(--ds-background-information, rgba(37,99,235,0.15))', borderRadius: 12, padding: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
           <Sparkles size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" />
           <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
         </div>
-        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--cp-blue)', marginBottom: 6 }}>{aiScore != null ? aiScore : '—'}/100</div>
+        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--cp-blue)', marginBottom: 4 }}>{aiScore != null ? aiScore : '—'}/100</div>
         <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-blue)', marginBottom: 12, opacity: 0.8 }}>{aiLabel ?? 'Score not computed'}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[
@@ -458,7 +458,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
             { label: 'Days to Deadline', value: daysToDeadline != null ? (daysToDeadline > 0 ? `${daysToDeadline}d` : 'Overdue') : '—' },
           ].map(f => (
             <div key={f.label} style={{ background: 'var(--ds-background-information, rgba(37,99,235,0.06))', borderRadius: 6, padding: '8px 10px' }}>
-              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--cp-blue)', opacity: 0.7, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--cp-blue)', opacity: 0.7, marginBottom: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</div>
               <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-blue)' }}>{f.value}</div>
             </div>
           ))}
@@ -478,7 +478,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><BarChart3 size={36} color="var(--ds-text-disabled)" /></div>
         <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No Key Results yet</div>
         <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', marginBottom: 16 }}>Add measurable key results to track progress toward this goal.</div>
-        <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', background: 'var(--ds-background-information, rgba(37,99,235,0.06))', border: '1px solid var(--ds-background-information, rgba(37,99,235,0.2))', borderRadius: 6, cursor: 'pointer' }}>
+        <button style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', background: 'var(--ds-background-information, rgba(37,99,235,0.06))', border: '1px solid var(--ds-background-information, rgba(37,99,235,0.2))', borderRadius: 6, cursor: 'pointer' }}>
           <Plus size={13} /> Add Key Result
         </button>
       </div>
@@ -492,17 +492,17 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         return (
           <div key={kr.id} className="kr-detail-card" style={{
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: '1px solid var(--divider)', borderRadius: 8,
-            padding: '14px 16px', transition: 'all 150ms',
+            padding: '12px 16px', transition: 'all 150ms',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-bd-zone)', padding: '2px 6px', borderRadius: 4, fontFamily: 'ui-monospace, monospace' }}>{kr.kr_key}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-bd-zone)', padding: '0px 6px', borderRadius: 4, fontFamily: 'ui-monospace, monospace' }}>{kr.kr_key}</span>
               <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{kr.title}</span>
               <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: pctColor }}>{pct}%</span>
             </div>
             <div style={{ height: 6, borderRadius: 4, background: 'var(--divider)', overflow: 'hidden', marginBottom: 8 }}>
               <div style={{ width: `${pct}%`, height: '100%', background: pctColor, borderRadius: 4, transition: 'width 300ms' }} />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
               {statusBadge(kr.status)}
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>{kr.current_value} / {kr.target}{kr.metric_unit ? ` ${kr.metric_unit}` : ''}</span>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>Due: {formatDate(kr.due_date)}</span>
@@ -513,7 +513,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
           </div>
         );
       })}
-      <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '12px 0', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px dashed var(--divider)', borderRadius: 8, cursor: 'pointer', marginTop: 4, transition: 'all 150ms' }}>
+      <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '12px 0', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px dashed var(--divider)', borderRadius: 8, cursor: 'pointer', marginTop: 4, transition: 'all 150ms' }}>
         <Plus size={13} /> Add Key Result
       </button>
       <style>{`
@@ -548,7 +548,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
           <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', marginBottom: 16 }}>Link initiatives from Products that contribute to this goal.</div>
           <button
             onClick={() => setShowSearch(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', background: 'var(--ds-background-information, rgba(37,99,235,0.06))', border: '1px solid var(--ds-background-information, rgba(37,99,235,0.2))', borderRadius: 6, cursor: 'pointer' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', background: 'var(--ds-background-information, rgba(37,99,235,0.06))', border: '1px solid var(--ds-background-information, rgba(37,99,235,0.2))', borderRadius: 6, cursor: 'pointer' }}
           >
             <Plus size={13} /> Link Request
           </button>
@@ -559,13 +559,13 @@ function InitiativesTab({ goalId }: { goalId: string }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {links.map(link => (
             <div key={link.id} className="init-card" style={{
-              border: '1px solid var(--divider)', borderRadius: 8, padding: '14px 16px',
-              display: 'flex', alignItems: 'center', gap: 10, transition: 'all 150ms',
+              border: '1px solid var(--divider)', borderRadius: 8, padding: '12px 16px',
+              display: 'flex', alignItems: 'center', gap: 8, transition: 'all 150ms',
             }}>
               <Link2 size={16} color="var(--ds-text-disabled)" />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-bd-zone)', padding: '2px 6px', borderRadius: 4, fontFamily: 'ui-monospace, monospace' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 0 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-bd-zone)', padding: '0px 6px', borderRadius: 4, fontFamily: 'ui-monospace, monospace' }}>
                     {link.initiative?.initiative_key || '—'}
                   </span>
                   <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -587,7 +587,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
           <button
             onClick={() => setShowSearch(true)}
             className="link-init-btn"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '12px 0', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px dashed var(--divider)', borderRadius: 8, cursor: 'pointer', marginTop: 4, transition: 'all 150ms' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '12px 0', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px dashed var(--divider)', borderRadius: 8, cursor: 'pointer', marginTop: 4, transition: 'all 150ms' }}
           >
             <Plus size={13} /> Link Request
           </button>
@@ -596,7 +596,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
 
       {showSearch && (
         <div style={{ marginTop: links.length > 0 ? 12 : 0, border: '1px solid var(--divider)', borderRadius: 8, padding: 12, background: 'var(--bg-1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
             <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
             <input
               autoFocus
@@ -605,7 +605,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
               placeholder="Search initiatives..."
               style={{ flex: 1, border: 'none', outline: 'none', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', background: 'transparent' }}
             />
-            <button onClick={() => { setShowSearch(false); setSearchQuery(''); }} style={{ border: 'none', background: 'none', color: 'var(--fg-4)', cursor: 'pointer', padding: 2 }}>
+            <button onClick={() => { setShowSearch(false); setSearchQuery(''); }} style={{ border: 'none', background: 'none', color: 'var(--fg-4)', cursor: 'pointer', padding: 0 }}>
               <X size={14} />
             </button>
           </div>
@@ -615,7 +615,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
                 <div
                   key={init.id}
                   onClick={() => { linkMutation.mutate({ goalId, requestId: init.id }); setShowSearch(false); setSearchQuery(''); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-primary-light, var(--ds-background-information))')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
@@ -659,7 +659,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
     );
   }
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {checkins.map(ci => {
         const kr = krMap.get(ci.key_result_id);
         const isPositive = ci.delta_value >= 0;
@@ -669,7 +669,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
             <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)', marginBottom: 4 }}>{kr?.kr_key} — {kr?.title || 'Unknown KR'}</div>
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: 4 }}>
               {ci.previous_value} → {ci.new_value}
-              <span style={{ color: isPositive ? 'var(--sem-success)' : 'var(--sem-danger)', marginLeft: 6 }}>({isPositive ? '+' : ''}{ci.delta_value})</span>
+              <span style={{ color: isPositive ? 'var(--sem-success)' : 'var(--sem-danger)', marginLeft: 4 }}>({isPositive ? '+' : ''}{ci.delta_value})</span>
             </div>
             {ci.note && <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: 1.5, marginBottom: 4 }}>{ci.note}</div>}
             {ci.confidence_level != null && (

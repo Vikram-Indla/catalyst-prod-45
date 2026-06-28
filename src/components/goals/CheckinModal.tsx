@@ -80,7 +80,7 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
 
   if (!isOpen) return null;
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)' };
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)' };
   const labelStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 4, display: 'block' };
 
   return (
@@ -90,14 +90,14 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
 
       {/* Modal */}
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
         width: 480, zIndex: 1001,
         background: 'var(--cp-float)', borderRadius: 16,
         boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
         animation: 'scaleIn 200ms ease-out',
       }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid var(--divider)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--ds-background-information, rgba(37,99,235,0.08))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ClipboardCheck size={14} color="var(--cp-blue)" />
@@ -112,9 +112,9 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
         </div>
 
         {/* Body */}
-        <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {/* Current state */}
-          <div style={{ background: 'var(--bg-1)', borderRadius: 8, padding: '10px 14px' }}>
+          <div style={{ background: 'var(--bg-1)', borderRadius: 8, padding: '8px 14px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginBottom: 4 }}>
               Current: <span style={{ fontWeight: 700, color: 'var(--fg-1)' }}>{kr?.current_value ?? 0}</span>
               {' / '}Target: <span style={{ fontWeight: 700, color: 'var(--fg-1)' }}>{kr?.target ?? 0}</span>
@@ -155,14 +155,14 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
 
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid var(--divider)' }}>
-          <button onClick={onClose} style={{ padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={createCheckin.isPending}
             style={{
-              padding: '7px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+              padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               background: createCheckin.isPending ? 'var(--ds-background-information-bold)' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createCheckin.isPending ? 'not-allowed' : 'pointer',
             }}

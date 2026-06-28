@@ -18,7 +18,7 @@
   display: grid;
   grid-template-rows: var(--c-chat-header-h) var(--c-chat-tabs-h) minmax(0, 1fr);
   min-height: 0;
-  border-right: 1px solid var(--c-chat-border);
+  border-right: 0px solid var(--c-chat-border);
 }
 
 /* When not split, the list fills the surface (it IS the grid). */
@@ -43,7 +43,7 @@
   align-items: center;
   gap: 8px;
   padding: 0 24px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
 }
 
 .c-activity__detail-title {
@@ -106,7 +106,7 @@
   display: flex;
   align-items: center;
   padding: 0 24px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
 }
 
 .c-activity__title {
@@ -145,7 +145,7 @@
   display: flex;
   align-items: flex-end;
   padding: 0 24px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
   gap: 0;
 }
 
@@ -158,7 +158,7 @@
   color: var(--c-chat-text-subtle);
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 0px solid transparent;
   cursor: pointer;
   white-space: nowrap;
   transition: color 80ms ease, border-color 80ms ease;
@@ -234,7 +234,7 @@
   align-items: baseline;
   gap: 8px;
   /* ads-scanner:ignore-next-line -- 2px sub-grid gap matches Jira activity row density */
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 }
 
 .c-act-item__who {
@@ -269,7 +269,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   /* ads-scanner:ignore-next-line -- 2px sub-grid gap matches Jira activity row density */
-  margin-top: 2px;
+  margin-top: 0px;
 }
 
 .c-act-item__preview mark {

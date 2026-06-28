@@ -112,7 +112,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
                 display:     'block',
                 width:       '100%',
                 textAlign:   'left',
-                padding:     '7px 12px',
+                padding:     '8px 12px',
                 background:  isSel
                   ? `var(--ds-background-neutral)`
                   : 'none',

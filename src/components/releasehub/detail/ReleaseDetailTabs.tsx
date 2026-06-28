@@ -312,7 +312,7 @@ export function ScopeTab({ releaseId }: { releaseId: string }) {
           {brs.length === 0
             ? <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>No linked business requests</span>
             : brs.map((b) => (
-              <span key={b.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 16, background: T.sunken, border: `1px solid ${T.border}`, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>
+              <span key={b.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 16, background: T.sunken, border: `1px solid ${T.border}`, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>
                 <JiraIssueTypeIcon type="Business Request" size={14} />
                 {b.title ?? b.businessRequestId}
               </span>
@@ -329,7 +329,7 @@ export function ScopeTab({ releaseId }: { releaseId: string }) {
           {sprints.length === 0
             ? <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>No sprints linked</span>
             : sprints.map((s) => (
-              <span key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 16, background: T.sunken, border: `1px solid ${T.border}`, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>
+              <span key={s.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 16, background: T.sunken, border: `1px solid ${T.border}`, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>
                 {s.code ? <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link }}>{s.code}</span> : null}
                 {s.name ?? '—'}
               </span>

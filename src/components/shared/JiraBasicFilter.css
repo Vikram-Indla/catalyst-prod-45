@@ -15,7 +15,7 @@
 .jf-trigger-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 0 10px;
   height: 32px;
   background: var(--ds-surface);
@@ -27,7 +27,7 @@
   line-height: 20px;
   color: var(--ds-text, rgb(41, 42, 46));
   font-family: var(--cp-font-body);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 .jf-trigger-btn:hover {
   background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.06));
@@ -37,7 +37,7 @@
 .jf-trigger-btn--active {
   border-color: var(--ds-border-selected);
   box-shadow: 0 0 0 1px var(--ds-border-selected);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 .jf-trigger-btn--active {
   background-color: var(--ds-background-selected);
@@ -47,7 +47,7 @@
 .jf-trigger-text {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 .jf-trigger-badge {
   display: inline-flex;
@@ -67,9 +67,9 @@
 /* ─── PANEL ─── */
 .jf-panel {
   position: absolute;
-  top: 100%;
+  top: 48%;
   left: 0;
-  margin-top: 6px;
+  margin-top: 4px;
   width: 520px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border-radius: 10px;
@@ -115,7 +115,7 @@
   gap: 0;
   padding: 0;
   border: none;
-  border-bottom: 2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  border-bottom: 0px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
   border-radius: 0;
   background: transparent;
   width: fit-content;
@@ -128,7 +128,7 @@
   padding: 4px 16px 6px;
   height: 36px;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 0px solid transparent;
   border-radius: 0;
   cursor: pointer;
   font-size: 14px;
@@ -149,7 +149,7 @@
   background: transparent;
   color: var(--ds-text-selected, var(--cp-text-primary, var(--cp-text-inverse)));
   font-weight: 500;
-  border-bottom: 2px solid var(--ds-text-brand, var(--cp-primary-60));
+  border-bottom: 0px solid var(--ds-text-brand, var(--cp-primary-60));
 }
 .jf-tab:disabled { opacity: 0.4; cursor: default; }
 
@@ -200,7 +200,7 @@
   justify-content: space-between;
   padding-right: 8px;
 }
-.jf-category-list { display: flex; flex-direction: column; gap: 1px; }
+.jf-category-list { display: flex; flex-direction: column; gap: 0px; }
 .jf-category-item {
   position: relative;
   display: flex;
@@ -274,7 +274,7 @@
   line-height: 1;
   flex-shrink: 0;
 }
-.jf-clear-wrapper { padding: 8px 0 0; margin-left: 2px; }
+.jf-clear-wrapper { padding: 8px 0 0; margin-left: 0px; }
 .jf-clear-btn {
   display: inline-flex;
   align-items: center;
@@ -313,7 +313,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 10px;
+  gap: 8px;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -347,7 +347,7 @@
 .jf-search-input-area {
   display: grid;
   flex: 1 1 0%;
-  padding: 2px 8px;
+  padding: 0px 8px;
   align-items: center;
   height: 30px;
   min-width: 0;
@@ -372,7 +372,7 @@
 .jf-search-input {
   background: transparent;
   border: none;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   padding: 0;
   font-size: 14px;
   line-height: 20px;
@@ -386,7 +386,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 290px;
-  padding: 2px 0;
+  padding: 0px 0;
   flex-shrink: 0;
 }
 .jf-option-item {
@@ -399,7 +399,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 5px 8px;
+  padding: 4px 8px;
   height: 34px;
   border-radius: 6px;
   transition: background-color 100ms;
@@ -468,7 +468,7 @@
 }
 .jf-option-label-extra { color: var(--ds-text-subtlest, var(--cp-text-secondary)); font-size: 12px; font-weight: 400; }
 .jf-empty-options {
-  padding: 20px 0;
+  padding: 16px 0;
   text-align: center;
   color: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)));
   font-size: 13px;
@@ -480,10 +480,10 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  gap: 20px;
+  gap: 16px;
   padding: 8px 16px;
   background-color: var(--ds-surface-sunken);
-  border-top: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
+  border-top: 0px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
   border-radius: 0 0 10px 10px;
   flex-shrink: 0;
   height: 38px;
@@ -492,7 +492,7 @@
 .jf-feedback-btn {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 4px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -519,7 +519,7 @@
   background-color: var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
   color: var(--ds-text-subtle);
   border-radius: 4px;
-  padding: 1px 6px;
+  padding: 0px 6px;
   font-family: var(--cp-font-body);
   font-size: 11px;
   font-weight: 600;

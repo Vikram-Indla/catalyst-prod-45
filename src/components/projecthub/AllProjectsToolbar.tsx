@@ -102,7 +102,7 @@ export function AllProjectsToolbar({
             const count = getCount(tab);
             return (
               <Tab key={tab}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   {tab}
                   <span style={{
                     position: 'absolute',
@@ -144,8 +144,8 @@ export function AllProjectsToolbar({
                     gridArea: '1 / 1 / 2 / 3',
                     color: token('color.text'),
                     fontSize: 'var(--ds-font-size-300)',
-                    marginLeft: 2,
-                    marginRight: 2,
+                    marginLeft: 0,
+                    marginRight: 0,
                     maxWidth: '100%',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

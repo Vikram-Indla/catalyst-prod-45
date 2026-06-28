@@ -28,7 +28,7 @@ export const ParentLink = memo(function ParentLink({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '6px',
+        gap: '4px',
       }}
     >
       <div

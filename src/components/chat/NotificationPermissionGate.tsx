@@ -112,7 +112,7 @@ export function NotificationPermissionGate({
           <BellIcon label="notifications" size="medium" primaryColor="var(--ds-link)" />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', flex: 1, minWidth: 0 }}>
           <p
             style={{
               margin: 0,

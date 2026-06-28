@@ -51,7 +51,7 @@ function DataTable({ data }: { data: any[] }) {
 function StatusBadge({ status }: { status: CheckStatus }) {
   const s = statusColors[status];
   return (
-    <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: 4, background: s.bg, color: s.fg, fontWeight: 700, fontSize: 'var(--ds-font-size-100)', letterSpacing: 0.5 }}>
+    <span style={{ display: "inline-block", padding: "0px 10px", borderRadius: 4, background: s.bg, color: s.fg, fontWeight: 700, fontSize: 'var(--ds-font-size-100)', letterSpacing: 0.5 }}>
       {s.label}
     </span>
   );
@@ -69,7 +69,7 @@ function CheckCard({ result }: { result: CheckResult }) {
       {result.data && !Array.isArray(result.data) && typeof result.data === "object" && (
         <div style={{ fontSize: 'var(--ds-font-size-200)', marginTop: 4 }}>
           {Object.entries(result.data).map(([k, v]) => (
-            <div key={k} style={{ display: "flex", gap: 8, padding: "2px 0" }}>
+            <div key={k} style={{ display: "flex", gap: 8, padding: "0px 0" }}>
               <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))", fontWeight: 500, minWidth: 140 }}>{k}:</span>
               <span>{String(v ?? "—")}</span>
             </div>

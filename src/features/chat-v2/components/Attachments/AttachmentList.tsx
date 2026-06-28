@@ -14,7 +14,7 @@ export function AttachmentList({ attachments }: AttachmentListProps) {
   return (
     <div
       style={{
-        marginTop: 6,
+        marginTop: 4,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
@@ -122,9 +122,9 @@ function FileCard({ attachment }: { attachment: ChatAttachment }) {
         marginTop: 4,
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         maxWidth: 360,
-        padding: '10px 12px',
+        padding: '8px 12px',
         borderRadius: 8,
         border: '1px solid var(--cv2-border-strong)',
         background: 'var(--cv2-bg-input)',

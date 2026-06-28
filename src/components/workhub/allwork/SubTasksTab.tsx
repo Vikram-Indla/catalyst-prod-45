@@ -92,7 +92,7 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
       onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--bg-app)'; e.currentTarget.style.borderColor = 'var(--ds-border)'; }}
     >
       {/* Row 1: Icon + Key + Summary */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-blue)', flexShrink: 0 }}>
           {item.issue_key}
@@ -107,11 +107,11 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
       </div>
 
       {/* Row 2: Status + Assignee + Priority + Updated */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingLeft: 26 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 24 }}>
         <StatusLozenge status={item.status} />
 
         {item.assignee_display_name && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <MiniAvatar name={item.assignee_display_name} />
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}>
               {item.assignee_display_name}
@@ -119,7 +119,7 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
           </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <PriorityIndicator priority={item.priority} fontSize={'var(--ds-font-size-200)'} />
         </div>
 
@@ -170,17 +170,17 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
   const total = subTasks.length;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {/* Summary bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 8, border: '1px solid var(--ds-border)',
+        padding: '8px 14px', backgroundColor: 'var(--ds-surface-sunken)', borderRadius: 8, border: '1px solid var(--ds-border)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
             {total} sub-task{total !== 1 ? 's' : ''}
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {[
               { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--cp-text-secondary, var(--cp-text-secondary))' },
               { count: progressTasks.length, label: 'In Progress', bg: 'var(--ds-link)', color: 'var(--bg-app)' },
@@ -188,7 +188,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{
-                  display: 'inline-block', padding: '1px 6px', borderRadius: 4,
+                  display: 'inline-block', padding: '0px 6px', borderRadius: 4,
                   backgroundColor: s.bg, color: s.color, fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                 }}>{s.count}</span>
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>{s.label}</span>
@@ -209,7 +209,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
       </div>
 
       {/* Cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {subTasks.map(item => (
           <SubTaskCard key={item.issue_key} item={item} onClick={() => onSubTaskClick(item)} />
         ))}

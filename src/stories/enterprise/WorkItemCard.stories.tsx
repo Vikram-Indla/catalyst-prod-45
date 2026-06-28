@@ -8,7 +8,7 @@ const tk = {
   textSubtle: 'var(--ds-text-subtle)', textSubtlest: 'var(--ds-text-subtlest)',
   flagBg: 'var(--ds-background-warning)', selected: 'var(--ds-background-selected)',
 };
-const d = { cardPadding: 12, avatarSize: 24, fontSize: 'var(--ds-font-size-300)', keyFontSize: 11, gap: 6, borderRadius: 8, minHeight: 80 };
+const d = { cardPadding: 12, avatarSize: 24, fontSize: 'var(--ds-font-size-300)', keyFontSize: 11, gap: 4, borderRadius: 8, minHeight: 80 };
 const issue = {
   id: 'i1', issue_key: 'BAU-5972', summary: 'Industrial Capabilities: Add Item Interface',
   status: 'In Development', status_category: 'indeterminate', priority: 'High',

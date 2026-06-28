@@ -85,7 +85,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
             </SelectContent>
           </Select>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <button
             onClick={() => setWeekOffset(o => Math.max(o - 1, -52))}
             disabled={weekOffset <= -52}

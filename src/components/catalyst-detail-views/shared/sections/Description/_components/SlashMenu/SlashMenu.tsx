@@ -194,7 +194,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
             onBlur={() => setSearchFocused(false)}
             style={{
               width: '100%',
-              padding: '6px 10px',
+              padding: '4px 10px',
               fontSize: 'var(--ds-font-size-400)',
               border: searchFocused
                 ? '2px solid var(--ds-border-focused)'
@@ -236,7 +236,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
               width: '100%',
               display: 'flex',
               alignItems: 'center',
-              gap: 10,
+              gap: 8,
               padding: '8px 10px',
               border: 'none',
               borderRadius: 3,
@@ -311,7 +311,7 @@ export function SlashMenu({ mode, query, coords, onPick, onViewMore, onDismiss }
              on the same vertical center. */
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
         }}
       >
         {/* U+22EF MIDLINE HORIZONTAL ELLIPSIS — three dots that sit at the

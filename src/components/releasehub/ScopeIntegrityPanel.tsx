@@ -90,7 +90,7 @@ export function ScopeIntegrityPanel() {
             </div>
 
             {/* Right: chips */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
               {healthy && <Chip label="Clean" color={T.success} bg={T.successBg} />}
               {hasDrift && <Chip label={`+${r.itemsAfterGoLive} late`} color={T.warning} bg={T.warningBg} />}
               {hasDefects && <Chip label={`${r.openDefects} defect${r.openDefects !== 1 ? 's' : ''}`} color={T.danger} bg={T.dangerBg} />}

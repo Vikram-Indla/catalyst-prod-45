@@ -51,7 +51,7 @@ function Avatar({ name }: { name: string | null }) {
 
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 12px', minHeight: 32 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '4px 12px', minHeight: 32 }}>
       <span style={{ width: 120, flexShrink: 0, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--aw-text-subtle)' }}>
         {label}
       </span>
@@ -87,11 +87,11 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
   const pc = PRIORITY_COLORS[item.priority] ?? 'var(--ds-text-subtlest)';
 
   return (
-    <div style={{ padding: '10px 0' }}>
+    <div style={{ padding: '8px 0' }}>
       {/* Status & Priority */}
       <FieldGroup title="Status & Priority">
         <FieldRow label="Issue Type">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <JiraIssueTypeIcon type={item.issue_type} size={16} />
             <span>{item.issue_type}</span>
           </div>
@@ -100,7 +100,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
           <StatusLozenge status={item.status} />
         </FieldRow>
         <FieldRow label="Priority">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <svg width="14" height="14" viewBox="0 0 14 14">
               <rect y="4" width="14" height="2.5" rx="1" fill={pc} />
               <rect y="8" width="14" height="2.5" rx="1" fill={pc} />
@@ -127,7 +127,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
       <FieldGroup title="Hierarchy">
         <FieldRow label="Parent">
           {item.parent_key ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ color: 'var(--aw-blue)', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>{item.parent_key}</span>
               {item.parent_summary && (
                 <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -145,7 +145,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
           {item.jira_created_at ? (
             <div>
               <span>{formatDate(item.jira_created_at)}</span>
-              <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-100)', marginLeft: 6 }}>({formatRel(item.jira_created_at)})</span>
+              <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-100)', marginLeft: 4 }}>({formatRel(item.jira_created_at)})</span>
             </div>
           ) : <EmptyVal />}
         </FieldRow>
@@ -153,7 +153,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
           {item.jira_updated_at ? (
             <div>
               <span>{formatDate(item.jira_updated_at)}</span>
-              <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-100)', marginLeft: 6 }}>({formatRel(item.jira_updated_at)})</span>
+              <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-100)', marginLeft: 4 }}>({formatRel(item.jira_updated_at)})</span>
             </div>
           ) : <EmptyVal />}
         </FieldRow>
@@ -175,7 +175,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {item.labels.map(l => (
                 <span key={l} style={{
-                  display: 'inline-flex', padding: '2px 8px', borderRadius: 4,
+                  display: 'inline-flex', padding: '0px 8px', borderRadius: 4,
                   fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                   background: 'var(--aw-hover)', color: 'var(--aw-text)',
                 }}>{l}</span>

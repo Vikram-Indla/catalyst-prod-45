@@ -38,7 +38,7 @@ export function MilestoneCard({
           <h3 className="font-semibold text-sm">{milestone.title}</h3>
           <p className="text-xs text-gray-500">{milestone.key}</p>
         </div>
-        <span className="px-2 py-1 bg-[var(--ds-surface)] border border-[var(--ds-border)] rounded text-xs font-medium">
+        <span className="px-2 py-1 bg-[var(--ds-surface-raised)] border border-[var(--ds-border)] rounded text-xs font-medium">
           {milestone.quarter}
         </span>
       </div>

@@ -341,8 +341,8 @@ export function T10WeekPage() {
           <span className="t10-checked-out-badge" style={{ 
             display: 'inline-flex', 
             alignItems: 'center', 
-            gap: 6, 
-            padding: '10px 20px',
+            gap: 4, 
+            padding: '8px 20px',
             fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
             color: 'var(--ds-text-subtlest)',

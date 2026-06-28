@@ -104,7 +104,7 @@ export function DataScope() {
     >
       <span style={{
         width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-app)', position: 'absolute',
-        top: 2, left: checked ? 18 : 2, transition: 'left .2s',
+        top: 0, left: checked ? 18 : 2, transition: 'left .2s',
         boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.2))',
       }} />
     </button>
@@ -112,7 +112,7 @@ export function DataScope() {
 
   const cardStyle: React.CSSProperties = {
     background: 'var(--bg-app)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8,
-    padding: 20, marginBottom: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
+    padding: 16, marginBottom: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
   }
 
   const activeCount = includedProjects.length
@@ -131,12 +131,12 @@ export function DataScope() {
 
       {/* Card 1: Included Projects */}
       <div style={cardStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', margin: 0 }}>
             Included Projects
           </h2>
           <span style={{
-            fontSize: 'var(--ds-font-size-50)', background: 'var(--ds-background-selected)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', padding: '2px 8px',
+            fontSize: 'var(--ds-font-size-50)', background: 'var(--ds-background-selected)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', padding: '0px 8px',
             borderRadius: 4, fontWeight: 600,
           }}>
             {activeCount} of {totalCount} active
@@ -153,7 +153,7 @@ export function DataScope() {
                 onClick={() => toggleProject(p.key)}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
-                  padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
+                  padding: '8px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
                   background: isOn ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
                   borderColor: isOn ? 'var(--ds-background-information)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))',
                   opacity: isOn ? 1 : 0.5,
@@ -180,7 +180,7 @@ export function DataScope() {
         </div>
 
         <button onClick={handleSaveProjects} disabled={batchUpdate.isPending} style={{
-          marginTop: 14, padding: '8px 20px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+          marginTop: 12, padding: '8px 20px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer',
           opacity: batchUpdate.isPending ? 0.6 : 1,
         }}>
@@ -194,20 +194,20 @@ export function DataScope() {
           Sync Window
         </h2>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}>
           <label style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', width: 260 }}>Default lookback period:</label>
           <select value={lookbackMonths} onChange={(e) => setLookbackMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
+            style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
             <option value={1}>1 month</option>
             <option value={2}>2 months</option>
             <option value={3}>3 months</option>
           </select>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
           <label style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', width: 260 }}>Maximum lookback (hard limit):</label>
           <select value={maxMonths} onChange={(e) => setMaxMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
+            style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
             <option value={3}>3 months</option>
             <option value={6}>6 months</option>
           </select>
@@ -215,7 +215,7 @@ export function DataScope() {
 
         <div style={{
           background: 'var(--ds-background-selected)', border: '1px solid var(--ds-background-information)', borderRadius: 8,
-          padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8,
+          padding: '8px 14px', marginBottom: 12, display: 'flex', gap: 8,
         }}>
           <span style={{ fontSize: 'var(--ds-font-size-400)' }}>ℹ️</span>
           <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-brand-bold-hovered)', margin: 0, lineHeight: 1.5 }}>
@@ -237,27 +237,27 @@ export function DataScope() {
           Data Quality Flags
         </h2>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}>
           <label style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', width: 260 }}>Mark items stale after:</label>
           <select value={staleThreshold} onChange={(e) => setStaleThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
+            style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
             <option value={7}>7 days</option>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
           </select>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
           <label style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))', width: 260 }}>Mark items critical after:</label>
           <select value={criticalThreshold} onChange={(e) => setCriticalThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
+            style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', fontSize: 'var(--ds-font-size-200)', width: 150 }}>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
             <option value={60}>60 days</option>
           </select>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
           {[
             { label: 'Flag unscheduled items (no effective due date)', checked: flagUnscheduled, onChange: setFlagUnscheduled },
             { label: 'Flag conflicting dates (child due after parent due)', checked: flagConflicting, onChange: setFlagConflicting },

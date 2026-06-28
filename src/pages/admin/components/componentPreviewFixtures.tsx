@@ -87,7 +87,7 @@ const JIRA_TABLE_COLUMNS: Column<MockRow>[] = [
     alwaysVisible: true,
     accessor: r => r.key,
     cell: ({ row }) => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <JiraIssueTypeIcon type={row.type} size={14} />
         <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: token('color.link', 'var(--ds-link)') }}>
           {row.key}
@@ -149,7 +149,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
   'jira-issue-type-icon': () => (
     <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
       {['Story', 'Task', 'Bug', 'Epic', 'Feature', 'Production Incident', 'Change Request'].map(type => (
-        <div key={type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+        <div key={type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
           <JiraIssueTypeIcon type={type} size={16} />
           <span style={{ fontSize: 'var(--ds-font-size-100)' }}>{type}</span>
         </div>
@@ -165,7 +165,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap' }}>
           {(['xsmall', 'small', 'medium', 'large', 'xlarge', 'xxlarge'] as const).map(size => (
-            <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <UserAvatar name="Vikram Indla" size={size} />
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon)') }}>{size}</span>
             </div>
@@ -178,7 +178,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
           {['Amadou Ndiaye', 'Vikram Indla', 'Sara Patel', 'Yazeed Daraz', 'Maria Rodriguez', 'Hiroshi Tanaka'].map(name => (
-            <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <UserAvatar name={name} size="large" />
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon)') }}>{name.split(' ')[0]}</span>
             </div>
@@ -197,7 +197,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
             { name: 'Yazeed Daraz', country: 'Jordan' },
             { name: 'Maria Rodriguez', country: 'USA' },
           ].map(({ name, country }) => (
-            <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <UserAvatar name={name} country={country} size="large" />
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon)') }}>{country}</span>
             </div>

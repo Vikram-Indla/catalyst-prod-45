@@ -21,7 +21,7 @@
 .sp-panel {
   padding: 0;
   font-family: var(--cp-font-body);
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 
 /* ══════════════════════════════════════════════
@@ -50,7 +50,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--ds-text-subtle);
+  color: var(--ds-text-subtle, #505258);
   border-radius: 3px;
   padding: 0;
 }
@@ -64,8 +64,8 @@
    Corrects 2026-05-08 14/600 lesson which measured wrapper levels. */
 .sp-title {
   font-size: 16px;
-  font-weight: 653;
-  color: var(--ds-text);
+  font-weight: 600;
+  color: var(--ds-text, #292A2E);
   padding: 0 4px;
   line-height: 20px;
 }
@@ -76,7 +76,7 @@
   display: inline;
   font-size: 14px;
   font-weight: 400;
-  color: var(--ds-text-subtlest);
+  color: var(--ds-text-subtlest, #626F86);
   margin-left: 4px;
 }
 
@@ -89,18 +89,18 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   border-radius: 3px;
   padding: 0;
   transition: background 0.12s, color 0.12s;
 }
 .sp-icon-btn:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-icon-btn--add:hover {
-  background: var(--ds-background-selected-subtle);
-  color: var(--ds-link);
+  background: var(--ds-background-selected-subtle, #E9F2FF);
+  color: var(--ds-link, #0055CC);
 }
 
 /* ══════════════════════════════════════════════
@@ -115,22 +115,22 @@
 .sp-progress-track {
   flex: 1;
   height: 6px;
-  background: var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  background: var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
   overflow: hidden;
 }
 .sp-progress-fill {
   height: 100%;
   /* 2026-06-23 (Vikram) — progress fill uses the canonical Catalyst done
-     green token --cp-status-done-green (var(--ds-background-success-bold)). Defined in index.css
-     :root + .dark. Was Jira-parity var(--ds-background-success-bold) lime previously. */
-  background: var(--cp-status-done-green, var(--ds-background-success-bold));
+     green token --cp-status-done-green (var(--ds-background-success-bold, #6A9A23)). Defined in index.css
+     :root + .dark. Was Jira-parity var(--ds-background-success-bold, #6A9A23) lime previously. */
+  background: var(--cp-status-done-green, var(--ds-background-success-bold, #6A9A23));
   border-radius: 3px;
   transition: width 0.3s ease;
 }
 .sp-progress-label {
   font-size: 12px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   white-space: nowrap;
   line-height: 1;
 }
@@ -144,7 +144,7 @@
    the inline create row — so the "+ Create" row is visually inside the same
    bordered container as the data rows (Jira parity). */
 .sp-table-body {
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 8px;
   overflow: hidden;
 }
@@ -159,7 +159,7 @@
 .sp-table-body .sp-create-wrap {
   margin-top: 0;
   padding: 4px 8px 4px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 
 /* Jira-parity: table header cells in subtasks panel — compact padding + muted label color.
@@ -167,13 +167,13 @@
    12px/653 (not 11px/600 as previously set).
    2026-06-23 — Replace JiraTable global header bottom border (inset 0 -2px,
    bold) with a small 1px hairline matching the vertical column dividers
-   (border-right on th: 1px solid --ds-border var(--ds-border)). */
+   (border-right on th: 1px solid --ds-border var(--ds-border, #DFE1E6)). */
 .sp-ak-table .jira-table-grid table thead > tr > th {
   padding: 0 12px !important;
-  color: var(--ds-text-subtle) !important;
+  color: var(--ds-text-subtle, #505258) !important;
   font-size: 12px !important;
-  font-weight: 653 !important;
-  box-shadow: inset 0 -1px 0 0 var(--ds-border) !important;
+  font-weight: 600 !important;
+  box-shadow: inset 0 -1px 0 0 var(--ds-border, #EBECF0) !important;
 }
 /* 2026-06-23 — Subtasks body rows have no expand-chevron column, so the
    header's 24×24 chevron-slot placeholder (used by JiraTable to align with
@@ -194,7 +194,7 @@
 
 /* 2026-06-23 — Priority inline-edit trigger is 180px min-width. The Priority
    column is narrower than 180px so the edit field needs to overflow into the
-   adjacent cell while open (Jira parity, image var(--ds-text-success)). Defeat both the td
+   adjacent cell while open (Jira parity, image var(--ds-text-success, #216E4E)). Defeat both the td
    inline overflow:hidden AND JiraTable's inner cell-content div overflow:
    hidden when the descendant is actively editing. */
 .sp-ak-table .jira-table-grid table tbody > tr > td:has([data-priority-editing="true"]) {
@@ -207,8 +207,8 @@
 }
 .sp-ak-table .jira-table-grid table thead > tr > th[data-actions-sticky] {
   box-shadow:
-    inset 1px 0 0 0 var(--ds-border),
-    inset 0 -1px 0 0 var(--ds-border) !important;
+    inset 1px 0 0 0 var(--ds-border, #C1C7D0),
+    inset 0 -1px 0 0 var(--ds-border, #EBECF0) !important;
 }
 
 /* Jira-parity: constrain data rows to 40px height (Jira measured 40px on BAU-5538).
@@ -243,7 +243,7 @@
 .sp-ak-table .jira-table-grid table tbody > tr > td[data-jt-drag-over="true"],
 .sp-ak-table .jira-table-grid table thead > tr > th[data-jt-drag-over="true"] {
   background: transparent !important;
-  box-shadow: inset 2px 0 0 0 var(--ds-border-selected) !important;
+  box-shadow: inset 2px 0 0 0 var(--ds-border-selected, #4C9AFF) !important;
 }
 
 /* 2026-06-23 — Suppress JiraTable's focused-row blue left bar (3px inset
@@ -251,27 +251,27 @@
    on the left edge — only background tint. Restore the standard bottom
    border so rows still divide correctly. */
 .sp-panel .jira-table-grid .jira-table-row-focused > td:first-child {
-  box-shadow: inset 0 -1px 0 0 var(--ds-border) !important;
+  box-shadow: inset 0 -1px 0 0 var(--ds-border, #DFE1E6) !important;
 }
 
 /* 2026-06-23 — Jira parity row hover: whole row paints --ds-surface-hovered
-   (var(--ds-background-neutral)). Individual cell on hover adds an extra layered tint so the
+   (var(--ds-background-neutral, #F1F2F4)). Individual cell on hover adds an extra layered tint so the
    hovered cell appears DARKER than the rest of the row. Layering done via
    --ds-background-neutral-subtle-hovered (rgba so it stacks on row bg). */
 .sp-ak-table .jira-table-grid table tbody > tr:hover > td {
-  background: var(--ds-surface-hovered) !important;
+  background: var(--ds-surface-hovered, #F0F1F2) !important;
 }
 .sp-ak-table .jira-table-grid table tbody > tr > td:hover {
-  background-color: var(--ds-background-neutral-hovered) !important;
+  background-color: var(--ds-background-neutral-hovered, #DCDFE4) !important;
 }
 
 /* DynamicTable forwards row.className to <tr>, so we paint backgrounds
    via descendant td (Atlaskit sets its own td background otherwise). */
 .sp-ak-table tr.sp-row--selected > td {
-  background: var(--ds-background-selected);
+  background: var(--ds-background-selected, #E9F2FF);
 }
 .sp-ak-table tr.sp-row--focused > td {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 2px solid var(--ds-border-focused, #4C9AFF);
   outline-offset: -2px;
 }
 
@@ -288,7 +288,7 @@
 .sp-type-icon svg { width: 16px; height: 16px; }
 
 .sp-issue-key {
-  color: var(--ds-link);
+  color: var(--ds-link, #1868DB);
   font-size: 14px;
   font-weight: 400;
   text-decoration: underline;
@@ -296,12 +296,12 @@
   cursor: pointer;
   flex-shrink: 0;
 }
-.sp-issue-key:hover { color: var(--ds-link-pressed); }
+.sp-issue-key:hover { color: var(--ds-link-pressed, #0747A6); }
 
 .sp-issue-summary {
   font-size: 14px;
   font-weight: 400;
-  color: var(--ds-text);
+  color: var(--ds-text, #29292E);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -315,7 +315,7 @@
 .sp-panel .sp-summary-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
   width: 100%;
 }
@@ -326,7 +326,7 @@
   transition: color 0.12s ease;
 }
 .sp-panel .sp-work-cell-summary-text:hover {
-  color: var(--ds-link);
+  color: var(--ds-link, #0052CC);
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
@@ -346,7 +346,7 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 3px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   flex-shrink: 0;
   opacity: 0;
@@ -359,24 +359,24 @@
   opacity: 1;
 }
 .sp-panel .sp-desc-trigger:hover {
-  background: var(--ds-border);
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  background: var(--ds-border, #DFE1E6);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-panel .sp-desc-trigger:focus-visible {
-  outline: none;
-  border-color: var(--cp-primary-60, var(--ds-link));
+  outline: 2px solid var(--ds-border-focused);
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25); /* ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant */
   opacity: 1;
 }
 .sp-panel .sp-desc-trigger-dot {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 0px;
+  right: 0px;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--cp-primary-60, var(--ds-link));
-  box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  background: var(--cp-primary-60, var(--ds-link, #0052CC));
+  box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 
 /* 2026-06-23 — Summary edit pencil. Mirrors `.sp-desc-trigger` opacity/hover
@@ -393,7 +393,7 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 3px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   flex-shrink: 0;
   opacity: 0;
@@ -406,12 +406,12 @@
   opacity: 1;
 }
 .sp-panel .sp-summary-edit-btn:hover {
-  background: var(--ds-background-neutral-hovered);
-  color: var(--ds-text, var(--cp-text-primary));
+  background: var(--ds-background-neutral-hovered, #DCDFE4);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 .sp-panel .sp-summary-edit-btn:focus-visible {
-  outline: none;
-  border-color: var(--cp-primary-60, var(--ds-link));
+  outline: 2px solid var(--ds-border-focused);
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25); /* ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant */
   opacity: 1;
 }
@@ -434,18 +434,18 @@
   width: 400px;
   /* 2026-06-23 — Summary inline-edit input renders at fixed 400px so it
      overflows into adjacent cells when the Work column is narrow but does
-     NOT stretch across the entire row (Jira parity, image var(--ds-text-success)). Combined
+     NOT stretch across the entire row (Jira parity, image var(--ds-text-success, #216E4E)). Combined
      with td + inner-div overflow:visible overrides below. */
   min-width: 400px;
   max-width: 400px;
   height: 32px;
   padding: 0 8px;
-  border: 2px solid var(--ds-border-focused);
+  border: 2px solid var(--ds-border-focused, #4C9AFF);
   border-radius: 3px;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-size: 14px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   font-family: inherit;
   box-sizing: border-box;
   position: relative;
@@ -466,10 +466,10 @@
   width: 32px;
   height: 32px;
   padding: 0;
-  border: 1px solid var(--ds-border);
-  background: var(--cp-bg-elevated, var(--ds-surface));
+  border: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF));
   border-radius: 3px;
-  color: var(--ds-text-subtle, var(--cp-text-secondary));
+  color: var(--ds-text-subtle, var(--cp-text-secondary, #42526E));
   cursor: pointer;
   flex-shrink: 0;
   box-shadow: 0 1px 2px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.08));
@@ -479,14 +479,14 @@
   opacity: 1 !important;
 }
 .sp-inline-summary-btn:hover {
-  background: var(--cp-bg-elevated, var(--ds-surface));
-  color: var(--ds-text, var(--cp-text-primary));
-  border-color: var(--cp-primary-60, var(--ds-link));
+  background: var(--cp-bg-elevated, var(--ds-surface, #FFFFFF));
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   opacity: 1 !important;
 }
 .sp-inline-summary-btn:focus-visible {
-  outline: none;
-  border-color: var(--cp-primary-60, var(--ds-link));
+  outline: 2px solid var(--ds-border-focused);
+  border-color: var(--cp-primary-60, var(--ds-link, #0052CC));
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25); /* ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant */
 }
 /* Cells containing the inline editor need overflow:visible so the
@@ -532,7 +532,7 @@
 }
 .sp-assignee-name {
   font-size: 14px;
-  color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)));
+  color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -547,7 +547,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   flex-shrink: 0;
 }
 
@@ -555,10 +555,10 @@
 .sp-status-btn-ak {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 0px;
   border: none;
   background: transparent;
-  padding: 2px 4px;
+  padding: 0px 4px;
   border-radius: 3px;
   cursor: pointer;
   font-family: inherit;
@@ -572,7 +572,7 @@
 .sp-status-chevron-ak {
   display: inline-flex;
   align-items: center;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 
 /* Row actions trigger (appears on row hover + when popup is open) */
@@ -584,7 +584,7 @@
   height: 24px;
   border: none;
   background: transparent;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   border-radius: 3px;
   cursor: pointer;
   padding: 0;
@@ -602,7 +602,7 @@
 .sp-row-actions-btn:hover,
 .sp-row-actions-btn[aria-expanded="true"] {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   opacity: 1;
 }
 
@@ -623,8 +623,8 @@
   align-items: center;
   height: 20px;
   padding: 0 8px;
-  background: var(--ds-background-information);
-  color: var(--ds-text-information);
+  background: var(--ds-background-information, #DEEBFF);
+  color: var(--ds-text-information, #0747A6);
   font-size: 12px;
   font-weight: 500;
   border-radius: 3px;
@@ -635,14 +635,14 @@
 }
 .sp-fixv-more {
   font-size: 11px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   padding: 0 4px;
   white-space: nowrap;
 }
 .sp-fixv-empty {
   display: inline-block;
   padding: 0 8px;
-  color: var(--ds-text-disabled);
+  color: var(--ds-text-disabled, #97A0AF);
   font-size: 14px;
   line-height: 40px;
 }
@@ -669,25 +669,25 @@
   height: 16px;
   border-radius: 3px;
   border: 1.5px solid var(--ds-border, rgba(9,30,66,0.3));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: background 0.12s, border-color 0.12s;
 }
-.sp-checkbox:hover .sp-checkbox-box { border-color: var(--ds-link, var(--cp-primary-60)); }
+.sp-checkbox:hover .sp-checkbox-box { border-color: var(--ds-link, var(--cp-primary-60, #0052CC)); }
 .sp-checkbox input:checked + .sp-checkbox-box,
 .sp-row--selected .sp-checkbox-box {
-  background: var(--ds-background-brand-bold, var(--cp-primary-60));
-  border-color: var(--ds-background-brand-bold, var(--cp-primary-60));
+  background: var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC));
+  border-color: var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC));
 }
 .sp-checkbox-dash {
   width: 8px;
   height: 2px;
-  background: var(--ds-link, var(--cp-primary-60));
+  background: var(--ds-link, var(--cp-primary-60, #0052CC));
   border-radius: 1px;
 }
-.sp-row--selected .sp-checkbox-dash { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))); }
+.sp-row--selected .sp-checkbox-dash { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))); }
 
 /* ══════════════════════════════════════════════
    Popover (@atlaskit/popup content)
@@ -696,29 +696,29 @@
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: var(--cp-font-body);
 }
 
 .sp-pop-search {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 10px;
-  border-bottom: 1px solid var(--ds-border, rgba(9,30,66,0.1));
+  border-bottom: 0px solid var(--ds-border, rgba(9,30,66,0.1));
 }
 .sp-pop-search-input {
   flex: 1;
   height: 24px;
   border: none;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: transparent;
   font-family: inherit;
 }
-.sp-pop-search-input::placeholder { color: var(--ds-text-subtlest); }
+.sp-pop-search-input::placeholder { color: var(--ds-text-subtlest, #7A869A); }
 
 .sp-pop-list {
   max-height: 280px;
@@ -727,13 +727,13 @@
 }
 
 .sp-pop-group + .sp-pop-group {
-  border-top: 1px solid var(--ds-border, rgba(9,30,66,0.08));
+  border-top: 0px solid var(--ds-border, rgba(9,30,66,0.08));
 }
 
 .sp-pop-group-label {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 8px 12px 4px;
@@ -744,7 +744,7 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 6px 10px;
+  padding: 4px 10px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -752,7 +752,7 @@
   font-family: inherit;
   text-align: left;
   transition: background 0.1s;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-pop-row:hover:not(:disabled) {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
@@ -766,7 +766,7 @@
 }
 .sp-pop-hint {
   font-size: 11px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   padding: 4px 10px 6px;
   line-height: 1.35;
 }
@@ -779,7 +779,7 @@
   top: calc(100% + 4px);
   right: 0;
   width: 220px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
@@ -790,21 +790,21 @@
 .sp-colpicker-title {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ds-border, rgba(9,30,66,0.1));
+  border-bottom: 0px solid var(--ds-border, rgba(9,30,66,0.1));
 }
 .sp-colpicker-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  padding: 4px 12px;
   cursor: pointer;
   transition: background 0.12s;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-colpicker-item:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04));
@@ -821,8 +821,8 @@
   transition: background 0.12s, border-color 0.12s;
 }
 .sp-colpicker-check--active {
-  background: var(--ds-background-brand-bold, var(--cp-workstream-catalyst-primary));
-  border-color: var(--ds-background-brand-bold, var(--cp-workstream-catalyst-primary));
+  background: var(--ds-background-brand-bold, var(--cp-workstream-catalyst-primary, #2563EB));
+  border-color: var(--ds-background-brand-bold, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 
 /* ══════════════════════════════════════════════
@@ -834,24 +834,24 @@
   gap: 4px;
   height: 32px;
   padding: 0 8px;
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: inherit;
 }
 .sp-type-selector-btn:hover {
-  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken));
+  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7));
 }
 .sp-type-selector-dropdown {
   position: absolute;
   top: calc(100% + 2px);
   left: 0;
   min-width: 180px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.25));
   z-index: 60;
@@ -865,13 +865,13 @@
   padding: 0 12px;
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-type-selector-item:hover {
-  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken));
+  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7));
 }
 .sp-type-selector-item.is-active {
-  background: var(--ds-background-selected);
+  background: var(--ds-background-selected, #DEEBFF);
 }
 
 /* ══════════════════════════════════════════════
@@ -887,21 +887,21 @@
   /* Aligned with the title text at 24px (after the chevron's -4 margin,
      the title now starts at chevron-right(-4+24) + title-padding(4) = 24). */
   margin-left: 24px;
-  margin-top: 2px;
+  margin-top: 0px;
   padding: 4px 8px;
   border-radius: 3px;
   font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif;
   font-size: 14px;
-  color: var(--ds-text-subtle);
+  color: var(--ds-text-subtle, #44546f);
   cursor: pointer;
   transition: background 100ms ease, color 100ms ease;
 }
 .sp-add-link:hover {
-  background: var(--ds-background-neutral-subtle-hovered);
-  color: var(--ds-text);
+  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
+  color: var(--ds-text, #172b4d);
 }
 .sp-add-link:focus-visible {
-  outline: 2px solid var(--ds-border-focused);
+  outline: 2px solid var(--ds-border-focused, #4c9aff);
   outline-offset: 1px;
 }
 
@@ -913,14 +913,14 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  margin-right: 2px;
-  color: var(--ds-text-subtle);
+  margin-right: 0px;
+  color: var(--ds-text-subtle, #44546f);
   border-radius: 3px;
   cursor: pointer;
 }
 .sp-title-plus:hover {
-  background: var(--ds-background-neutral-subtle-hovered);
-  color: var(--ds-text);
+  background: var(--ds-background-neutral-subtle-hovered, #f1f2f4);
+  color: var(--ds-text, #172b4d);
 }
 
 .sp-create-wrap { position: relative; margin-top: 4px; }
@@ -929,17 +929,17 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 4px;
+  padding: 0px 4px;
   /* 2026-06-07: gray idle border (was `transparent`) so the row reads as
      a discrete input affordance even when not focused. focus-within
      rule below swaps to brand blue. */
-  border: 1px solid var(--ds-border);
+  border: 1px solid var(--ds-border, #DFE1E6);
   border-radius: 3px;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
 }
 .sp-create-wrap:focus-within .sp-create-row {
-  border-color: var(--ds-border-focused);
-  box-shadow: 0 0 0 1px var(--ds-border-focused);
+  border-color: var(--ds-border-focused, #4C9AFF);
+  box-shadow: 0 0 0 1px var(--ds-border-focused, #4C9AFF);
 }
 .sp-create-input-wrap { flex: 1; min-width: 0; }
 .sp-create-input-wrap [data-ds--text-field--container] {
@@ -958,7 +958,7 @@
   align-items: center;
   gap: 4px;
   padding: 0 4px 0 8px;
-  border-left: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  border-left: 0px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
 }
 .sp-create-submit {
   display: inline-flex;
@@ -966,22 +966,22 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)));
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
-  background: var(--ds-background-neutral, var(--cp-bg-sunken));
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  background: var(--ds-background-neutral, var(--cp-bg-sunken, #F4F5F7));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
 }
 .sp-create-cancel {
   background: none;
   border: none;
   font-size: 13px;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   font-family: inherit;
 }
 .sp-create-cancel:hover {
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   text-decoration: underline;
 }
 
@@ -990,11 +990,11 @@
   top: calc(100% - 18px);
   left: 0;
   right: 0;
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
-  padding: 6px 4px;
+  padding: 4px 4px;
   z-index: 60;
   max-height: 340px;
   overflow-y: auto;
@@ -1002,11 +1002,11 @@
 .sp-create-section-label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px 4px;
+  gap: 4px;
+  padding: 4px 10px 4px;
   font-size: 10px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -1015,21 +1015,21 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 6px 10px;
+  padding: 4px 10px;
   border: none;
   background: transparent;
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   text-align: left;
   border-radius: 3px;
   transition: background 0.1s;
 }
 .sp-create-option:hover,
 .sp-create-option.is-active {
-  background: var(--ds-background-selected);
-  color: var(--ds-text-selected);
+  background: var(--ds-background-selected, #DEEBFF);
+  color: var(--ds-text-selected, #0747A6);
 }
 
 /* ══════════════════════════════════════════════
@@ -1043,20 +1043,20 @@
   padding: 32px 16px;
   text-align: center;
 }
-/* jira-compare 2026-05-04 (D4): corrected stale var(--cp-text-primary, var(--cp-text-inverse)) fallback → #292A2E. */
+/* jira-compare 2026-05-04 (D4): corrected stale var(--cp-text-primary, var(--cp-text-inverse, #172B4D)) fallback → #292A2E. */
 .sp-empty-heading {
   font-size: 14px;
   font-weight: 600;
-  color: var(--ds-text);
+  color: var(--ds-text, #292A2E);
 }
 .sp-empty-sub {
   font-size: 13px;
-  /* jira-compare 2026-05-04: subtlest token — var(--cp-text-secondary) (legacy) → var(--ds-text-subtlest) (ADS current). */
-  color: var(--ds-text-subtlest);
+  /* jira-compare 2026-05-04: subtlest token — var(--cp-text-secondary, #6B778C) (legacy) → var(--ds-text-subtlest, #626F86) (ADS current). */
+  color: var(--ds-text-subtlest, #626F86);
 }
 /* jira-compare 2026-05-04 (D2): ADS Button defaults — 32px height, 14px/500,
    neutral background (not outlined). Matched to @atlaskit/button default style.
-   font-size 13→14px, font-weight 400→500, stale var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text))) token → var(--ds-text). */
+   font-size 13→14px, font-weight 400→500, stale var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D))) token → var(--ds-text, #172B4D). */
 .sp-empty-cta {
   display: inline-flex;
   align-items: center;
@@ -1066,16 +1066,16 @@
   padding: 0 12px;
   border: none;
   border-radius: 3px;
-  background: var(--ds-background-neutral);
+  background: var(--ds-background-neutral, #F1F2F4);
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text);
+  color: var(--ds-text, #292A2E);
   cursor: pointer;
   font-family: inherit;
   transition: background 0.12s;
 }
 .sp-empty-cta:hover {
-  background: var(--ds-background-neutral-hovered);
+  background: var(--ds-background-neutral-hovered, #E2E3E5);
 }
 
 /* ══════════════════════════════════════════════
@@ -1090,7 +1090,7 @@
 }
 .sp-skeleton-pulse {
   border-radius: 4px;
-  background: var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken)));
+  background: var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   animation: sp-pulse 1.5s ease-in-out infinite;
 }
 @keyframes sp-pulse {
@@ -1110,7 +1110,7 @@
 .sp-board-col {
   display: flex;
   flex-direction: column;
-  background: var(--ds-background-neutral-subtle);
+  background: var(--ds-background-neutral-subtle, #F7F8F9);
   border: 1px solid var(--ds-border, rgba(9,30,66,0.08));
   border-radius: 6px;
   overflow: hidden;
@@ -1121,31 +1121,31 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 10px;
-  background: var(--ds-background-neutral);
-  border-bottom: 1px solid var(--ds-border, rgba(9,30,66,0.08));
+  background: var(--ds-background-neutral, #F1F2F4);
+  border-bottom: 0px solid var(--ds-border, rgba(9,30,66,0.08));
 }
 .sp-board-count {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, var(--cp-text-secondary));
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  padding: 1px 8px;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  padding: 0px 8px;
   border-radius: 9px;
 }
 .sp-board-col-body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   padding: 8px;
 }
 .sp-board-empty {
   font-size: 12px;
-  color: var(--ds-text-subtlest);
+  color: var(--ds-text-subtlest, #7A869A);
   padding: 12px 8px;
   text-align: center;
 }
 .sp-board-card {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.1));
   border-radius: 4px;
   padding: 8px 10px;
@@ -1158,7 +1158,7 @@
 }
 .sp-board-card-summary {
   font-size: 13px;
-  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   line-height: 1.35;
   margin-bottom: 8px;
   display: -webkit-box;
@@ -1176,7 +1176,7 @@
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  color: var(--ds-link);
+  color: var(--ds-link, #1868DB);
   font-family: var(--cp-font-mono);
 }
 
@@ -1194,16 +1194,16 @@
   flex-wrap: wrap;
   margin-top: 8px;
   padding: 8px 12px;
-  background: var(--ds-text);
+  background: var(--ds-text, #172B4D);
   border-radius: 6px;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   box-shadow: 0 4px 12px var(--ds-shadow-raised, rgba(9,30,66,0.25));
 }
 .sp-bulkbar-count {
   font-size: 13px;
   font-weight: 600;
   padding: 4px 8px 4px 0;
-  border-right: 1px solid var(--ds-surface, rgba(255,255,255,0.2));
+  border-right: 0px solid var(--ds-surface, rgba(255,255,255,0.2));
   margin-right: 4px;
 }
 .sp-bulkbar-btn {
@@ -1215,7 +1215,7 @@
   border: 1px solid var(--ds-surface, rgba(255,255,255,0.3));
   border-radius: 3px;
   background: transparent;
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
   cursor: pointer;
   font-size: 13px;
   font-family: inherit;
@@ -1228,12 +1228,12 @@
 .sp-bulkbar-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .sp-bulkbar-btn--danger {
   border-color: rgba(255,99,89,0.6); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-  color: var(--ds-background-danger);
+  color: var(--ds-background-danger, #FFECEB);
 }
 .sp-bulkbar-btn--danger:hover:not(:disabled) {
   background: rgba(255,99,89,0.15); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
-  border-color: var(--ds-background-danger);
-  color: var(--ds-background-danger);
+  border-color: var(--ds-background-danger, #FFECEB);
+  color: var(--ds-background-danger, #FFECEB);
 }
 .sp-bulkbar-cancel {
   display: inline-flex;
@@ -1253,7 +1253,7 @@
 }
 .sp-bulkbar-cancel:hover {
   background: var(--ds-surface, rgba(255,255,255,0.12));
-  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))));
 }
 
 /* ══════════════════════════════════════════════
@@ -1261,30 +1261,30 @@
    Subtasks panel table; kept here for historical parity).
    ══════════════════════════════════════════════ */
 .adf-editor-content table {
-  border: 0.556px solid var(--ds-surface-pressed);
+  border: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
   border-collapse: collapse;
   font-size: 14px;
   width: 100%;
   margin: 8px 0;
 }
 .adf-editor-content table th {
-  background: var(--ds-surface-hovered);
-  color: var(--ds-text);
+  background: var(--ds-surface-hovered, #F0F1F2);
+  color: var(--ds-text, #292A2E);
   font-size: 14px;
   font-weight: 400;
   padding: 8px;
   text-align: left;
   vertical-align: top;
-  border-top: 0.556px solid var(--ds-surface-pressed);
-  border-left: 0.556px solid var(--ds-surface-pressed);
+  border-top: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
+  border-left: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
 }
 .adf-editor-content table td {
-  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  color: var(--ds-text);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))));
+  color: var(--ds-text, #292A2E);
   font-size: 14px;
   font-weight: 400;
   padding: 8px;
   vertical-align: top;
-  border-top: 0.556px solid var(--ds-surface-pressed);
-  border-left: 0.556px solid var(--ds-surface-pressed);
+  border-top: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
+  border-left: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
 }

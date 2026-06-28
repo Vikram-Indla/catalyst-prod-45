@@ -54,7 +54,7 @@ function WorkloadRow({
         display: 'grid',
         gridTemplateColumns: '160px 1fr 40px',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         padding: '8px 0',
         borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
       }}

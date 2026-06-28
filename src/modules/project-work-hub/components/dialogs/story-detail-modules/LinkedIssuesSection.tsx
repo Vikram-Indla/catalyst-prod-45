@@ -57,7 +57,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
       <button onClick={() => setOpen(o => !o)} style={{
         height: 36, padding: '0 10px', border: open ? '2px solid var(--ds-border-focused)' : '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
         borderRadius: 3, fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', background: 'var(--ds-surface)', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', minWidth: 160,
+        display: 'flex', alignItems: 'center', gap: 4, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', minWidth: 160,
         transition: 'border-color 0.15s',
       }}>
         <span style={{ flex: 1, textAlign: 'left' }}>{value}</span>
@@ -507,7 +507,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       {/* Grouped link display — Jira style */}
       {!isLoading && Object.entries(grouped).map(([type, typeLinks]) => (
         <div key={type} style={{ marginBottom: 8 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', padding: '6px 0 4px', textTransform: 'lowercase' }}>{type}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', padding: '4px 0 4px', textTransform: 'lowercase' }}>{type}</div>
           <div style={{ border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', borderRadius: 3, overflow: 'hidden' }}>
             {(typeLinks as any[]).map((link: any) => {
               const target = link.target;
@@ -540,7 +540,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                   >{target.issue_key}</span>
                   <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                     <Lozenge appearance={statusToLozenge(target.status)}>{target.status}</Lozenge>
                     <ChevronDownIcon label="" size="small" />
                   </span>
@@ -638,8 +638,8 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
           all: 'unset',
           display: 'inline-flex',
           alignItems: 'center',
-          marginLeft: 28,
-          marginTop: 2,
+          marginLeft: 24,
+          marginTop: 0,
           padding: '4px 8px',
           borderRadius: 3,
           fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',

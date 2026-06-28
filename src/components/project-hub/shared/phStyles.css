@@ -19,7 +19,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken)));
   border-radius: 8px;
-  padding: 20px;
+  padding: 16px;
   box-shadow: 0 1px 3px 0 var(--ds-shadow-raised, rgba(0,0,0,0.1)), 0 1px 2px -1px var(--ds-shadow-raised, rgba(0,0,0,0.1));
 }
 
@@ -51,7 +51,7 @@
   font-family: var(--cp-font-heading);
   padding-bottom: 12px;
   margin-bottom: 16px;
-  border-bottom: 1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
+  border-bottom: 0px solid var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));
 }
 
 .dark .ph-card-title {

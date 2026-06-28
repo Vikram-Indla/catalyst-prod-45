@@ -94,7 +94,7 @@ export function OverviewTab({
         {/* Week Navigator */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <SectionTitle>THIS WEEK</SectionTitle>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button
               onClick={() => setWeekOffset(o => Math.max(o - 1, -52))}
               disabled={weekOffset <= -52}
@@ -117,11 +117,11 @@ export function OverviewTab({
           </div>
         </div>
         {statsLoading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
             {[1,2,3,4].map(i => <div key={i} style={{ background: 'var(--bg-app)', padding: '12px 14px' }}><Skeleton h={28} w="40%" /><Skeleton h={12} w="60%" /></div>)}
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
             {/* Total Open — CLICKABLE */}
             <div
               onClick={() => showFilteredList('Total Open', (i: any) => i.status_category !== 'done')}
@@ -130,8 +130,8 @@ export function OverviewTab({
               onMouseLeave={e => clickableTileHover(e, false)}
             >
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: loadColour }}>{openCount}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>TOTAL OPEN</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 2 }}>vs role avg {roleAvg}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 0 }}>TOTAL OPEN</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 0 }}>vs role avg {roleAvg}</div>
             </div>
             {/* Closed This Week — CLICKABLE */}
             <div
@@ -148,8 +148,8 @@ export function OverviewTab({
                 <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: closedColour }}>{closedThisWeek}</span>
                 {closedTrend && <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: closedTrendColor }}>{closedTrend}</span>}
               </div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>CLOSED THIS WEEK</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 2 }}>vs {prevWeekClosed} last week</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 0 }}>CLOSED THIS WEEK</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 0 }}>vs {prevWeekClosed} last week</div>
             </div>
             {/* In Review — CLICKABLE */}
             <div
@@ -159,12 +159,12 @@ export function OverviewTab({
               onMouseLeave={e => clickableTileHover(e, false)}
             >
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: INK1 }}>{inReview}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 0 }}>IN REVIEW</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 0 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
             </div>
             {/* Pickup Speed — color-coded */}
             <div style={{ background: 'var(--bg-app)', padding: '12px 14px' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 0 }}>
                 {pickupHours > 0 ? (
                   <>
                     <span style={{
@@ -181,8 +181,8 @@ export function OverviewTab({
                   <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: MUTED }}>—</span>
                 )}
               </div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>PICKUP SPEED</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 2 }}>team avg 38h</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 0 }}>PICKUP SPEED</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 0 }}>team avg 38h</div>
             </div>
           </div>
         )}
@@ -206,7 +206,7 @@ export function OverviewTab({
           </svg>
 
           {/* Stat rows — CLICKABLE */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
             {/* In progress row */}
             <div
               onClick={() => showFilteredList('In Progress', (i: any) => (i.status_category || '').toLowerCase() === 'in_progress')}
@@ -269,7 +269,7 @@ export function OverviewTab({
         {/* Anomaly callout */}
         {concurrent >= 3 && (
           <div style={{
-            marginTop: 10, background: 'var(--ds-background-warning, rgba(217,119,6,0.08))', borderLeft: `3px solid ${WARNING}`,
+            marginTop: 8, background: 'var(--ds-background-warning, rgba(217,119,6,0.08))', borderLeft: `3px solid ${WARNING}`,
             borderRadius: 4, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
           }}>
             <AlertTriangle size={13} color={WARNING} />
@@ -345,7 +345,7 @@ export function OverviewTab({
                   return norm === row.type && i.status_category !== 'done';
                 })}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
+                  display: 'flex', alignItems: 'center', gap: 8,
                   cursor: 'pointer', padding: '4px 0', borderRadius: 4, transition: 'background 120ms',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
@@ -368,8 +368,8 @@ export function OverviewTab({
         </div>
         {showBugInsight && (
           <div style={{
-            marginTop: 10, background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information)', borderRadius: 4,
-            padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 6,
+            marginTop: 8, background: 'var(--cp-blue-wash)', border: '1px solid var(--ds-background-information)', borderRadius: 4,
+            padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4,
           }}>
             <Info size={14} color={BRAND} />
             <span style={{ fontSize: 'var(--ds-font-size-100)', color: BRAND }}>Bug ratio ({bugRow!.pct}%) exceeds role average ({bugRow!.roleAvgPct}%)</span>
@@ -398,10 +398,10 @@ export function OverviewTab({
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4 }}>Weekly Story · {weekLabel}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontStyle: 'italic', color: INK1, marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontStyle: 'italic', color: INK1, marginTop: 0 }}>
               &ldquo;Focus on incident resolution and QA throughput&rdquo;
             </div>
-            <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+            <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--fg-3)' }} />
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-disabled)' }} />
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-disabled)' }} />
@@ -415,7 +415,7 @@ export function OverviewTab({
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <SectionTitle>HUB BREAKDOWN</SectionTitle>
         {/* Summary grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden', marginBottom: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden', marginBottom: 12 }}>
           {[
             { label: 'Total Backlog', value: hubSummary.total, color: INK1, onClick: () => showFilteredList('Backlog Items', (i: any) => i.status_category !== 'done') },
             { label: 'In Progress', value: hubSummary.inProgress, color: INK1, onClick: () => showFilteredList('In Progress Items', (i: any) => i.status_category === 'in_progress') },
@@ -424,12 +424,12 @@ export function OverviewTab({
           ].map((tile, i) => (
             <div key={i}
               onClick={tile.onClick}
-              style={{ background: 'var(--bg-app)', padding: '10px 12px', cursor: 'pointer', transition: 'background 120ms' }}
+              style={{ background: 'var(--bg-app)', padding: '8px 12px', cursor: 'pointer', transition: 'background 120ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: tile.color }}>{tile.value}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>{tile.label}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 0 }}>{tile.label}</div>
             </div>
           ))}
         </div>
@@ -443,7 +443,7 @@ export function OverviewTab({
                 return itemHub === hub.hub;
               })}
               style={{
-                border: `1px solid ${BORDER}`, borderRadius: 6, padding: '10px 14px',
+                border: `1px solid ${BORDER}`, borderRadius: 6, padding: '8px 14px',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 cursor: 'pointer', transition: 'background 150ms',
               }}

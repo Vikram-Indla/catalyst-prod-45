@@ -146,7 +146,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.5))', zIndex: 60 }} />
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70, padding: 28, border: '0.75px solid var(--divider)' }}>
+      <div style={{ position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)', width: 500, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70, padding: 24, border: '0.75px solid var(--divider)' }}>
         <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? 'var(--ds-background-danger)' : jobStatus === 'done' ? 'var(--ds-background-success)' : 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           {jobStatus === 'failed' ? (
             <AlertTriangle size={22} color="var(--sem-danger)" />
@@ -175,7 +175,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>{currentStep || config.steps[activeStep]}</span>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>{jobStatus === 'done' ? '100' : Math.min(progress, 99)}%</span>
             </div>
-            <div style={{ height: 6, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
+            <div style={{ height: 6, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden', marginBottom: 16, position: 'relative' }}>
               <div style={{
                 height: '100%', borderRadius: 4,
                 background: jobStatus === 'done' ? 'var(--sem-success)' : 'var(--cp-blue)',
@@ -191,12 +191,12 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
         )}
 
         {jobStatus !== 'failed' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
             {config.steps.map((step, i) => {
               const isDone = jobStatus === 'done' || i < activeStep;
               const isActive = jobStatus !== 'done' && i === activeStep;
               return (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDone ? 'var(--ds-background-success)' : isActive ? 'var(--ds-background-information)' : 'var(--bg-2)', color: isDone ? 'var(--sem-success)' : isActive ? 'var(--cp-blue)' : 'var(--fg-4)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, flexShrink: 0 }}>
                     {isDone ? <Check size={12} /> : isActive ? <Loader2 size={12} style={{ animation: 'ra-spin 1s linear infinite' }} /> : i + 1}
                   </div>
@@ -210,7 +210,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
         )}
 
         {jobStatus !== 'done' && jobStatus !== 'failed' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 14px', background: 'var(--cp-primary-5)', borderRadius: 'var(--ra-radius-card)', marginBottom: 20, borderTop: '1px solid var(--ds-background-information)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', background: 'var(--cp-primary-5)', borderRadius: 'var(--ra-radius-card)', marginBottom: 16, borderTop: '1px solid var(--ds-background-information)' }}>
             <Clock size={14} color="var(--cp-blue)" />
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link-pressed)', fontFamily: 'var(--cp-font-body)' }}>Estimated: {etaLabel} · You'll be notified when done</span>
           </div>

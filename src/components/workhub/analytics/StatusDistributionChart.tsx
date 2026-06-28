@@ -52,7 +52,7 @@ export function StatusDistributionChart({ data }: Props) {
         {/* Center label */}
         <div style={{
           position: 'absolute',
-          top: '42%', left: '50%',
+          top: '40%', left: '48%',
           transform: 'translate(-50%, -50%)',
           textAlign: 'center', pointerEvents: 'none',
         }}>

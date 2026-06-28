@@ -72,7 +72,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
       <button
         onClick={() => setOpen(v => !v)}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
+          display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 34, padding: '0 14px', borderRadius: 8,
           fontSize: 'var(--ds-font-size-400)', fontWeight: value ? 600 : 500,
           transition: 'all 0.15s',
@@ -91,7 +91,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
               width: 16, height: 16, borderRadius: '50%',
               backgroundColor: 'var(--cp-blue-wash)', border: 'none',
               cursor: 'pointer', color: 'var(--cp-blue-text)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
-              marginLeft: 2,
+              marginLeft: 0,
             }}
           >
             ✕
@@ -115,14 +115,14 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             background: 'var(--cp-float)', border: '1px solid var(--cp-bd)',
             borderRadius: 12,
             boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.12)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
-            zIndex: 50, padding: 6,
+            zIndex: 50, padding: 4,
             animation: 'fy-dropIn 0.15s ease',
           }}
         >
           {/* Search */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 12px',
+            padding: '8px 12px',
             borderBottom: '1px solid var(--cp-bd)',
             marginBottom: 4,
           }}>
@@ -145,7 +145,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             onClick={() => { onChange(null); setOpen(false); setSearch(''); }}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              width: '100%', textAlign: 'left', padding: '10px 12px',
+              width: '100%', textAlign: 'left', padding: '8px 12px',
               borderRadius: 8, fontSize: 'var(--ds-font-size-400)',
               fontWeight: !value ? 600 : 500,
               color: !value ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
@@ -167,8 +167,8 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                 key={option}
                 onClick={() => { onChange(option); setOpen(false); setSearch(''); }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 10, width: '100%',
-                  textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                  textAlign: 'left', padding: '8px 12px', borderRadius: 8,
                   fontSize: 'var(--ds-font-size-400)', fontWeight: isSelected ? 600 : 500,
                   color: isSelected ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
                   background: isSelected ? 'var(--cp-blue-wash)' : 'transparent',

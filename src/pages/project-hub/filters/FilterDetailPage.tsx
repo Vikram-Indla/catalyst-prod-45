@@ -422,7 +422,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 4,
                     padding: '4px 8px',
                     borderRadius: 3,
                     background: token('color.background.neutral'),

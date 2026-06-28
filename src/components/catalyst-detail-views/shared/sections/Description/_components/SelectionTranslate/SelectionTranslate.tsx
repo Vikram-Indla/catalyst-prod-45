@@ -295,7 +295,7 @@ export function SelectionTranslate({
             zIndex: 20,
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             background: 'var(--ds-surface)',
             border: '1px solid var(--ds-border)',
             color: 'var(--ds-text)',

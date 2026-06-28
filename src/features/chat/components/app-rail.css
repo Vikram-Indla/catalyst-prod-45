@@ -5,7 +5,7 @@
   align-items: center;
   padding: 12px 0;
   gap: 4px;
-  border-right: 1px solid var(--c-chat-border);
+  border-right: 0px solid var(--c-chat-border);
   background: var(--c-chat-surface);
   overflow: hidden;
 }
@@ -58,7 +58,7 @@
 .c-rail__badge {
   position: absolute;
   top: 0;
-  right: 6px;
+  right: 4px;
   min-width: 18px;
   height: 18px;
   border-radius: 9px;

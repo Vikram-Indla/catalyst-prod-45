@@ -65,7 +65,7 @@ export function TableContextMenu({
             </button>
           );
         })}
-        <div style={{ borderTop: '1px solid var(--cp-bd-zone)', margin: '2px 0' }} />
+        <div style={{ borderTop: '1px solid var(--cp-bd-zone)', margin: '0px 0' }} />
         {deleteConfirm ? (
           <div className="px-3 py-1.5 flex items-center gap-2">
             <span className="text-[11px]" style={{ color: 'var(--sem-danger)' }}>Confirm?</span>

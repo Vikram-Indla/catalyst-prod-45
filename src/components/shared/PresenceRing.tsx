@@ -92,7 +92,7 @@ export function PresenceRing({ name, src, size = 'medium', state, testId, toolti
           // 2px white gap + 2px coloured ring
           boxShadow:    `0 0 0 2px var(--ds-surface), 0 0 0 4px ${ringColor}`,
           // Extra margin so the ring doesn't clip the avatar group layout
-          margin:       2,
+          margin:       0,
         }}
       >
         <CatalystAvatar name={name} src={src} size={size} testId={testId} />

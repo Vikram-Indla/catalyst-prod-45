@@ -69,7 +69,7 @@ function FilterDropdown({
         onClick={() => setOpen(!open)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
-          padding: '5px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
+          padding: '4px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
           color: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : (isDark ? DK.t2 : 'var(--fg-3)'),
           background: selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.06))' : (isDark ? 'transparent' : 'var(--bg-app)'),
           border: `1px solid ${selected.length > 0 ? 'var(--ds-background-information, rgba(37,99,235,0.3))' : (isDark ? DK.border : 'var(--divider)')}`,
@@ -82,11 +82,11 @@ function FilterDropdown({
       </button>
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', left: 0, marginTop: 4,
+          position: 'absolute', top: '48%', left: 0, marginTop: 4,
           background: isDark ? DK.float : 'var(--bg-app)',
           border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8,
           boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.3))' : '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.08))',
-          padding: 6, minWidth: 180, zIndex: 9999, maxHeight: 240, overflowY: 'auto',
+          padding: 4, minWidth: 180, zIndex: 9999, maxHeight: 240, overflowY: 'auto',
         }}>
           {selected.length > 0 && (
             <button onClick={() => { onClear(); }} style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', width: '100%', textAlign: 'left', marginBottom: 4 }}>
@@ -96,7 +96,7 @@ function FilterDropdown({
           {options.map(opt => {
             const isSelected = selected.includes(opt.id);
             return (
-              <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t1 : 'var(--fg-1)' }}
+              <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t1 : 'var(--fg-1)' }}
                 onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--cp-bd-zone)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
@@ -136,15 +136,15 @@ export function GoalsToolbar({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         {/* View Switcher */}
-        <div style={{ display: 'inline-flex', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', borderRadius: 8, padding: 3, gap: 2 }}>
+        <div style={{ display: 'inline-flex', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', borderRadius: 8, padding: 4, gap: 0 }}>
           {viewButtons.map(vb => {
             const active = currentView === vb.key;
             return (
               <button key={vb.key} onClick={() => onViewChange(vb.key)} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                padding: '5px 12px', fontSize: 'var(--ds-font-size-200)',
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '4px 12px', fontSize: 'var(--ds-font-size-200)',
                 fontWeight: active ? 600 : 500,
                 color: active ? (isDark ? 'var(--bg-app)' : 'var(--fg-1)') : (isDark ? 'var(--fg-4)' : 'var(--fg-3)'),
                 background: active ? (isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bg-app)') : 'transparent',
@@ -160,7 +160,7 @@ export function GoalsToolbar({
         </div>
 
         {/* Search */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, padding: '5px 10px', minWidth: 220 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, padding: '4px 10px', minWidth: 220 }}>
           <Search size={14} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light)))'} />
           <input
             type="text" placeholder="Search goals or KRs..."
@@ -189,7 +189,7 @@ export function GoalsToolbar({
         {hasActiveFilters && (
           <button
             onClick={() => onFiltersChange?.({})}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--sem-danger)', background: 'var(--ds-background-danger, rgba(239,68,68,0.06))', border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))', borderRadius: 8, cursor: 'pointer' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--sem-danger)', background: 'var(--ds-background-danger, rgba(239,68,68,0.06))', border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))', borderRadius: 8, cursor: 'pointer' }}
           >
             <X size={11} /> Clear all
           </button>
@@ -197,8 +197,8 @@ export function GoalsToolbar({
 
         {currentView === 'tree' && (
           <button onClick={onExpandAll} style={{
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            padding: '5px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
             color: isDark ? DK.t2 : 'var(--fg-3)',
             background: isDark ? 'transparent' : 'var(--bg-app)',
             border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, cursor: 'pointer',

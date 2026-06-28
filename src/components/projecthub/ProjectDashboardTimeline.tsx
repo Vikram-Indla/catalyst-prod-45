@@ -184,7 +184,7 @@ function SectionHeader({ title, meta, action }: { title: string; meta?: string; 
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle }}>{title}</span>
-        {meta && <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, fontWeight: 400, marginLeft: 2 }}>{meta}</span>}
+        {meta && <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, fontWeight: 400, marginLeft: 0 }}>{meta}</span>}
       </div>
       {action}
     </div>
@@ -437,7 +437,7 @@ export function ProjectDashboardTimeline({ projectKey }: { projectKey: string })
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 16 }}>
           <span style={{
             fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.subtle, flexShrink: 0,
-            background: T.neutral, borderRadius: 4, padding: '2px 8px',
+            background: T.neutral, borderRadius: 4, padding: '0px 8px',
           }}>
             {format(rangeStart, 'MMM d, yyyy')} – {format(rangeEnd, 'MMM d, yyyy')}
           </span>

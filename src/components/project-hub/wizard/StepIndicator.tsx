@@ -60,7 +60,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                   backgroundColor: i < current ? 'var(--sem-success)' : 'var(--divider)',
                   marginLeft: 8,
                   marginRight: 8,
-                  marginBottom: 18,
+                  marginBottom: 16,
                 }}
               />
             )}

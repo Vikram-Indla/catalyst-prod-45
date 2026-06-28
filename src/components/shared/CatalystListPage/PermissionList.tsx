@@ -30,7 +30,7 @@ export function PermissionList({ entries, maxRows = 1 }: PermissionListProps) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {shown.map((e, i) => (
-        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
           <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center', flexShrink: 0 }}>
             {e.icon}
           </span>

@@ -101,7 +101,7 @@ export function MobileNavigationMenu() {
                     width: '100%',
                     display: 'flex',
                     alignItems: 'center',
-                    padding: '10px 24px',
+                    padding: '8px 24px',
                     border: 'none',
                     background: isActive
                       ? ('var(--cp-interact-selected, rgba(37,99,235,0.06))')

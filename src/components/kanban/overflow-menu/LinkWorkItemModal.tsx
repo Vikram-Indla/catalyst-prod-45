@@ -343,7 +343,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
               fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
-              display: 'flex', alignItems: 'center', gap: 6,
+              display: 'flex', alignItems: 'center', gap: 4,
             }}
           >
             <LinkIcon size={14} />

@@ -100,7 +100,7 @@ export default function ReportInsightPanel({ reportSlug, data }: Props) {
     >
       <div
         style={{
-          padding: '14px 16px 10px',
+          padding: '12px 16px 10px',
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           color: 'var(--ds-text-subtlest)',
@@ -109,7 +109,7 @@ export default function ReportInsightPanel({ reportSlug, data }: Props) {
           borderBottom: '1px solid var(--ds-border)',
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
         }}
       >
         <span>AI Insights</span>
@@ -117,7 +117,7 @@ export default function ReportInsightPanel({ reportSlug, data }: Props) {
           style={{
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
-            padding: '1px 5px',
+            padding: '0px 5px',
             borderRadius: 3,
             background: 'var(--ds-background-information)',
             color: 'var(--ds-text-information)',
@@ -139,7 +139,7 @@ export default function ReportInsightPanel({ reportSlug, data }: Props) {
               background: expanded === ins.label ? 'var(--ds-background-selected)' : 'var(--ds-surface-raised)',
               border: '1px solid var(--ds-border)',
               borderRadius: 6,
-              padding: '10px 12px',
+              padding: '8px 12px',
               cursor: 'pointer',
             }}
           >

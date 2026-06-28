@@ -36,7 +36,7 @@ export const SummaryCard: React.FC<{
       >
         {value}
       </div>
-      <div style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.textMuted, marginTop: '2px' }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.textMuted, marginTop: '0px' }}>{label}</div>
     </div>
   </div>
 );

@@ -539,7 +539,7 @@ export default function TaskCatalystView({
 
         {/* Checklist — hide when empty (zero-assumption). */}
         {checklist && checklist.length > 0 && (
-          <section style={{ marginBottom: 20 }}>
+          <section style={{ marginBottom: 16 }}>
             <h2
               style={{
                 margin: '0 0 8px',
@@ -560,7 +560,7 @@ export default function TaskCatalystView({
 
         {/* Attachments — hide when empty. */}
         {attachments && attachments.length > 0 && (
-          <section style={{ marginBottom: 20 }}>
+          <section style={{ marginBottom: 16 }}>
             <h2
               style={{
                 margin: '0 0 8px',

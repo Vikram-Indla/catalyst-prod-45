@@ -102,7 +102,7 @@ export default function WikiAnalyticsPage() {
 
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--ds-surface-sunken)', minHeight: '100%', padding: '24px 40px 48px' }}>
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
         <span style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontWeight: 600 }}>Analytics</span>
@@ -113,9 +113,9 @@ export default function WikiAnalyticsPage() {
       {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 32 }}>
         {isLoading ? Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${border}`, height: 80 }} />
+          <div key={i} style={{ padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${border}`, height: 80 }} />
         )) : statCards.map(s => (
-          <div key={s.label} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${border}`, textAlign: 'center' }}>
+          <div key={s.label} style={{ padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${border}`, textAlign: 'center' }}>
             <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>{s.value}</div>
             <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginTop: 4, letterSpacing: '0.05em' }}>{s.label}</div>
           </div>
@@ -123,9 +123,9 @@ export default function WikiAnalyticsPage() {
       </div>
 
       {/* Charts Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
         {/* Articles per Domain */}
-        <div style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${border}` }}>
+        <div style={{ padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${border}` }}>
           <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Articles per Domain</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={domainDistribution ?? []}>
@@ -143,7 +143,7 @@ export default function WikiAnalyticsPage() {
         </div>
 
         {/* Verification Status Pie */}
-        <div style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${border}` }}>
+        <div style={{ padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', border: `0.75px solid ${border}` }}>
           <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Verification Status</h2>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
@@ -160,7 +160,7 @@ export default function WikiAnalyticsPage() {
       </div>
 
       {/* Most Viewed + Least Helpful */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         {/* Most Viewed */}
         <div>
           <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, marginBottom: 12 }}>Most Viewed Articles</h2>

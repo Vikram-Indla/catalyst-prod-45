@@ -40,7 +40,7 @@ export function WorkspaceSearchResultsPanel({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 10,
+          gap: 8,
           padding: '0 16px',
           borderBottom: '1px solid var(--cv2-border)',
         }}
@@ -49,7 +49,7 @@ export function WorkspaceSearchResultsPanel({
           <div
             style={{
               fontFamily: 'var(--cv2-font)',
-              fontSize: 'var(--ds-font-size-400)',
+              fontSize: 'var(--ds-font-size-500)',
               fontWeight: 800,
               color: 'var(--cv2-text-strong)',
               whiteSpace: 'nowrap',
@@ -109,9 +109,9 @@ export function WorkspaceSearchResultsPanel({
                   onClick={() => onSelectHit(hit)}
                   style={{
                     display: 'flex',
-                    gap: 10,
+                    gap: 8,
                     width: '100%',
-                    padding: '10px 16px',
+                    padding: '8px 16px',
                     background: 'transparent',
                     border: 'none',
                     borderBottom: '1px solid var(--cv2-divider)',
@@ -119,6 +119,7 @@ export function WorkspaceSearchResultsPanel({
                     textAlign: 'left',
                     color: 'inherit',
                     fontFamily: 'var(--cv2-font)',
+                    fontSize: 'var(--ds-font-size-400)',
                   }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)';

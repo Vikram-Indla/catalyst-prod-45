@@ -32,14 +32,14 @@ export function MicButton({
         .caty-mic-lang-picker {
           position: absolute;
           bottom: calc(100% + 6px);
-          left: 50%;
+          left: 48%;
           transform: translateX(-50%);
           display: flex;
           gap: 4px;
           background: var(--ds-surface-overlay);
           border: 1px solid var(--ds-border);
           border-radius: 999px;
-          padding: 3px 6px;
+          padding: 4px 6px;
           box-shadow: 0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14));
           white-space: nowrap;
           pointer-events: all;
@@ -67,7 +67,7 @@ export function MicButton({
                     onVoiceModeChange(id);
                   }}
                   style={{
-                    padding: '2px 8px',
+                    padding: '0px 8px',
                     border: 'none',
                     borderRadius: 999,
                     fontSize: 'var(--ds-font-size-100)',

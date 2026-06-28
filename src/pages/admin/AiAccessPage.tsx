@@ -1,6 +1,6 @@
 import React from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { CatalystBreadcrumbs } from '@/components/ads';
+import { Breadcrumbs } from '@/components/ads';
 import { T } from '@/components/admin/ai-assistant/tokens';
 import { useAiCommandConsole } from '@/components/admin/ai-assistant/useAiCommandConsole';
 import { AiCommandComposer } from '@/components/admin/ai-assistant/AiCommandComposer';
@@ -12,23 +12,23 @@ export default function AiAccessPage() {
   return (
     <AdminGuard>
       <style>{CSS}</style>
-      <div style={{ padding: '20px 32px 48px', minHeight: '100%' }}>
-        <CatalystBreadcrumbs items={[
-          { label: 'Administration', href: '/admin' },
-          { label: 'AI assistant' },
+      <div style={{ padding: '16px 32px 48px', minHeight: '100%' }}>
+        <Breadcrumbs items={[
+          { key: 'admin', text: 'Administration', href: '/admin' },
+          { key: 'ai-assistant', text: 'AI assistant', isCurrent: true },
         ]} />
 
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
           <div style={{ minWidth: 0, flex: 1 }}>
             <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600, lineHeight: '28px', color: T.text, letterSpacing: '-.01em' }}>AI admin assistant</h1>
-            <p style={{ margin: '6px 0 0', fontSize: 14, color: T.subtle, maxWidth: 680 }}>
+            <p style={{ margin: '4px 0 0', fontSize: 14, color: T.subtle, maxWidth: 680 }}>
               Describe an access change in plain words. The assistant prepares it, runs it step by step, and confirms exactly what changed.
             </p>
           </div>
         </div>
 
         <div className="cc-grid">
-          <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
             <AiCommandComposer c={c} />
             <AiActivityFeed c={c} />
           </div>

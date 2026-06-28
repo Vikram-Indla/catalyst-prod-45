@@ -420,17 +420,17 @@ Do not use jargon. Do not hallucinate features not listed above.`;
                   background: bgColor,
                   borderLeft: `3px solid ${borderColor}`,
                   borderRadius: 6,
-                  padding: '10px 12px',
+                  padding: '8px 12px',
                   minHeight: 52,
                   display: 'flex',
                   alignItems: 'flex-start',
                   gap: 8,
                 }}
               >
-                <Icon size={14} style={{ color: labelColor, marginTop: 1, flexShrink: 0 }} />
+                <Icon size={14} style={{ color: labelColor, marginTop: 0, flexShrink: 0 }} />
                 <div>
                   <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: labelColor, lineHeight: '16px' }}>{g.label}</p>
-                  <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: detailColor, lineHeight: '15px', marginTop: 2 }}>{g.detail}</p>
+                  <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: detailColor, lineHeight: '15px', marginTop: 0 }}>{g.detail}</p>
                 </div>
               </div>
             );
@@ -782,11 +782,11 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
                   </span>
                 </div>
                 {entry.detail && (
-                  <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', fontStyle: 'italic', marginTop: 2 }}>
+                  <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', fontStyle: 'italic', marginTop: 0 }}>
                     {entry.detail}
                   </p>
                 )}
-                <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-disabled)', marginTop: 2 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-disabled)', marginTop: 0 }}>
                   {relativeTime(entry.created_at)}
                 </p>
               </div>

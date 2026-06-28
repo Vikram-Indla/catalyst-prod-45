@@ -615,7 +615,7 @@ useEffect(() => {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <ProjectPageHeader projectKey={pKey} hubType={isProduct ? 'product' : isIncident ? 'incident' : isTest ? 'test' : undefined} />
           {actions && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, paddingInline: 20, paddingBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, paddingInline: 16, paddingBottom: 8 }}>
               {actions}
             </div>
           )}

@@ -36,7 +36,7 @@
 .capacity-gantt-container .analytics-dept-filters {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 8px !important;
   flex-wrap: wrap !important;
 }
 
@@ -44,7 +44,7 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 10px 20px !important;
+  padding: 8px 20px !important;
   font-family: var(--ct-font-ui) !important;
   font-size: 14px !important;
   font-weight: 500 !important;
@@ -134,7 +134,7 @@
   align-items: center !important;
   justify-content: space-between !important;
   padding: 16px 24px !important;
-  border-bottom: 1px solid var(--cpg-slate-200) !important;
+  border-bottom: 0px solid var(--cpg-slate-200) !important;
   background: linear-gradient(to bottom, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))), var(--cpg-slate-50)) !important;
 }
 
@@ -152,7 +152,7 @@
   line-height: 1.25 !important;
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 8px !important;
 }
 
 .cpg-toolbar-title svg {
@@ -165,7 +165,7 @@
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: 6px 12px !important;
+  padding: 4px 12px !important;
   background: var(--cpg-slate-100) !important;
   border-radius: 8px !important;
 }
@@ -239,7 +239,7 @@
 .cpg-today-btn {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
   padding: 8px 14px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   border: 1px solid var(--cpg-slate-200) !important;
@@ -274,9 +274,9 @@
 .cpg-department-filters {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 8px !important;
   padding: 16px 24px !important;
-  border-bottom: 1px solid var(--cpg-slate-200) !important;
+  border-bottom: 0px solid var(--cpg-slate-200) !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   flex-wrap: wrap !important;
 }
@@ -285,7 +285,7 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 10px 20px !important;
+  padding: 8px 20px !important;
   font-family: var(--cpg-font-sans) !important;
   font-size: 14px !important;
   font-weight: 500 !important;
@@ -324,7 +324,7 @@
   align-items: center !important;
   gap: 24px !important;
   padding: 12px 24px !important;
-  border-bottom: 1px solid var(--cpg-slate-200) !important;
+  border-bottom: 0px solid var(--cpg-slate-200) !important;
   background: var(--cpg-slate-50) !important;
 }
 
@@ -436,8 +436,8 @@
   padding: 0 16px !important;
   display: flex !important;
   align-items: flex-end !important;
-  border-bottom: 2px solid var(--cpg-slate-300) !important;
-  border-right: 1px solid var(--cpg-slate-300) !important;
+  border-bottom: 0px solid var(--cpg-slate-300) !important;
+  border-right: 0px solid var(--cpg-slate-300) !important;
 }
 
 .cpg-header-label {
@@ -453,7 +453,7 @@
 .cpg-header-timeline {
   display: flex !important;
   flex-direction: column !important;
-  border-bottom: 2px solid var(--cpg-slate-300) !important;
+  border-bottom: 0px solid var(--cpg-slate-300) !important;
 }
 
 .cpg-months-row {
@@ -465,7 +465,7 @@
   min-width: 140px !important;
   text-align: center !important;
   padding: 12px 0 6px !important;
-  border-left: 1px solid var(--cpg-slate-300) !important;
+  border-left: 0px solid var(--cpg-slate-300) !important;
   position: relative !important;
 }
 
@@ -490,7 +490,7 @@
   font-weight: 500 !important;
   color: var(--cpg-slate-400) !important;
   display: block !important;
-  margin-top: 2px !important;
+  margin-top: 0px !important;
 }
 
 .cpg-current-badge {
@@ -502,9 +502,9 @@
   font-family: var(--cpg-font-sans) !important;
   font-size: 9px !important;
   font-weight: 700 !important;
-  padding: 2px 6px !important;
+  padding: 0px 6px !important;
   border-radius: 4px !important;
-  margin-left: 6px !important;
+  margin-left: 4px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.3px !important;
 }
@@ -522,11 +522,11 @@
   font-size: 10px !important;
   font-weight: 400 !important;
   color: var(--cpg-slate-400) !important;
-  border-left: 1px solid var(--cpg-slate-200) !important;
+  border-left: 0px solid var(--cpg-slate-200) !important;
 }
 
 .cpg-week-cell:first-child {
-  border-left: 1px solid var(--cpg-slate-300) !important;
+  border-left: 0px solid var(--cpg-slate-300) !important;
 }
 
 /* ==================== RESOURCE ROW ==================== */
@@ -550,8 +550,8 @@
   z-index: 20 !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   padding: 12px 16px !important;
-  border-right: 1px solid var(--cpg-slate-200) !important;
-  border-bottom: 1px solid var(--cpg-slate-200) !important;
+  border-right: 0px solid var(--cpg-slate-200) !important;
+  border-bottom: 0px solid var(--cpg-slate-200) !important;
   display: flex !important;
   gap: 12px !important;
   transition: background 0.15s ease !important;
@@ -610,7 +610,7 @@
   font-weight: 400 !important;
   color: var(--cpg-slate-500) !important;
   line-height: 1.25 !important;
-  margin-top: 2px !important;
+  margin-top: 0px !important;
 }
 
 .cpg-resource-meta {
@@ -625,7 +625,7 @@
   flex: 1 !important;
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
 }
 
 .cpg-util-track {
@@ -665,7 +665,7 @@
   font-family: var(--cpg-font-sans) !important;
   font-size: 10px !important;
   font-weight: 500 !important;
-  padding: 3px 6px !important;
+  padding: 4px 6px !important;
   border-radius: 4px !important;
   background: var(--cpg-slate-100) !important;
   color: var(--cpg-slate-500) !important;
@@ -688,7 +688,7 @@
 /* ==================== TIMELINE CELL ==================== */
 .cpg-timeline-cell {
   position: relative !important;
-  border-bottom: 1px solid var(--cpg-slate-200) !important;
+  border-bottom: 0px solid var(--cpg-slate-200) !important;
   min-height: 72px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   transition: background 0.15s ease !important;
@@ -703,7 +703,7 @@
 
 .cpg-grid-month {
   flex: 1 !important;
-  border-left: 1px solid var(--cpg-slate-300) !important;
+  border-left: 0px solid var(--cpg-slate-300) !important;
   display: flex !important;
 }
 
@@ -713,7 +713,7 @@
 
 .cpg-grid-week {
   flex: 1 !important;
-  border-left: 1px solid var(--cpg-slate-200) !important;
+  border-left: 0px solid var(--cpg-slate-200) !important;
 }
 
 .cpg-grid-week:first-child {
@@ -754,7 +754,7 @@
   font-weight: 500 !important;
   color: var(--cpg-slate-500) !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
-  padding: 3px 8px !important;
+  padding: 4px 8px !important;
   border-radius: 4px !important;
   border: 1px solid var(--cpg-slate-200) !important;
   white-space: nowrap !important;
@@ -830,7 +830,7 @@
   font-size: 11px !important;
   font-weight: 600 !important;
   line-height: 1 !important;
-  padding: 2px 8px !important;
+  padding: 0px 8px !important;
   border-radius: 6px !important;
   flex-shrink: 0 !important;
 }
@@ -860,14 +860,14 @@
   content: 'TODAY' !important;
   position: absolute !important;
   top: -20px !important;
-  left: 50% !important;
+  left: 48% !important;
   transform: translateX(-50%) !important;
   font-family: var(--cpg-font-sans) !important;
   font-size: 9px !important;
   font-weight: 700 !important;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse)))) !important;
   background: var(--cpg-danger) !important;
-  padding: 2px 6px !important;
+  padding: 0px 6px !important;
   border-radius: 4px !important;
   white-space: nowrap !important;
   letter-spacing: 0.05em !important;
@@ -879,7 +879,7 @@
   align-items: center !important;
   justify-content: space-between !important;
   padding: 16px 24px !important;
-  border-top: 1px solid var(--cpg-slate-200) !important;
+  border-top: 0px solid var(--cpg-slate-200) !important;
   background: var(--cpg-slate-50) !important;
 }
 
@@ -918,7 +918,7 @@
 .cpg-export-btn {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
   padding: 8px 14px !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface)))) !important;
   border: 1px solid var(--cpg-slate-200) !important;
@@ -946,7 +946,7 @@
   position: fixed !important;
   background: var(--cpg-slate-800) !important;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse)))) !important;
-  padding: 10px 14px !important;
+  padding: 8px 14px !important;
   border-radius: 8px !important;
   font-family: var(--cpg-font-sans) !important;
   font-size: 12px !important;
@@ -966,7 +966,7 @@
 
 .cpg-tooltip-title {
   font-weight: 600 !important;
-  margin-bottom: 6px !important;
+  margin-bottom: 4px !important;
 }
 
 .cpg-tooltip-row {

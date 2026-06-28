@@ -30,7 +30,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 6px;
+      gap: 4px;
       background: transparent;
       border-radius: 12px;
       padding: 0;
@@ -68,7 +68,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     .vf-bars {
       display: flex;
       align-items: center;
-      gap: 2px;
+      gap: 0px;
       height: 18px;
       flex-shrink: 0;
     }
@@ -168,7 +168,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       background: rgba(206, 147, 216, 0.12); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
       border: 1px solid rgba(206, 147, 216, 0.25); // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
       border-radius: 999px;
-      padding: 2px 10px;
+      padding: 0px 10px;
       font-size: 11px;
       font-weight: 500;
       color: #CE93D8; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
@@ -183,7 +183,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       background: var(--ds-surface, rgba(255,255,255,0.06));
       border: 1px solid var(--ds-surface, rgba(255,255,255,0.12));
       border-radius: 999px;
-      padding: 2px 8px;
+      padding: 0px 8px;
       font-size: 10px;
       font-weight: 500;
       color: var(--ds-surface, rgba(255,255,255,0.35));

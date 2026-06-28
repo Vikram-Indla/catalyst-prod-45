@@ -29,7 +29,7 @@ export const LinksTab: React.FC<LinksTabProps> = ({
 
       {/* LINKS LIST OR EMPTY STATE */}
       {links.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {links.map((link) => (
             <LinkItem
               key={link.id}

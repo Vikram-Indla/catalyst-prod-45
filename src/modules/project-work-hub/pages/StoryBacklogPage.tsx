@@ -454,7 +454,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <button
                 onClick={() => toggleStarMutation.mutate({ itemId: story.id, itemType: 'story', isCurrentlyStarred: isStarred })}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
               >
                 <Star
                   size={14}
@@ -530,7 +530,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       case 'priority':
         return (
           <td key={colKey} style={{ width: columnWidths.priority }} title={getPriorityLabel(story.priority)}>
-            <div style={{ display: 'flex', gap: 2 }}>
+            <div style={{ display: 'flex', gap: 0 }}>
               {[1, 2, 3, 4].map(i => {
                 const level = PRIORITY_ORDER.indexOf(story.priority || '') >= 0 ? PRIORITY_ORDER.length - PRIORITY_ORDER.indexOf(story.priority || '') : 0;
                 const filled = i <= level;
@@ -612,7 +612,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
               toggleStarMutation.mutate({ itemId: s.id, itemType: 'story', isCurrentlyStarred: isStarred });
             }}
             aria-label={isStarred ? 'Unstar story' : 'Star story'}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
           >
             <Star
               size={14}
@@ -733,7 +733,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         const idx = PRIORITY_ORDER.indexOf(s.priority || '');
         const level = idx >= 0 ? PRIORITY_ORDER.length - idx : 0;
         return (
-          <div style={{ display: 'flex', gap: 2 }} title={getPriorityLabel(s.priority)}>
+          <div style={{ display: 'flex', gap: 0 }} title={getPriorityLabel(s.priority)}>
             {[1, 2, 3, 4].map((i) => {
               const filled = i <= level;
               const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? 'var(--ds-text-warning, var(--cp-amber))' : 'var(--ds-text-success)';
@@ -785,7 +785,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: 'var(--ds-text-danger, var(--cp-danger))' }}>Error loading stories</div>;
 
   const v2EmptyState = (
-    <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
+    <div className="flex flex-col items-center justify-center" style={{ padding: '48px 0' }}>
       <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
       <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 4 }}>No stories found</p>
       <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginBottom: 16 }}>Try adjusting your filters or search</p>
@@ -796,7 +796,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     totalPages > 1 ? (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 12px', borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
+        padding: '8px 12px', borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
         fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontFamily: 'var(--cp-font-body)',
       }}>
         <span style={{ fontWeight: 500 }}>
@@ -897,7 +897,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     if (V2_TABLE_ENABLED) return renderTableV2();
     if (total === 0) {
       return (
-        <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
+        <div className="flex flex-col items-center justify-center" style={{ padding: '48px 0' }}>
           <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
           <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 4 }}>No stories found</p>
           <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginBottom: 16 }}>Try adjusting your filters or search</p>
@@ -974,7 +974,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                         }}
                         onClick={() => toggleGroup(group.label)}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           {collapsed[group.label]
                             ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle)' }} />
                             : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle)' }} />
@@ -1039,7 +1039,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         {totalPages > 1 && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '10px 12px', borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
+            padding: '8px 12px', borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
             fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ fontWeight: 500 }}>

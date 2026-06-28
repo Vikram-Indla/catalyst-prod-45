@@ -116,7 +116,7 @@ export function AddPeopleModal({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '14vh',
+        paddingTop: '12vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
     >
@@ -128,14 +128,14 @@ export function AddPeopleModal({
           border: '1px solid var(--cv2-border-strong)',
           borderRadius: 'var(--cv2-radius-lg)',
           boxShadow: 'var(--cv2-shadow-modal)',
-          padding: 22,
+          padding: 24,
           fontFamily: 'var(--cv2-font)',
           color: 'var(--cv2-text)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
               Add people to <span style={{ color: 'var(--cv2-text-subtle)' }}>#</span>{channelTitle}
             </div>
             <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-subtle)' }}>
@@ -159,8 +159,8 @@ export function AddPeopleModal({
             marginTop: 16,
             display: 'flex',
             flexWrap: 'wrap',
-            gap: 6,
-            padding: 10,
+            gap: 4,
+            padding: 8,
             background: 'var(--cv2-bg-input)',
             border: '1px solid var(--cv2-accent)',
             borderRadius: 'var(--cv2-radius-sm)',
@@ -186,7 +186,7 @@ export function AddPeopleModal({
               outline: 'none',
               fontFamily: 'inherit',
               fontSize: 'var(--ds-font-size-400)',
-              padding: '6px 4px',
+              padding: '4px 4px',
             }}
           />
         </div>
@@ -210,7 +210,7 @@ export function AddPeopleModal({
           </div>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
           <PrimaryBtn onClick={handleAdd} disabled={selected.length === 0 || submitting}>
             {submitting ? 'Adding…' : 'Add'}
           </PrimaryBtn>
@@ -227,7 +227,7 @@ function Chip({ person, onRemove }: { person: PeopleHit; onRemove: () => void })
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         padding: '4px 6px 4px 4px',
         background: 'var(--cv2-bg-row-selected)',
         borderRadius: 6,
@@ -271,7 +271,7 @@ function PersonRow({ hit, onPick }: { hit: PeopleHit; onPick: () => void }) {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         width: '100%',
         padding: '8px 12px',
         background: 'transparent',
@@ -306,7 +306,7 @@ function Avatar({ name, size }: { name: string; size: number }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: Math.max(10, Math.floor(size * 0.4)),
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
       }}
     >
@@ -324,8 +324,8 @@ function PrimaryBtn({ onClick, disabled, children }: { onClick: () => void; disa
       style={{
         height: 36,
         padding: '0 18px',
-        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success)',
-        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
+        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
+        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',

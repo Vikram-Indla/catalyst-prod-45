@@ -5,7 +5,7 @@
  * click it, it shows a very long text box, which is wrong."
  *
  * Root cause: the parent picker's dropdown was rendered with
- * `position: absolute; top: 100%; left: 0; right: 0` INSIDE the trigger's
+ * `position: absolute; top: 48%; left: 0; right: 0` INSIDE the trigger's
  * relative container. That placed the dropdown visually over the next
  * FieldRow (Priority). With z-index 100, clicks on the visually-Priority
  * pixels landed on the picker dropdown (higher z-index), so the
@@ -48,14 +48,14 @@ describe('CatalystParentLinker — portal dropdown (option A)', () => {
     ).toBeGreaterThanOrEqual(3);
   });
 
-  it('no picker dropdown uses position:absolute top:100% (old in-place positioning)', () => {
-    // The pre-fix pattern was `position: 'absolute', left: 0, right: 0, top: '100%'`
+  it('no picker dropdown uses position:absolute top:48% (old in-place positioning)', () => {
+    // The pre-fix pattern was `position: 'absolute', left: 0, right: 0, top: '48%'`
     // which placed the dropdown inside the trigger's relative container.
     // After portal conversion, dropdowns use `position: 'fixed'` with computed
     // top/left from getBoundingClientRect.
     expect(
       /position: ['"]absolute['"], left: 0, right: 0, top: ['"]100%['"]/.test(src),
-      'CatalystParentLinker must not use position:absolute top:100% for picker ' +
+      'CatalystParentLinker must not use position:absolute top:48% for picker ' +
       'dropdowns. Use createPortal + position:fixed with getBoundingClientRect.',
     ).toBe(false);
   });

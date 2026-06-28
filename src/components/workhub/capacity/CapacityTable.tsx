@@ -89,7 +89,7 @@ export function CapacityTable({ resources }: Props) {
         overflow: 'hidden',
       }}
     >
-      <div style={{ padding: '20px 24px 12px' }}>
+      <div style={{ padding: '16px 24px 12px' }}>
         <h3 style={{
           fontFamily: 'var(--cp-font-body)',
           fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
@@ -110,7 +110,7 @@ export function CapacityTable({ resources }: Props) {
                     key={col.key}
                     onClick={col.sortable ? () => handleSort(col.key) : undefined}
                     style={{
-                      padding: '10px 12px',
+                      padding: '8px 12px',
                       fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       textAlign: 'left',

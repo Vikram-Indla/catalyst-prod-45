@@ -128,7 +128,7 @@ export function JiraSyncDrawer({
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {/* Current Status */}
-          <div style={{ padding: '20px 24px' }}>
+          <div style={{ padding: '16px 24px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Current Status
             </div>
@@ -161,13 +161,13 @@ export function JiraSyncDrawer({
           <div className="bg-[var(--cp-border-subtle,_rgba(15,23,42,0.07))]" style={{ height: 1, margin: '0 24px' }} />
 
           {/* Recent Sync Runs */}
-          <div style={{ padding: '20px 24px' }}>
+          <div style={{ padding: '16px 24px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Recent Sync Runs
             </div>
             {syncLogs.length === 0 ? (
               <div className="flex flex-col items-center py-6">
-                <Inbox size={24} style={{ color: 'var(--divider)', marginBottom: 6 }} />
+                <Inbox size={24} style={{ color: 'var(--divider)', marginBottom: 4 }} />
                 <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>No sync runs yet</span>
               </div>
             ) : (
@@ -197,13 +197,13 @@ export function JiraSyncDrawer({
           <div className="bg-[var(--cp-border-subtle,_rgba(15,23,42,0.07))]" style={{ height: 1, margin: '0 24px' }} />
 
           {/* Write-back Queue */}
-          <div style={{ padding: '20px 24px' }}>
+          <div style={{ padding: '16px 24px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Write-back Queue ({writeBackQueue.length})
             </div>
             {writeBackQueue.length === 0 ? (
               <div className="flex flex-col items-center py-6">
-                <Inbox size={24} style={{ color: 'var(--divider)', marginBottom: 6 }} />
+                <Inbox size={24} style={{ color: 'var(--divider)', marginBottom: 4 }} />
                 <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>No pending write-backs</span>
               </div>
             ) : (

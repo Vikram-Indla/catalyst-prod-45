@@ -45,7 +45,7 @@ function OutcomeLozenge({ outcome }: { outcome: Outcome }) {
     <span
       style={{
         display: 'inline-block',
-        padding: '2px 8px',
+        padding: '0px 8px',
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-100)',
         lineHeight: '16px',
@@ -68,7 +68,7 @@ function TypePill({ label }: { label: string }) {
     <span
       style={{
         display: 'inline-block',
-        padding: '1px 8px',
+        padding: '0px 8px',
         borderRadius: 10,
         fontSize: 'var(--ds-font-size-100)',
         lineHeight: '16px',
@@ -178,7 +178,7 @@ export function RecentReleasesWidget() {
                     key={h}
                     style={{
                       textAlign: 'left',
-                      padding: '10px 12px',
+                      padding: '8px 12px',
                       borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
                       fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
@@ -227,7 +227,7 @@ export function RecentReleasesWidget() {
                       {item.title}
                     </div>
                     {item.assignee && (
-                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'), marginTop: 2 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'), marginTop: 0 }}>
                         {item.process_step} · Assignee: {item.assignee}
                       </div>
                     )}

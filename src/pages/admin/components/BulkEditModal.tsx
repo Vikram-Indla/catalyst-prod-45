@@ -216,8 +216,8 @@ const bulkModalCSS = `
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  padding: 16px 24px;
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken));
 }
 
 .ct-modal-header h2 {
@@ -337,7 +337,7 @@ const bulkModalCSS = `
 }
 
 .ct-field-select-trigger:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.08));
 }
@@ -389,7 +389,7 @@ const bulkModalCSS = `
 .ct-field-select-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 12px 14px;
   font-size: 14px;
   font-weight: 500;
@@ -426,7 +426,7 @@ const bulkModalCSS = `
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 24px;
-  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  border-top: 0px solid var(--ds-border, var(--cp-bg-sunken));
   background: var(--ds-surface-sunken);
   border-radius: 0 0 12px 12px;
 }

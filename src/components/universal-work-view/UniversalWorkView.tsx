@@ -188,7 +188,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '2px 8px',
+                padding: '0px 8px',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 border: '1px solid var(--cp-border, var(--cp-bg-sunken))',
                 borderRadius: 3,

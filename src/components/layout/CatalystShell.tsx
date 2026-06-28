@@ -856,7 +856,7 @@ function CatalystShellContent() {
             onClick={() => setMobileDrawerOpen(true)}
             style={{
               position: "absolute",
-              top: "50%",
+              top: "48%",
               left: 8,
               transform: "translateY(-50%)",
               width: 36,
@@ -916,7 +916,7 @@ function CatalystShellContent() {
             ...(sidebarOverlayMode
               ? {
                   position: "absolute" as const,
-                  top: 56, // start BELOW the 56px top nav — never covers the header
+                  top: 48, // start BELOW the 56px top nav — never covers the header
                   left: 0,
                   bottom: 0,
                   zIndex: 40,

@@ -94,7 +94,7 @@ export default function ProductionEventsPage() {
     {
       id: 'title', label: 'Event', flex: true, sortable: true,
       cell: ({ row }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{row.title}</span>
           {(row.releaseKey || row.changeKey) && <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{row.releaseKey ?? row.changeKey}</span>}
         </div>

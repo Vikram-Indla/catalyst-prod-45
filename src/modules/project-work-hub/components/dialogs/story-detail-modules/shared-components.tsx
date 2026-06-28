@@ -189,9 +189,9 @@ export function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onC
       </button>
       {open && (
         <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, width: 200, background: 'var(--ds-surface)', border: '1px solid var(--ds-shadow-raised, rgba(9,30,66,.24))', borderRadius: 6, boxShadow: '0 6px 16px var(--ds-shadow-raised, rgba(9,30,66,.15))', zIndex: 60, overflow: 'hidden', paddingBottom: 4 }}>
-          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '.05em', padding: '6px 12px 6px', borderBottom: '1px solid var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.1))' }}>Visible columns</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', textTransform: 'uppercase', letterSpacing: '.05em', padding: '4px 12px 6px', borderBottom: '1px solid var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.1))' }}>Visible columns</div>
           {COLS.map(col => (
-            <div key={col.key} onClick={() => toggle(col.key)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer', transition: 'background .12s' }}
+            <div key={col.key} onClick={() => toggle(col.key)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px', cursor: 'pointer', transition: 'background .12s' }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.04))')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >

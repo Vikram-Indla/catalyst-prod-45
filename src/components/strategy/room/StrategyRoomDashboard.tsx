@@ -118,12 +118,12 @@ const TOKENS = `
 [data-srd] .srd-link:hover{text-decoration:underline}
 
 /* Responsive: header */
-[data-srd] .srd-header { padding: 16px 32px 14px; display:flex; align-items:flex-start; justify-content:space-between; gap:8px; border-bottom:1px solid var(--srd-bdr); }
+[data-srd] .srd-header { padding: 16px 32px 14px; display:flex; align-items:flex-start; justify-content:space-between; gap:8px; border-bottom:0px solid var(--srd-bdr); }
 [data-srd] .srd-vision { margin: 12px 32px 0; }
 [data-srd] .srd-brief-banner { margin: 12px 32px 0; }
 [data-srd] .srd-themes { margin: 12px 32px 0; }
 [data-srd] .srd-main { padding: 16px 32px 40px; }
-[data-srd] .srd-grid { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; align-items:stretch; }
+[data-srd] .srd-grid { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; align-items:stretch; }
 
 @media (max-width: 1100px) {
   [data-srd] .srd-grid { grid-template-columns: 1fr 1fr; }
@@ -140,11 +140,11 @@ const TOKENS = `
   [data-srd] .srd-vision { flex-wrap:wrap; }
 }
 @media (max-width: 480px) {
-  [data-srd] .srd-header { padding: 10px 12px 8px; }
+  [data-srd] .srd-header { padding: 8px 12px 8px; }
   [data-srd] .srd-vision { margin: 8px 12px 0; padding: 8px 12px !important; }
-  [data-srd] .srd-brief-banner { margin: 8px 12px 0; padding: 10px 12px !important; }
+  [data-srd] .srd-brief-banner { margin: 8px 12px 0; padding: 8px 12px !important; }
   [data-srd] .srd-themes { margin: 8px 12px 0; }
-  [data-srd] .srd-main { padding: 10px 12px 24px; }
+  [data-srd] .srd-main { padding: 8px 12px 24px; }
 }
 `;
 
@@ -153,12 +153,12 @@ const S = (sz: number, wt = 700): React.CSSProperties => ({ fontFamily: 'var(--c
 const M = (sz = 11): React.CSSProperties => ({ fontFamily: 'var(--cp-font-mono)', fontSize: sz });
 const F = (g = 8): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap: g });
 const Dot = (c: string, s = 8): React.CSSProperties => ({ width: s, height: s, borderRadius: '50%', background: c, flexShrink: 0 });
-const Pill = (bg: string, c: string): React.CSSProperties => ({ ...M(11), fontWeight: 700, padding: '3px 10px', borderRadius: 'var(--srd-pill)', background: bg, color: c, whiteSpace: 'nowrap' });
-const Delta = (t: string): React.CSSProperties => ({ ...M(11), fontWeight: 600, padding: '2px 7px', borderRadius: 'var(--srd-pill)', marginInlineStart: 4, background: t === 'up' ? 'var(--srd-green-bg)' : t === 'down' ? 'var(--srd-red-bg)' : 'var(--srd-bg-3)', color: t === 'up' ? 'var(--srd-green-t)' : t === 'down' ? 'var(--srd-red-t)' : 'var(--srd-ink-m)' });
+const Pill = (bg: string, c: string): React.CSSProperties => ({ ...M(11), fontWeight: 700, padding: '4px 10px', borderRadius: 'var(--srd-pill)', background: bg, color: c, whiteSpace: 'nowrap' });
+const Delta = (t: string): React.CSSProperties => ({ ...M(11), fontWeight: 600, padding: '0px 7px', borderRadius: 'var(--srd-pill)', marginInlineStart: 4, background: t === 'up' ? 'var(--srd-green-bg)' : t === 'down' ? 'var(--srd-red-bg)' : 'var(--srd-bg-3)', color: t === 'up' ? 'var(--srd-green-t)' : t === 'down' ? 'var(--srd-red-t)' : 'var(--srd-ink-m)' });
 const BarTrack = (h = 6): React.CSSProperties => ({ height: h, background: 'var(--srd-bg-3)', borderRadius: 'var(--srd-pill)', overflow: 'hidden', display: 'flex' });
 const BarSeg = (c: string, p: number): React.CSSProperties => ({ height: '100%', minWidth: p > 0 ? 6 : 0, width: `${p}%`, background: c, transition: 'width .8s' });
 const BarSingle = (c: string, p: number): React.CSSProperties => ({ height: '100%', width: `${p}%`, background: c, borderRadius: 'var(--srd-pill)', transition: 'width .8s' });
-const SECT: React.CSSProperties = { fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--srd-ink-2)', textTransform: 'uppercase', letterSpacing: '.06em', margin: '18px 0 6px' };
+const SECT: React.CSSProperties = { fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--srd-ink-2)', textTransform: 'uppercase', letterSpacing: '.06em', margin: '16px 0 6px' };
 
 const STATUS_STYLE: Record<string, { color: string; bg: string; tc: string; label: string }> = {
   on_track: { color: 'var(--srd-green)', bg: 'var(--srd-green-bg)', tc: 'var(--srd-green-t)', label: 'On Track' },
@@ -173,7 +173,7 @@ function Ico({ d, sz = 14 }: { d: string; sz?: number }) {
 }
 
 const Empty = ({ msg, actionable }: { msg?: string; actionable?: boolean }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 80, gap: 6, textAlign: 'center', padding: 20 }}>
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 80, gap: 4, textAlign: 'center', padding: 16 }}>
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--srd-bdr-s)" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
     <span style={{ fontSize: 'var(--ds-font-size-200)', color: actionable ? 'var(--srd-ink-2)' : 'var(--srd-ink-m)', fontStyle: 'italic' }}>{msg || 'No data available'}</span>
   </div>
@@ -182,12 +182,12 @@ const Empty = ({ msg, actionable }: { msg?: string; actionable?: boolean }) => (
 function Widget({ title, link, foot, children, delay = 0 }: { title: string; link?: string; foot?: React.ReactNode; children: React.ReactNode; delay?: number }) {
   return (
     <div style={{ border: '1px solid var(--srd-bdr)', borderRadius: 'var(--srd-r4)', background: 'var(--srd-bg)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: `srd-fadeup .4s ease ${delay}s both` }}>
-      <div style={{ ...F(8), justifyContent: 'space-between', padding: '14px 20px 10px' }}>
+      <div style={{ ...F(8), justifyContent: 'space-between', padding: '12px 20px 10px' }}>
         <span style={{ ...S(13), color: 'var(--srd-ink)' }}>{title}</span>
         {link && <span className="srd-link" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--srd-blue)', cursor: 'pointer' }}>{link}</span>}
       </div>
       <div style={{ padding: '0 20px 16px', flex: 1 }}>{children}</div>
-      {foot && <div style={{ borderTop: '1px solid var(--srd-bdr-s)', padding: '10px 20px', ...F(12), fontSize: 'var(--ds-font-size-100)', color: 'var(--srd-ink-m)' }}>{foot}</div>}
+      {foot && <div style={{ borderTop: '1px solid var(--srd-bdr-s)', padding: '8px 20px', ...F(12), fontSize: 'var(--ds-font-size-100)', color: 'var(--srd-ink-m)' }}>{foot}</div>}
     </div>
   );
 }
@@ -199,7 +199,7 @@ function DeptRow({ name, pct, count, tag, utilization, utilColor, barColor = 'va
       <div style={{ flex: 1 }}><div style={{ height: 6, background: 'var(--srd-bg-3)', borderRadius: 'var(--srd-pill)', overflow: 'hidden' }}><div style={BarSingle(barColor, pct)} /></div></div>
       {utilization && <span style={{ ...M(10), fontWeight: 600, width: 34, textAlign: 'end', color: utilColor }}>{utilization}</span>}
       <span style={{ ...M(11), fontWeight: 600, color: 'var(--srd-ink-2)', width: 28, textAlign: 'end' }}>{count}</span>
-      {tag && <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '1px 6px', borderRadius: 'var(--srd-pill)', background: 'var(--srd-ai-bg)', color: 'var(--srd-ai-d)' }}>{tag}</span>}
+      {tag && <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0px 6px', borderRadius: 'var(--srd-pill)', background: 'var(--srd-ai-bg)', color: 'var(--srd-ai-d)' }}>{tag}</span>}
     </div>
   );
 }
@@ -241,9 +241,9 @@ export default function StrategyRoomDashboard({
 
       {/* HEADER */}
       <header className="srd-header">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           <CatalystPageHeader title="Strategy Room" />
-          <div style={{ ...F(12), marginTop: 2, flexWrap: 'wrap' }}>
+          <div style={{ ...F(12), marginTop: 0, flexWrap: 'wrap' }}>
             <span style={{ ...M(11), color: 'var(--srd-ink-m)', ...F(5) }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--srd-green)', flexShrink: 0, animation: 'srd-pulse 2s ease-in-out infinite' }} />
               Live{updatedAgo ? ` · Updated ${updatedAgo}` : ''}
@@ -268,8 +268,8 @@ export default function StrategyRoomDashboard({
 
       {/* VISION — editable, from database */}
       {vision && (
-        <div className="srd-vision" style={{ border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '10px 20px', background: 'var(--srd-blue-bg)', ...F(12), fontSize: 'var(--ds-font-size-300)', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'var(--ds-background-information, rgba(37,99,235,.08))', padding: '3px 8px', borderRadius: 'var(--srd-r)', flexShrink: 0 }}>Vision {visionYear}</span>
+        <div className="srd-vision" style={{ border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '8px 20px', background: 'var(--srd-blue-bg)', ...F(12), fontSize: 'var(--ds-font-size-300)', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'var(--ds-background-information, rgba(37,99,235,.08))', padding: '4px 8px', borderRadius: 'var(--srd-r)', flexShrink: 0 }}>Vision {visionYear}</span>
           {editingVision ? (
             <div style={{ flex: 1, ...F(6) }}>
               <input
@@ -288,7 +288,7 @@ export default function StrategyRoomDashboard({
               <Pencil size={12} style={{ color: 'var(--srd-ink-m)', opacity: 0.4 }} />
             </span>
           )}
-          <span style={{ ...M(11), color: 'var(--srd-blue)', background: 'var(--ds-background-information, rgba(37,99,235,.08))', padding: '2px 8px', borderRadius: 'var(--srd-pill)', flexShrink: 0 }}>Target {visionYear}</span>
+          <span style={{ ...M(11), color: 'var(--srd-blue)', background: 'var(--ds-background-information, rgba(37,99,235,.08))', padding: '0px 8px', borderRadius: 'var(--srd-pill)', flexShrink: 0 }}>Target {visionYear}</span>
         </div>
       )}
 
@@ -298,7 +298,7 @@ export default function StrategyRoomDashboard({
           <div className="srd-brief-grade" style={{ ...S(18, 800), width: 42, height: 42, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'var(--srd-red-bg)', color: 'var(--srd-red-t)', border: '2px solid var(--srd-red)' }}>{brief.grade}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ ...S(13), color: 'var(--srd-ink)' }}>{brief.headline}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--srd-ink-2)', marginTop: 1 }}>Published {brief.publishedAt} · Score {brief.score} · Next review: {brief.nextReview}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--srd-ink-2)', marginTop: 0 }}>Published {brief.publishedAt} · Score {brief.score} · Next review: {brief.nextReview}</div>
           </div>
           {brief.decisionCount > 0 && <span style={Pill('var(--srd-red-bg)', 'var(--srd-red-t)')}>{brief.decisionCount} decision{brief.decisionCount !== 1 ? 's' : ''}</span>}
           {brief.issueCount > 0 && <span style={Pill('var(--srd-ai-bg)', 'var(--srd-ai-d)')}>{brief.issueCount} data issue{brief.issueCount !== 1 ? 's' : ''}</span>}
@@ -310,23 +310,23 @@ export default function StrategyRoomDashboard({
       {themes && themes.length > 0 && (
         <div className="srd-themes" style={{ ...F(6), overflowX: 'auto', scrollbarWidth: 'none' as const }}>
           {themes.map((t, i) => { const s2 = st(t.status); return (
-            <div key={i} className="srd-chip" style={{ ...F(5), padding: '5px 12px', border: '1px solid var(--srd-bdr)', borderRadius: 'var(--srd-pill)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--srd-ink)', cursor: 'pointer', background: 'var(--srd-bg)', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background .15s' }}>
+            <div key={i} className="srd-chip" style={{ ...F(5), padding: '4px 12px', border: '1px solid var(--srd-bdr)', borderRadius: 'var(--srd-pill)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--srd-ink)', cursor: 'pointer', background: 'var(--srd-bg)', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background .15s' }}>
               <span style={Dot(s2.color, 7)} />{t.name}
-              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 7px', borderRadius: 'var(--srd-pill)', background: s2.bg, color: s2.tc }}>{s2.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 7px', borderRadius: 'var(--srd-pill)', background: s2.bg, color: s2.tc }}>{s2.label}</span>
             </div>
           ); })}
         </div>
       )}
 
       {/* DASHBOARD */}
-      <main className="srd-main" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <main className="srd-main" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div className="srd-grid">
 
           {/* BUDGET */}
           <Widget title="Budget Position" link="Full Planner →" delay={0.05} foot={budget ? (<>{(budget.footerStats || []).map((f, i) => <span key={i} style={{ ...F(5), marginInlineEnd: 8, color: 'var(--srd-ink-2)' }}><span style={Dot(f.color, 6)} />{f.label}</span>)}<span style={{ ...M(11), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>{budget.updatedAt}</span></>) : null}>
             {budget ? (<>
               <div style={F(6)}><span style={{ ...S(26, 800) }}>{budget.currency} {budget.total}</span>{budget.delta != null && <span style={Delta(deltaDir(budget.delta))}>{budget.delta > 0 ? '↑' : '↓'} {Math.abs(budget.delta)}% vs {budget.deltaRef}</span>}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--srd-ink-2)', marginTop: 2 }}>Annual budget · FY {fiscal?.year || '—'} · <span style={{ fontWeight: 700, color: budget.confidence < 60 ? 'var(--srd-ai-d)' : 'var(--srd-ink-2)', background: budget.confidence < 60 ? 'var(--srd-ai-bg)' : 'transparent', padding: budget.confidence < 60 ? '1px 7px' : 0, borderRadius: 'var(--srd-pill)', fontSize: 'var(--ds-font-size-100)' }}>{budget.confidence}% data confidence</span></div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--srd-ink-2)', marginTop: 0 }}>Annual budget · FY {fiscal?.year || '—'} · <span style={{ fontWeight: 700, color: budget.confidence < 60 ? 'var(--srd-ai-d)' : 'var(--srd-ink-2)', background: budget.confidence < 60 ? 'var(--srd-ai-bg)' : 'transparent', padding: budget.confidence < 60 ? '1px 7px' : 0, borderRadius: 'var(--srd-pill)', fontSize: 'var(--ds-font-size-100)' }}>{budget.confidence}% data confidence</span></div>
               {budget.segments && budget.segments.length > 0 && (<><div style={{ ...BarTrack(8), marginTop: 12, borderRadius: 'var(--srd-pill)' }}>{budget.segments.map((s, i) => <div key={i} style={BarSeg(s.color, s.pct)} />)}</div><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', marginTop: 8 }}>{budget.segments.map((s, i) => <span key={i} style={{ ...F(5), fontSize: 'var(--ds-font-size-100)', color: 'var(--srd-ink-2)' }}><span style={Dot(s.color, 6)} />{s.label}</span>)}</div></>)}
               {budget.departments && budget.departments.length > 0 && (<><div style={SECT}>By Department</div>{budget.departments.map((d, i) => <DeptRow key={i} name={d.name} pct={d.pct} count={d.count} tag={d.tag} />)}</>)}
             </>) : <Empty msg="Budget data not loaded" />}
@@ -336,14 +336,14 @@ export default function StrategyRoomDashboard({
           <Widget title="Workforce" link="Details →" delay={0.1} foot={workforce ? (<><span style={F(5)}><span style={Dot('var(--srd-ink-m)', 6)} />Thiqah (gov't staffing): {workforce.thiqahPct}%</span><span style={{ ...M(11), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>{workforce.updatedAt}</span></>) : null}>
             {workforce ? (<>
               <div style={F(6)}><span style={{ ...S(26, 800) }}>{workforce.total}</span><span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--srd-ink-2)' }}>team members</span>{workforce.delta != null && <span style={Delta(deltaDir(workforce.delta))}>{workforce.delta > 0 ? '↑' : '↓'} {Math.abs(workforce.delta)} vs {workforce.deltaRef}</span>}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--srd-ink-2)', marginTop: 2 }}>{workforce.departmentCount} departments · {workforce.vendorCount} vendors · <b style={{ color: 'var(--srd-ink-2)' }}>{workforce.avgUtilization}% avg utilization</b></div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--srd-ink-2)', marginTop: 0 }}>{workforce.departmentCount} departments · {workforce.vendorCount} vendors · <b style={{ color: 'var(--srd-ink-2)' }}>{workforce.avgUtilization}% avg utilization</b></div>
               {workforce.types && workforce.types.length > 0 && <div style={{ ...F(12), marginTop: 8 }}>{workforce.types.map((x, i) => <span key={i} style={{ ...F(5), fontSize: 'var(--ds-font-size-200)', color: 'var(--srd-ink-2)' }}><span style={Dot(x.color, 6)} /><b style={{ color: 'var(--srd-ink)' }}>{x.count}</b> {x.label}</span>)}</div>}
-              {workforce.buckets && workforce.buckets.length > 0 && <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>{workforce.buckets.map((b, i) => {
+              {workforce.buckets && workforce.buckets.length > 0 && <div style={{ display: 'flex', gap: 4, marginTop: 12 }}>{workforce.buckets.map((b, i) => {
                 const borderColor = b.isDanger ? 'var(--srd-red)' : b.isWarning ? 'var(--srd-ai)' : 'var(--srd-bdr)';
                 const bgColor = b.isDanger ? 'var(--srd-red-bg)' : b.isWarning ? 'var(--srd-ai-bg)' : 'var(--srd-bg)';
                 const numColor = b.isDanger ? 'var(--srd-red-t)' : b.isWarning ? 'var(--srd-ai-d)' : 'var(--srd-ink)';
                 const lblColor = b.isDanger ? 'var(--srd-red-t)' : b.isWarning ? 'var(--srd-ai-d)' : 'var(--srd-ink-2)';
-                return <div key={i} style={{ flex: 1, textAlign: 'center', border: `1px solid ${borderColor}`, borderRadius: 'var(--srd-r2)', padding: '7px 4px', background: bgColor }}><div style={{ ...S(17), color: numColor }}>{b.value}</div><div style={{ fontSize: 'var(--ds-font-size-50)', color: lblColor, marginTop: 1, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '.03em' }}>{b.label}</div></div>;
+                return <div key={i} style={{ flex: 1, textAlign: 'center', border: `1px solid ${borderColor}`, borderRadius: 'var(--srd-r2)', padding: '8px 4px', background: bgColor }}><div style={{ ...S(17), color: numColor }}>{b.value}</div><div style={{ fontSize: 'var(--ds-font-size-50)', color: lblColor, marginTop: 0, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '.03em' }}>{b.label}</div></div>;
               })}</div>}
               {workforce.departments && workforce.departments.length > 0 && (<><div style={SECT}>By Department</div>{workforce.departments.map((d, i) => <DeptRow key={i} name={d.name} pct={d.pct} count={d.count} utilization={d.utilization} utilColor={d.utilColor} />)}</>)}
             </>) : <Empty msg="Workforce data not loaded" />}
@@ -352,10 +352,10 @@ export default function StrategyRoomDashboard({
           {/* CONTRACTS */}
           <Widget title="Contract Status" link="All Contracts →" delay={0.15} foot={contracts ? (<><span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--srd-ai-d)' }}>⚡ {contracts.topSource}</span><span style={{ ...M(11), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>{contracts.updatedAt}</span></>) : null}>
             {contracts ? (<>
-              {contracts.buckets && contracts.buckets.length > 0 && <div style={{ display: 'flex', gap: 2 }}>{contracts.buckets.map((b, i) => <div key={i} style={{ flex: 1, textAlign: 'center', padding: '10px 4px', borderBottom: `2px solid ${b.color}`, borderRadius: 'var(--srd-r) var(--srd-r) 0 0', background: 'var(--srd-bg-2)' }}><div style={{ ...S(20, 800), color: b.textColor }}>{b.count}</div><div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--srd-ink-2)', textTransform: 'uppercase', marginTop: 4, fontWeight: 600, letterSpacing: '.03em' }}>{b.label}</div></div>)}</div>}
-              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--srd-ink-2)', textAlign: 'center', margin: '6px 0 10px' }}>{contracts.totalCount} total contracts across {contracts.departmentCount} departments</div>
+              {contracts.buckets && contracts.buckets.length > 0 && <div style={{ display: 'flex', gap: 0 }}>{contracts.buckets.map((b, i) => <div key={i} style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderBottom: `2px solid ${b.color}`, borderRadius: 'var(--srd-r) var(--srd-r) 0 0', background: 'var(--srd-bg-2)' }}><div style={{ ...S(20, 800), color: b.textColor }}>{b.count}</div><div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--srd-ink-2)', textTransform: 'uppercase', marginTop: 4, fontWeight: 600, letterSpacing: '.03em' }}>{b.label}</div></div>)}</div>}
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--srd-ink-2)', textAlign: 'center', margin: '4px 0 10px' }}>{contracts.totalCount} total contracts across {contracts.departmentCount} departments</div>
               {contracts.barSegments && contracts.barSegments.length > 0 && <div style={{ ...BarTrack(8), borderRadius: 'var(--srd-pill)' }}>{contracts.barSegments.map((s, i) => <div key={i} style={BarSeg(s.color, s.pct)} />)}</div>}
-              {contracts.expiringSoon && contracts.expiringSoon.length > 0 && (<><div style={SECT}>Expiring Soonest</div>{contracts.expiringSoon.map((e, i) => <div key={i} style={{ ...F(8), height: 28, fontSize: 'var(--ds-font-size-200)' }}><span style={Dot('var(--srd-red)', 6)} /><span style={{ fontWeight: 600, color: 'var(--srd-ink)', flex: 1 }}>{e.name}</span><span style={{ color: 'var(--srd-ink-m)', width: 110, flexShrink: 0 }}>{e.department}</span><span style={{ ...M(12), color: 'var(--srd-red-t)', fontWeight: 600 }}>{e.date}</span></div>)}{(contracts.moreCount ?? 0) > 0 && <span className="srd-link" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--srd-blue)', cursor: 'pointer', display: 'block', marginTop: 6 }}>+{contracts.moreCount} more within 3 months →</span>}</>)}
+              {contracts.expiringSoon && contracts.expiringSoon.length > 0 && (<><div style={SECT}>Expiring Soonest</div>{contracts.expiringSoon.map((e, i) => <div key={i} style={{ ...F(8), height: 28, fontSize: 'var(--ds-font-size-200)' }}><span style={Dot('var(--srd-red)', 6)} /><span style={{ fontWeight: 600, color: 'var(--srd-ink)', flex: 1 }}>{e.name}</span><span style={{ color: 'var(--srd-ink-m)', width: 110, flexShrink: 0 }}>{e.department}</span><span style={{ ...M(12), color: 'var(--srd-red-t)', fontWeight: 600 }}>{e.date}</span></div>)}{(contracts.moreCount ?? 0) > 0 && <span className="srd-link" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--srd-blue)', cursor: 'pointer', display: 'block', marginTop: 4 }}>+{contracts.moreCount} more within 3 months →</span>}</>)}
             </>) : <Empty msg="Contract data not loaded" />}
           </Widget>
         </div>
@@ -364,7 +364,7 @@ export default function StrategyRoomDashboard({
           {/* EXECUTION */}
           <Widget title="Execution Snapshot" delay={0.2} foot={execution && execution.length > 0 ? <span>{execution[0]?.footerNote || '—'}</span> : null}>
             {execution && execution.length > 0 ? execution.map((k, i) => (
-              <div key={i} style={{ ...F(8), justifyContent: 'space-between', padding: '9px 0', borderBottom: i < execution.length - 1 ? '1px solid var(--srd-bdr)' : 'none' }}>
+              <div key={i} style={{ ...F(8), justifyContent: 'space-between', padding: '8px 0', borderBottom: i < execution.length - 1 ? '1px solid var(--srd-bdr)' : 'none' }}>
                 <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--srd-ink)' }}>{k.label}</span>
                 <div style={F(8)}>
                   {k.target && <span style={{ ...M(10), color: 'var(--srd-ink-2)' }}>{k.target}</span>}

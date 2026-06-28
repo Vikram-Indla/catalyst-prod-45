@@ -75,7 +75,7 @@ export function LaterFilterMenu({ anchorRect, hideUpcoming, onChange, onClose }:
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 10,
+            gap: 8,
             width: '100%',
             padding: '8px 14px',
             background: opt.selected ? 'var(--cv2-accent)' : 'transparent',

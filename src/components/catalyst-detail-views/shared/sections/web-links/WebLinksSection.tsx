@@ -116,8 +116,8 @@ export function WebLinksSection({ workItemId }: WebLinksSectionProps) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
-          padding: '6px 0',
+          gap: 4,
+          padding: '4px 0',
         }}
       >
         <button
@@ -189,7 +189,7 @@ export function WebLinksSection({ workItemId }: WebLinksSectionProps) {
       </div>
 
       {expanded && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingLeft: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, paddingLeft: 24 }}>
           {links.map((link) => (
             <WebLinkRow key={link.id} link={link} onUnlink={(id) => deleteLink(id)} />
           ))}

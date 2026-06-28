@@ -354,7 +354,7 @@ export default function NotificationPanel({
       }}
       style={{
         position: "fixed",
-        top: 52,
+        top: 48,
         right: 16,
         width: PANEL_WIDTH,
         bottom: 16,
@@ -411,7 +411,7 @@ export default function NotificationPanel({
             alignItems: "center",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span
               style={{
                 fontFamily: "var(--cp-font-heading)",
@@ -462,7 +462,7 @@ export default function NotificationPanel({
               <span
                 style={{
                   position: "absolute",
-                  top: 2,
+                  top: 0,
                   left: unreadOnly ? 18 : 2,
                   width: 16,
                   height: 16,
@@ -535,7 +535,7 @@ export default function NotificationPanel({
                   role="menu"
                   style={{
                     position: "absolute",
-                    top: "100%",
+                    top: "48%",
                     right: 0,
                     marginTop: 4,
                     background: T.menuBg,
@@ -579,7 +579,7 @@ export default function NotificationPanel({
                           alignItems: "center",
                           gap: 8,
                           width: "100%",
-                          padding: "10px 14px",
+                          padding: "8px 14px",
                           background: "none",
                           border: "none",
                           cursor: "pointer",
@@ -657,7 +657,7 @@ export default function NotificationPanel({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 4,
                   padding: "8px 14px",
                   height: "auto",
                   background: "none",
@@ -723,7 +723,7 @@ export default function NotificationPanel({
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 6,
+                gap: 4,
                 padding: "8px 16px",
                 borderRadius: 6,
                 border: `0.5px solid ${T.borderStrong}`,

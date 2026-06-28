@@ -287,7 +287,7 @@ export const Board: React.FC<BoardProps> = ({
                           aria-label={`Show archived column — ${doneCount} done items`}
                           style={{
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                            gap: 6, height: '100%', width: '100%', border: 'none', background: 'transparent',
+                            gap: 4, height: '100%', width: '100%', border: 'none', background: 'transparent',
                             cursor: 'pointer', padding: '12px 4px',
                             color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
                           }}
@@ -314,7 +314,7 @@ export const Board: React.FC<BoardProps> = ({
                               onClick={onToggleHideDone}
                               title="Collapse archived column"
                               aria-label="Collapse archived column"
-                              style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', lineHeight: 1, padding: 2, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}
+                              style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', lineHeight: 1, padding: 0, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}
                             >✕</button>
                           </div>
                           {doneColumns.map((column) => {

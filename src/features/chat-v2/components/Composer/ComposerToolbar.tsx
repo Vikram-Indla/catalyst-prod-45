@@ -39,7 +39,7 @@ export function ComposerToolbar({ onFormat, activeFormats = {} }: ComposerToolba
         display: 'flex',
         alignItems: 'center',
         gap: 4,
-        padding: '6px 8px',
+        padding: '4px 8px',
         borderBottom: '1px solid var(--cv2-divider)',
       }}
     >

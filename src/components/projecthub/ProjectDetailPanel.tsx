@@ -46,7 +46,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
         {/* Header */}
         <div style={{ borderBottom: '1px solid var(--divider)', padding: '16px 20px' }}>
           <div className="flex items-center gap-3 mb-3">
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <ArrowLeft size={18} color="var(--fg-3)" />
             </button>
             <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 50, background: bg, color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, fontFamily: 'var(--cp-font-mono)', borderRadius: 8 }}>
@@ -65,7 +65,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
           <div className="flex items-center gap-2 mb-3">
             <ProjectStatusBadge status={project.status} />
             <ProjectHealthBadge health={project.health_status} />
-            <span className="inline-flex items-center gap-1.5 rounded-full" style={{ padding: '2px 10px', background: 'var(--bg-1)', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)' }}>
+            <span className="inline-flex items-center gap-1.5 rounded-full" style={{ padding: '0px 10px', background: 'var(--bg-1)', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)' }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: CAT_DOT[project.status_category] }} />
               {STATUS_CATEGORY_DISPLAY[project.status_category]}
             </span>
@@ -78,7 +78,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
               { label: 'Stories', val: project.total_stories },
               { label: 'Tasks', val: project.total_tasks },
             ].map(i => (
-              <div key={i.label} className="text-center rounded" style={{ padding: '6px 0', background: 'var(--bg-1)' }}>
+              <div key={i.label} className="text-center rounded" style={{ padding: '4px 0', background: 'var(--bg-1)' }}>
                 <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-mono)' }}>{i.val}</div>
                 <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)' }}>{i.label}</div>
               </div>

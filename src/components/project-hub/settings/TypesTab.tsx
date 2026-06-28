@@ -76,7 +76,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
       {/* Work Types Table */}
       <div className="ph-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px 12px' }}>
-          <h3 className="ph-card-title" style={{ marginBottom: 2 }}>Work Types</h3>
+          <h3 className="ph-card-title" style={{ marginBottom: 0 }}>Work Types</h3>
           <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', margin: 0 }}>
             Configure the workflow, field layout, and screens used by each work type.
           </p>
@@ -143,7 +143,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                     onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                   >
                     {/* Work type — icon + name */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 8px 12px 0', minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 8px 12px 0', minWidth: 0 }}>
                       <WorkItemTypeIcon type={t.icon} size={18} />
                       <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.name}
@@ -154,7 +154,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0' }}>
                       <span
                         style={{
-                          fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 8px',
+                          fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 8px',
                           borderRadius: 10, background: ls.bg, color: ls.text,
                           whiteSpace: 'nowrap',
                         }}

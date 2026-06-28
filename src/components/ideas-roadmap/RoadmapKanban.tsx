@@ -89,7 +89,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
           >
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '10px 12px 6px',
+              padding: '8px 12px 6px',
             }}>
               <span style={{
                 fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: dk.t2,
@@ -102,7 +102,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: dk.t3,
                 fontFamily: 'var(--cp-font-body)',
                 background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
-                padding: '1px 7px', borderRadius: 100,
+                padding: '0px 7px', borderRadius: 100,
               }}>
                 {colIdeas.length}
               </span>

@@ -113,7 +113,7 @@ export function OkrHeatmap() {
 
   const thCss: React.CSSProperties = {
     fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--exec-text-tertiary)',
-    textTransform: 'uppercase', letterSpacing: '0.05em', padding: '6px 8px', textAlign: 'center',
+    textTransform: 'uppercase', letterSpacing: '0.05em', padding: '4px 8px', textAlign: 'center',
   };
 
   return (
@@ -130,7 +130,7 @@ export function OkrHeatmap() {
           <tbody>
             {rows.map(row => (
               <tr key={row.themeId}>
-                <td style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--exec-text-primary)', padding: '6px 8px' }}>
+                <td style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--exec-text-primary)', padding: '4px 8px' }}>
                   <div className="flex items-center gap-2">
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: getThemeDotColor(row.overall.pct), flexShrink: 0 }} />
                     {formatThemeName(row.themeName)}

@@ -170,7 +170,7 @@ export function AddPeopleModal({
                   fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-danger)',
                   background: 'var(--ds-background-danger)',
-                  padding: '6px 10px',
+                  padding: '4px 10px',
                   borderRadius: 4,
                   marginBottom: 8,
                 }}
@@ -228,7 +228,7 @@ export function AddPeopleModal({
                             style={{
                               fontSize: 'var(--ds-font-size-50)',
                               fontWeight: 600,
-                              padding: '1px 6px',
+                              padding: '0px 6px',
                               borderRadius: 3,
                               background: 'var(--ds-background-success)',
                               color: 'var(--ds-text-success)',

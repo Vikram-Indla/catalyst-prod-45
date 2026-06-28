@@ -309,7 +309,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
           const projectPrefix = issueKey.split('-')[0] || '';
           const jiraUrl = `${JIRA_BROWSE_BASE}/${encodeURIComponent(issueKey)}`;
           return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span
                   aria-hidden
@@ -347,7 +347,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
                     fontSize: 'var(--ds-font-size-400)',
                     color: token('color.link', 'var(--ds-link)'),
                     textDecoration: 'none',
@@ -365,7 +365,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
           {/* Title row — type icon + linked key:summary */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, minWidth: 0 }}>
             {data.issue_type && (
-              <span style={{ flexShrink: 0, marginTop: 2 }}>
+              <span style={{ flexShrink: 0, marginTop: 0 }}>
                 <JiraIssueTypeIcon issueType={data.issue_type} size={16} />
               </span>
             )}
@@ -398,7 +398,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
               <Avatar size="small" name={assigneeName} />
             )}
             {data.status && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 0 }}>
                 <Lozenge appearance={statusAppearance} isBold={lozengeBold}>
                   {data.status}
                 </Lozenge>
@@ -532,7 +532,7 @@ const actionBtnStyle: React.CSSProperties = {
   alignItems: 'center',
   gap: 8,
   width: '100%',
-  padding: '6px 8px',
+  padding: '4px 8px',
   background: 'transparent',
   border: 'none',
   borderRadius: 3,

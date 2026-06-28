@@ -143,7 +143,7 @@
 .planhub-module .ph-sidebar {
   width: var(--ph-sidebar-width);
   background: var(--ph-surface);
-  border-right: 1px solid var(--ph-border);
+  border-right: 0px solid var(--ph-border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -151,7 +151,7 @@
 
 .planhub-module .ph-sidebar-header {
   padding: var(--ph-space-4);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
   display: flex;
   align-items: center;
   gap: var(--ph-space-3);
@@ -219,7 +219,7 @@
 .planhub-module .ph-page-header {
   padding: var(--ph-space-6);
   background: var(--ph-surface);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-page-title {
@@ -302,7 +302,7 @@
 .planhub-module .ph-badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px var(--ph-space-2);
+  padding: 0px var(--ph-space-2);
   font-size: var(--ph-text-xs);
   font-weight: var(--ph-font-medium);
   border-radius: var(--ph-radius-sm);
@@ -391,7 +391,7 @@
 }
 
 .planhub-module .ph-form-input:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--ph-primary);
   box-shadow: 0 0 0 3px var(--ph-primary-light);
 }
@@ -422,12 +422,12 @@
   text-transform: uppercase;
   color: var(--ph-gray-500);
   background: var(--ph-gray-50);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-table td {
   padding: var(--ph-space-4);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-table tbody tr {
@@ -454,7 +454,7 @@
   display: grid;
   grid-template-columns: 40px 60px 1fr 60px 90px 90px 100px 40px;
   background: var(--ph-gray-50);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
   font-size: var(--ph-text-xs);
   font-weight: var(--ph-font-semibold);
   text-transform: uppercase;
@@ -463,13 +463,13 @@
 
 .planhub-module .ph-task-grid-header > div {
   padding: var(--ph-space-3) var(--ph-space-2);
-  border-right: 1px solid var(--ph-border);
+  border-right: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-task-row {
   display: grid;
   grid-template-columns: 40px 60px 1fr 60px 90px 90px 100px 40px;
-  border-bottom: 1px solid var(--ph-gray-100);
+  border-bottom: 0px solid var(--ph-gray-100);
   align-items: center;
   height: var(--ph-row-height);
 }
@@ -531,7 +531,7 @@
 .planhub-module .ph-gantt-header {
   display: flex;
   background: var(--ph-gray-50);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
   position: sticky;
   top: 0;
 }
@@ -539,7 +539,7 @@
 .planhub-module .ph-gantt-month {
   min-width: 160px;
   padding: var(--ph-space-2) var(--ph-space-3);
-  border-right: 1px solid var(--ph-border);
+  border-right: 0px solid var(--ph-border);
   font-size: var(--ph-text-sm);
   font-weight: var(--ph-font-semibold);
   color: var(--ph-gray-600);
@@ -547,7 +547,7 @@
 
 .planhub-module .ph-gantt-row {
   height: var(--ph-row-height);
-  border-bottom: 1px solid var(--ph-gray-100);
+  border-bottom: 0px solid var(--ph-gray-100);
   position: relative;
   min-width: 640px;
 }
@@ -637,7 +637,7 @@
 
 .planhub-module .ph-ai-header {
   padding: var(--ph-space-4);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
   display: flex;
   align-items: center;
   gap: var(--ph-space-3);
@@ -764,7 +764,7 @@
   flex-wrap: wrap;
   gap: var(--ph-space-2);
   padding: var(--ph-space-3) var(--ph-space-4);
-  border-top: 1px solid var(--ph-border);
+  border-top: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-ai-suggestion {
@@ -788,7 +788,7 @@
   display: flex;
   gap: var(--ph-space-2);
   padding: var(--ph-space-4);
-  border-top: 1px solid var(--ph-border);
+  border-top: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-ai-input input {
@@ -824,7 +824,7 @@
 .planhub-module .ph-resource-grid {
   display: grid;
   grid-template-columns: 180px 120px 150px 100px 1fr 60px;
-  gap: 1px;
+  gap: 0px;
   background: var(--ph-border);
   border: 1px solid var(--ph-border);
   border-radius: var(--ph-radius-lg);
@@ -1020,7 +1020,7 @@
 
 .planhub-module .ph-modal-header {
   padding: var(--ph-space-5) var(--ph-space-6);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1039,7 +1039,7 @@
 
 .planhub-module .ph-modal-footer {
   padding: var(--ph-space-4) var(--ph-space-6);
-  border-top: 1px solid var(--ph-border);
+  border-top: 0px solid var(--ph-border);
   display: flex;
   justify-content: flex-end;
   gap: var(--ph-space-3);
@@ -1127,14 +1127,14 @@
   color: var(--ph-gray-600);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-resource-grid-cell {
   padding: var(--ph-space-3) var(--ph-space-4);
   font-size: var(--ph-text-sm);
   color: var(--ph-gray-700);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
   display: flex;
   align-items: center;
 }
@@ -1159,7 +1159,7 @@
   font-weight: var(--ph-font-medium);
   color: var(--ds-text-warning);
   background: var(--ds-background-warning-bold, rgba(245, 158, 11, 0.2));
-  padding: 2px 6px;
+  padding: 0px 6px;
   border-radius: var(--ph-radius-sm);
 }
 
@@ -1206,14 +1206,14 @@
   font-size: var(--ph-text-xs);
   color: var(--ph-primary);
   background: var(--ph-primary-light);
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: var(--ph-radius-full);
 }
 
 .planhub-module .ph-resource-skill-more {
   font-size: var(--ph-text-xs);
   color: var(--ph-gray-500);
-  padding: 2px 6px;
+  padding: 0px 6px;
 }
 
 .planhub-module .ph-loading-container {
@@ -1341,7 +1341,7 @@
   font-weight: var(--ph-font-semibold);
   color: var(--ph-purple);
   background: var(--ph-purple-light);
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: var(--ph-radius-full);
 }
 
@@ -1378,14 +1378,14 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background: var(--ph-gray-50);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-report-table td {
   padding: var(--ph-space-3) var(--ph-space-4);
   font-size: var(--ph-text-sm);
   color: var(--ph-gray-700);
-  border-bottom: 1px solid var(--ph-border);
+  border-bottom: 0px solid var(--ph-border);
 }
 
 .planhub-module .ph-report-table-empty {

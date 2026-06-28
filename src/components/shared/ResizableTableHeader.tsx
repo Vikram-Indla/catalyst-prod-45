@@ -84,7 +84,7 @@ export function ResizableTableHeader({
       {/* Subtle drop indicator — thin 2px left accent */}
       {isDragOver && (
         <div style={{
-          position: 'absolute', left: 0, top: 6, bottom: 6,
+          position: 'absolute', left: 0, top: 4, bottom: 4,
           width: 2, borderRadius: 1, background: 'var(--ds-background-information-bold)', zIndex: 15,
         }} />
       )}
@@ -142,7 +142,7 @@ export function ResizableTableHeader({
         }}
       >
         <div style={{
-          position: 'absolute', right: 2, top: 6, bottom: 6,
+          position: 'absolute', right: 0, top: 4, bottom: 4,
           width: 1, background: 'transparent', transition: 'background 120ms',
         }} className="group-hover/thead:bg-slate-300" />
       </div>

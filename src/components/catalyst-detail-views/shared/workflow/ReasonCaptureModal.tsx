@@ -43,7 +43,7 @@ export function ReasonCaptureModal(props: ReasonCaptureModalProps) {
 
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', display: 'block', marginBottom: 4 };
   const fieldStyle: React.CSSProperties = {
-    width: '100%', padding: '6px 8px', border: '1px solid var(--ds-border)', borderRadius: 4,
+    width: '100%', padding: '4px 8px', border: '1px solid var(--ds-border)', borderRadius: 4,
     background: 'var(--ds-surface)', color: 'var(--ds-text)', fontSize: 13, fontFamily: 'inherit',
   };
 
@@ -54,7 +54,7 @@ export function ReasonCaptureModal(props: ReasonCaptureModalProps) {
       style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ds-blanket, rgba(9,30,66,0.54))' }}
       onMouseDown={(e) => { if (e.target === e.currentTarget) props.onCancel(); }}
     >
-      <div style={{ width: 480, maxWidth: '92vw', background: 'var(--ds-surface-overlay, var(--ds-surface))', borderRadius: 8, boxShadow: 'var(--ds-shadow-overlay)', padding: 20 }}>
+      <div style={{ width: 480, maxWidth: '92vw', background: 'var(--ds-surface-overlay, var(--ds-surface))', borderRadius: 8, boxShadow: 'var(--ds-shadow-overlay)', padding: 16 }}>
         <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 600, color: 'var(--ds-text)' }}>Reason required</h2>
         <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--ds-text-subtle)' }}>
           Moving {props.entityType} {props.itemKey ?? ''} from <strong>{props.fromStatus ?? '—'}</strong> to <strong>{props.toStatus}</strong>

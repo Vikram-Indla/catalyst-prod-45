@@ -19,7 +19,7 @@ export function QuickFilterAvatars({ members, selected, onToggle }: QuickFilterA
           key={member.id}
           onClick={() => onToggle(member.id)}
           style={{
-            padding: '3px',
+            padding: '4px',
             borderRadius: '50%',
             border: selected.includes(member.id) ? `2px solid ${KANBAN_COLORS.gold}` : '2px solid transparent',
             cursor: 'pointer',
@@ -135,7 +135,7 @@ export function FilterDropdown({
         {label}
         {!singleSelect && selected?.length > 0 && (
           <span style={{
-            padding: '2px 6px',
+            padding: '0px 6px',
             borderRadius: '12px',
             backgroundColor: KANBAN_COLORS.gold,
             color: 'white',
@@ -151,9 +151,9 @@ export function FilterDropdown({
       {isOpen && (
         <div style={{
           position: 'absolute',
-          top: '100%',
+          top: '48%',
           left: 0,
-          marginTop: '6px',
+          marginTop: '4px',
           minWidth: '220px',
           backgroundColor: KANBAN_COLORS.bgCard,
           border: `1px solid ${KANBAN_COLORS.borderLight}`,
@@ -178,8 +178,8 @@ export function FilterDropdown({
                   width: '100%',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  padding: '10px 12px',
+                  gap: '8px',
+                  padding: '8px 12px',
                   border: 'none',
                   borderRadius: '6px',
                   backgroundColor: (singleSelect ? value === opt.id : selected?.includes(opt.id)) 
@@ -293,9 +293,9 @@ export function GroupByDropdown({ value, onChange, iconOnly }: GroupByDropdownPr
       {isOpen && (
         <div style={{
           position: 'absolute',
-          top: '100%',
+          top: '48%',
           left: 0,
-          marginTop: '6px',
+          marginTop: '4px',
           minWidth: '200px',
           backgroundColor: KANBAN_COLORS.bgCard,
           border: `1px solid ${KANBAN_COLORS.borderLight}`,
@@ -313,8 +313,8 @@ export function GroupByDropdown({ value, onChange, iconOnly }: GroupByDropdownPr
                   width: '100%',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  padding: '10px 14px',
+                  gap: '8px',
+                  padding: '8px 14px',
                   border: 'none',
                   borderRadius: '6px',
                   backgroundColor: value === opt.id ? KANBAN_COLORS.bgSelected : 'transparent',

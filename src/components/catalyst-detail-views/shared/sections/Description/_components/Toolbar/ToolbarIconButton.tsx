@@ -42,7 +42,7 @@ export function ToolbarIconButton({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
+    gap: 0,
     border: 'none',
     borderRadius: 3,
     background: active

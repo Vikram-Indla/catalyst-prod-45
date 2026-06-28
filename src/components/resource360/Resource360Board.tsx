@@ -40,11 +40,11 @@ export function Resource360Board({ items, onItemClick }: Props) {
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Search bar */}
-      <div style={{ padding: '10px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
+      <div style={{ padding: '8px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
         <input
           type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search key, title, or parent…"
-          style={{ width: 220, fontSize: 'var(--ds-font-size-100)', padding: '5px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.surface, color: T.text1, outline: 'none' }}
+          style={{ width: 220, fontSize: 'var(--ds-font-size-100)', padding: '4px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.surface, color: T.text1, outline: 'none' }}
         />
       </div>
 
@@ -54,7 +54,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
           <div key={col.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             {/* Column header */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 6,
+              display: 'flex', alignItems: 'center', gap: 4,
               padding: '8px 10px', marginBottom: 8,
               borderBottom: `3px solid ${col.color}`,
             }}>
@@ -62,7 +62,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
               <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: T.text1, letterSpacing: '0.06em' }}>{col.label}</span>
               <span style={{
                 fontSize: 'var(--ds-font-size-50)', fontWeight: 800, color: 'var(--ds-surface)', marginLeft: 'auto',
-                background: col.color, borderRadius: 12, padding: '1px 7px',
+                background: col.color, borderRadius: 12, padding: '0px 7px',
               }}>{col.items.length}</span>
             </div>
 
@@ -77,7 +77,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
                   <div key={item.work_item_id} onClick={() => onItemClick(item)}
                     style={{
                       background: T.surface, borderRadius: 8, padding: '8px 10px',
-                      marginBottom: 6, cursor: 'pointer',
+                      marginBottom: 4, cursor: 'pointer',
                       border: `1px solid ${stale ? T.todo : T.border}`,
                       borderLeft: `4px solid ${col.color}`,
                       boxShadow: T.shadow, transition: 'all .12s',
@@ -90,7 +90,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
                       <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: T.text1 }}>
                         <HighlightText text={item.item_key} query={searchTerm} />
                       </span>
-                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '1px 5px', borderRadius: 4, background: hubColor }}>{hubShort}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 800, color: 'var(--ds-surface)', padding: '0px 5px', borderRadius: 4, background: hubColor }}>{hubShort}</span>
                       {stale && <span title={stale.label} style={{ fontSize: 'var(--ds-font-size-50)' }}>{stale.icon}</span>}
                       <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: item.age_days > 14 ? T.todo : T.text4, marginLeft: 'auto' }}>{item.age_days}d</span>
                     </div>
@@ -120,7 +120,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
               })}
 
               {col.items.length === 0 && (
-                <div style={{ padding: 20, textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: T.text4 }}>No items</div>
+                <div style={{ padding: 16, textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: T.text4 }}>No items</div>
               )}
             </div>
           </div>

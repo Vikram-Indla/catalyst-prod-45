@@ -197,7 +197,7 @@ export function MenuItem({
         alignItems: 'center',
         gap: 8,
         width: '100%',
-        padding: '6px 8px',
+        padding: '4px 8px',
         border: 'none',
         borderRadius: 3,
         background: active

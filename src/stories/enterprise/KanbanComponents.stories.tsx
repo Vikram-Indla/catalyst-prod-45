@@ -86,7 +86,7 @@ function ColumnLabel({ name, count }: { name: string; count?: number }) {
             fontWeight: 500,
             background: tk.surfaceAlt,
             color: tk.textMuted,
-            padding: '1px 6px',
+            padding: '0px 6px',
             borderRadius: 8,
           }}
         >

@@ -165,7 +165,7 @@ export function JiraSyncPageMockup() {
         {/* Connected banner */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: C.bgSuccess, border: `1px solid ${C.textSuccess}`, borderRadius: 8, padding: '12px 16px', marginBottom: 24 }}>
           <span style={{ fontWeight: 600, color: C.textSuccess }}>✓ Connected</span>
-          <code style={{ fontSize: 'var(--ds-font-size-200)', background: C.bgNeutral, padding: '2px 6px', borderRadius: 3 }}>https://digital-transformation.atlassian.net</code>
+          <code style={{ fontSize: 'var(--ds-font-size-200)', background: C.bgNeutral, padding: '0px 6px', borderRadius: 3 }}>https://digital-transformation.atlassian.net</code>
           <span style={{ color: C.textSubtle, marginLeft: 'auto' }}>Last tested 1 hour ago</span>
         </div>
 
@@ -222,12 +222,12 @@ function OverviewTab({ projects, mappingValid, deviations }: any) {
   const totalIssues = projects.reduce((sum: number, p: any) => sum + (p.issues_cached || 0), 0);
 
   return (
-    <div style={{ marginTop: 20 }}>
+    <div style={{ marginTop: 16 }}>
       {/* MDT → Investor Journey Contract */}
       <div style={{ background: C.bgInfo, border: `2px solid ${C.textInfo}`, borderRadius: 8, padding: '16px', marginBottom: 24 }}>
         <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.textInfo, marginBottom: 4 }}>📋 Permanent Mapping Contract</div>
         <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textInfo }}>
-          <strong>MDT</strong> (Master Data Management) always syncs to <strong>Investor Journey</strong> Product. Same key in both systems: <code style={{ background: 'rgba(7,71,166,0.1)', padding: '2px 6px', borderRadius: 3 }}>MDT</code> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+          <strong>MDT</strong> (Master Data Management) always syncs to <strong>Investor Journey</strong> Product. Same key in both systems: <code style={{ background: 'rgba(7,71,166,0.1)', padding: '0px 6px', borderRadius: 3 }}>MDT</code> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         </div>
       </div>
 
@@ -257,7 +257,7 @@ function OverviewTab({ projects, mappingValid, deviations }: any) {
           { label: 'Issues Cached', value: totalIssues },
           { label: 'Last Sync', value: '1 day ago' },
         ].map(({ label, value }) => (
-          <div key={label} style={{ background: C.bgSurfaceSunken, border: `1px solid ${C.border}`, borderRadius: 8, padding: '20px 16px', textAlign: 'center' }}>
+          <div key={label} style={{ background: C.bgSurfaceSunken, border: `1px solid ${C.border}`, borderRadius: 8, padding: '16px 16px', textAlign: 'center' }}>
             <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: C.textDefault }}>{value}</div>
             <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, marginTop: 8 }}>{label}</div>
           </div>
@@ -324,20 +324,20 @@ function OverviewTab({ projects, mappingValid, deviations }: any) {
 
 function SyncControlTab({ mappingValid, onRefreshClick }: any) {
   return (
-    <div style={{ marginTop: 20 }}>
+    <div style={{ marginTop: 16 }}>
       <SectionMessage appearance="information" title="Mapping Required">
         Complete type, status, and field mappings before sync is allowed. Validation checks all mappings against Jira and Catalyst schemas.
       </SectionMessage>
 
       {/* Discovery Sync */}
-      <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '24px', marginTop: 20, marginBottom: 20 }}>
+      <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '24px', marginTop: 16, marginBottom: 16 }}>
         <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Discover Jira Metadata</h3>
         <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, margin: '0 0 16px 0' }}>Discover projects, issue types, statuses, fields from Jira. Always allowed, even before mappings.</p>
         <Button appearance="primary">Discover Now</Button>
       </div>
 
       {/* Manual Sync */}
-      <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '24px', marginBottom: 20 }}>
+      <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '24px', marginBottom: 16 }}>
         <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Manual Sync</h3>
         <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
           <Button appearance="primary" isDisabled={!mappingValid}>Run Full Sync</Button>
@@ -368,8 +368,8 @@ function ProjectsTab({ projects, onProjectClick }: any) {
   const filtered = projects.filter((p: any) => p.key.toLowerCase().includes(search.toLowerCase()) || p.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div style={{ marginTop: 20 }}>
-      <div style={{ marginBottom: 20 }}>
+    <div style={{ marginTop: 16 }}>
+      <div style={{ marginBottom: 16 }}>
         <Textfield placeholder="Search projects..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', maxWidth: 400 }} />
       </div>
 
@@ -387,7 +387,7 @@ function ProjectsTab({ projects, onProjectClick }: any) {
               <tr key={i} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
                   <span style={{ marginRight: 8 }}>{p.icon}</span>
-                  <code style={{ fontSize: 'var(--ds-font-size-100)', background: C.bgNeutral, padding: '2px 6px', borderRadius: 3 }}>{p.key}</code>
+                  <code style={{ fontSize: 'var(--ds-font-size-100)', background: C.bgNeutral, padding: '0px 6px', borderRadius: 3 }}>{p.key}</code>
                 </td>
                 <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>{p.name}</td>
                 <td style={{ padding: '12px 16px' }}>
@@ -414,12 +414,12 @@ function ProjectsTab({ projects, onProjectClick }: any) {
 
 function TypeMappingTab() {
   return (
-    <div style={{ marginTop: 20 }}>
+    <div style={{ marginTop: 16 }}>
       <SectionMessage appearance="information" title="Type Mappings">
         Map Jira issue types to Catalyst work item types. Each mapping sets target table, hierarchy rules, and field availability.
       </SectionMessage>
 
-      <div style={{ marginTop: 20, background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ marginTop: 16, background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: C.bgSurfaceSunken }}>
@@ -432,11 +432,11 @@ function TypeMappingTab() {
             {ISSUE_TYPES.map((t, i) => (
               <tr key={i} style={{ borderBottom: i < ISSUE_TYPES.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                 <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
-                  <span style={{ marginRight: 6 }}>{t.icon}</span>
+                  <span style={{ marginRight: 4 }}>{t.icon}</span>
                   <SourceAwareTitle title={t.jira} source="jira" />
                 </td>
                 <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)' }}>
-                  <span style={{ marginRight: 6 }}>{TYPE_ICONS[t.catalyst]}</span>
+                  <span style={{ marginRight: 4 }}>{TYPE_ICONS[t.catalyst]}</span>
                   <SourceAwareTitle title={t.catalyst} source="catalyst" />
                 </td>
                 <td style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: C.textSubtle }}>ph_issues</td>
@@ -456,12 +456,12 @@ function TypeMappingTab() {
 
 function StatusMappingTab() {
   return (
-    <div style={{ marginTop: 20 }}>
+    <div style={{ marginTop: 16 }}>
       <SectionMessage appearance="information" title="Status Mappings">
         Map Jira workflow statuses to Catalyst statuses. Deviations flagged for manual resolution.
       </SectionMessage>
 
-      <div style={{ marginTop: 20, background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ marginTop: 16, background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: C.bgSurfaceSunken }}>
@@ -520,8 +520,8 @@ function FieldMappingTab() {
   const filtered = fields.filter(f => filter === 'all' || f.status === filter);
 
   return (
-    <div style={{ marginTop: 20 }}>
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+    <div style={{ marginTop: 16 }}>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
         {[
           { label: 'All Fields', value: 'all' },
           { label: 'Mapped (9)', value: 'mapped' },
@@ -563,12 +563,12 @@ function FieldMappingTab() {
 
 function DatabaseSchemaTab() {
   return (
-    <div style={{ marginTop: 20 }}>
+    <div style={{ marginTop: 16 }}>
       <SectionMessage appearance="information" title="Supabase Target Schema">
         Jira data stored in Catalyst Supabase. Shown for transparency and debugging.
       </SectionMessage>
 
-      <div style={{ marginTop: 20 }}>
+      <div style={{ marginTop: 16 }}>
         <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, marginBottom: 16 }}>Work Item Type → Target Table</h3>
         <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -603,8 +603,8 @@ function DatabaseSchemaTab() {
 
 function BackupAndLogsTab() {
   return (
-    <div style={{ marginTop: 20 }}>
-      <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '20px', marginBottom: 20 }}>
+    <div style={{ marginTop: 16 }}>
+      <div style={{ background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 8, padding: '16px', marginBottom: 16 }}>
         <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, marginBottom: 8 }}>Daily Backup</h3>
         <p style={{ fontSize: 'var(--ds-font-size-200)', color: C.textSubtle, marginBottom: 12 }}>Tables: ph_issues, ph_comments. Retention: 180 days. Schedule: 02:00 UTC daily.</p>
         <Button>Backup Now</Button>
@@ -690,7 +690,7 @@ function ProjectDetailModal({ projectKey, onClose }: { projectKey: string | null
               <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: C.textDefault, margin: '0 0 12px 0' }}>Issue Type Filter</h3>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {['Epic', 'Story', 'Task', 'Bug', 'Change Request'].map(type => (
-                  <label key={type} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', background: C.bgNeutral, borderRadius: 4, cursor: 'pointer' }}>
+                  <label key={type} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '8px 12px', background: C.bgNeutral, borderRadius: 4, cursor: 'pointer' }}>
                     <input type="checkbox" defaultChecked style={{ width: 16, height: 16 }} />
                     <span style={{ fontSize: 'var(--ds-font-size-200)' }}>{type}</span>
                   </label>

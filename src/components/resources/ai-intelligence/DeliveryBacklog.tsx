@@ -48,7 +48,7 @@ export const DeliveryBacklog: React.FC<Props> = ({ metrics, hubs }) => {
       <div className="rai-section-header">
         <span className="rai-section-title">Delivery Backlog</span>
         <span className="rai-ai-badge">
-          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ marginRight: 2 }}>
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ marginRight: 0 }}>
             <path d="M8 0L9.8 6.2L16 8L9.8 9.8L8 16L6.2 9.8L0 8L6.2 6.2Z" fill="currentColor"/>
           </svg>
           AI
@@ -73,7 +73,7 @@ export const DeliveryBacklog: React.FC<Props> = ({ metrics, hubs }) => {
       {/* Per-hub backlog list */}
       <div style={{ border: '1px solid var(--rai-border)', borderRadius: 8, marginTop: 16, overflow: 'hidden' }}>
         {sorted.length === 0 && (
-          <div style={{ padding: '14px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--rai-ink-muted)', fontStyle: 'italic' }}>
+          <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--rai-ink-muted)', fontStyle: 'italic' }}>
             No open items in backlog
           </div>
         )}
@@ -103,7 +103,7 @@ export const DeliveryBacklog: React.FC<Props> = ({ metrics, hubs }) => {
         <div style={{
           background: 'var(--rai-surface-secondary)',
           borderTop: '2px solid var(--rai-border)',
-          padding: '10px 16px',
+          padding: '8px 16px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',

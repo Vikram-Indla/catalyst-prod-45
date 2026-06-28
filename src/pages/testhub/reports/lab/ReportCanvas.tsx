@@ -61,7 +61,7 @@ const STATUS_APPEARANCE: Record<string, 'success' | 'removed' | 'moved' | 'defau
 // ── shared primitives ──────────────────────────────────────────────────────────
 
 const TH: React.CSSProperties = {
-  padding: '9px 14px',
+  padding: '8px 14px',
   fontSize: 'var(--ds-font-size-100)',
   fontWeight: 700,
   color: 'var(--ds-text-subtlest)',
@@ -76,7 +76,7 @@ const TH: React.CSSProperties = {
 };
 
 const TD: React.CSSProperties = {
-  padding: '9px 14px',
+  padding: '8px 14px',
   fontSize: 'var(--ds-font-size-300)',
   color: 'var(--ds-text)',
   borderBottom: '1px solid var(--ds-border)',
@@ -130,7 +130,7 @@ function DataTable({
 
 function ChartWrap({ title, children, height = 260 }: { title?: string; children: React.ReactNode; height?: number }) {
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 16 }}>
       {title && (
         <p style={{ margin: '0 0 10px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
           {title}
@@ -146,7 +146,7 @@ function ChartWrap({ title, children, height = 260 }: { title?: string; children
 }
 
 function Section({ children }: { children: React.ReactNode }) {
-  return <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border)' }}>{children}</div>;
+  return <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border)' }}>{children}</div>;
 }
 
 function PassRateBar({ rate }: { rate: number }) {
@@ -367,7 +367,7 @@ function CaseDistribution({ data }: { data: SeededData }) {
   return (
     <>
       <Section>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <ChartWrap title="By status">
             <PieChart>
               <Pie data={statusData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({ name, percent }) => `${name} ${Math.round(percent * 100)}%`}>
@@ -728,7 +728,7 @@ function ProjectOverview({ data }: { data: SeededData }) {
     <Section>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
         {metrics.map(m => (
-          <div key={m.label} style={{ background: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)', borderRadius: 6, padding: '14px 16px' }}>
+          <div key={m.label} style={{ background: 'var(--ds-surface-raised)', border: '1px solid var(--ds-border)', borderRadius: 6, padding: '12px 16px' }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
               {m.label}
             </div>
@@ -813,7 +813,7 @@ function TraceabilitySummary({ data }: { data: SeededData }) {
   return (
     <>
       <Section>
-        <div style={{ display: 'flex', gap: 20, alignItems: 'center', padding: '8px 0' }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', padding: '8px 0' }}>
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Overall Coverage</div>
             <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--ds-text)' }}>{coveragePercent(linkedCases, totalCases)}</div>

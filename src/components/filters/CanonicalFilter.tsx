@@ -577,7 +577,7 @@ export function CanonicalFilter({
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           height: 32,
           padding: '0 10px',
           borderRadius: 3,
@@ -642,7 +642,7 @@ export function CanonicalFilter({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '10px 12px',
+              padding: '8px 12px',
               gap: 12,
             }}
           >
@@ -650,8 +650,8 @@ export function CanonicalFilter({
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 2,
-                padding: 3,
+                gap: 0,
+                padding: 4,
                 border: `1px solid ${borderSubtle}`,
                 borderRadius: 6,
                 background: surface,
@@ -795,7 +795,7 @@ export function CanonicalFilter({
                   padding: 8,
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 2,
+                  gap: 0,
                   overflowY: 'auto',
                 }}
               >
@@ -820,7 +820,7 @@ export function CanonicalFilter({
                   />
                 ))}
                 {unpinnedFields.length > 0 && (
-                  <div style={{ height: 1, background: borderSubtle, margin: '6px 0' }} />
+                  <div style={{ height: 1, background: borderSubtle, margin: '4px 0' }} />
                 )}
                 {unpinnedFields.map((f) => (
                   <FieldItem
@@ -842,7 +842,7 @@ export function CanonicalFilter({
                     onDrop={() => dropOn(f)}
                   />
                 ))}
-                <div style={{ position: 'relative', marginTop: 6, marginLeft: 16, alignSelf: 'flex-start' }}>
+                <div style={{ position: 'relative', marginTop: 4, marginLeft: 16, alignSelf: 'flex-start' }}>
                   <button
                     ref={addFieldBtnRef}
                     type="button"
@@ -963,7 +963,7 @@ export function CanonicalFilter({
             }}
           >
             <FeedbackButton />
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <span>Press</span>
               <Kbd>Shift</Kbd>
               <span>+</span>
@@ -1178,7 +1178,7 @@ function FieldItem({
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
-        gap: 2,
+        gap: 0,
       }}
     >
       {/* Grip lives OUTSIDE the row background. Width pinned so layout doesn't
@@ -1380,7 +1380,7 @@ function SavedSearchInput({
         style={{
           position: 'absolute',
           left: 8,
-          top: '50%',
+          top: '48%',
           transform: 'translateY(-50%)',
           display: 'flex',
           pointerEvents: 'none',
@@ -1433,7 +1433,7 @@ function SavedSection({
     <div>
       <div
         style={{
-          padding: '6px 12px',
+          padding: '4px 12px',
           fontSize: 'var(--ds-font-size-200)',
           fontWeight: 700,
           color: token('color.text.subtle', 'var(--ds-text-subtle)'),
@@ -1444,7 +1444,7 @@ function SavedSection({
       {items.length === 0 ? (
         <div
           style={{
-            padding: '6px 12px',
+            padding: '4px 12px',
             fontSize: 'var(--ds-font-size-200)',
             color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
           }}
@@ -1550,7 +1550,7 @@ function FeedbackButton() {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         padding: '4px 6px',
         background: hover ? hoverNeutral : 'transparent',
         border: 0,
@@ -1846,7 +1846,7 @@ function ProjectChip({
         alignItems: 'center',
         alignSelf: 'flex-start',
         position: 'relative',
-        gap: 10,
+        gap: 8,
         height: 40,
         padding: '0 10px 0 14px',
         minWidth: 400,
@@ -1978,7 +1978,7 @@ function FirstAndMore({
   const first = resolveLabel(values[0]);
   const extra = values.length - 1;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
       <span style={{
         color: activeColor || token('color.text', 'var(--ds-text)'),
         overflow: 'hidden',
@@ -2298,7 +2298,7 @@ function ClauseChip({
         alignItems: 'center',
         alignSelf: 'flex-start',
         position: 'relative',
-        gap: 10,
+        gap: 8,
         height: 40,
         padding: '0 10px 0 14px',
         minWidth: 400,
@@ -2360,8 +2360,8 @@ function ClauseChip({
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
           style={{
             display: 'inline-flex', alignItems: 'center',
-            color: textSubtle, padding: 2, borderRadius: 3,
-            marginLeft: 2,
+            color: textSubtle, padding: 0, borderRadius: 3,
+            marginLeft: 0,
           }}
         >
           <svg width="10" height="10" viewBox="0 0 16 16" aria-hidden focusable="false">
@@ -2817,7 +2817,7 @@ function JqlTabBody({
             position: 'absolute',
             inset: 0,
             margin: 0,
-            padding: '10px 84px 10px 12px',
+            padding: '8px 84px 10px 12px',
             fontFamily: '"SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace',
             fontSize: 'var(--ds-font-size-300)',
             lineHeight: 1.5,
@@ -2856,7 +2856,7 @@ function JqlTabBody({
             width: '100%',
             height: '100%',
             margin: 0,
-            padding: '10px 84px 10px 12px',
+            padding: '8px 84px 10px 12px',
             border: 0,
             outline: 'none',
             background: 'transparent',
@@ -2875,7 +2875,7 @@ function JqlTabBody({
         <div
           style={{
             position: 'absolute',
-            top: 6,
+            top: 4,
             right: 8,
             display: 'inline-flex',
             alignItems: 'center',
@@ -2934,7 +2934,7 @@ function JqlTabBody({
       </div>
       <div
         style={{
-          marginTop: 6,
+          marginTop: 4,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -3269,7 +3269,7 @@ function FilterSearchInput({
         style={{
           position: 'absolute',
           left: 8,
-          top: '50%',
+          top: '48%',
           transform: 'translateY(-50%)',
           display: 'flex',
           pointerEvents: 'none',
@@ -3339,7 +3339,7 @@ function OptionRow({
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        padding: '6px 12px',
+        padding: '4px 12px',
         cursor: 'pointer',
         background: hover ? hoverNeutral : 'transparent',
         fontSize: 'var(--ds-font-size-300)',

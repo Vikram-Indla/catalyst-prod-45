@@ -66,7 +66,7 @@ export function EmojiPicker({ anchor = 'center', anchorRect, onPick, onClose }: 
         activeSection={activeSection}
         onChange={setActiveSection}
       />
-      <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--cv2-divider)' }}>
+      <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--cv2-divider)' }}>
         <SearchField value={query} onChange={setQuery} />
       </div>
       <div
@@ -102,8 +102,8 @@ function computePosition(
 ): React.CSSProperties {
   if (anchor === 'center' || !rect) {
     return {
-      top: '50%',
-      left: '50%',
+      top: '48%',
+      left: '48%',
       transform: 'translate(-50%, -50%)',
     };
   }
@@ -136,7 +136,7 @@ function CategoryBar({
       style={{
         display: 'flex',
         gap: 0,
-        padding: '6px 8px',
+        padding: '4px 8px',
         borderBottom: '1px solid var(--cv2-divider)',
       }}
     >
@@ -234,7 +234,7 @@ function EmojiGroup({
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(8, 1fr)',
-          gap: 2,
+          gap: 0,
         }}
       >
         {entries.map(en => (

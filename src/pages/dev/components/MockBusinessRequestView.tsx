@@ -77,7 +77,7 @@ export function MockBusinessRequestView({
                 <Heading as="h3" level="h500" style={{ marginBottom: 12 }}>
                   Scope
                 </Heading>
-                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
+                <ul style={{ margin: '0 0 16px 0', paddingLeft: 16, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
                   <li>Applicant submission portal (Arabic + English)</li>
                   <li>Back-office review dashboard</li>
                   <li>Decision notification system</li>
@@ -88,7 +88,7 @@ export function MockBusinessRequestView({
                 <Heading as="h3" level="h500" style={{ marginBottom: 12 }}>
                   Acceptance Criteria
                 </Heading>
-                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
+                <ul style={{ margin: '0 0 16px 0', paddingLeft: 16, color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)' }}>
                   <li>✓ Support for Arabic and English throughout the application</li>
                   <li>✓ Mobile-responsive design for citizen portal</li>
                   <li>✓ Real-time submission status tracking</li>

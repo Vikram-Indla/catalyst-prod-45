@@ -422,7 +422,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
                       role="menuitem"
                     >
                       {zipping ? <Spinner size="small" /> : <DownloadIcon label="Download" />}
-                      <span style={{ marginLeft: 6 }}>Download all</span>
+                      <span style={{ marginLeft: 4 }}>Download all</span>
                       <span className="att-menu-badge">{attachments.length}</span>
                     </button>
                   </div>

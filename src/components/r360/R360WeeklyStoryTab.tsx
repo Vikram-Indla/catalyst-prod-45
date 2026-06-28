@@ -130,7 +130,7 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
 
       {/* §3 Week Summary Tiles */}
       <div style={{ padding: 16 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           {[
             { label: 'Opened', value: createdThisWeek, onClick: () => showFilteredList('Opened This Week', (i: any) => {
               const c = new Date(i.created_at);

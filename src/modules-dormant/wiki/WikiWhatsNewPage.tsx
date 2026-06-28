@@ -14,7 +14,7 @@ const BADGE_STYLES: Record<BadgeType, { bg: string; color: string }> = {
 };
 
 const SkeletonChangeItem = () => (
-  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 4, border: '1px solid var(--cp-border-subtle)', background: 'var(--cp-bg-elevated)' }}>
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-border-subtle)', background: 'var(--cp-bg-elevated)' }}>
     <SkeletonBlock width={60} height={16} />
     <div style={{ flex: 1 }}>
       <SkeletonBlock width="70%" height={14} style={{ marginBottom: 4 }} />
@@ -32,7 +32,7 @@ export default function WikiWhatsNewPage() {
     <div style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
       <div style={{ maxWidth: 840, marginInline: 'auto', padding: '16px 28px 48px' }}>
         {/* Breadcrumb */}
-        <nav role="navigation" aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
+        <nav role="navigation" aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') navigate('/wiki'); }} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-link)', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: 'var(--cp-text-muted)' }} />
           <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-secondary)', fontWeight: 600 }}>What's New</span>
@@ -63,17 +63,17 @@ export default function WikiWhatsNewPage() {
                 const bs = BADGE_STYLES[item.badge as BadgeType] || BADGE_STYLES.UPDATED;
                 return (
                   <div key={i} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px',
+                    display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 12px',
                     borderRadius: 4, border: '1px solid var(--cp-border-subtle)',
                     background: 'var(--cp-bg-elevated)',
                   }}>
                     <span aria-label={`Change type: ${item.badge}`} style={{
                       fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em',
-                      padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap', marginTop: 2,
+                      padding: '0px 6px', borderRadius: 4, whiteSpace: 'nowrap', marginTop: 0,
                       background: bs.bg, color: bs.color,
                     }}>{item.badge}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-text-primary)', marginBottom: 2, ...truncateStyle(2) }}>{item.title}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-text-primary)', marginBottom: 0, ...truncateStyle(2) }}>{item.title}</div>
                       <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-tertiary)', lineHeight: 1.4 }}>{item.desc}</div>
                     </div>
                     <DomainBadge code={item.domain} />

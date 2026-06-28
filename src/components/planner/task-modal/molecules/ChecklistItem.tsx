@@ -33,8 +33,8 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '14px',
-        padding: '14px 16px',
+        gap: '12px',
+        padding: '12px 16px',
         backgroundColor: completed ? COLORS.surfacePage : COLORS.surfaceCard,
         border: `1px solid ${isHovered ? 'var(--ds-text-disabled)' : 'var(--ds-border, var(--cp-bg-sunken))'}`,
         borderRadius: '12px',

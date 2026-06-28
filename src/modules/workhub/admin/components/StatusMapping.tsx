@@ -87,14 +87,14 @@ export function StatusMapping() {
 
       <div style={{
         background: 'var(--bg-app)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 8,
-        padding: 20, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
+        padding: 16, boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,.05))',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', margin: 0 }}>
             Category Mapping
           </h2>
           <span style={{
-            fontSize: 'var(--ds-font-size-50)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', padding: '2px 8px',
+            fontSize: 'var(--ds-font-size-50)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', padding: '0px 8px',
             borderRadius: 4, fontWeight: 500,
           }}>{totalCount} statuses</span>
         </div>
@@ -105,7 +105,7 @@ export function StatusMapping() {
           return (
             <div
               key={category}
-              style={{ marginBottom: 20 }}
+              style={{ marginBottom: 16 }}
               onDragOver={e => { e.preventDefault(); e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.03))' }}
               onDragLeave={e => { e.currentTarget.style.background = 'transparent' }}
               onDrop={e => {
@@ -116,9 +116,9 @@ export function StatusMapping() {
                 }
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <span style={{
-                  padding: '3px 10px', borderRadius: 4, fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
+                  padding: '4px 10px', borderRadius: 4, fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                   textTransform: 'uppercase', letterSpacing: '.3px',
                   background: colors.bg, color: colors.text,
                 }}>
@@ -131,14 +131,14 @@ export function StatusMapping() {
                   onClick={() => { setAddingTo(addingTo === category ? null : category); setNewStatus('') }}
                   style={{
                     marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', background: 'none',
-                    border: 'none', cursor: 'pointer', padding: '2px 6px', fontWeight: 500,
+                    border: 'none', cursor: 'pointer', padding: '0px 6px', fontWeight: 500,
                   }}
                 >
                   + Add
                 </button>
               </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {statuses.map(status => (
                   <div
                     key={status}
@@ -146,7 +146,7 @@ export function StatusMapping() {
                     onDragStart={() => setDragItem({ status, fromCategory: category })}
                     onDragEnd={() => setDragItem(null)}
                     style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
                       padding: '4px 10px', borderRadius: 4,
                       background: 'var(--bg-1)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))',
                       fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)',
@@ -163,7 +163,7 @@ export function StatusMapping() {
                       style={{
                         fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', background: 'none',
                         border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1,
-                        marginLeft: 2,
+                        marginLeft: 0,
                       }}
                       title="Remove"
                     >
@@ -174,7 +174,7 @@ export function StatusMapping() {
               </div>
 
               {addingTo === category && (
-                <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
                   <input
                     value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value)}
@@ -182,16 +182,16 @@ export function StatusMapping() {
                     placeholder="Jira status name"
                     autoFocus
                     style={{
-                      padding: '5px 10px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 4,
+                      padding: '4px 10px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: 4,
                       fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', width: 200,
                     }}
                   />
                   <button onClick={() => handleAddStatus(category)} style={{
-                    padding: '5px 12px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+                    padding: '4px 12px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                     background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', cursor: 'pointer',
                   }}>Add</button>
                   <button onClick={() => { setAddingTo(null); setNewStatus('') }} style={{
-                    padding: '5px 12px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)',
+                    padding: '4px 12px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)',
                     background: 'var(--bg-1)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', cursor: 'pointer',
                   }}>Cancel</button>
                 </div>

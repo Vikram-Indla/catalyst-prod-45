@@ -130,7 +130,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
     <div style={{
       fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: T.textSubtlest,
       textTransform: 'uppercase' as const, letterSpacing: '0.04em',
-      marginBottom: 12, paddingBottom: 6, borderBottom: `1px solid ${T.border}`,
+      marginBottom: 12, paddingBottom: 4, borderBottom: `1px solid ${T.border}`,
     }}>
       {children}
     </div>
@@ -430,7 +430,7 @@ function WizardStep1({
 
   return (
     <div>
-      <div style={{ marginBottom: 20, fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
+      <div style={{ marginBottom: 16, fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
         Paste the Notion database URL — the system auto-detects schema and pre-maps columns.
         You can refine the mapping in step 2.
       </div>
@@ -577,7 +577,7 @@ function WizardStep2({
         </SectionMessage>
       )}
 
-      <div style={{ marginTop: 20, marginBottom: 8 }}>
+      <div style={{ marginTop: 16, marginBottom: 8 }}>
         <ExclusionRulesEditor
           rules={state.exclusionRules}
           fields={fields}
@@ -831,7 +831,7 @@ function AddSourceWizard({
       {/* Step header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '14px 24px', borderBottom: `1px solid ${T.border}`,
+        padding: '12px 24px', borderBottom: `1px solid ${T.border}`,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {STEP_LABELS.map((label, i) => {
@@ -1017,7 +1017,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
         </div>
 
         {/* Status lozenges */}
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexShrink: 0 }}>
           {paused && <Lozenge appearance="moved">Paused</Lozenge>}
           {!paused && syncStatus === 'ok'      && <Lozenge appearance="success">Active</Lozenge>}
           {!paused && syncStatus === 'error'   && <Lozenge appearance="removed">Error</Lozenge>}
@@ -1077,7 +1077,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
         {lastSyncAt && (
           <div>
             Last sync: <span style={{ color: T.text }}>{formatRiyadh(lastSyncAt, 'relative')}</span>
-            <span style={{ marginLeft: 6, color: T.textSubtlest }}>({formatRiyadh(lastSyncAt)})</span>
+            <span style={{ marginLeft: 4, color: T.textSubtlest }}>({formatRiyadh(lastSyncAt)})</span>
           </div>
         )}
         <div style={{ marginLeft: 'auto' }}>
@@ -1089,7 +1089,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
       {syncStatus === 'error' && config.last_sync_error && (
         <div style={{
           marginTop: 8, fontSize: 'var(--ds-font-size-200)', color: T.dangerText,
-          background: T.danger, borderRadius: 4, padding: '6px 10px',
+          background: T.danger, borderRadius: 4, padding: '4px 10px',
         }}>
           {config.last_sync_error}
         </div>
@@ -1327,7 +1327,7 @@ export default function NotionConnectionPage() {
     <AdminGuard>
       <div style={{ padding: '32px 48px', maxWidth: 900 }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
           <NotionIcon size={48} />
           <div>
             <h1 style={{

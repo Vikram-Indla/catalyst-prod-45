@@ -132,7 +132,7 @@ export function LaterPanel({ selectedItemId, onSelectItem, showRightBorder = tru
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '14px 16px 6px',
+          padding: '12px 16px 6px',
         }}
       >
         <h1
@@ -182,7 +182,7 @@ export function LaterPanel({ selectedItemId, onSelectItem, showRightBorder = tru
         role="tablist"
         style={{
           display: 'flex',
-          gap: 18,
+          gap: 16,
           padding: '0 16px',
           borderBottom: '1px solid var(--cv2-divider)',
         }}
@@ -319,8 +319,8 @@ function TabBtn({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
-        padding: '10px 0 12px',
+        gap: 4,
+        padding: '8px 0 12px',
         background: 'transparent',
         color: active ? 'var(--cv2-text-strong)' : 'var(--cv2-text-subtle)',
         border: 'none',

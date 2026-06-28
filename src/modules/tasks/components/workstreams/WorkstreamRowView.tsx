@@ -124,7 +124,7 @@ export const WorkstreamRow: React.FC<{
     >
       {/* NAME CELL */}
       <td style={{ padding: '16px 20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
               width: '40px',
@@ -163,7 +163,7 @@ export const WorkstreamRow: React.FC<{
                   fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 500,
                   backgroundColor: COLORS.surfaceHover,
-                  padding: '2px 6px',
+                  padding: '0px 6px',
                   borderRadius: '4px',
                 }}
               >
@@ -189,7 +189,7 @@ export const WorkstreamRow: React.FC<{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              padding: '6px 10px',
+              padding: '4px 10px',
               backgroundColor: 'transparent',
               border: `1px solid ${isHovered || isDropdownOpen ? COLORS.borderDefault : 'transparent'}`,
               borderRadius: '8px',
@@ -233,7 +233,7 @@ export const WorkstreamRow: React.FC<{
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '4px',
                   fontSize: 'var(--ds-font-size-300)',
                   color: COLORS.textLight,
                 }}
@@ -268,7 +268,7 @@ export const WorkstreamRow: React.FC<{
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '6px',
+            gap: '4px',
             padding: '4px 10px',
             backgroundColor: healthConfig.bg,
             borderRadius: '6px',

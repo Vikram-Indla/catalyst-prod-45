@@ -57,7 +57,7 @@ export function JumpToDateMenu({
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 'var(--cv2-radius-md)',
         boxShadow: 'var(--cv2-shadow-modal)',
-        padding: '6px 0',
+        padding: '4px 0',
         fontFamily: 'var(--cv2-font)',
         zIndex: 'var(--cv2-popover-z, 1100)' as any,
       }}
@@ -74,7 +74,7 @@ export function JumpToDateMenu({
 
 function Header({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>{children}</div>
+    <div style={{ padding: '4px 14px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>{children}</div>
   );
 }
 

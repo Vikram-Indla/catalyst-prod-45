@@ -70,7 +70,7 @@ export function ActivityFeed({ workItemId }: Props) {
             className="w-full rounded text-[14px] resize-none focus:outline-none transition-colors bg-[var(--bg-1)]"
             style={{
               border: '1px solid var(--divider)',
-              padding: '10px 12px',
+              padding: '8px 12px',
               minHeight: 40,
             }}
             onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.backgroundColor = 'var(--bg-app)'; e.currentTarget.style.minHeight = '60px'; }}

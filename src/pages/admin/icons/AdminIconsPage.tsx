@@ -153,7 +153,7 @@ const gridStyle: React.CSSProperties = {
 const cardOuterStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  padding: 10,
+  padding: 8,
   borderRadius: 6,
   backgroundColor: 'var(--ds-surface)',
   border: '1px solid var(--ds-border)',
@@ -258,8 +258,8 @@ function IconCard({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: 6,
-        marginBottom: 6,
+        gap: 4,
+        marginBottom: 4,
         minWidth: 0,
       }}>
         <Tooltip content={label} position="top">
@@ -281,7 +281,7 @@ function IconCard({
       </div>
 
       {supportsDarkVariant && (
-        <div style={{ marginBottom: 6, fontSize: 'var(--ds-font-size-200)' }}>
+        <div style={{ marginBottom: 4, fontSize: 'var(--ds-font-size-200)' }}>
           <RadioGroup
             name={`variant-${category}-${itemKey}`}
             isDisabled={busy}
@@ -440,7 +440,7 @@ function AddCustomIconModal({ isOpen, onClose, category }: AddCustomIconModalPro
                   onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 />
                 {file && (
-                  <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
+                  <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
                     {file.name} · {Math.round(file.size / 1024)} KB
                   </div>
                 )}
@@ -686,7 +686,7 @@ export default function AdminIconsPage() {
             setNewCategoryOpen(true);
           }}
           style={{
-            padding: '6px 14px',
+            padding: '4px 14px',
             borderRadius: 4,
             background: 'var(--ds-background-brand-bold)',
             color: 'var(--ds-surface)',

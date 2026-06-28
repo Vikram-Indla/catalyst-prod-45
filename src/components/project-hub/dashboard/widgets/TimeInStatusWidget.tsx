@@ -358,7 +358,7 @@ export default function TimeInStatusWidget({
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 4,
                   height: 28,
                   padding: '0 10px',
                   ...(active ? SMALL_STRONG : SMALL),
@@ -528,7 +528,7 @@ export default function TimeInStatusWidget({
                       width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <PriorityIcon level={r.priority} size={16} />
                       {/* 2026-06-09 Vikram parity — match Epic Progress
                           summary cell: key + title both 14/400 blue link

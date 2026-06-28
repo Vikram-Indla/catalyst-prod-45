@@ -56,15 +56,15 @@ const ComponentSection = ({
 
     <div style={{ marginBottom: '16px' }}>
       <p style={{ color: T.textSubtle, margin: '0 0 8px 0' }}>
-        <strong>NPM Package:</strong> <code style={{ background: T.code, padding: '2px 6px', borderRadius: '3px' }}>{npm}</code>
+        <strong>NPM Package:</strong> <code style={{ background: T.code, padding: '0px 6px', borderRadius: '3px' }}>{npm}</code>
       </p>
       <p style={{ color: T.text, margin: '0 0 16px 0' }}>{description}</p>
     </div>
 
-    <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: '20px', marginBottom: '8px' }}>Installation</h3>
+    <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: '16px', marginBottom: '8px' }}>Installation</h3>
     <CodeBlock code={installation} />
 
-    <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: '20px', marginBottom: '8px' }}>API Reference</h3>
+    <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: '16px', marginBottom: '8px' }}>API Reference</h3>
     <div style={{ overflowX: 'auto', marginBottom: '16px' }}>
       <table
         style={{
@@ -86,10 +86,10 @@ const ComponentSection = ({
           {apiReference.map((ref, i) => (
             <tr key={i} style={{ borderBottom: `1px solid ${T.border}` }}>
               <td style={{ padding: '8px', color: T.text }}>
-                <code style={{ background: T.code, padding: '2px 4px', borderRadius: '2px' }}>{ref.prop}</code>
+                <code style={{ background: T.code, padding: '0px 4px', borderRadius: '2px' }}>{ref.prop}</code>
               </td>
               <td style={{ padding: '8px', color: T.text }}>
-                <code style={{ background: T.code, padding: '2px 4px', borderRadius: '2px', fontSize: 'var(--ds-font-size-100)' }}>{ref.type}</code>
+                <code style={{ background: T.code, padding: '0px 4px', borderRadius: '2px', fontSize: 'var(--ds-font-size-100)' }}>{ref.type}</code>
               </td>
               <td style={{ padding: '8px', color: T.textSubtle }}>{ref.default}</td>
               <td style={{ padding: '8px', color: T.text }}>{ref.description}</td>
@@ -99,7 +99,7 @@ const ComponentSection = ({
       </table>
     </div>
 
-    <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: '20px', marginBottom: '8px' }}>Usage Examples</h3>
+    <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: '16px', marginBottom: '8px' }}>Usage Examples</h3>
     {examples.map((ex, i) => (
       <div key={i} style={{ marginBottom: '16px' }}>
         <p style={{ fontWeight: 500, color: T.text, margin: '0 0 6px 0' }}>{ex.title}</p>
@@ -107,7 +107,7 @@ const ComponentSection = ({
       </div>
     ))}
 
-    <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: '20px', marginBottom: '8px' }}>Do's and Don'ts</h3>
+    <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginTop: '16px', marginBottom: '8px' }}>Do's and Don'ts</h3>
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
       <div style={{ padding: '12px', background: 'rgba(76, 154, 73, 0.1)', borderLeft: '4px solid rgb(76, 154, 73)', borderRadius: '3px' }}> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         <p style={{ fontWeight: 600, color: 'rgb(76, 154, 73)', margin: '0 0 8px 0' }}>✓ Do's</p> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent

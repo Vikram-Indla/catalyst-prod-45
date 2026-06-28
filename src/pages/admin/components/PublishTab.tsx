@@ -303,7 +303,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
             >
               Hub target
             </label>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
               {HUB_PRESETS.map(hub => {
                 const isActive = routeDraft === hub.route && !routeIsCustom;
                 return (

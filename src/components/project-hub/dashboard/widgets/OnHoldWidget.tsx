@@ -207,7 +207,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
           <KpiHeadline total={total} awaitingInfo={awaitingInfo} blocked={blocked} />
 
           {/* ── On-hold rows ──────────────────────────────────────────── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             <OnHoldHeader activeColumns={activeColumns} />
             {/* No slice cap — body has standardised height with internal
                 scroll, so the entire list is visible without truncation. */}
@@ -280,8 +280,8 @@ function KpiCell({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
-        padding: '10px 12px',
+        gap: 0,
+        padding: '8px 12px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}
     >

@@ -32,13 +32,13 @@ export function doPrintExport(items: RoadmapDemand[]) {
     return `<tr>
       <td style="font-family:monospace;color:var(--ds-text-brand, var(--cp-workstream-catalyst-primary));font-weight:600">${item.request_key || '—'}</td>
       <td style="font-weight:500;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.title}</td>
-      <td><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;background:${sc.bg};color:${sc.c}">${status.replace(/_/g, ' ')}</span></td>
+      <td><span style="display:inline-block;padding:0px 8px;border-radius:10px;font-size:10px;font-weight:600;background:${sc.bg};color:${sc.c}">${status.replace(/_/g, ' ')}</span></td>
       <td>${(item as any).owner_name || '—'}</td>
       <td style="font-family:monospace;font-size:11px">${fdf(item.start_date)}</td>
       <td style="font-family:monospace;font-size:11px">${fdf(item.end_date)}</td>
       <td style="font-weight:500">${item.priority_tier || '—'}</td>
       <td>
-        <div style="display:flex;align-items:center;gap:6px">
+        <div style="display:flex;align-items:center;gap:4px">
           <div style="flex:1;height:4px;background:var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)));border-radius:999px;overflow:hidden;min-width:50px">
             <div style="width:${item.progress}%;height:100%;background:var(--ds-text-brand, var(--cp-workstream-catalyst-primary));border-radius:999px"></div>
           </div>
@@ -55,10 +55,10 @@ export function doPrintExport(items: RoadmapDemand[]) {
 <style>
 * { box-sizing: border-box; margin: 0 }
 body { font-family: system-ui, -apple-system, sans-serif; color: var(--ds-text); padding: 40px; -webkit-print-color-adjust: exact; print-color-adjust: exact }
-@page { size: landscape; margin: 20mm }
+@page { size: landscape; margin: 16mm }
 table { width: 100%; border-collapse: collapse; font-size: 12px }
-th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--ds-border); font-size: 10px; font-weight: 700; color: var(--ds-text-subtlest); text-transform: uppercase; letter-spacing: 0.06em; background: var(--ds-surface-sunken) }
-td { padding: 8px 10px; border-bottom: 1px solid var(--ds-surface-sunken) }
+th { text-align: left; padding: 8px 10px; border-bottom: 0px solid var(--ds-border); font-size: 10px; font-weight: 700; color: var(--ds-text-subtlest); text-transform: uppercase; letter-spacing: 0.06em; background: var(--ds-surface-sunken) }
+td { padding: 8px 10px; border-bottom: 0px solid var(--ds-surface-sunken) }
 tr:hover { background: var(--ds-surface-sunken) }
 </style>
 </head><body>
@@ -78,7 +78,7 @@ tr:hover { background: var(--ds-surface-sunken) }
   </tr></thead>
   <tbody>${rows}</tbody>
 </table>
-<div style="margin-top:32px;padding-top:16px;border-top:1px solid var(--ds-border);display:flex;justify-content:space-between;font-size:10px;color:#A1A1AA">
+<div style="margin-top:32px;padding-top:16px;border-top:0px solid var(--ds-border);display:flex;justify-content:space-between;font-size:10px;color:#A1A1AA">
   <span>Catalyst V11 · Product Roadmap V9</span>
   <span>${now}</span>
 </div>

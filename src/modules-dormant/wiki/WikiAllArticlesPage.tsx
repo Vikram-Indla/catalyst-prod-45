@@ -79,13 +79,13 @@ export default function WikiAllArticlesPage() {
 
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--ds-surface-sunken)', minHeight: '100%', padding: '24px 40px 48px' }}>
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
         <span style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontWeight: 600 }}>All Articles</span>
       </nav>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <h1 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, margin: 0 }}>All Articles</h1>
         {selected.size > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -147,7 +147,7 @@ export default function WikiAllArticlesPage() {
           <div onClick={() => setShowConfirm(false)} style={{ position: 'absolute', inset: 0, background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.5))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.3))' }} />
           <div style={{ position: 'relative', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderRadius: 12, padding: 24, width: 400, boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }}>
             <h3 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, marginBottom: 8 }}>Confirm Bulk Action</h3>
-            <p style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 20 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 16 }}>
               This will {bulkAction === 'archive' ? 'archive' : `update ${bulkAction} for`} <strong>{selected.size} articles</strong>. This cannot be undone easily.
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
@@ -202,11 +202,11 @@ export default function WikiAllArticlesPage() {
                     style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)}>
-                  {a.format === 'pdf' ? <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))' : 'var(--ds-background-danger, var(--ds-background-danger))', color: 'var(--ds-text-danger, var(--cp-danger))' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />}
+                  {a.format === 'pdf' ? <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0px 4px', borderRadius: 4, background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))' : 'var(--ds-background-danger, var(--ds-background-danger))', color: 'var(--ds-text-danger, var(--cp-danger))' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />}
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                 <span style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{a.domain_code}</span>
-                <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
                 <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: confColor }}>{conf}%</span>
                 <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{a.view_count ?? 0}</span>
                 <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{new Date(a.updated_at).toLocaleDateString()}</span>

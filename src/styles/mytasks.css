@@ -111,7 +111,7 @@
   --mytasks-card-radius: 12px;
   --mytasks-row-padding: 12px 20px;
   --mytasks-row-gap: 12px;
-  --mytasks-section-header-padding: 14px 20px;
+  --mytasks-section-header-padding: 12px 20px;
   --mytasks-toolbar-padding: 16px 20px;
   
   /* ========================================
@@ -230,7 +230,7 @@
   justify-content: space-between;
   padding: var(--mytasks-toolbar-padding);
   background-color: var(--mytasks-bg-toolbar);
-  border-bottom: 1px solid var(--mytasks-border-default);
+  border-bottom: 0px solid var(--mytasks-border-default);
 }
 
 .mytasks-toolbar__left {
@@ -241,8 +241,8 @@
 .mytasks-search {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 8px 14px;
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px solid var(--mytasks-border-default);
   border-radius: 12px;
@@ -255,7 +255,7 @@
   background: transparent;
   font-size: 14px;
   color: var(--ds-text);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-family: inherit;
 }
 
@@ -269,7 +269,7 @@
 }
 
 .mytasks-search__shortcut {
-  padding: 3px 6px;
+  padding: 4px 6px;
   background-color: var(--ds-border, var(--cp-bg-sunken));
   border-radius: 4px;
   font-size: 10px;
@@ -280,8 +280,8 @@
 .mytasks-filter-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 14px;
+  gap: 4px;
+  padding: 8px 14px;
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px solid var(--mytasks-border-default);
   border-radius: 12px;
@@ -306,7 +306,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 18px;
+  padding: 8px 18px;
   background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   border: none;
   border-radius: 12px;
@@ -342,10 +342,10 @@
 .mytasks-section-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: var(--mytasks-section-header-padding);
   background-color: var(--mytasks-bg-section-header);
-  border-bottom: 1px solid var(--mytasks-border-default);
+  border-bottom: 0px solid var(--mytasks-border-default);
 }
 
 .mytasks-section-header__icon {
@@ -375,7 +375,7 @@
   font-weight: 500;
   color: var(--ds-text-subtlest);
   background-color: var(--ds-surface-sunken);
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: 12px;
 }
 
@@ -402,7 +402,7 @@
   gap: var(--mytasks-row-gap);
   padding: var(--mytasks-row-padding);
   background-color: var(--mytasks-bg-row);
-  border-bottom: 1px solid var(--mytasks-border-row);
+  border-bottom: 0px solid var(--mytasks-border-row);
   cursor: pointer;
   transition: background-color var(--mytasks-transition-fast);
 }
@@ -421,7 +421,7 @@
 
 /* Overdue State */
 .mytasks-row--overdue {
-  border-left: 3px solid var(--mytasks-border-overdue);
+  border-left: 4px solid var(--mytasks-border-overdue);
   background-color: var(--mytasks-bg-row-overdue);
 }
 
@@ -528,7 +528,7 @@
 .mytasks-row__workstream {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   font-size: var(--mytasks-workstream-font-size);
   font-weight: var(--mytasks-workstream-font-weight);
   color: var(--mytasks-workstream-color);
@@ -565,7 +565,7 @@
 .mytasks-row__date {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   font-size: var(--mytasks-date-font-size);
   font-weight: var(--mytasks-date-font-weight);
   flex-shrink: 0;
@@ -623,7 +623,7 @@
 
 .mytasks-row__actions {
   display: flex;
-  gap: 2px;
+  gap: 0px;
   opacity: 0;
   transition: opacity var(--mytasks-transition-normal);
   margin-left: 8px;
@@ -664,7 +664,7 @@
    ============================================================================ */
 
 .mytasks-empty {
-  padding: 60px 20px;
+  padding: 48px 20px;
   text-align: center;
   color: var(--ds-text-subtlest);
   font-size: 14px;
@@ -695,7 +695,7 @@
    ============================================================================ */
 
 .mytasks-loading {
-  padding: 60px 20px;
+  padding: 48px 20px;
   text-align: center;
   color: var(--ds-text-subtlest);
   font-size: 14px;
@@ -787,14 +787,14 @@
    ============================================================================ */
 
 .mytasks-completed-section {
-  border-top: 1px solid var(--mytasks-border-default);
+  border-top: 0px solid var(--mytasks-border-default);
   margin-top: 8px;
 }
 
 /* MUTED gray header — NOT green per spec */
 .mytasks-section-header--completed {
   background-color: var(--ds-surface-sunken);  /* slate-100, NOT green */
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken));  /* slate-200 */
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken));  /* slate-200 */
   cursor: pointer;
   width: 100%;
   text-align: left;

@@ -142,7 +142,7 @@ export function CatalystConfigureDrawer({
               No pinned fields yet — pin a field below to show it at the top of the sidebar.
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {pinnedFields.map((id) => {
                 const field = PINNABLE_FIELDS.find((f) => f.id === id);
                 if (!field) return null;
@@ -171,7 +171,7 @@ export function CatalystConfigureDrawer({
           }}>
             Available to pin
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {visibleFields.filter((f) => !pinnedFields.includes(f.id)).map((field) => (
               <FieldConfigRow
                 key={field.id}
@@ -215,7 +215,7 @@ function FieldConfigRow({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '10px 12px',
+        padding: '8px 12px',
         borderRadius: 4,
         background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
         transition: 'background 0.1s',

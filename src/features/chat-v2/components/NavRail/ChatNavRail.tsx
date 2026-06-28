@@ -51,7 +51,7 @@ export function ChatNavRail({
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 2,
+          gap: 0,
           padding: collapsed ? '12px 6px' : '12px 8px',
         }}
       >
@@ -172,9 +172,9 @@ function NavRow({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         width: '100%',
-        padding: '6px 12px',
+        padding: '4px 12px',
         background: active ? 'var(--cv2-bg-row-active, var(--cv2-bg-row-hover))' : 'transparent',
         border: 'none',
         textAlign: 'left',

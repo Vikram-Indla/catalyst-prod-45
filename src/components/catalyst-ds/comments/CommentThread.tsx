@@ -201,13 +201,13 @@ function CommentThread({
             }
           />
           {replyingToId === comment.id && (
-            <div style={{ paddingLeft: 44, paddingTop: 8, paddingBottom: 8 }}>
+            <div style={{ paddingLeft: 40, paddingTop: 8, paddingBottom: 8 }}>
               <div
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtle)',
-                  marginBottom: 6,
+                  marginBottom: 4,
                 }}
               >
                 Replying to {comment.author.name}

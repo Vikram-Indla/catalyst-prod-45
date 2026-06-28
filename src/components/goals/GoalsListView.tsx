@@ -46,7 +46,7 @@ function statusBadge(status: string, isDark = false) {
   };
   const s = map[status] || map.draft;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: isDark ? s.txtDk : s.text, background: isDark ? s.bgDk : s.bg, borderRadius: 99 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: isDark ? s.txtDk : s.text, background: isDark ? s.bgDk : s.bg, borderRadius: 99 }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot }} />
       {s.label}
     </span>
@@ -105,7 +105,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
           <span
             key={c.key}
             onClick={() => c.sortable && handleSort(c.key)}
-            style={{ cursor: c.sortable ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: 3, userSelect: 'none' }}
+            style={{ cursor: c.sortable ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: 4, userSelect: 'none' }}
           >
             {c.label}
             {c.sortable && sortKey === c.key && sortDir === 'asc' && <ChevronUp size={10} />}
@@ -129,13 +129,13 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
             onMouseEnter={e => (e.currentTarget.style.background = rowHover)}
             onMouseLeave={e => (e.currentTarget.style.background = rowBg)}
           >
-            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'var(--ds-surface-overlay)' : 'var(--cp-bd-zone)', padding: '0px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
             <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {theme && (<><span style={{ width: 8, height: 8, borderRadius: 4, background: theme.color, flexShrink: 0 }} /><span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t2 : 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span></>)}
             </div>
             <div>{statusBadge(goal.status, isDark)}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {goal.owner_name && ownerColors ? (
                 <>
                   <div style={{ width: 28, height: 28, borderRadius: '50%', background: ownerColors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ownerColors.text, flexShrink: 0 }}>

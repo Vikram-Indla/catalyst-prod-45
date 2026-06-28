@@ -464,8 +464,8 @@ export function WorkstreamsPage() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
-              padding: '10px 14px',
+              gap: '8px',
+              padding: '8px 14px',
               backgroundColor: COLORS.surfacePage,
               border: `1px solid ${COLORS.borderLight}`,
               borderRadius: '12px',
@@ -514,7 +514,7 @@ export function WorkstreamsPage() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '4px',
                   padding: '8px 14px',
                   backgroundColor: healthFilter ? 'var(--ds-background-selected)' : COLORS.surfaceWhite,
                   border: `1px solid ${healthFilter ? 'var(--ds-text-brand)' : COLORS.borderLight}`,
@@ -570,8 +570,8 @@ export function WorkstreamsPage() {
                           width: '100%',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '10px',
-                          padding: '10px 12px',
+                          gap: '8px',
+                          padding: '8px 12px',
                           backgroundColor: healthFilter === option.value ? COLORS.surfaceHover : 'transparent',
                           border: 'none',
                           borderRadius: '6px',
@@ -609,7 +609,7 @@ export function WorkstreamsPage() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '4px',
                   padding: '8px 14px',
                   backgroundColor: leadFilter ? 'var(--ds-background-selected)' : COLORS.surfaceWhite,
                   border: `1px solid ${leadFilter ? 'var(--ds-text-brand)' : COLORS.borderLight}`,
@@ -664,8 +664,8 @@ export function WorkstreamsPage() {
                           width: '100%',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '10px',
-                          padding: '10px 12px',
+                          gap: '8px',
+                          padding: '8px 12px',
                           backgroundColor: leadFilter === option.value ? COLORS.surfaceHover : 'transparent',
                           border: 'none',
                           borderRadius: '6px',
@@ -711,11 +711,11 @@ export function WorkstreamsPage() {
 
         {/* TABLE */}
         {isLoading ? (
-          <div style={{ padding: '60px', textAlign: 'center', color: COLORS.textMuted }}>
+          <div style={{ padding: '48px', textAlign: 'center', color: COLORS.textMuted }}>
             Loading workstreams...
           </div>
         ) : filteredWorkstreams.length === 0 ? (
-          <div style={{ padding: '60px', textAlign: 'center', color: COLORS.textMuted }}>
+          <div style={{ padding: '48px', textAlign: 'center', color: COLORS.textMuted }}>
             {searchQuery ? 'No workstreams match your search' : 'No workstreams yet'}
           </div>
         ) : viewMode === 'list' ? (
@@ -791,7 +791,7 @@ export function WorkstreamsPage() {
               padding: '24px',
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-              gap: '20px',
+              gap: '16px',
             }}
           >
             {paginatedWorkstreams.map((ws, index) => (

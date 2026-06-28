@@ -41,7 +41,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
 
   if (workItems.length === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
         <Users style={{ width: 48, height: 48, marginBottom: 16 }} />
         <p style={{ fontSize: 'var(--ds-font-size-400)', margin: 0 }}>No work items due in {getMonthName(month)} {year}</p>
       </div>
@@ -63,7 +63,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
     if (assignees.length === 0) return null;
 
     return (
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 2, marginTop: 2 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0, marginTop: 0 }}>
         {assignees.slice(0, maxAvatars).map((a) => (
           <div key={a.assignee_user_id} title={`${a.assignee_name}: ${a.event_title}`}>
             <AvatarChip name={a.assignee_name || 'U'} color={a.event_color} size={20} />
@@ -101,7 +101,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: 4,
                 padding: '4px 8px',
                 borderRadius: 'var(--wh-radius-full)',
                 border: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent',

@@ -16,7 +16,7 @@ const PRIORITIES = [
 function PriorityBarsInline({ level }: { level: number }) {
   const { isDark } = useTheme();
   return (
-    <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
         <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))') : ('var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken)))') }} />
       ))}
@@ -48,7 +48,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
     <div
       ref={ref}
       style={{
-        position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 180,
+        position: 'absolute', top: '48%', left: 0, marginTop: 4, width: 180,
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--cp-border, var(--cp-bg-sunken))', borderRadius: 6,
         boxShadow: isDark ? '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.10))', zIndex: 9999, overflow: 'hidden',
       }}

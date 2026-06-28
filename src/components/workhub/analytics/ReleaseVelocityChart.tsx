@@ -43,7 +43,7 @@ export function ReleaseVelocityChart({ data }: Props) {
       <h3 style={{
         fontFamily: 'var(--cp-font-body)',
         fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
-        color: 'var(--fg-1)', marginBottom: 20,
+        color: 'var(--fg-1)', marginBottom: 16,
       }}>
         Release Velocity
       </h3>

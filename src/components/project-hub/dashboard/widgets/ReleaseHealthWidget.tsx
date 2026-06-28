@@ -190,7 +190,7 @@ export default function ReleaseHealthWidget({
           description="Create a release to track delivery progress."
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {/* ── KPI headline strip ─────────────────────────────────────── */}
           <KpiHeadline active={count} onTrack={onTrackCount} atRisk={atRiskCount} />
 
@@ -260,8 +260,8 @@ function KpiCell({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
-        padding: '10px 10px',
+        gap: 0,
+        padding: '8px 10px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
         minWidth: 0,
       }}
@@ -308,7 +308,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 6,
+        gap: 4,
       }}
     >
       {/* Top line: name + status lozenge */}
@@ -340,7 +340,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
       </div>
 
       {/* Middle line: thick bar + % on the right */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <div
           style={{
             flex: 1,

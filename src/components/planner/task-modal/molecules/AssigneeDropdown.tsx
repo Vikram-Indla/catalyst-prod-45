@@ -44,7 +44,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
       style={{ 
         display: 'flex', 
         flexDirection: 'column', 
-        gap: '6px', 
+        gap: '4px', 
         position: 'relative' 
       }}
     >
@@ -59,8 +59,8 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
-          padding: '10px 14px',
+          gap: '8px',
+          padding: '8px 14px',
           backgroundColor: COLORS.surfaceCard,
           border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
           borderRadius: '12px',
@@ -106,7 +106,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
             borderRadius: '12px',
             boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
             zIndex: 99999,
-            padding: '6px',
+            padding: '4px',
             maxHeight: '280px',
             overflowY: 'auto'
           }}
@@ -144,8 +144,8 @@ const AssigneeItem: React.FC<{
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
-        padding: '10px 12px',
+        gap: '8px',
+        padding: '8px 12px',
         borderRadius: '8px',
         cursor: 'pointer',
         backgroundColor: isSelected 

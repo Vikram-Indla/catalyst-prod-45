@@ -26,7 +26,7 @@
   height: 64px;
   padding: 0 24px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken));
   gap: 16px;
 }
 
@@ -49,7 +49,7 @@
   justify-content: center;
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
   transition: transform 0.15s ease;
 }
@@ -57,7 +57,7 @@
 .t10-detail-logo-text {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 0px;
 }
 
 .t10-detail-logo-title {
@@ -88,7 +88,7 @@
 }
 
 .t10-detail-list-key {
-  padding: 5px 10px;
+  padding: 4px 10px;
   font-size: 12px;
   font-family: var(--cp-font-mono);
   font-weight: 600;
@@ -141,7 +141,7 @@
 .t10-detail-week-display {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 8px 16px;
   background: var(--ds-surface-sunken);
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
@@ -161,7 +161,7 @@
 }
 
 .t10-detail-week-badge {
-  padding: 3px 8px;
+  padding: 4px 8px;
   font-size: 10px;
   font-weight: 700;
   background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -204,7 +204,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 8px 20px;
   font-size: 13px;
   font-weight: 600;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
@@ -242,7 +242,7 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .t10-detail-ai-section {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px dashed var(--ds-text-disabled);
   border-radius: 16px;
@@ -259,7 +259,7 @@
 .t10-detail-ai-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .t10-detail-ai-icon {
@@ -277,7 +277,7 @@
 .t10-detail-ai-content {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
 }
 
 .t10-detail-ai-title {
@@ -294,7 +294,7 @@
 .t10-detail-ai-toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 500;
@@ -350,7 +350,7 @@
 .t10-detail-ai-suggestion-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   flex: 1;
   min-width: 0;
 }
@@ -420,7 +420,7 @@
 .t10-detail-add-wrapper {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding: 16px 20px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px dashed var(--ds-text-disabled);
@@ -446,7 +446,7 @@
   color: var(--ds-text);
   background: transparent !important;
   border: none !important;
-  outline: none !important;
+  outline: 2px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   border-radius: 0 !important;
   -webkit-appearance: none !important;
@@ -456,7 +456,7 @@
 .t10-detail-add-input:focus,
 .t10-detail-add-input:focus-visible {
   border: none !important;
-  outline: none !important;
+  outline: 2px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
   border-color: transparent !important;
 }
@@ -477,7 +477,7 @@
 }
 
 .t10-detail-add-hint kbd {
-  padding: 6px 12px;
+  padding: 4px 12px;
   font-family: inherit;
   font-size: 12px;
   font-weight: 500;
@@ -528,7 +528,7 @@
 .t10-detail-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .t10-detail-empty-state {
@@ -577,7 +577,7 @@
 .t10-detail-priority-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* Priority Item - COMPACT SINGLE-LINE card design */
@@ -731,7 +731,7 @@
 .t10-detail-priority-assignee {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   font-size: 13px;
   color: var(--ds-text-subtlest);
 }
@@ -748,7 +748,7 @@
   color: var(--ds-text-subtlest);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .t10-detail-priority-due-overdue {
@@ -895,7 +895,7 @@
 }
 
 .t10-detail-buffer-count {
-  padding: 2px 10px;
+  padding: 0px 10px;
   font-size: 12px;
   font-weight: 600;
   color: var(--ds-text-subtlest);
@@ -938,11 +938,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: var(--ds-surface-sunken);
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .t10-detail-buffer-item:last-child {
@@ -976,7 +976,7 @@
 }
 
 .t10-detail-buffer-swap {
-  padding: 6px 12px;
+  padding: 4px 12px;
   font-size: 12px;
   font-weight: 500;
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -1029,7 +1029,7 @@
 }
 
 .t10-detail-buffer-swap {
-  padding: 6px 12px;
+  padding: 4px 12px;
   font-size: 12px;
   font-weight: 500;
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -1053,7 +1053,7 @@
 
 /* Promote button - solid blue for adding to Top 10 */
 .t10-detail-buffer-promote {
-  padding: 6px 14px;
+  padding: 4px 14px;
   font-size: 12px;
   font-weight: 600;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
@@ -1141,12 +1141,12 @@
 .t10-detail-reorder-toast {
   position: fixed;
   bottom: 24px;
-  left: 50%;
+  left: 48%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 24px;
+  gap: 8px;
+  padding: 12px 24px;
   font-size: 14px;
   font-weight: 500;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
@@ -1184,7 +1184,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 24px;
+  padding: 48px 24px;
   text-align: center;
 }
 
@@ -1212,7 +1212,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 24px;
+  padding: 48px 24px;
   text-align: center;
 }
 
@@ -1238,7 +1238,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 8px 20px;
   font-size: 13px;
   font-weight: 600;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
@@ -1260,7 +1260,7 @@
 .t10-label-dropdown-current {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
@@ -1269,7 +1269,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 8px;
+  padding: 4px 8px;
   font-size: 12px;
   font-weight: 500;
   border: 1px solid;
@@ -1321,7 +1321,7 @@
 /* Dropdown Panel */
 .t10-label-dropdown-panel {
   position: absolute;
-  top: 100%;
+  top: 48%;
   left: 0;
   z-index: 10000;
   min-width: 280px;
@@ -1335,18 +1335,18 @@
 
 .t10-label-dropdown-search {
   padding: 12px;
-  border-bottom: 1px solid var(--ds-surface-sunken);
+  border-bottom: 0px solid var(--ds-surface-sunken);
 }
 
 .t10-label-dropdown-search input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   color: var(--ds-text);
   background: var(--ds-surface-sunken);
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   transition: all 0.15s ease;
 }
 
@@ -1370,9 +1370,9 @@
 .t10-label-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   color: var(--ds-text);
   background: transparent;
@@ -1411,7 +1411,7 @@
 /* Create New */
 .t10-label-dropdown-create {
   padding: 8px;
-  border-top: 1px solid var(--ds-surface-sunken);
+  border-top: 0px solid var(--ds-surface-sunken);
 }
 
 .t10-label-dropdown-create-btn {
@@ -1419,7 +1419,7 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   font-weight: 500;
   color: var(--ds-text-brand);
@@ -1446,13 +1446,13 @@
   color: var(--ds-text-subtlest);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .t10-label-dropdown-colors {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   margin-bottom: 12px;
 }
 
@@ -1479,7 +1479,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   font-weight: 600;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse))));
@@ -1530,8 +1530,8 @@
 .t10-assignee-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 3px 8px 3px 4px;
+  gap: 4px;
+  padding: 4px 8px 3px 4px;
   font-size: 12px;
   font-weight: 500;
   border: 1px solid;
@@ -1624,7 +1624,7 @@
 /* Dropdown Panel */
 .t10-assignee-dropdown-panel {
   position: absolute;
-  top: 100%;
+  top: 48%;
   left: 0;
   z-index: 10000;
   min-width: 280px;
@@ -1638,18 +1638,18 @@
 
 .t10-assignee-dropdown-search {
   padding: 12px;
-  border-bottom: 1px solid var(--ds-surface-sunken);
+  border-bottom: 0px solid var(--ds-surface-sunken);
 }
 
 .t10-assignee-dropdown-search input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   color: var(--ds-text);
   background: var(--ds-surface-sunken);
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   transition: all 0.15s ease;
 }
 
@@ -1673,9 +1673,9 @@
 .t10-assignee-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -1710,7 +1710,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
 }
 
 .t10-assignee-dropdown-name {
@@ -1765,7 +1765,7 @@
 .t10-duedate-chip {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   padding: 4px 8px;
   font-size: 12px;
   font-weight: 500;
@@ -1824,7 +1824,7 @@
 /* Dropdown Panel */
 .t10-duedate-dropdown-panel {
   position: absolute;
-  top: 100%;
+  top: 48%;
   left: 0;
   z-index: 10000;
   min-width: 300px;
@@ -1841,7 +1841,7 @@
   display: flex;
   gap: 8px;
   padding: 12px;
-  border-bottom: 1px solid var(--ds-surface-sunken);
+  border-bottom: 0px solid var(--ds-surface-sunken);
 }
 
 .t10-duedate-quick-btn {
@@ -1881,16 +1881,16 @@
 /* Footer */
 .t10-duedate-footer {
   padding: 12px;
-  border-top: 1px solid var(--ds-surface-sunken);
+  border-top: 0px solid var(--ds-surface-sunken);
 }
 
 .t10-duedate-clear-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   font-weight: 500;
   color: var(--ds-text-danger);

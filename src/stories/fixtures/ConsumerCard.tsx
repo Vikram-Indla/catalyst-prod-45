@@ -85,7 +85,7 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 653, color: 'var(--ds-text-subtlest)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Component Registry
           </div>
-          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: 'var(--ds-text)', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: 'var(--ds-text)', marginTop: 0 }}>
             {component}
           </div>
         </div>
@@ -108,7 +108,7 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
         </div>
         <code style={{
           fontSize: 'var(--ds-font-size-200)',
-          padding: '2px 6px',
+          padding: '0px 6px',
           borderRadius: 3,
           background: 'var(--ds-background-neutral)',
           color: 'var(--ds-text)',
@@ -119,7 +119,7 @@ export function ConsumerCard({ component, source, consumers, ads, risk, notes }:
         {ads && (
           <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
             <span style={{
-              padding: '2px 8px', borderRadius: 3,
+              padding: '0px 8px', borderRadius: 3,
               background: 'var(--ds-background-information)',
               color: 'var(--ds-text-information)',
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600,

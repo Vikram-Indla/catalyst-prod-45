@@ -84,9 +84,9 @@ export function BackgroundPickerItem({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 10,
+          gap: 8,
           width: '100%',
-          padding: '6px 10px',
+          padding: '4px 10px',
           border: 'none',
           borderRadius: 4,
           background: open
@@ -224,7 +224,7 @@ function PalettePopover({
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 22px)',
-          gap: 6,
+          gap: 4,
         }}
       >
         {PALETTE.map((c) => (

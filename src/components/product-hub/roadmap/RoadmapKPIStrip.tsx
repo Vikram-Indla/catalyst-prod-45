@@ -21,7 +21,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
     border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))'}`,
     borderRadius: 12,
-    padding: '14px 18px',
+    padding: '12px 18px',
     boxShadow: isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))',
   };
 
@@ -31,7 +31,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
     textTransform: 'uppercase',
     letterSpacing: '0.06em',
     color: ink[4],
-    marginBottom: 6,
+    marginBottom: 4,
   };
 
   const valueStyle: React.CSSProperties = {
@@ -53,7 +53,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>On Roadmap</div>
         <div style={valueStyle}>{stats.totalOnRoadmap}</div>
-        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[4], marginTop: 2 }}>of {stats.totalInitiatives} total business requests</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[4], marginTop: 0 }}>of {stats.totalInitiatives} total business requests</div>
       </div>
 
       {/* By Status */}
@@ -71,7 +71,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>This Quarter</div>
         <div style={valueStyle}>{stats.currentQuarter}</div>
-        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[4], marginTop: 2 }}>Active business requests</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[4], marginTop: 0 }}>Active business requests</div>
       </div>
     </div>
   );

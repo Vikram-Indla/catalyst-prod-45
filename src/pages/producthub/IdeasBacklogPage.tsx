@@ -125,14 +125,14 @@ export default function IdeasBacklogPage() {
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
       {/* Header */}
-      <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
+      <div style={{ padding: '16px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Backlog</h1>
             <p style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3, margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into requests — powered by IMPACT scoring & AI Intelligence</p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', border: '1px solid var(--ds-link)', borderRadius: '6px', padding: '7px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', border: '1px solid var(--ds-link)', borderRadius: '6px', padding: '8px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Sparkles size={14} /> Intelligence
             </button>
             <button onClick={() => setCreateOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -144,11 +144,11 @@ export default function IdeasBacklogPage() {
 
       {/* Stats Bar */}
       <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, display: 'flex', alignItems: 'stretch' }}>
-        <div style={{ padding: '14px 24px', borderRight: `1px solid ${dk.divider}` }}>
+        <div style={{ padding: '12px 24px', borderRight: `1px solid ${dk.divider}` }}>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>TOTAL IDEAS</div>
           <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.t1 }}>{stats?.total ?? ideas.length}</span>
         </div>
-        <div style={{ padding: '14px 16px', borderRight: `1px solid ${dk.divider}` }}>
+        <div style={{ padding: '12px 16px', borderRight: `1px solid ${dk.divider}` }}>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>BY STATUS</div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             {stats?.byStatus.map(s => (
@@ -158,20 +158,20 @@ export default function IdeasBacklogPage() {
             ))}
           </div>
         </div>
-        <div style={{ padding: '14px 16px', borderRight: `1px solid ${dk.divider}` }}>
+        <div style={{ padding: '12px 16px', borderRight: `1px solid ${dk.divider}` }}>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>BY QUARTER</div>
           <div style={{ display: 'flex', gap: '16px' }}>
             {(['Q1', 'Q2', 'Q3', 'Q4'] as const).map(q => (
-              <div key={q} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div key={q} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '20px', minWidth: '26px', padding: '0 4px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, background: QUARTER_BADGE[q].bg, color: QUARTER_BADGE[q].text }}>{q}</span>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: dk.t1 }}>{qCounts[q] || 0}</span>
               </div>
             ))}
           </div>
         </div>
-        <div style={{ flex: 1, padding: '14px 24px' }}>
+        <div style={{ flex: 1, padding: '12px 24px' }}>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>CONVERSION RATE</div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
             <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.greenText }}>{conversionRate}%</span>
             <span style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3 }}>{convertedCount} of {stats?.total ?? 0} converted</span>
           </div>
@@ -179,11 +179,11 @@ export default function IdeasBacklogPage() {
       </div>
 
       {/* Filter Bar */}
-      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '8px 28px', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <div style={{ position: 'relative', width: '220px' }}>
-          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: dk.t3 }} />
+          <Search size={14} style={{ position: 'absolute', left: '8px', top: '48%', transform: 'translateY(-50%)', color: dk.t3 }} />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search ideas..."
-            style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `1px solid ${dk.border}`, borderRadius: '6px', fontSize: 'var(--ds-font-size-300)', color: dk.t1, outline: 'none' }}
+            style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '8px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: `1px solid ${dk.border}`, borderRadius: '6px', fontSize: 'var(--ds-font-size-300)', color: dk.t1, outline: 'none' }}
           />
         </div>
         {FILTER_PILLS.map(pill => {
@@ -197,7 +197,7 @@ export default function IdeasBacklogPage() {
           );
         })}
         <div style={{ flex: 1 }} />
-        <button onClick={() => setTriageOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <button onClick={() => setTriageOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none', borderRadius: '6px', padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <Sparkles size={12} /> AI Triage ({ideas.length})
         </button>
       </div>
@@ -207,7 +207,7 @@ export default function IdeasBacklogPage() {
         {isLoading ? (
           <div style={{ padding: '40px', textAlign: 'center', color: dk.t3 }}>Loading ideas...</div>
         ) : ideas.length === 0 ? (
-          <div style={{ padding: '60px', textAlign: 'center' }}>
+          <div style={{ padding: '48px', textAlign: 'center' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>💡</div>
             <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: dk.t1, marginBottom: '4px' }}>No ideas yet</div>
             <div style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3 }}>Create your first idea to get started.</div>
@@ -228,7 +228,7 @@ export default function IdeasBacklogPage() {
                   ].map(col => (
                     <th key={col.label} style={{
                       textAlign: 'left', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))', padding: '10px 12px',
+                      letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))', padding: '8px 12px',
                       borderBottom: `0.75px solid ${dk.divider}`, whiteSpace: 'nowrap', width: col.width,
                     }}>{col.label}</th>
                   ))}
@@ -256,7 +256,7 @@ export default function IdeasBacklogPage() {
                         <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.title}</div>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <StatusBadge status={idea.status} />
                           {isConverted && idea.linked_initiative_key && (
                             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: '#11853D', fontFamily: 'var(--cp-font-mono)' }}>
@@ -310,7 +310,7 @@ export default function IdeasBacklogPage() {
                 })}
               </tbody>
             </table>
-            <div style={{ padding: '10px 16px', borderTop: `0.75px solid ${dk.divider}` }}>
+            <div style={{ padding: '8px 16px', borderTop: `0.75px solid ${dk.divider}` }}>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
             </div>
           </div>
@@ -403,16 +403,16 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
         <DialogHeader>
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontWeight: 650, fontSize: 'var(--ds-font-size-600)', color: dk.t1 }}>New Idea</DialogTitle>
         </DialogHeader>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
           <div>
-            <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>TITLE *</label>
+            <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '4px' }}>TITLE *</label>
             <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter idea title..."
               style={{ width: '100%', height: '50px', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', outline: 'none', color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>PRIORITY</label>
+              <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '4px' }}>PRIORITY</label>
               <Select value={priority} onValueChange={setPriority}>
                 <SelectTrigger className={`h-9 ${selectBg} dark:border-gray-700 dark:text-white`}><SelectValue /></SelectTrigger>
                 <SelectContent className={selectDropdown}>
@@ -421,7 +421,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
               </Select>
             </div>
             <div>
-              <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>TYPE</label>
+              <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '4px' }}>TYPE</label>
               <Select value={type} onValueChange={setType}>
                 <SelectTrigger className={`h-9 ${selectBg} dark:border-gray-700 dark:text-white`}><SelectValue /></SelectTrigger>
                 <SelectContent className={selectDropdown}>
@@ -431,7 +431,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
             </div>
           </div>
           <div>
-            <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>IDEAS THEME</label>
+            <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '4px' }}>IDEAS THEME</label>
             <Select value={theme || '__none__'} onValueChange={v => setTheme(v === '__none__' ? '' : v)}>
               <SelectTrigger className={`h-9 ${selectBg} dark:border-gray-700 dark:text-white`}><SelectValue placeholder="Select theme" /></SelectTrigger>
               <SelectContent className={selectDropdown}>
@@ -441,7 +441,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
             </Select>
           </div>
           <div>
-            <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
+            <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '4px' }}>DESCRIPTION</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Optional description..."
               style={{ width: '100%', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', resize: 'vertical', outline: 'none', fontFamily: 'var(--cp-font-body)', color: dk.t1, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}
             />

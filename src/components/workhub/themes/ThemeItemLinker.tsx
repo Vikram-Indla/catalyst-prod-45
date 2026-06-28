@@ -115,7 +115,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
     <div
       ref={ref}
       style={{
-        position: 'absolute', top: '100%', right: 0, marginTop: 4,
+        position: 'absolute', top: '48%', right: 0, marginTop: 4,
         width: 400, maxHeight: 400, background: 'var(--bg-app)',
         border: '1px solid var(--ds-border)', borderRadius: 12,
         boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,.15))', zIndex: 9999,
@@ -124,10 +124,10 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
       }}
     >
       {/* Search */}
-      <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--ds-surface-sunken)' }}>
+      <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken)' }}>
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          background: 'var(--bg-1)', borderRadius: 6, padding: '6px 10px',
+          display: 'flex', alignItems: 'center', gap: 4,
+          background: 'var(--bg-1)', borderRadius: 6, padding: '4px 10px',
         }}>
           <Search size={14} color="var(--ds-text-subtlest)" />
           <input
@@ -159,7 +159,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
               key={item.item_key}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '6px 12px', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
+                padding: '4px 12px', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
                 background: selected.has(item.item_key) ? 'var(--ds-background-information)' : 'transparent',
               }}
             >
@@ -177,7 +177,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
                 {item.item_key}
               </span>
               <span style={{
-                padding: '1px 6px', borderRadius: 4,
+                padding: '0px 6px', borderRadius: 4,
                 fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                 background: 'var(--bg-1)', color: 'var(--fg-2)',
               }}>
@@ -196,7 +196,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
 
       {/* Footer */}
       <div style={{
-        padding: '10px 12px', borderTop: '1px solid var(--ds-surface-sunken)',
+        padding: '8px 12px', borderTop: '1px solid var(--ds-surface-sunken)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
         <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>
@@ -207,7 +207,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
           disabled={selected.size === 0 || linking}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            padding: '6px 14px', borderRadius: 6, border: 'none',
+            padding: '4px 14px', borderRadius: 6, border: 'none',
             background: selected.size > 0 ? 'var(--cp-blue)' : 'var(--divider)',
             color: selected.size > 0 ? 'var(--bg-app)' : 'var(--fg-4)',
             fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: selected.size > 0 ? 'pointer' : 'default',

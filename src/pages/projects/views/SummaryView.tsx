@@ -139,7 +139,7 @@ export default function SummaryView({ project }: SummaryViewProps) {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={120}>
-              <BarChart data={priorityData} layout="vertical" margin={{ left: 10, right: 20 }}>
+              <BarChart data={priorityData} layout="vertical" margin={{ left: 8, right: 16 }}>
                 <XAxis type="number" hide />
                 <YAxis 
                   type="category" 

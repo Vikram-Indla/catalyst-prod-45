@@ -205,7 +205,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '2px',
+                padding: '0px',
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
@@ -228,7 +228,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               alignItems: 'center',
               gap: '8px',
               width: '100%',
-              padding: '10px 12px',
+              padding: '8px 12px',
               background: 'var(--ds-background-success)',
               border: '1px solid var(--ds-border)',
               borderRadius: '6px',
@@ -300,7 +300,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
           })
         ) : (
           <div style={{ 
-            padding: '20px', 
+            padding: '16px', 
             textAlign: 'center', 
             color: 'var(--ds-text-subtlest)',
             fontSize: 'var(--ds-font-size-300)',
@@ -331,7 +331,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '4px',
                 padding: '4px 10px',
                 background: colors?.bg,
                 color: colors?.color,
@@ -349,7 +349,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '1px',
+                    padding: '0px',
                     background: 'transparent',
                     border: 'none',
                     cursor: 'pointer',
@@ -389,7 +389,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '4px',
               padding: '8px 12px',
               background: 'transparent',
               border: '1px dashed var(--ds-border)',

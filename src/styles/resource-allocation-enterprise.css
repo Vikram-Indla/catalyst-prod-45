@@ -48,7 +48,7 @@
   --ra-bar-height: 4px;
   --ra-bar-radius: 2px;
   --ra-bar-track-bg: var(--ra-slate-200);
-  --ra-bar-margin-top: 6px;
+  --ra-bar-margin-top: 4px;
   
   /* TYPOGRAPHY */
   --ra-text-percent: var(--ra-slate-700);
@@ -141,7 +141,7 @@
   color: var(--ra-text-project) !important;
   font-size: var(--ra-text-project-size) !important;
   font-weight: 500 !important;
-  margin-top: 2px !important;
+  margin-top: 0px !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -152,8 +152,8 @@
   content: '' !important;
   position: absolute !important;
   bottom: 4px !important;
-  left: 6px !important;
-  right: 6px !important;
+  left: 4px !important;
+  right: 4px !important;
   height: var(--ra-bar-height) !important;
   background: var(--ra-bar-track-bg) !important;
   border-radius: var(--ra-bar-radius) !important;
@@ -167,8 +167,8 @@
 .ra-enterprise-clean .allocation-bar {
   position: absolute !important;
   bottom: 4px !important;
-  left: 6px !important;
-  right: 6px !important;
+  left: 4px !important;
+  right: 4px !important;
   height: var(--ra-bar-height) !important;
   border-radius: var(--ra-bar-radius) !important;
   z-index: 1 !important;
@@ -297,8 +297,8 @@
   font-size: 12px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.3px !important;
-  padding: 10px 8px !important;
-  border-bottom: 1px solid var(--ra-slate-200) !important;
+  padding: 8px 8px !important;
+  border-bottom: 0px solid var(--ra-slate-200) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -331,7 +331,7 @@
 .ra-enterprise-clean [role="grid"] .absolute.rounded-md::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 2px !important;
+  bottom: 0px !important;
   left: 4px !important;
   right: 4px !important;
   height: var(--ra-bar-height) !important;

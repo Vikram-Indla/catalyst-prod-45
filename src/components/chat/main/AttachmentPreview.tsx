@@ -51,8 +51,8 @@ function AttachmentTile({ a }: { a: ChatAttachment }) {
         rel="noopener noreferrer"
         style={{
           display: 'inline-block',
-          marginTop: 6,
-          marginRight: 6,
+          marginTop: 4,
+          marginRight: 4,
           borderRadius: 4,
           overflow: 'hidden',
           border: '1px solid var(--ds-border)',
@@ -83,9 +83,9 @@ function AttachmentTile({ a }: { a: ChatAttachment }) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: 8,
-        marginTop: 6,
-        marginRight: 6,
-        padding: '6px 10px',
+        marginTop: 4,
+        marginRight: 4,
+        padding: '4px 10px',
         background: 'var(--ds-background-neutral)',
         border: '1px solid var(--ds-border)',
         borderRadius: 4,

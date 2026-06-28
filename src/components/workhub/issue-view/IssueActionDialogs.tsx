@@ -27,24 +27,24 @@ const modalBase: React.CSSProperties = {
   overflow: 'hidden', boxShadow: '0 12px 40px var(--ds-shadow-raised, rgba(9,30,66,.35))',
 };
 const btnPrimary: React.CSSProperties = {
-  padding: '7px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
+  padding: '8px 20px', borderRadius: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
   cursor: 'pointer', border: 'none', background: 'var(--ds-link)', color: 'var(--ds-surface)',
 };
 const btnSecondary: React.CSSProperties = {
-  padding: '7px 16px', borderRadius: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+  padding: '8px 16px', borderRadius: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
   cursor: 'pointer', border: 'none', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
 };
 const btnDanger: React.CSSProperties = {
   ...btnPrimary, background: 'var(--ds-text-danger)',
 };
 const menuItem = (hover: boolean, danger = false): React.CSSProperties => ({
-  display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
+  display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left',
   padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', border: 'none', cursor: 'pointer',
   color: danger ? 'var(--ds-text-danger)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
   background: hover ? (danger ? 'var(--ds-background-danger-hovered)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken))') : 'transparent',
 });
 const labelStyle: React.CSSProperties = {
-  fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', display: 'block', marginBottom: 6,
+  fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', display: 'block', marginBottom: 4,
 };
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '8px 12px', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
@@ -130,7 +130,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   // Compute position anchored below the flag icon, clamped to viewport
   const pos = useMemo(() => {
     const rect = anchorRef.current?.getBoundingClientRect();
-    if (!rect) return { top: 120, left: 400 };
+    if (!rect) return { top: 48, left: 48 };
     const popW = 360, popH = 280, pad = 12;
     let top = rect.bottom + 6;
     let left = rect.left;
@@ -198,7 +198,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 99 }} />
       <div style={{
         position: 'fixed', top: pos.top, left: pos.left,
-        background: 'var(--ds-surface)', borderRadius: 8, width: 360, padding: '20px 24px',
+        background: 'var(--ds-surface)', borderRadius: 8, width: 360, padding: '16px 24px',
         boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))', zIndex: 100,
         border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
       }}>
@@ -215,7 +215,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
             ? 'Optional: let your team know why the flag was removed'
             : 'Optional: let your team know why this work item has been flagged'}
           style={{
-            width: '100%', padding: '10px 12px', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
+            width: '100%', padding: '8px 12px', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))',
             borderRadius: 4, fontSize: 'var(--ds-font-size-400)', outline: 'none', resize: 'vertical',
             minHeight: 80, fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
             lineHeight: '1.5',
@@ -302,7 +302,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
   return (
     <div style={overlayStyle} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{ ...modalBase, width: 600, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '20px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '16px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Copy size={20} color="var(--ds-link)" /> Clone Issue: {issueKey}
           </h2>
@@ -325,7 +325,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
         <div style={{ padding: '0 24px 20px', flex: 1, overflow: 'auto' }}>
           {/* Step 0: Options */}
           {step === 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div>
                 <label style={labelStyle}>Project</label>
                 <div style={{ ...inputStyle, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{projectKey}</div>
@@ -356,7 +356,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
 
           {/* Step 1: Fields */}
           {step === 1 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div>
                 <label style={labelStyle}>Summary *</label>
                 <input value={summary} onChange={e => setSummary(e.target.value)} style={inputStyle} />
@@ -381,7 +381,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
                 ['Comments', copyComments ? 'Included' : 'Excluded'],
                 ['Status', 'To Do (new)'],
               ].map(([label, val]) => (
-                <div key={label as string} style={{ display: 'flex', padding: '10px 0', borderBottom: '1px solid var(--ds-border)' }}>
+                <div key={label as string} style={{ display: 'flex', padding: '8px 0', borderBottom: '1px solid var(--ds-border)' }}>
                   <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>{label}</span>
                   <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{val}</span>
                 </div>
@@ -474,7 +474,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
   return (
     <div style={overlayStyle} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{ ...modalBase, width: 640, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '20px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '16px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <ArrowRight size={20} color="var(--ds-link)" /> Move Issue: {issueKey}
           </h2>
@@ -491,7 +491,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
 
         <div style={{ padding: '0 24px 20px', flex: 1, overflow: 'auto' }}>
           {step === 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div>
                 <label style={labelStyle}>Destination Project</label>
                 <select value={destProject} onChange={e => setDestProject(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
@@ -555,7 +555,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
                 ['New Status', newStatus],
                 ['Fields Dropped', fields.filter(f => f.result === 'Dropped').map(f => f.name).join(', ') || 'None'],
               ].map(([l, v]) => (
-                <div key={l as string} style={{ display: 'flex', padding: '10px 0', borderBottom: '1px solid var(--ds-border)' }}>
+                <div key={l as string} style={{ display: 'flex', padding: '8px 0', borderBottom: '1px solid var(--ds-border)' }}>
                   <span style={{ width: 140, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>{l}</span>
                   <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>{v}</span>
                 </div>
@@ -662,7 +662,7 @@ export function DeleteDialog({ issueId, issueKey, onClose }: {
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, var(--cp-text-secondary))" /></button>
         </div>
         <div style={{ background: 'var(--ds-background-danger)', border: '1px solid var(--ds-border-danger)', borderRadius: 4, padding: '12px 16px', marginBottom: 16, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}>
-          <AlertTriangle size={16} style={{ marginRight: 6, verticalAlign: 'text-bottom', color: 'var(--ds-text-danger)' }} />
+          <AlertTriangle size={16} style={{ marginRight: 4, verticalAlign: 'text-bottom', color: 'var(--ds-text-danger)' }} />
           This action <strong>cannot be undone</strong>. All comments, attachments, and history for <strong>{issueKey}</strong> will be permanently removed.
         </div>
         <div style={{ marginBottom: 16 }}>

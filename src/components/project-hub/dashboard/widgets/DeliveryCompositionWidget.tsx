@@ -104,7 +104,7 @@ export default function DeliveryCompositionWidget({
       onToggleCollapse={onToggleCollapse}
     >
       {isLoading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
@@ -124,14 +124,14 @@ export default function DeliveryCompositionWidget({
           description="Add business requests to see the delivery pipeline."
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {/* ── Column headers ─────────────────────────────────── */}
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: '140px 1fr 40px',
               gap: 8,
-              paddingBottom: 6,
+              paddingBottom: 4,
               borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             }}
           >

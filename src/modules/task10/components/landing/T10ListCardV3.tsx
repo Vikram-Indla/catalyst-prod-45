@@ -85,7 +85,7 @@ export function T10ListCardV3({
         backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         border: '1px solid var(--ds-border)',
         borderRadius: '12px',
-        padding: '20px 24px',
+        padding: '16px 24px',
         cursor: hasCurrentWeek ? 'pointer' : 'default',
         transition: 'all 0.2s ease',
         marginBottom: 0,
@@ -133,7 +133,7 @@ export function T10ListCardV3({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '4px',
               padding: '4px 10px',
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
@@ -190,7 +190,7 @@ export function T10ListCardV3({
               <div
                 style={{
                   position: 'absolute',
-                  top: '100%',
+                  top: '48%',
                   right: 0,
                   marginTop: '4px',
                   width: '140px',
@@ -295,7 +295,7 @@ export function T10ListCardV3({
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '12px',
-            padding: '10px 14px',
+            padding: '8px 14px',
             backgroundColor: 'var(--t10-bg-subtle)',
             border: '1px dashed var(--t10-border-default)',
             borderRadius: '12px',
@@ -320,7 +320,7 @@ export function T10ListCardV3({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '4px',
               padding: '8px 12px',
               backgroundColor: 'var(--t10-accent)',
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
@@ -350,7 +350,7 @@ export function T10ListCardV3({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '4px',
               padding: '8px 0',
               backgroundColor: 'transparent',
               border: 'none',
@@ -373,7 +373,7 @@ export function T10ListCardV3({
             <span
               style={{
                 marginLeft: '4px',
-                padding: '2px 8px',
+                padding: '0px 8px',
                 fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--ds-text-brand)',
@@ -410,7 +410,7 @@ export function T10ListCardV3({
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '10px',
+                      gap: '8px',
                       padding: '8px 12px',
                       borderRadius: '6px',
                       cursor: 'pointer',

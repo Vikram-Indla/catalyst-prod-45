@@ -150,10 +150,10 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config
             </ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
                 Required fields are marked with an asterisk
-                <span style={{ color: 'var(--ds-text-danger)', marginLeft: 2 }}>*</span>
+                <span style={{ color: 'var(--ds-text-danger)', marginLeft: 0 }}>*</span>
               </div>
               <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
                 You can merge this {config.label.lowerSingular} into another in your space. You can't undo this.
@@ -165,11 +165,11 @@ export function ReleaseMergeDialog({ isOpen, release, onClose, onSuccess, config
                     fontWeight: 600,
                     fontSize: 'var(--ds-font-size-200)',
                     color: 'var(--ds-text)',
-                    marginBottom: 6,
+                    marginBottom: 4,
                   }}
                 >
                   Merge {release.name} into
-                  <span style={{ color: 'var(--ds-text-danger)', marginLeft: 2 }}>*</span>
+                  <span style={{ color: 'var(--ds-text-danger)', marginLeft: 0 }}>*</span>
                 </label>
                 <ProductSelect
                   options={options}

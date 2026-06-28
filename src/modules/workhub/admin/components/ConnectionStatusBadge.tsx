@@ -21,7 +21,7 @@ export function ConnectionStatusBadge({ status }: ConnectionStatusBadgeProps) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         padding: '4px 12px',
         borderRadius: 20,
         fontSize: 12,

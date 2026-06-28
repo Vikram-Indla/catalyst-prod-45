@@ -103,7 +103,7 @@ export function CreateEditRoleModal({ isOpen, onClose, role }: CreateEditRoleMod
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', border: '1px solid var(--ds-border)', borderRadius: 4 }}>
             <div>
               <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: 'var(--ds-text)' }}>Active</p>
-              <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtle)' }}>Inactive roles cannot be assigned</p>
+              <p style={{ margin: '0px 0 0', fontSize: 12, color: 'var(--ds-text-subtle)' }}>Inactive roles cannot be assigned</p>
             </div>
             <Toggle
               id="rbac-role-active"

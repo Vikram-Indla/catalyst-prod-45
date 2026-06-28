@@ -87,7 +87,7 @@ function StatusChip({ status }: { status: BrStatus }) {
   return (
     <span style={{
       display: 'inline-block',
-      padding: '2px 8px',
+      padding: '0px 8px',
       borderRadius: 3,
       fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
@@ -187,7 +187,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
       gridTemplateColumns: '8px minmax(0,1.2fr) 1fr 72px 68px',
       alignItems: 'center',
       gap: 8,
-      padding: '5px 0',
+      padding: '4px 0',
       borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}18`,
     }}>
       {/* Indent spacer */}
@@ -229,7 +229,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
             position: 'absolute',
             left: `${left}%`,
             width: `${Math.max(1.5, right - left)}%`,
-            top: 3, height: 10,
+            top: 4, height: 10,
             borderRadius: 2,
             background: barBg,
             border: `1px solid ${barBorder}`,
@@ -297,7 +297,7 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
         }}>▶</span>
 
         {/* Quarter label + sprint tags */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{
               fontSize: 'var(--ds-font-size-300)',
@@ -313,7 +313,7 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
                 fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                 color: token('color.text.information', 'var(--ds-link)'),
                 background: token('color.background.information', 'var(--ds-background-selected)'),
-                borderRadius: 3, padding: '1px 5px',
+                borderRadius: 3, padding: '0px 5px',
                 flexShrink: 0,
               }}>
                 Current
@@ -330,7 +330,7 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
                   background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken)'),
                   border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
                   borderRadius: 3,
-                  padding: '1px 5px',
+                  padding: '0px 5px',
                   whiteSpace: 'nowrap',
                   letterSpacing: '0.01em',
                 }}>
@@ -510,7 +510,7 @@ export function ActiveInitiativesWidget() {
       }
     >
       {isLoading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '8px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 0' }}>
           {[0, 1, 2].map(i => (
             <div key={i} className="animate-pulse" style={{ height: 48, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)') }} />
           ))}
@@ -555,7 +555,7 @@ export function ActiveInitiativesWidget() {
 
           {/* Sections */}
           {sections.map(sec => (
-            <div key={sec.quarter} style={{ marginBottom: 2 }}>
+            <div key={sec.quarter} style={{ marginBottom: 0 }}>
               <ReleaseSectionHeader
                 section={sec}
                 rangeStart={rangeStart}
@@ -565,7 +565,7 @@ export function ActiveInitiativesWidget() {
                 onToggle={() => toggleSection(sec.quarter)}
               />
               {expandedSections.has(sec.quarter) && (
-                <div style={{ paddingBottom: 6 }}>
+                <div style={{ paddingBottom: 4 }}>
                   {sec.brs.length === 0 ? (
                     <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled)'), paddingLeft: 16, paddingTop: 4 }}>
                       No active BRs in this quarter

@@ -65,7 +65,7 @@ export default function IncidentInsightsPage() {
                   borderRadius: 4,
                   border: `1px solid ${'var(--cp-danger-light)'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-danger-text)', marginBottom: 2 }}>{item.title}</h4>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-danger-text)', marginBottom: 0 }}>{item.title}</h4>
                   <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-danger-text)' }}>{item.desc}</p>
                 </div>
               ))}
@@ -88,7 +88,7 @@ export default function IncidentInsightsPage() {
                   borderRadius: 4,
                   border: `1px solid ${'var(--cp-success-light)'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-success-text)', marginBottom: 2 }}>{item.title}</h4>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-success-text)', marginBottom: 0 }}>{item.title}</h4>
                   <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-success)' }}>{item.desc}</p>
                 </div>
               ))}

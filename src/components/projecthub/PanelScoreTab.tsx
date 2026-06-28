@@ -62,7 +62,7 @@ export function PanelScoreTab({ projectId }: Props) {
   };
 
   return (
-    <div style={{ padding: 20, fontFamily: 'var(--cp-font-body)' }}>
+    <div style={{ padding: 16, fontFamily: 'var(--cp-font-body)' }}>
       <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', marginBottom: 16 }}>
         Rate this project on each dimension (1–5). Computed score:{' '}
         <span style={{ fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-mono)' }}>{computed}</span>
@@ -70,7 +70,7 @@ export function PanelScoreTab({ projectId }: Props) {
       <div className="space-y-4">
         {FIELDS.map(f => (
           <div key={f.key}>
-            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               {f.label}
             </label>
             <div className="flex gap-2">
@@ -101,7 +101,7 @@ export function PanelScoreTab({ projectId }: Props) {
         onClick={save}
         disabled={saving}
         style={{
-          marginTop: 20, width: '100%', height: 40, borderRadius: 6,
+          marginTop: 16, width: '100%', height: 40, borderRadius: 6,
           background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none',
           fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: saving ? 'default' : 'pointer',
           opacity: saving ? 0.6 : 1,

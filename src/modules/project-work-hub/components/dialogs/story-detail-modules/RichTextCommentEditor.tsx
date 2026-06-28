@@ -161,7 +161,7 @@ export function RichTextCommentEditor({
     const chip = document.createElement('span');
     chip.contentEditable = 'false';
     chip.setAttribute('data-mention-id', member.id);
-    chip.style.cssText = 'background:var(--ds-background-information);color:var(--ds-link-pressed);padding:2px 6px;border-radius:3px;font-weight:500;font-size:13px;cursor:default;display:inline;';
+    chip.style.cssText = 'background:var(--ds-background-information);color:var(--ds-link-pressed);padding:0px 6px;border-radius:3px;font-weight:500;font-size:13px;cursor:default;display:inline;';
     chip.textContent = `@${member.full_name}`;
 
     const afterNode = document.createTextNode(after || '\u00A0');
@@ -214,7 +214,7 @@ export function RichTextCommentEditor({
       }}>
         {/* Toolbar */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 2, padding: '4px 8px',
+          display: 'flex', alignItems: 'center', gap: 0, padding: '4px 8px',
           borderBottom: '1px solid var(--ds-background-neutral-subtle)', background: 'var(--ds-surface-sunken)', flexWrap: 'wrap',
         }}>
           <button style={toolbarBtnStyle} onClick={() => execCmd('bold')} title="Bold"
@@ -324,7 +324,7 @@ export function RichTextCommentEditor({
           onClick={handleSubmit}
           disabled={isEmpty || isSubmitting}
           style={{
-            padding: '6px 16px', borderRadius: 4, border: 'none', cursor: isEmpty || isSubmitting ? 'not-allowed' : 'pointer',
+            padding: '4px 16px', borderRadius: 4, border: 'none', cursor: isEmpty || isSubmitting ? 'not-allowed' : 'pointer',
             background: isEmpty || isSubmitting ? 'var(--ds-surface-sunken, var(--cp-bg-sunken))' : 'var(--ds-background-brand-bold, var(--cp-primary-60))', color: isEmpty || isSubmitting ? 'var(--ds-text-disabled)' : 'var(--ds-surface)',
             fontSize: 'var(--ds-font-size-400)', fontWeight: 600, transition: 'background 0.15s',
           }}
@@ -334,7 +334,7 @@ export function RichTextCommentEditor({
         <button
           onClick={handleCancel}
           style={{
-            padding: '6px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
+            padding: '4px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
             background: 'transparent', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered)')}

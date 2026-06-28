@@ -119,7 +119,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
               style={{
                 fontSize: 'var(--ds-font-size-200)', fontWeight: tab === t ? 600 : 500,
                 color: tab === t ? 'var(--cp-blue)' : (isDark ? DK.t3 : 'var(--fg-3)'),
-                padding: '10px 12px', border: 'none', background: 'none',
+                padding: '8px 12px', border: 'none', background: 'none',
                 borderBottom: tab === t ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 cursor: 'pointer', whiteSpace: 'nowrap',
               }}
@@ -128,7 +128,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto" style={{ padding: 20 }}>
+        <div className="flex-1 overflow-y-auto" style={{ padding: 16 }}>
           {tab === 'Overview' && <OverviewTab theme={theme} sc={sc} bsc={bsc} pri={pri} isDark={isDark} />}
           {tab === 'Goals & KRs' && <GoalsTab theme={theme} isDark={isDark} />}
           {tab === 'Requests' && <InitiativesTab theme={theme} isDark={isDark} />}
@@ -160,7 +160,7 @@ function KpiCard({ label, value, color, isDark = false }: { label: string; value
   const d = dk(isDark);
   return (
     <div className="rounded-lg border text-center" style={{ borderColor: d.border, padding: '12px 8px', background: isDark ? 'transparent' : undefined }}>
-      <p style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: color || d.t1, marginBottom: 2 }}>{value}</p>
+      <p style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: color || d.t1, marginBottom: 0 }}>{value}</p>
       <p style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: d.t3, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</p>
     </div>
   );
@@ -216,7 +216,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
           padding: 16,
         }}>
           <div className="flex items-center gap-2 mb-2">
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', background: 'var(--ds-text-brand)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0px 6px', background: 'var(--ds-text-brand)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               AI
             </span>
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-primary-hover)' }}>Strategy Health Score</span>
@@ -233,7 +233,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
               <div key={f.label} className="rounded-md text-center" style={{
                 background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-surface, rgba(255,255,255,0.6))',
                 border: isDark ? '1px solid var(--ds-background-neutral)' : 'none',
-                padding: '6px 0',
+                padding: '4px 0',
               }}>
                 <p style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: isDark ? DK.t1 : 'var(--ds-link-pressed)' }}>{f.value}</p>
                 <p style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? DK.t3 : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }}>{f.label}</p>
@@ -410,7 +410,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
   };
 
   const inputStyle: React.CSSProperties = {
-    fontSize: 'var(--ds-font-size-200)', padding: '6px 8px', borderRadius: 4, outline: 'none', width: '100%',
+    fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', borderRadius: 4, outline: 'none', width: '100%',
     border: `1px solid ${d.border}`,
     background: isDark ? 'transparent' : 'var(--bg-app)',
     color: d.t1,
@@ -506,7 +506,7 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
               <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--bg-app)'}` }} />
               <div>
                 <p style={{ fontSize: 12.5, fontWeight: 500, color: d.t1 }}>{a.title}</p>
-                <p style={{ fontSize: 'var(--ds-font-size-100)', color: d.t2, marginBottom: 2 }}>{a.detail}</p>
+                <p style={{ fontSize: 'var(--ds-font-size-100)', color: d.t2, marginBottom: 0 }}>{a.detail}</p>
                 <p style={{ fontSize: 'var(--ds-font-size-50)', color: d.t3 }}>{formatRelativeTime(a.time)}</p>
               </div>
             </div>

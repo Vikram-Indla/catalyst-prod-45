@@ -88,7 +88,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
 
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', right: 0, marginTop: 4, width: 220,
+          position: 'absolute', top: '48%', right: 0, marginTop: 4, width: 220,
           background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6,
           boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.10))', zIndex: 100, padding: '8px 0',
           fontFamily: 'var(--cp-font-body)',
@@ -105,7 +105,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
                 disabled={col.alwaysVisible}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: col.alwaysVisible ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
+                  padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', color: col.alwaysVisible ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
                   background: 'none', border: 'none', cursor: col.alwaysVisible ? 'default' : 'pointer',
                   textAlign: 'left', opacity: col.alwaysVisible ? 0.6 : 1,
                 }}

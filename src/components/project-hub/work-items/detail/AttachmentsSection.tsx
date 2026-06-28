@@ -156,7 +156,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
         className={`relative rounded-md text-center cursor-pointer transition-colors ${dragOver ? 'bg-[var(--cp-blue-wash)]' : 'bg-[var(--bg-1)]'}`}
         style={{
           border: dragOver ? '2px dashed var(--cp-blue)' : '2px dashed var(--divider)',
-          padding: '14px 12px',
+          padding: '12px 12px',
         }}
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}

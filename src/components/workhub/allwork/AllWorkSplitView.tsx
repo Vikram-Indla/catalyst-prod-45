@@ -281,7 +281,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 }}
               >
                 <div className="flex items-start gap-2">
-                  <JiraIssueTypeIcon type={item.issue_type} size={14} style={{ marginTop: 2 }} />
+                  <JiraIssueTypeIcon type={item.issue_type} size={14} style={{ marginTop: 0 }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] leading-[18px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 500, fontFamily: 'var(--cp-font-body)' }}>
                       {item.summary}
@@ -458,7 +458,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                     <span
                       style={{
                         fontSize: 'var(--ds-font-size-50)', fontWeight: 700, minWidth: 18, textAlign: 'center',
-                        padding: '1px 5px', borderRadius: 12,
+                        padding: '0px 5px', borderRadius: 12,
                         backgroundColor: isActive ? 'var(--ds-background-information, rgba(37,99,235,0.10))' : isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--bd-subtle, var(--cp-ink-1))',
                         color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : 'var(--fg-3)',
                         fontFamily: 'var(--cp-font-mono)',

@@ -4,8 +4,8 @@
 .caty-btn {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 7px 16px 7px 8px;
+  gap: 8px;
+  padding: 8px 16px 7px 8px;
   border-radius: var(--radius-full, 9999px);
   background: var(--bg-elevated, var(--ds-surface));
   border: 1px solid var(--border-bold, var(--ds-icon-subtle));
@@ -62,8 +62,8 @@
 /* The ONLY place the warm gradient appears on the control itself: the thinking dots. */
 .caty-btn__dots {
   display: inline-flex;
-  gap: 3px;
-  margin-left: 2px;
+  gap: 4px;
+  margin-left: 0px;
 }
 
 .caty-btn__dots i {

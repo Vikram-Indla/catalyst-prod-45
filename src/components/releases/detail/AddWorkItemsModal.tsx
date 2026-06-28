@@ -226,7 +226,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                 alignItems: 'center',
                 gap: 8,
                 minHeight: 40,
-                padding: 6,
+                padding: 4,
                 border: `1px solid ${open ? BLUE : BORDER}`,
                 borderRadius: 3,
                 background: 'var(--ds-surface)',
@@ -241,7 +241,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                   display: 'flex',
                   flexWrap: 'wrap',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 4,
                 }}
               >
                 {picked.map((p) => (
@@ -250,8 +250,8 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: 6,
-                      padding: '2px 8px',
+                      gap: 4,
+                      padding: '0px 8px',
                       background: 'var(--ds-background-neutral)',
                       border: `1px solid ${BORDER}`,
                       borderRadius: 3,
@@ -330,7 +330,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
             maxHeight: 360,
           }}
         >
-          <div style={{ padding: 8, borderBottom: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ padding: 8, borderBottom: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ color: SUBTLE, display: 'inline-flex' }}><SearchIcon label="" size="small" /></span>
             <input
               ref={searchRef}
@@ -340,8 +340,8 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
               style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--ds-font-size-400)', color: TEXT }}
             />
           </div>
-          <div style={{ padding: '6px 0', overflowY: 'auto' }}>
-            <div style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: SUBTLE }}>
+          <div style={{ padding: '4px 0', overflowY: 'auto' }}>
+            <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: SUBTLE }}>
               Recent work items
             </div>
             {available.length === 0 && (

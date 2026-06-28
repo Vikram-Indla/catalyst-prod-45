@@ -148,7 +148,7 @@ export function ActivityRow({
         padding: '12px 14px',
         borderRadius: 8,
         background: 'transparent',
-        border: isSelected ? '1px solid var(--ds-background-discovery-bold)' : '1px solid var(--cv2-border)',
+        border: isSelected ? '1px solid var(--ds-background-discovery-bold, #7C3AED)' : '1px solid var(--cv2-border)',
         boxShadow: isSelected ? '0 4px 14px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.28))' : 'none',
         cursor: 'pointer',
         outline: 'none',
@@ -156,7 +156,7 @@ export function ActivityRow({
         userSelect: 'none',
       }}
     >
-      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
         <PresenceAvatar
           name={item.authorName}
           size={32}
@@ -166,7 +166,7 @@ export function ActivityRow({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               minWidth: 0,
               minHeight: 28,
             }}
@@ -199,7 +199,7 @@ export function ActivityRow({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
-              marginTop: 2,
+              marginTop: 0,
               fontFamily: 'var(--cv2-font)',
               fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cv2-text-subtle)',
@@ -211,7 +211,7 @@ export function ActivityRow({
           </div>
           <p
             style={{
-              margin: '6px 0 0',
+              margin: '4px 0 0',
               fontFamily: 'var(--cv2-font)',
               fontSize: 'var(--ds-font-size-400)',
               color: 'var(--cv2-text)',
@@ -262,7 +262,7 @@ function RowWithCheckbox({
           alignItems: 'center',
           justifyContent: 'center',
           background: 'transparent',
-          color: isChecked ? 'var(--cv2-accent)' : 'var(--cv2-text-subtle)',
+          color: isChecked ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-text-subtle)',
           border: 'none',
           cursor: 'pointer',
         }}
@@ -270,7 +270,7 @@ function RowWithCheckbox({
         {isChecked ? (
           <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true">
             <rect x="1" y="1" width="16" height="16" rx="2" fill="currentColor" />
-            <path d="M4.6 9.1l3 3 5.4-5.6" fill="none" stroke="var(--ds-surface)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M4.6 9.1l3 3 5.4-5.6" fill="none" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         ) : (
           <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true">
@@ -322,12 +322,12 @@ function DenseRow({
         background: 'transparent',
         // Selection cue: purple outline + soft shadow. No background change so
         // layout doesn't shift (preserves hover hit-testing on the row).
-        border: isSelected ? '1px solid var(--ds-background-discovery-bold)' : '1px solid transparent',
+        border: isSelected ? '1px solid var(--ds-background-discovery-bold, #7C3AED)' : '1px solid transparent',
         // Divider lives on the row itself so the wrapping group container can
         // be borderless inside. Declared AFTER `border` so the shorthand does
         // not stomp it back to transparent.
         borderBottom: isSelected
-          ? '1px solid var(--ds-background-discovery-bold)'
+          ? '1px solid var(--ds-background-discovery-bold, #7C3AED)'
           : (isLastInGroup ? '1px solid transparent' : '1px solid var(--cv2-border)'),
         borderRadius: isSelected ? 8 : 0,
         boxShadow: isSelected ? '0 4px 14px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.28))' : 'none',
@@ -337,7 +337,7 @@ function DenseRow({
         userSelect: 'none',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <PresenceAvatar
           name={item.authorName}
           size={28}
@@ -422,15 +422,15 @@ function SingleLineRow({
       tabIndex={0}
       style={{
         position: 'relative',
-        padding: '14px 18px',
+        padding: '12px 18px',
         borderRadius: 8,
         background: 'transparent',
-        border: isSelected ? '1px solid var(--ds-background-discovery-bold)' : '1px solid var(--cv2-border)',
+        border: isSelected ? '1px solid var(--ds-background-discovery-bold, #7C3AED)' : '1px solid var(--cv2-border)',
         boxShadow: isSelected ? '0 4px 14px var(--ds-background-discovery-bold, rgba(124, 58, 237, 0.28))' : 'none',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        gap: 14,
+        gap: 12,
         minWidth: 0,
         outline: 'none',
         WebkitTapHighlightColor: 'transparent',
@@ -556,7 +556,7 @@ function RightInfo({
             padding: '0 6px',
             borderRadius: 9,
             background: 'var(--cv2-unread)',
-            color: 'var(--cv2-unread-text)',
+            color: 'var(--cv2-unread-text, #FFFFFF)',
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
           }}

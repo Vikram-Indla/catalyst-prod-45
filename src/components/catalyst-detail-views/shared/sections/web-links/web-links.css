@@ -14,7 +14,7 @@
 .web-link-input:focus,
 .web-link-input:focus-visible,
 .web-link-input:focus-within {
-  outline: none !important;
+  outline: 2px solid var(--ds-border-focused) !important;
   box-shadow: none !important;
 }
 

@@ -32,10 +32,10 @@ export const ChecklistTab: React.FC<ChecklistTabProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          marginBottom: '20px'
+          marginBottom: '16px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textMuted }}>
             {completedCount} of {totalCount} complete ({progressPercent}%)
           </span>
@@ -49,7 +49,7 @@ export const ChecklistTab: React.FC<ChecklistTabProps> = ({
           display: 'flex',
           flexDirection: 'column',
           gap: '8px',
-          marginBottom: '20px'
+          marginBottom: '16px'
         }}
       >
         {items.map((item) => (

@@ -25,7 +25,7 @@ export function DraftsAndSentHeader({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '14px 16px 6px',
+        padding: '12px 16px 6px',
       }}
     >
       <h2
@@ -74,8 +74,8 @@ export function DraftsAndSentHeader({
 const editBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
-  gap: 6,
-  padding: '6px 10px',
+  gap: 4,
+  padding: '4px 10px',
   border: '1px solid var(--cv2-border)',
   borderRadius: 6,
   background: 'transparent',
@@ -87,7 +87,7 @@ const editBtnStyle: React.CSSProperties = {
 };
 
 const doneBtnStyle: React.CSSProperties = {
-  padding: '6px 14px',
+  padding: '4px 14px',
   border: '1px solid var(--cv2-border)',
   borderRadius: 6,
   background: 'transparent',
@@ -99,7 +99,7 @@ const doneBtnStyle: React.CSSProperties = {
 };
 
 const deleteBtnActiveStyle: React.CSSProperties = {
-  padding: '6px 14px',
+  padding: '4px 14px',
   border: '1px solid var(--cv2-danger)',
   borderRadius: 6,
   background: 'var(--cv2-danger)',
@@ -111,7 +111,7 @@ const deleteBtnActiveStyle: React.CSSProperties = {
 };
 
 const deleteBtnDisabledStyle: React.CSSProperties = {
-  padding: '6px 14px',
+  padding: '4px 14px',
   border: '1px solid var(--cv2-border)',
   borderRadius: 6,
   background: 'transparent',

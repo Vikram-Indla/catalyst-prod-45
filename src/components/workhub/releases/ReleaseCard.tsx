@@ -55,7 +55,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
         background: 'var(--cp-float)',
         border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-xl, 12px)',
-        padding: '20px 20px 20px 24px',
+        padding: '16px 20px 20px 24px',
         boxShadow: 'var(--wh-shadow-sm)',
         cursor: 'pointer',
         transition: 'box-shadow 150ms ease, border-color 150ms ease',
@@ -84,7 +84,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
           </div>
         </div>
         <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
+          display: 'inline-flex', alignItems: 'center', gap: 4,
           padding: '4px 12px', borderRadius: 9999,
           fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           background: status.bg, color: status.fg,
@@ -125,12 +125,12 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
 
       {/* Projects */}
       {release.projects.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12, flexWrap: 'wrap' }}>
           <FolderGit2 size={13} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
           {release.projects.map((proj, i) => (
             <span key={proj} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
-              padding: '2px 8px', borderRadius: 4,
+              padding: '0px 8px', borderRadius: 4,
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               background: `${getProjectColor(i)}10`,
               color: getProjectColor(i),

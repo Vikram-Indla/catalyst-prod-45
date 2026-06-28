@@ -49,7 +49,7 @@
   display: flex;
   background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  border-bottom: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
   /* GPU layer promotion to prevent flicker when portals mount */
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -65,7 +65,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--ds-text-subtlest); /* gray-500 */
-  border-right: 1px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  border-right: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
   position: sticky;
   left: 0;
   background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
@@ -86,7 +86,7 @@
   flex-shrink: 0;
   padding: 12px 8px;
   text-align: center;
-  border-right: 1px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  border-right: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -107,7 +107,7 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 50%;
+  left: 48%;
   transform: translateX(-50%);
   width: 32px;
   height: 3px;
@@ -121,7 +121,7 @@
 
 .timelineRow {
   display: flex;
-  border-bottom: 1px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
+  border-bottom: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.05));
   transition: 
     background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.15s ease;
@@ -167,7 +167,7 @@
 /* Focus state for keyboard navigation */
 .timelineRow:focus-within {
   background: var(--ds-background-information, rgba(37, 99, 235, 0.02));
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .timelineRow:focus-within::before {
@@ -207,15 +207,15 @@
   width: 220px;
   min-width: 220px;
   flex-shrink: 0;
-  border-right: 1px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
+  border-right: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.08));
   background: white;
   position: sticky;
   left: 0;
   z-index: 10;
-  padding: 10px 12px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .resourceInfo {
@@ -319,7 +319,7 @@
   width: 110px;
   min-width: 110px;
   flex-shrink: 0;
-  border-right: 1px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
+  border-right: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.04));
   position: relative;
   min-height: 56px;
 }
@@ -358,7 +358,7 @@
 
 /* Focus state for accessibility */
 .allocationBar:focus-visible {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   box-shadow: 
     0 0 0 2px white,
     0 0 0 4px var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
@@ -388,7 +388,7 @@
 .barCommitted .barBadge {
   background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   color: white;
-  padding: 3px 8px;
+  padding: 4px 8px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 700;
@@ -418,7 +418,7 @@
 .barForecast .barBadge {
   background: var(--ds-background-information, rgba(37, 99, 235, 0.6));
   color: white;
-  padding: 3px 8px;
+  padding: 4px 8px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 700;
@@ -560,18 +560,18 @@
 .barDangerForecast .barText { color: var(--ds-text-danger); }
 
 /* Bar badge for legacy bars */
-.barPrimary .barBadge { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barTeal .barBadge { background: var(--ds-chart-teal-bold); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barWarning .barBadge { background: var(--ds-text-warning); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barSlate .barBadge { background: var(--ds-text-subtle); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barDanger .barBadge { background: var(--ds-text-danger); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barPrimary .barBadge { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barTeal .barBadge { background: var(--ds-chart-teal-bold); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barWarning .barBadge { background: var(--ds-text-warning); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barSlate .barBadge { background: var(--ds-text-subtle); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barDanger .barBadge { background: var(--ds-text-danger); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 
 /* Forecast bar badges - outlined style */
-.barPrimaryForecast .barBadge { background: transparent; color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); border: 1px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barTealForecast .barBadge { background: transparent; color: var(--ds-chart-teal-bold); border: 1px solid var(--ds-chart-teal-bold); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barWarningForecast .barBadge { background: transparent; color: var(--ds-text-warning); border: 1px solid var(--ds-text-warning); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barSlateForecast .barBadge { background: transparent; color: var(--ds-text-subtle); border: 1px solid var(--ds-text-subtle); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barDangerForecast .barBadge { background: transparent; color: var(--ds-text-danger); border: 1px solid var(--ds-text-danger); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barPrimaryForecast .barBadge { background: transparent; color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); border: 1px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barTealForecast .barBadge { background: transparent; color: var(--ds-chart-teal-bold); border: 1px solid var(--ds-chart-teal-bold); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barWarningForecast .barBadge { background: transparent; color: var(--ds-text-warning); border: 1px solid var(--ds-text-warning); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barSlateForecast .barBadge { background: transparent; color: var(--ds-text-subtle); border: 1px solid var(--ds-text-subtle); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barDangerForecast .barBadge { background: transparent; color: var(--ds-text-danger); border: 1px solid var(--ds-text-danger); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 
 /* ═══════════════════════════════════════════════════════════════
    AVAILABLE CELL — Subtle elegance with refined transitions
@@ -598,7 +598,7 @@
 
 /* Focus state for keyboard navigation */
 .availableCell:focus-visible {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   box-shadow: 
     0 0 0 2px white,
     0 0 0 4px var(--ds-chart-teal-bold);
@@ -630,7 +630,7 @@
   opacity: 0;
   transform: translateY(4px);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .availableCell:hover .availableLabel {
@@ -663,7 +663,7 @@
 .contractMarkerDot {
   position: absolute;
   top: 8px;
-  left: 50%;
+  left: 48%;
   transform: translateX(-50%);
   width: 10px;
   height: 10px;
@@ -676,9 +676,9 @@
 .contractMarkerBadge {
   position: absolute;
   top: -4px;
-  left: 50%;
+  left: 48%;
   transform: translateX(-50%);
-  padding: 3px 8px;
+  padding: 4px 8px;
   background: linear-gradient(
     135deg,
     var(--marker-color-light) 0%,
@@ -692,7 +692,7 @@
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   /* Multi-layer shadow for premium depth */
   box-shadow: 
     0 1px 2px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15)),
@@ -750,7 +750,7 @@
   );
   pointer-events: none;
   z-index: 2;
-  border-left: 2px dashed var(--ds-text-disabled, rgba(156, 163, 175, 0.4));
+  border-left: 0px dashed var(--ds-text-disabled, rgba(156, 163, 175, 0.4));
 }
 
 .lockedZone::before {
@@ -765,7 +765,7 @@
 
 .lockedZoneBadge {
   position: absolute;
-  top: 50%;
+  top: 48%;
   left: 8px;
   transform: translateY(-50%);
   background: rgba(107, 114, 128, 0.9); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
@@ -785,8 +785,8 @@
 
 .barTooltip {
   position: absolute;
-  top: 100%;
-  left: 50%;
+  top: 48%;
+  left: 48%;
   transform: translateX(-50%) translateY(8px);
   background: var(--ds-text); /* gray-800 */
   color: white;
@@ -812,7 +812,7 @@
   content: '';
   position: absolute;
   top: -6px;
-  left: 50%;
+  left: 48%;
   transform: translateX(-50%);
   border: 6px solid transparent;
   border-bottom-color: var(--ds-text);
@@ -880,9 +880,9 @@
 .legend {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   padding: 12px 16px;
-  border-top: 1px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
+  border-top: 0px solid var(--ds-shadow-raised, rgba(0, 0, 0, 0.06));
   background: var(--ds-surface-sunken);
   font-size: 11px;
   color: var(--ds-text-subtlest);
@@ -891,7 +891,7 @@
 .legendItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .legendDot {
@@ -974,7 +974,7 @@
   height: 10px;
   width: 60%;
   border-radius: 4px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .skeletonBar {
@@ -997,7 +997,7 @@
     var(--ds-surface-sunken, rgba(249, 250, 251, 0.8)) 0%,
     var(--ds-background-neutral-subtle, rgba(243, 244, 246, 0.9)) 100%
   );
-  border-left: 2px solid var(--ds-background-information, rgba(37, 99, 235, 0.1));
+  border-left: 0px solid var(--ds-background-information, rgba(37, 99, 235, 0.1));
   position: sticky;
   right: 0;
   z-index: 5;

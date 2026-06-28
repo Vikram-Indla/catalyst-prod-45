@@ -10,7 +10,7 @@
   gap: 8px;
   padding: 0 12px;
   /* ads-scanner:ignore-next-line */
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
   background: var(--ds-surface-sunken);
 }
 
@@ -36,7 +36,7 @@
 .cp-assistant-trigger {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   cursor: pointer;
   background: transparent;
   border: none;
@@ -88,7 +88,7 @@
   position: relative;
   width: 64px;
   height: 64px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -132,7 +132,7 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   border: 1px solid var(--ds-border);
   border-radius: 8px;
   background: var(--ds-surface);
@@ -160,7 +160,7 @@
 .cp-potd__content {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
   min-width: 0;
 }
 
@@ -172,10 +172,10 @@
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  padding: 2px 6px;
+  padding: 0px 6px;
   border-radius: 3px;
   width: fit-content;
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 }
 
 .cp-potd__text {
@@ -197,7 +197,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   border: 1px solid var(--ds-border);
   border-radius: 8px;
   background: var(--ds-surface);
@@ -279,7 +279,7 @@
   height: 24px;
   flex: 0 0 auto;
   filter: drop-shadow(0 1px 3px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14)));
-  margin-top: 2px;
+  margin-top: 0px;
 }
 
 .cp-msg__bubble--ai {
@@ -303,7 +303,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: var(--ds-background-neutral);
   border-radius: 12px 12px 12px 4px;
 }
@@ -335,7 +335,7 @@
 .cp-story-card {
   border: 1px solid var(--ds-border);
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: var(--ds-surface);
 }
 
@@ -410,11 +410,11 @@
   flex: 1;
   border: 1px solid var(--ds-border);
   border-radius: 4px;
-  padding: 6px 10px;
+  padding: 4px 10px;
   font-size: 13px;
   background: var(--ds-surface);
   color: var(--ds-text);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .cp-epic-prompt__input:focus {
@@ -422,7 +422,7 @@
 }
 
 .cp-epic-prompt__btn {
-  padding: 6px 12px;
+  padding: 4px 12px;
   background: var(--ds-background-brand-bold);
   color: var(--ds-text-inverse);
   border: none;
@@ -442,7 +442,7 @@
 .cp-input-area {
   flex: 0 0 auto;
   /* ads-scanner:ignore-next-line */
-  border-top: 1px solid var(--ds-border);
+  border-top: 0px solid var(--ds-border);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -454,7 +454,7 @@
   border: 1px solid var(--ds-border);
   border-radius: 8px;
   background: var(--ds-surface-overlay);
-  padding: 10px 12px;
+  padding: 8px 12px;
   transition: border-color 0.1s;
 }
 
@@ -465,7 +465,7 @@
 .cp-input-box__textarea {
   width: 100%;
   border: none;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   background: transparent;
   resize: none;
   font-size: 13px;
@@ -622,14 +622,14 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  margin-left: 6px;
+  margin-left: 4px;
   padding-left: 24px;
 }
 
 .cp-thinking__steps::before {
   content: '';
   position: absolute;
-  left: 9px;
+  left: 8px;
   top: 12px;
   bottom: 12px;
   width: 1px;
@@ -639,15 +639,15 @@
 .cp-step {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 6px 0;
+  gap: 8px;
+  padding: 4px 0;
   position: relative;
 }
 
 .cp-step__icon {
   position: absolute;
   left: -24px;
-  top: 6px;
+  top: 4px;
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -662,7 +662,7 @@
 .cp-step__body {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
   min-width: 0;
   flex: 1;
 }
@@ -722,17 +722,17 @@
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 12px;
   background: var(--ds-background-neutral);
-  padding: 1px 5px;
+  padding: 0px 5px;
   border-radius: 3px;
   color: var(--ds-text);
 }
 
 .cp-ai-content ul, .cp-ai-content ol {
   margin: 4px 0 8px;
-  padding-left: 20px;
+  padding-left: 16px;
 }
 
-.cp-ai-content li { margin-bottom: 2px; }
+.cp-ai-content li { margin-bottom: 0px; }
 
 .cp-ai-content a {
   color: var(--ds-link);
@@ -766,12 +766,12 @@
   color: var(--ds-text-subtle);
   text-align: left;
   padding: 8px 10px;
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
 }
 
 .cp-table tbody td {
   padding: 8px 10px;
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
   vertical-align: top;
   color: var(--ds-text);
   line-height: 1.4;
@@ -794,11 +794,11 @@
 .cp-context-chip {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 12px;
   background: var(--ds-background-neutral-subtle);
   /* ads-scanner:ignore-next-line */
-  border-top: 1px solid var(--ds-border);
+  border-top: 0px solid var(--ds-border);
   flex: 0 0 auto;
   font-size: 12px;
   color: var(--ds-text-subtle);
@@ -811,7 +811,7 @@
 
 .cp-context-chip__label {
   font-weight: 400;
-  margin-right: 2px;
+  margin-right: 0px;
 }
 
 .cp-context-chip__pill {
@@ -821,7 +821,7 @@
   background: var(--ds-surface);
   border: 1px solid var(--ds-border);
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 0px 6px;
   font-size: 12px;
   font-weight: 500;
   color: var(--ds-link);
@@ -900,7 +900,7 @@
 .cp-view-menu__item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   padding: 8px;
   border: none;
@@ -945,7 +945,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: 10px;
   background: var(--ds-background-neutral);
   color: var(--ds-text-subtle);

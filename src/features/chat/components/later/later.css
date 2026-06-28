@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   padding: 0 24px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
 }
 
 .c-later__title {
@@ -73,7 +73,7 @@
   align-items: baseline;
   gap: 8px;
   /* ads-scanner:ignore-next-line -- 2px sub-grid gap matches Jira activity row density */
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 }
 
 .c-later-item__who {
@@ -108,7 +108,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   /* ads-scanner:ignore-next-line -- 2px sub-grid gap matches Jira activity row density */
-  margin-top: 2px;
+  margin-top: 0px;
 }
 
 /* ── Remove-from-later button ── */

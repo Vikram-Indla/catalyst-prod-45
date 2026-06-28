@@ -83,7 +83,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
               bottom: 0,
               left: 0,
               right: 0,
-              padding: '2px 4px',
+              padding: '0px 4px',
               background: 'var(--cv2-danger)',
               color: 'var(--ds-text-inverse)',
               fontSize: 'var(--ds-font-size-50)',
@@ -138,7 +138,7 @@ function FileCardThumb({ file }: { file: File }) {
         justifyContent: 'center',
         gap: 4,
         color: 'var(--cv2-text-subtle)',
-        padding: 6,
+        padding: 4,
         boxSizing: 'border-box',
       }}
     >

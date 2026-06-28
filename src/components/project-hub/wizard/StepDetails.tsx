@@ -176,7 +176,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               ...inputStyle,
               fontFamily: 'var(--cp-font-mono)',
               letterSpacing: '0.05em',
-              paddingRight: 36,
+              paddingRight: 32,
             }}
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -188,7 +188,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           </div>
         </div>
         {keyStatus === 'taken' && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-danger)', marginTop: 0, display: 'block' }}>
             This key is already in use
           </span>
         )}
@@ -283,7 +283,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
         {showLeadPicker && (
           <div
             className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] rounded-lg shadow-lg"
-            style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
+            style={{ top: '48%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
           >
             <div className="p-2 border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))]">
               <div className="relative">
@@ -354,7 +354,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
         <div className="flex items-center justify-between">
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>
-            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: 2 }}>Enable bi-directional sync with an existing Jira project</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: 0 }}>Enable bi-directional sync with an existing Jira project</div>
           </div>
           <Switch
             checked={data.linkJira}

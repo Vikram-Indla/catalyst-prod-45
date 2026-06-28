@@ -157,8 +157,8 @@ export default function WikiKnowledgeGraphPage() {
 
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', background: isDark ? 'var(--cp-bg-page)' : 'var(--ds-surface-sunken)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '20px 40px 0' }}>
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
+      <div style={{ padding: '16px 40px 0' }}>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontWeight: 600 }}>Knowledge Graph</span>
@@ -187,7 +187,7 @@ export default function WikiKnowledgeGraphPage() {
             padding: '8px 12px', boxShadow: isDark ? '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3))' : '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.1))',
             pointerEvents: 'none', zIndex: 10, fontSize: 'var(--ds-font-size-200)', maxWidth: 200,
           }}>
-            <div style={{ fontWeight: 600, marginBottom: 2, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : undefined }}>{tooltip.title}</div>
+            <div style={{ fontWeight: 600, marginBottom: 0, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : undefined }}>{tooltip.title}</div>
             <div style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{tooltip.domain} · {tooltip.views} views</div>
           </div>
         )}

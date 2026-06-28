@@ -37,7 +37,7 @@ export function RoadmapToolbar({
       <div style={{ flex: 1 }} />
 
       {/* Stat pills — EC-04: grey when 0 committed */}
-      <div style={{ display: 'flex', gap: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ display: 'flex', gap: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
         <span style={{
           background: hasCommitted ? 'var(--ds-background-success)' : 'var(--bg-1)',
           color: hasCommitted ? 'var(--sem-success)' : 'var(--fg-4)',
@@ -75,7 +75,7 @@ export function RoadmapToolbar({
       <button
         onClick={() => onCommittedOnlyChange(!committedOnly)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 6,
+          display: 'flex', alignItems: 'center', gap: 4,
           padding: '4px 10px', borderRadius: 100, border: '1px solid var(--divider)',
           background: committedOnly ? 'var(--ds-background-success)' : 'var(--bg-app)', cursor: 'pointer',
           fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
@@ -88,7 +88,7 @@ export function RoadmapToolbar({
           display: 'inline-block', transition: 'background 150ms',
         }}>
           <span style={{
-            position: 'absolute', top: 2, width: 12, height: 12, borderRadius: 6,
+            position: 'absolute', top: 0, width: 12, height: 12, borderRadius: 6,
             background: 'var(--bg-app)', transition: 'left 150ms',
             left: committedOnly ? 14 : 2,
           }} />

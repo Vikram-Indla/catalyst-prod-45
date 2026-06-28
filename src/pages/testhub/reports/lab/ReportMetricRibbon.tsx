@@ -30,7 +30,7 @@ function MetricCard({ label, value, sub, highlight = 'neutral' }: Metric) {
         padding: '12px 16px',
         display: 'flex',
         flexDirection: 'column',
-        gap: 3,
+        gap: 4,
       }}
     >
       <span
@@ -70,7 +70,7 @@ export default function ReportMetricRibbon({ metrics }: Props) {
     <div
       style={{
         display: 'flex',
-        gap: 10,
+        gap: 8,
         flexWrap: 'nowrap',
         overflowX: 'auto',
         padding: '16px 20px',

@@ -64,7 +64,7 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
+          gap: '8px',
           padding: '12px 14px',  // 12px vertical for field dropdowns
           backgroundColor: COLORS.surfaceCard,
           border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderFocus : COLORS.borderDefault)}`,
@@ -101,7 +101,7 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
             borderRadius: '12px',
             boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
             zIndex: 1000,
-            padding: '6px'
+            padding: '4px'
           }}
         >
           {options.map((option) => {
@@ -116,8 +116,8 @@ export const FieldDropdown: React.FC<FieldDropdownProps> = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  padding: '10px 12px',
+                  gap: '8px',
+                  padding: '8px 12px',
                   borderRadius: '8px',
                   cursor: 'pointer',
                   backgroundColor: isSelected ? COLORS.accentLight : 'transparent'

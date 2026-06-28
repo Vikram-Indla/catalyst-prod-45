@@ -65,7 +65,7 @@ function ConversationMenuItem({
         display: 'block',
         width: '100%',
         textAlign: 'left',
-        padding: '6px 10px',
+        padding: '4px 10px',
         background: 'transparent',
         border: 'none',
         borderRadius: 4,
@@ -338,7 +338,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             role="menu"
             style={{
               position: 'absolute',
-              top: '100%',
+              top: '48%',
               right: 0,
               marginTop: 4,
               minWidth: 200,

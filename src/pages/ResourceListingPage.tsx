@@ -265,7 +265,7 @@ export default function ResourceListingPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
           {/* Search — 36px height, 4px radius */}
           <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
-            <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: t.text3 }} />
+            <Search size={14} style={{ position: 'absolute', left: '8px', top: '48%', transform: 'translateY(-50%)', color: t.text3 }} />
             <input
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
@@ -294,7 +294,7 @@ export default function ResourceListingPage() {
         </div>
 
         {/* ═══ Resource Type Filter — compact row ═══ */}
-        <div style={{ display: 'flex', gap: 6, padding: '0 0 8px 0', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 4, padding: '0 0 8px 0', alignItems: 'center' }}>
           <span style={{
             fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: t.text3,
             textTransform: 'uppercase', letterSpacing: '0.05em',
@@ -395,7 +395,7 @@ export default function ResourceListingPage() {
                   Array.from({ length: 6 }).map((_, i) => (
                     <tr key={i}>
                       {COLUMNS.map(col => (
-                        <td key={col.key} style={{ padding: '6px 12px', height: '36px', maxHeight: '36px' }}>
+                        <td key={col.key} style={{ padding: '4px 12px', height: '36px', maxHeight: '36px' }}>
                           <div style={{
                             height: '12px', borderRadius: '3px',
                             background: `linear-gradient(90deg, ${t.shimmerFrom} 25%, ${t.shimmerMid} 50%, ${t.shimmerFrom} 75%)`,
@@ -409,7 +409,7 @@ export default function ResourceListingPage() {
                   ))
                 ) : sorted.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '60px 20px' }}>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '48px 20px' }}>
                       <Search size={32} style={{ color: t.textDim, margin: '0 auto 12px' }} />
                       <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: t.text1, marginBottom: '4px' }}>No resources match your search.</div>
                       <div style={{ fontSize: 'var(--ds-font-size-200)', color: t.text3 }}>Try adjusting your search or filters</div>
@@ -426,7 +426,7 @@ export default function ResourceListingPage() {
                   >
                     {/* RESOURCE */}
                     <td style={{ padding: '4px 12px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <ResourceAvatar name={r.full_name} avatarUrl={r.avatar_url} />
                         <div style={{ minWidth: 0 }}>
                           <div style={{
@@ -434,7 +434,7 @@ export default function ResourceListingPage() {
                             lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             maxWidth: '220px',
                           }}>{r.full_name}</div>
-                          <div style={{ fontSize: 'var(--ds-font-size-100)', color: t.textMuted, marginTop: 1 }}>RID: {r.rid}</div>
+                          <div style={{ fontSize: 'var(--ds-font-size-100)', color: t.textMuted, marginTop: 0 }}>RID: {r.rid}</div>
                         </div>
                       </div>
                     </td>
@@ -442,7 +442,7 @@ export default function ResourceListingPage() {
                     <td style={{ padding: '4px 12px' }}>
                       {r.dept_name ? (
                         <span style={{
-                          display: 'inline-flex', alignItems: 'center', gap: '6px',
+                          display: 'inline-flex', alignItems: 'center', gap: '4px',
                           fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: t.text2,
                         }}>
                           <span style={{

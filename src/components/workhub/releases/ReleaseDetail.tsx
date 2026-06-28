@@ -86,7 +86,7 @@ export function ReleaseDetail() {
     <div style={{ padding: '24px 32px', maxWidth: 1100, margin: '0 auto' }}>
       {/* Breadcrumb */}
       <button onClick={() => navigate('/projecthub/releases')} style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
+        display: 'inline-flex', alignItems: 'center', gap: 4,
         background: 'none', border: 'none', cursor: 'pointer',
         fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-blue)',
         marginBottom: 16, padding: 0,
@@ -114,9 +114,9 @@ export function ReleaseDetail() {
       </div>
 
       {/* Status + Date */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, marginLeft: 52 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, marginLeft: 48 }}>
         <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
+          display: 'inline-flex', alignItems: 'center', gap: 4,
           padding: '4px 12px', borderRadius: 9999,
           fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           background: statusLabel === 'Completed' ? 'var(--ds-background-success)' : statusLabel === 'Active' ? 'var(--ds-background-information)' : statusLabel === 'At Risk' ? 'var(--ds-background-danger)' : 'var(--bg-1)',
@@ -138,7 +138,7 @@ export function ReleaseDetail() {
 
       {/* Projects */}
       {release.projects.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 52, marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 48, marginBottom: 16, flexWrap: 'wrap' }}>
           <FolderGit2 size={14} style={{ color: 'var(--fg-4)' }} />
           {release.projects.map((proj, i) => {
             const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--ds-background-discovery-bold)', 'var(--ds-icon-information)', 'var(--ds-text-warning)', 'var(--ds-text-danger)', 'var(--ds-link)', 'var(--ds-text-success)', 'var(--ds-background-discovery-bold)'];
@@ -146,7 +146,7 @@ export function ReleaseDetail() {
             return (
               <span key={proj} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                padding: '2px 8px', borderRadius: 4,
+                padding: '0px 8px', borderRadius: 4,
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                 background: `${c}10`, color: c, border: `1px solid ${c}30`,
               }}>
@@ -167,7 +167,7 @@ export function ReleaseDetail() {
               border: '1px solid var(--divider)', borderRadius: 'var(--wh-radius-lg, 8px)',
               padding: '12px 16px', background: 'var(--cp-float)', minWidth: 100,
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                 <Icon size={14} color={kpi.color} />
                 <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   {kpi.label}
@@ -187,7 +187,7 @@ export function ReleaseDetail() {
       {/* Progress Bar */}
       <div style={{
         background: 'var(--cp-float)', border: '1px solid var(--divider)',
-        borderRadius: 'var(--wh-radius-lg, 8px)', padding: 20, marginBottom: 24,
+        borderRadius: 'var(--wh-radius-lg, 8px)', padding: 16, marginBottom: 24,
       }}>
         <StackedProgressBar
           segments={segments}
@@ -205,7 +205,7 @@ export function ReleaseDetail() {
           background: 'var(--cp-float)', border: '1px solid var(--divider)',
           borderRadius: 'var(--wh-radius-lg, 8px)', padding: '16px 20px', marginBottom: 24,
         }}>
-          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: 10 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>
             Team ({release.assignees.length})
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -265,7 +265,7 @@ function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl
 
   return (
     <div style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6,
+      display: 'inline-flex', alignItems: 'center', gap: 4,
       padding: '4px 10px 4px 4px', borderRadius: 9999,
       border: '1px solid var(--divider)',
       background: 'var(--bg-1)',

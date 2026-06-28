@@ -132,7 +132,7 @@ export function TaskContextMenu({
         <ChevronRight className="w-4 h-4 ml-auto" />
         
         {activeSubmenu === 'status' && statuses.length > 0 && (
-          <div className="cal-context-menu" style={{ top: -4, left: '100%', marginLeft: 4 }}>
+          <div className="cal-context-menu" style={{ top: -4, left: '48%', marginLeft: 4 }}>
             {statuses.map(status => (
               <div 
                 key={status.id}
@@ -166,7 +166,7 @@ export function TaskContextMenu({
         <ChevronRight className="w-4 h-4 ml-auto" />
         
         {activeSubmenu === 'reassign' && users.length > 0 && (
-          <div className="cal-context-menu" style={{ top: -4, left: '100%', marginLeft: 4, maxHeight: 200, overflowY: 'auto' }}>
+          <div className="cal-context-menu" style={{ top: -4, left: '48%', marginLeft: 4, maxHeight: 200, overflowY: 'auto' }}>
             <div 
               className="cal-context-menu-item"
               onClick={(e) => {
@@ -211,7 +211,7 @@ export function TaskContextMenu({
         <ChevronRight className="w-4 h-4 ml-auto" />
         
         {activeSubmenu === 'priority' && (
-          <div className="cal-context-menu" style={{ top: -4, left: '100%', marginLeft: 4 }}>
+          <div className="cal-context-menu" style={{ top: -4, left: '48%', marginLeft: 4 }}>
             {PRIORITIES.map(priority => (
               <div 
                 key={priority.value}

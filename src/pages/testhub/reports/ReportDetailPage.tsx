@@ -54,7 +54,7 @@ const TH: React.CSSProperties = {
 };
 
 const TD: React.CSSProperties = {
-  padding: '10px 16px',
+  padding: '8px 16px',
   fontSize: 'var(--ds-font-size-400)',
   color: 'var(--ds-text)',
   borderBottom: '1px solid var(--ds-border-subtle)',
@@ -133,7 +133,7 @@ function EmptyState() {
 
 function LoadingState() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: 64 }}>
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
       <Spinner size="large" />
     </div>
   );
@@ -150,7 +150,7 @@ function DateRangePicker({ value, onChange }: { value: DateRange; onChange: (v: 
           type="button"
           onClick={() => onChange(opt)}
           style={{
-            padding: '6px 12px',
+            padding: '4px 12px',
             fontSize: 'var(--ds-font-size-300)',
             fontWeight: value === opt ? 600 : 400,
             color: value === opt ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
@@ -771,7 +771,7 @@ function StatusBadge({ status }: { status: string }) {
   const color = colorMap[status] ?? 'var(--ds-text-subtle)';
   const bg = bgMap[status] ?? 'var(--ds-background-neutral)';
   return (
-    <span style={{ display: 'inline-block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '2px 8px', borderRadius: 3, background: bg, color }}>
+    <span style={{ display: 'inline-block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '0px 8px', borderRadius: 3, background: bg, color }}>
       {label}
     </span>
   );
@@ -1353,7 +1353,7 @@ export default function ReportDetailPage() {
 
       <div style={{ flex: 1, padding: '24px 24px 48px', maxWidth: 1200, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
         {!projectId ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
             <Spinner size="large" />
           </div>
         ) : (

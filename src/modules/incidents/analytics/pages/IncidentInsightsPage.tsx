@@ -1076,7 +1076,7 @@ const printStyles = `
   
   /* Optimize spacing for print */
   .print\\:mb-8 {
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
   }
   
   .print\\:p-4 {
@@ -1084,7 +1084,7 @@ const printStyles = `
   }
   
   .print\\:p-6 {
-    padding: 1rem !important;
+    padding: 0rem !important;
   }
   
   /* Typography adjustments */
@@ -1110,7 +1110,7 @@ const printStyles = `
   }
   
   .print\\:gap-6 {
-    gap: 1rem !important;
+    gap: 0rem !important;
   }
   
   /* KPI Grid - optimize for landscape */
@@ -1119,7 +1119,7 @@ const printStyles = `
   }
   
   .grid-cols-6 > * {
-    padding: 1rem !important;
+    padding: 0rem !important;
   }
   
   .grid-cols-6 .text-4xl {
@@ -1129,7 +1129,7 @@ const printStyles = `
   /* Two-column sections */
   .grid-cols-2 {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1rem !important;
+    gap: 0rem !important;
   }
   
   /* Tables */
@@ -1164,12 +1164,12 @@ const printStyles = `
   
   /* Page settings */
   @page {
-    margin: 1cm 1.5cm;
+    margin: 0cm 1.5cm;
     size: A4 landscape;
   }
   
   @page :first {
-    margin-top: 1cm;
+    margin-top: 0cm;
   }
   
   /* Avoid page breaks inside important elements */
@@ -1195,7 +1195,7 @@ const printStyles = `
     font-size: 8pt;
     color: var(--ds-text-subtlest);
     padding: 0.5rem;
-    border-top: 1px solid var(--ds-border);
+    border-top: 0px solid var(--ds-border);
   }
 }
 `;

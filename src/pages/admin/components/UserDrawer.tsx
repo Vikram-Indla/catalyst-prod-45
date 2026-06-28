@@ -487,7 +487,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
                   <span style={{ 
                     position: 'absolute', 
                     left: '12px', 
-                    top: '50%', 
+                    top: '48%', 
                     transform: 'translateY(-50%)', 
                     color: 'var(--ct-text-muted)',
                     fontSize: '13px'
@@ -610,8 +610,8 @@ const drawerCSS = `
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  padding: 16px 24px;
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken));
 }
 .um-drawer-header h2 {
   font-size: 18px;
@@ -622,7 +622,7 @@ const drawerCSS = `
 .um-drawer-header p {
   font-size: 12px;
   color: var(--ds-text-subtlest);
-  margin: 2px 0 0 0;
+  margin: 0px 0 0 0;
 }
 .um-drawer-close {
   width: 36px;
@@ -655,13 +655,13 @@ const drawerCSS = `
   align-items: center;
   gap: 8px;
   padding: 16px 24px;
-  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  border-top: 0px solid var(--ds-border, var(--cp-bg-sunken));
   background: var(--ds-surface-sunken);
 }
 
 /* Form Sections */
 .um-form-section {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 .um-form-section-title {
   font-size: 11px;
@@ -669,15 +669,15 @@ const drawerCSS = `
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--ds-surface-sunken);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 0px solid var(--ds-surface-sunken);
 }
 .um-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 .um-form-row.full {
   grid-template-columns: 1fr;
@@ -685,7 +685,7 @@ const drawerCSS = `
 .um-form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 .um-form-group label {
   font-size: 12px;
@@ -705,7 +705,7 @@ const drawerCSS = `
 }
 .um-form-group input:focus,
 .um-form-group select:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary));
   box-shadow: 0 0 0 3px var(--ds-background-information, rgba(37, 99, 235, 0.08));
 }
@@ -720,7 +720,7 @@ const drawerCSS = `
 .um-drawer .um-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 0 14px;
   height: 36px;
   font-size: 13px;

@@ -148,7 +148,7 @@ function LinkAsSplitButton({
         style={{
           display: "inline-flex",
           alignItems: "center",
-          gap: 6,
+          gap: 4,
           height: 32,
           padding: "0 10px 0 12px",
           border:
@@ -470,10 +470,10 @@ export function AiLinkSimilarPanel({
         role="status"
         aria-live="polite"
         style={{
-          padding: "10px 12px",
+          padding: "8px 12px",
           display: "flex",
           alignItems: "center",
-          gap: 10,
+          gap: 8,
           marginBottom: 8,
         }}
       >
@@ -501,7 +501,7 @@ export function AiLinkSimilarPanel({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "10px 12px",
+          padding: "8px 12px",
           border:
             "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))",
           borderRadius: 8,
@@ -584,7 +584,7 @@ export function AiLinkSimilarPanel({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "10px 12px",
+          padding: "8px 12px",
           cursor: "pointer",
           background: "var(--ds-surface-sunken)",
           borderBottom:
@@ -673,7 +673,7 @@ export function AiLinkSimilarPanel({
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                padding: "10px 0 6px",
+                padding: "8px 0 6px",
                 borderBottom:
                   "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken))",
               }}
@@ -757,11 +757,11 @@ export function AiLinkSimilarPanel({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingTop: 10,
+                paddingTop: 8,
                 marginTop: 4,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                   <Info
                     size={14}
@@ -786,7 +786,7 @@ export function AiLinkSimilarPanel({
                     border: "none",
                     background: "none",
                     cursor: "pointer",
-                    padding: 2,
+                    padding: 0,
                     color:
                       feedback === "up"
                         ? "var(--cp-primary-60)"
@@ -805,7 +805,7 @@ export function AiLinkSimilarPanel({
                     border: "none",
                     background: "none",
                     cursor: "pointer",
-                    padding: 2,
+                    padding: 0,
                     color:
                       feedback === "down"
                         ? "var(--ds-background-danger-bold)"

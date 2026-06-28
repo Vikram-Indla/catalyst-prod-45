@@ -2,7 +2,7 @@
 
 .cc-msg-search-wrap {
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
   background: var(--ds-surface);
 }
 
@@ -14,7 +14,7 @@
   border: 1px solid var(--ds-border);
   border-radius: 4px;
   padding: 4px 8px;
-  gap: 6px;
+  gap: 4px;
 }
 
 .cc-msg-search-input:focus-within {
@@ -32,7 +32,7 @@
   min-width: 0;
   background: transparent;
   border: none;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-size: 13px;
   font-family: inherit;
   color: var(--ds-text);
@@ -46,7 +46,7 @@
   flex-shrink: 0;
   background: transparent;
   border: none;
-  padding: 2px;
+  padding: 0px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -85,7 +85,7 @@
   flex-direction: column;
   max-height: 240px;
   overflow-y: auto;
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
   background: var(--ds-surface);
 }
 
@@ -112,7 +112,7 @@
 
 .cc-msg-search-result-avatar {
   flex-shrink: 0;
-  padding-top: 2px;
+  padding-top: 0px;
 }
 
 .cc-msg-search-result-content {
@@ -166,7 +166,7 @@
   gap: 8px;
   flex-wrap: wrap;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
   background: var(--ds-surface);
 }
 
@@ -175,12 +175,12 @@
 .cc-msg-search-group-header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px 4px;
+  gap: 4px;
+  padding: 4px 12px 4px;
   position: sticky;
   top: 0;
   background: var(--ds-surface);
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
 }
 
 .cc-msg-search-group-glyph {
@@ -226,7 +226,7 @@
 
 .cc-msg-search-recent {
   padding: 8px 12px;
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
   background: var(--ds-surface);
 }
 

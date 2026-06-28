@@ -52,7 +52,7 @@ export function ThreadPanel({
           borderBottom: '1px solid var(--ds-border)',
         }}
       >
-        <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', display: 'flex', alignItems: 'baseline', gap: 6, minWidth: 0 }}>
+        <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', display: 'flex', alignItems: 'baseline', gap: 4, minWidth: 0 }}>
           <span>Thread</span>
           {conversationTitle && (
             <span
@@ -92,7 +92,7 @@ export function ThreadPanel({
           <Avatar name={parentMessage.authorName} seed={parentMessage.authorId} />
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 500, fontSize: 'var(--ds-font-size-300)' }}>{parentMessage.authorName || initialsOf(parentMessage.authorName)}</div>
-            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', marginTop: 2 }}>{parentMessage.bodyText}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', marginTop: 0 }}>{parentMessage.bodyText}</div>
           </div>
         </div>
 
@@ -115,7 +115,7 @@ export function ThreadPanel({
       {/* Reply composer — canonical MessageComposer (same as main conversation) */}
       <div style={{ borderTop: '1px solid var(--ds-border)' }}>
         {onAlsoSendToConversation && (
-          <div style={{ padding: '6px 12px 0' }}>
+          <div style={{ padding: '4px 12px 0' }}>
             <Checkbox
               isChecked={alsoSend}
               onChange={(e) => setAlsoSend(e.currentTarget.checked)}

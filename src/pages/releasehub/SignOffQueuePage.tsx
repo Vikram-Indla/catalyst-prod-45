@@ -116,12 +116,12 @@ export default function SignOffQueuePage() {
                   <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{a.approverName ?? 'Unassigned'}</span>
                   {a.role && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtle, background: T.sunken, padding: '0 8px', borderRadius: 3 }}>{a.role}</span>}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
                   {a.chgNumber && <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.link }}>{a.chgNumber}</span>}
                   <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.changeTitle ?? '—'} · {waitLabel(a.waitStartedAt)}</span>
                 </div>
               </div>
-              <button onClick={() => setSelected(a)} style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              <button onClick={() => setSelected(a)} style={{ display: 'flex', alignItems: 'center', gap: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 Review <ChevronRight size={14} style={{ color: T.link }} />
               </button>
             </div>

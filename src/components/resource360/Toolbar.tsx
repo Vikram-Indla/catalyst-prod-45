@@ -59,7 +59,7 @@ function FilterDropdown({ label, value, options, onChange }: {
       <button
         onClick={() => setOpen(!open)}
         style={{
-          padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
+          padding: '4px 12px', fontSize: 11.5, fontWeight: 600,
           color: 'var(--r360-text-3)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           border: '1px solid var(--r360-border)', borderRadius: 6, cursor: 'pointer',
           whiteSpace: 'nowrap',
@@ -70,7 +70,7 @@ function FilterDropdown({ label, value, options, onChange }: {
       </button>
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', left: 0, marginTop: 4,
+          position: 'absolute', top: '48%', left: 0, marginTop: 4,
           background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8,
           boxShadow: '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,.1))', zIndex: 200,
           minWidth: 180, maxHeight: 240, overflowY: 'auto',
@@ -82,7 +82,7 @@ function FilterDropdown({ label, value, options, onChange }: {
               onClick={() => { onChange(o.key); setOpen(false); }}
               style={{
                 display: 'block', width: '100%', textAlign: 'left',
-                padding: '6px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: value === o.key ? 600 : 400,
+                padding: '4px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: value === o.key ? 600 : 400,
                 color: value === o.key ? 'var(--cp-blue)' : 'var(--fg-2)',
                 background: value === o.key ? ('var(--cp-primary-light)') : 'transparent',
                 border: 'none', borderRadius: 4, cursor: 'pointer',
@@ -105,7 +105,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   selectedProject = 'all', onProjectChange,
 }) => {
   const tabStyle = (active: boolean): React.CSSProperties => ({
-    padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 700 : 600,
+    padding: '4px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 700 : 600,
     color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--r360-text-3)',
     background: active ? 'var(--ds-surface-overlay)' : 'transparent',
     border: 'none', borderRadius: 6, cursor: 'pointer',
@@ -137,7 +137,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     >
       {/* View Tabs */}
       <div role="tablist" aria-label="View tabs" style={{
-        display: 'flex', background: 'var(--bg-3)', borderRadius: 8, padding: 3, gap: 2,
+        display: 'flex', background: 'var(--bg-3)', borderRadius: 8, padding: 4, gap: 0,
       }}>
         {views.map(v => (
           <button
@@ -170,7 +170,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       />
       <button
         style={{
-          padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
+          padding: '4px 12px', fontSize: 11.5, fontWeight: 600,
           color: 'var(--r360-text-3)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           border: '1px solid var(--r360-border)', borderRadius: 6, cursor: 'pointer',
         }}
@@ -180,7 +180,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       </button>
       <button
         style={{
-          padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
+          padding: '4px 12px', fontSize: 11.5, fontWeight: 600,
           color: 'var(--r360-text-3)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           border: '1px solid var(--r360-border)', borderRadius: 6, cursor: 'pointer',
         }}
@@ -194,7 +194,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
       {/* Role Toggle */}
       <div role="tablist" aria-label="Role filter" style={{
-        display: 'flex', background: 'var(--bg-3)', borderRadius: 6, padding: 2, gap: 1,
+        display: 'flex', background: 'var(--bg-3)', borderRadius: 6, padding: 0, gap: 0,
       }}>
         {roles.map(r => (
           <button
@@ -221,7 +221,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', borderRadius: 20,
           padding: '0 16px', height: 32, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           letterSpacing: '0.3px', cursor: 'pointer',
-          display: 'inline-flex', alignItems: 'center', gap: 6,
+          display: 'inline-flex', alignItems: 'center', gap: 4,
           transition: 'all 200ms ease',
           fontFamily: 'var(--cp-font-body)',
         }}

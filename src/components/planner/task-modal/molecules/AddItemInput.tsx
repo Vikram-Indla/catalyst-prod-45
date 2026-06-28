@@ -30,8 +30,8 @@ export const AddItemInput: React.FC<AddItemInputProps> = ({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '14px',
-        padding: '14px 16px',
+        gap: '12px',
+        padding: '12px 16px',
         backgroundColor: isFocused ? COLORS.surfaceCard : COLORS.surfacePage,
         // FIX 5: Subtle dashed border that becomes solid blue on focus
         border: `1.5px ${isFocused ? 'solid' : 'dashed'} ${isFocused ? 'var(--ds-text-brand)' : 'var(--ds-text-disabled)'}`,

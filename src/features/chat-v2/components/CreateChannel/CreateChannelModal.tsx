@@ -88,7 +88,7 @@ export function CreateChannelModal({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '10vh',
+        paddingTop: '8vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
     >
@@ -155,11 +155,11 @@ function Header({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
-        marginBottom: 18,
+        marginBottom: 16,
       }}
     >
       <div>
-        <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
           Create a channel
         </div>
         {step === 2 && channelName && (
@@ -221,7 +221,7 @@ function NameStep({
     <div>
       <label
         htmlFor="cv2-channel-name"
-        style={{ display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, marginBottom: 6 }}
+        style={{ display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, marginBottom: 4 }}
       >
         Name
       </label>
@@ -232,11 +232,11 @@ function NameStep({
           gap: 8,
           padding: '8px 10px',
           background: 'var(--cv2-bg-input)',
-          border: '1px solid var(--cv2-accent)',
+          border: '1px solid var(--cv2-accent, #1264A3)',
           borderRadius: 'var(--cv2-radius-sm)',
         }}
       >
-        <span aria-hidden="true" style={{ color: 'var(--cv2-text-subtle)', fontSize: 'var(--ds-font-size-400)' }}>#</span>
+        <span aria-hidden="true" style={{ color: 'var(--cv2-text-subtle)', fontSize: 'var(--ds-font-size-500)' }}>#</span>
         <input
           ref={inputRef}
           id="cv2-channel-name"
@@ -267,14 +267,14 @@ function NameStep({
       {hintsOpen && (
       <div
         style={{
-          marginTop: 10,
-          padding: '10px 12px',
+          marginTop: 8,
+          padding: '8px 12px',
           background: 'var(--cv2-bg-input)',
           border: '1px solid var(--cv2-border)',
           borderRadius: 'var(--cv2-radius-sm)',
           display: 'flex',
           flexDirection: 'column',
-          gap: 6,
+          gap: 4,
         }}
       >
         {PREFIX_HINTS.map(p => (
@@ -355,9 +355,9 @@ function RadioRow({
       style={{
         display: 'flex',
         alignItems: 'flex-start',
-        gap: 10,
+        gap: 8,
         width: '100%',
-        padding: '10px 0',
+        padding: '8px 0',
         background: 'transparent',
         border: 'none',
         textAlign: 'left',
@@ -372,13 +372,13 @@ function RadioRow({
           width: 18,
           height: 18,
           borderRadius: '50%',
-          border: `2px solid ${checked ? 'var(--cv2-accent)' : 'var(--cv2-border-strong)'}`,
+          border: `2px solid ${checked ? 'var(--cv2-accent, #1264A3)' : 'var(--cv2-border-strong)'}`,
           background: 'transparent',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
           flex: '0 0 auto',
-          marginTop: 2,
+          marginTop: 0,
         }}
       >
         {checked && (
@@ -387,7 +387,7 @@ function RadioRow({
               width: 8,
               height: 8,
               borderRadius: '50%',
-              background: 'var(--cv2-accent)',
+              background: 'var(--cv2-accent, #1264A3)',
             }}
           />
         )}
@@ -397,7 +397,7 @@ function RadioRow({
           {title}
         </span>
         {subtitle && (
-          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', marginTop: 2 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', marginTop: 0 }}>
             {subtitle}
           </span>
         )}
@@ -424,7 +424,7 @@ function Footer({
   return (
     <div
       style={{
-        marginTop: 18,
+        marginTop: 16,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -481,8 +481,8 @@ function PrimaryButton({
       disabled={disabled}
       style={{
         padding: '8px 18px',
-        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success)',
-        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
+        background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success, #007A5A)',
+        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',

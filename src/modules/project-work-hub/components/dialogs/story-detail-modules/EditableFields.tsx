@@ -639,7 +639,7 @@ function PriorityChip({ value }: { value: string }) {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 6,
+        gap: 4,
         whiteSpace: "nowrap",
       }}
     >
@@ -756,10 +756,10 @@ export function EditablePriority({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 6,
+            gap: 4,
             border: "2px solid var(--ds-border-focused)",
             borderRadius: 4,
-            padding: "2px 6px",
+            padding: "0px 6px",
             background: "var(--ds-background-input)",
             minWidth: 180,
             position: "relative",
@@ -771,7 +771,7 @@ export function EditablePriority({
               flex: 1,
               display: "inline-flex",
               alignItems: "center",
-              gap: 6,
+              gap: 4,
               fontSize: 'var(--ds-font-size-400)',
               color: hasValue
                 ? "var(--ds-text)"
@@ -835,7 +835,7 @@ export function EditablePriority({
             background: "none",
             border: "2px solid transparent",
             cursor: "pointer",
-            padding: "2px 6px",
+            padding: "0px 6px",
             borderRadius: 4,
             fontFamily: "inherit",
             textAlign: "left",
@@ -868,7 +868,7 @@ export function EditablePriority({
               borderRadius: 6,
               boxShadow: "0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))",
               zIndex: 1000,
-              padding: "6px 0",
+              padding: "4px 0",
             }}
           >
             {(options ?? PRIORITY_LIST).map((p) => {
@@ -880,7 +880,7 @@ export function EditablePriority({
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    padding: "6px 12px",
+                    padding: "4px 12px",
                     cursor: "pointer",
                     background: isSelected
                       ? "var(--ds-background-information)"
@@ -1065,7 +1065,7 @@ export function EditableLabels({
             background:
               "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))",
             borderRadius: 3,
-            padding: '2px 6px',
+            padding: '0px 6px',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
@@ -1139,7 +1139,7 @@ export function EditableStoryPoints({
         style={{
           display: "inline-flex",
           alignItems: "center",
-          gap: 6,
+          gap: 4,
           cursor: "pointer",
           padding: "4px 8px",
           borderRadius: 4,
@@ -1455,7 +1455,7 @@ export function EditableSprintReleases({
               style={{
                 display: "flex",
                 alignItems: "center",
-                padding: "6px 12px",
+                padding: "4px 12px",
                 fontSize: 'var(--ds-font-size-200)',
                 lineHeight: "20px",
                 cursor: "pointer",
@@ -1519,7 +1519,7 @@ export function EditableSprintReleases({
             border: "0.556px solid var(--ds-border-neutral, rgb(183,185,190))",
             borderRadius: 4,
             margin: "0 4px 0 0",
-            padding: "1px 4px",
+            padding: "0px 4px",
             alignItems: "center",
           }),
           multiValueLabel: (base) => ({
@@ -1785,7 +1785,7 @@ export function ParentFieldPicker({
               style={{
                 ...ATLASSIAN_DROPDOWN,
                 position: "absolute",
-                top: "100%",
+                top: "48%",
                 left: 0,
                 marginTop: 4,
                 width: Math.max(containerRef.current?.offsetWidth ?? 420, 420),

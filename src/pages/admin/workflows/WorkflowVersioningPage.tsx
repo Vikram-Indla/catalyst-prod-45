@@ -373,7 +373,7 @@ function TransitionsList({ versionId }: { versionId: string }) {
       { key: 'roles', content: roles.length > 0
         ? roles.map((r) => <span key={r} style={{ display: 'inline-block', marginRight: 4 }}><Lozenge appearance="inprogress">{r}</Lozenge></span>)
         : <span style={{ color: 'var(--ds-text-subtlest)', fontSize: 12 }}>any role</span> },
-      { key: 'guards', content: guards.length > 0 ? <div style={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>{guardDisplay}</div> : '—' },
+      { key: 'guards', content: guards.length > 0 ? <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0 }}>{guardDisplay}</div> : '—' },
       { key: 'flags', content: [t.requires_reason && 'reason', t.requires_comment && 'comment'].filter(Boolean).join(', ') || '—' },
     ] };
   });

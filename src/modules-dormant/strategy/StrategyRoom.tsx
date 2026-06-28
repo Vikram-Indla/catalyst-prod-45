@@ -94,7 +94,7 @@ export default function StrategyRoom() {
     <title>Executive Brief</title>
     ${styles}
     <style>
-      @page { size: auto; margin: 14mm; }
+      @page { size: auto; margin: 12mm; }
       html, body { margin: 0; padding: 0; background: var(--ds-surface); overflow: visible !important; height: auto !important; }
       .sri-root-container, .sri-root-container * { position: static !important; overflow: visible !important; height: auto !important; max-height: none !important; }
       .sri-root-container { inset: auto !important; z-index: auto !important; background: var(--ds-surface) !important; }

@@ -18,8 +18,8 @@ export const PermissionBanner: React.FC<PermissionBannerProps> = ({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
-        padding: '14px 18px',
+        gap: '8px',
+        padding: '12px 18px',
         backgroundColor: COLORS.warningBg,
         border: `1px solid ${COLORS.warningBorder}`,
         borderRadius: '12px',

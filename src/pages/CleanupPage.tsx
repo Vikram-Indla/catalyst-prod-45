@@ -560,7 +560,7 @@ export default function CleanupPage() {
           <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>Last scan: today 02:00 AST</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 'var(--ds-font-size-100)', fontWeight: 500, padding: '2px 8px', borderRadius: 20,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 500, padding: '0px 8px', borderRadius: 20,
             background: ragCfg.bg, border: `1px solid ${ragCfg.border}`, color: ragCfg.color,
           }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: ragCfg.color, display: 'inline-block' }} />
@@ -576,7 +576,7 @@ export default function CleanupPage() {
           borderBottom: '1px solid ' + (ragStatus === 'red' ? 'var(--ds-border-danger)' : 'var(--ds-border-warning)'),
           padding: '8px 24px', display: 'flex', alignItems: 'flex-start', gap: 8,
         }}>
-          <AlertTriangle size={14} color={ragStatus === 'red' ? 'var(--ds-text-danger)' : 'var(--ds-text-warning)'} style={{ flexShrink: 0, marginTop: 1 }} />
+          <AlertTriangle size={14} color={ragStatus === 'red' ? 'var(--ds-text-danger)' : 'var(--ds-text-warning)'} style={{ flexShrink: 0, marginTop: 0 }} />
           <span style={{ fontSize: 'var(--ds-font-size-300)', color: ragStatus === 'red' ? 'var(--ds-text-danger)' : 'var(--ds-text-warning)', lineHeight: 1.5 }}>
             {ragStatus === 'red'
               ? `Governance breach — ${itemCount} aging items, ${breachStreak}d streak. Force closures bypass status workflow. Reporters notified automatically. Audit trail is permanent. Restore window: 90 days. REPORTER items — onus is on the reporter, not you.`
@@ -601,7 +601,7 @@ export default function CleanupPage() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               style={{
-                padding: '10px 24px', border: 'none', cursor: 'pointer',
+                padding: '8px 24px', border: 'none', cursor: 'pointer',
                 background: 'transparent', fontFamily: 'var(--cp-font-body)',
                 fontSize: 'var(--ds-font-size-300)', fontWeight: activeTab === tab.key ? 700 : 500,
                 color: activeTab === tab.key ? 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
@@ -676,7 +676,7 @@ export default function CleanupPage() {
               {!isLoading && sharedItems.length === 0 ? (
                 <div style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', marginTop: 64, gap: 12,
+                  justifyContent: 'center', marginTop: 48, gap: 12,
                 }}>
                   <CheckCircle size={48} color="var(--ds-text-success)" strokeWidth={1.5} />
                   <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--ds-text-success)' }}>
@@ -729,7 +729,7 @@ export default function CleanupPage() {
                            <span style={{
                              fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
                              background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
-                             padding: '2px 8px', borderRadius: 20,
+                             padding: '0px 8px', borderRadius: 20,
                            }}>
                              {items.length}
                            </span>
@@ -820,7 +820,7 @@ export default function CleanupPage() {
                               <span style={{
                                 fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                                 background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)', border: '1px solid var(--ds-border-danger)',
-                                padding: '2px 8px', borderRadius: 4,
+                                padding: '0px 8px', borderRadius: 4,
                               }}>
                                 REPORTER
                               </span>
@@ -875,7 +875,7 @@ export default function CleanupPage() {
                               }}>
                                 <div style={{
                                   background: 'var(--ds-surface-sunken)', borderLeft: '2px solid var(--ds-border)',
-                                  paddingLeft: 12, paddingTop: 6, paddingBottom: 6,
+                                  paddingLeft: 12, paddingTop: 4, paddingBottom: 4,
                                   fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
                                 }}>
                                   {reason}
@@ -992,7 +992,7 @@ export default function CleanupPage() {
                 ) : listFilteredItems.length === 0 ? (
                   <div style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    justifyContent: 'center', padding: '64px 0', gap: 12,
+                    justifyContent: 'center', padding: '48px 0', gap: 12,
                   }}>
                     <CheckCircle size={32} color="var(--ds-text-disabled)" />
                     <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>No items match this filter</span>
@@ -1036,7 +1036,7 @@ export default function CleanupPage() {
                           { label: '', width: 32 },
                         ].map((col, i) => (
                           <th key={i} style={{
-                            height: 44, padding: '10px 12px',
+                            height: 44, padding: '8px 12px',
                             background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
                             fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
                             textTransform: 'uppercase', letterSpacing: '0.06em',
@@ -1086,7 +1086,7 @@ export default function CleanupPage() {
 
                             {/* Key + Type icon */}
                             <td style={{ padding: '8px 12px', width: 120 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 <JiraIssueTypeIcon type={item.issue_type} size={16} />
                                 <span style={{
                                   fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)',
@@ -1109,7 +1109,7 @@ export default function CleanupPage() {
                             {/* Parent — icon + full title */}
                             <td style={{ padding: '8px 12px', width: 180 }} title={parentTitle || undefined}>
                               {item.parent_key ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden' }}>
                                   <JiraIssueTypeIcon type={parentIssueType} size={14} />
                                   <span style={{
                                     fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)',
@@ -1233,7 +1233,7 @@ export default function CleanupPage() {
                               <span style={{
                                 display: 'inline-block', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))',
                                 background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))',
-                                padding: '2px 8px', borderRadius: 20, whiteSpace: 'nowrap',
+                                padding: '0px 8px', borderRadius: 20, whiteSpace: 'nowrap',
                                 maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis',
                               }}>
                                 {CAT_SHORT[item.categoryKey] || 'Other'}
@@ -1320,7 +1320,7 @@ export default function CleanupPage() {
               <tr style={{ background: 'var(--ds-surface-sunken)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, var(--ds-border)))' }}>
                 {['KEY', 'SUMMARY', 'CATEGORY', 'CLOSED', 'RESTORE DEADLINE', 'ACTION'].map(h => (
                   <th key={h} style={{
-                    padding: '10px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
+                    padding: '8px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                     textTransform: 'uppercase', letterSpacing: '0.04em',
                     color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                   }}>
@@ -1413,10 +1413,10 @@ export default function CleanupPage() {
             }}>
               Force close {selected.size} item{selected.size !== 1 ? 's' : ''}?
             </h2>
-            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginTop: 6, marginBottom: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginTop: 4, marginBottom: 0 }}>
               These items will be marked Done and locked. Reporters will be notified. A comment will be added to each issue. The action is permanent in the audit trail.
             </p>
-            <div style={{ height: 1, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', marginTop: 20 }} />
+            <div style={{ height: 1, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))', marginTop: 16 }} />
           </div>
 
           {/* BODY */}
@@ -1435,7 +1435,7 @@ export default function CleanupPage() {
               { Icon: Clock, text: 'Restore window: 90 days from today' },
             ].map((row, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '8px 0' }}>
-                <row.Icon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" style={{ flexShrink: 0, marginTop: 1 }} />
+                <row.Icon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))" style={{ flexShrink: 0, marginTop: 0 }} />
                 <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', lineHeight: 1.5 }}>{row.text}</span>
               </div>
             ))}
@@ -1464,7 +1464,7 @@ export default function CleanupPage() {
               return (
                 <div style={{ maxHeight: 160, overflowY: 'auto' }}>
                   {reporters.map((r, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,

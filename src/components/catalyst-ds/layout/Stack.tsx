@@ -22,7 +22,7 @@ const stackVariants = cva('flex flex-col', {
     },
   },
   defaultVariants: {
-    gap: '3',
+    gap: '4',
     align: 'stretch',
   },
 });

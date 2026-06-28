@@ -28,7 +28,7 @@ export function HuddleWindow() {
   const windowState = useHuddleStore((s) => s.windowState);
   const setWindowState = useHuddleStore((s) => s.setWindowState);
 
-  const [pos, setPos] = useState<Pos>(() => load(POS_KEY, { top: 72, left: 120 }));
+  const [pos, setPos] = useState<Pos>(() => load(POS_KEY, { top: 48, left: 48 }));
   const [size] = useState<Size>(() => load(SIZE_KEY, { w: 900, h: 560 }));
   const wrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
@@ -261,7 +261,7 @@ export function HuddleWindow() {
         onPointerUp={maximized ? undefined : endDrag}
         onPointerCancel={maximized ? undefined : endDrag}
         style={{
-          flex: '0 0 auto', height: 44, display: 'flex', alignItems: 'center', gap: 10,
+          flex: '0 0 auto', height: 44, display: 'flex', alignItems: 'center', gap: 8,
           padding: '0 12px', cursor: maximized ? 'default' : 'grab', touchAction: 'none',
           borderBottom: '1px solid var(--ds-border)',
           background: 'var(--ds-surface-overlay)',
@@ -271,7 +271,7 @@ export function HuddleWindow() {
         <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ds-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           Huddle with {active.conversationName}
         </span>
-        <span style={{ marginLeft: 'auto', display: 'inline-flex', gap: 6 }}>
+        <span style={{ marginLeft: 'auto', display: 'inline-flex', gap: 4 }}>
           <button type="button" data-huddle-btn title="Minimize" onClick={() => setWindowState('minimized')} style={winBtn}>—</button>
           {maximized
             ? <button type="button" data-huddle-btn title="Restore" onClick={() => setWindowState('open')} style={winBtn}>❐</button>
@@ -344,7 +344,7 @@ export function HuddleWindow() {
         )}
       </div>
 
-      <div style={{ flex: '0 0 auto', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+      <div style={{ flex: '0 0 auto', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         borderTop: '1px solid var(--ds-border)', background: 'var(--ds-surface-overlay)' }}>
         <button type="button" data-huddle-btn onClick={toggleMute} aria-pressed={muted} title={muted ? 'Unmute' : 'Mute'}
           style={ctrlBtn(muted ? 'var(--ds-background-warning)' : 'var(--ds-surface-sunken)')}>

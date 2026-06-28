@@ -43,7 +43,7 @@
   flex-direction: column;
   background: var(--ds-surface);
   /* ads-scanner:ignore-next-line */
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
 }
 
 /* Static gradient hairline — Caty AI signifier, NO motion (CLAUDE.md AI-CTA carve-out) */
@@ -111,7 +111,7 @@
   display: flex;
   align-items: center;
   flex: 0 0 auto;
-  padding-right: 6px;
+  padding-right: 4px;
 }
 
 .cc-dock__logo-wrap {
@@ -131,7 +131,7 @@
 .cc-dock__actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0px;
   flex: 0 0 auto;
   margin-left: auto;
 }
@@ -151,10 +151,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   height: 40px;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 0px solid transparent;
   background: transparent;
   font-size: 14px;
   font-weight: 500;
@@ -164,7 +164,7 @@
   padding: 0 14px;
   position: relative;
   transition: color 0.1s, border-bottom-color 0.1s;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .cc-mode-tab:hover:not(.cc-mode-tab--active) {
@@ -225,7 +225,7 @@
 .cc-conv:hover,
 .cc-conv:focus-visible {
   background: var(--ds-background-neutral-subtle-hovered);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .cc-conv__body {
@@ -294,7 +294,7 @@
 .cc-tabs {
   flex: 0 0 auto;
   /* ads-scanner:ignore-next-line */
-  border-top: 1px solid var(--ds-border);
+  border-top: 0px solid var(--ds-border);
   background: var(--ds-surface-sunken);
   padding: 8px;
   display: flex;
@@ -506,8 +506,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 10px 12px;
-  padding: 6px 10px;
+  margin: 8px 12px;
+  padding: 4px 10px;
   background: var(--ds-background-neutral);
   border: 1px solid transparent;
   border-radius: 6px;
@@ -522,7 +522,7 @@
 .cc-dir__search-input {
   flex: 1;
   border: none;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   background: transparent;
   font-size: 13px;
   color: var(--ds-text);
@@ -558,7 +558,7 @@
 .cc-dir__section {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 16px 2px;
   font-size: 11px;
   font-weight: 600;
@@ -574,7 +574,7 @@
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
-  padding: 1px 6px;
+  padding: 0px 6px;
   border-radius: 8px;
   margin-left: auto;
 }
@@ -582,7 +582,7 @@
 .cc-dir__row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   padding: 8px 12px;
   background: transparent;
@@ -616,13 +616,13 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
 }
 
 .cc-dir__top {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .cc-dir__name {
@@ -670,7 +670,7 @@
   background: transparent;
   border: 1px solid var(--ds-border);
   border-radius: 4px;
-  padding: 3px 8px;
+  padding: 4px 8px;
   flex: 0 0 auto;
   opacity: 0;
   transition: opacity 0.1s, background 0.1s, color 0.1s, border-color 0.1s;
@@ -732,12 +732,12 @@
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 12px;
   background: transparent;
   border: none;
   /* ads-scanner:ignore-next-line */
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
   color: var(--ds-link);
   font-size: 12px;
   font-weight: 500;
@@ -774,7 +774,7 @@
   min-width: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 2px !important;
+  gap: 0px !important;
 }
 
 /* Message head — author name + timestamp on one line */
@@ -822,7 +822,7 @@
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
-  gap: 2px !important;
+  gap: 0px !important;
   align-items: center !important;
   z-index: 10 !important;
   background: var(--ds-surface-overlay) !important;
@@ -882,7 +882,7 @@
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
-  padding: 2px 6px !important;
+  padding: 0px 6px !important;
   border-radius: 3px !important;
   background: var(--ds-background-neutral) !important;
   color: var(--ds-text-subtle) !important;
@@ -918,7 +918,7 @@
 .cc-dir__section-toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex: 1;
   background: transparent;
   border: none;
@@ -986,7 +986,7 @@
 
 .cc-dir__row-wrap .cc-dir__row {
   flex: 1;
-  padding-right: 36px;
+  padding-right: 32px;
 }
 
 .cc-dir__row-wrap--active .cc-dir__row {
@@ -997,7 +997,7 @@
 .cc-dir__archive-btn {
   position: absolute;
   right: 8px;
-  top: 50%;
+  top: 48%;
   transform: translateY(-50%);
   width: 24px;
   height: 24px;
@@ -1021,11 +1021,11 @@
 .cc-dir__row-actions {
   position: absolute;
   right: 8px;
-  top: 50%;
+  top: 48%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0px;
 }
 
 .cc-dir__rowact {
@@ -1068,7 +1068,7 @@
   /* ads-scanner:ignore-next-line */
   border: 1px solid var(--ds-border);
   /* ads-scanner:ignore-next-line — Caty brand accent (pink), no ADS token equivalent */
-  border-left: 2px solid var(--ds-background-danger-bold);
+  border-left: 0px solid var(--ds-background-danger-bold);
   cursor: pointer;
   transition: background 0.1s;
 }
@@ -1079,7 +1079,7 @@
 
 .cc-dir__caty-mark {
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 0px;
   display: block;
 }
 
@@ -1103,7 +1103,7 @@
 .cc-dir__caty-meta {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
@@ -1165,7 +1165,7 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--ds-text-subtle);
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 }
 
 .cc-dir__collapsed-nudge-sub {
@@ -1186,7 +1186,7 @@
 
 /* Section-level empty state hint */
 .cc-dir__section-empty {
-  padding: 6px 16px 8px;
+  padding: 4px 16px 8px;
   font-size: 12px;
   color: var(--ds-text-subtlest);
   line-height: 1.5;
@@ -1224,7 +1224,7 @@
 }
 
 .cc-dir__first-run-btn {
-  padding: 6px 16px;
+  padding: 4px 16px;
   border-radius: 4px;
   font-size: 13px;
   font-weight: 500;
@@ -1309,8 +1309,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 6px 10px;
-  padding: 7px 12px;
+  margin: 4px 10px;
+  padding: 8px 12px;
   border-radius: 8px;
   background: var(--ds-background-information);
   border: 1px solid var(--ds-border-information);
@@ -1329,7 +1329,7 @@
   color: var(--ds-text-inverse);
   border: none;
   border-radius: 4px;
-  padding: 3px 10px;
+  padding: 4px 10px;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -1350,7 +1350,7 @@
   border: none;
   color: var(--ds-text-subtlest);
   cursor: pointer;
-  padding: 2px;
+  padding: 0px;
   font-size: 16px;
   line-height: 1;
   flex: 0 0 auto;

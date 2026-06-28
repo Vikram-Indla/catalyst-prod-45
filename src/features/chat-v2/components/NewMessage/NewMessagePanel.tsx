@@ -153,7 +153,7 @@ export function NewMessagePanel({
             padding: '8px 16px',
             fontFamily: 'var(--cv2-font)',
             fontSize: 'var(--ds-font-size-200)',
-            color: 'var(--ds-text-danger)',
+            color: 'var(--ds-text-danger, #AE2A19)',
             background: 'var(--cv2-bg-panel)',
           }}
         >
@@ -187,7 +187,7 @@ function Header({ onClose }: { onClose: () => void }) {
         <div
           style={{
             fontFamily: 'var(--cv2-font)',
-            fontSize: 'var(--ds-font-size-400)',
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 800,
             color: 'var(--cv2-text-strong)',
           }}
@@ -248,7 +248,7 @@ function RecipientPicker({
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         background: 'var(--cv2-bg-panel)',
       }}
       onClick={() => inputRef.current?.focus()}
@@ -314,7 +314,7 @@ function RecipientChip({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         padding: '4px 4px 4px 4px',
         background: 'var(--cv2-bg-row-hover, rgba(255,255,255,0.08))',
         border: '1px solid var(--cv2-border-strong, rgba(255,255,255,0.16))',
@@ -464,7 +464,7 @@ const dropdownStyles: React.CSSProperties = {
   position: 'absolute',
   left: 16,
   right: 16,
-  top: '100%',
+  top: '48%',
   marginTop: 4,
   zIndex: 10,
   background: 'var(--cv2-bg-modal)',
@@ -481,7 +481,7 @@ const dropdownStyles: React.CSSProperties = {
 const emptyStyles: React.CSSProperties = {
   padding: '12px 16px',
   fontFamily: 'var(--cv2-font)',
-  fontSize: 'var(--ds-font-size-300)',
+  fontSize: 13,
   color: 'var(--cv2-text-muted)',
 };
 

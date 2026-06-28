@@ -250,7 +250,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
         {/* BRs badge + status */}
         <div style={{
           width: META_W, flexShrink: 0, paddingRight: 12,
-          display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6,
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4,
         }}>
           {release.brCount > 0 && (
             <span style={{
@@ -338,7 +338,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
               <span style={{
                 position: 'absolute',
                 left: `calc(${NAME_W}px + ${todayRatio} * (100% - ${NAME_W + META_W}px))`,
-                top: '50%', transform: 'translate(-50%, -50%)',
+                top: '48%', transform: 'translate(-50%, -50%)',
                 background: T.activeSolid, color: T.textInverse,
                 fontSize: 'var(--ds-font-size-100)', fontWeight: 800, padding: '0 8px',
                 borderRadius: 2, letterSpacing: '0.07em', whiteSpace: 'nowrap',
@@ -354,7 +354,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
                 <div
                   onClick={e => { e.stopPropagation(); setShowReleased(v => !v); }}
                   style={{
-                    display: 'flex', alignItems: 'center', height: 26, gap: 6,
+                    display: 'flex', alignItems: 'center', height: 26, gap: 4,
                     borderBottom: `1px solid ${T.border}`,
                     background: T.sunken, cursor: 'pointer', padding: '0 16px',
                   }}
@@ -373,7 +373,7 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
             {/* Active releases */}
             {active.length === 0 && upcoming.length > 0 && (
               <div style={{
-                display: 'flex', alignItems: 'center', height: 36, gap: 10,
+                display: 'flex', alignItems: 'center', height: 36, gap: 8,
                 borderBottom: `1px solid ${T.borderSub}`, padding: '0 16px',
               }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.neutral, flexShrink: 0 }} />
@@ -388,12 +388,12 @@ export function ProductDashboardTimeline({ productId }: { productId: string }) {
 
           {/* Footer legend */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+            display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
             padding: '8px 16px', borderTop: `1px solid ${T.border}`,
             background: T.sunken,
           }}>
             {([['active', T.activeSolid, 'Active'], ['upcoming', T.upcomingBar, 'Upcoming'], ['released', T.doneBar, 'Released']] as const).map(([, bar, label]) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <div style={{ width: 12, height: 8, borderRadius: 2, background: bar, flexShrink: 0 }} />
                 <span style={{ fontSize: 'var(--ds-font-size-50)', color: T.subtle }}>{label}</span>
               </div>

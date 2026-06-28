@@ -65,7 +65,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         backgroundColor: COLORS.surfaceCard,
         border: `1px solid ${COLORS.borderLight}`,
         borderRadius: '12px',
-        padding: '20px',
+        padding: '16px',
         transition: 'all 0.15s ease',
         boxShadow: isHovered ? '0 4px 12px var(--ds-shadow-raised, rgba(0, 0, 0, 0.08))' : 'none',
         transform: isHovered ? 'translateY(-2px)' : 'none',
@@ -81,7 +81,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           alignItems: 'flex-start',
           justifyContent: 'space-between',
           marginBottom: '16px',
-          paddingRight: '36px' // Space for kebab menu
+          paddingRight: '32px' // Space for kebab menu
         }}
       >
         {/* NAME */}
@@ -102,7 +102,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '6px',
+            gap: '4px',
             padding: '4px 10px',
             backgroundColor: healthConfig.bgColor,
             border: `1px solid ${healthConfig.borderColor}`,
@@ -135,7 +135,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
             color: COLORS.textMuted,
             textTransform: 'uppercase',
             letterSpacing: '0.03em',
-            marginBottom: '6px'
+            marginBottom: '4px'
           }}
         >
           Lead
@@ -272,7 +272,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
                 borderRadius: '12px',
                 boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.12))',
                 zIndex: 100,
-                padding: '6px',
+                padding: '4px',
                 overflow: 'hidden'
               }}
             >
@@ -291,7 +291,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
                 label="Archive" 
                 onClick={() => { onArchive(workstream.id); setShowMenu(false); }} 
               />
-              <div style={{ height: '1px', backgroundColor: COLORS.borderLight, margin: '6px 0' }} />
+              <div style={{ height: '1px', backgroundColor: COLORS.borderLight, margin: '4px 0' }} />
               <MenuOption 
                 icon={<Trash2 size={14} />} 
                 label="Delete" 
@@ -329,9 +329,9 @@ const MenuOption: React.FC<{
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
+        gap: '8px',
         width: '100%',
-        padding: '10px 12px',
+        padding: '8px 12px',
         backgroundColor: isHovered && !disabled
           ? (danger ? 'var(--ds-background-danger)' : 'var(--ds-surface-sunken)') 
           : 'transparent',

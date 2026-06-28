@@ -187,7 +187,7 @@ export function TicketBreadcrumbs({
           display: inline-flex;
           align-items: center;
           flex-wrap: wrap;
-          row-gap: 2px;
+          row-gap: 0px;
         }
         .tk-breadcrumbs li {
           display: inline-flex;
@@ -214,7 +214,7 @@ export function TicketBreadcrumbs({
           font-weight: 400;
           color: var(--ds-text-subtle);
           line-height: 20px;
-          padding: 2px 4px;
+          padding: 0px 4px;
           border-radius: 3px;
         }
         /* jira-compare 2026-05-16 re-probe (corrected): Jira breadcrumb items

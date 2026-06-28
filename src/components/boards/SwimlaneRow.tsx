@@ -18,12 +18,12 @@ export default function SwimlaneRow({ id, name, count, children }: Props) {
       background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
       border: '0.75px solid var(--cp-border-subtle)',
       borderRadius: 8,
-      marginBottom: 10,
+      marginBottom: 8,
     }}>
       {/* Header */}
       <button onClick={() => toggleSwimlane(id)} style={{
         display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-        padding: '10px 14px', border: 'none', background: 'transparent',
+        padding: '8px 14px', border: 'none', background: 'transparent',
         cursor: 'pointer', textAlign: 'left',
       }}>
         <span style={{
@@ -38,7 +38,7 @@ export default function SwimlaneRow({ id, name, count, children }: Props) {
           fontFamily: 'var(--cp-font-mono)',
         }}>{name}</span>
         <span style={{
-          fontSize: 10.5, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
+          fontSize: 10.5, fontWeight: 600, padding: '0px 6px', borderRadius: 8,
           background: 'var(--cp-bg-sunken)', color: 'var(--cp-text-muted)',
           fontFamily: 'var(--cp-font-mono)',
         }}>{count}</span>

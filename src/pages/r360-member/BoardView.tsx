@@ -171,7 +171,7 @@ function ProjectSwimlane({
         onClick={() => setCollapsed(!collapsed)}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCollapsed(!collapsed); } }}
         style={{
-          display: 'flex', alignItems: 'center', gap: 10,
+          display: 'flex', alignItems: 'center', gap: 8,
           padding: '0 16px',
           height: 44,
           // High-contrast crisp card row — white surface + defined border +
@@ -210,14 +210,14 @@ function ProjectSwimlane({
         </span>
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 16, alignItems: 'center' }}>
           <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: token('color.text.subtle', 'var(--ds-icon)'),
           }}>
             <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.neutral.bold', 'var(--ds-icon-subtle)') }} />
             {todoItems.length} To do
           </span>
           <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.information', 'var(--ds-link)'),
           }}>
             <span aria-hidden style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.background.information.bold', 'var(--ds-link)') }} />

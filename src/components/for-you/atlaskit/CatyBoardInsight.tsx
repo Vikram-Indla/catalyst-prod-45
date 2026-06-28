@@ -239,7 +239,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 32,
         padding: '0 16px',
         border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
@@ -321,7 +321,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
                       </span>
                     </div>
                     {/* Line 2: project + reporter avatar + days */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingInlineStart: 22, paddingBlockStart: 2 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingInlineStart: 24, paddingBlockStart: 0 }}>
                       <span style={{ font: `500 11px/14px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest)') }}>
                         {col.topBlocker.project}
                       </span>

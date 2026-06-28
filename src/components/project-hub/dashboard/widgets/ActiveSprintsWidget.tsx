@@ -54,7 +54,7 @@ function StatusChip({ status }: { status: string }) {
   return (
     <span style={{
       display: 'inline-block',
-      padding: '2px 8px',
+      padding: '0px 8px',
       borderRadius: 3,
       fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
@@ -139,7 +139,7 @@ function GanttBar({
           position: 'absolute',
           left: `${left}%`,
           width: `${width}%`,
-          top: 3,
+          top: 4,
           height: 14,
           borderRadius: 3,
           background: BAR_BG[status] ?? BAR_BG.Active,
@@ -177,7 +177,7 @@ function ReleaseBar({
       {/* Release bar: spans from left edge to target date */}
       <div style={{
         position: 'absolute', left: 0, width: `${Math.max(4, right)}%`,
-        top: 6, height: 8, borderRadius: 2,
+        top: 4, height: 8, borderRadius: 2,
         background: isAtRisk
           ? 'var(--ds-background-accent-red-subtlest)'
           : 'var(--ds-background-accent-blue-subtlest)',
@@ -299,12 +299,12 @@ function SprintRow({ sprint, rangeStart, rangeEnd, todayPct }: {
       gridTemplateColumns: '196px 1fr 80px 64px',
       alignItems: 'center',
       gap: 8,
-      padding: '5px 0',
+      padding: '4px 0',
       borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}20`,
     }}>
       <span style={{
         ...SMALL,
-        paddingLeft: 20,
+        paddingLeft: 16,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
@@ -344,13 +344,13 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
           gridTemplateColumns: '196px 1fr 80px 64px',
           alignItems: 'center',
           gap: 8,
-          padding: '7px 0',
+          padding: '8px 0',
           cursor: hasSprints ? 'pointer' : 'default',
           borderBottom: `1px solid ${token('color.border', 'var(--ds-border)')}50`,
         }}
       >
         {/* Release name + toggle chevron */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
           {hasSprints && (
             <span style={{
               fontSize: 'var(--ds-font-size-100)',
@@ -390,10 +390,10 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
         <div style={{
           ...LABEL,
           paddingLeft: hasSprints ? 16 : 0,
-          paddingBottom: 3,
+          paddingBottom: 4,
           color: token('color.text.subtlest', 'var(--ds-text-disabled)'),
           display: 'flex',
-          gap: 6,
+          gap: 4,
         }}>
           {release.sprints.length > 0 && (
             <span>{release.sprints.length} sprint{release.sprints.length !== 1 ? 's' : ''}</span>
@@ -506,7 +506,7 @@ export default function ActiveSprintsWidget({
       footer={footer}
     >
       {isLoading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[0, 1, 2].map(i => (
             <div key={i} className="animate-pulse" style={{ height: 46, borderRadius: 4, background: token('color.background.neutral.subtle', 'var(--ds-background-neutral)') }} />
           ))}
@@ -554,7 +554,7 @@ export default function ActiveSprintsWidget({
           {/* ── Release groups ──────────────────────────────────────────── */}
           <div>
             {(releases ?? []).map(rel => (
-              <div key={rel.id} style={{ marginBottom: 2 }}>
+              <div key={rel.id} style={{ marginBottom: 0 }}>
                 <ReleaseHeaderRow
                   release={rel}
                   rangeStart={rangeStart}
@@ -564,9 +564,9 @@ export default function ActiveSprintsWidget({
                   onToggle={() => toggleRelease(rel.id)}
                 />
                 {expandedIds.has(rel.id) && (
-                  <div style={{ paddingBottom: 6 }}>
+                  <div style={{ paddingBottom: 4 }}>
                     {rel.sprints.length === 0 ? (
-                      <div style={{ ...LABEL, paddingLeft: 20, paddingTop: 4, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>
+                      <div style={{ ...LABEL, paddingLeft: 16, paddingTop: 4, color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>
                         No sprints linked to this release
                       </div>
                     ) : (

@@ -310,7 +310,7 @@ export function makeKeyCell(
           textDecoration: "underline",
           border: `2px solid ${token("color.border.focused", "var(--ds-border-focused)")}`,
           borderRadius: 3,
-          padding: "2px 6px",
+          padding: "0px 6px",
         }
       : {
           display: "inline-flex",
@@ -376,7 +376,7 @@ export function makeKeyCell(
     ) : null;
     if (iconSlot) {
       return (
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
           {iconSlot}
           {keyNode}
         </span>
@@ -624,14 +624,14 @@ export function makeStatusEditCell<T>(opts: {
           style={{
             background: "transparent",
             border: "none",
-            padding: "2px 4px",
+            padding: "0px 4px",
             margin: "-2px -4px",
             borderRadius: 3,
             cursor: editable ? "pointer" : "default",
             fontFamily: "inherit",
             display: "inline-flex",
             alignItems: "center",
-            gap: 2,
+            gap: 0,
           }}
         >
           {status ? (
@@ -856,7 +856,7 @@ export function makeParentCell(
       //   bg: #B3DF72 (matches StatusPill 'success' family)
       //   color: #292A2E (primary text)
       //   font-size: 12px / weight 500 / line-height 16px
-      //   padding: 2px 6px / radius 3px
+      //   padding: 0px 6px / radius 3px
       //   icon retains native color (e.g. Epic = purple)
       <span
         style={{
@@ -864,7 +864,7 @@ export function makeParentCell(
           alignItems: "center",
           gap: 4,
           maxWidth: 260,
-          padding: "2px 6px",
+          padding: "0px 6px",
           borderRadius: 3,
           background: "var(--cp-jira-epic-chip-bg)",
           color: "var(--cp-jira-epic-chip-fg)",
@@ -939,8 +939,8 @@ export function makeCommentsCell(
               aria-hidden="true"
               style={{
                 position: "absolute",
-                top: 1,
-                right: 1,
+                top: 0,
+                right: 0,
                 width: 6,
                 height: 6,
                 borderRadius: "50%",
@@ -978,7 +978,7 @@ export function makeCommentsCell(
         style={{
           background: "transparent",
           border: "none",
-          padding: "2px 6px",
+          padding: "0px 6px",
           margin: "-2px -6px",
           borderRadius: 3,
           cursor: "pointer",
@@ -1024,7 +1024,7 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
     );
     return (
       <span
-        style={{ display: "inline-flex", gap: 2 }}
+        style={{ display: "inline-flex", gap: 0 }}
         title={p || "No priority"}
       >
         {[1, 2, 3, 4].map((i) => (

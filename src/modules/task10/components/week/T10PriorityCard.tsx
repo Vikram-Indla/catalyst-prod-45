@@ -106,8 +106,8 @@ export function T10PriorityCard({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 2,
-            padding: '2px 8px',
+            gap: 0,
+            padding: '0px 8px',
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             borderRadius: 4,

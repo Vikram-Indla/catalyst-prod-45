@@ -278,7 +278,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
           aria-label="Theme scope"
           style={{
             display: 'inline-flex',
-            gap: 2,
+            gap: 0,
             padding: 4,
             background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             borderRadius: 8,
@@ -331,8 +331,8 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            paddingInline: '6px',
-            paddingBlock: '2px',
+            paddingInline: '4px',
+            paddingBlock: '0px',
             borderRadius: 4,
             background: token('color.background.neutral', 'var(--ds-background-neutral)'),
             font: `400 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,

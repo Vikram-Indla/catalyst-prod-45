@@ -173,7 +173,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           onChange={e => handleSortChange(e.target.value)}
           aria-label="Sort by"
           style={{
-            padding: '6px 8px',
+            padding: '4px 8px',
             border: 'none',
             background: 'transparent',
             fontSize: 'var(--ds-font-size-300)',

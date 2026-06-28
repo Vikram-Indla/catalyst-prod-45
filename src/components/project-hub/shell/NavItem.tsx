@@ -59,7 +59,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
                 backgroundColor: 'var(--cp-purple-60)',
                 borderRadius: 4,
-                padding: '2px 6px',
+                padding: '0px 6px',
                 lineHeight: '14px',
                 letterSpacing: '0.04em',
               }}
@@ -77,7 +77,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 fontFamily: 'var(--cp-font-mono)',
                 borderRadius: 9999,
                 backgroundColor: 'var(--cp-border)',
-                padding: '1px 7px',
+                padding: '0px 7px',
               }}
             >
               {count}

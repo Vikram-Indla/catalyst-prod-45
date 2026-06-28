@@ -87,7 +87,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  marginBottom: 6,
+                  marginBottom: 4,
                 }}>
                   {release.name} · {release.title}
                 </div>

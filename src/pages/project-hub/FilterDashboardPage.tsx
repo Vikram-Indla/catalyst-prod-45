@@ -89,7 +89,7 @@ function KpiCard({ value, label, subtitle }: { value: number; label: string; sub
       background: 'var(--ds-surface)',
       border: '1px solid var(--ds-border)',
       borderRadius: 8,
-      padding: '20px 24px',
+      padding: '16px 24px',
     }}>
       <div style={{
         fontSize: 36,
@@ -396,7 +396,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: 8,
-                                  padding: '6px 0',
+                                  padding: '4px 0',
                                   borderBottom: '1px solid var(--ds-border-subtle)',
                                 }}
                               >
@@ -441,7 +441,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                   fontWeight: 500,
                                   color: 'var(--ds-text-subtle)',
                                   background: 'var(--ds-background-neutral)',
-                                  padding: '2px 8px',
+                                  padding: '0px 8px',
                                   borderRadius: 3,
                                   fontFamily: 'var(--ds-font-family-body)',
                                   maxWidth: 160,

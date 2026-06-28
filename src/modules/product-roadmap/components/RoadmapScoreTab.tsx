@@ -172,7 +172,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
   return (
     <div>
       {/* Computed score header */}
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '16px' }}>
         <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-icon-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
           Computed Score
         </div>
@@ -190,7 +190,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
           const val = scores[dim.key as keyof typeof scores];
           return (
             <div key={dim.key}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>{dim.label}</span>
                 <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontVariantNumeric: 'tabular-nums' }}>
                   {Number(val).toFixed(1)}

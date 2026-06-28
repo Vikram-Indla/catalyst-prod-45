@@ -65,7 +65,7 @@ export default function ProductStatusPage() {
         </div>
 
         {isLoading || !data ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ds-text-subtle)', padding: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)', padding: 24 }}>
             <Spinner size="medium" /> Loading product testing status…
           </div>
         ) : (

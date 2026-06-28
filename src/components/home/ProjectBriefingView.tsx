@@ -28,16 +28,16 @@ function Greeting({ userCtx }: { userCtx: UserContext }) {
   const effectiveRole = (userCtx.role === 'admin' || userCtx.role === 'authenticated') ? 'Team Member' : userCtx.role;
 
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 16 }}>
       <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.02em', margin: 0, fontFamily: 'var(--ds-font-family-body)' }}>
         {greeting}, {firstName}
       </h1>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
           {effectiveRole}
         </span>
         <span style={{ width: 1, height: 12, background: 'var(--divider)' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {topProjects.map(pk => (
             <span key={pk} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: PROJECT_COLORS[pk] || 'var(--fg-3)', flexShrink: 0 }} />
@@ -62,13 +62,13 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
   return (
     <div style={{
       border: '1px solid var(--divider)', borderRadius: 12, background: 'var(--cp-float)',
-      borderLeft: `3px solid ${project.projectColor}`, marginBottom: 10,
+      borderLeft: `3px solid ${project.projectColor}`, marginBottom: 8,
       overflow: 'hidden',
     }}>
       {/* Project header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', borderBottom: '1px solid var(--bg-2)',
+        padding: '8px 14px', borderBottom: '1px solid var(--bg-2)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: project.projectColor, flexShrink: 0 }} />
@@ -79,7 +79,7 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
             <span style={{
               fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--sem-danger)',
               background: 'var(--sem-danger-bg)', border: '1px solid var(--sem-danger-light)',
-              padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase',
+              padding: '0px 6px', borderRadius: 4, textTransform: 'uppercase',
               letterSpacing: '0.04em', fontFamily: 'var(--ds-font-family-body)',
             }}>
               INCIDENT
@@ -119,7 +119,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
       onClick={() => onClick(item.itemKey)}
       style={{
         display: 'flex', flexDirection: 'column', gap: 4, width: '100%',
-        padding: '10px 14px', background: 'transparent',
+        padding: '8px 14px', background: 'transparent',
         borderBottom: '1px solid var(--bg-2)', border: 'none',
         cursor: 'pointer', textAlign: 'left',
         transition: 'background 80ms',
@@ -143,7 +143,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
         {showMovedTag && (
           <span style={{
             fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-            background: 'var(--cp-blue)', padding: '1px 6px', borderRadius: 4,
+            background: 'var(--cp-blue)', padding: '0px 6px', borderRadius: 4,
             textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: 'var(--ds-font-family-body)',
             whiteSpace: 'nowrap',
           }}>
@@ -165,7 +165,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
       </span>
 
       {/* Metadata line */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
         <span>{item.involvement}</span>
         {item.assignee && (
           <>
@@ -178,7 +178,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
             <span>·</span>
             <span style={{
               fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase',
-              padding: '1px 5px', borderRadius: 4,
+              padding: '0px 5px', borderRadius: 4,
               background: 'var(--cp-lz-gy-bg)', color: 'var(--cp-lz-gy-t)',
             }}>
               {item.status}
@@ -213,7 +213,7 @@ function CollapsedGroupRow({ group, onItemClick }: { group: CollapsedGroup; onIt
         </span>
         <span style={{
           fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-1)',
-          background: 'var(--bg-2)', padding: '1px 6px', borderRadius: 4, minWidth: 20, textAlign: 'center',
+          background: 'var(--bg-2)', padding: '0px 6px', borderRadius: 4, minWidth: 20, textAlign: 'center',
         }}>
           {group.count}
         </span>
@@ -241,7 +241,7 @@ function CollapsedGroupRow({ group, onItemClick }: { group: CollapsedGroup; onIt
               onClick={() => onItemClick(item.itemKey)}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                padding: '6px 14px 6px 32px', background: 'transparent',
+                padding: '4px 14px 6px 32px', background: 'transparent',
                 borderBottom: '1px solid var(--bg-2)', border: 'none',
                 cursor: 'pointer', textAlign: 'left', transition: 'background 80ms',
               }}
@@ -283,7 +283,7 @@ function WeekNarrativeCard({ narrative, userCtx }: { narrative: WeekNarrative; u
 
   return (
     <div style={{
-      padding: '14px 16px', border: '1px solid var(--divider)', borderRadius: 8, background: 'var(--cp-float)',
+      padding: '12px 16px', border: '1px solid var(--divider)', borderRadius: 8, background: 'var(--cp-float)',
     }}>
       {narrative.myTotal > 0 ? (
         <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 8px', fontFamily: 'var(--ds-font-family-body)' }}>
@@ -306,7 +306,7 @@ function WeekNarrativeCard({ narrative, userCtx }: { narrative: WeekNarrative; u
               <span key={proj}>
                 {i > 0 && i < arr.length - 1 ? ', ' : ''}
                 {i > 0 && i === arr.length - 1 ? ' and ' : ''}
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: PROJECT_COLORS[proj] || 'var(--fg-3)', display: 'inline-block' }} />
                   <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{proj}</strong>
                 </span>
@@ -346,7 +346,7 @@ function BriefingSkeleton() {
       <Skeleton className="h-4 w-40 mb-6 rounded" />
       <Skeleton className="h-4 w-28 mb-3 rounded" />
       {[1, 2, 3].map(i => (
-        <div key={i} style={{ border: '1px solid var(--divider)', borderRadius: 12, padding: 14, marginBottom: 10 }}>
+        <div key={i} style={{ border: '1px solid var(--divider)', borderRadius: 12, padding: 12, marginBottom: 8 }}>
           <Skeleton className="h-4 w-24 mb-3 rounded" />
           <Skeleton className="h-3.5 w-full mb-2 rounded" />
           <Skeleton className="h-3.5 w-3/4 mb-2 rounded" />
@@ -363,7 +363,7 @@ function QuickActionsBar({ role, onPresetClick }: { role: string; onPresetClick:
   const presets = getPresetsForRole(effectiveRole);
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
       {presets.map(preset => (
         <button
           key={preset.query}
@@ -371,7 +371,7 @@ function QuickActionsBar({ role, onPresetClick }: { role: string; onPresetClick:
           style={{
             fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)',
             background: 'var(--cp-float)', border: '1px solid var(--divider)',
-            padding: '7px 14px', borderRadius: 20, cursor: 'pointer',
+            padding: '8px 14px', borderRadius: 20, cursor: 'pointer',
             transition: 'all 0.15s', fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
           }}
           onMouseEnter={e => {
@@ -398,7 +398,7 @@ function SectionLabel({ text }: { text: string }) {
     <span style={{
       fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--fg-3)',
       textTransform: 'uppercase', letterSpacing: '0.08em',
-      fontFamily: 'var(--ds-font-family-body)', display: 'block', marginBottom: 10,
+      fontFamily: 'var(--ds-font-family-body)', display: 'block', marginBottom: 8,
     }}>
       {text}
     </span>
@@ -440,13 +440,13 @@ export function ProjectBriefingView({ onItemClick, onPresetClick }: ProjectBrief
       )}
 
       {/* YOUR WEEK */}
-      <div style={{ marginTop: 20 }}>
+      <div style={{ marginTop: 16 }}>
         <SectionLabel text="Your week" />
         <WeekNarrativeCard narrative={weekNarrative} userCtx={userCtx} />
       </div>
 
       {/* QUICK ACTIONS */}
-      <div style={{ marginTop: 20, marginBottom: 4 }}>
+      <div style={{ marginTop: 16, marginBottom: 4 }}>
         <SectionLabel text="Quick actions" />
         <QuickActionsBar role={userCtx.role} onPresetClick={onPresetClick} />
       </div>

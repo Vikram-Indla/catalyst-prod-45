@@ -168,7 +168,7 @@ export function ModuleAccessMatrix() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>Legend</span>
           {LEVELS.map((lv) => (
-            <span key={lv} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>
+            <span key={lv} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text)' }}>
               <span style={{ width: 13, height: 13, borderRadius: 3, background: FILL[lv], boxShadow: lv === 'hidden' ? 'inset 0 0 0 1px var(--ds-border)' : 'none' }} />
               {LABEL[lv]}
             </span>

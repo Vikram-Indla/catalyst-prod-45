@@ -27,7 +27,7 @@ export function ProjectDistributionChart({ data }: Props) {
       </h3>
 
       <ResponsiveContainer width="100%" height={data.length * 48 + 40}>
-        <BarChart layout="vertical" data={data} margin={{ left: 60, right: 20, top: 5, bottom: 5 }}>
+        <BarChart layout="vertical" data={data} margin={{ left: 48, right: 16, top: 4, bottom: 4 }}>
           <CartesianGrid strokeDasharray="3 3" horizontal={false} />
           <XAxis type="number" tick={{ fontSize: 'var(--ds-font-size-200)' }} />
           <YAxis

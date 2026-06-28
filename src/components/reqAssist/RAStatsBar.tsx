@@ -99,7 +99,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
   return (
     <div style={{ marginBottom: 0 }}>
       {/* ── ROW 1: 4 Stat Cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, padding: '20px 28px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, padding: '16px 28px' }}>
 
         {/* Card 1: Jira Tickets Imported */}
         <div style={cardStyle}>
@@ -180,9 +180,9 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
               <Database size={16} color="var(--cp-blue)" />
             </div>
             <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
+              display: 'inline-flex', alignItems: 'center', gap: 4,
               background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
-              borderRadius: 12, padding: '2px 10px',
+              borderRadius: 12, padding: '0px 10px',
               fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)',
               fontFamily: 'var(--cp-font-body)',
             }}>
@@ -233,7 +233,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             <div style={{ maxHeight: 140, overflowY: 'auto' }}>
               {activityEvents.map((evt, idx) => (
                 <div key={evt.id} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
+                  display: 'flex', alignItems: 'center', gap: 8,
                   height: 32, fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)',
                   fontFamily: 'var(--cp-font-body)',
                   borderTop: idx > 0 ? '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))' : 'none',
@@ -306,5 +306,5 @@ const bigNumberStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)',
   textTransform: 'uppercase', letterSpacing: '0.06em',
-  fontFamily: 'var(--cp-font-body)', marginTop: 2,
+  fontFamily: 'var(--cp-font-body)', marginTop: 0,
 };

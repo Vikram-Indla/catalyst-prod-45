@@ -155,7 +155,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
         </div>
 
         {/* ACTION BUTTONS */}
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '4px' }}>
           <IconButton
             icon={<Link2 size={18} />}
             onClick={handleCopyLink}
@@ -303,8 +303,8 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
           <div
             style={{
               position: 'fixed',
-              top: '50%',
-              left: '50%',
+              top: '48%',
+              left: '48%',
               transform: 'translate(-50%, -50%)',
               backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               borderRadius: '16px',
@@ -324,7 +324,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 style={{
-                  padding: '10px 20px',
+                  padding: '8px 20px',
                   backgroundColor: 'var(--ds-surface-sunken)',
                   border: 'none',
                   borderRadius: '12px',
@@ -340,7 +340,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 onClick={handleDelete}
                 disabled={isLoading}
                 style={{
-                  padding: '10px 20px',
+                  padding: '8px 20px',
                   backgroundColor: 'var(--ds-text-danger)',
                   border: 'none',
                   borderRadius: '12px',
@@ -390,8 +390,8 @@ const KebabMenu: React.FC<{
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
-          padding: '10px 14px',
+          gap: '8px',
+          padding: '8px 14px',
           borderRadius: '8px',
           cursor: disabled ? 'not-allowed' : 'pointer',
           backgroundColor: isHovered && !disabled ? (danger ? 'var(--ds-background-danger)' : COLORS.surfaceHover) : 'transparent',
@@ -431,7 +431,7 @@ const KebabMenu: React.FC<{
           borderRadius: '12px',
           boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.15))',
           zIndex: 99999,
-          padding: '6px'
+          padding: '4px'
         }}
       >
         <MenuItem 
@@ -459,7 +459,7 @@ const KebabMenu: React.FC<{
           onClick={onArchive}
           disabled={isLoading}
         />
-        <div style={{ height: '1px', backgroundColor: COLORS.borderLight, margin: '6px 0' }} />
+        <div style={{ height: '1px', backgroundColor: COLORS.borderLight, margin: '4px 0' }} />
         <MenuItem 
           icon={<Trash2 size={16} />} 
           label="Delete task" 

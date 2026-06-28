@@ -5,7 +5,7 @@
  * ─────────────────────────────────────
  * minHeight:       72px
  * Padding:         20px top, 24px left/right, 16px bottom (with subtitle)
- * Bottom margin:   20px (mb-5) before page content
+ * Bottom margin:   16px (mb-5) before page content
  * Border:          1px bottom, semantic --border / --divider token
  * Background:      bg-card (semantic)
  *
@@ -110,7 +110,7 @@ export function CommandCenterHeader({
       </div>
 
       {/* Right: timestamp + actions + refresh */}
-      <div className="flex items-center gap-3 flex-shrink-0" style={{ marginTop: 2 }}>
+      <div className="flex items-center gap-3 flex-shrink-0" style={{ marginTop: 0 }}>
         {timestamp && (
           <span
             style={{

@@ -119,7 +119,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
       <div style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.35))', zIndex: 80 }} onClick={onClose} />
 
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
         width: 440, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
         padding: 24, border: '0.75px solid var(--divider)',
         fontFamily: 'var(--cp-font-body)',
@@ -169,7 +169,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 </div>
               ))}
               {filtered.length === 0 && (
-                <p style={{ textAlign: 'center', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)', padding: 20 }}>No projects found</p>
+                <p style={{ textAlign: 'center', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)', padding: 16 }}>No projects found</p>
               )}
             </div>
 
@@ -197,7 +197,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
                   <span style={{
                     fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)',
-                    color: 'var(--fg-2)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', padding: '1px 6px', borderRadius: 4,
+                    color: 'var(--fg-2)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', padding: '0px 6px', borderRadius: 4,
                   }}>{e.ra_tag || '—'}</span>
                   <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {e.title}

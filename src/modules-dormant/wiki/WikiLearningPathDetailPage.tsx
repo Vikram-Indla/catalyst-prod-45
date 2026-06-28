@@ -113,7 +113,7 @@ export default function WikiLearningPathDetailPage() {
 
   if (!path) {
     return (
-      <div style={{ fontFamily: 'var(--ds-font-family-body)', padding: '60px 40px', textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', background: isDark ? 'var(--cp-bg-page)' : undefined, minHeight: '100%' }}>
+      <div style={{ fontFamily: 'var(--ds-font-family-body)', padding: '48px 40px', textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', background: isDark ? 'var(--cp-bg-page)' : undefined, minHeight: '100%' }}>
         Learning path not found.
       </div>
     );
@@ -124,7 +124,7 @@ export default function WikiLearningPathDetailPage() {
   return (
     <div style={{ fontFamily: 'var(--ds-font-family-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', background: isDark ? 'var(--cp-bg-page)' : 'var(--ds-surface-sunken)', minHeight: '100%', padding: '24px 40px 60px' }}>
       {/* Breadcrumb */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
         <span onClick={() => navigate('/wiki/learning-paths')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Learning Paths</span>
@@ -189,7 +189,7 @@ export default function WikiLearningPathDetailPage() {
                   {a.title}
                 </span>
               </div>
-              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', width: 'fit-content' }}>{a.domain_code}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '0px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', width: 'fit-content' }}>{a.domain_code}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Clock size={11} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
                 <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{a.read_time_minutes ?? '?'}m</span>

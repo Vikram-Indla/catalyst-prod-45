@@ -55,8 +55,8 @@
      covers the visible area without exposing a corner. */
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 50%;
-  left: 50%;
+  top: 48%;
+  left: 48%;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -2;
   /* 2026-06-18 — magenta-led AI border. Matches the CatyPulseIcon mark
@@ -159,7 +159,7 @@
   margin: 0;
   padding: 0 0 0 6px; /* small inset so cursor/text don't sit flush against the icon gap */
   border: 0;
-  outline: 0;
+  outline: 2px solid var(--ds-border-focused);
   background: transparent;
   box-shadow: none;
   font: inherit;
@@ -174,7 +174,7 @@
 .ask-caty-row__input:focus,
 .ask-caty-row__input:focus-visible,
 .ask-caty-row__input:active {
-  outline: 0;
+  outline: 2px solid var(--ds-border-focused);
   box-shadow: none;
   border: 0;
 }

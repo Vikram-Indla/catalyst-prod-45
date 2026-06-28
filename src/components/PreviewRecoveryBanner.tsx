@@ -103,7 +103,7 @@ export function PreviewRecoveryBanner() {
         style={{
           display: "inline-flex",
           alignItems: "center",
-          gap: 6,
+          gap: 4,
           marginLeft: 8,
           padding: "8px 12px",
           background: "var(--ds-background-warning)",

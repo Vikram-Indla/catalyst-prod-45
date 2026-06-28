@@ -155,7 +155,7 @@ function StatusPill({ status, statusCategory, issueId, issueType, onStatusChange
       </button>
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', left: 0, marginTop: 4,
+          position: 'absolute', top: '48%', left: 0, marginTop: 4,
           background: 'var(--ds-surface)', borderRadius: 6, width: 220,
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9,30,66,.25))', zIndex: 80, padding: '4px 0',
           border: '1px solid var(--ds-border)', maxHeight: 320, overflowY: 'auto',
@@ -807,7 +807,7 @@ export function IssueContentView({
               </button>
               {moreMenuOpen && (
                 <div style={{
-                  position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                  position: 'absolute', top: '48%', right: 0, marginTop: 4,
                   background: 'var(--ds-surface)', borderRadius: 6, width: 220,
                   boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9,30,66,.25))', zIndex: 80,
                   border: '1px solid var(--ds-border)', padding: '4px 0',
@@ -860,7 +860,7 @@ export function IssueContentView({
 
         {/* Details section — identical to Story Detail Modal sidebar */}
         <div style={{ marginBottom: 16, padding: '0 16px' }}>
-          <div onClick={() => toggle('details')} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', marginBottom: 12, userSelect: 'none' }}>
+          <div onClick={() => toggle('details')} style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', marginBottom: 12, userSelect: 'none' }}>
             {collapsed.details
               ? <ChevronRight size={14} color="var(--ds-text-subtle)" />
               : <ChevronDown size={14} color="var(--ds-text-subtle)" />
@@ -898,7 +898,7 @@ export function IssueContentView({
                   )}
                 </div>
                 {showSprintReleaseDropdown && (
-                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--ds-surface)', border: '1px solid var(--ds-border)', borderRadius: 4, boxShadow: 'var(--ds-shadow-overlay, 0 4px 12px rgba(9,30,66,.15))', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '48%', left: 0, right: 0, background: 'var(--ds-surface)', border: '1px solid var(--ds-border)', borderRadius: 4, boxShadow: 'var(--ds-shadow-overlay, 0 4px 12px rgba(9,30,66,.15))', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
                     <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-border)' }}>
                       <input autoFocus value={sprintReleaseSearch} onChange={e => setSprintReleaseSearch(e.target.value)} placeholder="Search versions..."
                         style={{ width: '100%', border: '1px solid var(--ds-border)', borderRadius: 4, padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', outline: 'none', fontFamily: 'inherit' }}

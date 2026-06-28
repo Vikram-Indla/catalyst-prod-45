@@ -104,7 +104,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
           </span>
           {/* P0 badge */}
           {isCritical && (
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', background: 'var(--ds-text-danger)', borderRadius: 4, padding: '1px 4px' }}>P0</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', background: 'var(--ds-text-danger)', borderRadius: 4, padding: '0px 4px' }}>P0</span>
           )}
           {/* Title */}
           <span className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', letterSpacing: '-0.01em' }}>

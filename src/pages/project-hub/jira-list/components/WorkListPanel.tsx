@@ -369,7 +369,7 @@ export function WorkListPanel({
                 color: 'var(--ds-text-subtlest)',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: 4,
               }}
             >
               {/* IssueTypeIcon — 20px per spec; JiraIssueTypeIcon is canonical */}
@@ -480,7 +480,7 @@ export function WorkListPanel({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               flex: 1,
               minWidth: 0,
               border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
@@ -532,7 +532,7 @@ export function WorkListPanel({
         />
 
         {/* SortConfigButton + RefreshButton */}
-        <div style={{ display: 'flex', gap: 2 }}>
+        <div style={{ display: 'flex', gap: 0 }}>
           <IconButton
             appearance="subtle"
             icon={sortDir === 'asc' ? ArrowUpIcon : ArrowDownIcon}
@@ -560,7 +560,7 @@ export function WorkListPanel({
           background: 'var(--ds-background-neutral)',
           display: 'flex',
           flexDirection: 'column',
-          gap: 1,
+          gap: 0,
           padding: '8px',
         }}
       >
@@ -577,7 +577,7 @@ export function WorkListPanel({
                     width: '100%',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 4,
                     padding: '8px 8px',
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
