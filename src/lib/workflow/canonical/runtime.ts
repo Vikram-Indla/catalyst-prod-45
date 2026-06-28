@@ -345,17 +345,18 @@ export async function gateTransition(args: {
 export async function recordAdvisoryStatusChange(args: {
   entityKey: EntityKey; entityId: string; projectKey?: string | null;
   fromStatusRaw: string | null; toStatusRaw: string; currentRole?: string | null; sourceSurface: string;
-}): Promise<void> {
+}): Promise<{ reasonRequired: boolean } | null> {
   try {
     const version = await resolveCanonicalVersion(args.entityKey, args.projectKey);
-    if (!version) return;
+    if (!version) return null;
     const fromKey = resolveKeyInVersion(version, args.fromStatusRaw);
     const toKey = resolveKeyInVersion(version, args.toStatusRaw) ?? slugStatus(args.toStatusRaw);
-    if (!toKey) return;
+    if (!toKey) return null;
     const evaluation = evaluateTransition(version, args.entityKey, fromKey, toKey, { currentRole: args.currentRole ?? null });
     await writeAdvisoryAudit({
       entityKey: args.entityKey, entityId: args.entityId, versionId: version.versionId,
       fromKey, toKey, evaluation, sourceSurface: args.sourceSurface,
     });
-  } catch (err) { console.warn('[canonical-workflow] recordAdvisoryStatusChange skipped', err); }
+    return { reasonRequired: evaluation.reasonRequired };
+  } catch (err) { console.warn('[canonical-workflow] recordAdvisoryStatusChange skipped', err); return null; }
 }

@@ -25,6 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import { DOMAIN_ADAPTER_CONFIGS } from '@/lib/workflow/canonical/adapters';
 import { recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
+import { catalystToast } from '@/lib/catalystToast';
 import type { BacklogStory } from '../types/backlog.types';
 import type { StatusOption, LozengeAppearance } from '@/components/shared/JiraTable';
 import { BIZ_SOURCE, type BacklogDataSource } from './backlogDataSource';
@@ -295,10 +296,17 @@ export function useReleasesSource(): BacklogDataSource | null {
         await updateMutation.mutateAsync({ id, patch: mapped });
       }
       if (canonicalKey && prevStatus !== canonicalKey) {
-        await recordAdvisoryStatusChange({
+        const advisory = await recordAdvisoryStatusChange({
           entityKey: 'release', entityId: id, projectKey: null,
           fromStatusRaw: prevStatus, toStatusRaw: canonicalKey, sourceSurface: 'release_list',
         });
+        // Reason-required guard fires but no reason UI exists on this surface.
+        // Warn explicitly — do not silently audit would_block=true with no feedback.
+        if (advisory?.reasonRequired) {
+          catalystToast.warning(
+            'This release transition requires a reason. Open the release detail to provide one before the gate is enforced.'
+          );
+        }
       }
     },
 
