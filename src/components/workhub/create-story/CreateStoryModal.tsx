@@ -626,7 +626,12 @@ export function CreateStoryModal({
     () =>
       projects.map((p: any) => ({
         value: p.id,
-        label: p.name,
+        // Show "KEY Name" (e.g. "BAU Senaei BAU"); collapse to one token when
+        // the project's name already equals its key (e.g. "ICP").
+        label:
+          p.key && p.name && p.key !== p.name
+            ? `${p.key} ${p.name}`
+            : (p.name ?? p.key ?? ''),
         icon: (
           // Bucket F (2026-05-09): pass iconName + color so Lucide fallback
           // works for non-bundled-registry projects (ph_projects data joined).
