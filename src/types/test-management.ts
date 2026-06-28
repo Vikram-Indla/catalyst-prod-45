@@ -6,7 +6,7 @@ export type RunStatus = 'NOT_RUN' | 'IN_PROGRESS' | 'PASSED' | 'FAILED' | 'BLOCK
 
 export type DefectStatus = 'OPEN' | 'IN_PROGRESS' | 'FIXED' | 'VERIFIED' | 'CLOSED' | 'WONT_FIX' | 'DUPLICATE';
 
-export type DefectSeverity = 'CRITICAL' | 'MAJOR' | 'MINOR' | 'TRIVIAL';
+export type DefectSeverity = 'BLOCKER' | 'CRITICAL' | 'MAJOR' | 'MINOR' | 'TRIVIAL';
 
 // Test Plan status types
 export type TestPlanStatus = 'draft' | 'active' | 'completed' | 'archived';
@@ -566,6 +566,7 @@ export function getExecutionStatusColor(status: RunStatus): string {
 
 export function getSeverityColor(severity: DefectSeverity): string {
   const map: Record<DefectSeverity, string> = {
+    BLOCKER: 'text-danger',
     CRITICAL: 'text-danger',
     MAJOR: 'text-warning',
     MINOR: 'text-info',

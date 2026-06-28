@@ -216,11 +216,14 @@ const DEFECT_STATUS_OPTIONS = [
   { value: 'closed', label: 'Closed', color_category: 'done' },
   { value: 'reopened', label: 'Reopened', color_category: 'todo' },
 ];
+// Canonical 5-level severity (see work-item-canon WORK_ITEM_SEVERITIES).
+// value = the DefectSeverity union; tm_defects enum bridge lowercases on write.
 const DEFECT_SEVERITY_OPTIONS = [
-  { value: 'critical', label: 'Critical' },
-  { value: 'high', label: 'High' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
+  { value: 'BLOCKER', label: 'Blocker' },
+  { value: 'CRITICAL', label: 'Critical' },
+  { value: 'MAJOR', label: 'Major' },
+  { value: 'MINOR', label: 'Minor' },
+  { value: 'TRIVIAL', label: 'Trivial' },
 ];
 const DEFECT_ENVIRONMENT_OPTIONS = [
   { value: 'QA', label: 'QA' },
@@ -228,12 +231,6 @@ const DEFECT_ENVIRONMENT_OPTIONS = [
   { value: 'Beta', label: 'Beta' },
   { value: 'Prod', label: 'Prod' },
 ];
-const DEFECT_SEVERITY_MAP: Record<string, DefectSeverity> = {
-  critical: 'CRITICAL',
-  high: 'MAJOR',
-  medium: 'MINOR',
-  low: 'TRIVIAL',
-};
 
 // Lozenge appearance buckets — Atlaskit gives us 5 named appearances and we
 // map to the 3-color status guardrail (CLAUDE.md §5):
@@ -527,15 +524,14 @@ export function CreateStoryModal({
   // submit time via resolveTmProjectId — see handleSubmit's isDefect branch.
   const isDefect = workType === 'QA Bug';
   const createDefect = useCreateDefect();
-  const [defectSeverity, setDefectSeverity] =
-    useState<'critical' | 'high' | 'medium' | 'low'>('medium');
+  const [defectSeverity, setDefectSeverity] = useState<DefectSeverity>('MINOR');
   const [defectComponent, setDefectComponent] = useState('');
   const [defectEnvironment, setDefectEnvironment] = useState('');
   const [defectDueDate, setDefectDueDate] = useState('');
   const [defectExpectedAdf, setDefectExpectedAdf] = useState<unknown>(null);
   const [defectActualAdf, setDefectActualAdf] = useState<unknown>(null);
   const resetDefectState = useCallback(() => {
-    setDefectSeverity('medium');
+    setDefectSeverity('MINOR');
     setDefectComponent('');
     setDefectEnvironment('');
     setDefectDueDate('');
@@ -795,7 +791,7 @@ export function CreateStoryModal({
           title: form.summary.trim(),
           description: descAdf ? adfToPlainText(descAdf as any) : undefined,
           description_adf: descAdf ?? undefined,
-          severity: DEFECT_SEVERITY_MAP[defectSeverity] ?? 'MINOR',
+          severity: defectSeverity,
           priority: (form.priority || 'Medium').toLowerCase(),
           component: defectComponent || undefined,
           environment: defectEnvironment || undefined,
@@ -1298,7 +1294,7 @@ export function CreateStoryModal({
                         options={DEFECT_SEVERITY_OPTIONS}
                         value={DEFECT_SEVERITY_OPTIONS.find((o) => o.value === defectSeverity) ?? null}
                         onChange={(opt) =>
-                          setDefectSeverity(((opt as IconOption)?.value as any) ?? 'medium')
+                          setDefectSeverity(((opt as IconOption)?.value as any) ?? 'MINOR')
                         }
                         isSearchable={false}
                       />

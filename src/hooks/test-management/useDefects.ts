@@ -61,7 +61,7 @@ export async function resolveTmProjectId(
 }
 
 // DB uses lowercase enums - match the actual DB enum values
-type DbDefectSeverity = 'critical' | 'major' | 'minor' | 'trivial';
+type DbDefectSeverity = 'blocker' | 'critical' | 'major' | 'minor' | 'trivial';
 type DbDefectStatus = 'open' | 'in_progress' | 'resolved' | 'closed' | 'reopened';
 
 const severityToDb = (severity: DefectSeverity): DbDefectSeverity => {
