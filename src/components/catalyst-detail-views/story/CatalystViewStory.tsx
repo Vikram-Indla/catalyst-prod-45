@@ -43,6 +43,7 @@ import { ConfirmCloneDialog } from '../shared/ConfirmCloneDialog';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import { ReleaseSprintSection } from './ReleaseSprintSection';
+import { TestCoveragePanel } from './TestCoveragePanel';
 
 export default function CatalystViewStory({
   isOpen, onClose, itemId, projectId, projectKey,
@@ -180,6 +181,11 @@ export default function CatalystViewStory({
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />
+
+      {/* Test coverage / Trace-From (CAT-TESTHUB-REPORT-REVAMP, G-002) — stories only */}
+      {issue?.issue_type === 'Story' && issue?.issue_key && (
+        <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} />
+      )}
 
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
