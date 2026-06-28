@@ -307,10 +307,8 @@ function getAvatarColor(name: string): string {
     'var(--ds-background-warning-bold, #F97015)',  // Orange
     'var(--ds-chart-green-bold, #21C45D)',  // Green
     'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky
-// TODO: ads-unmapped — #FAC814 context unclear
-    '#FAC814',  // Amber
-// TODO: ads-unmapped — #BB36D3 context unclear
-    '#BB36D3',  // Fuchsia
+    'var(--ds-chart-yellow-bold, #FAC814)',  // Amber
+    'var(--ds-chart-purple-bold, #BB36D3)',  // Fuchsia
 // TODO: ads-unmapped — #1DAFA1 context unclear
     '#1DAFA1',  // Cyan
   ];

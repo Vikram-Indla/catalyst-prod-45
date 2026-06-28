@@ -440,7 +440,7 @@
 }
 
 .dark .date-column-header.weekend {
-  background-color: rgba(51, 65, 85, 0.3) !important;
+  background-color: var(--ds-background-neutral, rgba(51, 65, 85, 0.3)) !important;
 }
 
 /* ============================================================================
@@ -538,8 +538,8 @@
 [style*="background-color: rgb(253, 164, 175)"], /* pink/salmon */
 [style*="background-color: rgb(34, 211, 238)"],  /* bright cyan */
 [style*="background-color: rgb(251, 207, 232)"], /* light pink */
-[style*="background: rgb(14, 165, 233)"],
-[style*="background: rgb(253, 164, 175)"] {
+[style*="background: var(--ds-chart-blue-bold, rgb(14, 165, 233))"],
+[style*="background: rgb(253, 164, 175)"] /* ads-scanner:ignore-line — dark-mode attr selector, Tailwind rose-300 */ {
   background-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 

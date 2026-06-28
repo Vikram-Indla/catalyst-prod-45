@@ -197,8 +197,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                 const statusColor = cat === 'todo' ? T.todo : cat === 'progress' ? T.progress : T.done;
                 const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
                 const hub = item.hub || item.source_hub || 'ProjectHub';
-// TODO: ads-unmapped — #FAF8F5 context unclear
-                const baseBg = idx % 2 === 0 ? T.surface : '#FAF8F5';
+                const baseBg = idx % 2 === 0 ? T.surface : 'var(--ds-surface-sunken, #FAF8F5)';
                 const highlightBg = showPendingOnly && isPending ? T.pendingHighlight : baseBg;
                 const key = item.item_key || item.key || '—';
                 const title = item.title || '';
@@ -219,8 +218,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                       cursor: 'pointer', transition: 'background .1s',
                       borderRadius: 0,
                     }}
-// TODO: ads-unmapped — #EDE7E0 context unclear
-                    onMouseEnter={e => { e.currentTarget.style.background = '#EDE7E0'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EDE7E0)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = highlightBg; }}>
 
                     {/* Key + Hub badge */}

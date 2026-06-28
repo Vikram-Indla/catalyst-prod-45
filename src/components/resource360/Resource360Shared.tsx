@@ -9,8 +9,7 @@ export function HighlightText({ text, query }: { text: string; query: string }) 
   return (
     <>
       {text.slice(0, idx)}
-// TODO: ads-unmapped — #FEF08A context unclear
-      <mark style={{ background: '#FEF08A', padding: '0 1px', borderRadius: 2 }}>
+      <mark style={{ background: 'var(--ds-background-warning-bold, #FEF08A)', padding: '0 1px', borderRadius: 2 }}>
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}

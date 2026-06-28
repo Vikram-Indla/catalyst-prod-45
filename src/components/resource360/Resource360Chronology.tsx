@@ -4,12 +4,9 @@ import { getStatusCategory, getStaleIndicator, WH_HUB_COLORS, WH_HUB_SHORT } fro
 import { HighlightText, InlineExpansionPanel, ExpandChevron, useExpandedRow, expandAnimationCSS } from './Resource360Shared';
 
 const T = {
-// TODO: ads-unmapped — #1A1A2E context unclear
-  bg: '#F5F0EB', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', text1: 'var(--ds-surface, #0A0A0A)', text2: '#1A1A2E',
-// TODO: ads-unmapped — #3D3D56 context unclear
-  text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
-// TODO: ads-unmapped — #0E8A5F context unclear
-  todo: '#E23636', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: '#0E8A5F', pendHl: 'var(--ds-background-warning, #FFF7D6)',
+  bg: 'var(--ds-surface-sunken, #F5F0EB)', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', text1: 'var(--ds-text, #0A0A0A)', text2: 'var(--ds-text, #1A1A2E)',
+  text3: 'var(--ds-text-subtle, #3D3D56)', text4: 'var(--ds-text-subtlest, #6B6B80)', border: 'var(--ds-border, #D9D2C9)', borderStrong: 'var(--ds-border-bold, #C5BDB3)',
+  todo: 'var(--ds-text-danger, #E23636)', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, #0E8A5F)', pendHl: 'var(--ds-background-warning, #FFF7D6)',
   mono: "'JetBrains Mono','SF Mono',monospace",
 };
 

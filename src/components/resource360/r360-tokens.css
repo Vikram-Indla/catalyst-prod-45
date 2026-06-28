@@ -150,7 +150,7 @@
   background: var(--r360-surface-hover);
 }
 .r360-root .r360-row-alt {
-  background: #FAF8F5;
+  background: var(--ds-surface-sunken, #FAF8F5);
 }
 
 /* ─── KEY (monospace) ─── */

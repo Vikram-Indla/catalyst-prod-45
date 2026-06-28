@@ -102,8 +102,7 @@ export function getPriorityColor(priority: string): string {
     case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     case 'high': return 'var(--ds-background-warning-bold, #E2B203)';
     case 'medium': return 'var(--ds-text-warning, #974F0C)';
-// TODO: ads-unmapped — #57534E context unclear
-    case 'low': return '#57534E';
+    case 'low': return 'var(--ds-text-subtle, #57534E)';
     default: return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
   }
 }
