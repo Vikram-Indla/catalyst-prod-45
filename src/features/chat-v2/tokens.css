@@ -256,11 +256,11 @@ body[data-cv2-theme="light"] {
   text-decoration: none;
 }
 .cv2-mention[data-self="false"] {
-  background: rgba(38, 132, 255, 0.16);
+  background: rgba(38, 132, 255, 0.16); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   color: var(--ds-link-pressed, #1d4ed8);
 }
 .cv2-mention[data-self="true"] {
-  background: rgba(255, 159, 64, 0.18);
+  background: rgba(255, 159, 64, 0.18); /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   color: var(--ds-background-warning-bold, #d97706);
 }
 

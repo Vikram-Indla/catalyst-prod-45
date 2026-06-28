@@ -64,12 +64,12 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
           >
             {project.key}
           </div>
-          <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+          <span className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
             {project.name}
           </span>
           <span
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontFamily: 'var(--cp-font-mono)',
               fontWeight: 500,
               color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
@@ -94,7 +94,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
       <td style={{ padding: '0 12px', textAlign: 'right' }}>
         <span
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--cp-font-mono)',
             fontWeight: 500,
             color: 'var(--cp-text-secondary, #42526E)',
@@ -111,7 +111,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
 
       {/* Updated */}
       <td style={{ padding: '0 12px' }}>
-        <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))' }}>
           {formatRelativeTime(project.updated_at)}
         </span>
       </td>

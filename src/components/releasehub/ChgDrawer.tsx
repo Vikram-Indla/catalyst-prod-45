@@ -53,7 +53,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
   return (
     <>
       <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
-        <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-[var(--ds-surface, #080E1D)]/38 backdrop-blur-[1px]" />
         <div className="relative w-[700px] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
           onClick={e => e.stopPropagation()}>
           {/* Header */}
@@ -220,7 +220,7 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
           <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title"
             className="w-full h-8 px-2 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[12px]" />
           <div className="flex gap-2">
-            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[11px] text-[var(--ds-text-subtle,#475569)]">Cancel</button>
+            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] text-[11px] text-[var(--ds-text-subtle,var(--ds-text-subtle, #44546F))]">Cancel</button>
             <button onClick={handleLink} disabled={!key || !title || linkWorkItem.isPending}
               className="h-7 px-3 rounded bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[11px] font-bold disabled:opacity-50">
               {linkWorkItem.isPending ? 'Linking...' : 'Link'}
@@ -228,7 +228,7 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[var(--ds-background-information, #E9F2FF)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">
+        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[var(--ds-background-information, var(--ds-background-information, #E9F2FF))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">
           + Link Work Item
         </button>
       )}
@@ -280,7 +280,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
               <div className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate({ signoffId: signoff.id }, { onSuccess: () => catalystToast.success('Approved') })}
                   disabled={approveSignoff.isPending}
-                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
+                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[var(--ds-background-success-bold, #004D33)] disabled:opacity-50">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => catalystToast.success('Rejected') })}
                   disabled={rejectSignoff.isPending}
                   className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)] disabled:opacity-50">Reject</button>

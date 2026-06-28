@@ -26,7 +26,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
   // NON-DISMISSIBLE: no backdrop click, no Esc, no X button
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center">
-      <div className="absolute inset-0 bg-[#080E1D]/50 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-[var(--ds-surface, #080E1D)]/50 backdrop-blur-[2px]" />
       <div className="relative bg-white rounded-xl shadow-2xl w-[480px] overflow-hidden">
         <div className="bg-[var(--ds-background-danger,#FEF2F2)] border-b border-[var(--ds-border-danger,#FCA5A5)] px-6 py-4 flex items-center gap-3">
           <AlertTriangle size={20} className="text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]" />
@@ -44,7 +44,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
                 Link Work Item
               </button>
               <button onClick={onResolved}
-                className="w-full h-11 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px] font-medium text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[#F4F7FA]">
+                className="w-full h-11 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px] font-medium text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken, #F4F7FA)]">
                 Skip (RM only · logged)
               </button>
             </div>
@@ -61,7 +61,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
                   className="w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px]" />
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setMode('choose')} className="flex-1 h-9 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px] font-medium text-[var(--ds-text-subtle,#475569)]">Back</button>
+                <button onClick={() => setMode('choose')} className="flex-1 h-9 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle, #44546F))]">Back</button>
                 <button onClick={handleLink} disabled={!workItemKey || !workItemTitle || linkWorkItem.isPending}
                   className="flex-1 h-9 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[13px] font-semibold disabled:opacity-50">
                   {linkWorkItem.isPending ? 'Linking...' : 'Link & Continue'}

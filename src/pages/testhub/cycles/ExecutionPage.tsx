@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useEffect, useRef, useCallback, DragEvent, useSyncExternalStore } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import ModalDialog, { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/standard-button';
 import { useCycleScope } from '@/hooks/test-management/useTestCycles';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
 import { useProjects } from '@/hooks/test-management/useProjects';
@@ -11,6 +12,98 @@ import Textarea from '@atlaskit/textarea';
 import { ArrowLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { TMCycleScope, TMCaseStep, RunStatus } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
+
+const ATTACHMENT_BUCKET = 'testhub-attachments';
+const OFFLINE_QUEUE_KEY = 'testhub_offline_queue';
+
+// ── Online status hook ────────────────────────────────────────────────────────
+function subscribe(cb: () => void) {
+  window.addEventListener('online', cb);
+  window.addEventListener('offline', cb);
+  return () => { window.removeEventListener('online', cb); window.removeEventListener('offline', cb); };
+}
+function useOnlineStatus(): boolean {
+  return useSyncExternalStore(subscribe, () => navigator.onLine, () => true);
+}
+
+// ── Offline queue helpers ─────────────────────────────────────────────────────
+interface OfflineQueueItem {
+  id: string;
+  queuedAt: string;
+  scopeId: string;
+  executedBy: string;
+  runStatus: string;
+  notes: string | null;
+  durationSeconds: number;
+  stepResults: Array<{ test_step_id: string; step_number: number; status: string; actual_result: string | null }>;
+  scopeStatus: string;
+}
+
+function readQueue(): OfflineQueueItem[] {
+  try { return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) ?? '[]'); }
+  catch { return []; }
+}
+
+function writeQueue(items: OfflineQueueItem[]) {
+  localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(items));
+}
+
+async function flushOfflineQueue(qc: { invalidateQueries: (opts: { queryKey: string[] }) => void }): Promise<void> {
+  const items = readQueue();
+  if (items.length === 0) return;
+
+  const now = new Date().toISOString();
+  const failed: OfflineQueueItem[] = [];
+
+  for (const item of items) {
+    try {
+      // Compute next run number fresh from DB
+      const { data: maxRow } = await supabase
+        .from('tm_test_runs')
+        .select('run_number')
+        .eq('cycle_scope_id', item.scopeId)
+        .order('run_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const nextRunNumber = (maxRow?.run_number ?? 0) + 1;
+      const isTerminal = item.runStatus !== 'not_run' && item.runStatus !== 'in_progress';
+
+      const { data: run, error: runErr } = await supabase
+        .from('tm_test_runs')
+        .insert({
+          cycle_scope_id: item.scopeId,
+          run_number: nextRunNumber,
+          status: item.runStatus,
+          executed_by: item.executedBy,
+          notes: item.notes,
+          duration_seconds: item.durationSeconds,
+          started_at: item.queuedAt,
+          completed_at: isTerminal ? now : null,
+        })
+        .select()
+        .single();
+
+      if (runErr) throw runErr;
+
+      if (run && item.stepResults.length > 0) {
+        await supabase.from('tm_step_results').insert(
+          item.stepResults.map(sr => ({ ...sr, test_run_id: run.id, executed_at: item.queuedAt }))
+        );
+      }
+
+      await supabase.from('tm_cycle_scope').update({ current_status: item.scopeStatus }).eq('id', item.scopeId);
+      qc.invalidateQueries({ queryKey: ['tm-cycle-scope'] });
+    } catch {
+      failed.push(item);
+    }
+  }
+
+  writeQueue(failed);
+  if (failed.length < items.length) {
+    const flushed = items.length - failed.length;
+    catalystToast.success(`Synced ${flushed} offline result${flushed > 1 ? 's' : ''}`);
+  }
+}
 
 type StepStatus = 'NOT_RUN' | 'PASSED' | 'FAILED' | 'BLOCKED' | 'SKIPPED';
 
@@ -89,7 +182,7 @@ export default function ExecutionPage() {
               border: 'none',
               cursor: 'pointer',
               color: 'var(--ds-link, #0052CC)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               display: 'flex',
               alignItems: 'center',
               gap: 4,
@@ -100,7 +193,7 @@ export default function ExecutionPage() {
             <ArrowLeft size={13} />
             Back to cycle
           </button>
-          <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          <h3 style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
             {scopeItems.length} {scopeItems.length === 1 ? 'case' : 'cases'}
           </h3>
         </div>
@@ -121,10 +214,10 @@ export default function ExecutionPage() {
             >
               <RunStatusDot status={item.status} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)' }}>
                   {item.test_case?.key ?? '—'}
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {item.test_case?.title ?? '—'}
                 </div>
               </div>
@@ -145,7 +238,7 @@ export default function ExecutionPage() {
             onSaved={() => queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] })}
           />
         ) : (
-          <div style={{ padding: 48, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+          <div style={{ padding: 48, textAlign: 'center', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>
             Select a case from the list
           </div>
         )}
@@ -215,25 +308,17 @@ function SaveRunModal({
     return () => document.removeEventListener('keydown', handler, true);
   }, [onCancel]);
 
-  return createPortal(
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 9000,
-      background: 'var(--ds-shadow-raised, rgba(9,30,66,0.54))',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
-        borderRadius: 8, padding: 24, width: 480,
-        boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
-      }}>
-        <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
-          Save execution
-        </h3>
-        <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+  return (
+    <ModalDialog onClose={onCancel}>
+      <ModalHeader>
+        <ModalTitle>Save execution</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)' }}>
           Optionally add notes before saving this run result.
         </p>
-        <div style={{ marginBottom: 20 }}>
-          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', display: 'block', marginBottom: 4 }}>
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', display: 'block', marginBottom: 4 }}>
             Notes (optional)
           </label>
           <Textarea
@@ -243,34 +328,19 @@ function SaveRunModal({
             minimumRows={3}
           />
         </div>
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button
-            onClick={onCancel}
-            style={{
-              padding: '8px 16px', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)',
-              background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => onConfirm(notes)}
-            disabled={saving}
-            style={{
-              padding: '8px 16px', borderRadius: 4, border: 'none',
-              background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: 'var(--ds-text-inverse, #FFFFFF)', cursor: saving ? 'not-allowed' : 'pointer',
-              fontSize: 14, fontWeight: 500, opacity: saving ? 0.7 : 1,
-              display: 'flex', alignItems: 'center', gap: 8,
-            }}
-          >
-            {saving && <Spinner size="small" appearance="invert" />}
-            {saving ? 'Saving…' : 'Save run'}
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onCancel}>Cancel</Button>
+        <Button
+          appearance="primary"
+          onClick={() => onConfirm(notes)}
+          isDisabled={saving}
+          iconAfter={saving ? <Spinner size="small" appearance="invert" /> : undefined}
+        >
+          {saving ? 'Saving…' : 'Save run'}
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 
@@ -287,9 +357,32 @@ function StepRunner({
   const { data: caseDetail, isLoading } = useTestCase(scope.case_id);
   const steps: TMCaseStep[] = caseDetail?.steps ?? [];
   const [stepStates, setStepStates] = useState<StepState[]>([]);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [completedRunCount, setCompletedRunCount] = useState(0);
   const timer = useTimer();
+  const isOnline = useOnlineStatus();
+  const queryClient = useQueryClient();
+  const [offlineQueueCount, setOfflineQueueCount] = useState(() => readQueue().length);
+
+  // Flush offline queue when coming back online
+  useEffect(() => {
+    if (!isOnline) return;
+    const q = readQueue();
+    if (q.length === 0) return;
+    flushOfflineQueue(queryClient).then(() => setOfflineQueueCount(readQueue().length));
+  }, [isOnline]);
+
+  // Load existing run count for this scope (to display run number)
+  useEffect(() => {
+    if (!scope.id) return;
+    supabase
+      .from('tm_test_runs')
+      .select('id', { count: 'exact', head: true })
+      .eq('cycle_scope_id', scope.id)
+      .then(({ count }) => setCompletedRunCount(count ?? 0));
+  }, [scope.id]);
 
   // Init step states when case loads
   useEffect(() => {
@@ -301,6 +394,7 @@ function StepRunner({
   // Reset step states when scope changes
   useEffect(() => {
     setStepStates([]);
+    setPendingFiles([]);
     timer.reset();
   }, [scope.id]);
 
@@ -315,6 +409,7 @@ function StepRunner({
 
   const handleReset = () => {
     setStepStates(steps.map(s => ({ stepId: s.id, status: 'NOT_RUN', actualResult: '' })));
+    setPendingFiles([]);
     timer.reset();
   };
 
@@ -327,16 +422,55 @@ function StepRunner({
 
       const runStatus = computeRunStatus(stepStates);
       const dbStatus = runStatus.toLowerCase() as 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
+
+      // ── Offline path ──────────────────────────────────────────────────────────
+      if (!isOnline) {
+        const item: OfflineQueueItem = {
+          id: `${scope.id}-${Date.now()}`,
+          queuedAt: new Date().toISOString(),
+          scopeId: scope.id,
+          executedBy: user.id,
+          runStatus: dbStatus,
+          notes: notes || null,
+          durationSeconds: timer.elapsed,
+          stepResults: stepStates.map((ss, i) => ({
+            test_step_id: ss.stepId,
+            step_number: i + 1,
+            status: ss.status.toLowerCase(),
+            actual_result: ss.actualResult || null,
+          })),
+          scopeStatus: dbStatus,
+        };
+        const q = readQueue();
+        q.push(item);
+        writeQueue(q);
+        setOfflineQueueCount(q.length);
+        setShowSaveModal(false);
+        setPendingFiles([]);
+        timer.reset();
+        catalystToast.success('Offline — result queued. Will sync on reconnect.');
+        onSaved();
+        return;
+      }
+      // ─────────────────────────────────────────────────────────────────────────
       const isTerminal = runStatus !== 'NOT_RUN' && runStatus !== 'IN_PROGRESS';
 
+      // Compute next run number
+      const { data: maxRow } = await supabase
+        .from('tm_test_runs')
+        .select('run_number')
+        .eq('cycle_scope_id', scope.id)
+        .order('run_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const nextRunNumber = (maxRow?.run_number ?? 0) + 1;
+
       // Insert run record
-      // tm_test_runs keys on cycle_scope_id (NOT NULL) — case + cycle are
-      // derived via tm_cycle_scope. There is no cycle_id/scope_id/case_id column.
       const { data: run, error: runError } = await supabase
         .from('tm_test_runs')
         .insert({
           cycle_scope_id: scope.id,
-          run_number: 1,
+          run_number: nextRunNumber,
           status: dbStatus,
           executed_by: user.id,
           notes: notes || null,
@@ -362,6 +496,32 @@ function StepRunner({
         await supabase.from('tm_step_results').insert(stepResults);
       }
 
+      // Upload attachments
+      if (run && pendingFiles.length > 0) {
+        const uploadResults = await Promise.allSettled(
+          pendingFiles.map(async (file) => {
+            const ext = file.name.split('.').pop() ?? 'bin';
+            const safeName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+            const storagePath = `test-runs/${run.id}/${safeName}`;
+            const { error: upErr } = await supabase.storage
+              .from(ATTACHMENT_BUCKET)
+              .upload(storagePath, file, { contentType: file.type, upsert: false });
+            if (upErr) throw upErr;
+            await supabase.from('tm_attachments').insert({
+              entity_type: 'test_run',
+              entity_id: run.id,
+              file_name: file.name,
+              file_path: storagePath,
+              file_size: file.size,
+              mime_type: file.type || null,
+              uploaded_by: user.id,
+            });
+          })
+        );
+        const failed = uploadResults.filter(r => r.status === 'rejected').length;
+        if (failed > 0) catalystToast.error(`${failed} attachment(s) failed to upload`);
+      }
+
       // Update scope status
       await supabase
         .from('tm_cycle_scope')
@@ -369,7 +529,9 @@ function StepRunner({
         .eq('id', scope.id);
 
       setShowSaveModal(false);
-      catalystToast.success(`Saved: ${runStatus}`);
+      setPendingFiles([]);
+      setCompletedRunCount(nextRunNumber);
+      catalystToast.success(`Run #${nextRunNumber} saved: ${runStatus}`);
       timer.reset();
       onSaved();
     } catch (err: unknown) {
@@ -394,17 +556,35 @@ function StepRunner({
 
   return (
     <div style={{ padding: 24 }}>
+      {/* Offline banner */}
+      {(!isOnline || offlineQueueCount > 0) && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '8px 14px', marginBottom: 12, borderRadius: 6,
+          background: isOnline
+            ? 'var(--ds-background-warning)'
+            : 'var(--ds-background-danger)',
+          border: `1px solid ${isOnline ? 'var(--ds-border)' : 'var(--ds-border-danger)'}`,
+          fontSize: 'var(--ds-font-size-300)', color: isOnline ? 'var(--ds-text-warning)' : 'var(--ds-text-danger)',
+          fontWeight: 500,
+        }}>
+          {isOnline
+            ? `Back online — syncing ${offlineQueueCount} queued result${offlineQueueCount !== 1 ? 's' : ''}…`
+            : `You're offline — results will be queued and synced when connection is restored${offlineQueueCount > 0 ? ` (${offlineQueueCount} queued)` : ''}`
+          }
+        </div>
+      )}
       {/* Timer bar */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20,
-        padding: '10px 16px', borderRadius: 8,
+        display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16,
+        padding: '8px 16px', borderRadius: 8,
         background: timer.running
           ? 'var(--ds-background-information-subtle, #E9F2FF)'
           : 'var(--ds-surface-sunken, #F7F8F9)',
         border: '1px solid var(--ds-border, #DFE1E6)',
       }}>
         <span style={{
-          fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 18, fontWeight: 600,
+          fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-600)', fontWeight: 600,
           color: timer.running ? 'var(--ds-text-information, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
           minWidth: 72,
         }}>
@@ -425,7 +605,7 @@ function StepRunner({
           onClick={handleReset}
           style={{
             padding: '4px 12px', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)',
-            background: 'none', cursor: 'pointer', fontSize: 12,
+            background: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
             color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-body)',
           }}
         >
@@ -435,10 +615,10 @@ function StepRunner({
 
       {/* Case header */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)', marginBottom: 4 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)', marginBottom: 4 }}>
           {caseDetail.key}
         </div>
-        <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <h2 style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
           {caseDetail.title}
         </h2>
         {caseDetail.preconditions && (
@@ -447,7 +627,7 @@ function StepRunner({
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 6,
             padding: 12,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtle, #42526E)',
           }}>
             <strong style={{ display: 'block', marginBottom: 4, color: 'var(--ds-text, #172B4D)' }}>Preconditions</strong>
@@ -458,7 +638,7 @@ function StepRunner({
 
       {/* Steps */}
       {steps.length === 0 ? (
-        <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, padding: '24px 0' }}>
+        <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)', padding: '24px 0' }}>
           No steps defined for this test case.
         </div>
       ) : (
@@ -488,7 +668,7 @@ function StepRunner({
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                  <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+                  <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
                     Step {i + 1}
                   </span>
                   <div style={{ display: 'flex', gap: 8 }}>
@@ -524,41 +704,29 @@ function StepRunner({
                 </div>
                 <div style={{ padding: '12px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>ACTION</div>
-                    <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>{step.action}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>ACTION</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>{step.action}</div>
                     {step.test_data && (
                       <div style={{ marginTop: 8 }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 2 }}>TEST DATA</div>
-                        <code style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-code)' }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>TEST DATA</div>
+                        <code style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'var(--ds-font-family-code)' }}>
                           {step.test_data}
                         </code>
                       </div>
                     )}
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>EXPECTED RESULT</div>
-                    <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>EXPECTED RESULT</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>
                       {step.expected_result}
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>ACTUAL RESULT</div>
-                    <textarea
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>ACTUAL RESULT</div>
+                    <Textarea
                       value={state?.actualResult ?? ''}
-                      onChange={e => updateActualResult(i, e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateActualResult(i, e.target.value)}
                       placeholder="Enter actual result..."
-                      style={{
-                        width: '100%',
-                        border: '1px solid var(--ds-border, #DFE1E6)',
-                        borderRadius: 4,
-                        padding: '6px 8px',
-                        fontSize: 13,
-                        fontFamily: 'var(--ds-font-family-body)',
-                        color: 'var(--ds-text, #172B4D)',
-                        background: 'var(--ds-surface, #FFFFFF)',
-                        resize: 'vertical',
-                        minHeight: 56,
-                        outline: 'none',
-                        boxSizing: 'border-box',
-                      }}
+                      resize="smart"
+                      minimumRows={2}
                     />
                   </div>
                 </div>
@@ -568,19 +736,31 @@ function StepRunner({
         </div>
       )}
 
+      {/* Attachments */}
+      <AttachmentZone
+        files={pendingFiles}
+        onAdd={added => setPendingFiles(prev => [...prev, ...added])}
+        onRemove={i => setPendingFiles(prev => prev.filter((_, idx) => idx !== i))}
+      />
+
       {/* Action row */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+        {completedRunCount > 0 && (
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            {completedRunCount} prior {completedRunCount === 1 ? 'run' : 'runs'} · saving as Run #{completedRunCount + 1}
+          </span>
+        )}
         <button
           onClick={() => setShowSaveModal(true)}
           style={{
-            padding: '10px 24px',
+            padding: '8px 24px',
             background: 'var(--ds-background-brand-bold, #0052CC)',
             color: 'var(--ds-text-inverse, #FFFFFF)',
-            border: 'none', borderRadius: 4, fontSize: 14, fontWeight: 500,
+            border: 'none', borderRadius: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
             cursor: 'pointer',
           }}
         >
-          Save execution
+          {completedRunCount === 0 ? 'Save execution' : 'Add run'}
         </button>
       </div>
 
@@ -595,9 +775,106 @@ function StepRunner({
   );
 }
 
+// ─── Attachment zone ────────────────────────────────────────────────────────
+function AttachmentZone({
+  files,
+  onAdd,
+  onRemove,
+}: {
+  files: File[];
+  onAdd: (added: File[]) => void;
+  onRemove: (index: number) => void;
+}) {
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+    const dropped = Array.from(e.dataTransfer.files);
+    if (dropped.length) onAdd(dropped);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const fmtSize = (bytes: number) =>
+    bytes < 1024 * 1024
+      ? `${Math.round(bytes / 1024)} KB`
+      : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
+        ATTACHMENTS (optional)
+      </div>
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={() => setDragOver(false)}
+        onClick={() => inputRef.current?.click()}
+        style={{
+          border: `2px dashed ${dragOver ? 'var(--ds-border-focused, #388BFF)' : 'var(--ds-border, #DFE1E6)'}`,
+          borderRadius: 8,
+          padding: '16px 16px',
+          background: dragOver ? 'var(--ds-background-information-subtle, #E9F2FF)' : 'var(--ds-surface-sunken, #F7F8F9)',
+          cursor: 'pointer',
+          textAlign: 'center',
+          fontSize: 'var(--ds-font-size-300)',
+          color: 'var(--ds-text-subtle, #42526E)',
+          transition: 'all 0.15s',
+          marginBottom: files.length ? 8 : 0,
+        }}
+      >
+        Drop files here or <span style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500 }}>browse</span>
+        <input
+          ref={inputRef}
+          type="file"
+          multiple
+          style={{ display: 'none' }}
+          onChange={e => {
+            const picked = Array.from(e.target.files ?? []);
+            if (picked.length) onAdd(picked);
+            e.target.value = '';
+          }}
+        />
+      </div>
+      {files.map((f, i) => (
+        <div key={i} style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 8px', borderRadius: 4, marginTop: 4,
+          background: 'var(--ds-surface-sunken, #F7F8F9)',
+          border: '1px solid var(--ds-border, #DFE1E6)',
+          fontSize: 'var(--ds-font-size-300)',
+        }}>
+          <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ds-text, #172B4D)' }}>
+            {f.name}
+          </span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+            {fmtSize(f.size)}
+          </span>
+          <button
+            onClick={e => { e.stopPropagation(); onRemove(i); }}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)', lineHeight: 1, padding: 4,
+              flexShrink: 0,
+            }}
+            title="Remove"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const timerBtnStyle = (color: string): React.CSSProperties => ({
-  padding: '3px 10px', borderRadius: 4, border: `1px solid ${color}`,
-  background: 'none', cursor: 'pointer', fontSize: 12, color,
+  padding: '4px 8px', borderRadius: 4, border: `1px solid ${color}`,
+  background: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color,
   fontFamily: 'var(--ds-font-family-body)',
 });
 
@@ -648,12 +925,12 @@ function StepBtn({
     <button
       onClick={onClick}
       style={{
-        padding: '4px 10px',
+        padding: '4px 8px',
         background: active ? activeBg : 'none',
         border: `1px solid ${active ? color : 'var(--ds-border, #DFE1E6)'}`,
         borderRadius: 4,
         cursor: 'pointer',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         color: active ? color : 'var(--ds-text-subtle, #42526E)',
         fontWeight: active ? 600 : 400,
         display: 'flex',

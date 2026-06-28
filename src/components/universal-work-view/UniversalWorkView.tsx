@@ -176,7 +176,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
             padding: '8px 16px',
             borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
             background: 'var(--ds-surface-sunken, #F8FAFC)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             flexWrap: 'wrap',
           }}
         >

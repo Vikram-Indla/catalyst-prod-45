@@ -129,7 +129,7 @@ function SectionHeader({ icon, label }: { icon: React.ReactNode; label: string }
   return (
     <div className="flex items-center gap-2 pt-4 pb-3 border-t" style={{ borderColor: T.border, marginTop: 4 }}>
       <span style={{ color: T.inkSec, display: 'flex' }}>{icon}</span>
-      <span style={{ fontSize: 13, fontWeight: 700, color: T.inkSec, fontFamily: 'var(--cp-font-body)', letterSpacing: '.02em' }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: T.inkSec, fontFamily: 'var(--cp-font-body)', letterSpacing: '.02em' }}>{label}</span>
     </div>
   );
 }
@@ -292,10 +292,10 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
         <div style={{ padding: '20px 24px 16px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)', letterSpacing: '-.02em' }}>New Business Request</div>
+              <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)', letterSpacing: '-.02em' }}>New Business Request</div>
               {nextKey && (
                 <div style={{
-                  display: 'inline-block', marginTop: 6, fontSize: 12, fontWeight: 600,
+                  display: 'inline-block', marginTop: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                   color: T.primary, background: T.primaryBg, padding: '2px 10px',
                   borderRadius: 4, fontFamily: 'var(--cp-font-mono)', lineHeight: '20px',
                 }}>{nextKey}</div>
@@ -303,7 +303,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
             </div>
             <button onClick={doClose} style={{
               border: 'none', background: 'transparent', cursor: 'pointer',
-              fontSize: 20, color: T.inkMuted, padding: 4, lineHeight: 1, marginTop: -2,
+              fontSize: 'var(--ds-font-size-700)', color: T.inkMuted, padding: 4, lineHeight: 1, marginTop: -2,
             }}>
               <X className="w-4 h-4" />
             </button>
@@ -433,7 +433,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
         }}>
           <button onClick={doClose} style={{
             padding: '9px 20px', border: `1px solid ${T.border}`, borderRadius: 8,
-            background: T.surface, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            background: T.surface, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
             color: T.inkSec,
           }}>Cancel</button>
 
@@ -442,7 +442,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               onClick={() => handleCreate(true)}
               disabled={createMutation.isPending}
               style={{
-                padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                padding: '9px 20px', borderRadius: 8, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                 cursor: 'pointer', border: `1.5px solid ${T.primary}`,
                 background: T.surface, color: T.primary, opacity: createMutation.isPending ? 0.5 : 1,
               }}
@@ -454,7 +454,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               className="flex items-center gap-2"
               style={{
                 padding: '9px 24px', border: 'none', borderRadius: 8,
-                background: T.primary, color: 'var(--ds-surface, #fff)', fontSize: 13, fontWeight: 600,
+                background: T.primary, color: 'var(--ds-surface, #fff)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                 cursor: 'pointer', boxShadow: '0 2px 8px var(--ds-background-information, rgba(37,99,235,.25))',
                 opacity: (createMutation.isPending || !form.title.trim()) ? 0.5 : 1,
               }}

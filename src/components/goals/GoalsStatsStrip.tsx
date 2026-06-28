@@ -59,7 +59,7 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
     { label: 'On Track', value: `${onTrackPct}%`, icon: CheckCircle2, iconBg: 'var(--cp-success-light, #DCFCE7)', iconColor: 'var(--sem-success)', sub: `${onTrackGoals} of ${totalGoals} goals` },
     { label: 'Avg Progress', value: `${avgProgress}%`, icon: Activity, iconBg: 'var(--cp-warning-light, #FEF3C7)', iconColor: 'var(--sem-warning)', sub: `${100 - avgProgress}% to target` },
     { label: 'Total KRs', value: totalKRs, icon: BarChart3, iconBg: 'var(--cp-primary-light, #DBEAFE)', iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', sub: `~${krsPerGoal} per goal` },
-    { label: 'Overdue KRs', value: overdueKRs, icon: AlertTriangle, iconBg: isDark ? (overdueKRs > 0 ? 'var(--ds-background-danger, rgba(239,68,68,0.12))' : 'var(--ds-surface-overlay, #1F1F1F)') : (overdueKRs > 0 ? 'var(--ds-background-danger, #FFECEB)' : 'var(--cp-bd-zone)'), iconColor: overdueKRs > 0 ? 'var(--sem-danger)' : 'var(--fg-4)', sub: overdueKRs > 0 ? 'needs attention' : 'all on schedule' },
+    { label: 'Overdue KRs', value: overdueKRs, icon: AlertTriangle, iconBg: isDark ? (overdueKRs > 0 ? 'var(--ds-background-danger, rgba(239,68,68,0.12))' : 'var(--ds-surface-overlay, #1F1F1F)') : (overdueKRs > 0 ? 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))' : 'var(--cp-bd-zone)'), iconColor: overdueKRs > 0 ? 'var(--sem-danger)' : 'var(--fg-4)', sub: overdueKRs > 0 ? 'needs attention' : 'all on schedule' },
   ];
 
   return (
@@ -73,13 +73,13 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
             <card.icon size={18} color={card.iconColor} />
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t2 : 'var(--fg-3)', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t2 : 'var(--fg-3)', marginBottom: 4 }}>
               {card.label}
             </div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)', lineHeight: 1.2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)', lineHeight: 1.2 }}>
               {card.value}
             </div>
-            <div style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{card.sub}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{card.sub}</div>
           </div>
         </div>
       ))}

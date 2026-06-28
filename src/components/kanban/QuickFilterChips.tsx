@@ -66,7 +66,7 @@ export function QuickFilterChips({ active, onChange, tk }: QuickFilterChipsProps
       }}
     >
       <span style={{
-        fontSize: 12, fontWeight: 500, color: tk.textMuted,
+        fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: tk.textMuted,
         fontFamily: 'var(--cp-font-body)', marginRight: 4,
       }}>Quick filters:</span>
       {CHIPS.map((chip) => {
@@ -86,7 +86,7 @@ export function QuickFilterChips({ active, onChange, tk }: QuickFilterChipsProps
               height: 24,
               padding: '0 10px',
               borderRadius: 12,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 500,
               fontFamily: 'var(--cp-font-body)',
               border: `1px solid ${isActive ? 'var(--ds-link, #0C66E4)' : tk.borderSubtle}`,

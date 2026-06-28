@@ -174,7 +174,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
-      <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-[var(--ds-surface, #080E1D)]/38 backdrop-blur-[1px]" />
       <div className="relative w-[700px] h-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
         onClick={e => e.stopPropagation()}>
         {/* Header */}
@@ -429,8 +429,8 @@ Do not use jargon. Do not hallucinate features not listed above.`;
               >
                 <Icon size={14} style={{ color: labelColor, marginTop: 1, flexShrink: 0 }} />
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 500, color: labelColor, lineHeight: '16px' }}>{g.label}</p>
-                  <p style={{ fontSize: 11, fontWeight: 400, color: detailColor, lineHeight: '15px', marginTop: 2 }}>{g.detail}</p>
+                  <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: labelColor, lineHeight: '16px' }}>{g.label}</p>
+                  <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: detailColor, lineHeight: '15px', marginTop: 2 }}>{g.detail}</p>
                 </div>
               </div>
             );
@@ -527,7 +527,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
             <td className="px-3 py-2 truncate max-w-[200px]" title={c.title}>{c.title}</td>
             <td className="px-3 py-2"><StatusLozenge status={c.status} /></td>
             <td className="px-3 py-2"><span className="text-[11px] font-bold uppercase text-[var(--ds-text-subtle,#475569)]">{c.risk_level}</span></td>
-            <td className="px-3 py-2 text-[var(--fg-3)]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</td>
+            <td className="px-3 py-2 text-[var(--fg-3)]" style={{ fontFamily: RH.fontMono, fontSize: 'var(--ds-font-size-200)' }}>{c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</td>
           </tr>
         ))}
       </tbody>
@@ -708,7 +708,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             {hasPending && stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => (
               <div key={so.id} className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => catalystToast.success('Approved') })}
-                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
+                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))] text-white text-[11px] font-bold hover:bg-[var(--ds-background-success-bold, #004D33)]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => catalystToast.success('Rejected') })}
                   className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]">Reject</button>
               </div>
@@ -743,8 +743,8 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
     return (
       <div className="text-center py-12">
         <Activity size={32} style={{ color: 'var(--ds-border-disabled, #C1C7D0)', margin: '0 auto 12px' }} />
-        <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>No activity yet</p>
-        <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+        <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>No activity yet</p>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
           Activity will appear here as changes progress through their lifecycle.
         </p>
       </div>
@@ -767,26 +767,26 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
                 style={{
                   width: 28, height: 28,
                   background: avatarBg, color: avatarColor,
-                  fontSize: 11, fontWeight: 600,
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                 }}
               >
                 {initials}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                     {entry.actor_name || (isAI ? 'Catalyst AI' : 'System')}
                   </span>
-                  <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: 'var(--ds-text-subtle, #42526E)' }}>
                     {entry.action}
                   </span>
                 </div>
                 {entry.detail && (
-                  <p style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontStyle: 'italic', marginTop: 2 }}>
+                  <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontStyle: 'italic', marginTop: 2 }}>
                     {entry.detail}
                   </p>
                 )}
-                <p style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-disabled, #8590A2)', marginTop: 2 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-disabled, #8590A2)', marginTop: 2 }}>
                   {relativeTime(entry.created_at)}
                 </p>
               </div>

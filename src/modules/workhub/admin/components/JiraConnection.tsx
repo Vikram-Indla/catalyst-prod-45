@@ -128,7 +128,7 @@ export function JiraConnection() {
   if (isLoading) {
     return (
       <div className="wh-page">
-        <div style={{ color: 'var(--wh-tx3)', fontSize: 13 }}>Loading connection settings...</div>
+        <div style={{ color: 'var(--wh-tx3)', fontSize: 'var(--ds-font-size-300)' }}>Loading connection settings...</div>
       </div>
     );
   }
@@ -155,18 +155,18 @@ export function JiraConnection() {
                   width: 48, height: 48, borderRadius: 'var(--wh-rad)',
                   background: 'linear-gradient(135deg, var(--cp-primary-60, #0052CC), var(--ds-link, #0C66E4))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--ds-surface, #fff)', fontWeight: 800, fontSize: 14, fontFamily: 'var(--wh-fh)',
+                  color: 'var(--ds-surface, #fff)', fontWeight: 800, fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--wh-fh)',
                 }}>
                   JIRA
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                     <ConnectionStatusBadge status={status} />
-                    <span style={{ fontSize: 12, color: 'var(--wh-tx4)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-tx4)' }}>
                       Last tested {formatTimeAgo(connection?.last_tested_at ?? null)}
                     </span>
                   </div>
-                  <div style={{ fontSize: 13, color: 'var(--wh-tx2)', fontFamily: 'var(--wh-mo)' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--wh-tx2)', fontFamily: 'var(--wh-mo)' }}>
                     {connection?.site_url}
                   </div>
                 </div>
@@ -190,13 +190,13 @@ export function JiraConnection() {
                     border: '1px solid var(--wh-bdr)',
                   }}>
                     <div style={{
-                      fontFamily: 'var(--wh-fh)', fontSize: 22, fontWeight: 700,
+                      fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700,
                       color: 'var(--wh-tx)', marginBottom: 4,
                     }}>
                       {stat.value}
                     </div>
                     <div style={{
-                      fontFamily: 'var(--wh-fh)', fontSize: 11, fontWeight: 600,
+                      fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                       color: 'var(--wh-tx4)', textTransform: 'uppercase', letterSpacing: '0.04em',
                     }}>
                       {stat.label}
@@ -210,7 +210,7 @@ export function JiraConnection() {
             {status === 'connected' && projects.length > 0 && (
               <div style={{ marginTop: 16 }}>
                 <div style={{
-                  fontFamily: 'var(--wh-fh)', fontSize: 11, fontWeight: 600,
+                  fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                   color: 'var(--wh-tx4)', textTransform: 'uppercase', letterSpacing: '0.04em',
                   marginBottom: 8,
                 }}>
@@ -222,7 +222,7 @@ export function JiraConnection() {
                       display: 'inline-flex', alignItems: 'center', gap: 5,
                       background: 'var(--wh-sf)', border: '1px solid var(--wh-bdr)',
                       borderRadius: 20, padding: '3px 10px 3px 8px',
-                      fontSize: 12, fontFamily: 'var(--wh-mo)', fontWeight: 500,
+                      fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--wh-mo)', fontWeight: 500,
                       color: 'var(--wh-tx2)',
                     }}>
                       <span style={{
@@ -243,10 +243,10 @@ export function JiraConnection() {
                 borderTop: '1px solid var(--wh-bdr)', flexWrap: 'wrap',
               }}>
                 {checks.map(c => (
-                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12 }}>
+                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 'var(--ds-font-size-200)' }}>
                     <span>{c.passed ? '✅' : '❌'}</span>
                     <span style={{ color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>{c.name}</span>
-                    <span style={{ color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', fontSize: 11 }}>
+                    <span style={{ color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', fontSize: 'var(--ds-font-size-100)' }}>
                       {c.duration_ms}ms
                     </span>
                   </div>
@@ -261,13 +261,13 @@ export function JiraConnection() {
                 background: 'var(--wh-dng-bg)', borderRadius: 'var(--wh-rad)',
                 border: '1px solid var(--ds-background-danger, rgba(239,68,68,0.2))',
               }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                   ❌ Connection failed
                 </div>
                 {checks
                   .filter((c: any) => !c.passed)
                   .map((c: any) => (
-                    <div key={c.name} style={{ fontSize: 12, color: 'var(--wh-tx2)', marginBottom: 2 }}>
+                    <div key={c.name} style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-tx2)', marginBottom: 2 }}>
                       • {c.name}: {c.message}
                     </div>
                   ))
@@ -281,10 +281,10 @@ export function JiraConnection() {
                 display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap',
               }}>
                 {checks.map((c: any) => (
-                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12 }}>
+                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 'var(--ds-font-size-200)' }}>
                     <span>{c.passed ? '✅' : '❌'}</span>
                     <span style={{ color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>{c.name}</span>
-                    <span style={{ color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', fontSize: 11 }}>
+                    <span style={{ color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', fontSize: 'var(--ds-font-size-100)' }}>
                       {c.duration_ms}ms
                     </span>
                   </div>
@@ -321,7 +321,7 @@ export function JiraConnection() {
         {showForm && (
           <div className="wh-card" style={{ padding: 24 }}>
             <h3 style={{
-              fontFamily: 'var(--wh-fh)', fontSize: 15, fontWeight: 700,
+              fontFamily: 'var(--wh-fh)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700,
               color: 'var(--wh-tx)', marginBottom: 20,
             }}>
               {isEditing ? 'Edit Credentials' : 'Configure Connection'}
@@ -351,7 +351,7 @@ export function JiraConnection() {
                     aria-describedby={errors.url ? 'wh-url-error' : undefined}
                   />
                 </div>
-                {touched.url && errors.url && <span id="wh-url-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.url}</span>}
+                {touched.url && errors.url && <span id="wh-url-error" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.url}</span>}
               </div>
 
               {/* Email */}
@@ -378,7 +378,7 @@ export function JiraConnection() {
                     aria-describedby={errors.email ? 'wh-email-error' : undefined}
                   />
                 </div>
-                {touched.email && errors.email && <span id="wh-email-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.email}</span>}
+                {touched.email && errors.email && <span id="wh-email-error" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.email}</span>}
               </div>
 
               {/* API Token */}
@@ -417,7 +417,7 @@ export function JiraConnection() {
                     {showToken ? <EyeOpenStrikethroughIcon label="Hide token" size="small" /> : <EyeOpenIcon label="Show token" size="small" />}
                   </button>
                 </div>
-                {touched.token && errors.token && <span id="wh-token-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.token}</span>}
+                {touched.token && errors.token && <span id="wh-token-error" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.token}</span>}
               </div>
 
               {/* Actions */}

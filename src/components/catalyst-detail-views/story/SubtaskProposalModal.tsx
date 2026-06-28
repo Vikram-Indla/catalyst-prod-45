@@ -96,13 +96,13 @@ export function SubtaskProposalModal({
           borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           marginBottom: 16,
         }}>
-          <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
             <strong>{proposals.length}</strong> subtasks suggested
           </div>
-          <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
             <strong>{existingCount}</strong> already exist
           </div>
-          <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
             {selectedCount} of {proposals.length} selected
           </span>
           <Button appearance="subtle" spacing="compact" onClick={selectedCount === proposals.length ? onDeselectAll : onSelectAll}>

@@ -47,7 +47,7 @@ function OutcomeLozenge({ outcome }: { outcome: Outcome }) {
         display: 'inline-block',
         padding: '2px 8px',
         borderRadius: 3,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         lineHeight: '16px',
         fontWeight: 600,
         textTransform: 'uppercase',
@@ -70,7 +70,7 @@ function TypePill({ label }: { label: string }) {
         display: 'inline-block',
         padding: '1px 8px',
         borderRadius: 10,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         lineHeight: '16px',
         fontWeight: 500,
         background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
@@ -156,7 +156,7 @@ export function RecentReleasesWidget() {
             data-testid="recent-releases-empty"
             style={{
               padding: 24,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               textAlign: 'center',
             }}
@@ -168,7 +168,7 @@ export function RecentReleasesWidget() {
             style={{
               width: '100%',
               borderCollapse: 'collapse',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             <thead>
@@ -180,7 +180,7 @@ export function RecentReleasesWidget() {
                       textAlign: 'left',
                       padding: '10px 12px',
                       borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                       textTransform: 'uppercase',
@@ -201,7 +201,7 @@ export function RecentReleasesWidget() {
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={e => {
                     Array.from((e.currentTarget as HTMLTableRowElement).cells).forEach(
-                      td => { (td as HTMLTableCellElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)'); },
+                      td => { (td as HTMLTableCellElement).style.background = token('color.background.neutral.hovered', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'); },
                     );
                   }}
                   onMouseLeave={e => {
@@ -214,7 +214,7 @@ export function RecentReleasesWidget() {
                     <span
                       style={{
                         fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                         fontWeight: 600,
                         color: token('color.link', 'var(--ds-link, #0C66E4)'),
                       }}
@@ -223,11 +223,11 @@ export function RecentReleasesWidget() {
                     </span>
                   </td>
                   <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
                       {item.title}
                     </div>
                     {item.assignee && (
-                      <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), marginTop: 2 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), marginTop: 2 }}>
                         {item.process_step} · Assignee: {item.assignee}
                       </div>
                     )}

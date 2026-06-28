@@ -23,7 +23,7 @@ describe('mapTasksToRows', () => {
         assigneeId: undefined,
         teamId: 'w1',
         teamName: 'Workstream A',
-        teamColor: '#ff0000',
+        teamColor: 'var(--ds-text-danger, #ff0000)',
         dueDate: undefined,
         startDate: undefined,
         blocked: false,

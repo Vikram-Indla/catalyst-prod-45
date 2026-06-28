@@ -22,7 +22,7 @@ export const ViewToggleButton: React.FC<{
       backgroundColor: isActive ? COLORS.surfaceWhite : 'transparent',
       border: 'none',
       borderRadius: '6px',
-      fontSize: '13px',
+      fontSize: 'var(--ds-font-size-300)',
       fontWeight: 500,
       color: isActive ? COLORS.textPrimary : COLORS.textMuted,
       cursor: 'pointer',

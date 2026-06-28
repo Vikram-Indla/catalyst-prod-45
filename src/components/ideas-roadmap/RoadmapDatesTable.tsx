@@ -17,7 +17,7 @@ const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 const headerStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)',
+  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)',
   textTransform: 'uppercase', letterSpacing: '0.07em',
   background: 'var(--bg-1, #F8FAFC)', height: 50, padding: '8px 12px',
   borderBottom: '2px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', position: 'sticky', top: 0, zIndex: 2,
@@ -71,11 +71,11 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
               >
                 <td style={cellStyle}>
                   <span style={{
-                    fontSize: 10, fontFamily: 'var(--cp-font-mono)',
+                    fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)',
                     color: 'var(--fg-4)', textTransform: 'uppercase',
                   }}>{idea.ideaKey}</span>
                 </td>
-                <td style={{ ...cellStyle, fontSize: 13, fontWeight: 650, color: 'var(--fg-1)' }}>
+                <td style={{ ...cellStyle, fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: 'var(--fg-1)' }}>
                   <div
                     title={idea.title.length > 50 ? idea.title : undefined}
                     style={{
@@ -86,7 +86,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {idea.team ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 600, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 600, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                       color: 'var(--fg-2)', padding: '2px 6px', borderRadius: 4,
                     }}>{idea.team}</span>
                   ) : <span style={{ color: 'var(--ds-text-disabled, #CBD5E1)' }}>—</span>}
@@ -94,7 +94,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {qStyle ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, height: 20, display: 'inline-flex',
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, height: 20, display: 'inline-flex',
                       alignItems: 'center', padding: '0 8px', borderRadius: 4,
                       background: qStyle.bg, color: qStyle.color,
                       fontFamily: 'var(--cp-font-body)', textTransform: 'uppercase',
@@ -104,7 +104,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 {MILESTONE_CONFIGS.map(m => (
                   <td key={m.key} style={cellStyle}>
                     <span style={{
-                      fontSize: 11, fontFamily: 'var(--cp-font-mono)',
+                      fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-mono)',
                       color: idea.milestones[m.key] ? 'var(--fg-2)' : 'var(--ds-text-disabled, #CBD5E1)',
                       fontVariantNumeric: 'tabular-nums',
                     }}>{formatDate(idea.milestones[m.key])}</span>
@@ -129,8 +129,8 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {isConverted(idea.status) ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--bg-app)',
-                      border: '1px solid #B7EBD1', padding: '2px 6px', borderRadius: 4,
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--bg-app)',
+                      border: '1px solid var(--ds-background-success, #B7EBD1)', padding: '2px 6px', borderRadius: 4,
                     }}>✓</span>
                   ) : idea.isCommitted ? (
                     <button
@@ -138,7 +138,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                       style={{
                         height: 22, padding: '0 6px', borderRadius: 4,
                         border: '1px solid var(--divider)', background: 'var(--bg-app)',
-                        color: 'var(--fg-3)', fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                        color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, cursor: 'pointer',
                         transition: 'all 150ms',
                       }}
                     >→ Init</button>

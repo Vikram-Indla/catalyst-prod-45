@@ -77,7 +77,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
       <div className="ph-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px 12px' }}>
           <h3 className="ph-card-title" style={{ marginBottom: 2 }}>Work Types</h3>
-          <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
+          <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', margin: 0 }}>
             Configure the workflow, field layout, and screens used by each work type.
           </p>
         </div>
@@ -98,7 +98,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
               key={h}
               style={{
                 padding: '8px 8px 8px 0',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
@@ -114,11 +114,11 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
 
         {/* Table body */}
         {isLoading ? (
-          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>
+          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>
             Loading…
           </div>
         ) : types.length === 0 ? (
-          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>
+          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>
             No work types configured
           </div>
         ) : (
@@ -145,7 +145,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                     {/* Work type — icon + name */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 8px 12px 0', minWidth: 0 }}>
                       <WorkItemTypeIcon type={t.icon} size={18} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.name}
                       </span>
                     </div>
@@ -154,7 +154,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0' }}>
                       <span
                         style={{
-                          fontSize: 10, fontWeight: 600, padding: '2px 8px',
+                          fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 8px',
                           borderRadius: 10, background: ls.bg, color: ls.text,
                           whiteSpace: 'nowrap',
                         }}
@@ -165,21 +165,21 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
 
                     {/* Workflow */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.workflow_name ?? '—'}
                       </span>
                     </div>
 
                     {/* Field config */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.field_config}
                       </span>
                     </div>
 
                     {/* Screen */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.screen_name ?? '—'}
                       </span>
                     </div>
@@ -187,7 +187,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                     {/* Actions */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {disabled ? (
-                        <span style={{ fontSize: 10, fontStyle: 'italic', color: 'var(--fg-4)' }}>Off</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-50)', fontStyle: 'italic', color: 'var(--fg-4)' }}>Off</span>
                       ) : (
                         <button
                           onClick={() => setSelectedTypeId(isSelected ? null : t.id)}
@@ -196,7 +196,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                             background: isSelected ? 'var(--ds-background-selected-bold,var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: isSelected ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-3)',
-                            fontSize: 16, fontWeight: 700, lineHeight: 1,
+                            fontSize: 'var(--ds-font-size-500)', fontWeight: 700, lineHeight: 1,
                             transition: 'background 80ms',
                           }}
                           title="Configure fields"

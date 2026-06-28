@@ -89,15 +89,15 @@ function SeverityBadge({ severity }: { severity: string }) {
     switch (severity) {
       case 'SEV1':
         // Dark red background, light red text for dark mode
-        return "bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger,#ef4444)] dark:bg-[var(--ds-text-danger, #AE2A19)] dark:text-[var(--ds-border-danger,#fca5a5)] dark:border dark:border-[var(--ds-text-danger,#991b1b)]";
+        return "bg-[var(--ds-background-danger, rgba(239,68,68,0.08))] text-[var(--ds-text-danger,#ef4444)] dark:bg-[var(--ds-text-danger, var(--ds-text-danger, #AE2A19))] dark:text-[var(--ds-border-danger,#fca5a5)] dark:border dark:border-[var(--ds-text-danger,#991b1b)]";
       case 'SEV2':
         // Amber variant for dark mode
-        return "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)] dark:bg-[var(--ds-text-warning, #974F0C)] dark:text-[var(--ds-background-warning, #FFF7D6)] dark:border dark:border-[var(--ds-text-warning, #974F0C)]";
+        return "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)] dark:bg-[var(--ds-text-warning, var(--ds-text-warning, #974F0C))] dark:text-[var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))] dark:border dark:border-[var(--ds-text-warning, var(--ds-text-warning, #974F0C))]";
       case 'SEV3':
       case 'SEV4':
       default:
         // Gray variant for dark mode
-        return "bg-[var(--ds-background-neutral-subtle, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)] dark:bg-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border dark:border-[var(--ds-text-subtle, #44546F)]";
+        return "bg-[var(--ds-background-neutral-subtle, #F7F8F9)] text-[var(--ds-text-subtlest, #626F86)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border dark:border-[var(--ds-text-subtle, #44546F)]";
     }
   };
   
@@ -168,10 +168,10 @@ export const KanbanCard = memo(function KanbanCard({
         "cursor-pointer transition-all group",
         isDragging && "opacity-50",
         // Dark mode compliant backgrounds
-        "bg-white dark:bg-[var(--ds-text, #172B4D)]",
-        "border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-text, #172B4D)]",
+        "bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]",
+        "border border-[var(--ds-border, #E8E8E8)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]",
         // Hover state
-        "hover:border-[var(--ds-background-neutral-hovered, #D4D4D4)] dark:hover:border-[var(--ds-text-subtle, #44546F)] dark:hover:bg-[var(--ds-text, #172B4D)]",
+        "hover:border-[var(--ds-background-neutral-hovered, #D4D4D4)] dark:hover:border-[var(--ds-border-bold,#454545)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
         // Shadow
         "shadow-[0_1px_3px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.05))),0_1px_2px_var(--ds-shadow-raised, var(--ds-shadow-raised, rgba(0,0,0,0.03)))]",
         "dark:shadow-none",
@@ -194,7 +194,7 @@ export const KanbanCard = memo(function KanbanCard({
             <span className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold",
               "bg-[var(--ds-background-warning-bold, rgba(245,158,11,0.08))] text-[var(--ds-text-warning,#d97706)]",
-              "dark:bg-[#431407] dark:text-[var(--ds-background-warning, #FFF7D6)] dark:border dark:border-[#7c2d12]"
+              "dark:bg-[#431407] dark:text-[var(--ds-background-warning, #FFF7D6)] dark:border dark:border-[var(--ds-text-danger, #7c2d12)]"
             )}>
               <AlertTriangle className="h-2.5 w-2.5" />
               Major

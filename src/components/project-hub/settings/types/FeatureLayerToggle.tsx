@@ -39,11 +39,11 @@ export function FeatureLayerToggle({ projectId, enabled, onToggled }: FeatureLay
 
   return (
     <div className="flex items-center gap-3 mt-5 pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
-      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-2)' }}>Feature Layer:</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-2)' }}>Feature Layer:</span>
       <span
         className="rounded-full"
         style={{
-          fontSize: 11, fontWeight: 600, padding: '2px 10px',
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 10px',
           backgroundColor: enabled ? 'var(--sem-success-bg)' : 'var(--cp-bd-zone)',
           color: enabled ? 'var(--sem-success)' : 'var(--fg-4)',
         }}
@@ -55,7 +55,7 @@ export function FeatureLayerToggle({ projectId, enabled, onToggled }: FeatureLay
         disabled={loading}
         className="hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors disabled:opacity-50"
         style={{
-          height: 32, padding: '8px 12px', fontSize: 12, fontWeight: 500,
+          height: 32, padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
           color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
           background: 'transparent', cursor: loading ? 'default' : 'pointer',
         }}

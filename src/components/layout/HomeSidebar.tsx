@@ -192,7 +192,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
           style={{
             color: token('color.text', 'var(--ds-text, #172B4D)'),
             fontWeight: 400,
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             lineHeight: '18px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -478,10 +478,10 @@ export default function HomeSidebar({
       // Collapsed HOME route: render hub icons with outline styling
       // Border color per hub — matches the colored square icons in the hub switcher (Variant A: stroke only).
       const HUB_BORDER_COLORS: Record<string, string> = {
-        home:     '#4A7FE0',
+        home:     '#4A7FE0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         strategy: 'var(--ds-background-discovery-bold, #8b5cf6)',
         ideation: 'var(--ds-background-warning-bold, #f59e0b)',
-        product:  '#38BDF8',
+        product:  '#38BDF8', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         project:  'var(--ds-background-accent-teal-bolder, #14b8a6)',
         release:  'var(--ds-background-accent-magenta-bolder, #ec4899)',
         test:     'var(--ds-background-success-bold, #1F845A)',
@@ -556,7 +556,7 @@ export default function HomeSidebar({
             {
               id: 'recent-loading-label',
               title: (
-                <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
+                <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 'var(--ds-font-size-100)' }}>
                   Loading recent pages...
                 </span>
               ),
@@ -582,7 +582,7 @@ export default function HomeSidebar({
           items: [{
             id: 'recent-placeholder',
             title: (
-              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '12px' }}>
+              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 'var(--ds-font-size-200)' }}>
                 No recent pages
               </span>
             ),

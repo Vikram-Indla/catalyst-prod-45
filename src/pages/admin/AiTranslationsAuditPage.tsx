@@ -42,22 +42,22 @@ const FIELD_TYPE_OPTIONS = [
 
 /* ── Tokens (ADS only) ──────────────────────────────────── */
 const T = {
-  h1: { fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: 0 } as React.CSSProperties,
-  subtitle: { fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle, #44546F)', marginTop: 4 } as React.CSSProperties,
+  h1: { fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: 0 } as React.CSSProperties,
+  subtitle: { fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtle, #44546F)', marginTop: 4 } as React.CSSProperties,
   th: {
-    fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtlest, #626F86)',
+    fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtlest, #626F86)',
     padding: '8px 12px', textAlign: 'left' as const,
     borderBottom: '1.67px solid var(--ds-border, rgba(11,18,14,0.14))',
     whiteSpace: 'nowrap' as const,
   } as React.CSSProperties,
   td: {
-    fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)',
+    fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text, #292A2E)',
     padding: '8px 12px', borderBottom: '1px solid var(--ds-border-subtle, rgba(11,18,14,0.09))',
     verticalAlign: 'top' as const,
   } as React.CSSProperties,
   tagBase: {
     display: 'inline-block', padding: '4px 8px', borderRadius: 3,
-    fontSize: 11, fontWeight: 600, lineHeight: '16px',
+    fontSize: 'var(--ds-font-size-100)', fontWeight: 600, lineHeight: '16px',
   } as React.CSSProperties,
 };
 
@@ -113,7 +113,7 @@ function TruncatedCell({ text }: { text: string }) {
           onClick={() => setExpanded(e => !e)}
           style={{
             marginLeft: 4, background: 'none', border: 'none', padding: 0,
-            fontSize: 12, color: 'var(--ds-link, #0C66E4)', cursor: 'pointer',
+            fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0C66E4)', cursor: 'pointer',
           }}
         >
           {expanded ? 'Show less' : 'Show more'}
@@ -131,7 +131,7 @@ function PaginationBar({ page, setPage, count }: { page: number; setPage: (p: nu
   const hasPrev = page > 0;
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', gap: 8 }}>
-      <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #626F86)' }}>
         {count === 0 ? 'No entries' : `${start}–${end} of ${count}`}
       </span>
       <div style={{ display: 'flex', gap: 8 }}>
@@ -221,7 +221,7 @@ export default function AiTranslationsAuditPage() {
 
         {/* ── Page header ── */}
         <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: 0 }}>Translation logs</h1>
+          <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: 0 }}>Translation logs</h1>
           <p style={T.subtitle}>
             All CATY translations cached from issue summaries, descriptions, and comments.
           </p>
@@ -231,7 +231,7 @@ export default function AiTranslationsAuditPage() {
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
           {/* Issue key search */}
           <div style={{ width: 200 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 4 }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 4 }}>
               Issue key
             </label>
             <Textfield
@@ -255,7 +255,7 @@ export default function AiTranslationsAuditPage() {
 
           {/* Language direction */}
           <div style={{ width: 200 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 4 }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 4 }}>
               Direction
             </label>
             <AdsSelect
@@ -268,7 +268,7 @@ export default function AiTranslationsAuditPage() {
 
           {/* Field type */}
           <div style={{ width: 180 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 4 }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 4 }}>
               Field
             </label>
             <AdsSelect
@@ -340,7 +340,7 @@ export default function AiTranslationsAuditPage() {
                     <td style={{ ...T.td, fontWeight: 500 }}>
                       <a
                         href={`/browse/${row.issue_key}`}
-                        style={{ color: 'var(--ds-link, #0C66E4)', textDecoration: 'none', fontSize: 13 }}
+                        style={{ color: 'var(--ds-link, #0C66E4)', textDecoration: 'none', fontSize: 'var(--ds-font-size-300)' }}
                         onMouseEnter={e => ((e.target as HTMLElement).style.textDecoration = 'underline')}
                         onMouseLeave={e => ((e.target as HTMLElement).style.textDecoration = 'none')}
                       >
@@ -353,7 +353,7 @@ export default function AiTranslationsAuditPage() {
                     <td style={T.td}>
                       <LangBadge source={row.source_lang} target={row.target_lang} />
                     </td>
-                    <td style={{ ...T.td, fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                    <td style={{ ...T.td, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>
                       {new Date(row.created_at).toLocaleDateString('en-GB', {
                         day: '2-digit', month: 'short', year: 'numeric',
                         hour: '2-digit', minute: '2-digit',
@@ -362,7 +362,7 @@ export default function AiTranslationsAuditPage() {
                     <td style={T.td}>
                       <TruncatedCell text={row.translated_text} />
                     </td>
-                    <td style={{ ...T.td, fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>
+                    <td style={{ ...T.td, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>
                       {row.updated_at !== row.created_at
                         ? new Date(row.updated_at).toLocaleDateString('en-GB', {
                             day: '2-digit', month: 'short', year: 'numeric',

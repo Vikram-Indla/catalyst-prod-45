@@ -7,7 +7,7 @@
  *   - 28 × 28 button
  *   - 1px var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) border at rest (subtle, NOT borderless ghost)
  *   - 4px border radius
- *   - #42526E icon at rest, #C1C7D0 when disabled
+ *   - var(--ds-text-subtle, #42526E) icon at rest, #C1C7D0 when disabled
  *   - hover: bg var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)), border #C1C7D0
  *   - 4px gap between prev/next
  *

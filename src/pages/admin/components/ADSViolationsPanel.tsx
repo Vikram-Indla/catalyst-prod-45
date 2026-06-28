@@ -90,7 +90,7 @@ export default function ADSViolationsPanel() {
         padding: '4px 10px',
         borderRadius: 12,
         border: `1px solid ${
-          isActive ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border-disabled, #DCDFE4)')
+          isActive ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border-disabled, var(--ds-border-disabled, #DCDFE4))')
         }`,
         background: isActive
           ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')

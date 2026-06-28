@@ -33,19 +33,19 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Top bar */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 12,
-        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderBottom: '1px solid var(--ds-text, #172B4D)',
+        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderBottom: '1px solid var(--ds-text, var(--ds-text, #172B4D))',
         flexShrink: 0,
       }}>
         <div style={{
-          width: 36, height: 24, borderRadius: 4, background: '#0D2242',
+          width: 36, height: 24, borderRadius: 4, background: '#0D2242', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--bg-app)', fontSize: 9, fontWeight: 800,
+          color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-100)', fontWeight: 800,
         }}>MIM</div>
         <div style={{ width: 1, height: 20, background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' }} />
-        <span style={{ color: 'var(--divider)', fontSize: 14, fontWeight: 600, flex: 1 }}>
+        <span style={{ color: 'var(--divider)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, flex: 1 }}>
           {slide === 0 ? 'Ideas Roadmap — FY 2026' : `${QUARTERS[slide - 1]} 2026 — Delivery Plan`}
         </span>
-        <span style={{ color: 'var(--fg-4)', fontSize: 12 }}>
+        <span style={{ color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)' }}>
           {slide === 0 ? 'Overview' : QUARTERS[slide - 1]}
         </span>
       </div>
@@ -70,13 +70,13 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Navigation */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexShrink: 0,
-        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderTop: '1px solid var(--ds-text, #172B4D)',
+        background: 'var(--ds-shadow-overlay, rgba(15,23,42,0.95))', borderTop: '1px solid var(--ds-text, var(--ds-text, #172B4D))',
       }}>
         <button onClick={() => setSlide(s => Math.max(0, s - 1))} disabled={slide === 0}
           style={{
             width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
             border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', opacity: slide === 0 ? 0.3 : 1,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}>←</button>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           {Array.from({ length: TOTAL_SLIDES }, (_, i) => (
@@ -92,9 +92,9 @@ export function PresentationModal({ ideas, onClose }: Props) {
           style={{
             width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
             border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', opacity: slide === TOTAL_SLIDES - 1 ? 0.3 : 1,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}>→</button>
-        <span style={{ color: 'var(--fg-3)', fontSize: 11, marginLeft: 8, fontFamily: 'var(--cp-font-mono)' }}>
+        <span style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-100)', marginLeft: 8, fontFamily: 'var(--cp-font-mono)' }}>
           {slide + 1} / {TOTAL_SLIDES}
         </span>
       </div>
@@ -102,7 +102,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Close button */}
       <button onClick={onClose} style={{
         position: 'absolute', top: 10, right: 16, background: 'none', border: 'none',
-        color: 'var(--fg-4)', fontSize: 22, cursor: 'pointer', zIndex: 1,
+        color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-700)', cursor: 'pointer', zIndex: 1,
       }}>✕</button>
     </div>
   );
@@ -117,7 +117,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
     <div style={{ display: 'flex', gap: 60, alignItems: 'center', maxWidth: 1200, width: '100%' }}>
       {/* Left */}
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
           Ministry of Industry & Mineral Resources
         </div>
         <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--bg-app)', fontFamily: 'var(--cp-font-heading)', lineHeight: 1.1, marginBottom: 8 }}>
@@ -136,9 +136,9 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
               background: 'var(--ds-border, var(--cp-ink-1, #292929))', border: '1px solid var(--ds-text, #172B4D)',
               borderRadius: 8, padding: '16px 20px', minWidth: 140,
             }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>
               <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bg-app)', fontFamily: 'var(--cp-font-heading)' }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 2 }}>{s.sub}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', marginTop: 2 }}>{s.sub}</div>
             </div>
           ))}
         </div>
@@ -146,7 +146,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
 
       {/* Right — Q breakdown */}
       <div>
-        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 16 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 16 }}>
           DELIVERY BY QUARTER
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -155,9 +155,9 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
               background: 'var(--ds-surface-overlay, #1F1F1F)', border: '1px solid var(--ds-text, #172B4D)',
               borderRadius: 8, padding: '16px 20px', borderTop: `3px solid ${qColors[i]}`, minWidth: 140,
             }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', marginBottom: 8 }}>{q} {Q_LABELS[q]}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', marginBottom: 8 }}>{q} {Q_LABELS[q]}</div>
               <div style={{ fontSize: 36, fontWeight: 800, color: qColors[i], fontFamily: 'var(--cp-font-heading)' }}>{qs[q]}</div>
-              <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>committed ideas</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: 2 }}>committed ideas</div>
             </div>
           ))}
         </div>
@@ -173,7 +173,7 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
 
   if (!qIdeas.length) {
     return (
-      <div style={{ color: 'var(--fg-3)', fontSize: 18, textAlign: 'center' }}>
+      <div style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-600)', textAlign: 'center' }}>
         No committed ideas in {quarter} 2026
       </div>
     );
@@ -183,12 +183,12 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
     <div style={{ width: '100%', maxWidth: 1200 }}>
       {/* Header */}
       <div style={{ display: 'flex', marginBottom: 16, borderBottom: `2px solid ${color}`, paddingBottom: 8 }}>
-        <div style={{ width: 240, fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
+        <div style={{ width: 240, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
           IDEA
         </div>
         <div style={{ flex: 1, display: 'flex' }}>
           {months.map(m => (
-            <div key={m} style={{ flex: 1, textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
+            <div key={m} style={{ flex: 1, textAlign: 'center', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
               {m.toUpperCase()}
             </div>
           ))}
@@ -205,8 +205,8 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
             borderBottom: '1px solid var(--ds-text, #172B4D)',
           }}>
             <div style={{ width: 240, paddingRight: 16 }}>
-              <div style={{ fontSize: 10, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>{idea.ideaKey}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--divider)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>{idea.ideaKey}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--divider)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t}</div>
             </div>
             <div style={{ flex: 1, display: 'flex', position: 'relative', height: '100%', alignItems: 'center' }}>
               {months.map((m, mi) => (

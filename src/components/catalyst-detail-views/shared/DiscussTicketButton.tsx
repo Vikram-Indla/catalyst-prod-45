@@ -44,7 +44,7 @@ export function DiscussTicketButton({ issueKey, variant = 'icon' }: DiscussTicke
           borderRadius: 4,
           background: 'var(--ds-surface, #FFFFFF)',
           color: 'var(--ds-text, #172B4D)',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           cursor: startThread.isPending ? 'not-allowed' : 'pointer',
         }}

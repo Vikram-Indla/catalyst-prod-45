@@ -143,7 +143,7 @@ export function RoadmapToolbar({
               onClick={() => onViewModeChange(k)}
               style={{
                 height: 32, padding: '0 10px', border: 'none', cursor: 'pointer',
-                fontSize: 11, fontWeight: viewMode === k ? 600 : 500,
+                fontSize: 'var(--ds-font-size-100)', fontWeight: viewMode === k ? 600 : 500,
                 color: viewMode === k ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : (hc ? 'var(--ds-text-subtle, #44546F)' : 'var(--ds-text-subtlest, #626F86)')),
                 background: viewMode === k ? ('var(--cp-primary-light, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : (hc ? 'var(--ds-background-neutral, #F0F0F0)' : 'var(--ds-surface, #fff)')),
                 borderRight: k === 'gantt' ? `1px solid ${borderColor}` : 'none',
@@ -214,7 +214,7 @@ export function RoadmapToolbar({
               background: hc ? 'var(--ds-text, #172B4D)' : 'var(--ds-surface, #fff)',
               color: hc ? 'var(--ds-surface, #fff)' : 'var(--ds-text-subtle, #44546F)',
               fontWeight: 600,
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
             }}
           >
             <Contrast className="w-3.5 h-3.5" />

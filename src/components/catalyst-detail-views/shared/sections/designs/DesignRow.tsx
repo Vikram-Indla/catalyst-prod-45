@@ -72,7 +72,7 @@ export function DesignRow({ design, onUnlink }: DesignRowProps) {
           flex: '0 1 auto',
           minWidth: 0,
           maxWidth: '100%',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: linkHovered
             ? 'var(--ds-text-subtle, #6B6E76)'
             : 'var(--ds-text, #292A2E)',

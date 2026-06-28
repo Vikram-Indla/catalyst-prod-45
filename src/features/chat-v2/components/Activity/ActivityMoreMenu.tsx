@@ -186,14 +186,14 @@ const Item = React.forwardRef<HTMLButtonElement, {
         cursor: 'pointer',
         textAlign: 'left',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         transition: 'background var(--cv2-transition-fast)',
       }}
     >
       <span style={{ display: 'inline-flex', width: 16, color: 'inherit' }}>{icon}</span>
       <span style={{ flex: 1 }}>{label}</span>
       {shortcut && (
-        <span style={{ fontSize: 12, color: active ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'var(--cv2-text-muted)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: active ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'var(--cv2-text-muted)' }}>
           {shortcut}
         </span>
       )}

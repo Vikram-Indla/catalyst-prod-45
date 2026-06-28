@@ -23,7 +23,7 @@ export function StatusDistributionChart({ data }: Props) {
     }}>
       <h3 style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 16, fontWeight: 600,
+        fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 16,
       }}>
         Status Distribution
@@ -44,7 +44,7 @@ export function StatusDistributionChart({ data }: Props) {
             <Tooltip content={<ChartTooltip />} />
             <Legend
               verticalAlign="bottom" height={36}
-              formatter={(value: string) => <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-body)' }}>{value}</span>}
+              formatter={(value: string) => <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)' }}>{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -56,10 +56,10 @@ export function StatusDistributionChart({ data }: Props) {
           transform: 'translate(-50%, -50%)',
           textAlign: 'center', pointerEvents: 'none',
         }}>
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, color: 'var(--fg-1)' }}>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--fg-1)' }}>
             {total}
           </div>
-          <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--fg-4)' }}>
+          <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>
             items
           </div>
         </div>

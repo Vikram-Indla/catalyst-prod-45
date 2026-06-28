@@ -72,7 +72,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]">
           <button
             type="button"
             onClick={onClose}

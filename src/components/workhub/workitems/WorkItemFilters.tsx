@@ -168,14 +168,14 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
                     onClick={() => toggle(opt.value)}
                     className="flex items-center w-full px-3 py-2 text-xs transition-colors group"
                     style={{
-                      backgroundColor: isSelected ? '#f0f7ff' : 'transparent',
+                      backgroundColor: isSelected ? 'var(--ds-background-information, #f0f7ff)' : 'transparent',
                       color: 'var(--wh-text-primary, #0f172a)',
                     }}
                     onMouseEnter={e => {
                       if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)');
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.backgroundColor = isSelected ? '#f0f7ff' : 'transparent';
+                      e.currentTarget.style.backgroundColor = isSelected ? 'var(--ds-background-information, #f0f7ff)' : 'transparent';
                     }}
                   >
                     {/* Checkbox */}
@@ -361,10 +361,10 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
             <FilterChip key={`t-${t}`} label={t} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" bgColor="var(--ds-background-selected, #EFF6FF)" borderColor="var(--ds-background-information, #E9F2FF)" onRemove={() => removeChip('types', t)} />
           ))}
           {selectedStatuses.map(s => (
-            <FilterChip key={`s-${s}`} label={s} color="var(--ds-link, #0C66E4)" bgColor="#ecfeff" borderColor="#a5f3fc" onRemove={() => removeChip('statuses', s)} />
+            <FilterChip key={`s-${s}`} label={s} color="var(--ds-link, #0C66E4)" bgColor="var(--ds-background-information, #ecfeff)" borderColor="var(--ds-background-information, #a5f3fc)" onRemove={() => removeChip('statuses', s)} />
           ))}
           {selectedReleases.map(r => (
-            <FilterChip key={`r-${r}`} label={r} color="var(--quality-high, #059669)" bgColor="var(--ds-background-success, #DFFCF0)" borderColor="#a7f3d0" onRemove={() => removeChip('fix_version_names', r)} />
+            <FilterChip key={`r-${r}`} label={r} color="var(--quality-high, #059669)" bgColor="var(--ds-background-success, #DFFCF0)" borderColor="var(--ds-background-success, #a7f3d0)" onRemove={() => removeChip('fix_version_names', r)} />
           ))}
         </div>
       )}
@@ -383,7 +383,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
           className="w-full pl-9 pr-4 rounded-lg border outline-none transition-colors"
           style={{
             height: '50px',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
             color: 'var(--wh-text-primary, #0f172a)',
           }}

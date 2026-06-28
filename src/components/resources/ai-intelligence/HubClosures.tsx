@@ -67,8 +67,8 @@ export const HubClosures: React.FC<Props> = ({ data }) => {
                       <span>{h.hub}</span>
                     </div>
                   </td>
-                  <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 15, fontWeight: 700, color }}>{h.closed}</td>
-                  <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 15, fontWeight: 700 }}>{h.total}</td>
+                  <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color }}>{h.closed}</td>
+                  <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700 }}>{h.total}</td>
                   <td>
                     <div className="rai-minibar">
                       <div className="rai-minibar-track">
@@ -87,8 +87,8 @@ export const HubClosures: React.FC<Props> = ({ data }) => {
                   <span>All Hubs</span>
                 </div>
               </td>
-              <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 15, fontWeight: 700, color: getPctColor(totalPct) }}>{totalClosed}</td>
-              <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 15, fontWeight: 700 }}>{totalAll}</td>
+              <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: getPctColor(totalPct) }}>{totalClosed}</td>
+              <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700 }}>{totalAll}</td>
               <td>
                 <div className="rai-minibar">
                   <div className="rai-minibar-track">

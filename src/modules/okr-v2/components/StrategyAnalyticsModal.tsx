@@ -52,8 +52,8 @@ const TrendBadge = ({ trend, value }: { trend: TrendDirection; value: string }) 
     <span className={cn(
       "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium",
 isNeutral && "bg-muted/50 text-muted-foreground",
-      isPositive && "bg-[var(--ds-background-success, #DFFCF0)] dark:bg-[var(--ds-background-success-bold, rgba(74,222,128,0.10))] text-[var(--ds-text-success,#4a7c4a)] dark:text-[var(--ds-background-success-bold, #1F845A)]",
-      !isPositive && !isNeutral && "bg-amber-50 dark:bg-[var(--ds-background-warning-bold, rgba(251,191,36,0.10))] text-amber-600 dark:text-[var(--ds-background-warning-bold, #E2B203)]"
+      isPositive && "bg-[var(--ds-background-success, #DFFCF0)] dark:bg-[var(--ds-background-success-bold, rgba(74,222,128,0.10))] text-[var(--ds-text-success,#4a7c4a)] dark:text-[var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))]",
+      !isPositive && !isNeutral && "bg-amber-50 dark:bg-[var(--ds-background-warning-bold, rgba(251,191,36,0.10))] text-amber-600 dark:text-[var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))]"
     )}>
       {isPositive && <TrendingUp className="h-3 w-3" />}
       {isNeutral && <Minus className="h-3 w-3" />}

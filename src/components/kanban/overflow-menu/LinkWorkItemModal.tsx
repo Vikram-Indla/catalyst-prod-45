@@ -169,7 +169,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <LinkIcon size={16} color={textM} />
-            <span style={{ fontSize: 15, fontWeight: 600, color: textP, fontFamily: 'var(--cp-font-heading)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: textP, fontFamily: 'var(--cp-font-heading)' }}>
               Link {issue.issueKey}
             </span>
           </div>
@@ -182,7 +182,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
         <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1 }}>
           {/* Link type selector */}
           <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
               Link type
             </div>
             <div ref={ltRef} style={{ position: 'relative' }}>
@@ -191,7 +191,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                 style={{
                   height: 32, padding: '0 12px', width: '100%',
                   border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
-                  fontSize: 13, color: textP, background: tk.inputBg,
+                  fontSize: 'var(--ds-font-size-300)', color: textP, background: tk.inputBg,
                   cursor: 'pointer', display: 'flex', alignItems: 'center',
                   fontFamily: 'var(--cp-font-body)',
                 }}
@@ -213,7 +213,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                       style={{
                         width: '100%', height: 32, padding: '0 12px', border: 'none',
                         background: lt === linkType ? tk.dropHighlight : 'transparent',
-                        cursor: 'pointer', fontSize: 13, color: textP, textAlign: 'left',
+                        cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: textP, textAlign: 'left',
                         fontFamily: 'var(--cp-font-body)',
                       }}
                       onMouseEnter={e => { if (lt !== linkType) e.currentTarget.style.background = tk.surfaceHover; }}
@@ -229,7 +229,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
 
           {/* Search input with selected chips */}
           <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: textM, letterSpacing: '0.03em', marginBottom: 4 }}>
               Work item
             </div>
             <div style={{
@@ -244,7 +244,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                 <span key={item.key} style={{
                   display: 'inline-flex', alignItems: 'center', gap: 4,
                   height: 24, padding: '0 8px', background: tk.chipBg,
-                  borderRadius: 3, fontSize: 12, fontWeight: 500, color: textP,
+                  borderRadius: 3, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: textP,
                 }}>
                   <JiraIssueTypeIcon type={item.issueType} size={12} />
                   {item.key}
@@ -263,7 +263,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                 placeholder={selected.length > 0 ? '' : 'Search by key or summary'}
                 style={{
                   flex: 1, minWidth: 100, height: 28, border: 'none',
-                  fontSize: 13, color: textP, background: 'transparent',
+                  fontSize: 'var(--ds-font-size-300)', color: textP, background: 'transparent',
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
                 }}
               />
@@ -285,14 +285,14 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                       width: '100%', padding: '8px 12px', border: 'none',
                       background: 'transparent', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 8,
-                      fontSize: 13, color: textP, textAlign: 'left',
+                      fontSize: 'var(--ds-font-size-300)', color: textP, textAlign: 'left',
                       fontFamily: 'var(--cp-font-body)',
                     }}
                     onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={14} />
-                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: textM, flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: textM, flexShrink: 0 }}>
                       {r.issue_key}
                     </span>
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -301,7 +301,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                   </button>
                 ))}
                 {filtered.length === 0 && search.trim() && !isFetching && (
-                  <div style={{ padding: 12, fontSize: 12, color: textM }}>No matching items</div>
+                  <div style={{ padding: 12, fontSize: 'var(--ds-font-size-200)', color: textM }}>No matching items</div>
                 )}
               </div>
             )}
@@ -311,7 +311,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
           {error && (
             <div style={{
               padding: '8px 12px', background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 4,
-              fontSize: 12, color: 'var(--ds-background-danger-bold, #C9372C)',
+              fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold, #C9372C)',
             }}>
               {error}
             </div>
@@ -328,7 +328,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
             style={{
               height: 32, padding: '0 16px', border: `1px solid ${border}`,
               borderRadius: 4, background: 'transparent', cursor: 'pointer',
-              fontSize: 13, color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-300)', color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
             }}
           >
             Cancel
@@ -340,7 +340,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
               height: 32, padding: '0 16px', border: 'none',
               borderRadius: 4, background: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : tk.chipBg,
               cursor: selected.length > 0 ? 'pointer' : 'not-allowed',
-              fontSize: 13, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
+              fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 6,

@@ -464,7 +464,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
         style={{
           background: 'var(--bg-app)', color: 'var(--fg-2)',
           border: '1.5px solid var(--divider)', borderRadius: '8px',
-          padding: '8px 14px', fontSize: '13px', fontWeight: 600,
+          padding: '8px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
           transition: 'border-color 150ms',
         }}
@@ -491,15 +491,15 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
             background: 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1d4ed8), var(--cp-blue))', padding: '14px 16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#D6E4F0" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
-              <span style={{ color: 'var(--ds-surface, #fff)', fontSize: 14, fontWeight: 700 }}>Export Work Items</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--ds-background-information, #D6E4F0)" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
+              <span style={{ color: 'var(--ds-surface, #fff)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700 }}>Export Work Items</span>
             </div>
-            <div style={{ color: '#D6E4F0', fontSize: 11, marginLeft: 26 }}>Select months · Sheet 1 = Resources</div>
+            <div style={{ color: 'var(--ds-background-information, #D6E4F0)', fontSize: 'var(--ds-font-size-100)', marginLeft: 26 }}>Select months · Sheet 1 = Resources</div>
           </div>
 
           {/* Month selection */}
           <div style={{ padding: '14px 16px 8px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, #626F86)', letterSpacing: '0.06em', marginBottom: 10 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, #626F86)', letterSpacing: '0.06em', marginBottom: 10 }}>
               SELECT PERIOD
             </div>
 
@@ -533,17 +533,17 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   }}>
                     {checked && <Check size={12} strokeWidth={3} color="var(--ds-text-success, var(--cp-success, #16A34A))" />}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, #172B4D)', flex: 1 }}>{opt.label}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, #172B4D)', flex: 1 }}>{opt.label}</span>
                   {opt.isCurrent && (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface, #fff)',
                       background: 'var(--cp-blue)', borderRadius: 4, padding: '2px 7px',
                     }}>CURRENT</span>
                   )}
                   {opt.isFuture && (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, color: dk ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-background-warning-bold, #E2B203)',
-                      background: dk ? 'var(--ds-background-warning-bold, rgba(251, 191, 36, 0.10))' : 'var(--ds-background-warning, #FFF7D6)', borderRadius: 4, padding: '2px 7px',
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: dk ? 'var(--ds-background-warning-bold, #E2B203)' : 'var(--ds-background-warning-bold, #E2B203)',
+                      background: dk ? 'var(--ds-background-warning-bold, rgba(251, 191, 36, 0.10))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', borderRadius: 4, padding: '2px 7px',
                     }}>UPCOMING</span>
                   )}
                 </label>
@@ -560,7 +560,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               style={{
                 width: '100%', padding: '11px 16px', borderRadius: 8,
                 border: 'none', cursor: canGenerate ? 'pointer' : 'not-allowed',
-                fontSize: 13, fontWeight: 700, color: 'var(--ds-surface, #fff)',
+                fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-surface, #fff)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 transition: 'all 200ms',
                 background: genState === 'done'
@@ -583,7 +583,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               )}
             </button>
             {totalSelected > 0 && (
-              <div style={{ textAlign: 'center', fontSize: 11, color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, #626F86)', marginTop: 6 }}>
+              <div style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, #626F86)', marginTop: 6 }}>
                 {totalSelected} {totalSelected === 1 ? 'month' : 'months'} selected
               </div>
             )}

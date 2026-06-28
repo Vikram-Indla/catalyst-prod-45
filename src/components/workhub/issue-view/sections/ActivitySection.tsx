@@ -40,7 +40,7 @@ function formatRelative(date: string | null): string {
 function AvatarSmall({ name, isDark }: { name: string; isDark: boolean }) {
   const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const colors = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+  const colors = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #FA8C16)', 'var(--ds-chart-green-bold, #52C41A)', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
   return (
     <div
       className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
@@ -94,13 +94,13 @@ function HistoryItem({ entry, isDark }: { entry: any; isDark: boolean }) {
         <div className="flex items-center gap-2 text-xs font-body flex-wrap">
           <span className={cn('font-medium', isDark ? 'text-[var(--ds-text-subtlest,#A1A1A1)]' : 'text-[var(--ds-text-accent-gray,#505258)]')}>{fieldName}</span>
           {oldVal && (
-            <span className={cn('px-1.5 py-0.5 rounded line-through', isDark ? 'bg-[#2E1A1A] text-[var(--ds-background-danger, #FFECEB)]' : 'bg-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-text-danger, #AE2A19)]')}>
+            <span className={cn('px-1.5 py-0.5 rounded line-through', isDark ? 'bg-[var(--ds-background-danger, #2E1A1A)] text-[var(--ds-background-danger, #FFECEB)]' : 'bg-[var(--ds-background-danger, #FFECEB)] text-[var(--ds-text-danger, #AE2A19)]')}>
               {oldVal}
             </span>
           )}
           <ArrowRight className="w-3 h-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
           {newVal && (
-            <span className={cn('px-1.5 py-0.5 rounded', isDark ? 'bg-[#1A2E1A] text-[#57D9A3]' : 'bg-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-text-success, #006644)]')}>
+            <span className={cn('px-1.5 py-0.5 rounded', isDark ? 'bg-[var(--ds-background-success, #1A2E1A)] text-[var(--ds-background-success-bold, #57D9A3)]' : 'bg-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-text-success, #006644)]')}>
               {newVal}
             </span>
           )}

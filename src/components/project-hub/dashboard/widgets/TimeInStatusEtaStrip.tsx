@@ -81,7 +81,7 @@ export function TimeInStatusEtaStrip({
         alignItems: 'center',
         gap: 4,
         marginTop: 1,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         lineHeight: '14px',
         fontWeight: 500,
         fontFamily: 'Atlassian Sans, -apple-system, system-ui, sans-serif',
@@ -103,7 +103,7 @@ export function TimeInStatusEtaStrip({
           <span
             style={{
               fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               fontWeight: isOver ? 653 : 500,
             }}
           >

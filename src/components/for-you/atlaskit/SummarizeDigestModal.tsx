@@ -164,10 +164,10 @@ export function SummarizeDigestModal({
         borderRadius: 17,
         background: 'var(--ds-surface, #FFFFFF)',
       }}>
-        <span style={{ fontSize: 14, fontWeight: 700, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
           ✦ Caty's digest
         </span>
-        <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
           {stats.done} of {stats.total} mentions summarized
         </span>
       </div>
@@ -197,7 +197,7 @@ export function SummarizeDigestModal({
   );
 
   const footerNote = (
-    <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginInlineEnd: 'auto' }}>
+    <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginInlineEnd: 'auto' }}>
       Powered by Caty
       {stats.errors > 0 && ` · ${stats.errors} shown as original (AI unavailable)`}
     </span>
@@ -231,7 +231,7 @@ export function SummarizeDigestModal({
               cursor: 'pointer',
               padding: '2px 8px',
               borderRadius: 3,
-              fontSize: 18,
+              fontSize: 'var(--ds-font-size-600)',
               lineHeight: 1,
               color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             }}
@@ -295,7 +295,7 @@ function DigestRow({
           display: 'flex',
           alignItems: 'baseline',
           gap: 6,
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           marginBlockEnd: 6,
         }}>
           <span style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{mention.mentionerName}</span>
@@ -309,7 +309,7 @@ function DigestRow({
               color: token('color.text.brand', 'var(--ds-link, #0052CC)'),
               fontWeight: 600,
               fontFamily: 'var(--cp-font-mono, ui-monospace, "SF Mono", Menlo, Consolas, monospace)',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
             }}
           >
             {mention.issueKey}
@@ -321,7 +321,7 @@ function DigestRow({
 
         {/* Summary — skeleton while loading, prose when done, error message on failure */}
         <div style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           lineHeight: '20px',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           marginBlockEnd: 10,
@@ -346,7 +346,7 @@ function DigestRow({
               <span style={{
                 display: 'block',
                 marginBlockStart: 4,
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
               }}>
                 AI summary unavailable — showing original

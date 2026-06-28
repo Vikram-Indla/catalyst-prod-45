@@ -19,7 +19,7 @@ import {
 } from '@/hooks/test-management/useTestCases';
 import { supabase } from '@/integrations/supabase/client';
 import { CatyIconCTA } from '@/components/ui/CatyIconCTA';
-import { AIGenerateTestCasesDialog } from '@/components/releases/test-cases/AIGenerateTestCasesDialog';
+import { AIGenerateTestCasesDialog } from '@/components/testhub/AIGenerateTestCasesDialog';
 import type { GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
 import { catalystToast } from '@/lib/catalystToast';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
@@ -166,7 +166,7 @@ function ArchiveModal({ count, onConfirm, onClose, saving }: {
         <ModalTitle>Archive {count} case{count > 1 ? 's' : ''}?</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text-subtle)' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)' }}>
           Archived cases are hidden from the repository but can be restored later.
         </p>
       </ModalBody>
@@ -223,7 +223,7 @@ function CopyModal({ count, folders, onConfirm, onClose, saving }: {
             onChange={e => setAddSuffix(e.target.checked)}
             style={{ width: 16, height: 16 }}
           />
-          <span style={{ fontSize: 13, color: 'var(--ds-text)' }}>Add "(Copy)" suffix to titles</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)' }}>Add "(Copy)" suffix to titles</span>
         </label>
       </ModalBody>
       <ModalFooter>
@@ -268,7 +268,7 @@ function SystemFolderItem({ label, selected, onClick }: {
         padding: '6px 12px', cursor: 'pointer',
         background: selected ? 'var(--ds-background-selected)' : 'transparent',
         color: selected ? 'var(--ds-text-selected)' : 'var(--ds-text)',
-        fontSize: 13, display: 'flex', alignItems: 'center', gap: 8, userSelect: 'none',
+        fontSize: 'var(--ds-font-size-300)', display: 'flex', alignItems: 'center', gap: 8, userSelect: 'none',
       }}
       onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle)'; }}
       onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -322,7 +322,7 @@ function FolderNode({
           padding: `6px 8px 6px ${12 + indent * 16}px`, cursor: 'pointer',
           background: isSelected ? 'var(--ds-background-selected)' : 'transparent',
           color: isSelected ? 'var(--ds-text-selected)' : 'var(--ds-text)',
-          fontSize: 13, display: 'flex', alignItems: 'center', gap: 4,
+          fontSize: 'var(--ds-font-size-300)', display: 'flex', alignItems: 'center', gap: 4,
           position: 'relative',
         }}
         onClick={() => onSelect(folder.id)}
@@ -357,7 +357,7 @@ function FolderNode({
         {rollupCount > 0 && (
           <span
             style={{
-              flexShrink: 0, fontSize: 11, fontWeight: 600, minWidth: 18, textAlign: 'center',
+              flexShrink: 0, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, minWidth: 18, textAlign: 'center',
               padding: '0 6px', borderRadius: 10, marginRight: 2,
               background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)',
             }}
@@ -520,7 +520,7 @@ function CaseStatusPill({ status }: { status: CaseStatus }) {
 function PriorityChip({ priority }: { priority: TMCasePriority }) {
   return (
     <span style={{
-      fontSize: 11, padding: '2px 8px', borderRadius: 12,
+      fontSize: 'var(--ds-font-size-100)', padding: '2px 8px', borderRadius: 12,
       background: 'var(--ds-background-neutral)',
       color: 'var(--ds-text-subtle)', fontWeight: 500,
     }}>
@@ -532,33 +532,33 @@ function PriorityChip({ priority }: { priority: TMCasePriority }) {
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 12, fontWeight: 600,
+  display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
   color: 'var(--ds-text-subtle)', marginBottom: 4,
 };
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '6px 8px', fontSize: 14, borderRadius: 4,
+  width: '100%', padding: '6px 8px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
   border: '2px solid var(--ds-border-focused)',
   background: 'var(--ds-surface)',
   color: 'var(--ds-text)', outline: 'none', boxSizing: 'border-box',
 };
 
 const selectStyle: React.CSSProperties = {
-  width: '100%', padding: '6px 8px', fontSize: 14, borderRadius: 4,
+  width: '100%', padding: '6px 8px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
   border: '2px solid var(--ds-border)',
   background: 'var(--ds-surface)',
   color: 'var(--ds-text)', outline: 'none', boxSizing: 'border-box',
 };
 
 const cancelBtnStyle: React.CSSProperties = {
-  padding: '6px 14px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+  padding: '6px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
   border: '2px solid var(--ds-border)',
   background: 'var(--ds-surface)',
   color: 'var(--ds-text)', cursor: 'pointer',
 };
 
 const primaryBtnStyle = (disabled: boolean): React.CSSProperties => ({
-  padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+  padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
   border: 'none',
   background: disabled ? 'var(--ds-background-disabled)' : 'var(--ds-background-brand-bold)',
   color: disabled ? 'var(--ds-text-disabled)' : 'var(--ds-text-inverse)',
@@ -693,7 +693,7 @@ export default function RepositoryPage() {
           <span style={{
             fontFamily: 'var(--ds-font-family-code, monospace)',
             color: 'var(--ds-text-subtlest)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
           }}>
             {row.key ?? '—'}
           </span>
@@ -724,7 +724,7 @@ export default function RepositoryPage() {
       cell: ({ row }) => {
         if (row.priority_ref) {
           return (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)' }}>
               <span style={{
                 width: 8, height: 8, borderRadius: '50%',
                 background: row.priority_ref.color ?? 'var(--ds-background-neutral)',
@@ -774,7 +774,7 @@ export default function RepositoryPage() {
           borderBottom: '1px solid var(--ds-border-information)',
           display: 'flex', alignItems: 'center', gap: 12,
         }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-information)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-information)' }}>
             {selectedIds.size} selected
           </span>
           <DropdownMenu trigger="Bulk actions" placement="bottom-start">
@@ -799,7 +799,7 @@ export default function RepositoryPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <span style={{
-              fontSize: 11, fontWeight: 600,
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: 'var(--ds-text-subtlest)',
               textTransform: 'uppercase', letterSpacing: '0.5px',
             }}>
@@ -854,7 +854,7 @@ export default function RepositoryPage() {
                 onChange={e => setSearch(e.target.value)}
                 style={{
                   flex: 1, border: '1px solid var(--ds-border)',
-                  borderRadius: 4, padding: '4px 8px', fontSize: 13,
+                  borderRadius: 4, padding: '4px 8px', fontSize: 'var(--ds-font-size-300)',
                   background: 'var(--ds-surface)',
                   color: 'var(--ds-text)', outline: 'none',
                 }}
@@ -874,7 +874,7 @@ export default function RepositoryPage() {
                   background: selectMode ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
                   color: selectMode ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
                   border: '1px solid var(--ds-border)',
-                  borderRadius: 4, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                  borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
@@ -887,7 +887,7 @@ export default function RepositoryPage() {
                   padding: '6px 12px',
                   background: 'var(--ds-background-brand-bold)',
                   color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4,
-                  fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >

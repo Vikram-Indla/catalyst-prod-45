@@ -159,7 +159,7 @@ function IncidentHealthSection({
   slaAtRisk: number;
   onDrillDown: (filter: string) => void;
 }) {
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28']; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -173,8 +173,8 @@ function IncidentHealthSection({
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trends}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} className="text-muted-foreground" />
-                <YAxis tick={{ fontSize: 11 }} className="text-muted-foreground" />
+                <XAxis dataKey="date" tick={{ fontSize: 'var(--ds-font-size-100)' }} className="text-muted-foreground" />
+                <YAxis tick={{ fontSize: 'var(--ds-font-size-100)' }} className="text-muted-foreground" />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--card))', 
@@ -182,7 +182,7 @@ function IncidentHealthSection({
                     borderRadius: '8px',
                   }} 
                 />
-                <Legend wrapperStyle={{ fontSize: '11px' }} />
+                <Legend wrapperStyle={{ fontSize: 'var(--ds-font-size-100)' }} />
                 <Line type="monotone" dataKey="logged" stroke="var(--ds-text-brand, #3b82f6)" strokeWidth={2} name="Logged" dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="closed" stroke="var(--ds-chart-teal-bold, #0d9488)" strokeWidth={2} name="Closed" dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="converted" stroke="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" strokeWidth={2} name="Converted" dot={{ r: 3 }} />

@@ -106,7 +106,7 @@ export function EmojiPicker({ mode, inlineQuery = '', coords, onSelect, onDismis
             style={{
               width: '100%',
               padding: '6px 8px',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: 3,
               background: 'var(--ds-surface, #FFFFFF)',
@@ -122,7 +122,7 @@ export function EmojiPicker({ mode, inlineQuery = '', coords, onSelect, onDismis
           filtered.length === 0 ? (
             <div
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtlest, #6B778C)',
                 padding: 12,
                 textAlign: 'center',
@@ -150,7 +150,7 @@ export function EmojiPicker({ mode, inlineQuery = '', coords, onSelect, onDismis
             {mode === 'inline' && (
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtlest, #6B778C)',
                   padding: 12,
                   textAlign: 'center',
@@ -179,7 +179,7 @@ function EmojiSection({
     <div style={{ marginBottom: 12 }}>
       <div
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
           color: 'var(--ds-text-subtle, #44546F)',
           marginBottom: 6,
@@ -226,7 +226,7 @@ function EmojiGrid({
             background: 'transparent',
             borderRadius: 3,
             cursor: 'pointer',
-            fontSize: 18,
+            fontSize: 'var(--ds-font-size-600)',
           }}
           onMouseEnter={(ev) => {
             ev.currentTarget.style.background =

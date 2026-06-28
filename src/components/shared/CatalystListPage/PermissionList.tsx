@@ -34,13 +34,13 @@ export function PermissionList({ entries, maxRows = 1 }: PermissionListProps) {
           <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center', flexShrink: 0 }}>
             {e.icon}
           </span>
-          <span style={{ fontSize: 14, color: token('color.text'), whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text'), whiteSpace: 'nowrap' }}>
             {e.label}
           </span>
         </span>
       ))}
       {more > 0 && (
-        <span style={{ fontSize: 12, color: token('color.text.subtlest') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
           +{more}
         </span>
       )}

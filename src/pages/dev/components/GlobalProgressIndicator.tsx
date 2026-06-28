@@ -22,7 +22,7 @@ export function GlobalProgressIndicator({
   const [isOpen, setIsOpen] = useState(false);
 
   const content = (
-    <div style={{ fontSize: '12px', maxWidth: 300, padding: 8 }}>
+    <div style={{ fontSize: 'var(--ds-font-size-200)', maxWidth: 300, padding: 8 }}>
       <div style={{ marginBottom: 8 }}>
         <strong>Preparing Evidence Pack</strong>
       </div>
@@ -56,7 +56,7 @@ export function GlobalProgressIndicator({
       <div style={{ marginBottom: 8, color: 'var(--ds-icon-subtle, #626F86)' }}>
         <strong>Estimated time remaining:</strong> 15 seconds
       </div>
-      <div style={{ fontSize: '11px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-icon-subtle, #626F86)' }}>
         <strong>Destination:</strong> Evidence Pack
       </div>
     </div>
@@ -93,10 +93,10 @@ export function GlobalProgressIndicator({
               animation: 'spin 2s linear infinite',
             }}
           />
-          <span style={{ fontSize: '14px', color: 'var(--ds-text-success, #216E4E)', fontWeight: 500 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-success, #216E4E)', fontWeight: 500 }}>
             Preparing Evidence: {itemKey}
           </span>
-          <span style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>
             {progress}%
           </span>
         </div>
@@ -106,7 +106,7 @@ export function GlobalProgressIndicator({
         style={{
           width: 120,
           height: 4,
-          backgroundColor: '#BCDFFB',
+          backgroundColor: 'var(--ds-background-information, #E9F2FF)',
           borderRadius: 2,
           overflow: 'hidden',
         }}

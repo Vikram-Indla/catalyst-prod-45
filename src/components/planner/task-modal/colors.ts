@@ -48,7 +48,6 @@ export const STATUS_COLORS: Record<string, string> = {
   'In Review': 'var(--ds-background-discovery-bold, #8b5cf6)',
   'Done': 'var(--ds-text-success, #16a34a)'
 };
-
 // Priority Colors — MEDIUM IS YELLOW #eab308
 export const PRIORITY_COLORS: Record<string, string> = {
   'Critical': 'var(--ds-text-danger, #dc2626)',

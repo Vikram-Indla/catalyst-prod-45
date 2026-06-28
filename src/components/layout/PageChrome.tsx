@@ -72,7 +72,7 @@ export function PageChrome({
               <h1
                 style={{
                   fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
-                  fontSize: 20,
+                  fontSize: 'var(--ds-font-size-700)',
                   fontWeight: 600,
                   color: 'var(--text-1)',
                   letterSpacing: '-0.003em',

@@ -212,13 +212,13 @@ const Item = React.forwardRef<HTMLButtonElement, {
         cursor: 'pointer',
         textAlign: 'left',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => {
         if (!active) {
           (e.currentTarget as HTMLElement).style.background = danger
-            ? 'rgba(224,30,90,0.12)'
+            ? 'rgba(224,30,90,0.12)' // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             : 'var(--cv2-bg-row-hover)';
         }
       }}
@@ -231,7 +231,7 @@ const Item = React.forwardRef<HTMLButtonElement, {
       </span>
       <span style={{ flex: 1 }}>{label}</span>
       {shortcut && (
-        <span style={{ fontSize: 12, color: active ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'var(--cv2-text-muted)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: active ? 'var(--ds-surface, rgba(255,255,255,0.8))' : 'var(--cv2-text-muted)' }}>
           {shortcut}
         </span>
       )}

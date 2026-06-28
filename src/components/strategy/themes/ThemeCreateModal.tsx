@@ -16,13 +16,13 @@ interface Props {
 }
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', fontSize: 13, padding: '8px 10px',
+  width: '100%', fontSize: 'var(--ds-font-size-300)', padding: '8px 10px',
   border: '1px solid var(--divider)', borderRadius: 6,
   color: 'var(--fg-1)', outline: 'none', background: 'var(--cp-float)',
 };
 
 const labelStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, color: 'var(--fg-2)',
+  fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)',
   display: 'block', marginBottom: 4,
 };
 
@@ -137,7 +137,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
           padding: '16px 24px', borderBottom: '1px solid var(--divider)',
           background: 'var(--cp-float)', borderRadius: '12px 12px 0 0', zIndex: 1,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)' }}>
+          <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--fg-1)' }}>
             {initialData ? 'Edit Strategic Theme' : 'Create Strategic Theme'}
           </h2>
           <button onClick={onClose} className="rounded-md p-1 hover:bg-gray-100" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
@@ -267,8 +267,8 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               ) : (
                 <div className="flex gap-2">
                   <input style={{ ...inputStyle, flex: 1 }} placeholder="Group name" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} autoFocus />
-                  <button onClick={handleCreateGroup} disabled={!newGroupName.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '0 10px', borderRadius: 4, border: 'none', background: newGroupName.trim() ? 'var(--cp-blue)' : 'var(--fg-4)', color: 'var(--ds-surface, #FFF)', cursor: newGroupName.trim() ? 'pointer' : 'default' }}>Create</button>
-                  <button onClick={() => { setShowNewGroup(false); setNewGroupName(''); }} style={{ fontSize: 11, padding: '0 10px', borderRadius: 4, border: '1px solid var(--divider)', background: 'var(--ds-surface, #FFF)', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
+                  <button onClick={handleCreateGroup} disabled={!newGroupName.trim()} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '0 10px', borderRadius: 4, border: 'none', background: newGroupName.trim() ? 'var(--cp-blue)' : 'var(--fg-4)', color: 'var(--ds-surface, #FFF)', cursor: newGroupName.trim() ? 'pointer' : 'default' }}>Create</button>
+                  <button onClick={() => { setShowNewGroup(false); setNewGroupName(''); }} style={{ fontSize: 'var(--ds-font-size-100)', padding: '0 10px', borderRadius: 4, border: '1px solid var(--divider)', background: 'var(--ds-surface, #FFF)', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
                 </div>
               )}
             </div>
@@ -289,7 +289,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               <button
                 onClick={() => setForm(f => ({ ...f, success_metrics: [...f.success_metrics, { name: '', target: '' }] }))}
                 className="flex items-center gap-1"
-                style={{ fontSize: 12, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, marginTop: 4 }}
+                style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, marginTop: 4 }}
               >
                 <Plus size={13} /> Add Another Metric
               </button>
@@ -302,12 +302,12 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
           padding: '14px 24px', borderTop: '1px solid var(--divider)',
           background: 'var(--cp-float)', borderRadius: '0 0 12px 12px',
         }}>
-          <button onClick={onClose} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
           {!initialData && (
-            <button onClick={() => handleSubmit('draft')} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}>Save as Draft</button>
+            <button onClick={() => handleSubmit('draft')} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}>Save as Draft</button>
           )}
           <button onClick={() => handleSubmit()} disabled={!form.title.trim()} style={{
-            fontSize: 12, fontWeight: 600, height: 34, padding: '0 16px',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, height: 34, padding: '0 16px',
             border: 'none', borderRadius: 6,
             background: form.title.trim() ? 'var(--cp-blue)' : 'var(--fg-4)',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: form.title.trim() ? 'pointer' : 'default',

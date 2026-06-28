@@ -42,18 +42,18 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
             background: HUB_DOT_COLORS[hub] || 'var(--ds-text-subtlest, #626F86)',
             flexShrink: 0, alignSelf: 'center',
           }} />
-          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--fg-1)' }}>{count}</span>
-          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>{hub}</span>
+          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--fg-1)' }}>{count}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)' }}>{hub}</span>
         </div>
       ))}
       <span style={{ color: 'var(--fg-4)' }}>|</span>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-        <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{projectCount}</span>
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>projects</span>
+        <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>{projectCount}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)' }}>projects</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-        <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{reporterCount}</span>
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>reporters</span>
+        <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>{reporterCount}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)' }}>reporters</span>
       </div>
     </div>
   );

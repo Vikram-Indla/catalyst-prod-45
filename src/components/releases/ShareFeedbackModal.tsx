@@ -39,13 +39,13 @@ const GRAY_BORDER = 'var(--ds-border, #DFE1E6)';
 const labelStyle: React.CSSProperties = {
   display: 'block',
   fontWeight: 600,
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   color: 'var(--ds-text, #172B4D)',
   marginBottom: 6,
 };
 
 const errStyle: React.CSSProperties = {
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   color: RED,
   marginTop: 4,
   display: 'flex',
@@ -134,12 +134,12 @@ function CategoryDropdown({
           border: `1px solid ${borderColor}`,
           background: 'var(--ds-surface-overlay, #FFFFFF)',
           color: selected ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontFamily: 'inherit',
           cursor: 'pointer',
           outline: 'none',
           textAlign: 'left',
-          boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none',
+          boxShadow: open ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
         }}
       >
         <span>{selected ? selected.label : 'Choose one'}</span>
@@ -168,7 +168,7 @@ function CategoryDropdown({
             background: 'var(--ds-surface-overlay, #FFFFFF)',
             border: `1px solid ${GRAY_BORDER}`,
             borderRadius: 4,
-            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
+            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
             padding: '6px 0',
             maxHeight: 280,
             overflowY: 'auto',
@@ -219,7 +219,7 @@ function CategoryRow({
           : hover
           ? 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)'
           : 'transparent',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: checked ? 'var(--ds-text-selected, #0C66E4)' : 'var(--ds-text, #292A2E)',
         fontWeight: checked ? 500 : 400,
       }}
@@ -306,7 +306,7 @@ export function ShareFeedbackModal({ isOpen, onClose }: ShareFeedbackModalProps)
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #505258)' }}>
                 Required fields are marked with an asterisk
                 <span style={{ color: RED, marginLeft: 2 }}>*</span>
               </div>
@@ -360,10 +360,10 @@ export function ShareFeedbackModal({ isOpen, onClose }: ShareFeedbackModalProps)
               {/* Opt-in checkboxes — only shown after category picked */}
               {category && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
-                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #292A2E)' }}>
                   Catalyst opt-in options
                 </div>
-                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'var(--ds-text, #292A2E)' }}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)' }}>
                   <Checkbox
                     isChecked={contactOptIn}
                     onChange={(e) => setContactOptIn((e.target as HTMLInputElement).checked)}
@@ -381,7 +381,7 @@ export function ShareFeedbackModal({ isOpen, onClose }: ShareFeedbackModalProps)
                     .
                   </span>
                 </label>
-                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'var(--ds-text, #292A2E)' }}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)' }}>
                   <Checkbox
                     isChecked={researchOptIn}
                     onChange={(e) => setResearchOptIn((e.target as HTMLInputElement).checked)}

@@ -89,7 +89,7 @@ export default function TriageQueuePage() {
                     </td>
                     <td className="px-3 py-2"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
                     <td className="px-3 py-2"><SourceBadge source={c.source} /></td>
-                    <td className="px-3 py-2 text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
+                    <td className="px-3 py-2 text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]" style={{ fontFamily: RH.fontMono, fontSize: 'var(--ds-font-size-200)' }}>
                       {c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
                     </td>
                     <td className="px-3 py-2">
@@ -119,7 +119,7 @@ export default function TriageQueuePage() {
                           <TriageLinkDropdown releases={releases} onLink={(releaseId) => linkChangeToRelease(c.id, releaseId)} />
                         )}
                         <button onClick={() => ignoreTriageItem(c.id)}
-                          className="h-7 px-3 rounded text-[11px] font-medium border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:text-[var(--ds-text-subtle,#475569)]">
+                          className="h-7 px-3 rounded text-[11px] font-medium border border-[var(--ds-shadow-overlay, rgba(15,23,42,0.12))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:text-[var(--ds-text-subtle,var(--ds-text-subtle, #44546F))]">
                           Ignore
                         </button>
                       </div>

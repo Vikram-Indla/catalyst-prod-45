@@ -31,7 +31,7 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({
       }}
     >
       {/* TIMESTAMPS */}
-      <span style={{ fontSize: '13px', color: COLORS.textMuted }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.textMuted }}>
         Created{' '}
         <strong style={{ fontWeight: 600, color: COLORS.textSecondary }}>
           {formatDate(task.createdAt)}
@@ -54,14 +54,14 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({
                 animation: 'spin 1s linear infinite'
               }} 
             />
-            <span style={{ fontSize: '12px', color: COLORS.textMuted }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: COLORS.textMuted }}>
               Saving...
             </span>
           </>
         ) : lastSaved ? (
           <>
             <Check size={14} style={{ color: 'var(--sem-success)' }} />
-            <span style={{ fontSize: '12px', color: COLORS.textMuted }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: COLORS.textMuted }}>
               Saved
             </span>
           </>

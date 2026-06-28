@@ -171,8 +171,8 @@ export const MenuItem: React.FC<{
     style={{
       width: '100%', height: SIZES.MENU_ITEM_HEIGHT, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
       border: 'none', background: selected ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
-      color: selected ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
-      fontSize: 14, lineHeight: '20px', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left',
+      color: selected ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+      fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left',
     }}
     onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#091E420F'); }}
     onMouseLeave={(e) => { if (!selected) e.currentTarget.style.background = 'transparent'; }}

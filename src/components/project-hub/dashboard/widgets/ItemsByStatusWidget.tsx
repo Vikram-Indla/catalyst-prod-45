@@ -156,7 +156,7 @@ export default function ItemsByStatusWidget({
           }
           style={{
             background: 'transparent', border: 0, cursor: 'pointer',
-            ...SMALL, color: token('color.link', '#0C66E4'),
+            ...SMALL, color: token('color.link', 'var(--ds-link, #0C66E4)'),
             padding: 0, display: 'flex', alignItems: 'center', gap: 4,
           }}
         >
@@ -172,7 +172,7 @@ export default function ItemsByStatusWidget({
               style={{
                 height: 24,
                 borderRadius: 4,
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -241,7 +241,7 @@ function KpiHeadline({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
       }}
     >
       <span
@@ -268,9 +268,9 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', '#F7F8F9'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         overflow: 'hidden',
       }}
     >
@@ -347,7 +347,7 @@ function BarRow({ bucket: b, total, onClick }: { bucket: Bucket; total: number; 
         cursor: onClick ? 'pointer' : 'default',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+        e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = 'transparent';
@@ -401,7 +401,7 @@ function BarRow({ bucket: b, total, onClick }: { bucket: Bucket; total: number; 
           textAlign: 'right',
           ...SMALL_STRONG,
           fontWeight: 500,
-          color: token('color.text.subtle', '#626F86'),
+          color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -432,7 +432,7 @@ function BlockedBreakdown({
   return (
     <div
       style={{
-        background: token('elevation.surface.sunken', '#F7F8F9'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
         borderInlineStart: `3px solid var(--ds-border-accent-red, #C9372C)`,
         borderRadius: token('border.radius', '4px'),
         padding: '10px 12px',

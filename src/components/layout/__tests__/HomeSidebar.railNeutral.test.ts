@@ -6,7 +6,7 @@
  * rail is monochrome; color is reserved for the ACTIVE hub (brand-blue pill +
  * left bar). The hub outline SVGs feed the rail via <img>, so the accent color
  * is baked into the asset — neutralising the rail means the outline glyphs must
- * carry only the neutral ink (#44546F), never a per-hub accent.
+ * carry only the neutral ink (var(--ds-text-subtle, #44546F)), never a per-hub accent.
  *
  * This test pins that: every hub *-outline.svg may contain only the neutral
  * ink + white/none. Any per-hub accent reappearing = rail rainbow regression.

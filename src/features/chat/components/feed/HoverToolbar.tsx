@@ -426,7 +426,7 @@ export interface HoverToolbarCallbacks {
 
 function CatyStarIcon({ label: _ }: { label: string }) {
   return (
-    <span aria-hidden="true" style={{ fontSize: 13, lineHeight: 1, display: 'flex', alignItems: 'center', fontFamily: 'var(--ds-font-family-body)' }}>✦</span>
+    <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1, display: 'flex', alignItems: 'center', fontFamily: 'var(--ds-font-family-body)' }}>✦</span>
   );
 }
 

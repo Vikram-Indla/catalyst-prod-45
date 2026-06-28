@@ -52,17 +52,17 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             width: 36, height: 36, borderRadius: 8,
             background: 'var(--ds-background-danger, #FFEBEE)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Trash2 size={18} color="#D32F2F" />
+            <Trash2 size={18} color="var(--ds-icon-danger, #D32F2F)" />
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: tk.textPrimary }}>Delete work item?</div>
-            <div style={{ fontSize: 12, color: tk.textMuted, marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary }}>Delete work item?</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textMuted, marginTop: 2 }}>
               This action is irreversible. All data for <strong>{issueKey}</strong> will be permanently removed.
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 12, color: tk.textSecondary, display: 'block', marginBottom: 4 }}>
+          <label style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textSecondary, display: 'block', marginBottom: 4 }}>
             Type <strong>{issueKey}</strong> to confirm
           </label>
           <input
@@ -71,17 +71,17 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             onChange={e => setTyped(e.target.value)}
             placeholder={issueKey}
             style={{
-              width: '100%', padding: '6px 10px', fontSize: 13, borderRadius: 4,
+              width: '100%', padding: '6px 10px', fontSize: 'var(--ds-font-size-300)', borderRadius: 4,
               border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
               color: tk.textPrimary, outline: 'none', fontFamily: 'var(--cp-font-mono)',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#D32F2F'; }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-danger, #D32F2F)'; }}
             onBlur={e => { e.currentTarget.style.borderColor = tk.inputBorder; }}
           />
         </div>
         <div className="flex justify-end gap-2">
           <button onClick={onCancel} style={{
-            padding: '6px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+            padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
             border: `1px solid ${tk.border}`, background: 'transparent',
             color: tk.textPrimary, cursor: 'pointer',
           }}>Cancel</button>
@@ -89,7 +89,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             onClick={canDelete ? onConfirm : undefined}
             disabled={!canDelete}
             style={{
-              padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+              padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
               border: 'none', background: canDelete ? '#D32F2F' : 'var(--ds-border, #DFE1E6)',
               color: canDelete ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-disabled, #9E9E9E)', cursor: canDelete ? 'pointer' : 'not-allowed',
               opacity: canDelete ? 1 : 0.6,

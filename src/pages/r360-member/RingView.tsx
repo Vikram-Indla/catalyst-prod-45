@@ -39,26 +39,26 @@ const MONO = '"ui-monospace","SFMono-Regular","SF Mono",Menlo,monospace';
 const T = {
   surface:           () => token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
   surfaceRaised:     () => token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
-  bgNeutral:         () => token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
-  bgNeutralSubtle:   () => token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+  bgNeutral:         () => token('color.background.neutral', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'),
+  bgNeutralSubtle:   () => token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'),
   bgNeutralHovered:  () => token('color.background.neutral.hovered', '#E9EAEB'),
-  bgSuccessBold:     () => token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)'),
-  bgInfoBold:        () => token('color.background.information.bold', 'var(--cp-primary-60, #0052CC)'),
+  bgSuccessBold:     () => token('color.background.success.bold', 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))'),
+  bgInfoBold:        () => token('color.background.information.bold', 'var(--cp-primary-60, var(--ds-link, #0C66E4))'),
   text:              () => token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-  textSubtle:        () => token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
-  textSubtlest:      () => token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
-  textDisabled:      () => token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'),
+  textSubtle:        () => token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))'),
+  textSubtlest:      () => token('color.text.subtlest', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))'),
+  textDisabled:      () => token('color.text.disabled', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))'),
   textInverse:       () => token('color.text.inverse', 'var(--ds-surface, #FFFFFF)'),
-  textInfo:          () => token('color.text.information', 'var(--ds-link, #0C66E4)'),
-  textWarning:       () => token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
-  textDanger:        () => token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-  textSuccess:       () => token('color.text.success', 'var(--ds-text-success, #216E4E)'),
-  iconSuccess:       () => token('color.icon.success', 'var(--ds-background-success-bold, #1F845A)'),
+  textInfo:          () => token('color.text.information', 'var(--ds-link, var(--ds-link, #0C66E4))'),
+  textWarning:       () => token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))'),
+  textDanger:        () => token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))'),
+  textSuccess:       () => token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))'),
+  iconSuccess:       () => token('color.icon.success', 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))'),
   iconInverse:       () => token('color.icon.inverse', 'var(--ds-surface, #FFFFFF)'),
-  iconDisabled:      () => token('color.icon.disabled', 'var(--ds-text-disabled, #8590A2)'),
+  iconDisabled:      () => token('color.icon.disabled', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))'),
   border:            () => token('color.border', '#091E4224'),
-  borderBold:        () => token('color.border.bold', 'var(--ds-text-disabled, #8590A2)'),
-  borderSuccess:     () => token('color.border.success', 'var(--ds-background-success-bold, #1F845A)'),
+  borderBold:        () => token('color.border.bold', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))'),
+  borderSuccess:     () => token('color.border.success', 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))'),
 } as const;
 
 export function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, onAvatarClick, presenceState }: {
@@ -174,17 +174,17 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                   <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke={T.iconInverse()} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: T.text() }}>Completed This Week</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: T.textInverse(), background: T.bgSuccessBold(), padding: '2px 8px', borderRadius: 12 }}>{doneCount}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text() }}>Completed This Week</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.textInverse(), background: T.bgSuccessBold(), padding: '2px 8px', borderRadius: 12 }}>{doneCount}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
-              style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${T.border()}`, borderRadius: 4, background: T.surface(), cursor: 'pointer', color: T.textSubtle(), fontSize: 14 }}
+              style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${T.border()}`, borderRadius: 4, background: T.surface(), cursor: 'pointer', color: T.textSubtle(), fontSize: 'var(--ds-font-size-400)' }}
               aria-label="Close completed panel"
             >{'✕'}</button>
           </div>
 
           {/* Throughput */}
-          <div style={{ padding: '8px 16px', fontSize: 12, color: T.textSubtle(), borderBottom: `1px solid ${T.border()}` }}>
+          <div style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-200)', color: T.textSubtle(), borderBottom: `1px solid ${T.border()}` }}>
             {doneCount} of {totalItems} total resolved ({totalItems > 0 ? Math.round((doneCount / totalItems) * 100) : 0}%)
           </div>
 
@@ -195,14 +195,14 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               padding: '24px 16px',
               textAlign: 'center',
               color: T.textSubtle(),
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               lineHeight: '18px',
             }}>
-              <div style={{ fontSize: 24, marginBottom: 8 }}>✨</div>
+              <div style={{ fontSize: 'var(--ds-font-size-800)', marginBottom: 8 }}>✨</div>
               <div style={{ fontWeight: 600, color: T.text(), marginBottom: 4 }}>
                 Nothing completed yet this week
               </div>
-              <div style={{ fontSize: 12 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)' }}>
                 Resolve work items to fill this badge.
               </div>
             </div>
@@ -223,12 +223,12 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                   <div style={{ flexShrink: 0, marginTop: 2 }}>{getJiraIcon(item.item_type)}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
-                      <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
                       <CatalystStatusPill status="Done" statusCategory="done" interactive={false} compact />
                     </div>
-                    <div style={{ fontSize: 12, fontWeight: 400, color: T.text(), lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
-                    <div style={{ fontSize: 11, color: T.textSubtle(), marginTop: 2, fontStyle: 'italic' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: T.text(), lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtle(), marginTop: 2, fontStyle: 'italic' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
                   </div>
                 </div>
               );
@@ -237,7 +237,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
 
           {/* Footer — only when there are items the user can click into */}
           {doneCount > 0 && (
-            <div style={{ padding: '10px 16px', borderTop: `1px solid ${T.border()}`, fontSize: 11, color: T.textSubtlest(), textAlign: 'center', fontStyle: 'italic' }}>
+            <div style={{ padding: '10px 16px', borderTop: `1px solid ${T.border()}`, fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest(), textAlign: 'center', fontStyle: 'italic' }}>
               Click any item to view details
             </div>
           )}
@@ -274,16 +274,16 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               <img src={avatarUrl} alt={name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             ) : (
-              <span style={{ fontSize: 22, fontWeight: 700, color: T.textInverse() }}>{initials(name)}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: T.textInverse() }}>{initials(name)}</span>
             )}
           </div>
 
           {/* Name + Role */}
-          <div style={{ fontSize: 16, fontWeight: 600, color: T.text() }}>{name}</div>
-          <div style={{ fontSize: 13, color: T.textSubtle(), marginBottom: 16 }}>{role}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text() }}>{name}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.textSubtle(), marginBottom: 16 }}>{role}</div>
 
           {/* Week Stats Row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, fontSize: 13 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, fontSize: 'var(--ds-font-size-300)' }}>
             <span style={{ fontWeight: 600, color: T.text() }}>{nonDone.length} open</span>
             <span style={{ color: T.textSubtlest() }}>&middot;</span>
             <span style={{ fontWeight: 600, color: staleItems.length > 0 ? T.textDanger() : T.text() }}>{staleItems.length} stale</span>
@@ -297,7 +297,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           {/* Open Items */}
           {nonDone.length > 0 && (
             <div style={{ textAlign: 'left' as const, marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: T.textSubtle(), letterSpacing: '0.04em', marginBottom: 10 }}>Open items</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textSubtle(), letterSpacing: '0.04em', marginBottom: 10 }}>Open items</div>
               {nonDone.map(item => {
                 const hasHighP = isHighPriority(item.priority);
                 const hasMedP = isMediumPriority(item.priority);
@@ -317,12 +317,12 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     {/* Compact header: icon + key + project + age */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5 }}>
                       {getJiraIcon(item.item_type)}
-                      <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
-                      <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: item.age_days > 30 ? T.textWarning() : T.textSubtlest(), fontFamily: MONO }}>since {item.age_days} days</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '1px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: item.age_days > 30 ? T.textWarning() : T.textSubtlest(), fontFamily: MONO }}>since {item.age_days} days</span>
                     </div>
                     {/* Title */}
-                    <div style={{ fontSize: 12, fontWeight: 500, color: T.text(), lineHeight: '1.35', marginBottom: 6 }}>{item.title}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', marginBottom: 6 }}>{item.title}</div>
                     {/* Status + from-tag */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                       <CatalystStatusPill status={item.status} statusCategory={item.status_category} interactive={false} compact />
@@ -339,7 +339,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           {/* Completed Section */}
           {doneItems.length > 0 && (
             <div style={{ textAlign: 'left' as const, borderInlineStart: `3px solid ${T.borderSuccess()}`, paddingInlineStart: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: T.textSuccess(), letterSpacing: '0.04em', marginBottom: 10 }}>Completed</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textSuccess(), letterSpacing: '0.04em', marginBottom: 10 }}>Completed</div>
               {doneItems.map(item => {
                 const closedDate = item.resolved_at || item.updated_at;
                 const resolvedLabel = closedDate ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
@@ -352,17 +352,17 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
-                        <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO }}>{item.item_key}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: T.bgNeutral(), color: T.textSubtle() }}>{item.project_key}</span>
                         <CatalystStatusPill status="Done" statusCategory="done" interactive={false} compact />
                       </div>
-                      <div style={{ fontSize: 12, color: T.text(), marginTop: 2 }}>{item.title}</div>
-                      <div style={{ fontSize: 11, color: T.textSubtlest(), marginTop: 2 }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.text(), marginTop: 2 }}>{item.title}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest(), marginTop: 2 }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
                     </div>
                   </div>
                 );
               })}
-              <div style={{ fontSize: 12, color: T.textSubtle(), marginTop: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle(), marginTop: 8 }}>
                 {doneCount} of {totalItems} total resolved ({totalItems > 0 ? Math.round((doneCount / totalItems) * 100) : 0}%)
               </div>
             </div>
@@ -372,7 +372,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           {nonDone.length === 0 && doneItems.length === 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '20px 0' }}>
               <CalendarX2 size={32} style={{ color: T.iconDisabled() }} />
-              <span style={{ fontSize: 13, color: T.textSubtlest(), fontStyle: 'italic' }}>No activity recorded this week</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: T.textSubtlest(), fontStyle: 'italic' }}>No activity recorded this week</span>
             </div>
           )}
         </div>
@@ -428,13 +428,13 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               {/* Row 1 (compact header): icon + key + project + age ── 20px */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, height: 20, marginBottom: 4 }}>
                 {getJiraIcon(item.item_type)}
-                <span style={{ fontSize: 11, fontWeight: 600, color: T.textInfo(), fontFamily: MONO, letterSpacing: '-0.01em' }}>{item.item_key}</span>
-                <span style={{ fontSize: 9, fontWeight: 600, padding: '1px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle(), lineHeight: '14px', whiteSpace: 'nowrap' }}>{item.project_key}</span>
-                <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap' }}>since {item.age_days} days</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textInfo(), fontFamily: MONO, letterSpacing: '-0.01em' }}>{item.item_key}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '1px 5px', borderRadius: 3, background: T.bgNeutral(), color: T.textSubtle(), lineHeight: '14px', whiteSpace: 'nowrap' }}>{item.project_key}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: ageColor, fontFamily: MONO, whiteSpace: 'nowrap' }}>since {item.age_days} days</span>
               </div>
 
               {/* Row 2 (title): 2-line clamp, 12px/500 ── flex fills remaining space */}
-              <div style={{ fontSize: 12, fontWeight: 500, color: T.text(), lineHeight: '1.35', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.text(), lineHeight: '1.35', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
 
               {/* Row 3 (status bar): lozenge + from-tag + contributor ── 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, minHeight: 24 }}>
@@ -447,7 +447,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                   </span>
                 )}
                 {isContributor && (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 500, color: T.textSubtle() }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-50)', fontWeight: 500, color: T.textSubtle() }}>
                     {'→'} <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}
                   </span>
                 )}
@@ -463,7 +463,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
         <div style={{
           position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)',
           display: 'flex', alignItems: 'center', gap: 8,
-          fontSize: 11, fontWeight: 600, color: T.textSubtle(),
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.textSubtle(),
           background: T.bgNeutralSubtle(),
           border: `1px solid ${T.border()}`,
           borderRadius: 12, padding: '3px 8px',
@@ -476,7 +476,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               background: 'none', border: 'none',
               cursor: safePage === 0 ? 'default' : 'pointer',
               color: safePage === 0 ? T.textDisabled() : T.textInfo(),
-              fontSize: 13, fontWeight: 700, padding: '0 4px', lineHeight: 1,
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 700, padding: '0 4px', lineHeight: 1,
             }}
             aria-label="Previous page"
           >{'‹'}</button>
@@ -490,7 +490,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               background: 'none', border: 'none',
               cursor: safePage >= totalPages - 1 ? 'default' : 'pointer',
               color: safePage >= totalPages - 1 ? T.textDisabled() : T.textInfo(),
-              fontSize: 13, fontWeight: 700, padding: '0 4px', lineHeight: 1,
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 700, padding: '0 4px', lineHeight: 1,
             }}
             aria-label="Next page"
           >{'›'}</button>
@@ -502,7 +502,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
 
       {/* EMPTY STATE */}
       {items.length === 0 && (
-        <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center', color: T.textSubtle(), fontSize: 14 }}>
+        <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center', color: T.textSubtle(), fontSize: 'var(--ds-font-size-400)' }}>
           No work items found for this week
         </div>
       )}

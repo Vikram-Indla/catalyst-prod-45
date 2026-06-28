@@ -66,16 +66,16 @@ export function ActivityFeed() {
             className="flex items-center justify-center flex-shrink-0"
             style={{
               width: 28, height: 28, borderRadius: '50%', background: item.color,
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 10, fontWeight: 600,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
             }}
           >
             {item.initials}
           </div>
           <div className="flex-1 min-w-0">
-            <div style={{ fontSize: 11, color: 'var(--exec-text-secondary)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-secondary)', lineHeight: 1.5 }}>
               {item.text}
             </div>
-            <div style={{ fontSize: 10, color: 'var(--exec-text-tertiary)', marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-text-tertiary)', marginTop: 2 }}>
               {item.time}
             </div>
           </div>

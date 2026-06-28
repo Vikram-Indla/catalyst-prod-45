@@ -6,7 +6,7 @@ const repoRoot = resolve(__dirname, '../../../../..');
 
 // 2026-06-18 — Translate affordance adopts the canonical AI-CTA mark.
 // Every title-translate surface must (a) drop the legacy idle glyph
-// (🌐 emoji in the backlog cell, blue #1868DB "C"-square in the drawer
+// (🌐 emoji in the backlog cell, blue var(--ds-link, #1868DB) "C"-square in the drawer
 // chips), (b) render CatyPulseIcon as the idle + in-progress mark, and
 // (c) stop importing @atlaskit/spinner — the translating state is the
 // pulsing CatyPulseIcon (Option A), not a spinner.

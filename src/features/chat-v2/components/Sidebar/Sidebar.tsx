@@ -376,7 +376,7 @@ function EmptySection({ label }: { label: string }) {
       style={{
         padding: '8px 12px 8px 32px',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--cv2-text-muted)',
       }}
     >

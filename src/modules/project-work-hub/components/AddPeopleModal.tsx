@@ -111,7 +111,7 @@ export function AddPeopleModal() {
             id="add-people-modal-title"
             style={{
               margin: 0,
-              fontSize: 20,
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 653,
               letterSpacing: '-0.003em',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -146,7 +146,7 @@ export function AddPeopleModal() {
               htmlFor="add-people-emails"
               style={{
                 display: 'block',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
                 color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 marginBottom: 4,
@@ -165,7 +165,7 @@ export function AddPeopleModal() {
             <label
               style={{
                 display: 'block',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
                 color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 marginBottom: 4,
@@ -188,7 +188,7 @@ export function AddPeopleModal() {
                 borderRadius: 3,
                 background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                 color: token('color.text', 'var(--ds-text, #172B4D)'),
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 400,
                 fontFamily: 'inherit',
                 cursor: 'pointer',
@@ -198,7 +198,7 @@ export function AddPeopleModal() {
               <ChevronDown size={14} />
             </button>
           </div>
-          <p style={{ margin: 0, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
             Each person you add will get access to this project.
           </p>
         </div>

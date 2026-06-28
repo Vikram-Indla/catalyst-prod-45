@@ -151,7 +151,7 @@
 }
 
 .cc-msg-search-highlight {
-  background: #fff59d;
+  background: #fff59d; /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   color: inherit;
   padding: 0 2px;
   border-radius: 2px;

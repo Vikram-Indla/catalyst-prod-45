@@ -233,7 +233,7 @@ function SwitcherPanel({
             border: 'none',
             outline: 'none',
             background: 'transparent',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text, #172B4D)',
             fontFamily: 'inherit',
           }}
@@ -242,7 +242,7 @@ function SwitcherPanel({
           <button
             onClick={() => onSearchChange('')}
             style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0,
-              color: 'var(--ds-icon-subtle, #626F86)', fontSize: 14, lineHeight: 1 }}
+              color: 'var(--ds-icon-subtle, #626F86)', fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}
             aria-label="Clear search"
           >×</button>
         )}
@@ -279,7 +279,7 @@ function SwitcherPanel({
 
         {/* Empty state when search returns nothing */}
         {q && filteredMain.length === 0 && filtered(starredItems).length === 0 && (
-          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 13,
+          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtlest, #626F86)' }}>
             No results for "{search}"
           </div>
@@ -287,7 +287,7 @@ function SwitcherPanel({
 
         {/* Empty state — no items at all */}
         {!q && allItems.length === 0 && starredItems.length === 0 && (
-          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 13,
+          <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtlest, #626F86)' }}>
             {mode === 'tasks' ? 'No active workstreams' :
              mode === 'project' ? 'No projects yet' : 'No products yet'}
@@ -308,7 +308,7 @@ function SwitcherPanel({
           onClick={() => { onManagementNav(managementPath); onClose(); }}
           style={{
             border: 'none', background: 'none', cursor: 'pointer', padding: '4px 8px',
-            fontSize: 12, fontWeight: 500, color: 'var(--ds-link, #0052CC)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-link, #0052CC)',
             borderRadius: 3, fontFamily: 'inherit',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
@@ -321,7 +321,7 @@ function SwitcherPanel({
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
             border: 'none', background: 'none', cursor: 'pointer', padding: '4px 8px',
-            fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)',
             borderRadius: 3, fontFamily: 'inherit',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
@@ -351,7 +351,7 @@ function Section({
         <div style={{
           display: 'flex', alignItems: 'center', gap: 5,
           padding: '2px 12px 4px',
-          fontSize: 11, fontWeight: 700,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
           color: 'var(--ds-text-subtlest, #626F86)',
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
@@ -422,14 +422,14 @@ function ItemRow({ item, isCurrent, onNavigate }: {
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontSize: 13, fontWeight: isCurrent ? 600 : 400,
+          fontSize: 'var(--ds-font-size-300)', fontWeight: isCurrent ? 600 : 400,
           color: isCurrent ? 'var(--ds-text-selected, #0052CC)' : 'var(--ds-text, #172B4D)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {item.name}
         </div>
         <div style={{
-          fontSize: 11, fontFamily: 'monospace',
+          fontSize: 'var(--ds-font-size-100)', fontFamily: 'monospace',
           color: 'var(--ds-text-subtlest, #626F86)',
           marginTop: 1,
         }}>
@@ -711,7 +711,7 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
           : '1px solid var(--ds-border, rgba(161,189,217,0.14))',
         borderRadius: 4,
         cursor: 'pointer',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
         fontWeight: 500,
         color: 'var(--ds-text, #172B4D)',
@@ -728,7 +728,7 @@ export function ContextSwitcher({ variant = 'topnav', expanded = true }: Context
       <span style={{ display: 'flex', alignItems: 'baseline', gap: 4, overflow: 'hidden' }}>
         {triggerDisplayKey && (
           <span style={{
-            fontSize: 12, fontWeight: 700, letterSpacing: '0.02em',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 700, letterSpacing: '0.02em',
             color: 'var(--ds-text-subtle, #44546F)',
             flexShrink: 0,
           }}>

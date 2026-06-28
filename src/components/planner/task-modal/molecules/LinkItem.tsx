@@ -59,7 +59,7 @@ export const LinkItem: React.FC<LinkItemProps> = ({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: COLORS.textPrimary,
             marginBottom: '4px'
@@ -73,7 +73,7 @@ export const LinkItem: React.FC<LinkItemProps> = ({
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
           style={{
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             color: COLORS.accent,
             textDecoration: 'none',
             display: 'block',

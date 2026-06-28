@@ -1175,7 +1175,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
         <h1
           style={{
             margin: 0,
-            fontSize: 24,
+            fontSize: 'var(--ds-font-size-800)',
             fontWeight: 653,
             color: token('color.text', 'var(--ds-text, #172B4D)'),
             lineHeight: '28px',
@@ -1220,13 +1220,13 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
             <button
               onClick={switchToBasic}
               style={{
-                height: 32, padding: '0 8px', fontSize: 14,
+                height: 32, padding: '0 8px', fontSize: 'var(--ds-font-size-400)',
                 fontWeight: filterMode === 'basic' ? 600 : 400,
                 border: `1px solid ${filterMode === 'basic' ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 borderRight: filterMode === 'basic' ? `1px solid ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}` : 'none',
                 borderRadius: '3px 0 0 3px',
                 background: 'transparent',
-                color: filterMode === 'basic' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                color: filterMode === 'basic' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                 cursor: 'pointer',
               }}
             >
@@ -1235,12 +1235,12 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
             <button
               onClick={switchToJql}
               style={{
-                height: 32, padding: '0 8px', fontSize: 14,
+                height: 32, padding: '0 8px', fontSize: 'var(--ds-font-size-400)',
                 fontWeight: filterMode === 'jql' ? 600 : 400,
                 border: `1px solid ${filterMode === 'jql' ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 borderRadius: '0 3px 3px 0',
                 background: 'transparent',
-                color: filterMode === 'jql' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                color: filterMode === 'jql' ? token('color.link', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                 cursor: 'pointer',
               }}
             >
@@ -1339,7 +1339,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
                         borderRadius: 3,
                         border: `1px solid ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`,
                         background: 'transparent',
-                        fontSize: 14,
+                        fontSize: 'var(--ds-font-size-400)',
                         color: token('color.link', 'var(--ds-link, #0C66E4)'),
                         whiteSpace: 'nowrap', flexShrink: 0,
                       }}
@@ -1347,7 +1347,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
                       {FACET_LABELS[facet]}: {displayLabel}
                       <button
                         onClick={() => toggleValue(facet, val)}
-                        style={{ background: 'none', border: 'none', padding: '0 0 0 2px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'inherit', fontSize: 16, lineHeight: 1 }}
+                        style={{ background: 'none', border: 'none', padding: '0 0 0 2px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'inherit', fontSize: 'var(--ds-font-size-500)', lineHeight: 1 }}
                         aria-label={`Remove ${FACET_LABELS[facet]} ${displayLabel}`}
                       >×</button>
                     </span>
@@ -1418,7 +1418,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
 
           <div style={{ flex: 1 }} />
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 8px', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), fontSize: 'var(--ds-font-size-200)', fontWeight: 500, whiteSpace: 'nowrap' }}>
             {isFetching && <Spinner size="small" />}
             {!isFetching && data != null && `${data.totalCount} item${data.totalCount === 1 ? '' : 's'}`}
           </div>
@@ -1485,7 +1485,7 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
             emptyView={
-              <div style={{ padding: '32px 24px', textAlign: 'center', color: token('color.text.subtle'), fontSize: 14 }}>
+              <div style={{ padding: '32px 24px', textAlign: 'center', color: token('color.text.subtle'), fontSize: 'var(--ds-font-size-400)' }}>
                 No work items match this filter. Adjust the criteria above.
               </div>
             }

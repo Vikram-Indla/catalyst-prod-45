@@ -22,7 +22,7 @@ const STATUS_BAR_COLORS_DARK: Record<string, string> = {
   'Approved': 'var(--ds-background-information-bold, rgba(59,130,246,0.15))', 'Converted to Request': 'var(--ds-background-success-bold, rgba(22,163,74,0.15))',
 };
 const STATUS_TEXT_COLORS_DARK: Record<string, string> = {
-  'Draft': 'var(--ds-surface, rgba(255,255,255,0.72))', 'Submitted': 'var(--ds-surface, rgba(255,255,255,0.72))', 'Under Review': 'var(--ds-background-information-bold, #0C66E4)',
+  'Draft': 'var(--ds-surface, rgba(255,255,255,0.72))', 'Submitted': 'var(--ds-surface, rgba(255,255,255,0.72))', 'Under Review': 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))',
   'Approved': 'var(--ds-background-information-bold, #0C66E4)', 'Converted to Request': 'var(--ds-background-success, #DFFCF0)',
 };
 
@@ -46,7 +46,7 @@ export default function IdeasAnalyticsPage() {
     return (
       <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
         <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Analytics</h1>
+          <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Analytics</h1>
         </div>
         <div style={{ padding: '60px', textAlign: 'center', color: dk.t3 }}>Loading analytics...</div>
       </div>
@@ -96,8 +96,8 @@ export default function IdeasAnalyticsPage() {
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
       <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Analytics</h1>
-          <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Comprehensive insights across the ideation pipeline</p>
+          <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Analytics</h1>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3, margin: '4px 0 0' }}>Comprehensive insights across the ideation pipeline</p>
         </div>
       </div>
 
@@ -113,20 +113,20 @@ export default function IdeasAnalyticsPage() {
         {/* Row 1 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion Funnel</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion Funnel</div>
             {funnelData.map(s => {
               const label = s.status === 'Converted to Request' ? 'Converted' : s.status;
               const isConv = s.status === 'Converted to Request';
               return (
                 <div key={s.status} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <span style={{ width: '100px', fontSize: '12px', fontWeight: isConv ? 700 : 600, color: dk.t2, flexShrink: 0 }}>{label}</span>
+                  <span style={{ width: '100px', fontSize: 'var(--ds-font-size-200)', fontWeight: isConv ? 700 : 600, color: dk.t2, flexShrink: 0 }}>{label}</span>
                   <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                     <div style={{
                       width: `${Math.max((s.count / maxFunnel) * 100, s.count > 0 ? 8 : 0)}%`, height: '100%',
                       background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || 'var(--ds-border, var(--cp-ink-1, #2E2E2E))') : (STATUS_BAR_COLORS[s.status] || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'),
                       borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px',
-                      color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || 'var(--ds-text-subtle, #42526E)'),
-                      fontSize: '12px', fontWeight: 700, minWidth: s.count > 0 ? '32px' : undefined,
+                      color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))'),
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 700, minWidth: s.count > 0 ? '32px' : undefined,
                     }}>{s.count}</div>
                   </div>
                 </div>
@@ -135,14 +135,14 @@ export default function IdeasAnalyticsPage() {
           </div>
 
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Quarter Distribution</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Quarter Distribution</div>
             {stats.byQuarter.length === 0 ? (
-              <div style={{ color: dk.t3, fontSize: '13px' }}>No ideas assigned to quarters</div>
+              <div style={{ color: dk.t3, fontSize: 'var(--ds-font-size-300)' }}>No ideas assigned to quarters</div>
             ) : stats.byQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', color: QUARTER_BADGE[q.quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{q.quarter}</span>
+                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', color: QUARTER_BADGE[q.quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', fontWeight: 700 }}>{q.count}</div>
+                  <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-200)', fontWeight: 700 }}>{q.count}</div>
                 </div>
               </div>
             ))}
@@ -152,28 +152,28 @@ export default function IdeasAnalyticsPage() {
         {/* Row 2 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion by Theme</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion by Theme</div>
             {convByTheme.length === 0 ? (
-              <div style={{ color: dk.t3, fontSize: '13px' }}>No conversion data</div>
+              <div style={{ color: dk.t3, fontSize: 'var(--ds-font-size-300)' }}>No conversion data</div>
             ) : convByTheme.map(t => (
               <div key={t.theme} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <span style={{ width: '140px', fontSize: '12px', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.theme}</span>
+                <span style={{ width: '140px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.theme}</span>
                 <div style={{ flex: 1, height: '20px', background: barTrack, borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
-                  <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.15))' : 'var(--ds-link, #0C66E4)', borderRadius: '4px' }} />
+                  <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'var(--ds-background-information-bold, rgba(59,130,246,0.15))' : 'var(--ds-link, var(--ds-link, #0C66E4))', borderRadius: '4px' }} />
                   <div style={{ position: 'absolute', top: 0, left: 0, width: `${(t.converted / maxConvTheme) * 100}%`, height: '100%', background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))', borderRadius: '4px' }} />
                 </div>
-                <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: dk.greenText, minWidth: '40px', textAlign: 'right' }}>{t.converted}/{t.total}</span>
+                <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: dk.greenText, minWidth: '40px', textAlign: 'right' }}>{t.converted}/{t.total}</span>
               </div>
             ))}
           </div>
 
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion by Quarter</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion by Quarter</div>
             {convByQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', color: QUARTER_BADGE[q.quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{q.quarter}</span>
+                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', color: QUARTER_BADGE[q.quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
+                  <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-200)', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
                 </div>
               </div>
             ))}
@@ -187,9 +187,9 @@ export default function IdeasAnalyticsPage() {
 function StatCard({ label, value, subtitle, color, isDark, dk }: { label: string; value: string; subtitle: string; color: string; isDark: boolean; dk: typeof DK }) {
   return (
     <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${isDark ? 'var(--ds-border-bold, #454545)' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
-      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
       <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--cp-font-mono)', color, letterSpacing: '-0.5px' }}>{value}</span>
-      <div style={{ fontSize: '12px', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>
     </div>
   );
 }

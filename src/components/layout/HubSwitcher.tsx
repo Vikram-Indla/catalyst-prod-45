@@ -107,11 +107,14 @@ function HubRowLabel({ hub }: { hub: HubEntry }) {
         flex: 1,
       }}
     >
-      <span data-hub-label={hub.key}>{hub.label}</span>
+      {/* Explicit readable color: Atlaskit LinkItem was rendering the label at
+          ~7% alpha (rgba(206,206,217,0.07)) in dark mode → invisible. Force the
+          theme-aware text token so labels are readable in light AND dark. */}
+      <span data-hub-label={hub.key} style={{ color: 'var(--ds-text, #172B4D)' }}>{hub.label}</span>
       <span
         data-hub-shortcut={hub.key}
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           color: 'var(--ds-text-subtlest, #626F86)',
           fontFamily: 'var(--ds-font-family-code, ui-monospace, SFMono-Regular, monospace)',
           fontWeight: 500,
@@ -193,7 +196,11 @@ export function HubSwitcher() {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <Tooltip content="Switch hub" position="bottom">
+      {/* Suppress the tooltip while the menu is open — otherwise the
+          position="bottom" tooltip renders over the dropdown's search row and
+          clips the "Search hubs" placeholder to "h hubs". Empty content =
+          no tooltip popup. */}
+      <Tooltip content={open ? '' : 'Switch hub'} position="bottom">
         {(tooltipProps) => (
           <DropdownMenuTrigger asChild>
             <button
@@ -213,7 +220,7 @@ export function HubSwitcher() {
                   ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
                   : 'transparent',
                 cursor: 'pointer',
-                color: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+                color: 'var(--ds-icon, #44546F)',
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => {
@@ -242,7 +249,9 @@ export function HubSwitcher() {
         className="z-[1000]"
         style={{
           width: 343,
-          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+          boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))',
           borderRadius: 8,
           padding: 0,
           maxHeight: 'none',
@@ -251,12 +260,7 @@ export function HubSwitcher() {
       >
         <style>{`
           [data-hub-switcher-section] [class*="SectionTitle"] {
-            color: var(--ds-text-subtle, #505258) !important;
-          }
-          @media (prefers-color-scheme: dark) {
-            [data-hub-switcher-section] [class*="SectionTitle"] {
-              color: var(--ds-text-subtle, #e0e0e0) !important;
-            }
+            color: var(--ds-text-subtle, #44546F) !important;
           }
         `}</style>
         <div
@@ -283,7 +287,7 @@ export function HubSwitcher() {
               border: 'none',
               outline: 'none',
               background: 'transparent',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #f0f0f0)))',
             }}
           />
@@ -344,7 +348,7 @@ export function HubSwitcher() {
                           borderRadius: 4,
                           background: 'var(--ds-surface, #FFFFFF)',
                           border: '1px solid var(--ds-border, #DFE1E6)',
-                          boxShadow: '0 1px 3px rgba(9, 30, 66, 0.08)',
+                          boxShadow: '0 1px 3px rgba(9, 30, 66, 0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
                           marginBottom: 4,
                           outline: 'none',
                         }}

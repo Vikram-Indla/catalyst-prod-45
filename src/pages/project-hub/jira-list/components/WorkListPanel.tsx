@@ -11,12 +11,12 @@
  * 2026-05-21: Left Panel Navigator spec alignment (14 gaps closed):
  *  - GroupBySelector: @atlaskit/dropdown-menu (Group by: None/Status/Assignee/Priority)
  *  - SortConfigButton + RefreshButton: @atlaskit/button/new IconButton appearance="subtle"
- *  - IssueCardList: background #F7F8F9, gap 1px hairline separator (flex column)
- *  - Active card: 3px solid #0C66E4 left accent bar (position:absolute), #E9F2FF bg
- *  - Active summary color: #0C66E4
+ *  - IssueCardList: background var(--ds-surface-sunken, #F7F8F9), gap 1px hairline separator (flex column)
+ *  - Active card: 3px solid var(--ds-link, #0C66E4) left accent bar (position:absolute), var(--ds-background-information, #E9F2FF) bg
+ *  - Active summary color: var(--ds-link, #0C66E4)
  *  - IssueTypeIcon: 20px
- *  - IssueKey typography: 13px/500/#44546F
- *  - Footer: 40px sticky, mixed-weight "N of 1000+" (gray + bold blue #0C66E4)
+ *  - IssueKey typography: 13px/500/var(--ds-text-subtle, #44546F)
+ *  - Footer: 40px sticky, mixed-weight "N of 1000+" (gray + bold blue var(--ds-link, #0C66E4))
  *  - Infinite scroll: IntersectionObserver + @atlaskit/spinner (replaces Load-more button)
  *  - Keyboard: Up/Down arrows, J/K vim-style, Home/End, Enter/Space, Escape propagates to parent
  */
@@ -347,7 +347,7 @@ export function WorkListPanel({
                 : 'var(--ds-text, #292A2E)',
               marginBottom: 8,
               lineHeight: '20px',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             {item.summary || '(No title)'}
@@ -364,7 +364,7 @@ export function WorkListPanel({
           >
             <span
               style={{
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: 'var(--ds-text-subtlest, #44546F)',
                 display: 'inline-flex',
@@ -400,7 +400,7 @@ export function WorkListPanel({
                     padding: 0,
                     margin: 0,
                     font: 'inherit',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
                     color: 'var(--ds-text-subtlest, #44546F)',
                     cursor: 'pointer',
@@ -460,7 +460,7 @@ export function WorkListPanel({
         flexDirection: 'column',
         flex: 1,
         minHeight: 0,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
       }}
     >
       {/* ── Inner search bar (hidden when AllWorkToolbar owns search) ── */}
@@ -500,7 +500,7 @@ export function WorkListPanel({
                 outline: 'none',
                 boxShadow: 'none',
                 width: '100%',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 background: 'transparent',
                 color: 'var(--ds-text, #172B4D)',
               }}
@@ -556,7 +556,7 @@ export function WorkListPanel({
           flex: 1,
           overflowY: 'auto',
           minHeight: 0,
-          // IssueCardList container: #F7F8F9 bg with 1px gap (hairline sep between cards)
+          // IssueCardList container: var(--ds-surface-sunken, #F7F8F9) bg with 1px gap (hairline sep between cards)
           background: 'var(--ds-background-neutral, #F7F8F9)',
           display: 'flex',
           flexDirection: 'column',
@@ -579,7 +579,7 @@ export function WorkListPanel({
                     alignItems: 'center',
                     gap: 6,
                     padding: '8px 8px',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: 'var(--ds-text-subtle, #626F86)',
                     background: 'var(--ds-background-neutral, #F7F8F9)',
@@ -607,7 +607,7 @@ export function WorkListPanel({
                     <JiraIssueTypeIcon type={group.label as any} size={14} />
                   )}
                   <span style={{ flex: 1 }}>{group.label}</span>
-                  <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest, #8590A2)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ds-text-subtlest, #8590A2)' }}>
                     {group.items.length}
                   </span>
                 </button>
@@ -650,7 +650,7 @@ export function WorkListPanel({
               padding: '32px 16px',
               textAlign: 'center',
               color: 'var(--ds-text-subtle, #626F86)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             No work items
@@ -671,7 +671,7 @@ export function WorkListPanel({
             justifyContent: 'center',
             borderTop: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
             background: 'var(--ds-surface, #FFFFFF)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             gap: 4,
           }}
         >

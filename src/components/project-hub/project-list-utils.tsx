@@ -40,7 +40,7 @@ export function StatusBadge({ status }: { status: string }) {
         display: 'inline-block',
         height: 20,
         lineHeight: '20px',
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
@@ -68,7 +68,7 @@ const HEALTH_STYLES: Record<string, { bg: string; color: string; dot: string }> 
 };
 
 export function HealthBadge({ health }: { health: string | null }) {
-  if (!health) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
+  if (!health) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
   const s = HEALTH_STYLES[health] || HEALTH_STYLES.on_track;
   const label = health.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
   return (
@@ -79,7 +79,7 @@ export function HealthBadge({ health }: { health: string | null }) {
         gap: 5,
         height: 20,
         lineHeight: '20px',
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
         borderRadius: 3,
         padding: '0 6px',
@@ -95,7 +95,6 @@ export function HealthBadge({ health }: { health: string | null }) {
     </span>
   );
 }
-
 const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--quality-high, #059669)', '#0369A1', 'var(--ds-background-accent-magenta-bolder, #be185d)'];
 
 function getInitials(name: string): string {
@@ -111,7 +110,7 @@ function hashName(name: string): number {
 }
 
 export function AvatarStack({ names }: { names: string[] }) {
-  if (names.length === 0) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
+  if (names.length === 0) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
 
   const show = Math.min(names.length, 4);
   const overflow = names.length - show;
@@ -129,7 +128,7 @@ export function AvatarStack({ names }: { names: string[] }) {
             marginLeft: i > 0 ? -6 : 0,
             backgroundColor: AVATAR_COLORS[hashName(name) % AVATAR_COLORS.length],
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            fontSize: 10,
+            fontSize: 'var(--ds-font-size-50)',
             fontWeight: 600,
             border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             fontFamily: 'var(--cp-font-body)',
@@ -151,7 +150,7 @@ export function AvatarStack({ names }: { names: string[] }) {
             marginLeft: -6,
             backgroundColor: 'var(--ds-background-neutral, #EBECF0)',
             color: 'var(--ds-text-subtle, #42526E)',
-            fontSize: 10,
+            fontSize: 'var(--ds-font-size-50)',
             fontWeight: 700,
             border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             fontFamily: 'var(--cp-font-body)',

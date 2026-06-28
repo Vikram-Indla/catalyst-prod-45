@@ -74,7 +74,7 @@ export function getTimelineCellColors(percentage: number): { bg: string; text: s
     return { bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.15))', text: BRAND_COLORS.teal };
   }
   if (percentage === 100) {
-    return { bg: 'rgba(249, 115, 22, 0.15)', text: BRAND_COLORS.orangeDark };
+    return { bg: 'rgba(249, 115, 22, 0.15)', text: BRAND_COLORS.orangeDark }; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   }
   // Over 100%
   return { bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.15))', text: BRAND_COLORS.red };

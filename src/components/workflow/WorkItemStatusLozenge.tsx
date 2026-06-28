@@ -47,7 +47,7 @@ export function StatusLozengeByType({
   const appearance = categoryToAppearance(statusCategory);
 
   // Canonical status pill (statusPalette.ts). Was @atlaskit/lozenge whose bold
-  // success rendered the dark #1F845A/white that diverged from the canonical
+  // success rendered the dark var(--ds-background-success-bold, #1F845A)/white that diverged from the canonical
   // #94C748 pastel; unified 2026-06-17 with all other work-item status pills.
   return (
     <span style={{
@@ -61,7 +61,7 @@ export function StatusLozengeByType({
     }}>
       <span style={{
         font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: statusFg(),
+        color: statusFg(appearance),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         padding: '2px',

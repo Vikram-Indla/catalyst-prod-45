@@ -11,7 +11,7 @@ interface IconColorPickerProps {
 export function IconColorPicker({ icon, onIconChange }: IconColorPickerProps) {
   return (
     <div>
-      <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
+      <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
         Icon
       </label>
       <IconPickerGrid

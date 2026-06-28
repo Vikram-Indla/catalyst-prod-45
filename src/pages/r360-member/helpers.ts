@@ -38,7 +38,7 @@ export function getMonthRange(offset: number) {
 export function priorityDotColor(p: string) {
   const l = p?.toLowerCase();
   if (l === 'highest' || l === 'critical') return 'var(--ds-text-danger, #EF4444)';
-  if (l === 'high') return 'var(--ds-background-warning-bold, #f97316)';
+  if (l === 'high') return 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #f97316))';
   if (l === 'medium') return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 }

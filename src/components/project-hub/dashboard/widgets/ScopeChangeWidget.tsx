@@ -135,7 +135,7 @@ export default function ScopeChangeWidget({
               style={{
                 height: 56,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -191,9 +191,9 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', '#F7F8F9'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         overflow: 'hidden',
       }}
     >
@@ -234,7 +234,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
       }}
     >
       <span
@@ -346,7 +346,7 @@ function ReleaseRow({
           }}
         >
           {s.releaseName}{' '}
-          <span style={{ color: token('color.text.subtle', '#626F86'), fontWeight: 500 }}>
+          <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'), fontWeight: 500 }}>
             · {formatEndDate(s.endDate)}
           </span>
         </span>
@@ -361,7 +361,7 @@ function ReleaseRow({
           <span
             style={{
               ...SMALL,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
               fontVariantNumeric: 'tabular-nums',
               whiteSpace: 'nowrap',
             }}
@@ -386,7 +386,7 @@ function ReleaseRow({
             flex: 1,
             height: 14,
             borderRadius: 7,
-            background: token('color.background.neutral', '#F1F2F4'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
             overflow: 'hidden',
             display: 'flex',
           }}
@@ -421,7 +421,7 @@ function ReleaseRow({
               s.deltaPercent > thresholdHigh
                 ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
                 : s.deltaPercent > 0
-                  ? token('color.text.subtle', '#44546F')
+                  ? token('color.text.subtle', 'var(--ds-text-subtle, #44546F)')
                   : 'var(--ds-text-accent-green-bolder, #216E4E)',
             fontVariantNumeric: 'tabular-nums',
           }}

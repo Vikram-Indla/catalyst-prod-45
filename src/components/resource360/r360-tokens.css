@@ -49,7 +49,7 @@
   --r360-hub-task: var(--ds-background-discovery-bold, #6E5DC6);
 
   /* ─── PRIORITY — WARM SPECTRUM ─── */
-  --r360-pri-critical: #BE123C;
+  --r360-pri-critical: var(--ds-text-danger, #BE123C);
   --r360-pri-highest: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --r360-pri-high: var(--ds-background-warning-bold, #E2B203);
   --r360-pri-medium: var(--ds-text-warning, #974F0C);
@@ -150,7 +150,7 @@
   background: var(--r360-surface-hover);
 }
 .r360-root .r360-row-alt {
-  background: #FAF8F5;
+  background: var(--ds-surface-sunken, #FAF8F5);
 }
 
 /* ─── KEY (monospace) ─── */

@@ -111,7 +111,7 @@ export function ConversationRow({
             borderRadius: 8,
             background: 'var(--cv2-unread)',
             color: 'var(--cv2-unread-text, #FFFFFF)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',

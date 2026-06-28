@@ -6,7 +6,7 @@ export type RunStatus = 'NOT_RUN' | 'IN_PROGRESS' | 'PASSED' | 'FAILED' | 'BLOCK
 
 export type DefectStatus = 'OPEN' | 'IN_PROGRESS' | 'FIXED' | 'VERIFIED' | 'CLOSED' | 'WONT_FIX' | 'DUPLICATE';
 
-export type DefectSeverity = 'CRITICAL' | 'MAJOR' | 'MINOR' | 'TRIVIAL';
+export type DefectSeverity = 'BLOCKER' | 'CRITICAL' | 'MAJOR' | 'MINOR' | 'TRIVIAL';
 
 // Test Plan status types
 export type TestPlanStatus = 'draft' | 'active' | 'completed' | 'archived';
@@ -40,9 +40,11 @@ export interface TMTestPlan {
   created_by?: string;
   created_at: string;
   updated_at: string;
+  sprint_id?: string | null;
   // Joined relations
   owner?: { id: string; full_name?: string; avatar_url?: string };
   release?: { id: string; name: string; version?: string };
+  sprint?: { id: string; name: string; status: string } | null;
   created_by_user?: { id: string; full_name?: string; avatar_url?: string };
 }
 
@@ -62,6 +64,7 @@ export interface TestPlanFilters {
   status?: TestPlanStatus | TestPlanStatus[];
   owner_id?: string;
   release_id?: string;
+  sprint_id?: string | null;
   search?: string;
   date_from?: string;
   date_to?: string;
@@ -74,6 +77,7 @@ export interface CreateTestPlanInput {
   start_date?: string;
   end_date?: string;
   release_id?: string;
+  sprint_id?: string | null;
   objectives?: string;
   in_scope?: string;
   out_of_scope?: string;
@@ -169,11 +173,13 @@ export interface TMTestCase {
   created_at: string;
   updated_at: string;
   is_ai_generated?: boolean;
+  sprint_id?: string | null;
   // Canonical assignee fields (matching TMCycleScope/TMDefect pattern)
   assigned_to: string | null;
   assignee?: { id: string; full_name: string; avatar_url?: string };
   // Joined relations
   priority?: TMCasePriority;
+  sprint?: { id: string; name: string; status: string } | null;
   priority_ref?: { name: string; color: string; level?: number } | null;
   type?: TMCaseType;
   folder?: TMFolder;
@@ -206,6 +212,8 @@ export interface TMCycle {
   blocked_count?: number;
   not_run_count?: number;
   pass_rate?: number;
+  sprint_id?: string | null;
+  sprint?: { id: string; name: string; status: string } | null;
 }
 
 export interface TMRun {
@@ -231,6 +239,7 @@ export interface TMCycleScope {
   cycle_id: string;
   case_id: string;
   assigned_to: string | null;
+  due_date: string | null;
   status: RunStatus;
   last_run_id: string | null;
   last_run_at: string | null;
@@ -277,6 +286,8 @@ export interface TMDefect {
   jira_status_category?: string | null;
   jira_assignee_name?: string | null;
   jira_reporter_name?: string | null;
+  sprint_id?: string | null;
+  sprint?: { id: string; name: string; status: string } | null;
   test_case?: TMTestCase;
   run?: TMRun;
   assignee?: { id: string; full_name: string; avatar_url?: string };
@@ -390,7 +401,20 @@ export interface UpdateCycleInput extends Partial<CreateCycleInput> {
 export interface CreateDefectInput {
   title: string;
   description?: string;
+  description_adf?: unknown;
   severity: DefectSeverity;
+  priority?: string;
+  component?: string;
+  environment?: string;
+  affects_version?: string;
+  steps_to_reproduce?: string;
+  expected_result?: string;
+  expected_result_adf?: unknown;
+  actual_result?: string;
+  actual_result_adf?: unknown;
+  due_date?: string;
+  parent_key?: string;
+  sprint?: string;
   assigned_to?: string;
   case_id?: string;
   run_id?: string;
@@ -542,6 +566,7 @@ export function getExecutionStatusColor(status: RunStatus): string {
 
 export function getSeverityColor(severity: DefectSeverity): string {
   const map: Record<DefectSeverity, string> = {
+    BLOCKER: 'text-danger',
     CRITICAL: 'text-danger',
     MAJOR: 'text-warning',
     MINOR: 'text-info',

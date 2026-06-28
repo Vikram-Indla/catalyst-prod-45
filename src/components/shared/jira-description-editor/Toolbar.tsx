@@ -18,7 +18,7 @@ const TEXT_COLORS = [
   { label: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
   { label: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
   { label: 'Green', value: 'var(--ds-background-success-bold, #1F845A)' },
-  { label: 'Teal', value: '#00B8D9' },
+  { label: 'Teal', value: 'var(--ds-chart-teal-bold, #00B8D9)' },
   { label: 'Blue', value: 'var(--cp-primary-60, #0052CC)' },
   { label: 'Purple', value: 'var(--ds-background-discovery-bold, #6554C0)' },
   { label: 'Pink', value: 'var(--ds-background-danger-bold, #C9372C)' },
@@ -88,7 +88,7 @@ function StyleDropdown({ editor }: { editor: Editor }) {
         title="Text style"
       >
         {/* Always shows "Tt" icon — Jira canonical */}
-        <span style={{ fontFamily: 'Georgia, serif', fontSize: 13, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1 }}>Tt</span>
+        <span style={{ fontFamily: 'Georgia, serif', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1 }}>Tt</span>
         <ChevronDown size={12} />
       </button>
       {open && (
@@ -313,7 +313,7 @@ function LinkBtn({ editor }: { editor: Editor }) {
       </TbBtn>
       {open && (
         <div className="jde-link-dialog">
-          <div style={{ fontSize: 11, fontWeight: 650, marginBottom: 6, color: 'var(--ds-text-subtle, #42526E)' }}>Link URL</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, marginBottom: 6, color: 'var(--ds-text-subtle, #42526E)' }}>Link URL</div>
           <input
             ref={inputRef}
             value={url}
@@ -466,7 +466,7 @@ function InsertMenu({ editor }: { editor: Editor }) {
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <TbBtn title="Insert content" onClick={() => setOpen(v => !v)}>
-        <span style={{ fontSize: 16, fontWeight: 400, lineHeight: 1 }}>+</span>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 400, lineHeight: 1 }}>+</span>
       </TbBtn>
       {open && (
         <div className="jde-dropdown jde-dropdown--insert">
@@ -508,7 +508,7 @@ function EmojiBtn({ editor }: { editor: Editor }) {
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <TbBtn title="Emoji" onClick={() => setOpen(v => !v)}>
-        <span style={{ fontSize: 14 }}>😀</span>
+        <span style={{ fontSize: 'var(--ds-font-size-400)' }}>😀</span>
       </TbBtn>
       {open && (
         <div className="jde-emoji-picker">
@@ -558,7 +558,7 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
         style={{ color: 'var(--cp-purple-60, #7C3AED)', gap: 3 }}
       >
         <Sparkles size={13} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-purple-60, #7C3AED)' }}>Improve</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-purple-60, #7C3AED)' }}>Improve</span>
         <ChevronDown size={10} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
       </button>
       {open && (

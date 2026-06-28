@@ -33,12 +33,12 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
 
       <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 56px)' }}>
         {isLoading && (
-          <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>
+          <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)' }}>
             Loading…
           </div>
         )}
         {!isLoading && bookmarks.length === 0 && (
-          <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>
+          <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)' }}>
             Nothing saved yet. Click the bookmark icon on any message to save it for later.
           </div>
         )}
@@ -71,18 +71,18 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text, #172B4D)',
                 }}
               >
                 <span style={{ fontWeight: 500 }}>Saved message</span>
-                <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--ds-text-subtle, #44546F)' }}>
+                <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)' }}>
                   {relative(b.created_at)}
                 </span>
               </div>
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtle, #44546F)',
                   marginTop: 2,
                   overflow: 'hidden',

@@ -24,7 +24,7 @@ export function ThemeHealthChart({ themes }: Props) {
     }}>
       <h3 style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 16, fontWeight: 600,
+        fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 16,
       }}>
         Theme Health
@@ -52,7 +52,7 @@ export function ThemeHealthChart({ themes }: Props) {
                 }} />
                 <span style={{
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 14, fontWeight: 600,
+                  fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
                   color: 'var(--fg-1)',
                 }}>
                   {theme.name}
@@ -61,14 +61,14 @@ export function ThemeHealthChart({ themes }: Props) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 700,
                   color: 'var(--fg-1)',
                 }}>
                   {theme.completion_percent}%
                 </span>
                 <span style={{
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-4)',
                 }}>
                   {theme.done_items}/{theme.total_items} done

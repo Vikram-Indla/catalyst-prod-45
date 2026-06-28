@@ -204,7 +204,7 @@ export function MenuItem({
           ? 'var(--ds-background-selected, #E9F2FE)'
           : 'transparent',
         color: 'var(--ds-text, #292A2E)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily:
@@ -238,7 +238,7 @@ export function MenuItem({
       {shortcut && (
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             color: 'var(--ds-text-subtlest, #6B778C)',
             flexShrink: 0,
           }}

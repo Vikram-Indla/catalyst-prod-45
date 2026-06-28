@@ -98,14 +98,14 @@ export const DEFAULT_WORK_ITEM_TYPES = [
 ];
 
 export const JIRA_EPIC_COLORS = [
-  { label: 'Purple',  hex: '#8869AC' },
-  { label: 'Blue',    hex: '#3C6FBB' },
-  { label: 'Teal',    hex: '#3BAF85' },
-  { label: 'Green',   hex: '#65C170' },
-  { label: 'Yellow',  hex: '#F0C43F' },
-  { label: 'Orange',  hex: '#F79231' },
-  { label: 'Red',     hex: '#F04D44' },
-  { label: 'Pink',    hex: '#E74A8E' },
+  { label: 'Purple',  hex: '#8869AC' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { label: 'Blue',    hex: '#3C6FBB' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { label: 'Teal',    hex: '#3BAF85' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { label: 'Green',   hex: '#65C170' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { label: 'Yellow',  hex: '#F0C43F' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { label: 'Orange',  hex: '#F79231' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { label: 'Red',     hex: '#F04D44' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+  { label: 'Pink',    hex: '#E74A8E' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
 ];
 
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

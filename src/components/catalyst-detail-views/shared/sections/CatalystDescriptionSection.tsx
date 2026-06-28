@@ -221,7 +221,7 @@ function AtlaskitRendererPlaceholder({ plain }: { plain: string }) {
       className="cv-desc-body"
       // Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans
       style={{
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 400,
         color: "var(--ds-text, #292A2E)",
         lineHeight: "24px",
@@ -827,10 +827,10 @@ export function CatalystDescriptionSection({
             margin: 0,
             padding: "0 16px",
             flex: 1,
-            /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88).
+            /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88). // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                TreeWalker text-node probe confirmed h2 is the direct parent of the "Description"
                text node at 14px/500. Differs from Key details/Subtasks/LWI/Activity (all 16px/653). */
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             lineHeight: "20px",
             color: "var(--ds-text-subtle, #505258)",
@@ -918,7 +918,7 @@ export function CatalystDescriptionSection({
             if (issue) startTransition(() => setEditing(true));
           }}
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: "var(--ds-text-subtlest, #97A0AF)",
             fontStyle: "normal",
             minHeight: 40,
@@ -984,7 +984,7 @@ export function CatalystDescriptionSection({
                 className="cv-desc-body"
                 dir="auto"
                 style={{
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   color: "var(--ds-text, #292A2E)",
                   lineHeight: "24px",

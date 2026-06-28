@@ -141,7 +141,7 @@ export function NewConversationModal({ onClose, onCreated }: Props) {
                 background: mode === m ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
                 color: mode === m ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
                 cursor: 'pointer',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: mode === m ? 600 : 400,
               }}
             >
@@ -163,7 +163,7 @@ export function NewConversationModal({ onClose, onCreated }: Props) {
                 padding: '8px 12px',
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 4,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: 'var(--ds-text, #172B4D)',
                 background: 'var(--ds-surface, #FFFFFF)',
                 marginBottom: 8,
@@ -179,7 +179,7 @@ export function NewConversationModal({ onClose, onCreated }: Props) {
               }}
             >
               {filtered.length === 0 && (
-                <div style={{ padding: '12px 16px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13 }}>
+                <div style={{ padding: '12px 16px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)' }}>
                   No people found.
                 </div>
               )}
@@ -208,11 +208,11 @@ export function NewConversationModal({ onClose, onCreated }: Props) {
                     />
                   </div>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                       {p.full_name ?? p.email ?? 'Unknown'}
                     </div>
                     {p.email && (
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                         {p.email}
                       </div>
                     )}
@@ -227,7 +227,7 @@ export function NewConversationModal({ onClose, onCreated }: Props) {
           <div>
             <label
               htmlFor="c-new-conv-name"
-              style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', display: 'block', marginBottom: 4 }}
+              style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', display: 'block', marginBottom: 4 }}
             >
               Channel name
             </label>
@@ -244,7 +244,7 @@ export function NewConversationModal({ onClose, onCreated }: Props) {
                 padding: '8px 12px',
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 4,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: 'var(--ds-text, #172B4D)',
                 background: 'var(--ds-surface, #FFFFFF)',
                 outline: 'none',
@@ -254,7 +254,7 @@ export function NewConversationModal({ onClose, onCreated }: Props) {
         )}
 
         {error && (
-          <p style={{ marginTop: 8, fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)' }}>
+          <p style={{ marginTop: 8, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)' }}>
             {error}
           </p>
         )}

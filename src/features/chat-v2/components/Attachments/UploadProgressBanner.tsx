@@ -22,7 +22,7 @@ export function UploadProgressBanner({ label = 'Processing uploaded file…' }: 
           'repeating-linear-gradient(135deg, var(--cv2-accent, #1264A3) 0 14px, var(--cv2-accent-strong, #0B4F84) 14px 28px)',
         color: 'var(--ds-text-inverse, #FFFFFF)',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         textAlign: 'center',
         boxShadow: '0 4px 14px var(--ds-shadow-raised, rgba(0,0,0,0.25))',

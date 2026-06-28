@@ -27,11 +27,11 @@ export const IssueLabels: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>Labels</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>Labels</div>
         <CatalystTagGroup labels={['frontend', 'auth']} />
       </div>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>Fix Versions</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>Fix Versions</div>
         <CatalystTagGroup labels={['Sprint 2.2 - 15 May 2025', 'v3.0']} color="teal" />
       </div>
     </div>

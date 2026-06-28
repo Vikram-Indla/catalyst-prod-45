@@ -67,7 +67,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
           backgroundColor: 'var(--ds-surface, #FFFFFF)',
           border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           cursor: 'pointer',
           textAlign: 'left',
@@ -78,7 +78,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
           transition: 'border-color 150ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = '#B6C2CF';
+          e.currentTarget.style.borderColor = 'var(--ds-border, #B6C2CF)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))';
@@ -128,7 +128,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                   transition: 'background-color 150ms',
                 }}

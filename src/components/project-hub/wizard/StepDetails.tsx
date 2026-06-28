@@ -128,7 +128,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
     width: '100%',
     height: 40,
     padding: '8px 12px',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     color: 'var(--fg-1)',
     border: '1px solid var(--divider)',
     borderRadius: 6,
@@ -146,7 +146,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
     <div className="space-y-4">
       {/* Name */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
           Project Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
         </label>
         <input
@@ -160,7 +160,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
       {/* Key */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
           Project Key <span style={{ color: 'var(--sem-danger)' }}>*</span>
         </label>
         <div className="relative">
@@ -188,7 +188,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           </div>
         </div>
         {keyStatus === 'taken' && (
-          <span style={{ fontSize: 11, color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>
             This key is already in use
           </span>
         )}
@@ -196,7 +196,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
       {/* Department */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
           Department <span style={{ color: 'var(--sem-danger)' }}>*</span>
         </label>
         <input
@@ -210,14 +210,14 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
       {/* Priority */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
           Priority
         </label>
         <div className="grid grid-cols-4 gap-2">
           {PRIORITY_OPTIONS.map(opt => {
             const selected = data.priority === opt.value;
             const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-              critical: { bg: 'var(--ds-background-danger, #FFECEB)', text: '#BE123C', border: '#FECDD3' },
+              critical: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #BE123C)', border: '#FECDD3' },
               high:     { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-danger, #AE2A19)', border: 'var(--ds-background-warning, #FFF7D6)' },
               medium:   { bg: '#FEFCE8', text: 'var(--ds-text-warning, #974F0C)', border: '#FEF08A' },
               low:      { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #1F845A)', border: 'var(--ds-background-success, #DFFCF0)' },
@@ -230,7 +230,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                 onClick={() => onChange({ ...data, priority: selected ? '' : opt.value })}
                 style={{
                   height: 36,
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   borderRadius: 6,
                   background: selected ? c.bg : 'transparent',
@@ -248,7 +248,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
       {/* Lead Picker */}
       <div ref={leadRef} className="relative">
-        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
           Project Lead
         </label>
         <button
@@ -268,14 +268,14 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               {selectedLead.avatar_url ? (
                 <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
               ) : (
-                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]" style={{ width: 22, height: 22, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                   {getInitials(selectedLead.display_name)}
                 </div>
               )}
-              <span className="truncate" style={{ fontSize: 13, color: 'var(--fg-1)' }}>{selectedLead.display_name}</span>
+              <span className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)' }}>{selectedLead.display_name}</span>
             </div>
           ) : (
-            <span style={{ color: 'var(--fg-4)', fontSize: 13 }}>Select project lead...</span>
+            <span style={{ color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)' }}>Select project lead...</span>
           )}
           <ChevronDown size={14} style={{ color: 'var(--fg-3)', flexShrink: 0 }} />
         </button>
@@ -300,7 +300,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
             </div>
             <div className="overflow-y-auto flex-1 p-1" style={{ maxHeight: 200 }}>
               {filteredProfiles.length === 0 ? (
-                <div className="text-center py-4" style={{ fontSize: 12, color: 'var(--fg-3)' }}>No results</div>
+                <div className="text-center py-4" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>No results</div>
               ) : (
                 filteredProfiles.map(p => (
                   <button
@@ -312,13 +312,13 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
                     ) : (
-                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]" style={{ width: 24, height: 24, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                         {getInitials(p.display_name)}
                       </div>
                     )}
                     <div className="min-w-0">
-                      <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{p.display_name}</div>
-                      <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{p.role || 'Team Member'}</div>
+                      <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>{p.display_name}</div>
+                      <div className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{p.role || 'Team Member'}</div>
                     </div>
                     {p.id === data.lead_id && <Check size={14} className="ml-auto text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
                   </button>
@@ -331,7 +331,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
       {/* Description */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
           Description
         </label>
         <textarea
@@ -353,8 +353,8 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
       <div className="rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] p-4">
         <div className="flex items-center justify-between">
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>
-            <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>Enable bi-directional sync with an existing Jira project</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: 2 }}>Enable bi-directional sync with an existing Jira project</div>
           </div>
           <Switch
             checked={data.linkJira}
@@ -363,7 +363,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
         </div>
         {data.linkJira && (
           <div className="mt-3">
-            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               Jira Project Key
             </label>
             <input

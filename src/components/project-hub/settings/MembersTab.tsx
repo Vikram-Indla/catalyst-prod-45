@@ -136,7 +136,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by name or email to add..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
+            style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
           />
         </div>
 
@@ -153,13 +153,13 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <div className="flex items-center justify-center rounded-full flex-shrink-0"
-                  style={{ width: 28, height: 28, background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length], color: 'var(--bg-app)', fontSize: 11, fontWeight: 600 }}
+                  style={{ width: 28, height: 28, background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length], color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}
                 >
                   {user.name[0]?.toUpperCase() || '?'}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{user.name}</div>
-                  <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{user.email}</div>
+                  <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>{user.name}</div>
+                  <div className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{user.email}</div>
                 </div>
               </button>
             ))}
@@ -173,7 +173,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
           {[1,2,3].map(i => <div key={i} className="ph-skeleton rounded" style={{ height: 48 }} />)}
         </div>
       ) : members.length === 0 ? (
-        <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>No members yet</div>
+        <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>No members yet</div>
       ) : (
         <div className="space-y-1">
           {members.map(m => (
@@ -186,7 +186,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       )}
 
       <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
-        <p style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', lineHeight: 1.6 }}>
           <strong>Admin</strong> — Full access including settings ·{' '}
           <strong>Member</strong> — Create, edit, and manage work items ·{' '}
           <strong>Viewer</strong> — Read-only access, can add comments
@@ -200,7 +200,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
             <ModalTitle appearance="warning">Remove member</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <p style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0 }}>
               Remove <strong>{pendingRemove.name}</strong> from this project? They will lose access to all project work items and settings.
             </p>
           </ModalBody>

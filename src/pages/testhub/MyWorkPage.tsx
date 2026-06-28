@@ -43,6 +43,7 @@ export default function MyWorkPage() {
       "assignee",
       "reporter",
       "category",
+      "sprint",
     ] as const,
   };
 

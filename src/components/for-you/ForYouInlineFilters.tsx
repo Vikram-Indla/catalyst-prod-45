@@ -16,8 +16,7 @@ const HUB_DOT_COLORS: Record<string, string> = {
   Strategy: 'var(--ds-link, #0C66E4)',
   Plan: 'var(--ds-background-discovery-bold, #6366f1)',
 };
-
-const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
+const AVATAR_PALETTE = ['var(--ds-chart-blue-bold, #6b7a8d)', 'var(--ds-chart-green-bold, #7a8b6b)', 'var(--ds-chart-orange-bold, #8b7a6b)', 'var(--ds-background-discovery-bold, #6b6b8b)', 'var(--ds-chart-teal-bold, #6b8b8b)', 'var(--ds-chart-magenta-bold, #8b6b7a)', 'var(--ds-chart-purple-bold, #7a6b8b)', 'var(--ds-background-discovery, #6b8b7a)'];
 function getAvatarColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -75,7 +74,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           height: 34, padding: '0 14px', borderRadius: 8,
-          fontSize: 14, fontWeight: value ? 600 : 500,
+          fontSize: 'var(--ds-font-size-400)', fontWeight: value ? 600 : 500,
           transition: 'all 0.15s',
           border: value ? '1px solid var(--cp-blue)' : '1px solid var(--cp-bd)',
           background: value ? 'var(--cp-blue-wash)' : 'var(--cp-bg)',
@@ -91,7 +90,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 16, height: 16, borderRadius: '50%',
               backgroundColor: 'var(--cp-blue-wash)', border: 'none',
-              cursor: 'pointer', color: 'var(--cp-blue-text)', fontSize: 10, fontWeight: 700,
+              cursor: 'pointer', color: 'var(--cp-blue-text)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
               marginLeft: 2,
             }}
           >
@@ -136,7 +135,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
               autoFocus
               style={{
                 flex: 1, border: 'none', background: 'transparent', outline: 'none',
-                fontSize: 13, color: 'var(--cp-t1)', fontFamily: 'var(--cp-font-body)',
+                fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-t1)', fontFamily: 'var(--cp-font-body)',
               }}
             />
           </div>
@@ -147,7 +146,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               width: '100%', textAlign: 'left', padding: '10px 12px',
-              borderRadius: 8, fontSize: 14,
+              borderRadius: 8, fontSize: 'var(--ds-font-size-400)',
               fontWeight: !value ? 600 : 500,
               color: !value ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
               background: !value ? 'var(--cp-blue-wash)' : 'transparent',
@@ -170,7 +169,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                   textAlign: 'left', padding: '10px 12px', borderRadius: 8,
-                  fontSize: 14, fontWeight: isSelected ? 600 : 500,
+                  fontSize: 'var(--ds-font-size-400)', fontWeight: isSelected ? 600 : 500,
                   color: isSelected ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
                   background: isSelected ? 'var(--cp-blue-wash)' : 'transparent',
                   border: 'none', cursor: 'pointer',
@@ -190,7 +189,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                   return avatarUrl ? (
                     <img src={avatarUrl} alt={option} style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                   ) : (
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                   );
                 })()}
 
@@ -202,7 +201,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
           })}
 
           {filtered.length === 0 && (
-            <div style={{ padding: '12px 10px', fontSize: 12, color: 'var(--cp-t3)', textAlign: 'center' }}>No matches</div>
+            <div style={{ padding: '12px 10px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-t3)', textAlign: 'center' }}>No matches</div>
           )}
         </div>
       )}
@@ -219,7 +218,7 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
         <button
           onClick={() => onFiltersChange({ project: null, hub: null, reportedBy: null })}
           style={{
-            fontSize: 12, fontWeight: 600, color: 'var(--cp-err-text)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-err-text)',
             background: 'none', border: 'none', cursor: 'pointer',
             marginLeft: 4, transition: 'opacity 0.15s',
           }}

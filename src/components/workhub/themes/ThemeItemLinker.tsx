@@ -137,7 +137,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
             autoFocus
             style={{
               border: 'none', outline: 'none', background: 'transparent',
-              fontSize: 12, width: '100%', color: 'var(--fg-1)',
+              fontSize: 'var(--ds-font-size-200)', width: '100%', color: 'var(--fg-1)',
             }}
           />
         </div>
@@ -146,11 +146,11 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
       {/* Items */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
         {isLoading ? (
-          <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: 'var(--fg-4)' }}>
+          <div style={{ padding: 16, textAlign: 'center', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>
             Loading items...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: 'var(--fg-4)' }}>
+          <div style={{ padding: 16, textAlign: 'center', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>
             {search ? 'No matches' : 'No unlinked items'}
           </div>
         ) : (
@@ -159,8 +159,8 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
               key={item.item_key}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '6px 12px', cursor: 'pointer', fontSize: 12,
-                background: selected.has(item.item_key) ? '#f0f9ff' : 'transparent',
+                padding: '6px 12px', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
+                background: selected.has(item.item_key) ? 'var(--ds-background-information, #f0f9ff)' : 'transparent',
               }}
             >
               <input
@@ -172,13 +172,13 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
               <span style={{
                 fontFamily: 'var(--ph-font-mono, monospace)',
                 fontWeight: 600, color: 'var(--cp-blue)', whiteSpace: 'nowrap',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
               }}>
                 {item.item_key}
               </span>
               <span style={{
                 padding: '1px 6px', borderRadius: 4,
-                fontSize: 10, fontWeight: 600,
+                fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                 background: 'var(--bg-1)', color: 'var(--fg-2)',
               }}>
                 {item.item_type}
@@ -199,7 +199,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
         padding: '10px 12px', borderTop: '1px solid var(--ds-surface-sunken, #F7F8F9)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
-        <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>
           {selected.size} selected
         </span>
         <button
@@ -210,7 +210,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
             padding: '6px 14px', borderRadius: 6, border: 'none',
             background: selected.size > 0 ? 'var(--cp-blue)' : 'var(--divider)',
             color: selected.size > 0 ? 'var(--bg-app)' : 'var(--fg-4)',
-            fontSize: 12, fontWeight: 600, cursor: selected.size > 0 ? 'pointer' : 'default',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: selected.size > 0 ? 'pointer' : 'default',
           }}
         >
           <Link2 size={13} />

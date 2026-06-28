@@ -74,7 +74,7 @@ function StatusLozenge({ status }: { status: string }) {
     <span style={{
       display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
       backgroundColor: s.bg, color: s.text,
-      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       lineHeight: '16px', whiteSpace: 'nowrap',
     }}>
       {status.toUpperCase()}
@@ -88,7 +88,7 @@ function PriorityLozenge({ priority }: { priority: string }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4,
-      fontSize: '11px', fontWeight: 650,
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 650,
       background: c.bg, color: c.text, border: `1px solid ${c.border}`,
     }}>
       {priority}
@@ -100,11 +100,11 @@ function PriorityLozenge({ priority }: { priority: string }) {
 // Note: selectStyle/inputStyle are used in edit mode — dark mode applied inline via isDark
 const selectStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
-  padding: '0 8px', fontSize: '13px', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: '100%', outline: 'none',
 };
 const inputStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.14))',
-  padding: '0 8px', fontSize: '13px', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: '100%', outline: 'none',
 };
 
 function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
@@ -112,7 +112,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
   return (
     <div>
       <div style={{
-        fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const,
         letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: '6px',
       }}>
         {label}
@@ -232,7 +232,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 200 }} />
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ color: dk.t3, fontSize: '14px' }}>Loading...</span>
+        <span style={{ color: dk.t3, fontSize: 'var(--ds-font-size-400)' }}>Loading...</span>
       </div>
     </>
   );
@@ -259,7 +259,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
         }}>
           <span style={{
-            fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 700,
+            fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700,
             color: dk.blueKey, background: 'var(--cp-primary-light, #EFF6FF)', padding: '3px 10px', borderRadius: '4px',
           }}>
             {rawIdea.idea_key}
@@ -284,7 +284,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {/* Title */}
           <div style={{ padding: '20px 24px', borderBottom: `1px solid ${dk.divider}` }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: dk.t1, margin: 0, lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: dk.t1, margin: 0, lineHeight: 1.3 }}>
               {rawIdea.title}
             </h2>
           </div>
@@ -297,12 +297,12 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               display: 'flex', alignItems: 'center', gap: '12px',
             }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: dk.t1 }}>Ready for promotion</div>
-                <div style={{ fontSize: '11px', color: dk.t3, marginTop: '2px' }}>Convert to an request to begin planning.</div>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.t1 }}>Ready for promotion</div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, marginTop: '2px' }}>Convert to an request to begin planning.</div>
               </div>
               <button onClick={() => onConvert?.(rawIdea.idea_key)} style={{
                 background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px',
-                padding: '7px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                padding: '7px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
               }}>
                 → Convert
               </button>
@@ -342,7 +342,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     ))}
                   </select>
                 ) : (
-                  <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{rawIdea.idea_type || 'Feature'}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1 }}>{rawIdea.idea_type || 'Feature'}</span>
                 )
               } />
 
@@ -355,7 +355,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     ))}
                   </select>
                 ) : (
-                  <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{formatSource(rawIdea.source)}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1 }}>{formatSource(rawIdea.source)}</span>
                 )
               } />
 
@@ -363,14 +363,14 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <FieldPair label="Ideas Theme" value={
                 isEditing ? (
                   <input value={localTheme} onChange={e => setLocalTheme(e.target.value)} style={darkInputStyle} placeholder="Enter ideas theme" />
-                ) : <span style={{ fontSize: '13px', fontWeight: 500, color: localTheme ? dk.t1 : dk.t3 }}>{localTheme || '—'}</span>
+                ) : <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: localTheme ? dk.t1 : dk.t3 }}>{localTheme || '—'}</span>
               } />
 
               {/* ASSIGNED TEAM — editable */}
               <FieldPair label="Assigned Team" value={
                 isEditing ? (
                   <input value={localTeam} onChange={e => setLocalTeam(e.target.value)} style={darkInputStyle} placeholder="Enter team" />
-                ) : <span style={{ fontSize: '13px', fontWeight: 500, color: localTeam ? dk.t1 : dk.t3 }}>{localTeam || '—'}</span>
+                ) : <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: localTeam ? dk.t1 : dk.t3 }}>{localTeam || '—'}</span>
               } />
 
               {/* TARGET RELEASE — editable */}
@@ -378,7 +378,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 isEditing ? (
                   <input type="date" value={localTargetRelease} onChange={e => setLocalTargetRelease(e.target.value)} style={darkInputStyle} />
                 ) : (
-                  <span style={{ fontSize: '13px', fontWeight: 500, color: rawIdea.target_release_date ? dk.t1 : dk.t3 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: rawIdea.target_release_date ? dk.t1 : dk.t3 }}>
                     {rawIdea.target_release_date ? new Date(rawIdea.target_release_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}
                   </span>
                 )
@@ -396,11 +396,11 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       height: 20, padding: '0 6px', borderRadius: 4,
-                      fontSize: '11px', fontWeight: 700,
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                       background: QUARTER_BADGE[quarter]?.bg || 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                       color: QUARTER_BADGE[quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                     }}>{quarter} 2026</span>
-                  ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>
+                  ) : <span style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3 }}>—</span>
                 )
               } />
 
@@ -413,9 +413,9 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <div style={{
                       width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'var(--ds-surface, #FFF)', fontSize: '10px', fontWeight: 700, flexShrink: 0,
+                      color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0,
                     }}>{assigneeInitials}</div>
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: assigneeName ? dk.t1 : dk.t3 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: assigneeName ? dk.t1 : dk.t3 }}>
                       {assigneeName || 'Unassigned'}
                     </span>
                   </div>
@@ -424,7 +424,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
               {/* CREATED — always read-only */}
               <FieldPair label="Created" value={
-                <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1 }}>
                   {rawIdea.created_at ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                 </span>
               } />
@@ -436,10 +436,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             <div style={{ padding: '16px 24px', borderBottom: `1px solid ${dk.divider}` }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2 }}>
                     COMMITTED TO ROADMAP
                   </div>
-                  <div style={{ fontSize: '11px', color: dk.t3, marginTop: '2px' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, marginTop: '2px' }}>
                     Mark as committed to include in roadmap view
                   </div>
                 </div>
@@ -466,7 +466,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
           {/* Description */}
           <div style={{ padding: '20px 24px', borderBottom: `1px solid ${dk.divider}` }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '8px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '8px' }}>
               DESCRIPTION
             </div>
             {isEditing ? (
@@ -477,12 +477,12 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 placeholder="Add a description..."
                 style={{
                   width: '100%', borderRadius: '4px', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`,
-                  padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical',
+                  padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: dk.t1, resize: 'vertical',
                   fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 }}
               />
             ) : (
-              <p style={{ fontSize: '13px', color: rawIdea.description ? dk.t1 : dk.t3, lineHeight: 1.5, margin: 0 }}>
+              <p style={{ fontSize: 'var(--ds-font-size-300)', color: rawIdea.description ? dk.t1 : dk.t3, lineHeight: 1.5, margin: 0 }}>
                 {rawIdea.description || 'No description provided'}
               </p>
             )}
@@ -490,7 +490,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
           {/* IMPACT Score */}
           <div style={{ padding: '20px 24px', borderBottom: `1px solid ${dk.divider}` }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '12px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '12px' }}>
               IMPACT SCORE
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
@@ -500,10 +500,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               }}>
                 {impactScore.toFixed(2)}
               </span>
-              <span style={{ fontSize: '13px', color: dk.t2 }}>out of 5.00</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t2 }}>out of 5.00</span>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
-                borderRadius: '4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+                borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
                 ...(impactScore >= 3.5
                   ? { backgroundColor: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }
                   : impactScore >= 2.0
@@ -528,14 +528,14 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   width: '32px', height: '32px', borderRadius: '50%',
                   backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '13px', fontWeight: 700, flexShrink: 0,
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 700, flexShrink: 0,
                 }}>
                   {dim.letter}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
-                    <span style={{ fontSize: '12px', color: dk.t2 }}>{dim.weight}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t2 }}>{dim.weight}</span>
                   </div>
                   <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', overflow: 'hidden' }}>
                     <div style={{
@@ -546,7 +546,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   </div>
                 </div>
                 <span style={{
-                  fontFamily: 'var(--cp-font-mono)', fontSize: '14px', fontWeight: 650,
+                  fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-400)', fontWeight: 650,
                   color: dim.score > 0 ? dk.t1 : dk.t3,
                   minWidth: '30px', textAlign: 'right',
                 }}>
@@ -558,7 +558,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
           {/* Comments */}
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '12px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '12px' }}>
               COMMENTS
             </div>
             <CommentsSection ideaId={rawIdea.id} />
@@ -575,14 +575,14 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               height: '50px', padding: '0 16px', borderRadius: '6px',
               border: `1px solid ${dk.border}`,
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: dk.t2,
-              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
             }}>
               Cancel
             </button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
               border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
               opacity: updateIdea.isPending ? 0.7 : 1,
             }}>
               {updateIdea.isPending ? 'Saving...' : 'Save Changes'}
@@ -627,12 +627,12 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
     }
   };
 
-  if (isLoading) return <div style={{ fontSize: '13px', color: dk.t3 }}>Loading comments...</div>;
+  if (isLoading) return <div style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3 }}>Loading comments...</div>;
 
   return (
     <div>
       {comments.length === 0 ? (
-        <p style={{ fontSize: '13px', color: dk.t3, margin: 0 }}>No comments yet</p>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3, margin: 0 }}>No comments yet</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
           {comments.map((c: any) => {
@@ -649,13 +649,13 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
                     <div style={{
                       width: '28px', height: '28px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'var(--ds-surface, #FFF)', fontSize: '10px', fontWeight: 700,
+                      color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                     }}>{initials}</div>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: dk.t1 }}>{name}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.t1 }}>{name}</span>
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '12px', color: dk.t3 }}>{timeAgo}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>{timeAgo}</span>
                 </div>
-                <div style={{ fontSize: '14px', color: dk.t2, lineHeight: 1.5 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', color: dk.t2, lineHeight: 1.5 }}>
                   {c.body || c.comment_text || ''}
                 </div>
               </div>
@@ -673,7 +673,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
           style={{
             flex: 1, minHeight: '50px', maxHeight: '120px', resize: 'vertical',
             border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px',
-            fontSize: '14px', fontFamily: 'var(--cp-font-body)', outline: 'none', color: dk.t1,
+            fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--cp-font-body)', outline: 'none', color: dk.t1,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           }}
         />

@@ -92,7 +92,7 @@ export default function ProjectBoardSettingsPage() {
 
   if (!board || !key) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>
         Board not found
       </div>
     );

@@ -60,7 +60,6 @@ interface Product {
   is_active: boolean;
   sort_order: number;
   created_at: string;
-  icon_key: string | null;
 }
 
 const FAV_STORAGE_KEY = 'product-hub.favorites';
@@ -324,7 +323,7 @@ function LeadOwnerPopover({ product }: { product: Product }) {
             aria-label={`Remove ${currentOwner.display_name} as lead`}
           >
             <Avatar src={currentOwner.avatar_url || undefined} name={currentOwner.display_name || '?'} size="small" />
-            <span style={{ fontSize: 13, flex: 1, fontFamily: 'var(--cp-font-body)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', flex: 1, fontFamily: 'var(--cp-font-body)' }}>
               {currentOwner.display_name}
             </span>
             <Lozenge appearance="success" isBold={false}>Current</Lozenge>
@@ -354,13 +353,13 @@ function LeadOwnerPopover({ product }: { product: Product }) {
             aria-label={`Set ${p.display_name} as lead`}
           >
             <Avatar src={p.avatar_url || undefined} name={p.display_name || '?'} size="small" />
-            <span style={{ fontSize: 13, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--cp-font-body)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--cp-font-body)' }}>
               {p.display_name}
             </span>
           </div>
         ))}
         {filtered.filter(p => p.id !== product.owner_id).length === 0 && !currentOwner && (
-          <div style={{ fontSize: 12, color: token('color.text.subtlest'), textAlign: 'center', padding: '12px 0' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest'), textAlign: 'center', padding: '12px 0' }}>
             No results
           </div>
         )}
@@ -388,11 +387,11 @@ function LeadOwnerPopover({ product }: { product: Product }) {
       >
         <Avatar src={currentOwner?.avatar_url || undefined} name={currentOwner?.display_name || '?'} size="small" />
         {currentOwner ? (
-          <span style={{ fontSize: 14, color: token('color.text'), fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text'), fontFamily: 'var(--cp-font-body)' }}>
             {currentOwner.display_name}
           </span>
         ) : (
-          <span style={{ fontSize: 14, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)' }}>
             Assign lead
           </span>
         )}
@@ -457,7 +456,7 @@ export default function AllProductsPage() {
       const { data, error } = await (supabase as any)
         .from('products')
         .select(
-          'id, code, name, description, color, owner_id, is_active, sort_order, created_at, icon_key',
+          'id, code, name, description, color, owner_id, is_active, sort_order, created_at',
         )
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
@@ -537,12 +536,12 @@ export default function AllProductsPage() {
         return (
           <td key={colKey}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
-              <ProductAvatar code={p.code} iconKey={p.icon_key} size={24} />
+              <ProductAvatar code={p.code} size={24} />
               <RouterLink
                 to={`/product-hub/${p.code}/backlog`}
                 title={p.name}
                 style={{
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   color: token('color.link'),
                   fontFamily: 'var(--cp-font-body)',
@@ -569,7 +568,7 @@ export default function AllProductsPage() {
             <span
               style={{
                 fontFamily: 'var(--cp-font-mono)',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 500,
                 color: token('color.text.subtle'),
                 letterSpacing: '0.02em',
@@ -583,7 +582,7 @@ export default function AllProductsPage() {
       case 'type':
         return (
           <td key={colKey}>
-            <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
               Product line
             </span>
           </td>
@@ -657,7 +656,7 @@ export default function AllProductsPage() {
             alignItems: 'center',
             gap: 6,
             padding: '8px 14px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             borderRadius: 3,
             border: 'none',
@@ -704,7 +703,7 @@ export default function AllProductsPage() {
                 alignItems: 'center',
                 gap: 4,
                 padding: '6px 10px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: filterType ? 600 : 400,
                 borderRadius: 3,
                 border: `2px solid ${filterType ? token('color.border.selected') : token('color.border')}`,
@@ -750,7 +749,7 @@ export default function AllProductsPage() {
                 alignItems: 'center',
                 gap: 4,
                 padding: '6px 10px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: filterLead ? 600 : 400,
                 borderRadius: 3,
                 border: `2px solid ${filterLead ? token('color.border.selected') : token('color.border')}`,
@@ -802,7 +801,7 @@ export default function AllProductsPage() {
               background: 'transparent',
               border: 'none',
               padding: '6px 8px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.link'),
               cursor: 'pointer',
               fontFamily: 'inherit',
@@ -817,7 +816,7 @@ export default function AllProductsPage() {
       <div style={{ marginTop: 12 }}>
         {error ? (
           <div style={{ padding: '40px 0', textAlign: 'center' }}>
-            <p style={{ fontSize: 14, color: token('color.text.danger') }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.danger') }}>
               Could not load products — check browser console for the Supabase error.
             </p>
           </div>
@@ -834,7 +833,7 @@ export default function AllProductsPage() {
           </div>
         ) : filteredProducts.length === 0 ? (
           <div style={{ padding: '60px 0', textAlign: 'center' }}>
-            <p style={{ fontSize: 14, color: token('color.text.subtlest') }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
               {searchQuery ? `No products match "${searchQuery}"` : 'No products yet. Create one to get started.'}
             </p>
           </div>

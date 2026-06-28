@@ -300,7 +300,7 @@ export function JQLEditor({
   // Shared inline styles for textarea/input text
   const textStyle: React.CSSProperties = {
     fontFamily: 'var(--ds-font-family-code, monospace)',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     lineHeight: 1.5,
     color: singleLine ? token('color.text') : 'transparent',
     caretColor: token('color.text'),
@@ -319,7 +319,7 @@ export function JQLEditor({
             padding: '0 12px',
             height: 32,
             lineHeight: '32px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'var(--ds-font-family-code, monospace)',
             whiteSpace: 'pre',
             overflow: 'hidden',
@@ -384,7 +384,7 @@ export function JQLEditor({
             position: 'absolute',
             top: 0, left: 0, right: 0, bottom: 0,
             padding: '8px 12px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'var(--ds-font-family-code, monospace)',
             lineHeight: 1.5,
             whiteSpace: 'pre-wrap',
@@ -432,7 +432,7 @@ export function JQLEditor({
       </div>
 
       {showFilterCount && filterCount > 0 && (
-        <div style={{ marginTop: 4, fontSize: 12, color: token('color.text.subtlest') }}>
+        <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
           {filterCount} active {filterCount === 1 ? 'filter' : 'filters'}
           {validation.isChecking && (
             <span style={{ marginLeft: 8, color: token('color.text.subtlest') }}>Validating…</span>
@@ -444,7 +444,7 @@ export function JQLEditor({
         <div style={{ marginTop: 4 }}>
           {validation.errors.map((err, i) => (
             <div key={i} style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: token('color.text.danger'),
               display: 'flex',
               alignItems: 'flex-start',
@@ -461,7 +461,7 @@ export function JQLEditor({
         <div style={{ marginTop: 4 }}>
           {validation.warnings.map((w, i) => (
             <div key={i} style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--ds-text-warning, #974F0C)',
               display: 'flex',
               alignItems: 'flex-start',

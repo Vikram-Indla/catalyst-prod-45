@@ -115,18 +115,18 @@ export const CANONICAL_PRIORITY_OPTIONS: CanonicalPriorityOption[] = [
 /** Map a priority id → its Atlaskit core icon (color tinted). */
 function priorityIcon(id: string): React.ReactNode {
   switch (id) {
-    case 'Highest': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #CD1316)' }}><PriorityHighestIcon label="" size="small" /></span>;
-    case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-background-danger-bold, #E15D31)' }}><PriorityHighIcon    label="" size="small" /></span>;
-    case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-background-warning-bold, #E4A11B)' }}><PriorityMediumIcon  label="" size="small" /></span>;
-    case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link, #2898BD)' }}><PriorityLowIcon     label="" size="small" /></span>;
-    case 'Lowest':  return <span style={{ display: 'inline-flex', color: 'var(--ds-border-focused, #388BFF)' }}><PriorityLowestIcon  label="" size="small" /></span>;
+    case 'Highest': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-inverse, #FFFFFF)', background: 'var(--ds-background-danger-bold, #C9372C)', borderRadius: 2, padding: '0 2px' }}><PriorityHighestIcon label="" size="small" /></span>;
+    case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #AE2A19)' }}><PriorityHighIcon    label="" size="small" /></span>;
+    case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-text-warning, #974F0C)' }}><PriorityMediumIcon  label="" size="small" /></span>;
+    case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link, #0C66E4)' }}><PriorityLowIcon     label="" size="small" /></span>;
+    case 'Lowest':  return <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest, #626F86)' }}><PriorityLowestIcon  label="" size="small" /></span>;
     default:        return null;
   }
 }
 /** Map a severity id → its Atlaskit core icon (color tinted). */
 function severityIcon(id: string): React.ReactNode {
   switch (id) {
-    case 'Blocker': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #CD1316)' }}><PriorityBlockerIcon label="" size="small" /></span>;
+    case 'Blocker': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #AE2A19)' }}><PriorityBlockerIcon label="" size="small" /></span>;
     case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-background-danger-bold, #E15D31)' }}><PriorityHighIcon    label="" size="small" /></span>;
     case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-background-warning-bold, #E4A11B)' }}><PriorityMediumIcon  label="" size="small" /></span>;
     case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link, #2898BD)' }}><PriorityLowIcon     label="" size="small" /></span>;
@@ -584,7 +584,7 @@ export function CanonicalFilter({
           border: `1px solid ${open ? blueBorder : borderSubtle}`,
           background: open ? blueBg : surface,
           color: open ? blue : textPrimary,
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           fontFamily: 'inherit',
           cursor: 'pointer',
@@ -602,7 +602,7 @@ export function CanonicalFilter({
               borderRadius: 3,
               background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold, #0C66E4)'),
               color: token('color.text', 'var(--ds-text, #172B4D)'),
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               display: 'inline-flex',
               alignItems: 'center',
@@ -688,7 +688,7 @@ export function CanonicalFilter({
                   borderRadius: 3,
                   background: savedOpen ? blueBg : 'transparent',
                   color: savedOpen ? blue : textPrimary,
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
                   fontFamily: 'inherit',
                   cursor: 'pointer',
@@ -858,7 +858,7 @@ export function CanonicalFilter({
                       borderRadius: 3,
                       background: surface,
                       color: removedFields.length === 0 ? token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)') : textSubtle,
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 500,
                       fontFamily: 'inherit',
                       cursor: removedFields.length === 0 ? 'not-allowed' : 'pointer',
@@ -908,7 +908,7 @@ export function CanonicalFilter({
                     background: 'transparent',
                     color: activeFieldCount > 0 ? blue : textDisabled,
                     cursor: activeFieldCount > 0 ? 'pointer' : 'not-allowed',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
                     fontFamily: 'inherit',
                     textDecoration: 'none',
@@ -921,7 +921,7 @@ export function CanonicalFilter({
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
               {!selectedField ? (
-                <div style={{ padding: '16px 16px', color: textSubtle, fontSize: 14 }}>
+                <div style={{ padding: '16px 16px', color: textSubtle, fontSize: 'var(--ds-font-size-400)' }}>
                   Select a field to start creating a filter.
                 </div>
               ) : (() => {
@@ -958,7 +958,7 @@ export function CanonicalFilter({
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '8px 12px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: textSubtle,
             }}
           >
@@ -1063,7 +1063,7 @@ function EllipsisMenuItem({
         padding: '0 12px',
         display: 'flex',
         alignItems: 'center',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         cursor: enabled ? 'pointer' : 'not-allowed',
         color: enabled ? textPrimary : textDisabled,
@@ -1109,7 +1109,7 @@ function TabButton({
         border: `1px solid ${active ? blueBorder : 'transparent'}`,
         background,
         color: active ? blue : textPrimary,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         borderRadius: 4,
         cursor: 'pointer',
@@ -1238,7 +1238,7 @@ function FieldItem({
           display: 'flex',
           alignItems: 'center',
           gap: 4,
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           cursor: 'pointer',
           borderRadius: 3,
@@ -1270,7 +1270,7 @@ function FieldItem({
               borderRadius: 3,
               background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold, #0C66E4)'),
               color: token('color.text', 'var(--ds-text, #172B4D)'),
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               display: 'inline-flex',
               alignItems: 'center',
@@ -1287,7 +1287,7 @@ function FieldItem({
                 type="button"
                 aria-label={pinned ? 'Unpin field' : 'Pin field'}
                 onClick={(e) => { e.stopPropagation(); onTogglePin(); }}
-                style={{ ...iconBtnStyle(), color: token('color.text', 'var(--ds-text, #172B4D)') }}
+                style={{ ...iconBtnStyle(), color: token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))') }}
               >
                 <TinyIcon>
                   {pinned
@@ -1404,7 +1404,7 @@ function SavedSearchInput({
           border: `1px solid ${focused ? blueBorder : borderInput}`,
           borderRadius: 3,
           outline: 'none',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontFamily: 'inherit',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
@@ -1434,7 +1434,7 @@ function SavedSection({
       <div
         style={{
           padding: '6px 12px',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 700,
           color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
         }}
@@ -1445,7 +1445,7 @@ function SavedSection({
         <div
           style={{
             padding: '6px 12px',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'),
           }}
         >
@@ -1503,7 +1503,7 @@ function SavedItem({
         alignItems: 'center',
         justifyContent: 'space-between',
         cursor: 'pointer',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         background,
         color: active || hover ? blue : textPrimary,
@@ -1556,7 +1556,7 @@ function FeedbackButton() {
         border: 0,
         cursor: 'pointer',
         color: 'inherit',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontFamily: 'inherit',
         borderRadius: 3,
       }}
@@ -1580,7 +1580,7 @@ function Kbd({ children }: { children: React.ReactNode }) {
         background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
         border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderRadius: 3,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontFamily: 'inherit',
         fontWeight: 600,
         color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -1773,7 +1773,7 @@ function AdvancedTabBody({
             borderRadius: 3,
             background: 'transparent',
             color: textSubtle,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             fontFamily: 'inherit',
             cursor: inactiveFields.length === 0 ? 'not-allowed' : 'pointer',
@@ -1853,7 +1853,7 @@ function ProjectChip({
         border: `1px solid ${isActive ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : borderSubtle}`,
         borderRadius: 3,
         background: isActive ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : hover ? hoverNeutral : surface,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontFamily: 'inherit',
         cursor: 'pointer',
       }}
@@ -1875,7 +1875,7 @@ function ProjectChip({
             gap: 4,
             height: 28,
             padding: '0 6px 0 10px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontFamily: 'inherit',
             fontWeight: 500,
             border: `1px solid ${borderSubtle}`,
@@ -1955,7 +1955,7 @@ function ProjectAvatar({
         borderRadius: 3,
         background: color || 'var(--ds-link, #0C66E4)',
         color: 'var(--ds-text-inverse, #FFFFFF)',
-        fontSize: 10,
+        fontSize: 'var(--ds-font-size-50)',
         fontWeight: 700,
         flexShrink: 0,
       }}
@@ -1996,7 +1996,7 @@ function FirstAndMore({
           borderRadius: 3,
           background: token('color.background.accent.blue.subtle', 'var(--ds-background-information-bold, #0C66E4)'),
           color: token('color.text', 'var(--ds-text, #172B4D)'),
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           display: 'inline-flex',
           alignItems: 'center',
@@ -2109,7 +2109,7 @@ function ProjectPickerPopover({
             border: 0,
             borderRadius: 3,
             color: token('color.text', 'var(--ds-text, #172B4D)'),
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'inherit',
             cursor: 'pointer',
           }}
@@ -2136,7 +2136,7 @@ function ProjectPickerPopover({
       </div>
       <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0', minHeight: 0 }}>
         {filtered.length === 0 ? (
-          <div style={{ padding: 12, fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+          <div style={{ padding: 12, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
             No matches
           </div>
         ) : filtered.map((r) => (
@@ -2169,7 +2169,7 @@ function ProjectPickerPopover({
             color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
             cursor: selectedKeys.length > 0 ? 'pointer' : 'not-allowed',
             opacity: selectedKeys.length > 0 ? 1 : 0.6,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             fontFamily: 'inherit',
           }}
@@ -2284,7 +2284,7 @@ function ClauseChip({
 
   // Background: white idle, gray on hover, blue-tinted when active.
   let chipBg: string = surface;
-  if (isActive) chipBg = token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)');
+  if (isActive) chipBg = token('color.background.selected', 'var(--ds-background-selected, var(--ds-background-information, #E9F2FF))');
   else if (hover) chipBg = hoverNeutral;
 
   return (
@@ -2305,7 +2305,7 @@ function ClauseChip({
         border: `1px solid ${isActive ? blueBorder : borderSubtle}`,
         background: chipBg,
         borderRadius: 3,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontFamily: 'inherit',
         cursor: 'pointer',
       }}
@@ -2329,7 +2329,7 @@ function ClauseChip({
           gap: 4,
           height: 28,
           padding: '0 6px 0 10px',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontFamily: 'inherit',
           fontWeight: 500,
           border: `1px solid ${borderSubtle}`,
@@ -2518,7 +2518,7 @@ function AddFilterMenu({
       }}
     >
       {options.length === 0 ? (
-        <div style={{ padding: '8px 12px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
           All fields already added
         </div>
       ) : options.map((o) => (
@@ -2650,7 +2650,7 @@ function ValuePickerPopover({
             border: 0,
             borderRadius: 3,
             color: token('color.text', 'var(--ds-text, #172B4D)'),
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'inherit',
             cursor: 'pointer',
           }}
@@ -2819,7 +2819,7 @@ function JqlTabBody({
             margin: 0,
             padding: '10px 84px 10px 12px',
             fontFamily: '"SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             lineHeight: 1.5,
             color: textPrimary,
             whiteSpace: 'pre-wrap',
@@ -2863,7 +2863,7 @@ function JqlTabBody({
             color: 'transparent',
             caretColor: textPrimary,
             fontFamily: '"SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             lineHeight: 1.5,
             resize: 'none',
             whiteSpace: 'pre-wrap',
@@ -2938,7 +2938,7 @@ function JqlTabBody({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           color: textSubtle,
         }}
       >
@@ -3037,7 +3037,7 @@ function FieldEditor(props: FieldEditorProps) {
       onClearField={onClearField}
     >
       {filtered.length === 0 ? (
-        <div style={{ padding: 12, fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+        <div style={{ padding: 12, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
           No matches
         </div>
       ) : (
@@ -3159,7 +3159,7 @@ function ParentEditor({
         />
       ))}
       {loading && (
-        <div style={{ padding: 8, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+        <div style={{ padding: 8, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
           Loading…
         </div>
       )}
@@ -3234,14 +3234,14 @@ function EditorShell({
             background: 'transparent',
             color: selected.length > 0 ? blue : textDisabled,
             cursor: selected.length > 0 ? 'pointer' : 'not-allowed',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             fontFamily: 'inherit',
           }}
         >
           Clear
         </button>
-        <span style={{ fontSize: 12, color: textSubtle }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: textSubtle }}>
           {countShown} of {total}
         </span>
       </div>
@@ -3293,7 +3293,7 @@ function FilterSearchInput({
           border: `1px solid ${focused ? blueBorder : borderInput}`,
           borderRadius: 3,
           outline: 'none',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontFamily: 'inherit',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
@@ -3342,7 +3342,7 @@ function OptionRow({
         padding: '6px 12px',
         cursor: 'pointer',
         background: hover ? hoverNeutral : 'transparent',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: token('color.text', 'var(--ds-text, #172B4D)'),
       }}
     >
@@ -3373,7 +3373,7 @@ function OptionRow({
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
         )}
         {sublabel && (
-          <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {sublabel}
           </span>
         )}

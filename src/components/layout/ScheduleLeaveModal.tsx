@@ -65,7 +65,7 @@ function LeaveOptionLabel({ label, value }: { label: string; value: LeaveKind })
           flexShrink: 0,
         }}
       />
-      <span style={{ fontSize: 14 }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)' }}>{label}</span>
     </div>
   );
 }
@@ -78,7 +78,7 @@ function BackupOptionLabel({ label }: { label: string }) {
         src={resolveAvatarUrl(label) ?? null}
         size="xsmall"
       />
-      <span style={{ fontSize: 14 }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)' }}>{label}</span>
     </div>
   );
 }
@@ -168,14 +168,14 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
 
   const labelStyle = {
     display: 'block',
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 600,
     color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
     marginBottom: 4,
   } as const;
 
   const errorStyle = {
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
     marginTop: 4,
   } as const;
@@ -202,7 +202,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
                 padding: '0 12px',
                 border: '2px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 3,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontFamily: 'inherit',
                 color: 'var(--ds-text, #172B4D)',
                 background: 'var(--ds-surface, #FFFFFF)',
@@ -210,7 +210,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
                 cursor: 'pointer',
                 transition: 'border-color 150ms',
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, #0052CC)'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, var(--ds-link, #0C66E4))'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
             />
             {errors.startsAt && <div style={errorStyle}>{errors.startsAt}</div>}
@@ -231,7 +231,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
                 padding: '0 12px',
                 border: '2px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 3,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontFamily: 'inherit',
                 color: 'var(--ds-text, #172B4D)',
                 background: 'var(--ds-surface, #FFFFFF)',
@@ -239,7 +239,7 @@ export function ScheduleLeaveModal({ isOpen, onClose }: Props) {
                 cursor: 'pointer',
                 transition: 'border-color 150ms',
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, #0052CC)'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-link, var(--ds-link, #0C66E4))'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
             />
             {errors.endsAt && <div style={errorStyle}>{errors.endsAt}</div>}

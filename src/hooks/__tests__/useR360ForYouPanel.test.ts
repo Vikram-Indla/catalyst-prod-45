@@ -17,7 +17,7 @@ describe('computeProjectAllocations', () => {
   it('always includes a Buffer entry at exactly 20%', () => {
     const result = computeProjectAllocations([
       { projectId: 'p1', name: 'Senaei BAU', key: 'BAU', color: 'var(--cp-primary-60, #0052CC)', role: 'lead' },
-      { projectId: 'p2', name: 'Data Analytics', key: 'DA', color: '#00B8D9', role: 'member' },
+      { projectId: 'p2', name: 'Data Analytics', key: 'DA', color: '#00B8D9', role: 'member' }, // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
     ]);
     const buffer = result.find((p) => p.isBuffer);
     expect(buffer).toBeDefined();

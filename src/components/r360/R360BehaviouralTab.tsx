@@ -111,7 +111,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <SectionTitle>WORK RHYTHM DNA</SectionTitle>
         {!hasActivity ? (
-          <div style={{ fontSize: 13, color: MUTED, padding: '20px 0', textAlign: 'center' as const }}>No activity data yet</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: MUTED, padding: '20px 0', textAlign: 'center' as const }}>No activity data yet</div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120 }}>
             {WORK_DAYS.map((d, idx) => {
@@ -126,7 +126,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
                     backgroundColor: isPeak ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--cp-blue)',
                     transition: 'height 300ms ease, background-color 0ms',
                   }} />
-                  <span style={{ fontSize: 11, color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
                 </div>
               );
             })}
@@ -157,9 +157,9 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
             >
-              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
-              <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
-              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 4 }}>{tile.sub}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
+              <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: INK4, marginTop: 4 }}>{tile.sub}</div>
             </div>
           ))}
         </div>
@@ -186,8 +186,8 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               onMouseEnter={e => { if (row.onClick) e.currentTarget.style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.03))'; }}
               onMouseLeave={e => { if (row.onClick) e.currentTarget.style.background = 'transparent'; }}
             >
-              <span style={{ fontSize: 12, color: INK2 }}>{row.label}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-mono)', color: INK1 }}>{row.value}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: INK2 }}>{row.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-mono)', color: INK1 }}>{row.value}</span>
             </div>
           ))}
         </div>
@@ -205,8 +205,8 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
           {hubSegments.map((s, i) => (
             <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: s.color, display: 'inline-block', flexShrink: 0 }} />
-              <span style={{ fontSize: 12, color: INK2 }}>{s.hub === 'incident' ? 'IncidentHub' : s.hub === 'bau' || s.hub === 'BAU' ? 'BAU' : s.hub}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-mono)', color: INK1 }}>{s.count}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: INK2 }}>{s.hub === 'incident' ? 'IncidentHub' : s.hub === 'bau' || s.hub === 'BAU' ? 'BAU' : s.hub}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-mono)', color: INK1 }}>{s.count}</span>
             </div>
           ))}
         </div>

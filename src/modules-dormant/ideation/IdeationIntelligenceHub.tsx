@@ -113,16 +113,16 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
           <div style={{
             width: '36px', height: '50px', borderRadius: '50%', background: 'var(--cp-purple-60, #7C3AED)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '16px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            fontSize: 'var(--ds-font-size-500)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           }}>✦</div>
           <div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: C.textPrimary }}>AI Ideas Hub</div>
-            <div style={{ fontSize: '12px', color: C.textTertiary }}>{total} ideas analyzed · {themes.length} themes · {duplicates.length} duplicate signals</div>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: C.textPrimary }}>AI Ideas Hub</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textTertiary }}>{total} ideas analyzed · {themes.length} themes · {duplicates.length} duplicate signals</div>
           </div>
         </div>
         <button onClick={onClose} style={{
           background: C.bg, border: `1px solid ${C.border}`, cursor: 'pointer', padding: '8px 16px',
-          fontSize: '13px', fontWeight: 600, color: C.textTertiary, borderRadius: '8px',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.textTertiary, borderRadius: '8px',
         }}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F7F8F9)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = C.bg; }}
@@ -140,9 +140,9 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
           <div key={s.title} style={{
             flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '16px 20px',
           }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: C.textTertiary, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>{s.title}</div>
-            <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: MONO, color: s.valueColor }}>{s.value}</div>
-            <div style={{ fontSize: '12px', fontWeight: 500, color: C.textTertiary, marginTop: '2px' }}>{s.label}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: C.textTertiary, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>{s.title}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, fontFamily: MONO, color: s.valueColor }}>{s.value}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: C.textTertiary, marginTop: '2px' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -153,7 +153,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
         {/* ── Card A: Duplicate Detection ── */}
         <ContentCard title="Duplicate Detection" badge={`${duplicates.length} signals found`} badgeColor={C.warning}>
           {duplicates.length === 0 ? (
-            <div style={{ fontSize: '13px', color: C.textTertiary, padding: '20px 0', textAlign: 'center' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: C.textTertiary, padding: '20px 0', textAlign: 'center' }}>
               No duplicate signals detected across {total} ideas
             </div>
           ) : duplicates.map((d, i) => (
@@ -172,11 +172,11 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
         <ContentCard title="Theme Discovery" badge={`${themes.length} themes`} badgeColor={C.primary}>
           {themes.map(t => (
             <div key={t.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-              <span style={{ color: C.textPrimary, fontSize: '14px', fontWeight: 500, minWidth: '140px', direction: /[\u0600-\u06FF]/.test(t.name) ? 'rtl' : 'ltr' }}>{t.name}</span>
-              <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: C.textSecondary, minWidth: '55px' }}>
+              <span style={{ color: C.textPrimary, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, minWidth: '140px', direction: /[\u0600-\u06FF]/.test(t.name) ? 'rtl' : 'ltr' }}>{t.name}</span>
+              <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: C.textSecondary, minWidth: '55px' }}>
                 {t.count} ideas
               </span>
-              <span style={{ fontSize: '12px', color: C.textTertiary, minWidth: '60px' }}>{t.trend}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: C.textTertiary, minWidth: '60px' }}>{t.trend}</span>
               <div style={{ flex: 1, height: '8px', background: C.surfaceAlt, borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ width: `${t.pct}%`, height: '100%', background: t.barColor, borderRadius: '4px' }} />
               </div>
@@ -188,8 +188,8 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
               marginTop: '16px', borderLeft: `3px solid ${C.insightBorder}`,
               background: C.insightBg, borderRadius: '0 8px 8px 0', padding: '12px 16px',
             }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: C.insightText, marginBottom: '2px' }}>✦ Emerging Insight</div>
-              <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)', lineHeight: 1.5 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.insightText, marginBottom: '2px' }}>✦ Emerging Insight</div>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', lineHeight: 1.5 }}>
                 The top theme "{themes[0].name}" accounts for {themes[0].count} ideas ({Math.round((themes[0].count / total) * 100)}% of backlog).
                 {themes.length > 1 && ` "${themes[1].name}" follows with ${themes[1].count} ideas.`}
               </div>
@@ -205,8 +205,8 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
             return (
               <div key={team} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: `1px solid ${C.surfaceAlt}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '14px', color: C.textSecondary, fontWeight: 500 }}>{team}</span>
-                  <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 600, color: C.textSecondary }}>{count} ideas · {pct}%</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: C.textSecondary, fontWeight: 500 }}>{team}</span>
+                  <span style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.textSecondary }}>{count} ideas · {pct}%</span>
                 </div>
                 <div style={{ marginTop: '4px', height: '4px', background: 'var(--ds-border, #DFE1E6)', borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: '4px' }} />
@@ -231,9 +231,9 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
                 <div style={{ height: '4px', background: C.border, borderRadius: '4px', marginBottom: '12px', overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${total > 0 ? Math.round((p.count / total) * 100) : 0}%`, background: p.color, borderRadius: '4px' }} />
                 </div>
-                <div style={{ fontFamily: MONO, fontSize: '24px', fontWeight: 800, color: C.textPrimary, lineHeight: 1 }}>{p.count}</div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: C.textSecondary, marginTop: '6px' }}>{p.name}</div>
-                <div style={{ fontSize: '11px', fontWeight: 500, color: C.textTertiary, marginTop: '2px' }}>{total > 0 ? Math.round((p.count / total) * 100) : 0}%</div>
+                <div style={{ fontFamily: MONO, fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: C.textPrimary, lineHeight: 1 }}>{p.count}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: C.textSecondary, marginTop: '6px' }}>{p.name}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: C.textTertiary, marginTop: '2px' }}>{total > 0 ? Math.round((p.count / total) * 100) : 0}%</div>
               </div>
             ))}
           </div>
@@ -243,8 +243,8 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
               background: C.gapBg, borderLeft: `3px solid ${C.gapBorder}`,
               borderRadius: '0 6px 6px 0', padding: '12px 16px',
             }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: C.gapText, marginBottom: '2px' }}>⚠ Attention Needed</div>
-              <div style={{ fontSize: '13px', color: C.gapBody, lineHeight: 1.5 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: C.gapText, marginBottom: '2px' }}>⚠ Attention Needed</div>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: C.gapBody, lineHeight: 1.5 }}>
                 {draft} ideas remain in Draft status. Consider reviewing and promoting them to the pipeline.
               </div>
             </div>
@@ -263,10 +263,10 @@ function ContentCard({ title, badge, badgeColor, children }: { title: string; ba
         padding: '16px 20px', borderBottom: `1px solid var(--ds-surface-sunken, #F7F8F9)`,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <span style={{ fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>{title}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: C.textPrimary }}>{title}</span>
         <span style={{
           background: C.surfaceAlt, color: C.textTertiary,
-          fontSize: '12px', fontWeight: 500, padding: '2px 10px', borderRadius: '12px',
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 500, padding: '2px 10px', borderRadius: '12px',
         }}>{badge}</span>
       </div>
       <div style={{ padding: '16px 20px' }}>{children}</div>
@@ -285,26 +285,26 @@ function DuplicatePair({ match, idea1, idea2, signals, onMerge }: {
       borderRadius: '8px', padding: '12px 16px', marginBottom: '12px',
     }}>
       <div style={{ marginBottom: '8px' }}>
-        <span style={{ color: C.primary, fontSize: '13px', fontWeight: 600 }}>{match}% similarity</span>
+        <span style={{ color: C.primary, fontSize: 'var(--ds-font-size-300)', fontWeight: 600 }}>{match}% similarity</span>
       </div>
-      <div style={{ fontSize: '13px', marginBottom: '2px' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', marginBottom: '2px' }}>
         <span style={{ fontFamily: MONO, fontWeight: 600, color: C.textPrimary }}>{idea1.key}</span>
         <span style={{ color: C.textSecondary, marginLeft: '6px', fontWeight: 400 }}>{idea1.title}</span>
       </div>
-      <div style={{ fontSize: '13px', marginBottom: '8px' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', marginBottom: '8px' }}>
         <span style={{ fontFamily: MONO, fontWeight: 600, color: C.textPrimary }}>{idea2.key}</span>
         <span style={{ color: C.textSecondary, marginLeft: '6px', fontWeight: 400 }}>{idea2.title}</span>
       </div>
-      <div style={{ fontSize: '12px', color: C.textTertiary, lineHeight: 1.5, marginBottom: '10px' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: C.textTertiary, lineHeight: 1.5, marginBottom: '10px' }}>
         Shared signals: {signals}
       </div>
       <div style={{ display: 'flex', gap: '8px' }}>
         <button onClick={() => { if (onMerge) onMerge(); else toast.success('Merge initiated'); }}
-          style={{ background: C.primary, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+          style={{ background: C.primary, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer' }}>
           Merge Ideas
         </button>
         <button onClick={() => toast('Kept separate')}
-          style={{ background: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+          style={{ background: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: '6px', padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer' }}>
           Dismiss
         </button>
       </div>

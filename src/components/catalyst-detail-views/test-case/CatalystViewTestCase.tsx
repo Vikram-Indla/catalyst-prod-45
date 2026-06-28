@@ -21,6 +21,8 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
+import Textfield from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
@@ -33,7 +35,7 @@ import {
   CatalystSidebarDetails,
 } from '../shared/sections';
 import { useTestCase } from '@/hooks/test-management/useTestCases';
-import { useTestCaseVersions } from '@/hooks/test-management/useTestCaseVersions';
+import { useTestCaseVersions, useRestoreTestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 /* ═══════════════════════════════════════════
@@ -214,8 +216,9 @@ export default function CatalystViewTestCase({
     [testCase?.objective],
   );
 
-  /* Versions (read-only list). */
+  /* Versions (list + restore). */
   const { data: versions = [] } = useTestCaseVersions(isOpen ? itemId : undefined);
+  const restoreVersion = useRestoreTestCaseVersion();
 
   /* ── Write paths — direct tm_test_cases updates, no version churn. ── */
   const handleTitleChange = useCallback(async (newTitle: string) => {
@@ -295,7 +298,7 @@ export default function CatalystViewTestCase({
   const stepsPanel = (
     <div style={{ padding: '8px 16px' }}>
       {steps.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, margin: 0 }}>No steps.</p>
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: 0 }}>No steps.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {steps.map((s: any, i: number) => (
@@ -305,10 +308,10 @@ export default function CatalystViewTestCase({
               padding: 12,
               background: 'var(--ds-surface-raised)',
             }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>
                 Step {s.step_number ?? i + 1}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 'var(--ds-font-size-300)' }}>
                 <div>
                   <div style={miniLabel}>Action</div>
                   <div style={{ color: 'var(--ds-text)' }}>{s.action || '—'}</div>
@@ -321,7 +324,7 @@ export default function CatalystViewTestCase({
               {s.test_data ? (
                 <div style={{ marginTop: 8 }}>
                   <div style={miniLabel}>Test data</div>
-                  <div style={{ color: 'var(--ds-text)', fontSize: 13 }}>{s.test_data}</div>
+                  <div style={{ color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-300)' }}>{s.test_data}</div>
                 </div>
               ) : null}
             </div>
@@ -335,31 +338,200 @@ export default function CatalystViewTestCase({
   const versionsPanel = (
     <div style={{ padding: '8px 16px' }}>
       {versions.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 13, margin: 0 }}>No version history.</p>
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: 0 }}>No version history. Use "New version" in the repository to create a snapshot.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {versions.map((v: any) => (
+          {versions.map((v: any, idx: number) => (
             <div key={v.id} style={{
-              display: 'flex', alignItems: 'baseline', gap: 10,
-              padding: '8px 12px',
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '10px 12px',
               border: '1px solid var(--ds-border)', borderRadius: 6,
-              background: 'var(--ds-surface-raised)',
+              background: idx === 0 ? 'var(--ds-background-selected)' : 'var(--ds-surface-raised)',
             }}>
               <span style={{
-                fontSize: 12, fontWeight: 700, color: 'var(--ds-text)',
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text)',
                 fontFamily: 'var(--ds-font-family-code, monospace)',
+                minWidth: 28,
               }}>
                 v{v.version_number}
               </span>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle)', flex: 1 }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', flex: 1 }}>
                 {v.change_summary || '—'}
               </span>
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
+              {v.changed_by_profile?.full_name && (
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
+                  {v.changed_by_profile.full_name}
+                </span>
+              )}
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>
                 {v.created_at ? new Date(v.created_at).toLocaleDateString() : ''}
               </span>
+              {idx > 0 && (
+                <button
+                  onClick={() => restoreVersion.mutate({ testCaseId: itemId!, versionNumber: v.version_number })}
+                  disabled={restoreVersion.isPending}
+                  style={{
+                    padding: '3px 10px', fontSize: 'var(--ds-font-size-200)',
+                    border: '1px solid var(--ds-border)', borderRadius: 4,
+                    background: 'none', cursor: 'pointer',
+                    color: 'var(--ds-text)', whiteSpace: 'nowrap',
+                  }}
+                >
+                  Restore
+                </button>
+              )}
+              {idx === 0 && (
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-brand)', fontWeight: 600 }}>Current</span>
+              )}
             </div>
           ))}
         </div>
+      )}
+    </div>
+  );
+
+  /* ── Requirements tab — tm_requirement_links. ── */
+  const { data: reqLinks = [], refetch: refetchLinks } = useQuery({
+    queryKey: ['tm-req-links', itemId],
+    queryFn: async () => {
+      if (!itemId) return [];
+      const { data, error } = await supabase
+        .from('tm_requirement_links')
+        .select('id, requirement_type, requirement_id, external_key, external_title, external_url, link_type, notes, created_at')
+        .eq('test_case_id', itemId)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!itemId,
+  });
+
+  const [linkForm, setLinkForm] = useState({ open: false, type: 'external', extKey: '', extTitle: '', linkType: 'verifies', saving: false });
+
+  const handleAddLink = useCallback(async () => {
+    if (!linkForm.extKey.trim() && !linkForm.extTitle.trim()) return;
+    setLinkForm(f => ({ ...f, saving: true }));
+    try {
+      const { error } = await supabase.rpc('tm_link_requirement', {
+        p_case_id: itemId,
+        p_requirement_type: linkForm.type,
+        p_external_key: linkForm.extKey.trim() || null,
+        p_external_title: linkForm.extTitle.trim() || null,
+        p_link_type: linkForm.linkType,
+      });
+      if (error) throw error;
+      setLinkForm(f => ({ ...f, open: false, extKey: '', extTitle: '', saving: false }));
+      refetchLinks();
+      catalystToast.success('Requirement linked');
+    } catch (err: any) {
+      catalystToast.error('Failed to link', err?.message);
+      setLinkForm(f => ({ ...f, saving: false }));
+    }
+  }, [itemId, linkForm, refetchLinks]);
+
+  const handleDeleteLink = useCallback(async (linkId: string) => {
+    const { error } = await supabase.from('tm_requirement_links').delete().eq('id', linkId);
+    if (error) { catalystToast.error('Failed to remove link'); return; }
+    refetchLinks();
+    catalystToast.success('Link removed');
+  }, [refetchLinks]);
+
+  const requirementsPanel = (
+    <div style={{ padding: '12px 16px' }}>
+      {/* Existing links */}
+      {reqLinks.length === 0 && !linkForm.open && (
+        <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)', margin: '0 0 12px' }}>
+          No requirements linked. Add one to track coverage.
+        </p>
+      )}
+      {reqLinks.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+          {reqLinks.map((l: any) => (
+            <div key={l.id} style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '8px 10px', borderRadius: 6,
+              border: '1px solid var(--ds-border)',
+              background: 'var(--ds-surface-sunken)',
+            }}>
+              {l.external_key && (
+                <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', flexShrink: 0 }}>
+                  {l.external_key}
+                </span>
+              )}
+              <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {l.external_title ?? l.requirement_type ?? '—'}
+              </span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', flexShrink: 0, textTransform: 'capitalize' }}>
+                {l.link_type ?? 'verifies'}
+              </span>
+              <button
+                onClick={() => handleDeleteLink(l.id)}
+                title="Remove link"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: 2, flexShrink: 0 }}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      {/* Add link form */}
+      {linkForm.open ? (
+        <div style={{ border: '1px solid var(--ds-border)', borderRadius: 6, padding: 12, background: 'var(--ds-surface-sunken)', marginBottom: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
+            <div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>KEY</div>
+              <Textfield
+                value={linkForm.extKey}
+                onChange={e => setLinkForm(f => ({ ...f, extKey: e.target.value }))}
+                placeholder="e.g. REQ-001"
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>TITLE</div>
+              <Textfield
+                value={linkForm.extTitle}
+                onChange={e => setLinkForm(f => ({ ...f, extTitle: e.target.value }))}
+                placeholder="Requirement description"
+              />
+            </div>
+          </div>
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>LINK TYPE</div>
+            <Select
+              value={{ label: linkForm.linkType, value: linkForm.linkType }}
+              options={[
+                { label: 'verifies', value: 'verifies' },
+                { label: 'covers', value: 'covers' },
+                { label: 'implements', value: 'implements' },
+                { label: 'relates_to', value: 'relates_to' },
+              ]}
+              onChange={(opt) => opt && setLinkForm(f => ({ ...f, linkType: opt.value }))}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={handleAddLink}
+              disabled={linkForm.saving || (!linkForm.extKey.trim() && !linkForm.extTitle.trim())}
+              style={{ padding: '6px 14px', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
+            >
+              {linkForm.saving ? 'Saving…' : 'Add link'}
+            </button>
+            <button
+              onClick={() => setLinkForm(f => ({ ...f, open: false, extKey: '', extTitle: '' }))}
+              style={{ padding: '6px 14px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text)' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => setLinkForm(f => ({ ...f, open: true }))}
+          style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-link)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          + Link requirement
+        </button>
       )}
     </div>
   );
@@ -424,16 +596,18 @@ export default function CatalystViewTestCase({
               <Tab>Details</Tab>
               <Tab>Steps{steps.length ? ` (${steps.length})` : ''}</Tab>
               <Tab>Versions{versions.length ? ` (${versions.length})` : ''}</Tab>
+              <Tab>Requirements{reqLinks.length ? ` (${reqLinks.length})` : ''}</Tab>
             </TabList>
             <TabPanel>{detailsPanel}</TabPanel>
             <TabPanel>{stepsPanel}</TabPanel>
             <TabPanel>{versionsPanel}</TabPanel>
+            <TabPanel>{requirementsPanel}</TabPanel>
           </Tabs>
         </div>
       </>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, steps.length, versions.length, handleTitleChange]);
+  }, [testCase, pseudoIssue, isLoading, detailsPanel, stepsPanel, versionsPanel, requirementsPanel, steps.length, versions.length, reqLinks.length, handleTitleChange]);
 
   /* ── rightContent: canonical sidebar. ── */
   const rightContent = useMemo(() => {
@@ -492,7 +666,7 @@ export default function CatalystViewTestCase({
 }
 
 const miniLabel: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 'var(--ds-font-size-100)',
   fontWeight: 600,
   color: 'var(--ds-text-subtlest)',
   textTransform: 'uppercase',

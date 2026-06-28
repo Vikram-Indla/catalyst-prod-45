@@ -9,8 +9,8 @@ import Button from '@atlaskit/button/new';
 import { Plus, Link2 } from '@/lib/atlaskit-icons';
 
 const T = {
-  headline: { fontSize: 20, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: '16px 0 8px 0' },
-  subtext: { fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)', margin: 0 },
+  headline: { fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: '16px 0 8px 0' },
+  subtext: { fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text, #292A2E)', margin: 0 },
   container: {
     flex: 1,
     display: 'flex',
@@ -61,7 +61,7 @@ export default function DependenciesEmptyState({ projectKey, onAddClick }: Depen
       </Button>
 
       {/* Secondary link */}
-      <p style={{ ...T.subtext, marginTop: 24, fontSize: 12, color: 'var(--ds-text-subtle, #505258)' }}>
+      <p style={{ ...T.subtext, marginTop: 24, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #505258)' }}>
         Dependencies are stored locally and synced within {projectKey}
       </p>
     </div>

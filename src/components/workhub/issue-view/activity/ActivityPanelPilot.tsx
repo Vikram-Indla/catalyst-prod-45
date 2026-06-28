@@ -37,8 +37,7 @@ interface ActivityPanelPilotProps {
 // ════════════════════════════════════════
 // Helpers
 // ════════════════════════════════════════
-
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 function avatarBg(name: string) {
   return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length];
 }
@@ -145,7 +144,7 @@ function HistoryRow({ entry, showTypePill = false }: { entry: any; showTypePill?
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 background: 'var(--ds-background-neutral-subtle, #F4F5F7)',
                 color: 'var(--ds-text-subtle, #42526E)',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 letterSpacing: 0.5,
                 lineHeight: '14px',

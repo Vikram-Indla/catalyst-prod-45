@@ -223,7 +223,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
                       <div className={cn(
                         "h-8 rounded-[6px] flex items-center justify-center text-[11px] font-bold",
                         available > 0 
-                          ? "bg-[repeating-linear-gradient(45deg,var(--ds-background-success, #DFFCF0),var(--ds-background-success, #DFFCF0)_3px,var(--ds-background-success, #DFFCF0)_3px,var(--ds-background-success, #DFFCF0)_6px)] border border-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-background-success-bold, #1F845A)]"
+                          ? "bg-[repeating-linear-gradient(45deg,var(--ds-background-success, #DFFCF0),var(--ds-background-success, #DFFCF0)_3px,var(--ds-background-success, #DFFCF0)_3px,var(--ds-background-success, #DFFCF0)_6px)] border border-[var(--ds-background-success, #DFFCF0)] text-[var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))]"
                           : "bg-muted/50 border border-border text-muted-foreground"
                       )}>
                         {available}%

@@ -11,7 +11,7 @@ export function SavedForLaterBadge() {
         marginBottom: 4,
         color: 'var(--cv2-saved-fg)',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 700,
       }}
     >

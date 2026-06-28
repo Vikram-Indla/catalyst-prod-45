@@ -103,7 +103,7 @@ function FieldBlock({ label, children }: { label: string; children: React.ReactN
   return (
     <div>
       <div style={{
-        fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
         color: 'var(--ds-text-subtlest, #5E6C84)', marginBottom: 6,
       }}>{label}</div>
       {children}
@@ -296,7 +296,7 @@ export default function CatalystViewIdea({
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{
                   fontFamily: 'var(--cp-font-mono, ui-monospace, SFMono-Regular)',
-                  fontSize: 13, fontWeight: 700, color: 'var(--ds-text-brand, #0C66E4)',
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text-brand, #0C66E4)',
                 }}>
                   {rawIdea?.idea_key ?? '—'}
                 </span>
@@ -316,7 +316,7 @@ export default function CatalystViewIdea({
                   {localStatus === 'Converted to Request' ? 'CONVERTED' : (localStatus || 'DRAFT').toUpperCase()}
                 </Lozenge>
                 {updatedAgo && (
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #5E6C84)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #5E6C84)' }}>
                     Updated {updatedAgo}
                   </span>
                 )}
@@ -346,14 +346,14 @@ export default function CatalystViewIdea({
                     borderRadius: 4, padding: 12,
                   }}>
                     <div style={{
-                      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
                       letterSpacing: '0.06em', color: 'var(--ds-text-success, #1F845A)',
                       marginBottom: 6,
                     }}>
                       CONVERTED TO INITIATIVE
                     </div>
                     <span style={{
-                      fontFamily: 'var(--cp-font-mono, ui-monospace)', fontSize: 13,
+                      fontFamily: 'var(--cp-font-mono, ui-monospace)', fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 700, color: 'var(--ds-text-success, #1F845A)',
                     }}>
                       {rawIdea.linked_initiative_key}
@@ -383,7 +383,7 @@ export default function CatalystViewIdea({
                         onChange={(v) => setLocalPriority(v?.value || '')}
                         spacing="compact"
                       />
-                    ) : <span style={{ fontSize: 13, fontWeight: 600 }}>{localPriority}</span>}
+                    ) : <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600 }}>{localPriority}</span>}
                   </FieldBlock>
 
                   <FieldBlock label="TYPE">
@@ -395,7 +395,7 @@ export default function CatalystViewIdea({
                         onChange={(v) => setLocalType(v?.value || '')}
                         spacing="compact"
                       />
-                    ) : <span style={{ fontSize: 13 }}>{localType || '—'}</span>}
+                    ) : <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{localType || '—'}</span>}
                   </FieldBlock>
 
                   <FieldBlock label="SOURCE">
@@ -407,7 +407,7 @@ export default function CatalystViewIdea({
                         onChange={(v) => setLocalSource(v?.value || '')}
                         spacing="compact"
                       />
-                    ) : <span style={{ fontSize: 13 }}>{localSource || '—'}</span>}
+                    ) : <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{localSource || '—'}</span>}
                   </FieldBlock>
 
                   <FieldBlock label="IDEAS THEME">
@@ -420,7 +420,7 @@ export default function CatalystViewIdea({
                         placeholder="Select theme"
                         spacing="compact"
                       />
-                    ) : <span style={{ fontSize: 13 }}>{localTheme || '—'}</span>}
+                    ) : <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{localTheme || '—'}</span>}
                   </FieldBlock>
 
                   <FieldBlock label="ASSIGNED TEAM">
@@ -433,7 +433,7 @@ export default function CatalystViewIdea({
                         placeholder="Select team"
                         spacing="compact"
                       />
-                    ) : <span style={{ fontSize: 13 }}>{localTeam || '—'}</span>}
+                    ) : <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{localTeam || '—'}</span>}
                   </FieldBlock>
 
                   <FieldBlock label="TARGET RELEASE">
@@ -446,7 +446,7 @@ export default function CatalystViewIdea({
                         placeholder="Select release"
                         spacing="compact"
                       />
-                    ) : <span style={{ fontSize: 13 }}>{localRelease || '—'}</span>}
+                    ) : <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{localRelease || '—'}</span>}
                   </FieldBlock>
 
                   <FieldBlock label="QUARTER">
@@ -468,13 +468,13 @@ export default function CatalystViewIdea({
                     ) : localQuarter ? (
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', height: 20,
-                        padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700,
+                        padding: '0 6px', borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                         background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                         color: QUARTER_BADGE[localQuarter]?.text || 'var(--ds-text-subtlest, #5E6C84)',
                       }}>
                         {localQuarter} 2026
                       </span>
-                    ) : <span style={{ fontSize: 13 }}>—</span>}
+                    ) : <span style={{ fontSize: 'var(--ds-font-size-300)' }}>—</span>}
                   </FieldBlock>
 
                   <FieldBlock label="ASSIGNEE">
@@ -492,7 +492,7 @@ export default function CatalystViewIdea({
                         spacing="compact"
                       />
                     ) : (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-300)' }}>
                         {!assigneeName && <UnassignedAvatar size={20} />}
                         {assigneeName || 'Unassigned'}
                       </span>
@@ -500,7 +500,7 @@ export default function CatalystViewIdea({
                   </FieldBlock>
 
                   <FieldBlock label="CREATED">
-                    <span style={{ fontSize: 13 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)' }}>
                       {rawIdea.created_at
                         ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                         : '—'}
@@ -537,7 +537,7 @@ export default function CatalystViewIdea({
                   ) : localDescriptionAdf ? (
                     <DisplayView adf={localDescriptionAdf} />
                   ) : (
-                    <p style={{ fontSize: 13, lineHeight: 1.6, margin: 0, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                    <p style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1.6, margin: 0, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                       No description provided
                     </p>
                   )}
@@ -545,19 +545,19 @@ export default function CatalystViewIdea({
 
                 <div>
                   <div style={{
-                    fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
                     letterSpacing: '0.06em', color: 'var(--ds-text-subtlest, #5E6C84)',
                     marginBottom: 12,
                   }}>IMPACT SCORE</div>
 
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16 }}>
                     <span style={{
-                      fontSize: 28, fontWeight: 700,
+                      fontSize: 'var(--ds-font-size-800)', fontWeight: 700,
                       fontFamily: 'var(--cp-font-mono, ui-monospace, SFMono-Regular)',
                     }}>
                       {composite.toFixed(2)}
                     </span>
-                    <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #5E6C84)' }}>
                       out of 5.00
                     </span>
                     <Lozenge appearance={impactLevel}>{impactLabel}</Lozenge>
@@ -572,12 +572,12 @@ export default function CatalystViewIdea({
                         background: 'var(--ds-background-neutral, #F1F2F4)',
                         color: 'var(--ds-text-subtle, #5E6C84)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 12, fontWeight: 700, flexShrink: 0,
+                        fontSize: 'var(--ds-font-size-200)', fontWeight: 700, flexShrink: 0,
                       }}>{dim.letter}</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <span style={{ fontSize: 12, fontWeight: 500 }}>{dim.name}</span>
-                          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #5E6C84)' }}>{dim.weight}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500 }}>{dim.name}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #5E6C84)' }}>{dim.weight}</span>
                         </div>
                         <ImpactSlider
                           value={dim.value}
@@ -587,7 +587,7 @@ export default function CatalystViewIdea({
                       </div>
                       <span style={{
                         fontFamily: 'var(--cp-font-mono, ui-monospace)',
-                        fontSize: 13, fontWeight: 600,
+                        fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                         color: dim.value > 0 ? 'inherit' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                         minWidth: 28, textAlign: 'right',
                       }}>{dim.value.toFixed(1)}</span>
@@ -602,14 +602,14 @@ export default function CatalystViewIdea({
                     borderRadius: 4, padding: 14,
                   }}>
                     <div style={{
-                      fontSize: 13, fontWeight: 600,
+                      fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                       color: 'var(--ds-text-success, #216E4E)',
                       marginBottom: 4,
                     }}>
                       Ready to promote?
                     </div>
                     <p style={{
-                      fontSize: 12, margin: '0 0 12px',
+                      fontSize: 'var(--ds-font-size-200)', margin: '0 0 12px',
                       color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                     }}>
                       Convert this idea into a tracked Request under Product Hub.

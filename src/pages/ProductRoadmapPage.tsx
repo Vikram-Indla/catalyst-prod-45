@@ -312,7 +312,7 @@ export const ProductRoadmapPage: React.FC = () => {
           onClick={() => setColorByHealth(v => !v)}
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            padding: '4px 10px', borderRadius: 4, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+            padding: '4px 10px', borderRadius: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer',
             border: `1px solid ${colorByHealth ? 'var(--ds-border-focused, #1868DB)' : 'var(--ds-border, #DFE1E6)'}`,
             background: colorByHealth ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
             color: colorByHealth ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
@@ -322,9 +322,9 @@ export const ProductRoadmapPage: React.FC = () => {
           Date Pulse health
         </button>
         {colorByHealth && (
-          <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>
+          <div style={{ display: 'flex', gap: 12, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)' }}>
             <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: 'var(--ds-background-danger-bold, #C9372C)', marginRight: 4 }} />Overdue</span>
-            <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: '#C25100', marginRight: 4 }} />At Risk</span>
+            <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: '#C25100', marginRight: 4 }} />At Risk</span> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: 'var(--ds-background-success-bold, #1F845A)', marginRight: 4 }} />Healthy</span>
             <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: 'var(--ds-border-disabled, #DCDFE4)', marginRight: 4 }} />Uncommitted</span>
           </div>

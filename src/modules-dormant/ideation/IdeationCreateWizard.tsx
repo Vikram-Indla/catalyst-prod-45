@@ -81,12 +81,12 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
   const inputBase: React.CSSProperties = {
     width: '100%', height: '44px',
     border: `1px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
-    borderRadius: '8px', padding: '0 14px', fontSize: '14px',
+    borderRadius: '8px', padding: '0 14px', fontSize: 'var(--ds-font-size-400)',
     color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', outline: 'none',
   };
   const labelBase: React.CSSProperties = {
-    display: 'block', fontSize: '13px', fontWeight: 600,
+    display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
     color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: '6px',
   };
   const focusHandlers = isDark ? focusHandlersDark : focusHandlersLight;
@@ -251,13 +251,13 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>Submit New Idea</span>
+            <span style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>Submit New Idea</span>
             <button
               onClick={onClose}
               style={{
                 width: '32px', height: '32px', borderRadius: '8px',
                 background: 'transparent', border: 'none', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-                fontSize: '16px', cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-500)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bg-sunken, #F4F4F5)'; }}
@@ -278,13 +278,13 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
-              <span style={{ fontSize: '13px', color: 'var(--cp-purple-60, #7C3AED)', fontWeight: 500 }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-purple-60, #7C3AED)', fontWeight: 500 }}>
                 AI can auto-fill fields from a short description
               </span>
             </div>
             <button style={{
               background: 'var(--cp-purple-60, #7C3AED)', color: 'var(--ds-surface, #FFF)', border: 'none',
-              borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+              borderRadius: '6px', padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
             }}>Auto-fill</button>
           </div>
 
@@ -307,7 +307,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                 style={{ ...inputBase, borderColor: titleError ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}
                 {...focusHandlers}
               />
-              {titleError && <span style={{ fontSize: '12px', color: 'var(--ds-text-danger, #EF4444)', marginTop: '4px', display: 'block' }}>Required</span>}
+              {titleError && <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #EF4444)', marginTop: '4px', display: 'block' }}>Required</span>}
             </div>
 
             {/* Row 2: Description */}
@@ -328,7 +328,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                 }}
                 {...focusHandlers}
               />
-              {descError && <span style={{ fontSize: '12px', color: 'var(--ds-text-danger, #EF4444)', marginTop: '4px', display: 'block' }}>Required</span>}
+              {descError && <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #EF4444)', marginTop: '4px', display: 'block' }}>Required</span>}
             </div>
 
             {/* Row 3: Type + Priority */}
@@ -412,7 +412,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                             width: '22px', height: '22px', borderRadius: '50%',
                             background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)',
                             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '10px', fontWeight: 700, flexShrink: 0,
+                            fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0,
                           }}>
                             {getInitials(p.full_name || 'NA')}
                           </span>
@@ -488,14 +488,14 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   <span key={tag} style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '2px 8px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
-                    borderRadius: '4px', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+                    borderRadius: '4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   }}>
                     {tag}
                     <button
                       onClick={() => removeTag(tag)}
                       style={{
                         background: 'none', border: 'none', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-                        cursor: 'pointer', padding: 0, fontSize: '14px', lineHeight: 1,
+                        cursor: 'pointer', padding: 0, fontSize: 'var(--ds-font-size-400)', lineHeight: 1,
                       }}
                     >×</button>
                   </span>
@@ -507,7 +507,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   placeholder={tags.length === 0 ? 'Type a tag and press Enter...' : ''}
                   style={{
                     flex: 1, minWidth: '120px', border: 'none', outline: 'none',
-                    fontSize: '13px', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', background: 'transparent',
+                    fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', background: 'transparent',
                     height: '28px',
                   }}
                 />
@@ -531,7 +531,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               style={{
                 background: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                 border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: '8px',
-                padding: '10px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+                padding: '10px 20px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, cursor: 'pointer',
               }}
             >Cancel</button>
             <button
@@ -539,7 +539,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               disabled={createIdea.isPending}
               style={{
                 background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none',
-                borderRadius: '8px', padding: '10px 24px', fontSize: '14px',
+                borderRadius: '8px', padding: '10px 24px', fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600, cursor: 'pointer',
                 opacity: createIdea.isPending ? 0.7 : 1,
               }}

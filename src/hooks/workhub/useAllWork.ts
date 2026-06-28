@@ -5,8 +5,24 @@
  */
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { workhubService } from '@/services/workhub';
-import { whQueryKeys } from '@/types/workhub.ts';
 import { catalystToast } from '@/lib/catalystToast';
+
+// Query-key factory (was @/types/workhub.ts, removed in the work-item enum
+// dedup sweep). Inlined here — this is the only consumer. Keys follow the
+// shared 'workhub' prefix convention used by the other hooks in this file.
+const whQueryKeys = {
+  all: ['workhub'] as const,
+  detail: (id: string) => ['workhub', 'detail', id] as const,
+  statuses: () => ['workhub', 'statuses'] as const,
+  workTypes: () => ['workhub', 'work-types'] as const,
+  sprintReleases: () => ['workhub', 'sprint-releases'] as const,
+  labels: () => ['workhub', 'labels'] as const,
+  comments: (id: string) => ['workhub', 'comments', id] as const,
+  worklogs: (id: string) => ['workhub', 'worklogs', id] as const,
+  history: (id: string) => ['workhub', 'history', id] as const,
+  links: (id: string) => ['workhub', 'links', id] as const,
+  stats: () => ['workhub', 'stats'] as const,
+};
 
 // ════════════════════════════════════════════════════════════════
 // READ HOOKS

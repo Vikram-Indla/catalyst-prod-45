@@ -52,13 +52,27 @@ jobs:
         run: npm install rollup@^4.20.0 --no-save
 
       - name: Type check
-        run: npx tsc --noEmit
-        continue-on-error: true  # Remove once strictNullChecks is enabled
+        # Root `tsc --noEmit` is a no-op (project-references config compiles
+        # nothing). Point at the app project so app-code type errors surface.
+        run: npx tsc -p tsconfig.app.json --noEmit
+        continue-on-error: true  # ~157 baseline errors; remove continue-on-error
+                                 # once the baseline is burned down.
 
       - name: Lint (hub-scope ADS + lucide-react ban — warn during migration)
         run: npm run lint
         continue-on-error: true  # Tighten to fail-on-warn once swept files
                                  # are promoted to error tier in eslint.config.js
+
+      - name: ADS color ratchet (blocks on NEW hard-coded colors)
+        # Fails only when the hard-coded-color count exceeds the committed
+        # baseline (design-governance/color-baseline.json). Existing debt does
+        # not block; regressions do. CAT-ADS-COMPLIANCE-20260627-001.
+        run: npm run lint:colors:gate
+
+      - name: ADS audit ratchet (blocks on NEW tokens/typography/spacing violations)
+        # Per-category fail-on-increase over the design-governance audit vs
+        # design-governance/audit-baseline.json. CAT-ADS-COMPLIANCE-20260627-001.
+        run: npm run audit:ads:gate
 
       - name: Build
         run: npx vite build

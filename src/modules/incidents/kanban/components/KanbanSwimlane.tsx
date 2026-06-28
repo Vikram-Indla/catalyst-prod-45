@@ -187,7 +187,7 @@ const SwimlaneColumn = memo(function SwimlaneColumn({
       <div className={cn(
         "flex items-center gap-1.5 px-2 py-1.5",
         "border-b border-border/30 dark:border-[var(--ds-text, #172B4D)]",
-        "bg-muted/20 dark:bg-[var(--ds-text, #172B4D)]"
+        "bg-muted/20 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]"
       )}>
         <span className="text-xs font-medium text-muted-foreground flex-1 truncate">
           {config.label}

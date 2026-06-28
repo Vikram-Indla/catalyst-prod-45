@@ -109,7 +109,7 @@ export function SummaryPanel({
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
-            fontSize: 15,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 800,
             color: 'var(--cv2-text-strong)',
           }}
@@ -190,7 +190,7 @@ function LoadingState({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div
         style={{
-          fontSize: 18,
+          fontSize: 'var(--ds-font-size-600)',
           fontWeight: 800,
           color: 'var(--cv2-text-strong)',
           lineHeight: 1.35,
@@ -198,7 +198,7 @@ function LoadingState({
       >
         {title}
       </div>
-      <div style={{ fontSize: 13, color: 'var(--cv2-text-muted)' }}>Sifting through messages…</div>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)' }}>Sifting through messages…</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
         <Shimmer width="92%" />
         <Shimmer width="96%" />
@@ -308,7 +308,7 @@ function SummaryHeader({ mode, payload }: { mode: SummaryPanelMode; payload: Sum
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div
         style={{
-          fontSize: 22,
+          fontSize: 'var(--ds-font-size-700)',
           fontWeight: 800,
           color: 'var(--cv2-text-strong)',
           lineHeight: 1.25,
@@ -322,7 +322,7 @@ function SummaryHeader({ mode, payload }: { mode: SummaryPanelMode; payload: Sum
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 12,
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--cv2-text-muted)',
         }}
       >
@@ -369,7 +369,7 @@ function SectionTitleOnly({ title }: { title: string }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, opacity: 0.55 }}>
       <div
         style={{
-          fontSize: 15,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 800,
           color: 'var(--cv2-text-strong)',
           lineHeight: 1.35,
@@ -411,7 +411,7 @@ function SectionCard({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
         <div
           style={{
-            fontSize: 15,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 800,
             color: 'var(--cv2-text-strong)',
             lineHeight: 1.35,
@@ -454,19 +454,19 @@ function SectionCard({
           intact. Once done, swap to the rich HTML pass so @mention pills,
           bold/italic/code render properly. */}
       {animate && !done ? (
-        <div style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--cv2-text)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.55, color: 'var(--cv2-text)' }}>
           {visible}
           <Caret />
         </div>
       ) : (
         <div
-          style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--cv2-text)' }}
+          style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1.55, color: 'var(--cv2-text)' }}
           dangerouslySetInnerHTML={{ __html: renderSummaryInline(section.body, participantNames, selfFullName) }}
         />
       )}
       {done && expanded && section.details.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cv2-text-muted)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--cv2-text-muted)' }}>
             More details
           </div>
           <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -475,7 +475,7 @@ function SectionCard({
               return (
                 <li
                   key={`${section.id}-${i}`}
-                  style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--cv2-text)' }}
+                  style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1.55, color: 'var(--cv2-text)' }}
                 >
                   <span
                     dangerouslySetInnerHTML={{
@@ -530,11 +530,11 @@ function ReferenceMarker({ index, onClick }: { index: number; onClick: () => voi
         minWidth: 18,
         height: 18,
         padding: '0 5px',
-        background: 'rgba(29, 155, 209, 0.18)',
+        background: 'rgba(29, 155, 209, 0.18)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         color: 'var(--ds-link, #0C66E4)',
         border: 'none',
         borderRadius: 4,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         cursor: 'pointer',
         verticalAlign: 'middle',

@@ -84,7 +84,7 @@ export function ScheduleSendDropdown({
               background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
               color: 'var(--ds-text, #172B4D)',
               cursor: disabled ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               opacity: disabled ? 0.5 : 1,
             }}
@@ -123,7 +123,7 @@ export function ScheduleSendDropdown({
               <label
                 style={{
                   display: 'block',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   marginBottom: '4px',
                   color: 'var(--ds-text, #172B4D)',
@@ -143,7 +143,7 @@ export function ScheduleSendDropdown({
               <label
                 style={{
                   display: 'block',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   marginBottom: '4px',
                   color: 'var(--ds-text, #172B4D)',
@@ -157,7 +157,7 @@ export function ScheduleSendDropdown({
                 onChange={(e) => setCustomTime(e.target.value)}
                 style={{
                   padding: '8px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: '3px',
                   width: '100%',

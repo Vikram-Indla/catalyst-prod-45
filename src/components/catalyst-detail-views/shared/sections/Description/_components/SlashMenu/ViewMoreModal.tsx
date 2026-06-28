@@ -80,11 +80,11 @@ interface Props {
 const COLOR_TO_HEX: Record<ModalIconColor, string> = {
   green: 'var(--ds-background-success-bold, #1F845A)',
   blue: 'var(--ds-link, #1868DB)',
-  orange: '#E56910',
+  orange: 'var(--ds-text-warning, #E56910)',
   purple: 'var(--ds-background-discovery-bold, #6E5DC6)',
   red: 'var(--ds-background-danger-bold, #C9372C)',
   gray: 'var(--ds-icon-subtle, #626F86)',
-  pink: '#E774BB',
+  pink: '#E774BB', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   brand: 'var(--ds-link, #1868DB)',
 };
 
@@ -99,7 +99,7 @@ function renderIcon(el: ModalElement) {
     return (
       <span
         style={{
-          fontWeight: 700, fontSize: 13,
+          fontWeight: 700, fontSize: 'var(--ds-font-size-300)',
           color: primaryColor,
           fontFamily: '"Atlassian Sans", ui-sans-serif, system-ui, sans-serif',
         }}
@@ -299,7 +299,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
             style={{
               margin: 0,
               padding: '8px 16px 28px',
-              fontSize: 28,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 600,
               lineHeight: 1.2,
               color: 'var(--ds-text, #292A2E)',
@@ -326,7 +326,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                     color: active
                       ? 'var(--ds-text-selected, #0C66E4)'
                       : 'var(--ds-text, #292A2E)',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: active ? 600 : 400,
                     cursor: 'pointer',
                   }}
@@ -367,7 +367,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 border: searchFocused
                   ? '2px solid var(--ds-border-focused, #2684FF)'
                   : '2px solid var(--ds-border, #DFE1E6)',
@@ -389,7 +389,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                   padding: 40,
                   textAlign: 'center',
                   color: 'var(--ds-text-subtlest, #6B778C)',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                 }}
               >
                 No elements match
@@ -470,7 +470,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                       <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                         <span
                           style={{
-                            fontSize: 14,
+                            fontSize: 'var(--ds-font-size-400)',
                             fontWeight: 500,
                             color: 'var(--ds-text, #292A2E)',
                             overflow: 'hidden',
@@ -482,7 +482,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
                         </span>
                         <span
                           style={{
-                            fontSize: 12,
+                            fontSize: 'var(--ds-font-size-200)',
                             color: 'var(--ds-text-subtlest, #6B778C)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -515,7 +515,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               onClick={onClose}
               style={{
                 padding: '6px 12px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 border: 'none',
                 borderRadius: 3,
@@ -532,7 +532,7 @@ export function ViewMoreModal({ isOpen, onClose, editor, onExternalAction }: Pro
               onClick={handleInsert}
               style={{
                 padding: '6px 14px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 border: 'none',
                 borderRadius: 3,

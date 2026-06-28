@@ -405,7 +405,7 @@ function ConversationItemRow({
           {c.projectKey ? (
             <ProjectIcon projectKey={c.projectKey} size="xsmall" />
           ) : (
-            <span style={{ fontSize: '13px', lineHeight: 1 }}>#</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: 1 }}>#</span>
           )}
         </span>
       )}

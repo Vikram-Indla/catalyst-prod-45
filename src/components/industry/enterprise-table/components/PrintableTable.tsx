@@ -131,7 +131,7 @@ export function PrintableTable<T extends { id: string }>({
             
             .print-subtitle {
               font-size: 10pt;
-              color: #666;
+              color: var(--ds-text-subtlest, #666);
             }
             
             table {
@@ -181,7 +181,7 @@ export function PrintableTable<T extends { id: string }>({
               padding-top: 12px;
               border-top: 1px solid var(--ds-border, #DFE1E6);
               font-size: 9pt;
-              color: #666;
+              color: var(--ds-text-subtlest, #666);
               display: flex;
               justify-content: space-between;
             }

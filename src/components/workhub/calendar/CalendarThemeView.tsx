@@ -38,7 +38,7 @@ export function CalendarThemeView({ year, month, events, isLoading }: Props) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
         <Palette style={{ width: 48, height: 48, marginBottom: 16 }} />
-        <p style={{ fontSize: 14, margin: 0 }}>No themes span {getMonthName(month)} {year}</p>
+        <p style={{ fontSize: 'var(--ds-font-size-400)', margin: 0 }}>No themes span {getMonthName(month)} {year}</p>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export function CalendarThemeView({ year, month, events, isLoading }: Props) {
     <div style={{ border: '1px solid var(--divider)', borderRadius: 'var(--wh-radius-lg)', overflow: 'hidden', fontFamily: 'var(--wh-font-sans)' }}>
       {/* Day number header */}
       <div style={{ display: 'grid', gridTemplateColumns: `180px repeat(${daysInMonth}, 1fr)`, borderBottom: '1px solid var(--divider)', backgroundColor: 'var(--cp-float)' }}>
-        <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase' }}>
+        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase' }}>
           Theme
         </div>
         {days.map((d) => (
@@ -59,7 +59,7 @@ export function CalendarThemeView({ year, month, events, isLoading }: Props) {
             style={{
               padding: '8px 2px',
               textAlign: 'center',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: todayInMonth && d === todayDay ? 700 : 400,
               color: todayInMonth && d === todayDay ? 'var(--cp-blue)' : 'var(--fg-4)',
               backgroundColor: todayInMonth && d === todayDay ? 'var(--cp-primary-5)' : undefined,
@@ -130,10 +130,10 @@ export function CalendarThemeView({ year, month, events, isLoading }: Props) {
             >
               {/* Label */}
               <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {theme.event_title}
                 </span>
-                <span style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 2 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', marginTop: 2 }}>
                   {fmtStart} — {fmtEnd}
                 </span>
               </div>

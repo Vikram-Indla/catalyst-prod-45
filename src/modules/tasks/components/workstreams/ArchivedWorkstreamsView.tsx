@@ -125,7 +125,7 @@ export function ArchivedWorkstreamsView({
           </button>
           <div>
             <h1 style={{
-              fontSize: '20px',
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 700,
               color: 'var(--ds-text, #0f172a)',
               margin: 0,
@@ -133,7 +133,7 @@ export function ArchivedWorkstreamsView({
               Archived Workstreams
             </h1>
             <p style={{
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-subtlest, #64748b)',
               marginTop: '2px',
               margin: 0,

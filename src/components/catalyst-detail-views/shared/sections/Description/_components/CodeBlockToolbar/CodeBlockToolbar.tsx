@@ -523,7 +523,7 @@ function LanguageSelect({
         : 'var(--ds-border-input, #8590A2)'
     }`,
     borderRadius: 4,
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     color:
       current === CODE_LANGUAGE_NONE
         ? 'var(--ds-text-subtle, #6B778C)'
@@ -582,7 +582,7 @@ function LanguageSelect({
               border: 'none',
               outline: 'none',
               background: 'transparent',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text, #292A2E)',
             }}
           />
@@ -658,7 +658,7 @@ function LanguageSelect({
                   <div
                     style={{
                       padding: '8px 12px',
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       color: 'var(--ds-text-subtle, #6B778C)',
                     }}
                   >
@@ -728,7 +728,7 @@ function LanguageRow({
       style={{
         position: 'relative',
         padding: '7px 12px 7px 14px',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: selected ? 500 : 400,
         color: selected
           ? 'var(--ds-text-information, #0C66E4)'
@@ -913,7 +913,7 @@ function MenuItem({ label, icon, onClick, danger = false }: MenuItemProps) {
         color: danger
           ? 'var(--ds-text-danger, #AE2A19)'
           : 'var(--ds-text, #292A2E)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 400,
         cursor: 'pointer',
         textAlign: 'start',

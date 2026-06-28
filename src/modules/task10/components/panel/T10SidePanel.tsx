@@ -167,7 +167,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {hasChanges && (
-              <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #626F86)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #626F86)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <Save size={14} /> Saving...
               </span>
             )}
@@ -239,7 +239,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
                   <div className={`t10-checkbox ${isCompleted ? 'checked' : ''}`} style={{ width: '26px', height: '26px' }}>
                     {isCompleted && <Check size={14} strokeWidth={3} />}
                   </div>
-                  <span style={{ fontSize: '14px', color: isCompleted ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--ds-text-subtlest, #626F86)', fontWeight: isCompleted ? 600 : 400 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: isCompleted ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--ds-text-subtlest, #626F86)', fontWeight: isCompleted ? 600 : 400 }}>
                     {isCompleted ? 'Completed' : 'Mark as completed'}
                   </span>
                 </div>

@@ -5,8 +5,8 @@
  * 
  * DESIGN TOKENS FROM SPECIFICATION:
  * - Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) (buttons, active states)
- * - Insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), Cosourced: #0d9488, Outsourced: var(--ds-text-warning, #d97706)
- * - Licenses: #7c3aed
+ * - Insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), Cosourced: var(--ds-chart-teal-bold, #0d9488), Outsourced: var(--ds-text-warning, #d97706)
+ * - Licenses: var(--ds-background-discovery-bold, #7c3aed)
  * - Text: var(--ds-text, #0f172a) primary, var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) secondary, var(--ds-text-subtlest, #64748b) muted
  * - 5px solid top borders on cards, font-mono for values
  */

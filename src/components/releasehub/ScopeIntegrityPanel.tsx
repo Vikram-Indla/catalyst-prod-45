@@ -25,7 +25,7 @@ function Chip({ label, color, bg }: { label: string; color: string; bg: string }
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       padding: '4px 8px', borderRadius: 12,
-      fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600,
+      fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
       color, background: bg, flexShrink: 0,
     }}>{label}</span>
   );
@@ -45,8 +45,8 @@ export function ScopeIntegrityPanel() {
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
-        <span style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text }}>Scope integrity</span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>{activeRows.length} active release{activeRows.length !== 1 ? 's' : ''}</span>
+        <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text }}>Scope integrity</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{activeRows.length} active release{activeRows.length !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Rows */}
@@ -73,9 +73,9 @@ export function ScopeIntegrityPanel() {
             {/* Left: name + bar */}
             <div style={{ minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
+                <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
                 {r.scopeItems > 0 && (
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest, flexShrink: 0 }}>{r.scopeItems} items</span>
+                  <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, flexShrink: 0 }}>{r.scopeItems} items</span>
                 )}
               </div>
               {/* Scope bar: baseline (blue) | drift (orange) */}

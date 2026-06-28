@@ -127,7 +127,7 @@ import("./App")
       <div style="padding:40px;font-family:monospace;color:var(--ds-background-danger-bold, #dc2626)">
         <h1>Boot Error</h1>
         <pre style="white-space:pre-wrap;word-break:break-all">${String(err?.message || err)}</pre>
-        <pre style="white-space:pre-wrap;word-break:break-all;font-size:12px;color:#666">${String(err?.stack || '')}</pre>
+        <pre style="white-space:pre-wrap;word-break:break-all;font-size:12px;color:var(--ds-text-subtlest, #666)">${String(err?.stack || '')}</pre>
       </div>
     `;
   });

@@ -55,7 +55,7 @@ import { ResizeColumnDialog } from './ResizeColumnDialog';
 // Simple Atlaskit-tuned button style used by the pagination footer.
 const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
   padding: '4px 10px',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
   borderRadius: 3,
   background: disabled ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
@@ -563,7 +563,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* Row hover. Apr 28, 2026 (jira-compare cycle 4): tokenized — was
          hardcoded var(--ds-surface-sunken, #F7F8F9). --ds-background-neutral-subtle-hovered is the
          exact Atlaskit hover bg (var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) in light theme). */
-      /* Jira DOM probe 2026-05-16: row hover bg = rgba(9,30,66,0.06) ≈ #F1F2F4 */
+      /* Jira DOM probe 2026-05-16: row hover bg = rgba(9,30,66,0.06) ≈ var(--ds-background-neutral, #F1F2F4) */
       .jira-table-grid table tbody > tr:hover > td {
         background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
       }
@@ -825,7 +825,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            Catalyst's previous UPPERCASE / wide-tracked / muted-grey
            treatment was a Catalyst opinion. Matching Jira's actual list
            view here for parity. Apr 27 2026 jira-compare regression
-           (D-005 + D-006): fontWeight 700 → 653, color var(--ds-text-subtle, #44546F) → var(--ds-text-subtlest, #6B6E76).
+           (D-005 + D-006): fontWeight 700 → 653, color var(--ds-text-subtle, var(--ds-icon, #44546F)) → var(--ds-text-subtlest, var(--ds-text-subtlest, #6B6E76)).
            Jira spec (measured 2026-05-12): 12px/653/var(--ds-text-subtle, rgb(80,82,88)) — NOT 14px/400.
            14px/400 is body text. Headers must be bold and smaller.
            May 12 2026 (design-intelligence RCA): line-height 18px → 16px
@@ -845,7 +845,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         border-right: 1px solid var(--ds-border, #EBECF0);
       }
       .jira-table-grid thead th.jira-th-sortable { cursor: pointer; }
-      /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded #EBECF0 */
+      /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded var(--ds-background-neutral, #EBECF0) */
       .jira-table-grid thead th.jira-th-sortable:hover { background: var(--ds-background-neutral-hovered, #EBECF0); }
       /* 2026-05-10 Jira-parity: row body is the click target for opening
          the detail panel. cursor: pointer signals clickability. Inline
@@ -1276,6 +1276,21 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       cells: Array<{ key: string; content: React.ReactNode; colSpan?: number }>;
     }> = [];
 
+    // RCA 2026-06-28 (excess Work-column left padding): the expand-chevron
+    // slot must be reserved only when at least one VISIBLE row is actually
+    // expandable. Callers (BacklogPage, Tasks) pass `getRowHasChildren`
+    // UNCONDITIONALLY as a function, so gating the empty placeholder on mere
+    // prop-presence reserved ~28px (24px slot + 4px margin) on every row even
+    // when 0 rows had children — pushing the type icon + key right. Gate on
+    // actual expandability instead. Slot stays uniform across rows when a
+    // parent exists (children align under it); a fully-flat list reserves
+    // nothing. Matches Jira: the toggle column appears only when something can
+    // be toggled.
+    const anyRowHasChildren = !!getRowHasChildren && (
+      pagedData.some((r) => getRowHasChildren(r)) ||
+      (groups?.some((g) => g.rows.some((r) => getRowHasChildren(r))) ?? false)
+    );
+
     const renderDataRow = (row: TRow) => {
       const id = getRowId(row);
       const isSelected = selectedSet.has(id);
@@ -1427,10 +1442,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     </button>
                   );
                 }
-                // Only render the empty slot when the hierarchy feature is active
-                // (getRowHasChildren is provided). Leaf rows in a flat list skip
-                // the slot entirely so the type icon starts at the cell edge.
-                if (!getRowHasChildren) return null;
+                // Only render the empty slot when the table actually has an
+                // expandable row (see anyRowHasChildren RCA above). Leaf rows in
+                // a flat list — or a hierarchy where nothing is currently
+                // expandable — skip the slot so the type icon starts at the
+                // cell edge with no dead padding.
+                if (!anyRowHasChildren) return null;
                 return (
                   <span
                     aria-hidden="true"
@@ -1590,7 +1607,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     width: 24,
                     height: 24,
                     // 2026-05-08 DOM probe: Jira group header chevron color = rgb(80,82,88)
-                    // = --ds-text-subtle. Was #6B6E76 (--ds-text-subtlest) — too faint.
+                    // = --ds-text-subtle. Was var(--ds-text-subtlest, #6B6E76) (--ds-text-subtlest) — too faint.
                     color: 'var(--ds-text-subtle, #505258)',
                     transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
                     transition: 'transform 200ms ease',
@@ -1610,12 +1627,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   {(g as any).labelNode}
                 </span>
               ) : (
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {g.label}
                 </span>
               )}
               {g.meta && (
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
                   {g.meta}
                 </span>
               )}
@@ -1953,7 +1970,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                           `left:-10000px`,
                           `width:${ghostW}px`,
                           `height:${ghostH}px`,
-                          `background:rgba(76,154,255,0.10)`,
+                          `background:var(--ds-background-selected, #E9F2FF)`,
                           `border:2px solid var(--ds-border-selected, #4C9AFF)`,
                           `border-radius:3px`,
                           `pointer-events:none`,
@@ -2470,12 +2487,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     background: 'transparent',
                     cursor: 'pointer',
                     color: 'var(--ds-text, #292A2E)',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 600,
                     borderRadius: 3,
                   }}
                 >
-                  <span style={{ fontSize: 22, lineHeight: 1, marginTop: -2, fontWeight: 400 }}>+</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-700)', lineHeight: 1, marginTop: -2, fontWeight: 400 }}>+</span>
                   <span>{stickyCreateFooter.placeholder ?? 'Create'}</span>
                 </button>
                 <div
@@ -2484,7 +2501,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: 'var(--ds-text, #292A2E)',
                   }}
@@ -2552,7 +2569,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             gap: 8,
             padding: '8px 12px',
             borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtle, #42526E)',
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
           }}>
@@ -2651,14 +2668,14 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     // legacy var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))) → --ds-text fallback #292A2E to match
                     // the rest of the table's body-text token swap.
                     color: a.danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #292A2E)',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     textAlign: 'left',
                     cursor: disabled ? 'default' : 'pointer',
                     opacity: disabled ? 0.5 : 1,
                     fontFamily: 'inherit',
                     borderRadius: 3,
                   }}
-                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? 'var(--ds-background-danger-hovered, #FFEBE6)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? 'var(--ds-background-danger-hovered, #FFEBE6)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {a.icon}
@@ -2955,9 +2972,9 @@ function ColumnManagerTrigger<TRow>({
           outline: 'none',
           boxShadow: 'none',
         }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F1F2F4)')}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
-        onFocus={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F1F2F4)')}
+        onFocus={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')}
         onBlur={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
       >
         {/* 2026-06-09 Jira parity: Jira's column-picker icon is a bordered
@@ -3003,7 +3020,7 @@ function ColumnManagerTrigger<TRow>({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 6px' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
               Columns
             </span>
             <button
@@ -3016,7 +3033,7 @@ function ColumnManagerTrigger<TRow>({
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--ds-link, #0C66E4)',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 padding: '2px 4px',
@@ -3058,7 +3075,7 @@ function ColumnManagerTrigger<TRow>({
                     padding: '6px 10px',
                     cursor: 'pointer',
                     fontFamily: 'inherit',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: isActive ? 600 : 500,
                     color: isActive ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                     marginBottom: -1,
@@ -3085,7 +3102,7 @@ function ColumnManagerTrigger<TRow>({
           </div>
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 13, color: 'var(--ds-text-subtlest, #7A869A)' }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #7A869A)' }}>No matches</div>
             )}
             {filtered.map((c) => {
               const isVisible = visibility.has(c.id);
@@ -3102,10 +3119,10 @@ function ColumnManagerTrigger<TRow>({
                     padding: '6px 8px',
                     cursor: 'pointer',
                     borderRadius: 3,
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     color: 'var(--ds-text, #292A2E)',
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))')}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   <AkCheckbox
@@ -3121,14 +3138,14 @@ function ColumnManagerTrigger<TRow>({
           {/* 2026-05-12 Jira parity: "X of Y" count display at the bottom */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '6px 8px 2px', fontSize: 11, color: 'var(--ds-text-subtlest, #7A869A)',
+            padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)',
             borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', marginTop: 4,
           }}>
             <span>{matchCount} of {totalInTab}</span>
           </div>
           {/* Locked columns hint */}
           {columns.some((c) => c.alwaysVisible) && (
-            <div style={{ padding: '6px 8px 2px', fontSize: 11, color: 'var(--ds-text-subtlest, #7A869A)' }}>
+            <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)' }}>
               {columns.filter((c) => c.alwaysVisible && !c.id.startsWith('__')).map((c) => c.label || c.id).join(', ')} are required.
             </div>
           )}

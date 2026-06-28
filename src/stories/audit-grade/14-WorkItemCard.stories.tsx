@@ -20,7 +20,7 @@ const tk = {
   textSubtle: 'var(--ds-text-subtle, #42526E)', textSubtlest: 'var(--ds-text-subtlest, #6B778C)',
   flagBg: 'var(--ds-background-warning, #FFF7D6)', selected: 'var(--ds-background-selected, #E9F2FE)',
 };
-const d = { cardPadding: 12, avatarSize: 24, fontSize: 13, keyFontSize: 11, gap: 6, borderRadius: 8, minHeight: 80 };
+const d = { cardPadding: 12, avatarSize: 24, fontSize: 'var(--ds-font-size-300)', keyFontSize: 11, gap: 6, borderRadius: 8, minHeight: 80 };
 
 const card = {
   id: 'i1', issue_key: 'BAU-5972', summary: 'Industrial Capabilities: Add Item Interface',

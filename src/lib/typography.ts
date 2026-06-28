@@ -34,7 +34,7 @@
  * source of truth when Atlaskit provides one):
  *   color.text                rgb(41,42,46)   #292A2E
  *   color.text.subtle         rgb(80,82,88)   #505258
- *   color.text.subtlest       rgb(107,110,118) #6B6E76
+ *   color.text.subtlest       rgb(107,110,118) var(--ds-text-subtlest, #6B6E76)
  */
 import { token } from '@atlaskit/tokens';
 
@@ -112,7 +112,7 @@ export const text = {
   success: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
 
   /** Warning — caution labels. */
-  warning: token('color.text.warning', '#A54800'),
+  warning: token('color.text.warning', 'var(--ds-chart-orange-bold, #A54800)'),
 
   /** Discovery — AI / purple category accents. */
   discovery: token('color.text.discovery', 'var(--ds-background-discovery-bold, #6E5DC6)'),

@@ -108,7 +108,7 @@ export function TimeInStatusHoverCard({
         width: 340,
         padding: '12px 14px',
         fontFamily: 'Atlassian Sans, -apple-system, system-ui, sans-serif',
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', 'var(--ds-text, #172B4D)'),
       }}
     >
       {/* Row 0 — ticket header (Jira hover parity) — type icon + key + title */}
@@ -119,7 +119,7 @@ export function TimeInStatusHoverCard({
           gap: 8,
           marginBottom: 8,
           paddingBottom: 8,
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', paddingTop: 2, flexShrink: 0 }}>
@@ -128,10 +128,10 @@ export function TimeInStatusHoverCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           <div
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: '20px',
               fontWeight: 653,
-              color: token('color.link', '#0C66E4'),
+              color: token('color.link', 'var(--ds-link, #0C66E4)'),
               wordBreak: 'break-word',
             }}
           >
@@ -169,7 +169,7 @@ export function TimeInStatusHoverCard({
             borderRadius: 3,
             background: pillBg,
             color: pillFg,
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 653,
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
@@ -183,9 +183,9 @@ export function TimeInStatusHoverCard({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 500,
-              color: token('color.text.subtle', '#42526E'),
+              color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             }}
           >
             <PriorityIcon level={priority} size={14} />
@@ -198,11 +198,11 @@ export function TimeInStatusHoverCard({
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 }}>
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 653,
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
-            color: token('color.text.subtlest', '#6B778C'),
+            color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
           }}
         >
           Time in status
@@ -210,9 +210,9 @@ export function TimeInStatusHoverCard({
         <span
           style={{
             fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-            fontSize: 16,
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 653,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--ds-text, #172B4D)'),
           }}
         >
           {fmtDuration(currentMs)}
@@ -223,13 +223,13 @@ export function TimeInStatusHoverCard({
       {visits > 1 && (
         <div
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
-            color: token('color.text.subtle', '#42526E'),
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             marginBottom: 8,
           }}
         >
-          Re-entered status <b style={{ color: token('color.text', '#172B4D'), fontWeight: 653 }}>{visits}×</b>
+          Re-entered status <b style={{ color: token('color.text', 'var(--ds-text, #172B4D)'), fontWeight: 653 }}>{visits}×</b>
         </div>
       )}
 
@@ -238,11 +238,11 @@ export function TimeInStatusHoverCard({
         <div style={{ marginBottom: 8 }}>
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 653,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: token('color.text.subtlest', '#6B778C'),
+              color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               marginBottom: 2,
             }}
           >
@@ -255,8 +255,8 @@ export function TimeInStatusHoverCard({
           />
           <div
             style={{
-              fontSize: 11,
-              color: token('color.text.subtlest', '#6B778C'),
+              fontSize: 'var(--ds-font-size-100)',
+              color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               marginTop: 2,
               fontVariantNumeric: 'tabular-nums',
             }}
@@ -271,11 +271,11 @@ export function TimeInStatusHoverCard({
         <div>
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 653,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: token('color.text.subtlest', '#6B778C'),
+              color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               marginBottom: 4,
             }}
           >
@@ -289,9 +289,9 @@ export function TimeInStatusHoverCard({
           {patternDescription && (
             <div
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 lineHeight: '16px',
-                color: token('color.text.subtle', '#42526E'),
+                color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                 marginTop: 4,
               }}
             >
@@ -305,8 +305,8 @@ export function TimeInStatusHoverCard({
       {p50Hours == null && pattern === 'none' && (
         <div
           style={{
-            fontSize: 12,
-            color: token('color.text.subtle', '#42526E'),
+            fontSize: 'var(--ds-font-size-200)',
+            color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             lineHeight: '16px',
           }}
         >

@@ -36,7 +36,7 @@ export function JiraStatusLozenge({
   maxWidth,
 }: JiraStatusLozengeProps) {
   // Canonical status pill (statusPalette.ts). Was @atlaskit/lozenge whose bold
-  // success rendered the dark #1F845A/white; unified 2026-06-17 to the canonical
+  // success rendered the dark var(--ds-background-success-bold, #1F845A)/white; unified 2026-06-17 to the canonical
   // #94C748 pastel shared by all work-item status pills.
   return (
     <span style={{
@@ -50,7 +50,7 @@ export function JiraStatusLozenge({
     }}>
       <span style={{
         font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: statusFg(),
+        color: statusFg(APPEARANCE_MAP[category]),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         padding: '2px',

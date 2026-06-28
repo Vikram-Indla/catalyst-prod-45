@@ -39,7 +39,7 @@ export function ReleaseTimeline({ releases, onNavigate }: Props) {
           return (
             <div key={r.id} className={styles.timelineRow}>
               <div className={styles.timelineRowLabel}>
-                <span className={styles.versionBadge} style={{ fontSize: 10 }}>{r.version}</span>
+                <span className={styles.versionBadge} style={{ fontSize: 'var(--ds-font-size-50)' }}>{r.version}</span>
                 <span className={styles.timelineRowLabelText}>{r.name}</span>
               </div>
               <div className={styles.timelineBarsCell}>

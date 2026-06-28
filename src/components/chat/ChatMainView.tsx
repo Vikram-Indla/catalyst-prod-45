@@ -337,22 +337,22 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                     border: 'none',
                     outline: 'none',
                     background: 'transparent',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color: 'var(--ds-text, #172B4D)',
                   }}
                 />
-                {isSearching && <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>Searching…</span>}
+                {isSearching && <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>Searching…</span>}
                 <button
                   type="button"
                   onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16, lineHeight: 1, padding: '0 4px' }}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-500)', lineHeight: 1, padding: '0 4px' }}
                   aria-label="Close search"
                 >×</button>
               </div>
               {searchQuery.trim().length >= 2 && (
                 <div style={{ marginTop: 8, maxHeight: 320, overflowY: 'auto', borderRadius: 4, border: '1px solid var(--ds-border, #DFE1E6)' }}>
                   {searchResults.length === 0 && !isSearching ? (
-                    <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                    <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                       No messages found for "{searchQuery}"
                     </div>
                   ) : (
@@ -376,13 +376,13 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                           border: 'none',
                           borderBottom: '1px solid var(--ds-border, #DFE1E6)',
                           cursor: 'pointer',
-                          fontSize: 13,
+                          fontSize: 'var(--ds-font-size-300)',
                         }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)'; }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F7F8F9))'; }}
                         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                       >
                         <span style={{ fontWeight: 500, color: 'var(--ds-text, #172B4D)', marginRight: 8 }}>{r.message.authorName}</span>
-                        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                           {new Date(r.message.createdAt).toLocaleDateString()}
                         </span>
                         <div style={{ marginTop: 2, color: 'var(--ds-text-subtle, #44546F)' }}>
@@ -408,7 +408,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: '12px',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 color: 'var(--ds-text, #172B4D)',
               }}
             >
@@ -420,7 +420,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                   border: 'none',
                   color: 'var(--ds-text-subtle, #44546F)',
                   cursor: 'pointer',
-                  fontSize: '16px',
+                  fontSize: 'var(--ds-font-size-500)',
                   padding: '0 4px',
                 }}
                 aria-label="Dismiss hint"
@@ -452,7 +452,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
           {convTab === 'pins' && activeConversation?.kind === 'channel' ? (
             <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
               {pins.length === 0 ? (
-                <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, textAlign: 'center', paddingTop: 32 }}>
+                <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)', textAlign: 'center', paddingTop: 32 }}>
                   No pinned messages yet. Hover a message and pin it.
                 </div>
               ) : (
@@ -466,14 +466,14 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                           padding: '8px 12px',
                           border: '1px solid var(--ds-border, #DFE1E6)',
                           borderRadius: 4,
-                          fontSize: 13,
+                          fontSize: 'var(--ds-font-size-300)',
                           background: 'var(--ds-surface, #FFFFFF)',
                           display: 'flex',
                           alignItems: 'flex-start',
                           gap: 8,
                         }}
                       >
-                        <span style={{ fontSize: 16 }}>📌</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-500)' }}>📌</span>
                         <div style={{ flex: 1 }}>
                           {msg ? (
                             <>
@@ -486,7 +486,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                         </div>
                         <button
                           type="button"
-                          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12, padding: '2px 4px' }}
+                          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-200)', padding: '2px 4px' }}
                           title="Unpin"
                           onClick={() => resolvedActiveId && togglePin.mutate({ conversationId: resolvedActiveId, messageId: pin.message_id, currentlyPinned: true })}
                         >
@@ -574,12 +574,12 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
               borderBottom: '1px solid var(--ds-border, #DFE1E6)',
               width: '100%',
               cursor: 'pointer',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--ds-text-subtle, #44546F)',
               fontWeight: 500,
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, #0052CC)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-link, var(--ds-link, #0C66E4))'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--ds-icon, #44546F))'; }}
           >
             <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={2.5}>
               <polyline points="15 18 9 12 15 6" />
@@ -620,7 +620,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             display: 'flex',
             alignItems: 'center',
             gap: 4,
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             color: 'var(--ds-text-subtle, #44546F)',
             boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.1))',
           }}
@@ -664,11 +664,11 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             {/* Rainbow AI header */}
             <div style={{ padding: '2px', background: 'conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder, #BE185D), var(--ds-background-discovery-bold, #6E5DC6), var(--ds-link, #0C66E4), var(--ds-background-information-bold, #0C66E4), var(--ds-background-success, #DFFCF0), var(--ds-background-warning-bold, #E2B203), var(--ds-background-accent-magenta-bolder, #BE185D))', borderRadius: '8px 8px 0 0', flexShrink: 0 }}>
               <div style={{ background: 'var(--ds-surface-overlay, #FFFFFF)', padding: '12px 16px', borderRadius: '6px 6px 0 0', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>✦ Ask Caty — Channel Summary</span>
-                <button type="button" onClick={() => setCatySummary({ open: false, loading: false, text: '' })} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16, lineHeight: 1 }} aria-label="Close">✕</button>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>✦ Ask Caty — Channel Summary</span>
+                <button type="button" onClick={() => setCatySummary({ open: false, loading: false, text: '' })} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-500)', lineHeight: 1 }} aria-label="Close">✕</button>
               </div>
             </div>
-            <div style={{ padding: 16, overflowY: 'auto', flex: 1, fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.6 }}>
+            <div style={{ padding: 16, overflowY: 'auto', flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', lineHeight: 1.6 }}>
               {catySummary.loading ? (
                 <div style={{ color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic' }}>Thinking…</div>
               ) : (

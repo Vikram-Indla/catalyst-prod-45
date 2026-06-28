@@ -41,12 +41,12 @@ interface ReleaseGroup {
 // ─── Status chip ──────────────────────────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, #0C66E4)') },
-  'At Risk': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') },
-  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') },
-  Upcoming:  { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') },
-  Completed: { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, #216E4E)') },
-  'On Track':{ bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, #216E4E)') },
+  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, var(--ds-link, #0C66E4))') },
+  'At Risk': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') },
+  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))') },
+  Upcoming:  { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))') },
+  Completed: { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
+  'On Track':{ bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
 };
 
 function StatusChip({ status }: { status: string }) {
@@ -56,7 +56,7 @@ function StatusChip({ status }: { status: string }) {
       display: 'inline-block',
       padding: '2px 8px',
       borderRadius: 3,
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
       lineHeight: '16px',
       background: bg,
@@ -353,7 +353,7 @@ function ReleaseHeaderRow({ release, rangeStart, rangeEnd, todayPct, expanded, o
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0 }}>
           {hasSprints && (
             <span style={{
-              fontSize: 9,
+              fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
               flexShrink: 0,
               display: 'inline-block',
@@ -465,7 +465,7 @@ export default function ActiveSprintsWidget({
           border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           background: 'transparent',
           color: token('color.link', 'var(--ds-link, #0C66E4)'),
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           cursor: 'pointer',
           whiteSpace: 'nowrap',
@@ -539,7 +539,7 @@ export default function ActiveSprintsWidget({
                 left: `${todayPct}%`,
                 transform: 'translateX(-50%)',
                 whiteSpace: 'nowrap',
-                fontSize: 10,
+                fontSize: 'var(--ds-font-size-50)',
               }}>
                 ▼ Today
               </span>

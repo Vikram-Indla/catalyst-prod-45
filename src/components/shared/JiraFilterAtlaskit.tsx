@@ -234,8 +234,8 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           borderRadius: 3,
           border: `1px solid ${isOpen ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           background: isOpen ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-          color: isOpen ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
-          fontSize: 13,
+          color: isOpen ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           fontFamily: 'inherit',
           cursor: 'pointer',
@@ -254,7 +254,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
               borderRadius: 10,
               background: token('color.background.accent.blue.bolder', 'var(--ds-link, #0C66E4)'),
               color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               display: 'inline-flex',
               alignItems: 'center',
@@ -286,7 +286,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
             boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px var(--ds-shadow-raised, rgba(9,30,66,0.18))'),
             color: token('color.text', 'var(--ds-text, #172B4D)'),
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           {/* Drawer header — matches Jira: small caps "FILTERS" with a subtle border */}
@@ -301,7 +301,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           >
             <span
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 653,
                 color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               }}
@@ -316,7 +316,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
                   background: 'transparent',
                   border: 'none',
                   color: token('color.link', 'var(--ds-link, #0C66E4)'),
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   cursor: 'pointer',
                   padding: '2px 4px',
@@ -355,7 +355,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
                       cursor: 'pointer',
                     }}
                     onMouseEnter={(e) => {
-                      if (!selected) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+                      if (!selected) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
                     }}
                     onMouseLeave={(e) => {
                       if (!selected) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -494,7 +494,7 @@ function Section({
     >
       <div
         style={{
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           marginBottom: 10,
@@ -523,7 +523,7 @@ function AvatarGrid({
   const [showAll, setShowAll] = useState(false);
   if (options.length === 0) {
     return (
-      <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
         {emptyHint}
       </div>
     );
@@ -584,7 +584,7 @@ function AvatarGrid({
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           <MoreIcon label="" size="small" />
@@ -608,7 +608,7 @@ function StatusChipGrid({
   const [showAll, setShowAll] = useState(false);
   if (options.length === 0) {
     return (
-      <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
         No statuses available.
       </div>
     );
@@ -681,7 +681,7 @@ function WorkTypeChipGrid({
   const [showAll, setShowAll] = useState(false);
   if (options.length === 0) {
     return (
-      <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
         No work types available.
       </div>
     );
@@ -707,9 +707,9 @@ function WorkTypeChipGrid({
               padding: '6px 12px',
               borderRadius: 16,
               border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
-              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
-              fontSize: 13,
+              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'),
+              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+              fontSize: 'var(--ds-font-size-300)',
               cursor: 'pointer',
               fontFamily: 'inherit',
               textAlign: 'left',
@@ -768,7 +768,7 @@ function PillChipGrid({
   const [showAll, setShowAll] = useState(false);
   if (options.length === 0) {
     return (
-      <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), fontStyle: 'italic' }}>
         {emptyHint}
       </div>
     );
@@ -793,8 +793,8 @@ function PillChipGrid({
               padding: compact ? '4px 10px' : '6px 12px',
               borderRadius: 16,
               border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : 'transparent'}`,
-              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+              background: isSel ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'),
+              color: isSel ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))'),
               fontSize: compact ? 12 : 13,
               cursor: 'pointer',
               fontFamily: 'inherit',
@@ -859,7 +859,7 @@ function DateRange({
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 8, alignItems: 'end' }}>
       <div>
-        <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>{fromLabel}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>{fromLabel}</div>
         <DatePicker
           value={from || ''}
           onChange={(v: string) => onChange(v || null, to)}
@@ -871,7 +871,7 @@ function DateRange({
       </div>
       <div style={{ paddingBottom: 8, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>→</div>
       <div>
-        <div style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>{toLabel}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>{toLabel}</div>
         <DatePicker
           value={to || ''}
           onChange={(v: string) => onChange(from, v || null)}

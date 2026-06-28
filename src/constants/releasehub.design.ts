@@ -48,9 +48,9 @@ export const RH = {
 };
 
 // ── STATUS LOZENGE 3-COLOR GUARDRAIL ──────────────────────────────
-// GREY:  bg=var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) text=#253858 → NEW, ARCHIVED, NOT_STARTED
-// BLUE:  bg=#DEEBFF text=#0747A6 → IN_UAT, IN_BETA, IN_PROGRESS, PLANNING, WAITING
-// GREEN: bg=#E3FCEF text=#006644 → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
+// GREY:  bg=var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) text=var(--ds-text, #253858) → NEW, ARCHIVED, NOT_STARTED
+// BLUE:  bg=#DEEBFF text=var(--ds-link-pressed, #0747A6) → IN_UAT, IN_BETA, IN_PROGRESS, PLANNING, WAITING
+// GREEN: bg=var(--ds-background-success, #E3FCEF) text=var(--ds-text-success, #006644) → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
 
 export const LOZENGE = {
   grey:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },

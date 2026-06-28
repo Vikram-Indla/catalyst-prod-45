@@ -138,7 +138,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
         >
           <p 
             style={{
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-subtlest, #64748b)',
               marginBottom: '12px',
               margin: 0,
@@ -159,7 +159,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
               height: '50px',
               padding: '0 16px',
               fontFamily: 'var(--cp-font-body)',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               backgroundColor: 'var(--ds-text-brand, #3b82f6)',

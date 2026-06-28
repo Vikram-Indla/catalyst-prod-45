@@ -15,6 +15,7 @@ export interface TestPlanFormState {
   description: string;
   status: TestPlanStatus;
   release_id: string | null;
+  sprint_id: string | null;
   start_date: Date | null;
   end_date: Date | null;
   objectives: string;
@@ -53,6 +54,7 @@ export const initialFormState: TestPlanFormState = {
   description: '',
   status: 'draft',
   release_id: null,
+  sprint_id: null,
   start_date: null,
   end_date: null,
   objectives: '',

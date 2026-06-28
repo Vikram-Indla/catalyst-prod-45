@@ -122,10 +122,10 @@ function HubRow({ row, onOpenRow, onUnstar }: { row: StarredHubRow; onOpenRow: (
       style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, paddingInline: 8, borderRadius: 4, cursor: 'pointer', background: hover ? HOVER : 'transparent' }}
     >
       <RowIcon row={row} />
-      <span style={{ fontSize: 13, color: TEXT, fontFamily: BODY_FONT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{row.label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: TEXT, fontFamily: BODY_FONT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{row.label}</span>
       {isWork && (
         <>
-          <span style={{ fontSize: 12, fontFamily: MONO_FONT, color: TEXT_SUBTLE, flexShrink: 0 }}>{row.subtitle}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: MONO_FONT, color: TEXT_SUBTLE, flexShrink: 0 }}>{row.subtitle}</span>
           {row.status && <JiraForYouLozenge status={row.status} statusCategory={row.statusCategory} />}
         </>
       )}

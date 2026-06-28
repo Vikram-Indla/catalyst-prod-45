@@ -31,6 +31,8 @@ export function useAiCommandConsole() {
   const [running, setRunning] = useState<RunState | null>(null);
   const [confirm, setConfirm] = useState<ConfirmState | null>(null);
   const [history, setHistory] = useState<ConfirmationEntry[]>([]);
+  // Entity chips — people selected for bulk operations
+  const [entityChips, setEntityChips] = useState<EntitySuggestion[]>([]);
 
   const qc = useQueryClient();
   const learnedRef = useRef<LearnedCommand[]>([]);
@@ -48,23 +50,50 @@ export function useAiCommandConsole() {
     if (!c) return;
     pickRef.current = { text: c.example, cmd: c };
     setComposerRaw(c.example); setFocused(false); setConfirm(null);
-  }, []);
-  const setComposer = useCallback((v: string) => {
-    if (pickRef.current && v !== pickRef.current.text) pickRef.current = null;
-    setComposerRaw(v); setConfirm(null);
+    setEntityChips([]);
   }, []);
 
-  // Entity autocomplete — replaces the last word in composer with entity's insert value
-  const pickEntity = useCallback((s: EntitySuggestion) => {
-    setComposerRaw(prev => {
-      const words = prev.split(/(\s+)/);
-      // Replace last non-empty segment
-      let last = words.length - 1;
-      while (last > 0 && words[last].trim() === '') last--;
-      words[last] = s.insert;
-      return words.join('') + ' ';
-    });
+  const clearAll = useCallback(() => {
+    setComposerRaw('');
+    setEntityChips([]);
+    setConfirm(null);
     pickRef.current = null;
+  }, []);
+
+  const setComposer = useCallback((v: string) => {
+    if (pickRef.current && v !== pickRef.current.text) pickRef.current = null;
+    setComposerRaw(v);
+    setConfirm(null);
+    if (v === '') setEntityChips([]);
+  }, []);
+
+  // Remove the last typed fragment (word that triggered autocomplete) from composer
+  const removeFrag = (prev: string) => {
+    const words = prev.split(/(\s+)/);
+    let last = words.length - 1;
+    while (last > 0 && words[last].trim() === '') last--;
+    words[last] = '';
+    return words.join('').trimEnd();
+  };
+
+  // Entity autocomplete — always adds to chips; removes the fragment from composer
+  const pickEntity = useCallback((s: EntitySuggestion) => {
+    setEntityChips(prev => {
+      // Deduplicate by insert value
+      if (prev.some(c => c.insert === s.insert)) return prev;
+      return [...prev, s];
+    });
+    setComposerRaw(prev => removeFrag(prev));
+    pickRef.current = null;
+  }, []);
+
+  const removeChip = useCallback((index: number) => {
+    setEntityChips(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
+  // Remove last chip on backspace when composer is empty
+  const removeLastChip = useCallback(() => {
+    setEntityChips(prev => prev.slice(0, -1));
   }, []);
 
   const onFocus = () => setFocused(true);
@@ -86,6 +115,7 @@ export function useAiCommandConsole() {
     setHistory(h => [makeEntry(r.cmd ?? { title: r.title, risk: r.risk, bulk: r.bulk }, summary, r.novel, h.length + 2, 'just now', r.request), ...h].slice(0, 6));
     setRunning(null);
     setComposerRaw('');
+    setEntityChips([]);
     planRef.current = null;
   }, []);
 
@@ -189,10 +219,16 @@ export function useAiCommandConsole() {
 
   const run = useCallback(() => {
     const q = composer.trim();
-    if (!q || running) return;
-    const cmd = match(q);
-    void execute(q, cmd, !cmd);
-  }, [composer, running, match, execute]);
+    const hasChips = entityChips.length > 0;
+    if ((!q && !hasChips) || !!running) return;
+    // Compose full message: qualifier text + picked people names
+    const people = entityChips.map(c => c.insert).join(', ');
+    const fullMessage = hasChips
+      ? (q ? `${q} ${people}` : people)
+      : q;
+    const cmd = match(fullMessage);
+    void execute(fullMessage, cmd, !cmd);
+  }, [composer, entityChips, running, match, execute]);
 
   const confirmRun = useCallback(async () => {
     const plan = planRef.current;
@@ -214,7 +250,10 @@ export function useAiCommandConsole() {
   const toView = useCallback((c: Command): CommandView => ({ title: c.title, desc: c.desc, risk: c.risk, bulk: !!c.bulk, cat: c.cat, onPick: () => pick(c) }), [pick]);
 
   const matched = useMemo(() => match(composer), [composer, match]);
-  const statusKind: 'ready' | 'match' | 'novel' = composer.trim() === '' ? 'ready' : (matched ? 'match' : 'novel');
+  const statusKind: 'ready' | 'match' | 'novel' = (composer.trim() === '' && entityChips.length === 0) ? 'ready' : (matched ? 'match' : 'novel');
+
+  // Bulk mode: 2+ chips OR single chip with a bulk command active
+  const isBulkMode = entityChips.length >= 2 || (entityChips.length >= 1 && !!(matched?.bulk));
 
   const paletteGroups = useMemo(() => {
     const groups = groupCommands(filterCommands(all(), composer), toView);
@@ -224,7 +263,7 @@ export function useAiCommandConsole() {
   }, [composer, all, toView]);
   const paletteFiltered = useMemo(() => filterCommands(all(), composer), [composer, all]);
   const paletteOpen = focused && !running;
-  const paletteEmpty = paletteOpen && composer.trim() !== '' && paletteFiltered.length === 0;
+  const paletteEmpty = paletteOpen && composer.trim() !== '' && paletteFiltered.length === 0 && entityChips.length === 0;
 
   const entitySuggestions = useEntitySearch(composer);
 
@@ -235,17 +274,17 @@ export function useAiCommandConsole() {
     return groupCommands(list, toView);
   }, [all, railTab, search, toView]);
 
-  const chips = useMemo(() => ['Send a password reset link', 'Assign a product role', 'Invite multiple users', 'Deactivate a user'].map((title, i) => ({
+  const quickChips = useMemo(() => ['Send a password reset link', 'Assign a product role', 'Invite multiple users', 'Deactivate a user'].map((title, i) => ({
     label: ['Reset a password', 'Assign a role', 'Invite people', 'Deactivate a user'][i],
     onPick: () => pick(COMMANDS.find(c => c.title === title)),
   })), [pick]);
 
   return {
-    composer, setComposer, focused, onFocus, onBlur,
+    composer, setComposer, clearAll, focused, onFocus, onBlur,
     search, setSearch, railTab, setRailTab,
     running, confirm, history, run, confirmRun, cancelConfirm, cancelRun,
-    statusKind, paletteOpen, paletteEmpty, paletteGroups, railGroups, chips,
+    statusKind, paletteOpen, paletteEmpty, paletteGroups, railGroups, quickChips,
     libCount: railGroups.reduce((s, g) => s + g.items.length, 0),
-    entitySuggestions, pickEntity,
+    entitySuggestions, pickEntity, entityChips, removeChip, removeLastChip, isBulkMode,
   };
 }

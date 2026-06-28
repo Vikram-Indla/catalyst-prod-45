@@ -434,7 +434,7 @@ export function Description({
             margin: 0,
             padding: 0,
             flex: 1,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             lineHeight: '20px',
             color: 'var(--ds-text-subtle, #505258)',
@@ -497,7 +497,7 @@ export function Description({
               style={{
                 marginTop: 8,
                 padding: '8px 12px',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: 'var(--ds-text-danger, #AE2A19)',
                 background: 'var(--ds-background-danger, #FFECEB)',
                 borderRadius: 4,
@@ -524,7 +524,7 @@ export function Description({
             e.currentTarget.style.background = 'transparent';
           }}
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: 'var(--ds-text-subtlest, #97A0AF)',
             minHeight: 40,
             cursor: issue ? 'pointer' : 'default',

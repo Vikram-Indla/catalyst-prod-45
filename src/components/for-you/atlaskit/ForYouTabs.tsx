@@ -157,7 +157,7 @@ function TabButton({
   // neutral bg. Rest: transparent.
   // Phase 12 (2026-04-29): reverted to token(). Atlaskit theme handles flip.
   // Selected fill: LIGHT keeps Jira's white-pill + shadow elevation. DARK can't
-  // use shadow elevation (invisible on dark canvas) and elevation.surface (#22272B)
+  // use shadow elevation (invisible on dark canvas) and elevation.surface (var(--ds-surface, #22272B))
   // matches the container -> no contrast. Use color.background.selected (#1C2B41)
   // so the active tab is clearly distinct in dark. (RCA 2026-06-18)
   const background = isActive

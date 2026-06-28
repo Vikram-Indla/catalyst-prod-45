@@ -94,12 +94,12 @@ export default function DirectNotificationRow({
     : token("color.text", "#292A2E");
   const text2 = isDark
     ? "var(--ds-text-subtlest, #A1A1A1)"
-    : token("color.text.subtle", "#626F86");
+    : token("color.text.subtle", "var(--ds-text-subtlest, #626F86)");
   const text3 = isDark
     ? "var(--ds-text-subtlest, var(--cp-text-secondary, #878787))"
-    : token("color.text.subtlest", "#8590A2");
+    : token("color.text.subtlest", "var(--ds-text-disabled, #8590A2)");
   const linkClr = isDark
-    ? "#6698FF"
+    ? "#6698FF" // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     : token("color.link", "var(--ds-link, #0C66E4)");
   const dotColor =
     "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))";
@@ -272,7 +272,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               fontFamily: "var(--cp-font-body)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: "20px",
               color: text1,
               flex: 1,
@@ -301,7 +301,7 @@ export default function DirectNotificationRow({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: text3,
                 whiteSpace: "nowrap",
               }}
@@ -370,7 +370,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               fontFamily: "var(--cp-font-body)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: "20px",
               color: text1,
               flex: 1,
@@ -386,7 +386,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               fontFamily: "var(--cp-font-body)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               color: linkClr,
               flexShrink: 0,
@@ -397,7 +397,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               color: text3,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: "20px",
               flexShrink: 0,
             }}
@@ -408,7 +408,7 @@ export default function DirectNotificationRow({
           <span
             style={{
               fontFamily: "var(--cp-font-body)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               color: text2,
               flexShrink: 0,
@@ -464,7 +464,7 @@ export default function DirectNotificationRow({
                 style={{
                   margin: 0,
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   lineHeight: "20px",
                   color: text1,
                   overflow: "hidden",
@@ -480,7 +480,7 @@ export default function DirectNotificationRow({
                 style={{
                   margin: 0,
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   lineHeight: "20px",
                   color: text3,
                   fontStyle: "italic",
@@ -520,7 +520,7 @@ export default function DirectNotificationRow({
                           : "transparent",
                       cursor: "pointer",
                       fontFamily: "var(--cp-font-body)",
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       color: text2,
                       lineHeight: "16px",
                     }}
@@ -529,7 +529,7 @@ export default function DirectNotificationRow({
                       count > 0 ? `, ${count}` : ""
                     }`}
                   >
-                    <span style={{ fontSize: 12, lineHeight: 1 }}>{emoji}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', lineHeight: 1 }}>{emoji}</span>
                     {count > 0 && (
                       <span style={{ fontWeight: 500 }}>{count}</span>
                     )}
@@ -551,7 +551,7 @@ export default function DirectNotificationRow({
                   background: "transparent",
                   cursor: "pointer",
                   color: text3,
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   lineHeight: 1,
                   padding: 0,
                 }}
@@ -591,7 +591,7 @@ export default function DirectNotificationRow({
                 type="button"
                 style={{
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: linkClr,
                   background: "none",
@@ -609,7 +609,7 @@ export default function DirectNotificationRow({
                 type="button"
                 style={{
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: linkClr,
                   background: "none",
@@ -665,7 +665,7 @@ export default function DirectNotificationRow({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 400,
                 color: linkClr,
               }}

@@ -140,13 +140,13 @@ export default function ProjectBoardPage() {
             <div>
               <div
                 style={{
-                  fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary)',
+                  fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-text-primary)',
                   fontFamily: 'var(--cp-font-mono)', lineHeight: 1.1,
                 }}
               >
                 {s.value}
               </div>
-              <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-text-tertiary)', marginTop: 1 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-text-tertiary)', marginTop: 1 }}>
                 {s.label}
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function ProjectBoardPage() {
                 onClick={() => setActiveView(v.key)}
                 className="flex items-center gap-1.5"
                 style={{
-                  padding: '6px 14px', fontSize: 12,
+                  padding: '6px 14px', fontSize: 'var(--ds-font-size-200)',
                   fontWeight: isActive ? 600 : 500,
                   fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6, cursor: 'pointer', border: 'none',
@@ -197,7 +197,7 @@ export default function ProjectBoardPage() {
             style={{
               paddingLeft: 30, paddingRight: 10,
               height: 32, width: 200,
-              fontSize: 12, fontWeight: 500,
+              fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
               border: '1px solid var(--cp-border-default)',
               background: 'var(--cp-bg-elevated)', color: 'var(--cp-text-primary)',
               fontFamily: 'var(--cp-font-body)',
@@ -211,7 +211,7 @@ export default function ProjectBoardPage() {
           className="flex items-center gap-1.5"
           style={{
             padding: '6px 12px', height: 32,
-            fontSize: 12, fontWeight: 500,
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
             borderRadius: 6, cursor: 'pointer',
             border: hasActiveFilters ? '1px solid var(--ds-background-information, #E9F2FF)' : ('1px solid var(--cp-border-default)'),
             background: hasActiveFilters ? ('var(--cp-interact-selected)') : ('var(--cp-bg-elevated)'),
@@ -225,7 +225,7 @@ export default function ProjectBoardPage() {
           {hasActiveFilters && (
             <span
               className="rounded-full flex items-center justify-center"
-              style={{ width: 16, height: 16, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', fontSize: 9, fontWeight: 700 }}
+              style={{ width: 16, height: 16, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}
             >
               {[filterType, filterStatus, filterPriority, filterSource].filter(Boolean).length}
             </span>
@@ -241,7 +241,7 @@ export default function ProjectBoardPage() {
             className="flex items-center gap-1.5 transition-colors"
             style={{
               padding: '6px 12px', height: 32,
-              fontSize: 12, fontWeight: 500,
+              fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
               border: '1px solid var(--cp-border-default)',
               background: 'var(--cp-bg-elevated)', color: 'var(--cp-text-secondary)',
@@ -317,7 +317,7 @@ export default function ProjectBoardPage() {
               onClick={clearFilters}
               className="self-end transition-colors"
               style={{
-                fontSize: 11, fontWeight: 500, color: 'var(--ds-text-danger, #EF4444)',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-danger, #EF4444)',
                 background: 'transparent', border: 'none', cursor: 'pointer',
                 textDecoration: 'underline',
               }}
@@ -354,10 +354,10 @@ export default function ProjectBoardPage() {
           style={{ padding: '80px 40px', background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)' }}
         >
           <GanttChart size={36} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth={1.5} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>
             Timeline View
           </span>
-          <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary)', marginTop: 4 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-text-tertiary)', marginTop: 4 }}>
             Coming in Phase 2
           </span>
         </div>
@@ -403,14 +403,14 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
 
   return (
     <div className="flex flex-col gap-1 relative" data-filter-dropdown>
-      <label style={{ fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <label style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </label>
       <button
         onClick={onToggle}
         className="flex items-center justify-between gap-2 rounded-md transition-colors"
         style={{
-          fontSize: 12, fontWeight: 500, padding: '4px 8px',
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 500, padding: '4px 8px',
           border: '1px solid var(--cp-border-default)', background: 'var(--cp-bg-elevated)', color: 'var(--cp-text-primary)',
           cursor: 'pointer', minWidth: 130, textAlign: 'left' as const,
         }}
@@ -429,7 +429,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
               onClick={() => onChange(o.value)}
               className="w-full text-left px-3 py-1.5 rounded transition-colors"
               style={{
-                fontSize: 12, fontWeight: value === o.value ? 600 : 400,
+                fontSize: 'var(--ds-font-size-200)', fontWeight: value === o.value ? 600 : 400,
                 color: 'var(--cp-text-secondary)',
                 background: value === o.value ? 'var(--cp-interact-selected)' : 'transparent',
                 border: 'none', cursor: 'pointer',
@@ -438,7 +438,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
               onMouseLeave={e => { if (value !== o.value) e.currentTarget.style.background = 'transparent'; }}
             >
               {o.label}
-              {value === o.value && <span style={{ float: 'right', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 11 }}>✓</span>}
+              {value === o.value && <span style={{ float: 'right', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 'var(--ds-font-size-100)' }}>✓</span>}
             </button>
           ))}
         </div>

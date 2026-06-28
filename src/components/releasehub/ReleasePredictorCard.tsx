@@ -51,7 +51,7 @@ function fmtDate(d: string | null): string {
 function Metric({ label, value, fg, accent }: { label: string; value: string; fg?: string; accent?: string }) {
   return (
     <div style={{ background: T.sunken, borderRadius: 6, padding: '8px 12px', borderLeft: accent ? `3px solid ${accent}` : undefined }}>
-      <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtle }}>{label}</div>
+      <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>{label}</div>
       <div style={{ fontFamily: RH.fontDisplay, fontSize: value.length > 4 ? 16 : 22, fontWeight: 600, color: fg ?? T.text, lineHeight: '1.6' }}>{value}</div>
     </div>
   );
@@ -74,14 +74,14 @@ export function ReleasePredictorCard({
     <div style={{ background: T.surface, border: `0.5px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderBottom: `0.5px solid ${T.border}` }}>
         <CatyPulseIcon size={16} />
-        <span style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text }}>
+        <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>
           {kind === 'release' ? 'Release' : 'Sprint'} predictor
         </span>
-        <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {label}</span>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {label}</span>
         <button
           onClick={() => run.mutate({ kind, id })}
           disabled={run.isPending}
-          style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '4px 8px', fontFamily: RH.fontBody, fontSize: 12, color: T.text, cursor: run.isPending ? 'default' : 'pointer' }}
+          style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '4px 8px', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, cursor: run.isPending ? 'default' : 'pointer' }}
         >
           {run.isPending ? <Spinner size="small" /> : <CatyPulseIcon size={14} />}
           {p ? 'Re-run' : 'Run predictor'}
@@ -89,14 +89,14 @@ export function ReleasePredictorCard({
       </div>
 
       {!p && (
-        <div style={{ padding: 24, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>
+        <div style={{ padding: 24, textAlign: 'center', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>
           {run.isError ? <span style={{ color: T.danger }}>Could not run the predictor. Try again.</span>
             : 'Run the predictor to forecast completion from work-item dates.'}
         </div>
       )}
 
       {p && p.risk === 'no_data' && (
-        <div style={{ padding: 16, fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>
+        <div style={{ padding: 16, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>
           <div style={{ fontWeight: 600, color: T.text, marginBottom: 4 }}>Not enough data to forecast</div>
           {p.narrative}
         </div>
@@ -113,7 +113,7 @@ export function ReleasePredictorCard({
 
           {p.timeUsedPct != null && p.predictedPct != null && (
             <div style={{ padding: '0 16px 12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: RH.fontBody, fontSize: 11, color: T.subtle, marginBottom: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, marginBottom: 4 }}>
                 <span>Time used <b style={{ color: T.text }}>{p.timeUsedPct}%</b></span>
                 <span>Work done <b style={{ color: T.text }}>{p.predictedPct}%</b></span>
               </div>
@@ -128,13 +128,13 @@ export function ReleasePredictorCard({
 
           {total > 0 && (
             <div style={{ padding: '0 16px 8px' }}>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtle, marginBottom: 4 }}>Status spread · by item count</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle, marginBottom: 4 }}>Status spread · by item count</div>
               <div style={{ display: 'flex', height: 14, borderRadius: 4, overflow: 'hidden' }}>
                 {p.statusSpread.map((s) => (
                   <div key={s.status} title={`${s.status}: ${s.count}`} style={{ width: `${(s.count / total) * 100}%`, background: stageColor(s.weight) }} />
                 ))}
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8, fontFamily: RH.fontBody, fontSize: 11, color: T.subtle }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>
                 {p.statusSpread.map((s) => (
                   <span key={s.status} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                     <span style={{ width: 9, height: 9, borderRadius: 2, background: stageColor(s.weight) }} />{s.status} {s.count}
@@ -146,25 +146,25 @@ export function ReleasePredictorCard({
 
           <div style={{ display: 'flex', gap: 24, padding: '12px 16px', borderTop: `0.5px solid ${T.border}`, marginTop: 8 }}>
             <div>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtle }}>Need to hit due</div>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text }}>{p.requiredPace != null ? `${p.requiredPace} / day` : '—'}</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>Need to hit due</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>{p.requiredPace != null ? `${p.requiredPace} / day` : '—'}</div>
             </div>
             <div>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtle }}>Closing pace</div>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: p.observedPace != null && p.requiredPace != null && p.observedPace < p.requiredPace ? T.warn : T.text }}>{p.observedPace != null ? `${p.observedPace} / day` : '—'}</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>Closing pace</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: p.observedPace != null && p.requiredPace != null && p.observedPace < p.requiredPace ? T.warn : T.text }}>{p.observedPace != null ? `${p.observedPace} / day` : '—'}</div>
             </div>
             <div>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtle }}>Overdue</div>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: p.itemOverdue > 0 ? T.danger : T.text }}>{p.itemOverdue} item{p.itemOverdue === 1 ? '' : 's'}</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtle }}>Overdue</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: p.itemOverdue > 0 ? T.danger : T.text }}>{p.itemOverdue} item{p.itemOverdue === 1 ? '' : 's'}</div>
             </div>
           </div>
 
           {p.reasons.length > 0 && (
             <div style={{ padding: '12px 16px', borderTop: `0.5px solid ${T.border}` }}>
-              <div style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 8 }}>What's still pending</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.text, marginBottom: 8 }}>What's still pending</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {p.reasons.map((r, i) => (
-                  <div key={i} style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.text }}>
+                  <div key={i} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
                     {r.label}{r.keys?.length ? <span style={{ color: T.subtle }}> — {r.keys.slice(0, 4).join(', ')}</span> : null}
                   </div>
                 ))}
@@ -175,7 +175,7 @@ export function ReleasePredictorCard({
           {p.narrative && (
             <div style={{ display: 'flex', gap: 9, padding: '12px 16px', borderTop: `0.5px solid ${T.border}`, background: T.sunken }}>
               <CatyPulseIcon size={16} />
-              <div style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.text, lineHeight: 1.55 }}>{p.narrative}</div>
+              <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, lineHeight: 1.55 }}>{p.narrative}</div>
             </div>
           )}
         </>

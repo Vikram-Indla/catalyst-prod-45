@@ -48,6 +48,8 @@ import {
 } from '@/modules/tasks/hooks/useTaskDetails';
 import { ChecklistSection } from '@/modules/tasks/components/TaskDetailDrawer/ChecklistSection';
 import { AttachmentsSection } from '@/modules/tasks/components/TaskDetailDrawer/AttachmentsSection';
+// CAT-TASKS-20260627-001 Slice 6: task <-> work-item linking section.
+import { TaskLinkedItemsSection } from '@/modules/tasks/components/TaskLinkedItemsSection';
 import { ConfirmDeleteDialog } from '../shared/ConfirmDeleteDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
@@ -542,7 +544,7 @@ export default function TaskCatalystView({
               style={{
                 margin: '0 0 8px',
                 padding: '0 16px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 lineHeight: '20px',
                 color: 'var(--ds-text-subtle, #505258)',
@@ -563,7 +565,7 @@ export default function TaskCatalystView({
               style={{
                 margin: '0 0 8px',
                 padding: '0 16px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 lineHeight: '20px',
                 color: 'var(--ds-text-subtle, #505258)',
@@ -576,6 +578,11 @@ export default function TaskCatalystView({
             </div>
           </section>
         )}
+
+        {/* Linked items — task <-> work-item links (Slice 6). Mirrors the Story
+            view's Linked Work Items placement (after content, before Activity).
+            Excludes the sub-task category in the picker (rule #1). */}
+        <TaskLinkedItemsSection taskId={itemId} />
 
         {/* Activity — canonical ActivityPanel (no worklog tab). */}
         <section style={{ marginTop: 8 }}>
@@ -648,8 +655,13 @@ export default function TaskCatalystView({
         fullPageMode={fullPageMode}
         itemType="Task"
         itemKey={t?.key || null}
-        projectKey={t?.workstream?.key_prefix || projectKey || ''}
-        projectName={t?.workstream?.name || 'Tasks'}
+        // CAT-TASKS-20260627-001 Slice 2: breadcrumb parity = "Tasks › [key]"
+        // (canonical TicketBreadcrumbs, same component Story uses). projectKey
+        // kept truthy so the breadcrumb renders; the root crumb always reads
+        // "Tasks" rather than the workstream name, for a stable Tasks-rooted
+        // trail. parentKey=null → no parent crumb (linking arrives in Slice 3).
+        projectKey={t?.workstream?.key_prefix || projectKey || 'TASKS'}
+        projectName="Tasks"
         parentKey={null}
         parentType="Task"
         moreMenuItems={[

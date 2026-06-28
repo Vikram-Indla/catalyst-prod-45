@@ -144,7 +144,7 @@ function RoadmapKebabMenu({ row, currentUserId, projectKey, onDeleted }: Roadmap
       onKeyDown={(e) => e.key === 'Enter' && (setOpen(false), onClick())}
       style={{
         padding: '6px 12px',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         cursor: 'pointer',
         color: danger ? 'var(--ds-text-danger, #AE2A19)' : token('color.text'),
         whiteSpace: 'nowrap',
@@ -198,7 +198,7 @@ function RoadmapKebabMenu({ row, currentUserId, projectKey, onDeleted }: Roadmap
               <ModalTitle appearance="danger">Delete roadmap</ModalTitle>
             </ModalHeader>
             <ModalBody>
-              <p style={{ margin: 0, fontSize: 14 }}>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)' }}>
                 Delete <strong>{row.title}</strong>? This cannot be undone.
               </p>
             </ModalBody>
@@ -408,7 +408,7 @@ export default function RoadmapsListPage() {
             style={{
               color: token('color.link'),
               fontWeight: token('font.weight.medium'),
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               textDecoration: 'none',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -421,7 +421,7 @@ export default function RoadmapsListPage() {
           </Link>
           {row.filter_name && (
             <span style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: token('color.text.subtlest'),
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -443,10 +443,10 @@ export default function RoadmapsListPage() {
       cell: ({ row }) => row.owner_name ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <AkAvatar size="xsmall" src={row.owner_avatar ?? undefined} name={row.owner_name} />
-          <span aria-hidden="true" style={{ fontSize: 14, color: token('color.text') }}>{row.owner_name}</span>
+          <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text') }}>{row.owner_name}</span>
         </div>
       ) : (
-        <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>—</span>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>—</span>
       ),
     },
     {
@@ -457,7 +457,7 @@ export default function RoadmapsListPage() {
       defaultVisible: true,
       accessor: r => r.visibility,
       cell: ({ row }) => (
-        <span style={{ fontSize: 14, color: token('color.text.subtle') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle') }}>
           {row.visibility === 'org' ? 'My organization' : 'Private'}
         </span>
       ),
@@ -471,7 +471,7 @@ export default function RoadmapsListPage() {
       accessor: r => r.updated_at ?? '',
       cell: ({ row }) => (
         <span
-          style={{ fontSize: 14, color: token('color.text.subtle') }}
+          style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle') }}
           title={row.updated_at ? new Date(row.updated_at).toLocaleString() : undefined}
         >
           {relativeFromIso(row.updated_at)}
@@ -545,7 +545,7 @@ export default function RoadmapsListPage() {
       }}
       style={{
         background: 'none', border: 'none', padding: '0 4px',
-        fontSize: 14, color: token('color.text.subtle'), cursor: 'pointer', whiteSpace: 'nowrap',
+        fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle'), cursor: 'pointer', whiteSpace: 'nowrap',
       }}
     >
       Export CSV
@@ -576,12 +576,12 @@ export default function RoadmapsListPage() {
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       padding: '48px 32px', gap: 12, color: token('color.text.subtle'),
     }}>
-      <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
+      <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: token('font.weight.medium') }}>
         {hasActiveFilters ? 'No roadmaps match your search' : 'No roadmaps yet'}
       </span>
       {!hasActiveFilters && (
         <>
-          <span style={{ fontSize: 14, color: token('color.text.subtlest') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest') }}>
             Create a roadmap from any saved filter.
           </span>
           <Button appearance="primary" onClick={() => navigate(`/project-hub/${projectKey}/filters`)}>

@@ -4,7 +4,7 @@
  */
 
 :root {
-  /* Locate-in-timeline accents (Vikram 2026-06-25). #964AC0 is not an ADS token,
+  /* Locate-in-timeline accents (Vikram 2026-06-25). #964AC0 is not an ADS token, /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
      so it lives here as a Catalyst token. */
   --cat-locate-accent: #964AC0;         /* located row title pill + emphasis */
   --cat-locate-accent-subtle: #E4D2F2;  /* ancestor chevron background square */

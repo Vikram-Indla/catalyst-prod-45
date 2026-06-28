@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { STATUS_BG, STATUS_TEXT, statusBg, categoryToAppearance } from '../statusPalette';
+import { STATUS_BG, STATUS_TEXT, statusBg, statusFg, categoryToAppearance } from '../statusPalette';
 
 const ROOT = resolve(__dirname, '../../../../..'); // → src/
 
@@ -20,16 +20,25 @@ function read(rel: string) {
 }
 
 describe('canonical status palette', () => {
-  it('pins the done/success background to the bright lime var(--ds-background-success-bold, #6A9A23)', () => {
-    expect(STATUS_BG.success).toBe('var(--ds-background-success-bold, #6A9A23)');
-    expect(statusBg('success')).toBe('var(--ds-background-success-bold, #6A9A23)');
+  // 2026-06-28 — migrated to ADS bold tokens (Lozenge parity).
+  // Bold bgs render vivid in both light+dark. moved uses dark text (not inverse)
+  // because #E2B203 amber with white text fails WCAG AA (~1.9:1).
+  it('pins each status to its ADS bold background token', () => {
+    expect(STATUS_BG.success).toBe('var(--ds-background-success-bold, #1F845A)');
+    expect(statusBg('success')).toBe('var(--ds-background-success-bold, #1F845A)');
     expect(STATUS_TEXT).toBe('var(--ds-text, #172B4D)');
   });
 
-  it('maps done category to the canonical success bg', () => {
-    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success-bold, #6A9A23)');
-    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information, #E9F2FF)');
-    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-border, #DFE1E6)');
+  it('maps each category to its canonical ADS bold bg', () => {
+    expect(statusBg(categoryToAppearance('done'))).toBe('var(--ds-background-success-bold, #1F845A)');
+    expect(statusBg(categoryToAppearance('in_progress'))).toBe('var(--ds-background-information-bold, #0055CC)');
+    expect(statusBg(categoryToAppearance('todo'))).toBe('var(--ds-background-neutral, #DFE1E6)');
+  });
+
+  it('pairs each status bg with its matching text token (WCAG-correct)', () => {
+    expect(statusFg('success')).toBe('var(--ds-text-inverse, #FFFFFF)');
+    expect(statusFg('inprogress')).toBe('var(--ds-text-inverse, #FFFFFF)');
+    expect(statusFg('default')).toBe('var(--ds-text, #172B4D)');
   });
 });
 

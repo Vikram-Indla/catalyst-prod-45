@@ -53,13 +53,13 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
           display: 'flex', alignItems: 'center', gap: 8,
         }}
       >
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', flex: 1 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-1)', flex: 1 }}>
           {config.config_name}
         </span>
         {config.is_default && (
           <span
             style={{
-              fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 8px', borderRadius: 10,
               background: 'var(--ds-background-success, #DCFCE7)', color: 'var(--ds-text-success, #15803D)',
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}
@@ -79,18 +79,18 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fg-3)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fg-3)' }}>
             Projects using this
           </span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-mono)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-mono)' }}>
             {config.project_count}
           </span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fg-3)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fg-3)' }}>
             Work types
           </span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-mono)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-mono)' }}>
             {config.work_type_names.length}
           </span>
         </div>
@@ -111,7 +111,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
               }}
             >
               <WorkItemTypeIcon type={TYPE_ICON[typeName] ?? 'story'} size={13} />
-              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}>
                 {typeName}
               </span>
             </div>
@@ -140,17 +140,17 @@ export function FieldsTab({ projectId }: FieldsTabProps) {
     <div className="space-y-5">
       <div className="ph-card" style={{ padding: '16px 20px' }}>
         <h3 className="ph-card-title" style={{ marginBottom: 4 }}>Field Configuration</h3>
-        <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', margin: 0 }}>
           Field configuration schemes define which fields are available for each work type. Work types sharing the same configuration inherit the same set of available fields.
         </p>
       </div>
 
       {isLoading ? (
-        <div className="ph-card" style={{ padding: '24px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>
+        <div className="ph-card" style={{ padding: '24px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>
           Loading…
         </div>
       ) : schemes.length === 0 ? (
-        <div className="ph-card" style={{ padding: '24px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>
+        <div className="ph-card" style={{ padding: '24px 0', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>
           No field scheme configured
         </div>
       ) : (
@@ -166,14 +166,14 @@ export function FieldsTab({ projectId }: FieldsTabProps) {
               }}
             >
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 2 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 2 }}>
                   Field Scheme
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>
                   {scheme.scheme_name}
                 </div>
               </div>
-              <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
+              <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
                 {scheme.ph_field_config.length} {scheme.ph_field_config.length === 1 ? 'configuration' : 'configurations'}
               </span>
             </div>

@@ -666,7 +666,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
           // Light mode: border visible
           "border-b border-[var(--table-header-border)]",
           // Dark mode: ultra-subtle border
-          "dark:border-b dark:border-[#232323]",
+          "dark:border-b dark:border-[var(--ds-surface, #232323)]",
           "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised,#1a1a1a)]"
         )}>
           <span className="text-sm text-[var(--table-text-secondary)]">
@@ -693,7 +693,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                 // Light mode: visible border
                 "border-b border-[var(--table-header-border)]",
                 // Dark mode: ultra-subtle or no border (rely on surface contrast)
-                "dark:border-b dark:border-[#232323]",
+                "dark:border-b dark:border-[var(--ds-surface, #232323)]",
                 "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised,#1a1a1a)]"
               )}>
                 {enableDragDrop && (
@@ -719,7 +719,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                       className={cn(
                         "py-3 px-4 text-left cursor-pointer transition-colors",
                         // NO column dividers in dark mode - content clarity over borders
-                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[#2a2a2a]"
+                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface, #2a2a2a)]"
                       )}
                       style={{ width: column.width }}
                     >
@@ -762,13 +762,13 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                                 // Light mode: subtle border
                                 "border-b border-[var(--table-row-border)]",
                                 // Dark mode: ultra-subtle divider (barely visible, never white)
-                                "dark:border-b dark:border-[#232323]",
+                                "dark:border-b dark:border-[var(--ds-surface, #232323)]",
                                 // Alternating row backgrounds for row distinction
                                 rowIndex % 2 === 0 
                                   ? "bg-[var(--table-row-bg)]" 
                                   : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)]",
                                 // Hover: surface tint, NOT border highlight
-                                "hover:bg-[var(--table-row-hover)] dark:hover:bg-[#2a2a2a]",
+                                "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface, #2a2a2a)]",
                                 // Selected: surface elevation with subtle brand accent
                                 selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30",
                                 // Dragging state
@@ -799,13 +799,13 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                         // Light mode: subtle border
                         "border-b border-[var(--table-row-border)]",
                         // Dark mode: ultra-subtle divider
-                        "dark:border-b dark:border-[#232323]",
+                        "dark:border-b dark:border-[var(--ds-surface, #232323)]",
                         // Alternating backgrounds for row separation
                         rowIndex % 2 === 0 
                           ? "bg-[var(--table-row-bg)]" 
                           : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)]",
                         // Hover: surface tint
-                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[#2a2a2a]",
+                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[var(--ds-surface, #2a2a2a)]",
                         // Selected: surface elevation
                         selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30"
                       )}

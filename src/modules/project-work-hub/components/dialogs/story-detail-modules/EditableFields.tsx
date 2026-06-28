@@ -644,7 +644,7 @@ function PriorityChip({ value }: { value: string }) {
       }}
     >
       <CanonicalPriorityIcon level={value} size={16} label="" />
-      <span style={{ fontSize: 14, color: "var(--ds-text, #292A2E)" }}>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--ds-text, #292A2E)" }}>
         {value}
       </span>
     </span>
@@ -772,7 +772,7 @@ export function EditablePriority({
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: hasValue
                 ? "var(--ds-text, #292A2E)"
                 : "var(--ds-text-subtlest, #8993A4)",
@@ -845,7 +845,7 @@ export function EditablePriority({
             <PriorityChip value={currentPriority} />
           ) : (
             <span
-              style={{ fontSize: 14, color: "var(--ds-text-subtle, #5E6C84)" }}
+              style={{ fontSize: 'var(--ds-font-size-400)', color: "var(--ds-text-subtle, #5E6C84)" }}
             >
               None
             </span>
@@ -1075,7 +1075,7 @@ export function EditableLabels({
             ...base,
             color:
               "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -1153,7 +1153,7 @@ export function EditableStoryPoints({
       >
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color:
               currentPoints != null
                 ? "var(--ds-text, #172B4D)"
@@ -1184,7 +1184,7 @@ export function EditableStoryPoints({
               display: "flex",
               alignItems: "center",
               cursor: "pointer",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               color:
                 "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
@@ -1219,7 +1219,7 @@ export function EditableStoryPoints({
                 display: "flex",
                 alignItems: "center",
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 400,
                 color:
                   "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
@@ -1456,7 +1456,7 @@ export function EditableSprintReleases({
                 display: "flex",
                 alignItems: "center",
                 padding: "6px 12px",
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 lineHeight: "20px",
                 cursor: "pointer",
                 borderLeft:
@@ -1507,7 +1507,7 @@ export function EditableSprintReleases({
           }),
           groupHeading: (base) => ({
             ...base,
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
           }),
           // jira-compare 2026-05-20: Live DOM probe of digital-transformation.atlassian.net
           // confirms Sprint/Iteration chip = transparent bg + 0.556px solid rgb(183,185,190) border
@@ -1524,7 +1524,7 @@ export function EditableSprintReleases({
           }),
           multiValueLabel: (base) => ({
             ...base,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
             color: "var(--ds-text, #292A2E)",
             padding: 0,
@@ -1692,7 +1692,7 @@ export function ParentFieldPicker({
             <span
               style={{
                 flex: 1,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color:
                   "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
                 overflow: "hidden",
@@ -1766,7 +1766,7 @@ export function ParentFieldPicker({
             <span
               style={{
                 flex: 1,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color:
                   "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
               }}
@@ -1814,7 +1814,7 @@ export function ParentFieldPicker({
                     padding: "0 12px",
                     border: "2px solid var(--ds-border-focused, #4C9AFF)",
                     borderRadius: 3,
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontFamily: "inherit",
                     outline: "none",
                     color:
@@ -1836,7 +1836,7 @@ export function ParentFieldPicker({
                     alignItems: "center",
                     gap: 8,
                     cursor: "pointer",
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     color:
                       "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
                   }}
@@ -1904,7 +1904,7 @@ export function ParentFieldPicker({
                             fontWeight: 600,
                             color:
                               "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
-                            fontSize: 12,
+                            fontSize: 'var(--ds-font-size-200)',
                           }}
                         >
                           {result.issue_key}
@@ -1913,7 +1913,7 @@ export function ParentFieldPicker({
                       {/* Line 2: summary */}
                       <div
                         style={{
-                          fontSize: 14,
+                          fontSize: 'var(--ds-font-size-400)',
                           color: "var(--ds-text, #172B4D)",
                           paddingLeft: 24,
                           overflow: "hidden",
@@ -1930,7 +1930,7 @@ export function ParentFieldPicker({
                   <div
                     style={{
                       padding: 16,
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       color:
                         "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                       textAlign: "center",
@@ -1943,7 +1943,7 @@ export function ParentFieldPicker({
                   <div
                     style={{
                       padding: 16,
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       color:
                         "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                       textAlign: "center",

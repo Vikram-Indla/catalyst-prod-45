@@ -202,7 +202,7 @@ export function AddPeopleModal({
             marginBottom: 12,
           }}
         >
-          <span style={{ fontSize: 14, color: subtleText, fontWeight: 500 }}>To:</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: subtleText, fontWeight: 500 }}>To:</span>
           {selectedIds.map((id) => {
             const person = peopleById.get(id);
             if (!person) return null;
@@ -217,7 +217,7 @@ export function AddPeopleModal({
                   color: 'var(--ds-text-selected, #0C66E4)',
                   borderRadius: 12,
                   padding: '4px 8px 4px 4px',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
                 }}
               >
@@ -231,7 +231,7 @@ export function AddPeopleModal({
                     border: 'none',
                     background: 'transparent',
                     cursor: 'pointer',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     lineHeight: '14px',
                     opacity: 0.7,
                     color: 'inherit',
@@ -243,7 +243,7 @@ export function AddPeopleModal({
               </span>
             );
           })}
-          <span style={{ fontSize: 14, color: subtlestText }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: subtlestText }}>
             {selectedIds.length === 0 ? 'Add people, or type a name' : ''}
           </span>
         </div>
@@ -262,13 +262,13 @@ export function AddPeopleModal({
         {/* Results */}
         <div style={{ maxHeight: 420, overflowY: 'auto', margin: '0 -8px' }}>
           {isLoading && (
-            <div style={{ padding: '24px 8px', fontSize: 14, color: subtlestText }}>
+            <div style={{ padding: '24px 8px', fontSize: 'var(--ds-font-size-400)', color: subtlestText }}>
               Loading people…
             </div>
           )}
 
           {!isLoading && !hasResults && (
-            <div style={{ padding: '24px 8px', fontSize: 14, color: subtlestText }}>
+            <div style={{ padding: '24px 8px', fontSize: 'var(--ds-font-size-400)', color: subtlestText }}>
               {q ? `No people match “${query}”.` : 'Everyone is already in this conversation.'}
             </div>
           )}
@@ -278,7 +278,7 @@ export function AddPeopleModal({
               <React.Fragment key={group.presence}>
                 <div
                   style={{
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     lineHeight: '16px',
                     fontWeight: 700,
                     color: subtlestText,
@@ -313,15 +313,15 @@ export function AddPeopleModal({
                     >
                       <Avatar person={person} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '18px' }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '18px' }}>
                           {person.name}
                         </div>
-                        <div style={{ fontSize: 12, lineHeight: '16px', color: subtlestText }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', lineHeight: '16px', color: subtlestText }}>
                           {person.role}
                           {person.presenceNote ? ` · ${person.presenceNote}` : ''}
                         </div>
                       </div>
-                      <span style={{ fontSize: 12, color: subtleText, flex: '0 0 auto' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: subtleText, flex: '0 0 auto' }}>
                         {PRESENCE_LABEL[person.presence]}
                       </span>
                     </div>
@@ -333,7 +333,7 @@ export function AddPeopleModal({
       </ModalBody>
 
       <ModalFooter>
-        <span style={{ fontSize: 12, color: subtlestText, marginRight: 'auto' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: subtlestText, marginRight: 'auto' }}>
           {selectedIds.length > 0 ? `${selectedIds.length} selected` : ''}
         </span>
         <Button appearance="subtle" onClick={handleClose}>

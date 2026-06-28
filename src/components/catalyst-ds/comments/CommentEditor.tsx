@@ -474,7 +474,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
               style={{
                 marginTop: 8,
                 padding: '8px 12px',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: 'var(--ds-text-danger, #AE2A19)',
                 background: 'var(--ds-background-danger, #FFECEB)',
                 borderRadius: 4,

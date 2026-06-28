@@ -101,11 +101,11 @@ function CatyStatusPill({ status, statusCategory }: { status: string; statusCate
 
   // Exact rgb values from CatalystStatusPill.tsx — canonical source of truth.
   const BG: Record<string, string> = {
-    success:    'rgb(148, 199, 72)',   // lime green
+    success:    'rgb(148, 199, 72)',   // lime green // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     inprogress: 'var(--ds-background-information, rgb(143, 184, 246))',  // light blue
-    moved:      'rgb(243, 214, 100)',  // yellow
+    moved:      'rgb(243, 214, 100)',  // yellow // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     removed:    'var(--ds-background-neutral, rgb(221, 222, 225))',  // grey-red
-    new:        'rgb(184, 172, 246)',  // purple
+    new:        'rgb(184, 172, 246)',  // purple // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     default:    'var(--ds-background-neutral, rgb(221, 222, 225))',  // grey
   };
 
@@ -208,7 +208,7 @@ function DmStackAvatar({ c, onCall = false }: { c: ChatConversation; onCall?: bo
           boxShadow: '0 0 0 2px var(--ds-surface-overlay, #FFFFFF)',
         }}
       >
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-inverse, #FFFFFF)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14h3v6H6a2 2 0 0 1-2-2zM20 14h-3v6h1a2 2 0 0 0 2-2z" />
         </svg>
       </span>

@@ -25,7 +25,7 @@ interface AddColumnModalProps {
 }
 
 // task_statuses.color is varchar(7) — these are persisted DATA values (plain
-// hex), not UI style tokens. Existing seed statuses store plain hex (#9ca3af).
+// hex), not UI style tokens. Existing seed statuses store plain hex (var(--ds-text-disabled, #9ca3af)).
 // Do NOT use var(--ds-*) token strings here: they exceed 7 chars and overflow
 // the column. The swatch renders identically via backgroundColor.
 const STATUS_COLORS = [

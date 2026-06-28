@@ -559,7 +559,7 @@ function SubmenuRow({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '6px 12px',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: T.textBold,
         background: hovered ? T.hoverBg : 'transparent',
         cursor: 'default',
@@ -757,7 +757,7 @@ function MenuItem({
         width: '100%',
         padding: '8px 12px',
         cursor: 'pointer',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: danger ? T.dangerText : T.textBold,
         background: hovered ? (danger ? T.dangerBg : T.hoverBg) : 'transparent',
       }}
@@ -891,7 +891,7 @@ function AddLinkPanel({
             flex: 1,
             height: 32,
             padding: '0 8px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             border: `2px solid ${T.activeText}`,
             borderRadius: 3,
             outline: 'none',
@@ -902,7 +902,7 @@ function AddLinkPanel({
       </div>
       <div style={{ maxHeight: 240, overflowY: 'auto' }}>
         {tickets.length === 0 ? (
-          <div style={{ padding: '8px 12px', fontSize: 13, color: T.textSubtle }}>
+          <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: T.textSubtle }}>
             {query.trim() ? 'No matches — press Enter to use as URL' : 'Type to search'}
           </div>
         ) : (
@@ -919,7 +919,7 @@ function AddLinkPanel({
                   display: 'flex',
                   width: '100%',
                   padding: '6px 12px',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: T.textBold,
                   boxSizing: 'border-box',
                 }}
@@ -1028,7 +1028,7 @@ function AddAltPanel({
             flex: 1,
             height: 32,
             padding: '0 8px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             border: `2px solid ${T.activeText}`,
             borderRadius: 3,
             outline: 'none',
@@ -1045,7 +1045,7 @@ function AddAltPanel({
             all: 'unset',
             cursor: 'pointer',
             padding: '6px 10px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: T.textSubtle,
             borderRadius: 3,
           }}
@@ -1059,7 +1059,7 @@ function AddAltPanel({
             all: 'unset',
             cursor: 'pointer',
             padding: '6px 10px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-inverse, #FFFFFF)',
             background: T.activeText,
             borderRadius: 3,

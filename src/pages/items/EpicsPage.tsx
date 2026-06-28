@@ -456,7 +456,7 @@ export default function EpicsPage() {
                 border-radius: 8px;
               }
               .card-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-              .card-key { color: #666; font-size: 14px; }
+              .card-key { color: var(--ds-text-subtlest, #666); font-size: 14px; }
               .card-body { margin-top: 15px; }
               .card-footer { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--ds-border, #DFE1E6); }
               .badge { 

@@ -63,14 +63,14 @@ export function PanelScoreTab({ projectId }: Props) {
 
   return (
     <div style={{ padding: 20, fontFamily: 'var(--cp-font-body)' }}>
-      <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 16 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', marginBottom: 16 }}>
         Rate this project on each dimension (1–5). Computed score:{' '}
         <span style={{ fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-mono)' }}>{computed}</span>
       </div>
       <div className="space-y-4">
         {FIELDS.map(f => (
           <div key={f.key}>
-            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
               {f.label}
             </label>
             <div className="flex gap-2">
@@ -82,7 +82,7 @@ export function PanelScoreTab({ projectId }: Props) {
                     type="button"
                     onClick={() => setValues(v => ({ ...v, [f.key]: n }))}
                     style={{
-                      flex: 1, height: 36, borderRadius: 6, fontSize: 13, fontWeight: 600,
+                      flex: 1, height: 36, borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                       background: sel ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                       color: sel ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-2)',
                       border: `1px solid ${sel ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--divider)'}`,
@@ -103,7 +103,7 @@ export function PanelScoreTab({ projectId }: Props) {
         style={{
           marginTop: 20, width: '100%', height: 40, borderRadius: 6,
           background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
-          fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: saving ? 'default' : 'pointer',
           opacity: saving ? 0.6 : 1,
         }}
       >

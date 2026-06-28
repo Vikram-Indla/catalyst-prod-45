@@ -114,7 +114,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
             <h3
               style={{
                 margin: 0,
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
                 color: 'var(--ds-text)',
               }}
@@ -123,14 +123,14 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
             </h3>
 
             {status.owner_name && (
-              <div style={{ fontSize: '13px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 <div style={{ fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>Owner</div>
                 <div style={{ color: 'var(--ds-text)' }}>{status.owner_name}</div>
               </div>
             )}
 
             {status.entry_criteria && (
-              <div style={{ fontSize: '13px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 <div style={{ fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>
                   Entry Criteria
                 </div>
@@ -139,7 +139,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
             )}
 
             {status.exit_criteria && (
-              <div style={{ fontSize: '13px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 <div style={{ fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>
                   Exit Criteria
                 </div>
@@ -148,7 +148,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
             )}
 
             {status.expected_outputs && (
-              <div style={{ fontSize: '13px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 <div style={{ fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>
                   Expected Outputs
                 </div>
@@ -157,7 +157,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
             )}
 
             {status.impacted_roles && status.impacted_roles.length > 0 && (
-              <div style={{ fontSize: '13px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 <div style={{ fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>
                   Impacted Roles
                 </div>
@@ -172,7 +172,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
             )}
 
             {status.activities && status.activities.length > 0 && (
-              <div style={{ fontSize: '13px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 <div style={{ fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>
                   Activities
                 </div>
@@ -187,7 +187,7 @@ export function BRStatusEducationalPopover({ status }: BRStatusEducationalPopove
             )}
 
             {status.risks && (
-              <div style={{ fontSize: '13px' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 <div style={{ fontWeight: 500, color: 'var(--ds-text-subtlest)' }}>Risks</div>
                 <div style={{ color: 'var(--ds-text)' }}>{status.risks}</div>
               </div>

@@ -48,7 +48,7 @@ export const ParentLink = memo(function ParentLink({
           border: 'none',
           background: 'transparent',
           color: 'var(--ds-link, #0C66E4)',
-          fontSize: '12px',
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           fontFamily: 'var(--cp-font-mono)',
           cursor: 'pointer',

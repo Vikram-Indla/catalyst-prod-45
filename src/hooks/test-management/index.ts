@@ -10,6 +10,8 @@ export { useTestCycles } from './useTestCycles';
 export { useCreateCycleEnhanced, useDeleteCycleEnhanced, useCloneCycleEnhanced } from './useTestCyclesEnhanced';
 export { useProjects } from './useProjects';
 export { useReleases } from './useReleases';
+export { useSprintsByProject } from './useSprintsByProject';
+export type { SprintOption } from './useSprintsByProject';
 export { useTeamMembers } from './useAdminConfig';
 export { useCreateFolder, useDeleteFolder } from './useFolders';
 export { useSaveTestData, hasTestDataToSave } from './useTestData';

@@ -86,7 +86,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
               padding: '2px 4px',
               background: 'var(--cv2-danger, #E01E5A)',
               color: 'var(--ds-text-inverse, #FFFFFF)',
-              fontSize: 10,
+              fontSize: 'var(--ds-font-size-50)',
               fontWeight: 700,
               textAlign: 'center',
             }}
@@ -107,7 +107,7 @@ export function ComposerAttachmentChip({ attachment, onRemove }: ComposerAttachm
             width: 22,
             height: 22,
             borderRadius: '50%',
-            background: '#1A1D21',
+            background: '#1A1D21', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
             color: 'var(--ds-text-inverse, #FFFFFF)',
             border: '2px solid var(--cv2-bg-panel)',
             display: 'inline-flex',
@@ -145,7 +145,7 @@ function FileCardThumb({ file }: { file: File }) {
       <FileGenericIcon size={28} />
       <div
         style={{
-          fontSize: 10,
+          fontSize: 'var(--ds-font-size-50)',
           fontWeight: 700,
           color: 'var(--cv2-text)',
           textTransform: 'uppercase',
@@ -156,7 +156,7 @@ function FileCardThumb({ file }: { file: File }) {
       <div
         title={file.name}
         style={{
-          fontSize: 10,
+          fontSize: 'var(--ds-font-size-50)',
           color: 'var(--cv2-text-muted)',
           maxWidth: '100%',
           overflow: 'hidden',

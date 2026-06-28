@@ -160,7 +160,7 @@ export function ToolbarMenuButton({
             padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           {groups.map((group, gi) => (
@@ -168,7 +168,7 @@ export function ToolbarMenuButton({
               {group.title && (
                 <div style={{
                   padding: '4px 16px',
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 700,
                   letterSpacing: '0.04em',
                   color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
@@ -210,7 +210,7 @@ export function ToolbarMenuButton({
                       color: item.isDisabled
                         ? token('color.text.disabled', '#A6A7AA')
                         : token('color.text', 'var(--ds-text, #172B4D)'),
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       fontFamily: 'inherit',
                       textAlign: 'left',
                       cursor: item.isDisabled ? 'not-allowed' : 'pointer',

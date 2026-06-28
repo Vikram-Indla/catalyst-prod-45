@@ -10,6 +10,7 @@ export interface EntitySuggestion {
 
 // Debounced entity search across profiles, roles, and departments.
 // Triggers when the last word in `text` is ≥ 2 chars.
+// No approval_status filter — admin tool must see all non-deleted users including owners/admins.
 export function useEntitySearch(text: string): EntitySuggestion[] {
   const [suggestions, setSuggestions] = useState<EntitySuggestion[]>([]);
 
@@ -26,8 +27,7 @@ export function useEntitySearch(text: string): EntitySuggestion[] {
           .from('profiles')
           .select('full_name, email')
           .or(`full_name.ilike.%${q}%,email.ilike.%${q}%`)
-          .eq('approval_status', 'APPROVED')
-          .limit(4),
+          .limit(5),
         supabase
           .from('product_roles')
           .select('name, code')
@@ -42,19 +42,19 @@ export function useEntitySearch(text: string): EntitySuggestion[] {
       ]);
       if (cancelled) return;
       setSuggestions([
-        ...(people ?? []).map(p => ({
+        ...(people ?? []).map((p: { full_name: string | null; email: string | null }) => ({
           type: 'person' as const,
-          label: p.full_name ?? p.email,
-          subtitle: p.email,
-          insert: p.email,
+          label: p.full_name ?? p.email ?? '',
+          subtitle: p.email ?? '',
+          insert: p.full_name ?? p.email ?? '',
         })),
-        ...(roles ?? []).map(r => ({
+        ...(roles ?? []).map((r: { name: string; code: string }) => ({
           type: 'role' as const,
           label: r.name,
-          subtitle: r.code,
+          subtitle: r.code ?? '',
           insert: r.name,
         })),
-        ...(depts ?? []).map(d => ({
+        ...(depts ?? []).map((d: { name: string }) => ({
           type: 'department' as const,
           label: d.name,
           subtitle: 'department',

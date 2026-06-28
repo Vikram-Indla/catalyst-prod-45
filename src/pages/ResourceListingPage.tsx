@@ -59,8 +59,7 @@ const getInitials = (name: string) => {
     ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
     : (parts[0]?.[0] || '?').toUpperCase();
 };
-
-const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', '#6b8b7a'];
+const AVATAR_COLORS = ['var(--ds-chart-blue-bold, #6b7a8d)', 'var(--ds-chart-green-bold, #7a8b6b)', 'var(--ds-chart-orange-bold, #8b7a6b)', 'var(--ds-background-discovery-bold, #6b6b8b)', 'var(--ds-chart-teal-bold, #6b8b8b)', 'var(--ds-chart-magenta-bold, #8b6b7a)', 'var(--ds-chart-purple-bold, #7a6b8b)', 'var(--ds-background-discovery, #6b8b7a)'];
 
 const hashColor = (name: string) => {
   let hash = 0;
@@ -273,7 +272,7 @@ export default function ResourceListingPage() {
               placeholder="Search by name, role, or department..."
               style={{
                 width: '100%', height: 36, padding: '0 12px 0 32px',
-                fontSize: '13px', fontWeight: 500,
+                fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
                 background: t.inputBg, border: `1px solid ${t.borderInput}`,
                 borderRadius: '4px', outline: 'none', color: t.text1,
                 boxSizing: 'border-box',
@@ -297,7 +296,7 @@ export default function ResourceListingPage() {
         {/* ═══ Resource Type Filter — compact row ═══ */}
         <div style={{ display: 'flex', gap: 6, padding: '0 0 8px 0', alignItems: 'center' }}>
           <span style={{
-            fontSize: 11, fontWeight: 600, color: t.text3,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: t.text3,
             textTransform: 'uppercase', letterSpacing: '0.05em',
             marginRight: 4,
           }}>
@@ -318,7 +317,7 @@ export default function ResourceListingPage() {
                 onClick={() => { setResourceTypeFilter(pill.key); setPage(1); }}
                 style={{
                   height: 26, padding: '0 10px', borderRadius: 3,
-                  fontSize: 12, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: isActive ? 600 : 500, cursor: 'pointer',
                   transition: 'all 150ms ease',
                   display: 'inline-flex', alignItems: 'center', gap: 4,
                   border: isActive ? `1.5px solid ${isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, #172B4D)'}` : `1px solid ${t.pillBorder}`,
@@ -344,7 +343,7 @@ export default function ResourceListingPage() {
                     background: isActive ? ('var(--cp-border-subtle, var(--ds-shadow-raised, rgba(0,0,0,0.06)))') : t.badgeBg,
                     color: isActive ? 'inherit' : t.text3,
                     borderRadius: 3, padding: '0 5px',
-                    fontSize: 11, fontWeight: 600,
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                   }}>
                     {count}
                   </span>
@@ -370,7 +369,7 @@ export default function ResourceListingPage() {
                       onClick={() => col.key !== 'actions' && handleSort(col.key as SortKey)}
                       style={{
                         background: t.headerBg, padding: '0 12px', height: '36px',
-                        fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
+                        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const,
                         letterSpacing: '0.07em', color: t.text2,
                         borderBottom: `0.75px solid ${t.border}`,
                         cursor: col.key !== 'actions' ? 'pointer' : 'default',
@@ -412,8 +411,8 @@ export default function ResourceListingPage() {
                   <tr>
                     <td colSpan={6} style={{ textAlign: 'center', padding: '60px 20px' }}>
                       <Search size={32} style={{ color: t.textDim, margin: '0 auto 12px' }} />
-                      <div style={{ fontSize: '15px', fontWeight: 700, color: t.text1, marginBottom: '4px' }}>No resources match your search.</div>
-                      <div style={{ fontSize: '12px', color: t.text3 }}>Try adjusting your search or filters</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: t.text1, marginBottom: '4px' }}>No resources match your search.</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', color: t.text3 }}>Try adjusting your search or filters</div>
                     </td>
                   </tr>
                 ) : pageData.map(r => (
@@ -431,11 +430,11 @@ export default function ResourceListingPage() {
                         <ResourceAvatar name={r.full_name} avatarUrl={r.avatar_url} />
                         <div style={{ minWidth: 0 }}>
                           <div style={{
-                            fontSize: '13px', fontWeight: 600, color: t.text1,
+                            fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: t.text1,
                             lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             maxWidth: '220px',
                           }}>{r.full_name}</div>
-                          <div style={{ fontSize: '11px', color: t.textMuted, marginTop: 1 }}>RID: {r.rid}</div>
+                          <div style={{ fontSize: 'var(--ds-font-size-100)', color: t.textMuted, marginTop: 1 }}>RID: {r.rid}</div>
                         </div>
                       </div>
                     </td>
@@ -444,7 +443,7 @@ export default function ResourceListingPage() {
                       {r.dept_name ? (
                         <span style={{
                           display: 'inline-flex', alignItems: 'center', gap: '6px',
-                          fontSize: '13px', fontWeight: 500, color: t.text2,
+                          fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: t.text2,
                         }}>
                           <span style={{
                             width: '6px', height: '6px', borderRadius: '50%',
@@ -452,15 +451,15 @@ export default function ResourceListingPage() {
                           }} />
                           {r.dept_name}
                         </span>
-                      ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
+                      ) : <span style={{ fontSize: 'var(--ds-font-size-300)', color: t.textDim }}>—</span>}
                     </td>
                     {/* JOB ROLE */}
-                    <td style={{ padding: '4px 12px', fontSize: '13px', fontWeight: 500, color: t.text1 }}>
+                    <td style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: t.text1 }}>
                       {r.job_role || '—'}
                     </td>
                     {/* ASSIGNMENT */}
                     <td style={{
-                      padding: '4px 12px', fontSize: '13px', color: t.text2,
+                      padding: '4px 12px', fontSize: 'var(--ds-font-size-300)', color: t.text2,
                       maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>
                       {r.assignment_name || '—'}
@@ -468,10 +467,10 @@ export default function ResourceListingPage() {
                     {/* LOCATION — neutral text, no semantic colors */}
                     <td style={{ padding: '4px 12px' }}>
                       {r.location_type ? (
-                        <span style={{ fontSize: '13px', fontWeight: 500, color: t.text2 }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: t.text2 }}>
                           {r.location_type}
                         </span>
-                      ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
+                      ) : <span style={{ fontSize: 'var(--ds-font-size-300)', color: t.textDim }}>—</span>}
                     </td>
                     {/* ACTIONS — opacity:0 hover reveal */}
                     <td style={{ padding: '4px 12px', textAlign: 'center' }}>
@@ -520,7 +519,7 @@ export default function ResourceListingPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '8px 12px',
               borderTop: `0.75px solid ${t.border}`,
-              fontSize: 12, color: t.text2,
+              fontSize: 'var(--ds-font-size-200)', color: t.text2,
             }}>
               <span>
                 Showing {startIdx + 1}–{endIdx} of {sorted.length} resources
@@ -535,7 +534,7 @@ export default function ResourceListingPage() {
                     color: safePage === 1 ? t.textDim : t.text2,
                     cursor: safePage === 1 ? 'not-allowed' : 'pointer',
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                   }}
                 >
                   <ChevronLeft size={13} />
@@ -550,7 +549,7 @@ export default function ResourceListingPage() {
                       background: safePage === n ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                       color: safePage === n ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))' : t.text2,
                       fontWeight: safePage === n ? 600 : 400,
-                      cursor: 'pointer', fontSize: 12,
+                      cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
                     }}
                   >
                     {n}
@@ -565,7 +564,7 @@ export default function ResourceListingPage() {
                     color: safePage === totalPages ? t.textDim : t.text2,
                     cursor: safePage === totalPages ? 'not-allowed' : 'pointer',
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                   }}
                 >
                   <ChevronRight size={13} />
@@ -613,7 +612,7 @@ function PillButton({ active, onClick, label, tokens }: { active: boolean; onCli
         borderRadius: '3px',
         padding: '0 12px',
         height: 30,
-        fontSize: '13px',
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: active ? 600 : 500,
         cursor: 'pointer',
         whiteSpace: 'nowrap',
@@ -656,7 +655,7 @@ function ResourceAvatar({ name, avatarUrl }: { name: string; avatarUrl: string |
       width: 28, height: 28, borderRadius: '50%',
       background: hashColor(name), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: '11px', fontWeight: 600, flexShrink: 0,
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 600, flexShrink: 0,
     }}>
       {getInitials(name)}
     </div>

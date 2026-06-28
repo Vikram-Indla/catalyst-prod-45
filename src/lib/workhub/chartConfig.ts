@@ -15,7 +15,7 @@ export const STATUS_CHART_COLORS: Record<string, string> = {
 export const TYPE_CHART_COLORS: Record<string, string> = {
   'Epic':     'var(--ds-link-pressed, #1e40af)',
   'Story':    'var(--ds-text-success, #216E4E)',
-  'Subtask':  '#312e81',
+  'Subtask':  '#312e81', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   'Bug':      'var(--ds-background-danger-bold, #dc2626)',
   'Task':     'var(--ds-text-subtle, #44546F)',
   'Incident': 'var(--ds-text-warning, #974F0C)',

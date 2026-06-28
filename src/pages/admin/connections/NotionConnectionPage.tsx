@@ -128,7 +128,7 @@ function Card({ children, style }: { children: React.ReactNode; style?: React.CS
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontSize: 12, fontWeight: 653, color: T.textSubtlest,
+      fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: T.textSubtlest,
       textTransform: 'uppercase' as const, letterSpacing: '0.04em',
       marginBottom: 12, paddingBottom: 6, borderBottom: `1px solid ${T.border}`,
     }}>
@@ -141,7 +141,7 @@ function FieldRow({ label, hint, children }: { label: string; hint?: string; chi
   return (
     <div style={{ marginBottom: 16 }}>
       <Label htmlFor={label.toLowerCase().replace(/\s/g, '-')}>{label}</Label>
-      {hint && <div style={{ fontSize: 12, color: T.textSubtlest, marginBottom: 4 }}>{hint}</div>}
+      {hint && <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest, marginBottom: 4 }}>{hint}</div>}
       {children}
     </div>
   );
@@ -216,10 +216,10 @@ function ExclusionRulesEditor({
   return (
     <div>
       <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ fontSize: 13, fontWeight: 500, color: T.text }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text }}>
           Row exclusions
           {rules.length > 0 && (
-            <span style={{ marginLeft: 8, fontSize: 11, color: T.textSubtlest }}>
+            <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>
               ({rules.length} rule{rules.length > 1 ? 's' : ''} — matching rows won't sync)
             </span>
           )}
@@ -228,7 +228,7 @@ function ExclusionRulesEditor({
       </div>
 
       {rules.length === 0 && (
-        <div style={{ fontSize: 12, color: T.textSubtlest, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest, fontStyle: 'italic' }}>
           No exclusions — all rows will sync. Add a rule to skip rows matching a condition.
         </div>
       )}
@@ -264,7 +264,7 @@ function ExclusionRulesEditor({
             onClick={() => remove(i)}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: T.dangerText, fontSize: 16, lineHeight: 1, padding: 4,
+              color: T.dangerText, fontSize: 'var(--ds-font-size-500)', lineHeight: 1, padding: 4,
             }}
           >
             ×
@@ -430,7 +430,7 @@ function WizardStep1({
 
   return (
     <div>
-      <div style={{ marginBottom: 20, fontSize: 14, color: T.textSubtle }}>
+      <div style={{ marginBottom: 20, fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
         Paste the Notion database URL — the system auto-detects schema and pre-maps columns.
         You can refine the mapping in step 2.
       </div>
@@ -507,8 +507,8 @@ function WizardStep2({
         key: 'notion',
         content: (
           <div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: T.text }}>{prop.name}</div>
-            <div style={{ fontSize: 11, color: T.textSubtlest }}>{prop.type}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text }}>{prop.name}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>{prop.type}</div>
           </div>
         ),
       },
@@ -516,7 +516,7 @@ function WizardStep2({
         key: 'sample',
         content: (
           <div style={{
-            fontSize: 12, color: T.textSubtle, maxWidth: 160,
+            fontSize: 'var(--ds-font-size-200)', color: T.textSubtle, maxWidth: 160,
             whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis',
           }}>
             {prop.sample || <span style={{ color: T.textSubtlest }}>—</span>}
@@ -525,7 +525,7 @@ function WizardStep2({
       },
       {
         key: 'arrow',
-        content: <span style={{ color: T.textSubtlest, fontSize: 16 }}>→</span>,
+        content: <span style={{ color: T.textSubtlest, fontSize: 'var(--ds-font-size-500)' }}>→</span>,
       },
       {
         key: 'catalyst',
@@ -549,10 +549,10 @@ function WizardStep2({
     <div>
       <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
         <div>
-          <div style={{ fontSize: 14, fontWeight: 500, color: T.text, marginBottom: 4 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: T.text, marginBottom: 4 }}>
             {state.testResult?.title}
           </div>
-          <div style={{ fontSize: 13, color: T.textSubtle }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.textSubtle }}>
             {props.length} columns · {state.testResult?.rows?.length ?? 0} rows · {mappedCount} mapped
           </div>
         </div>
@@ -669,7 +669,7 @@ function WizardStep3({
             {nextSync && (
               <div style={{
                 background: T.info, borderRadius: 4, padding: '8px 12px',
-                fontSize: 12, color: T.text, marginTop: -8, marginBottom: 16,
+                fontSize: 'var(--ds-font-size-200)', color: T.text, marginTop: -8, marginBottom: 16,
               }}>
                 Next sync: <strong>{nextSync}</strong>
               </div>
@@ -683,8 +683,8 @@ function WizardStep3({
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${T.border}` }}>
           <div>
-            <div style={{ fontSize: 14, color: T.text }}>Comment sync</div>
-            <div style={{ fontSize: 12, color: T.textSubtlest }}>Notion comments → business request activity feed via webhook</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: T.text }}>Comment sync</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest }}>Notion comments → business request activity feed via webhook</div>
           </div>
           <Toggle
             isChecked={state.commentSyncEnabled}
@@ -695,8 +695,8 @@ function WizardStep3({
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
           <div>
-            <div style={{ fontSize: 14, color: T.text }}>Notify admins after sync</div>
-            <div style={{ fontSize: 12, color: T.textSubtlest }}>Send a notification bell event to all admin users when sync completes</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: T.text }}>Notify admins after sync</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest }}>Send a notification bell event to all admin users when sync completes</div>
           </div>
           <Toggle
             isChecked={state.notifyAdmins}
@@ -709,7 +709,7 @@ function WizardStep3({
       {showWebhook && (
         <Card>
           <SectionTitle>Webhook</SectionTitle>
-          <div style={{ fontSize: 12, color: T.textSubtle, marginBottom: 12 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle, marginBottom: 12 }}>
             Register this URL in your Notion integration (Capabilities → Webhooks) to receive real-time
             comment and field-change events.
           </div>
@@ -727,7 +727,7 @@ function WizardStep3({
             <div style={{
               flex: 1, background: T.surfaceSunken, border: `1px solid ${T.border}`, borderRadius: 4,
               padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)',
-              fontSize: 11, color: T.text, wordBreak: 'break-all' as const,
+              fontSize: 'var(--ds-font-size-100)', color: T.text, wordBreak: 'break-all' as const,
             }}>
               {WEBHOOK_URL}
             </div>
@@ -843,7 +843,7 @@ function AddSourceWizard({
                 key={label}
                 onClick={() => done ? goStep(stepNum) : undefined}
                 style={{
-                  fontSize: 13, fontWeight: active ? 600 : 400, cursor: done ? 'pointer' : 'default',
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 600 : 400, cursor: done ? 'pointer' : 'default',
                   color: active ? T.text : done ? T.link : T.textSubtlest,
                 }}
               >
@@ -973,7 +973,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
             style={{
               display: 'block', width: '100%', textAlign: 'left',
               padding: '8px 16px', border: 'none', background: 'none',
-              fontSize: 14, color: T.text, cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-400)', color: T.text, cursor: 'pointer',
             }}
           >
             Edit mapping
@@ -989,7 +989,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
             style={{
               display: 'block', width: '100%', textAlign: 'left',
               padding: '8px 16px', border: 'none', background: 'none',
-              fontSize: 14, color: T.dangerText, cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-400)', color: T.dangerText, cursor: 'pointer',
             }}
           >
             Disconnect
@@ -1010,8 +1010,8 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
         <NotionIcon size={32} />
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: T.text }}>{config.source_label}</div>
-          <div style={{ fontSize: 12, color: T.textSubtlest }}>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: T.text }}>{config.source_label}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest }}>
             {config.database_title || (config.database_id?.slice(0, 8) + '…')}
           </div>
         </div>
@@ -1052,7 +1052,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
           aria-expanded={menuOpen}
           style={{
             background: 'none', border: `1px solid ${T.border}`, borderRadius: 4,
-            padding: '4px 8px', cursor: 'pointer', fontSize: 18, color: T.textSubtle,
+            padding: '4px 8px', cursor: 'pointer', fontSize: 'var(--ds-font-size-600)', color: T.textSubtle,
             lineHeight: 1,
           }}
         >
@@ -1064,7 +1064,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
       {/* Stats row */}
       <div style={{
         marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}`,
-        display: 'flex', gap: 24, fontSize: 12, color: T.textSubtle,
+        display: 'flex', gap: 24, fontSize: 'var(--ds-font-size-200)', color: T.textSubtle,
       }}>
         <div>
           <span style={{ fontWeight: 600, color: T.text }}>{recordsCount.toLocaleString()}</span>
@@ -1088,7 +1088,7 @@ function SourceCard({ config, onConfigure }: { config: any; onConfigure: () => v
       {/* Error message */}
       {syncStatus === 'error' && config.last_sync_error && (
         <div style={{
-          marginTop: 8, fontSize: 12, color: T.dangerText,
+          marginTop: 8, fontSize: 'var(--ds-font-size-200)', color: T.dangerText,
           background: T.danger, borderRadius: 4, padding: '6px 10px',
         }}>
           {config.last_sync_error}
@@ -1167,7 +1167,7 @@ function SyncLogTab() {
       {
         key: 'source',
         content: (
-          <div style={{ fontSize: 12, fontWeight: 500, color: T.textSubtle }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.textSubtle }}>
             {(log.notion_sync_config as any)?.source_label || '—'}
           </div>
         ),
@@ -1176,8 +1176,8 @@ function SyncLogTab() {
         key: 'time',
         content: (
           <div>
-            <div style={{ fontSize: 13, color: T.text }}>{formatRiyadh(log.started_at)}</div>
-            <div style={{ fontSize: 11, color: T.textSubtlest }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.text }}>{formatRiyadh(log.started_at)}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>
               {log.triggered_by === 'manual' ? 'Manual' : 'Scheduled'}
             </div>
           </div>
@@ -1194,7 +1194,7 @@ function SyncLogTab() {
       {
         key: 'records',
         content: (
-          <div style={{ fontSize: 13, color: T.textSubtle }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.textSubtle }}>
             {log.records_synced != null && <><strong>{log.records_synced}</strong> synced</>}
             {log.records_skipped != null && <>, {log.records_skipped} skipped</>}
           </div>
@@ -1203,7 +1203,7 @@ function SyncLogTab() {
       {
         key: 'duration',
         content: (
-          <div style={{ fontSize: 12, color: T.textSubtlest }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest }}>
             {log.finished_at
               ? `${Math.round((new Date(log.finished_at).getTime() - new Date(log.started_at).getTime()) / 1000)}s`
               : '—'}
@@ -1213,7 +1213,7 @@ function SyncLogTab() {
       {
         key: 'error',
         content: log.error_message
-          ? <span style={{ fontSize: 12, color: T.dangerText }}>{log.error_message}</span>
+          ? <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.dangerText }}>{log.error_message}</span>
           : null,
       },
     ],
@@ -1221,7 +1221,7 @@ function SyncLogTab() {
 
   return (
     <div style={{ paddingTop: 8 }}>
-      <div style={{ fontSize: 12, color: T.textSubtlest, marginBottom: 8 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest, marginBottom: 8 }}>
         All times shown in Arabia Standard Time (AST, UTC+3)
       </div>
       <DynamicTable
@@ -1269,7 +1269,7 @@ function CommentsTab() {
       {
         key: 'body',
         content: (
-          <div style={{ fontSize: 13, color: T.text }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.text }}>
             <Lozenge appearance="new">Notion</Lozenge>
             <span style={{ marginLeft: 8 }}>{c.body}</span>
           </div>
@@ -1278,7 +1278,7 @@ function CommentsTab() {
       {
         key: 'page',
         content: (
-          <div style={{ fontSize: 12, color: T.textSubtlest, fontFamily: 'var(--ds-font-family-code, monospace)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest, fontFamily: 'var(--ds-font-family-code, monospace)' }}>
             {c.notion_page_id?.slice(0, 8)}…
           </div>
         ),
@@ -1287,8 +1287,8 @@ function CommentsTab() {
         key: 'when',
         content: (
           <div>
-            <div style={{ fontSize: 12, color: T.text }}>{formatRiyadh(c.created_at, 'relative')}</div>
-            <div style={{ fontSize: 11, color: T.textSubtlest }}>{formatRiyadh(c.created_at)}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.text }}>{formatRiyadh(c.created_at, 'relative')}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>{formatRiyadh(c.created_at)}</div>
           </div>
         ),
       },
@@ -1297,9 +1297,9 @@ function CommentsTab() {
 
   return (
     <div style={{ paddingTop: 8 }}>
-      <div style={{ marginBottom: 12, fontSize: 13, color: T.textSubtle }}>
+      <div style={{ marginBottom: 12, fontSize: 'var(--ds-font-size-300)', color: T.textSubtle }}>
         Last 50 comments synced from Notion · <Badge max={999}>{comments.length}</Badge>
-        <span style={{ fontSize: 12, color: T.textSubtlest, marginLeft: 12 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest, marginLeft: 12 }}>
           Times shown in AST (UTC+3)
         </span>
       </div>
@@ -1331,7 +1331,7 @@ export default function NotionConnectionPage() {
           <NotionIcon size={48} />
           <div>
             <h1 style={{
-              margin: 0, fontSize: 24, fontWeight: 653, color: T.text, lineHeight: '28px',
+              margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: T.text, lineHeight: '28px',
               fontFamily: 'var(--ds-font-family-heading, "Atlassian Sans", sans-serif)',
             }}>
               Notion
@@ -1344,7 +1344,7 @@ export default function NotionConnectionPage() {
           </div>
         </div>
 
-        <p style={{ margin: '0 0 24px', fontSize: 14, lineHeight: '20px', color: T.textSubtle }}>
+        <p style={{ margin: '0 0 24px', fontSize: 'var(--ds-font-size-400)', lineHeight: '20px', color: T.textSubtle }}>
           Connect Notion databases and sync rows as business requests.
           Each source syncs independently — pause, resume, or disconnect without affecting others.
           All schedule times are in Riyadh time (AST, UTC+3).

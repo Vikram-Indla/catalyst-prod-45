@@ -30,7 +30,7 @@ const ACTIVITY_TABS: { id: ActivityTab; label: string }[] = [
 ];
 
 function avatarColor(name: string) {
-  const colors = ['bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', 'bg-[#5243AA]', 'bg-[#00A3BF]', 'bg-[#FF8800]', 'bg-[var(--cp-primary-60, #0052CC)]'];
+  const colors = ['bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', 'bg-[var(--ds-background-discovery-bold, #5243AA)]', 'bg-[var(--ds-chart-teal-bold, #00A3BF)]', 'bg-[var(--ds-background-warning-bold, #FF8800)]', 'bg-[var(--cp-primary-60, #0052CC)]'];
   return colors[(name?.charCodeAt(0) ?? 0) % colors.length];
 }
 

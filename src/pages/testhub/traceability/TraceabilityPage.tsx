@@ -3,364 +3,245 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@atlaskit/spinner';
 import Lozenge from '@atlaskit/lozenge';
+import DynamicTable from '@atlaskit/dynamic-table';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { supabase } from '@/integrations/supabase/client';
-import { CaseStatus } from '@/types/test-management';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface LinkedTestCase {
+interface ReqLink {
   id: string;
+  requirement_type: string;
+  requirement_id: string | null;
+  external_key: string | null;
+  external_title: string | null;
+  link_type: string | null;
+  test_case_id: string;
   case_key: string | null;
-  title: string | null;
-  status: CaseStatus | null;
-  linked_work_item_id: string | null;
+  case_title: string | null;
+  exec_status: string | null;
 }
 
-interface WorkItem {
-  id: string;
-  issue_key: string | null;
-  summary: string | null;
-  issue_type: string | null;
-  status: string | null;
+interface ReqGroup {
+  reqKey: string;
+  displayKey: string;
+  displayTitle: string;
+  links: ReqLink[];
 }
 
-// ─── Status → Lozenge appearance ─────────────────────────────────────────────
+// ─── Status helpers ───────────────────────────────────────────────────────────
 
-function caseStatusAppearance(
-  status: CaseStatus | null
-): 'default' | 'inprogress' | 'success' | 'removed' {
+function execAppearance(status: string | null): 'default' | 'inprogress' | 'success' | 'removed' | 'moved' {
   if (!status) return 'default';
-  if (status === 'APPROVED') return 'success';
-  if (status === 'REVIEW') return 'inprogress';
-  if (status === 'DEPRECATED') return 'removed';
+  const s = status.toLowerCase();
+  if (s === 'passed') return 'success';
+  if (s === 'failed') return 'removed';
+  if (s === 'blocked') return 'moved';
+  if (s === 'in_progress') return 'inprogress';
   return 'default';
 }
 
-function caseStatusLabel(status: CaseStatus | null): string {
-  if (!status) return '—';
-  const map: Record<CaseStatus, string> = {
-    DRAFT: 'Draft',
-    REVIEW: 'Review',
-    APPROVED: 'Approved',
-    DEPRECATED: 'Deprecated',
+function execLabel(status: string | null): string {
+  if (!status) return 'Not run';
+  const map: Record<string, string> = {
+    passed: 'Passed', failed: 'Failed', blocked: 'Blocked',
+    in_progress: 'In progress', not_run: 'Not run', skipped: 'Skipped',
   };
-  return map[status] ?? status;
+  return map[status.toLowerCase()] ?? status;
 }
 
-// ─── Coverage badge ───────────────────────────────────────────────────────────
+// ─── Fetch ────────────────────────────────────────────────────────────────────
 
-function CoveragePill({
-  total,
-  passing,
-  failing,
-}: {
-  total: number;
-  passing: number;
-  failing: number;
-}) {
-  const appearance =
-    failing > 0 ? 'removed' : passing === total ? 'success' : 'default';
-  return (
-    <Lozenge appearance={appearance}>
-      {passing}/{total} passing
-    </Lozenge>
-  );
-}
-
-// ─── Fetch hooks ──────────────────────────────────────────────────────────────
-
-function useLinkedTestCases(projectId: string | undefined) {
+function useTraceability(projectId: string | undefined) {
   return useQuery({
-    queryKey: ['traceability-test-cases', projectId],
-    queryFn: async (): Promise<LinkedTestCase[]> => {
+    queryKey: ['traceability-matrix', projectId],
+    queryFn: async (): Promise<ReqLink[]> => {
       if (!projectId) return [];
-      const { data, error } = await supabase
-        .from('tm_test_cases')
-        .select('id, case_key, title, status, linked_work_item_id')
-        .eq('project_id', projectId)
-        .not('linked_work_item_id', 'is', null);
+
+      const { data: links, error } = await supabase
+        .from('tm_requirement_links')
+        .select(`
+          id,
+          requirement_type,
+          requirement_id,
+          external_key,
+          external_title,
+          link_type,
+          test_case_id,
+          test_case:tm_test_cases!test_case_id(case_key, title, status, project_id)
+        `)
+        .order('created_at', { ascending: true });
 
       if (error) throw error;
-      return (data ?? []) as LinkedTestCase[];
+
+      const projectLinks = (links ?? []).filter(
+        (l: any) => l.test_case?.project_id === projectId
+      );
+
+      if (projectLinks.length === 0) return [];
+
+      // Latest exec status per case from tm_cycle_scope
+      const caseIds = [...new Set(projectLinks.map((l: any) => l.test_case_id as string))];
+      const { data: scopes } = await supabase
+        .from('tm_cycle_scope')
+        .select('test_case_id, current_status, updated_at')
+        .in('test_case_id', caseIds)
+        .order('updated_at', { ascending: false });
+
+      const latestByCase = new Map<string, string>();
+      for (const s of (scopes ?? [])) {
+        if (!latestByCase.has(s.test_case_id) && s.current_status) {
+          latestByCase.set(s.test_case_id, s.current_status);
+        }
+      }
+
+      return projectLinks.map((l: any) => ({
+        id: l.id,
+        requirement_type: l.requirement_type,
+        requirement_id: l.requirement_id,
+        external_key: l.external_key,
+        external_title: l.external_title,
+        link_type: l.link_type,
+        test_case_id: l.test_case_id,
+        case_key: l.test_case?.case_key ?? null,
+        case_title: l.test_case?.title ?? null,
+        exec_status: latestByCase.get(l.test_case_id) ?? null,
+      }));
     },
     enabled: !!projectId,
   });
 }
 
-function useWorkItems(ids: string[]) {
-  return useQuery({
-    queryKey: ['traceability-work-items', ids],
-    queryFn: async (): Promise<WorkItem[]> => {
-      if (ids.length === 0) return [];
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status')
-        .in('id', ids);
-
-      if (error) throw error;
-      return (data ?? []) as WorkItem[];
-    },
-    enabled: ids.length > 0,
-  });
-}
-
-// ─── Main component ───────────────────────────────────────────────────────────
+// ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function TraceabilityPage() {
   const { projectKey = 'BAU' } = useParams<{ projectKey: string }>();
-  const { data: projects = [], isLoading: projectsLoading } = useProjects();
-  const projectId = projects[0]?.id ?? undefined;
+  const { data: projects = [], isLoading: projLoading } = useProjects();
+  const projectId = projects[0]?.id;
 
-  const { data: testCases = [], isLoading: casesLoading } =
-    useLinkedTestCases(projectId);
+  const { data: links = [], isLoading: linksLoading } = useTraceability(projectId);
+  const isLoading = projLoading || linksLoading;
 
-  // Unique linked work item IDs
-  const linkedIds = useMemo(
-    () => [
-      ...new Set(
-        testCases
-          .map((tc) => tc.linked_work_item_id)
-          .filter((id): id is string => id !== null)
-      ),
-    ],
-    [testCases]
-  );
-
-  const { data: workItems = [], isLoading: itemsLoading } =
-    useWorkItems(linkedIds);
-
-  const isLoading = projectsLoading || casesLoading || itemsLoading;
-
-  // ── Group test cases by work item ──────────────────────────────────────────
-  const grouped = useMemo(() => {
-    const casesByItem = new Map<string, LinkedTestCase[]>();
-    for (const tc of testCases) {
-      if (!tc.linked_work_item_id) continue;
-      const arr = casesByItem.get(tc.linked_work_item_id) ?? [];
-      arr.push(tc);
-      casesByItem.set(tc.linked_work_item_id, arr);
+  const groups = useMemo((): ReqGroup[] => {
+    const map = new Map<string, ReqGroup>();
+    for (const l of links) {
+      const key = l.requirement_id
+        ? `${l.requirement_type}:${l.requirement_id}`
+        : `ext:${l.external_key ?? ''}:${l.external_title ?? ''}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          reqKey: key,
+          displayKey: l.external_key ?? l.requirement_type,
+          displayTitle: l.external_title ?? `${l.requirement_type} (internal)`,
+          links: [],
+        });
+      }
+      map.get(key)!.links.push(l);
     }
+    return Array.from(map.values());
+  }, [links]);
 
-    return workItems.map((wi) => ({
-      workItem: wi,
-      cases: casesByItem.get(wi.id) ?? [],
-    }));
-  }, [workItems, testCases]);
+  const totalCases = useMemo(() => new Set(links.map(l => l.test_case_id)).size, [links]);
+  const passed = useMemo(() => groups.filter(g => g.links.some(l => l.exec_status === 'passed')).length, [groups]);
+  const failed = useMemo(() => groups.filter(g => g.links.some(l => l.exec_status === 'failed')).length, [groups]);
 
-  // ── Coverage summary ───────────────────────────────────────────────────────
-  const summary = useMemo(() => {
-    const covered = grouped.length;
-    const withPassing = grouped.filter((g) =>
-      g.cases.some((c) => c.status === 'APPROVED')
-    ).length;
-    const withFailing = grouped.filter((g) =>
-      g.cases.some((c) => c.status === 'DEPRECATED')
-    ).length;
-    return { covered, withPassing, withFailing };
-  }, [grouped]);
+  const head = {
+    cells: [
+      { key: 'requirement', content: 'Requirement', width: 25 },
+      { key: 'test-cases', content: 'Test cases' },
+      { key: 'coverage', content: 'Coverage', width: 18 },
+    ],
+  };
+
+  const rows = groups.map(g => {
+    const passCount = g.links.filter(l => l.exec_status === 'passed').length;
+    const failCount = g.links.filter(l => l.exec_status === 'failed').length;
+    const covAppearance: 'removed' | 'success' | 'default' =
+      failCount > 0 ? 'removed' : passCount === g.links.length ? 'success' : 'default';
+
+    return {
+      key: g.reqKey,
+      cells: [
+        {
+          key: 'requirement',
+          content: (
+            <div>
+              {g.displayKey && g.displayKey !== g.displayTitle && (
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, marginBottom: 2 }}>
+                  {g.displayKey}
+                </div>
+              )}
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }} title={g.displayTitle}>
+                {g.displayTitle}
+              </div>
+            </div>
+          ),
+        },
+        {
+          key: 'test-cases',
+          content: (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {g.links.map(l => (
+                <span key={l.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'var(--ds-background-neutral)', borderRadius: 3 }}>
+                  <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
+                    {l.case_key ?? '—'}
+                  </span>
+                  <Lozenge appearance={execAppearance(l.exec_status)}>
+                    {execLabel(l.exec_status)}
+                  </Lozenge>
+                </span>
+              ))}
+            </div>
+          ),
+        },
+        {
+          key: 'coverage',
+          content: (
+            <Lozenge appearance={covAppearance}>
+              {passCount}/{g.links.length} passing
+            </Lozenge>
+          ),
+        },
+      ],
+    };
+  });
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        fontFamily: 'var(--ds-font-family-body)',
-        background: 'var(--ds-surface, #FFFFFF)',
-        paddingTop: 16,
-      }}
-    >
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)', background: 'var(--ds-surface)', paddingTop: 16 }}>
       <ProjectPageHeader hubType="test" />
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px' }}>
-        {/* ── Loading ──────────────────────────────────────────────────── */}
         {isLoading && (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: 48,
-            }}
-          >
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
             <Spinner size="large" />
           </div>
         )}
 
-        {/* ── Empty state ───────────────────────────────────────────────── */}
-        {!isLoading && grouped.length === 0 && (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '64px 24px',
-              color: 'var(--ds-text-subtlest, #6B778C)',
-            }}
-          >
-            <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>
-              No linked test cases
-            </div>
-            <div style={{ fontSize: 14 }}>
-              Link test cases to work items in the test repository to see
-              traceability coverage here.
-            </div>
-          </div>
-        )}
-
-        {/* ── Coverage summary ──────────────────────────────────────────── */}
-        {!isLoading && grouped.length > 0 && (
+        {!isLoading && (
           <>
-            <div
-              style={{
-                display: 'flex',
-                gap: 24,
-                padding: '12px 0 16px',
-                borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-                marginBottom: 16,
-              }}
-            >
-              <SummaryStat
-                label="Requirements covered"
-                value={summary.covered}
-              />
-              <SummaryStat
-                label="With passing tests"
-                value={summary.withPassing}
-                accent="success"
-              />
-              <SummaryStat
-                label="With failing tests"
-                value={summary.withFailing}
-                accent="danger"
-              />
-            </div>
+            {groups.length > 0 && (
+              <div style={{ display: 'flex', gap: 32, padding: '12px 0 20px', borderBottom: '1px solid var(--ds-border)', marginBottom: 20 }}>
+                <Stat label="Requirements" value={groups.length} />
+                <Stat label="Test cases linked" value={totalCases} />
+                <Stat label="With passing run" value={passed} accent="success" />
+                <Stat label="With failing run" value={failed} accent="danger" />
+              </div>
+            )}
 
-            {/* ── Matrix ─────────────────────────────────────────────────── */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '180px 1fr 130px',
-                columnGap: 16,
-              }}
-              role="table"
-              aria-label="Traceability matrix"
-            >
-              {/* Header */}
-              <MatrixColHeader>Work item</MatrixColHeader>
-              <MatrixColHeader>Linked test cases</MatrixColHeader>
-              <MatrixColHeader>Coverage</MatrixColHeader>
-
-              {/* Rows */}
-              {grouped.map(({ workItem, cases }) => {
-                const passingCount = cases.filter(
-                  (c) => c.status === 'APPROVED'
-                ).length;
-                const failingCount = cases.filter(
-                  (c) => c.status === 'DEPRECATED'
-                ).length;
-
-                return (
-                  <React.Fragment key={workItem.id}>
-                    {/* Work item cell */}
-                    <MatrixCell>
-                      <div>
-                        <div
-                          style={{
-                            fontSize: 12,
-                            fontFamily: 'var(--ds-font-family-code, monospace)',
-                            color: 'var(--ds-link, #0052CC)',
-                            fontWeight: 500,
-                            marginBottom: 2,
-                          }}
-                        >
-                          {workItem.issue_key ?? '—'}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 13,
-                            color: 'var(--ds-text, #172B4D)',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            maxWidth: 160,
-                          }}
-                          title={workItem.summary ?? undefined}
-                        >
-                          {workItem.summary ?? '—'}
-                        </div>
-                      </div>
-                    </MatrixCell>
-
-                    {/* Test cases cell */}
-                    <MatrixCell>
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          gap: 6,
-                        }}
-                      >
-                        {cases.length === 0 ? (
-                          <span
-                            style={{
-                              fontSize: 13,
-                              color: 'var(--ds-text-subtlest, #6B778C)',
-                            }}
-                          >
-                            —
-                          </span>
-                        ) : (
-                          cases.map((tc) => (
-                            <span
-                              key={tc.id}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                padding: '2px 8px',
-                                background:
-                                  'var(--ds-background-neutral, #F1F2F4)',
-                                borderRadius: 3,
-                                fontSize: 12,
-                              }}
-                            >
-                              <span
-                                style={{
-                                  fontFamily:
-                                    'var(--ds-font-family-code, monospace)',
-                                  color: 'var(--ds-text-subtle, #42526E)',
-                                }}
-                              >
-                                {tc.case_key ?? '—'}
-                              </span>
-                              <Lozenge
-                                appearance={caseStatusAppearance(tc.status)}
-                              >
-                                {caseStatusLabel(tc.status)}
-                              </Lozenge>
-                            </span>
-                          ))
-                        )}
-                      </div>
-                    </MatrixCell>
-
-                    {/* Coverage cell */}
-                    <MatrixCell>
-                      {cases.length > 0 ? (
-                        <CoveragePill
-                          total={cases.length}
-                          passing={passingCount}
-                          failing={failingCount}
-                        />
-                      ) : (
-                        '—'
-                      )}
-                    </MatrixCell>
-                  </React.Fragment>
-                );
-              })}
-            </div>
+            <DynamicTable
+              head={head}
+              rows={rows}
+              isLoading={false}
+              emptyView={
+                <div style={{ textAlign: 'center', padding: '64px 24px', color: 'var(--ds-text-subtlest)' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, marginBottom: 8 }}>No requirements linked</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-400)' }}>
+                    Open a test case → Requirements tab → Link requirement to start tracking coverage.
+                  </div>
+                </div>
+              }
+            />
           </>
         )}
       </div>
@@ -370,77 +251,12 @@ export default function TraceabilityPage() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function SummaryStat({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: number;
-  accent?: 'success' | 'danger';
-}) {
-  const valueColor =
-    accent === 'success'
-      ? 'var(--ds-text-success, #216E4E)'
-      : accent === 'danger'
-      ? 'var(--ds-text-danger, #AE2A19)'
-      : 'var(--ds-text, #172B4D)';
-
+function Stat({ label, value, accent }: { label: string; value: number; accent?: 'success' | 'danger' }) {
+  const color = accent === 'success' ? 'var(--ds-text-success)' : accent === 'danger' ? 'var(--ds-text-danger)' : 'var(--ds-text)';
   return (
     <div>
-      <div
-        style={{
-          fontSize: 24,
-          fontWeight: 653,
-          color: valueColor,
-          lineHeight: 1,
-          marginBottom: 4,
-        }}
-      >
-        {value}
-      </div>
-      <div
-        style={{
-          fontSize: 12,
-          color: 'var(--ds-text-subtlest, #6B778C)',
-        }}
-      >
-        {label}
-      </div>
-    </div>
-  );
-}
-
-function MatrixColHeader({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        fontSize: 12,
-        fontWeight: 653,
-        color: 'var(--ds-text-subtlest, #6B778C)',
-        padding: '8px 0',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-        userSelect: 'none',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function MatrixCell({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        fontSize: 14,
-        color: 'var(--ds-text, #172B4D)',
-        padding: '10px 0',
-        borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      {children ?? '—'}
+      <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color, lineHeight: 1, marginBottom: 4 }}>{value}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{label}</div>
     </div>
   );
 }

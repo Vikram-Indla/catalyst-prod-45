@@ -70,7 +70,7 @@ export default function ReleaseComparePage() {
               const isSelected = selected.includes(r.id);
               return (
                 <button key={r.id} onClick={() => toggleSelect(r.id)}
-                  className={`bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[var(--cp-teal-60, #0D9488)] border-2 ring-2 ring-[var(--cp-teal-60, #0D9488)]/20' : 'border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] hover:border-[#C9D3E0]'}`}
+                  className={`bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[var(--cp-teal-60, #0D9488)] border-2 ring-2 ring-[var(--cp-teal-60, #0D9488)]/20' : 'border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] hover:border-[var(--ds-border, #C9D3E0)]'}`}
                   style={{ transition: 'all 0.12s ease' }}>
                   <span className="text-[13px] font-semibold block truncate" style={{ color: RH.ink1 }}>{r.name}</span>
                   <div className="flex items-center gap-2 mt-1.5">
@@ -87,7 +87,7 @@ export default function ReleaseComparePage() {
               <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
                 <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
                   <thead>
-                    <tr className="bg-[#F4F7FA] border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
+                    <tr className="bg-[var(--ds-surface-sunken, #F4F7FA)] border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
                       <th scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[var(--ds-text-subtle,#475569)] w-[160px]">METRIC</th>
                       {selectedReleases.map((r: any) => (
                         <th key={r.id} scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[var(--ds-text-subtle,#475569)]">{r.name}</th>
@@ -118,8 +118,8 @@ export default function ReleaseComparePage() {
                   <ResponsiveContainer width="100%" height={320}>
                     <RadarChart data={radarData}>
                       <PolarGrid stroke="var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))" />
-                      <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: 'var(--ds-text-subtle, #475569)' }} />
-                      <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
+                      <PolarAngleAxis dataKey="subject" tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtle, #475569)' }} />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 'var(--ds-font-size-50)' }} />
                       {selectedReleases.map((r: any, i: number) => (
                         <Radar key={r.id} name={r.name} dataKey={`r${i}`} stroke={RADAR_COLORS[i]} fill={RADAR_COLORS[i]} fillOpacity={0.15} />
                       ))}

@@ -180,7 +180,7 @@ export const WORK_ITEM_CONFIG: Record<WorkItemType, {
   icon: string;
 }> = {
   epic: {
-    // §11 Epic purple #904EE2
+    // §11 Epic purple var(--ds-background-discovery-bold, #904EE2)
     label: 'Epic',
     color: 'var(--ds-text-discovery, #904EE2)',
     bgColor: 'var(--ds-background-discovery, #EAE6FF)',

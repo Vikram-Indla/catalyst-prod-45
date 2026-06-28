@@ -194,23 +194,97 @@ No custom `<table>`, CSS grid table, or flex table unless explicitly approved af
 
 ---
 
-## ADS TOKENS ONLY — BARE COLORS BANNED
+## ADS TOKENS ONLY — HARD STOP ⛔
 
-**Bare colors are banned.** (No hex, no raw rgb/rgba/hsl, no Tailwind color utilities.)
+> **This is the single most violated rule. Violations block commits. No exceptions.**
+> Vikram has had to correct this more than 100 times. Every violation from this point is a failure.
 
-**Banned:**
-- hex colors (`#E9F2FE`)
-- raw `rgb()`, `rgba()`, `hsl()`
-- lime, bright green, yellow/orange warning slabs
-- rainbow action colors on non-AI controls
-- Tailwind color utilities (`bg-slate-100`, `text-gray-500`)
-- custom color constants
+**BEFORE WRITING OR TOUCHING ANY STYLED COMPONENT run this audit:**
 
-**Allowed:**
-- `var(--ds-*)` tokens
-- ADS `token()` helper
-- canonical Catalyst component-owned colors
-- approved AI CTA rainbow only where already canonical (`AIIntelligenceButton`, `CatyRainbowCTA`)
+```bash
+grep -rn --include="*.tsx" --include="*.ts" --include="*.css" \
+  -E "(#[0-9a-fA-F]{3,8}|rgba?\(|hsl[a]?\(|bg-(red|green|blue|yellow|orange|lime|pink|purple|slate|gray|zinc|neutral|stone|amber|emerald|teal|cyan|sky|indigo|violet|fuchsia|rose)-|text-(red|green|blue|yellow|orange|lime|pink|purple|slate|gray|zinc|neutral|stone|amber|emerald|teal|cyan|sky|indigo|violet|fuchsia|rose)-)" \
+  src/
+```
+
+**If it returns ANY match in a file you are about to touch → fix before committing.**
+
+**Banned — absolutely no exceptions:**
+- bare hex values: `#E9F2FE`, `#0C66E4`, any hex
+- raw `rgb()`, `rgba()`, `hsl()`, `hsla()` — even with CSS variables as arguments
+- Tailwind color utilities: `bg-slate-100`, `text-gray-500`, `border-green-200`, etc.
+- inline `style={{ color: 'green' }}` or any named CSS color
+- lime, bright green, yellow/orange, rainbow on non-AI controls
+- custom color constants or local color maps (e.g. `const COLOR_MAP = { low: '#...' }`)
+- hex fallbacks in `var(--ds-*, #fallback)` — use token-only, no fallback hex
+
+**Allowed — only these patterns:**
+- `var(--ds-background-*)`, `var(--ds-text-*)`, `var(--ds-border-*)`, etc. — NO hex fallback
+- ADS `token('color.background.neutral')` helper from `@atlaskit/tokens`
+- `@atlaskit/lozenge`, `@atlaskit/badge`, `@atlaskit/tag` — let the component own its color
+- Canonical Catalyst component-owned colors (component sets color internally, caller passes no color prop)
+- `AIIntelligenceButton` / `CatyRainbowCTA` rainbow — only those two, nowhere else
+
+**ADS Token reference (memorise these):**
+
+| Purpose | Token |
+|---|---|
+| Page background | `var(--ds-surface)` |
+| Sunken / alternate row | `var(--ds-surface-sunken)` |
+| Card / elevated | `var(--ds-surface-raised)` |
+| Primary text | `var(--ds-text)` |
+| Secondary text | `var(--ds-text-subtle)` |
+| Placeholder / hint | `var(--ds-text-subtlest)` |
+| Danger text | `var(--ds-text-danger)` |
+| Warning text | `var(--ds-text-warning)` |
+| Success text | `var(--ds-text-success)` |
+| Info text | `var(--ds-text-information)` |
+| Link / brand text | `var(--ds-text-brand)` |
+| Border default | `var(--ds-border)` |
+| Border bold | `var(--ds-border-bold)` |
+| Border focused | `var(--ds-border-focused)` |
+| Border danger | `var(--ds-border-danger)` |
+| Neutral bg | `var(--ds-background-neutral)` |
+| Neutral subtle bg | `var(--ds-background-neutral-subtle)` |
+| Success subtle bg | `var(--ds-background-success)` |
+| Warning subtle bg | `var(--ds-background-warning)` |
+| Danger subtle bg | `var(--ds-background-danger)` |
+| Info subtle bg | `var(--ds-background-information)` |
+| Selected bg | `var(--ds-background-selected)` |
+| Brand bold bg (CTA) | `var(--ds-background-brand-bold)` |
+| Icon default | `var(--ds-icon)` |
+| Icon subtle | `var(--ds-icon-subtle)` |
+| Icon danger | `var(--ds-icon-danger)` |
+| Icon success | `var(--ds-icon-success)` |
+| Overlay shadow | `var(--ds-shadow-overlay)` |
+| Focus ring | `var(--ds-border-focused)` |
+
+**ENFORCEMENT: Before every commit touching styled code:**
+
+```bash
+# Run this. Zero output = clean. Any output = STOP, fix first.
+grep -rn --include="*.tsx" --include="*.ts" --include="*.css" \
+  -E "(#[0-9a-fA-F]{3,8}(?!['\"]?\s*\))|rgba?\s*\(|hsl[a]?\s*\()" \
+  src/ | grep -v "node_modules" | grep -v "\.snap"
+```
+
+### Enforcement (CAT-ADS-COMPLIANCE-20260627-001)
+
+A **ratchet gate** blocks NEW hard-coded colors at commit time and in CI, without blocking the pre-existing debt:
+
+- `npm run lint:colors` — list every hard-coded color (`scripts/no-hardcoded-colors.cjs`).
+- `npm run lint:colors:gate` — fail only if the count exceeds the committed baseline in `design-governance/color-baseline.json`. Runs in `.husky/pre-commit` (blocking) and in `ci.yml`.
+- `npm run audit:ads` — full design-governance audit (tokens, typography, spacing, fonts).
+- `npm run audit:ads:gate` — per-category fail-on-increase ratchet over the audit vs `design-governance/audit-baseline.json` (catches Tailwind color utils, hardcoded font-size, off-grid spacing — what the hex scanner misses). Blocking in `.husky/pre-commit` and `ci.yml`.
+
+When a slice reduces a count, ratchet the relevant baseline down: `node scripts/ads-color-gate.cjs --update` and/or `node scripts/ads-audit-gate.cjs --update`, then commit the baseline file(s). Baselines only ever move down. The audit's `tokens` category is noisy (over-reports var()/token() fallbacks) but the ratchet is increase-only, so the noise is inert.
+
+**Escape hatch** (intentional, documented exceptions only — e.g. a Jira-parity hex with no ADS-token equivalent):
+```css
+/* ads-scanner:ignore-next-line — Jira-parity bypass, no ADS token (probed YYYY-MM-DD) */
+color: #ff991f;
+```
+or `/* ads-scanner:ignore-line */` on the same line. Do not use to hide real violations.
 
 ---
 

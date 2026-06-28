@@ -10,7 +10,7 @@ import { getBarPosition, isOverdue } from './timelineUtils';
 import { TimelineBarTooltip } from './TimelineBarTooltip';
 import { TimelineContextMenu } from './TimelineContextMenu';
 // Type concept removed — Business Request uses single brand color.
-const getTypeColor = () => ({ hex: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, #0747A6)', border: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', gradient: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-text-brand, #3B82F6))' });
+const getTypeColor = () => ({ hex: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))', border: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', gradient: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-text-brand, #3B82F6))' });
 
 interface TimelineBarProps {
   request: TimelineRequest;
@@ -120,7 +120,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
           <span
             style={{
               zIndex: 1,
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: 'var(--ds-surface, #fff)',
               paddingLeft: '8px',

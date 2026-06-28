@@ -90,7 +90,7 @@ export default function HealthRadarWidget({
               style={{
                 height: 48,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -155,8 +155,8 @@ export default function HealthRadarWidget({
                     gap: 10,
                     padding: '8px 10px',
                     borderRadius: token('border.radius', '4px'),
-                    background: token('elevation.surface', '#FFFFFF'),
-                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                    border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                   }}
                 >
                   {/* Health badge */}
@@ -195,7 +195,7 @@ export default function HealthRadarWidget({
                       ...LABEL,
                       color: r.healthStatus === 'Overdue'
                         ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
-                        : token('color.text.subtlest', '#8590A2'),
+                        : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                       whiteSpace: 'nowrap',
                       flexShrink: 0,
                     }}

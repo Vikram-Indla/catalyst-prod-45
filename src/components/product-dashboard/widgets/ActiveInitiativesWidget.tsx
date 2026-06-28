@@ -74,12 +74,12 @@ function stepToStatus(step: string | null): BrStatus {
 // ─── Status chip ──────────────────────────────────────────────────────────────
 
 const CHIP_STYLE: Record<BrStatus, { bg: string; color: string }> = {
-  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, #0C66E4)') },
+  Active:    { bg: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.information', 'var(--ds-link, var(--ds-link, #0C66E4))') },
   'In Review':{ bg: token('color.background.discovery', 'var(--ds-background-discovery, #F3F0FF)'), color: token('color.text.discovery', 'var(--ds-background-discovery-bold, #6E5DC6)') },
-  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') },
-  Done:      { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, #216E4E)') },
-  Planned:   { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') },
-  'On Hold': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') },
+  Blocked:   { bg: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), color: token('color.text.danger', 'var(--ds-text-danger, var(--ds-text-danger, #AE2A19))') },
+  Done:      { bg: token('color.background.success', 'var(--ds-background-success, #DFFCF0)'), color: token('color.text.success', 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))') },
+  Planned:   { bg: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'), color: token('color.text.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest, #626F86))') },
+  'On Hold': { bg: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'), color: token('color.text.warning', 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))') },
 };
 
 function StatusChip({ status }: { status: BrStatus }) {
@@ -89,7 +89,7 @@ function StatusChip({ status }: { status: BrStatus }) {
       display: 'inline-block',
       padding: '2px 8px',
       borderRadius: 3,
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
       lineHeight: '16px',
       background: bg,
@@ -178,7 +178,6 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
   const left  = pct(s, rangeStart, totalMs);
   const right = pct(e, rangeStart, totalMs);
   const hasBar = s && e && totalMs > 0;
-
   const barBg     = token('color.background.accent.blue.subtle', '#CCE0FF');
   const barBorder = token('color.border.accent.blue', 'var(--ds-link, #0C66E4)');
 
@@ -197,7 +196,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
       {/* BR key + title */}
       <div style={{ minWidth: 0 }}>
         <div style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
           color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
           fontFamily: 'ui-monospace, monospace',
@@ -207,7 +206,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
           {br.key}
         </div>
         <div style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 400,
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           overflow: 'hidden',
@@ -244,7 +243,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
 
       {/* End date */}
       <span style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 400,
         color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
         textAlign: 'right',
@@ -289,7 +288,7 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
       >
         {/* Chevron */}
         <span style={{
-          fontSize: 9,
+          fontSize: 'var(--ds-font-size-100)',
           color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
           transition: 'transform 120ms',
           transform: (hasBrs && expanded) ? 'rotate(90deg)' : 'rotate(0deg)',
@@ -301,7 +300,7 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
         <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 600,
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               letterSpacing: '-0.003em',
@@ -311,7 +310,7 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
             </span>
             {isActive && (
               <span style={{
-                fontSize: 10, fontWeight: 700,
+                fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                 color: token('color.text.information', 'var(--ds-link, #0C66E4)'),
                 background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
                 borderRadius: 3, padding: '1px 5px',
@@ -326,7 +325,7 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {section.sprints.map((sp, i) => (
                 <span key={i} style={{
-                  fontSize: 10,
+                  fontSize: 'var(--ds-font-size-50)',
                   color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                   background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
                   border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
@@ -346,12 +345,12 @@ function ReleaseSectionHeader({ section, rangeStart, totalMs, todayPct, expanded
         <ReleaseBar section={section} rangeStart={rangeStart} totalMs={totalMs} todayPct={todayPct} />
 
         {/* BR count */}
-        <span style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)') }}>
           {section.brs.length} BR{section.brs.length !== 1 ? 's' : ''}
         </span>
 
         {/* Quarter end */}
-        <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), textAlign: 'right', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), textAlign: 'right', whiteSpace: 'nowrap' }}>
           {section.qEnd ? fmtShort(section.qEnd) : '—'}
         </span>
       </div>
@@ -475,7 +474,7 @@ export function ActiveInitiativesWidget() {
   const blockedCount = sections?.flatMap(s => s.brs).filter(b => b.status === 'Blocked').length ?? 0;
 
   const LABEL_STYLE: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 600,
     color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
     letterSpacing: '0.04em',
@@ -487,7 +486,7 @@ export function ActiveInitiativesWidget() {
       title="Release Timelines"
       question="Active initiatives across release quarters"
       footerLeft={
-        <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
           {totalBrs} active BR{totalBrs !== 1 ? 's' : ''}
           {blockedCount > 0 && (
             <span style={{ color: 'var(--ds-text-accent-red-bolder, #AE2A19)', fontWeight: 600, marginLeft: 8 }}>
@@ -500,7 +499,7 @@ export function ActiveInitiativesWidget() {
         <a
           href="#"
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: token('color.link', 'var(--ds-link, #0C66E4)'),
             textDecoration: 'none',
@@ -517,7 +516,7 @@ export function ActiveInitiativesWidget() {
           ))}
         </div>
       ) : !sections?.length ? (
-        <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), fontSize: 13 }}>
+        <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), fontSize: 'var(--ds-font-size-300)' }}>
           No active initiatives scheduled across release quarters.
         </div>
       ) : (
@@ -568,7 +567,7 @@ export function ActiveInitiativesWidget() {
               {expandedSections.has(sec.quarter) && (
                 <div style={{ paddingBottom: 6 }}>
                   {sec.brs.length === 0 ? (
-                    <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), paddingLeft: 16, paddingTop: 4 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'), paddingLeft: 16, paddingTop: 4 }}>
                       No active BRs in this quarter
                     </div>
                   ) : (

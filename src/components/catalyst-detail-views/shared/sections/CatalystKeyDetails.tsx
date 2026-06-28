@@ -69,7 +69,7 @@ export function KeyDetailsFieldRow({
           Narrow containers (panel mode) shrink label to 120px via ResizeObserver. */}
       <Inline space={isNarrow ? 'space.200' : 'space.800'} alignBlock={alignBlock}>
         <span style={{
-          fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
+          fontSize: 'var(--ds-font-size-400)', fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
           minWidth: isNarrow ? 120 : 320, flexShrink: 0,
         }}>{label}</span>
         <div
@@ -221,7 +221,7 @@ export function CatalystKeyDetails({
         </Tooltip>
         <h2
           onClick={() => setCollapsed(!collapsed)}
-          style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', cursor: 'pointer' }}
+          style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', cursor: 'pointer' }}
         >
           Key details
         </h2>

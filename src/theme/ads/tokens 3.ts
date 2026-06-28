@@ -74,7 +74,7 @@ export const adsTokens = {
      * hubPage — outer page background for <AtlaskitPageShell>.
      *
      * Apr 19, 2026 (V3 — White Canvas):
-     *   Light mode moved from Jira-blue #E9F2FE to var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) on Vikram's
+     *   Light mode moved from Jira-blue var(--ds-background-selected, #E9F2FE) to var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) on Vikram's
      *   decision (dashboard read as a "grey/blue tint" next to backlog;
      *   backlog's mostly-white content had been masking the same frame).
      *   Decision: flatten project-hub surfaces to a single white canvas.
@@ -82,23 +82,23 @@ export const adsTokens = {
      *   scroll clipping and layout continue working — they just become
      *   white-on-white and visually invisible.
      *
-     *   Pre-V3 (historical): #E9F2FE — Jira BAU list DOM rgb(233,242,254)
+     *   Pre-V3 (historical): var(--ds-background-selected, #E9F2FE) — Jira BAU list DOM rgb(233,242,254)
      *   measured 2026-04-18.
      *
-     * Dark mode continues to mirror DARK MODE page bg #0A0A0A (CLAUDE.md §18).
+     * Dark mode continues to mirror DARK MODE page bg var(--ds-text, #0A0A0A) (CLAUDE.md §18).
      */
     hubPage:  { cp: '--cp-bg-hub-page', light: 'var(--ds-surface, #FFFFFF)', dark: 'var(--ds-surface, #FFFFFF)', atlaskit: '' } satisfies AdsToken,
     surface:  { cp: '--cp-bg-surface',  light: 'var(--ds-surface, #FFFFFF)', dark: 'var(--ds-surface, #FFFFFF)', atlaskit: 'elevation.surface' } satisfies AdsToken,
     overlay:  { cp: '--cp-bg-overlay',  light: 'var(--ds-surface-sunken, #F8FAFC)', dark: 'var(--ds-text, #172B4D)', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
     inset:    { cp: '--cp-bg-inset',    light: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
-    hover:    { cp: '--cp-interact-hover',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.04))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
+    hover:    { cp: '--cp-interact-hover',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.04))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
     // 2026-05-01 — RCA fix for blue tint on Atlaskit Editor canvas in dark mode.
     // Previously dark = rgba(37,99,235,0.14) which painted Editor's "selected"
     // canvas state as a visible blue rectangle. ADS canonical dark value for
     // color.background.selected is #1C2B41 (atlassian.design — Jira parity).
     // Light kept at the original Catalyst tint per existing UI specs.
-    selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information, rgba(37,99,235,0.08))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.selected' } satisfies AdsToken,
-    pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.08))', dark: 'var(--ds-text, #172B4D)', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
+    selected: { cp: '--cp-interact-selected', light: 'var(--ds-background-information, rgba(37,99,235,0.08))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.selected' } satisfies AdsToken,
+    pressed:  { cp: '--cp-interact-press',    light: 'var(--ds-shadow-raised, rgba(0,0,0,0.08))', dark: 'var(--ds-text, var(--ds-text, #172B4D))', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
   },
   text: {
     primary:   { cp: '--cp-text-primary',   light: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', dark: 'var(--ds-background-neutral, #F1F2F4)', atlaskit: 'color.text' } satisfies AdsToken,
@@ -138,7 +138,7 @@ export const adsTokens = {
     bug:         { cp: '--cp-wi-bug',         light: 'var(--ds-background-danger-bold, #C9372C)', dark: 'var(--ds-background-danger-bold, #C9372C)', atlaskit: '' } satisfies AdsToken,
     story:       { cp: '--cp-wi-story',       light: 'var(--ds-background-success-bold, #1F845A)', dark: 'var(--ds-background-success-bold, #1F845A)', atlaskit: '' } satisfies AdsToken,
     task:        { cp: '--cp-wi-task',        light: 'var(--ds-background-information-bold, #1D7AFC)', dark: 'var(--ds-background-information-bold, #1D7AFC)', atlaskit: '' } satisfies AdsToken,
-    epic:        { cp: '--cp-wi-epic',        light: '#904EE2', dark: '#904EE2', atlaskit: '' } satisfies AdsToken,
+    epic:        { cp: '--cp-wi-epic',        light: 'var(--ds-background-discovery-bold, #904EE2)', dark: 'var(--ds-background-discovery-bold, #904EE2)', atlaskit: '' } satisfies AdsToken,
     subtask:     { cp: '--cp-wi-subtask',     light: 'var(--ds-background-information-bold, #1D7AFC)', dark: 'var(--ds-background-information-bold, #1D7AFC)', atlaskit: '' } satisfies AdsToken,
     newFeature:  { cp: '--cp-wi-new-feature', light: 'var(--ds-background-success-bold, #1F845A)', dark: 'var(--ds-background-success-bold, #1F845A)', atlaskit: '' } satisfies AdsToken,
     improvement: { cp: '--cp-wi-improvement', light: 'var(--ds-background-information-bold, #1D7AFC)', dark: 'var(--ds-background-information-bold, #1D7AFC)', atlaskit: '' } satisfies AdsToken,

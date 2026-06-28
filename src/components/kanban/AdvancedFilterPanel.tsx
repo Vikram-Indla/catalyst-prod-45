@@ -195,12 +195,12 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       }}>
         <div className="flex items-center gap-2">
           <Filter size={15} color="var(--ds-text-subtle, #42526E)" />
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', letterSpacing: '-0.01em' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', letterSpacing: '-0.01em' }}>
             Advanced Filters
           </span>
           {activeCount > 0 && (
             <span style={{
-              fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, #fff)',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-surface, #fff)',
               background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '2px 8px',
               lineHeight: '16px',
             }}>{activeCount}</span>
@@ -209,7 +209,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         <div className="flex items-center gap-2">
           {activeCount > 0 && (
             <button onClick={clearAll} style={{
-              fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'none', border: 'none',
+              fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'none', border: 'none',
               cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap4,
             }}>
               <Trash2 size={13} /> Clear all
@@ -310,7 +310,7 @@ function MultiSelectFilterSection({
         className="flex items-center justify-between w-full"
         style={{
           padding: '12px 20px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+          cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
@@ -320,7 +320,7 @@ function MultiSelectFilterSection({
           {label}
           {selected.length > 0 && (
             <span style={{
-              fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface, #fff)',
               background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '4px 8px',
               lineHeight: '16px',
             }}>{selected.length}</span>
@@ -342,7 +342,7 @@ function MultiSelectFilterSection({
                 style={{
                   width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
                   border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4,
-                  fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'var(--ds-surface-sunken, #FAFBFC)',
+                  fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'var(--ds-surface-sunken, #FAFBFC)',
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
                 }}
                 onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))')}
@@ -382,7 +382,7 @@ function MultiSelectFilterSection({
               );
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: '10px 4px', fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>No results</div>
+              <div style={{ padding: '10px 4px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)' }}>No results</div>
             )}
           </div>
         </div>
@@ -413,7 +413,7 @@ function DateRangeFilterSection({
         className="flex items-center justify-between w-full"
         style={{
           padding: '12px 20px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+          cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
@@ -423,7 +423,7 @@ function DateRangeFilterSection({
           {label}
           {hasValue && (
             <span style={{
-              fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface, #fff)',
               background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '4px 8px',
               lineHeight: '16px',
             }}>1</span>
@@ -443,7 +443,7 @@ function DateRangeFilterSection({
               onChange={onChangeAfter}
               tk={tk}
             />
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)', fontWeight: 500 }}>—</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)', fontWeight: 500 }}>—</span>
             <DatePickerBtn
               label="Before"
               value={before}
@@ -455,7 +455,7 @@ function DateRangeFilterSection({
             <button
               onClick={() => { onChangeAfter(null); onChangeBefore(null); }}
               style={{
-                fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'none', border: 'none',
+                fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'none', border: 'none',
                 cursor: 'pointer', padding: 0, fontWeight: 500,
               }}
             >Clear dates</button>
@@ -482,7 +482,7 @@ function DatePickerBtn({
           display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap4,
           height: 28, padding: '0 8px', borderRadius: 4,
           border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
-          cursor: 'pointer', fontSize: 11, color: value ? tk.textPrimary : tk.textMuted,
+          cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', color: value ? tk.textPrimary : tk.textMuted,
           fontFamily: 'var(--cp-font-body)', flex: 1, minWidth: 0,
         }}>
           <CalendarIcon size={12} />

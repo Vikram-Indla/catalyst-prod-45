@@ -144,7 +144,7 @@ export function CatyAiSearch({
           background: "transparent",
           boxShadow: "none",
           font: "inherit",
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: "var(--ds-text, #292A2E)",
           textAlign: isRtl ? "right" : "left",
           appearance: "none",
@@ -181,7 +181,7 @@ export function CatyAiSearch({
           aria-hidden="true"
           style={{
             flexShrink: 0,
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             color: "var(--ds-text-subtlest, #6B778C)",
             border: "0.5px solid var(--ds-border, #DFE1E6)",
             borderRadius: 4,

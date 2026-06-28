@@ -9,7 +9,7 @@
 export const AVATAR_COLORS = [
   'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
   'var(--ds-chart-teal-bold, #0d9488)', // Teal
-  '#0369a1', // Sky-dark
+  'var(--ds-link, #0369a1)', // Sky-dark
   'var(--ds-text-warning, #d97706)', // Amber
   'var(--ds-link, #0C66E4)', // Cyan
   'var(--ds-link-pressed, #1e40af)', // Blue-dark

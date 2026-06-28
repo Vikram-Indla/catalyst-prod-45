@@ -52,7 +52,7 @@ function ColHeader({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 653,
         color: 'var(--ds-text-subtlest, #6B778C)',
         padding: '8px 0',
@@ -76,7 +76,7 @@ function Cell({
   return (
     <div
       style={{
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: 'var(--ds-text, #172B4D)',
         padding: '10px 0',
         borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
@@ -183,7 +183,7 @@ export default function DefectsPage() {
           >
             <div
               style={{
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600,
                 color: 'var(--ds-text, #172B4D)',
                 marginBottom: 12,
@@ -198,7 +198,7 @@ export default function DefectsPage() {
                 htmlFor="defect-title"
                 style={{
                   display: 'block',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--ds-text-subtle, #42526E)',
                   marginBottom: 4,
@@ -216,7 +216,7 @@ export default function DefectsPage() {
                   width: '100%',
                   boxSizing: 'border-box',
                   padding: '8px 10px',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontFamily: 'var(--ds-font-family-body)',
                   color: 'var(--ds-text, #172B4D)',
                   background: 'var(--ds-surface, #FFFFFF)',
@@ -233,7 +233,7 @@ export default function DefectsPage() {
                 htmlFor="defect-severity"
                 style={{
                   display: 'block',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--ds-text-subtle, #42526E)',
                   marginBottom: 4,
@@ -249,7 +249,7 @@ export default function DefectsPage() {
                 }
                 style={{
                   padding: '8px 10px',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontFamily: 'var(--ds-font-family-body)',
                   color: 'var(--ds-text, #172B4D)',
                   background: 'var(--ds-surface, #FFFFFF)',
@@ -273,7 +273,7 @@ export default function DefectsPage() {
                 htmlFor="defect-description"
                 style={{
                   display: 'block',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--ds-text-subtle, #42526E)',
                   marginBottom: 4,
@@ -291,7 +291,7 @@ export default function DefectsPage() {
                   width: '100%',
                   boxSizing: 'border-box',
                   padding: '8px 10px',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontFamily: 'var(--ds-font-family-body)',
                   color: 'var(--ds-text, #172B4D)',
                   background: 'var(--ds-surface, #FFFFFF)',
@@ -307,7 +307,7 @@ export default function DefectsPage() {
               <div
                 style={{
                   marginBottom: 12,
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-danger, #AE2A19)',
                 }}
               >
@@ -353,10 +353,10 @@ export default function DefectsPage() {
               color: 'var(--ds-text-subtlest, #6B778C)',
             }}
           >
-            <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, marginBottom: 8 }}>
               No defects found
             </div>
-            <div style={{ fontSize: 14, marginBottom: 16 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', marginBottom: 16 }}>
               Defects are tracked here when they are reported during test execution.
             </div>
             <Button appearance="primary" onClick={() => setShowCreate(true)}>
@@ -370,7 +370,7 @@ export default function DefectsPage() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '120px 1fr 110px 110px 160px 160px 120px',
+              gridTemplateColumns: '120px 1fr 110px 110px 160px 160px 140px 120px',
               columnGap: 16,
             }}
             role="table"
@@ -383,6 +383,7 @@ export default function DefectsPage() {
             <ColHeader>Status</ColHeader>
             <ColHeader>Linked test run</ColHeader>
             <ColHeader>Assigned to</ColHeader>
+            <ColHeader>Sprint</ColHeader>
             <ColHeader>Created</ColHeader>
 
             {/* Data rows */}
@@ -435,7 +436,7 @@ export default function DefectsPage() {
                     {defect.run_id ? (
                       <span
                         style={{
-                          fontSize: 12,
+                          fontSize: 'var(--ds-font-size-200)',
                           color: 'var(--ds-link, #0052CC)',
                         }}
                       >
@@ -449,6 +450,11 @@ export default function DefectsPage() {
                     {defect.assignee?.full_name ??
                       defect.jira_assignee_name ??
                       '—'}
+                  </Cell>
+                  <Cell>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
+                      {(defect as any).sprint?.name ?? '—'}
+                    </span>
                   </Cell>
                   <Cell>{createdDate ?? '—'}</Cell>
                 </React.Fragment>

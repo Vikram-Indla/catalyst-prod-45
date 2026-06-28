@@ -164,13 +164,13 @@ export function UWVToolbar({
       }}
     >
       {statusGroups.length === 0 ? (
-        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>No statuses available</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #505258)' }}>No statuses available</div>
       ) : (
         statusGroups.map((group: any) => (
           <div key={group.label} style={{ marginBottom: 12 }}>
             <div
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 color: 'var(--ds-text-subtle, #505258)',
                 textTransform: 'uppercase',
@@ -226,7 +226,7 @@ export function UWVToolbar({
         <IconButton icon={CloseGlyph as any} label="Close" appearance="subtle" onClick={onClose} />
         <span
           style={{
-            fontSize: 15,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 600,
             color: 'var(--ds-text, #292A2E)',
             marginLeft: 8,
@@ -293,7 +293,7 @@ export function UWVToolbar({
                     border: `1px solid ${active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
                     background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, #505258)',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
@@ -396,7 +396,7 @@ export function UWVToolbar({
           />
           <label
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--ds-text-subtle, #505258)',
               display: 'inline-flex',
               alignItems: 'center',

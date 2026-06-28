@@ -62,7 +62,7 @@ function StatusLozenge({ status }: { status: string }) {
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',
       padding: '0 6px', borderRadius: 4,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
       background: bg, color: text,
       fontFamily: 'var(--cp-font-body)',
     }}>
@@ -117,7 +117,7 @@ export function JiraSyncDrawer({
           borderBottom: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)', margin: 0 }}>
+          <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)', margin: 0 }}>
             Jira Sync Log
           </h2>
           <button onClick={onClose} style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', color: 'var(--fg-3)' }}>
@@ -129,16 +129,16 @@ export function JiraSyncDrawer({
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {/* Current Status */}
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Current Status
             </div>
             <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
               <span className="bg-[var(--sem-success)]" style={{ width: 8, height: 8, borderRadius: '50%', display: 'inline-block' }} />
-              <span style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500 }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontWeight: 500 }}>
                 Connected to {jiraProjectKey || projectKey}
               </span>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--fg-3)', marginBottom: 12 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginBottom: 12 }}>
               Last sync: {relativeTime(lastSyncedAt)}
             </div>
             <button
@@ -148,7 +148,7 @@ export function JiraSyncDrawer({
               style={{
                 height: 32, padding: '0 14px', borderRadius: 4,
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
-                fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
                 cursor: isSyncing ? 'not-allowed' : 'pointer',
               }}
             >
@@ -162,13 +162,13 @@ export function JiraSyncDrawer({
 
           {/* Recent Sync Runs */}
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Recent Sync Runs
             </div>
             {syncLogs.length === 0 ? (
               <div className="flex flex-col items-center py-6">
                 <Inbox size={24} style={{ color: 'var(--divider)', marginBottom: 6 }} />
-                <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>No sync runs yet</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>No sync runs yet</span>
               </div>
             ) : (
               syncLogs.map(log => (
@@ -180,10 +180,10 @@ export function JiraSyncDrawer({
                   {log.status === 'completed' ? <CheckCircle2 size={14} style={{ color: 'var(--sem-success)', flexShrink: 0 }} />
                     : log.status === 'failed' ? <AlertCircle size={14} style={{ color: 'var(--sem-danger)', flexShrink: 0 }} />
                     : <Clock size={14} style={{ color: 'var(--cp-blue)', flexShrink: 0 }} />}
-                  <span style={{ fontSize: 11, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)', minWidth: 90 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)', minWidth: 90 }}>
                     {formatDate(log.startedAt)}
                   </span>
-                  <span style={{ fontSize: 11, color: 'var(--fg-3)', flex: 1 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', flex: 1 }}>
                     {log.itemsSynced} items synced
                     {log.conflictsFound > 0 && <span style={{ color: 'var(--sem-danger)' }}> · {log.conflictsFound} conflicts</span>}
                   </span>
@@ -198,13 +198,13 @@ export function JiraSyncDrawer({
 
           {/* Write-back Queue */}
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Write-back Queue ({writeBackQueue.length})
             </div>
             {writeBackQueue.length === 0 ? (
               <div className="flex flex-col items-center py-6">
                 <Inbox size={24} style={{ color: 'var(--divider)', marginBottom: 6 }} />
-                <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>No pending write-backs</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>No pending write-backs</span>
               </div>
             ) : (
               writeBackQueue.map(item => (
@@ -214,8 +214,8 @@ export function JiraSyncDrawer({
                   style={{ height: 50, borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.07))' }}
                 >
                   <div>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-2)' }}>{item.fieldName}</span>
-                    <span style={{ fontSize: 11, color: 'var(--fg-3)' }}> → {item.newValue}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)' }}>{item.fieldName}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}> → {item.newValue}</span>
                   </div>
                   <button
                     onClick={() => onApproveWriteBack(item.id)}
@@ -223,7 +223,7 @@ export function JiraSyncDrawer({
                     style={{
                       height: 24, padding: '0 8px', borderRadius: 4,
                       border: '0.75px solid var(--divider)', background: 'none',
-                      fontSize: 10, fontWeight: 600, color: 'var(--fg-2)',
+                      fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-2)',
                       fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
                     }}
                   >

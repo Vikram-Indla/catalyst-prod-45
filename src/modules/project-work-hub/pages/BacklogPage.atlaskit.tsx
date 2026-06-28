@@ -130,6 +130,7 @@ import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog
 // Shared with the AllWork toolbar so both surfaces read identically.
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { useProject } from '@/hooks/useProjects';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 // Apr 28, 2026 (carryover #9): Star/Unstar persisted via the canonical
 // starred_items table chokepoint. Replaces the prior local useState toggle
@@ -137,6 +138,7 @@ import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useStarredItems } from '@/hooks/useStarredItems';
 import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
+import { CatalystSideDrawer } from '@/components/catalyst-detail-views';
 import type { RequestRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { STORY_STATUS_LOZENGE, getPriorityLabel, shouldSynthesizeEpicRow, keyCellIconType, flattenTree } from '../utils/backlog.utils';
@@ -776,6 +778,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   }, [dbStatuses]);
   const STATUS_OPTIONS = dataSource?.statusOptions ?? (dbStatusOptions.length > 0 ? dbStatusOptions : DEFAULT_STATUS_OPTIONS);
   const ALL_BACKLOG_STATUSES = dataSource?.allStatuses ?? DEFAULT_ALL_BACKLOG_STATUSES;
+  // Story status filter options come from the canonical ph_wf_* workflow (18
+  // canonical labels), unioned with remaining legacy statuses so non-Story
+  // types stay filterable. Canonical labels are listed first.
+  const canonicalStoryWf = useCanonicalIssueWorkflow('Story');
+  const STATUS_FILTER_OPTIONS = useMemo(() => {
+    const canon = canonicalStoryWf.statusGroups.flatMap((g) => g.statuses);
+    return Array.from(new Set([...canon, ...ALL_BACKLOG_STATUSES]));
+  }, [canonicalStoryWf.statusGroups, ALL_BACKLOG_STATUSES]);
   const statusAppearance = dataSource?.statusAppearance ?? defaultStatusAppearance;
   const statusLabel = dataSource?.statusLabel ?? defaultStatusLabel;
   // Resolve the effective allowed-column-ids list. The dataSource adapter
@@ -2205,7 +2215,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             {!isOrphan && parentKey && (
               <span style={{
                 fontFamily: 'var(--cp-font-mono)',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtle, #42526E)',
                 fontWeight: 600,
                 flexShrink: 0,
@@ -2245,6 +2255,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // direct URL access; from a row inside the backlog the panel is the path.
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; key: string | null } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
+
+  // Key-cell click target: floating modal (CatalystSideDrawer without panelMode).
+  // Sidebar-icon click target stays on openDetail (right-side panel).
+  const [modalItem, setModalItem] = useState<{ id: string; itemType: string; key: string | null } | null>(null);
+  const closeModal = useCallback(() => setModalItem(null), []);
 
   // Detail panel width (Jira-parity: panel is drag-resizable, value persisted per project).
   // Drag handle + chrome lives in <CatalystDetailPanel>; this surface only owns the width
@@ -2328,6 +2343,37 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       key: it.key ?? null,
     });
   }, [projectKey, dataSource, resolvedBaseUrl, navigate]);
+
+  // Key-cell click: open floating modal via CatalystSideDrawer (no panelMode).
+  // Mirrors openDetail's entityKind short-circuits (release/test_case/defect
+  // navigate to dedicated detail pages — no modal surface for those kinds).
+  const openModal = useCallback((it: BacklogItem) => {
+    if (dataSource?.entityKind === 'release') {
+      navigate(`/release-hub/${it.id}`);
+      return;
+    }
+    if (dataSource?.entityKind === 'test_case') {
+      navigate(`/testhub/repository?case=${it.id}`);
+      return;
+    }
+    if (dataSource?.entityKind === 'defect') {
+      navigate(`/testhub/defects/${it.id}`);
+      return;
+    }
+    const sourceIsBiz = dataSource && (it as any).source === BIZ_SOURCE;
+    const rawType = (it.type as string) || 'story';
+    let itemType = rawType;
+    if (sourceIsBiz) {
+      const override = dataSource?.resolveItemType?.(it as any);
+      itemType = override || 'business_request';
+    } else if (rawType === 'bug') itemType = 'defect';
+    else if (rawType === 'initiative') itemType = 'business_request';
+    setModalItem({
+      id: (it as any).issue_key || it.id,
+      itemType,
+      key: it.key ?? null,
+    });
+  }, [dataSource, navigate]);
 
   /* 2026-06-17: open the panel on first render when the caller asks for
      it (e.g. /tasks/list?openTask=<id> landing from the "Open in full
@@ -2673,7 +2719,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       cell: (() => {
         const keyCellRenderer = makeKeyCell(
           (r: BacklogItem) => r.key,
-          (r: BacklogItem) => openDetail(r),
+          (r: BacklogItem) => openModal(r),
           /* 2026-06-16: key-cell href (used by middle-click "open in new
              tab"). For biz-source rows (adapter-owned routing, e.g.
              incident hub), return undefined so middle-click is a no-op
@@ -2707,7 +2753,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   borderRadius: 3,
                   background: bg,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
-                  fontSize: 10,
+                  fontSize: 'var(--ds-font-size-50)',
                   fontWeight: 700,
                 }}
               >
@@ -2842,6 +2888,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // for future experiments once the upstream surface bug is root-caused.
       cell: makeStatusEditCell<BacklogItem>({
         getStatus: (r) => r.status,
+        // Per-row canonical routing: Story rows source options/labels from
+        // ph_wf_* (canonical transitions); all other types keep ALL_BACKLOG_STATUSES.
+        getIssueType: (r) => r.issue_type,
         options: ALL_BACKLOG_STATUSES,
         appearanceFor: (s) => statusAppearance(s) as LozengeAppearance,
         // 2026-06-01 (catalyst-clone): when an adapter provides statusLabel
@@ -2861,7 +2910,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       renderFilterMenu: (close) => (
         <ColumnFilterMultiSelect
           title="Status"
-          options={ALL_BACKLOG_STATUSES}
+          options={STATUS_FILTER_OPTIONS}
           selected={filterValue.status}
           onChange={(next) => setFilterValue((p) => ({ ...p, status: next }))}
           onClose={close}
@@ -4133,7 +4182,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           padding: '0 12px',
           marginLeft: 8,
           color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           whiteSpace: 'nowrap',
         }}>
@@ -4349,7 +4398,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               if (!showHierarchy) return 0;
               return depthById.get(r.id) ?? 0;
             }}
-            onRowClick={openDetail}
+            /* Row body click: no-op. Only the Summary cell's hover-sidebar
+               icon opens the right-side panel; the Key cell opens the modal.
+               Other column body click → nothing per Vikram 2026-06-28 spec. */
             selectable
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
@@ -4423,7 +4474,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 </div>
                 <div style={{
                   display: 'block',
-                  fontSize: 16,
+                  fontSize: 'var(--ds-font-size-500)',
                   fontWeight: 600,
                   color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, var(--ds-text, #172B4D)))'),
                   marginBottom: 8,
@@ -4433,7 +4484,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 </div>
                 <div style={{
                   display: 'block',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))'),
                   textAlign: 'center',
@@ -4452,7 +4503,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       display: 'inline-flex',
                       alignItems: 'center',
                       padding: '4px 12px',
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 500,
                       color: token('color.link', 'var(--ds-link, #0C66E4)'),
                       background: 'transparent',
@@ -4536,6 +4587,18 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             />
           );
         })()}
+        {/* Key-click → floating modal. Same router, no panelMode → modal chrome. */}
+        {modalItem && (
+          <CatalystSideDrawer
+            isOpen
+            onClose={closeModal}
+            itemId={modalItem.id}
+            itemType={modalItem.itemType}
+            entityKind={dataSource?.entityKind}
+            projectKey={projectKey ?? ''}
+            projectId={projectId}
+          />
+        )}
       </div>
 
       {/* Atlaskit-native Edit modal (replaces shadcn Dialog wrapper).
@@ -4697,11 +4760,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     <span style={{
                       width: 24, height: 24, borderRadius: '50%',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 12, fontWeight: 700,
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 700,
                       background: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
                       color: bulkWizardStep >= s ? 'var(--ds-text-inverse, #fff)' : 'var(--ds-text-subtle, #42526E)',
                     }}>{s}</span>
-                    <span style={{ fontSize: 12, color: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, #7A869A)', fontWeight: 500 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: bulkWizardStep >= s ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, #7A869A)', fontWeight: 500 }}>
                       {s === 1 ? 'Choose action' : 'Configure & confirm'}
                     </span>
                     {s < 2 && <span style={{ flex: 1, height: 1, background: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))' }} />}
@@ -4737,8 +4800,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                         style={{ marginTop: 4, accentColor: 'var(--ds-link, #0C66E4)' }}
                       />
                       <div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 4 }}>{opt.label}</div>
-                        <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))' }}>{opt.description}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #292A2E)', marginBottom: 4 }}>{opt.label}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--ds-icon, #44546F)))' }}>{opt.description}</div>
                       </div>
                     </label>
                   ))}
@@ -4981,7 +5044,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   border: 'none',
                   background: 'transparent',
                   textAlign: 'left',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   fontFamily: 'inherit',
                   color: (item as any).danger
@@ -5062,7 +5125,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               id="add-people-modal-title"
               style={{
                 margin: 0,
-                fontSize: 20,
+                fontSize: 'var(--ds-font-size-700)',
                 fontWeight: 653,
                 letterSpacing: '-0.003em',
                 color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -5104,7 +5167,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 htmlFor="add-people-emails"
                 style={{
                   display: 'block',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                   marginBottom: 4,
@@ -5125,7 +5188,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               <label
                 style={{
                   display: 'block',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                   marginBottom: 4,
@@ -5152,7 +5215,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   borderRadius: 3,
                   background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                   color: token('color.text', 'var(--ds-text, #172B4D)'),
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   fontFamily: 'inherit',
                   cursor: 'pointer',
@@ -5165,7 +5228,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             <p
               style={{
                 margin: 0,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               }}
             >
@@ -5307,7 +5370,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               id="linked-teams-modal-title"
               style={{
                 margin: 0,
-                fontSize: 20,
+                fontSize: 'var(--ds-font-size-700)',
                 fontWeight: 653,
                 letterSpacing: '-0.003em',
                 color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -5333,7 +5396,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
           {/* Body — Jira copy adapted: "space" → "project". */}
           <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text, #172B4D)') }}>
               Add the teams that work in this project, so everyone knows who to go to for help.
             </p>
             <Textfield
@@ -5427,7 +5490,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             <h2
               id="archive-project-modal-title"
               style={{
-                margin: 0, fontSize: 20, fontWeight: 653,
+                margin: 0, fontSize: 'var(--ds-font-size-700)', fontWeight: 653,
                 letterSpacing: '-0.003em',
                 color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
               }}
@@ -5437,7 +5500,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           </div>
 
           <div style={{ padding: '0 24px 16px' }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px' }}>
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px' }}>
               <strong>{pageTitle}</strong> will be archived. Issues stay accessible from search and links, but the project disappears from the active projects list. You can unarchive it later.
             </p>
           </div>
@@ -5513,7 +5576,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             <h2
               id="delete-project-modal-title"
               style={{
-                margin: 0, fontSize: 20, fontWeight: 653,
+                margin: 0, fontSize: 'var(--ds-font-size-700)', fontWeight: 653,
                 letterSpacing: '-0.003em',
                 color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
               }}
@@ -5523,7 +5586,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           </div>
 
           <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px' }}>
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text, #172B4D)'), lineHeight: '20px' }}>
               This will permanently delete <strong>{pageTitle}</strong> and all of its issues, releases, and sprints. This action cannot be undone.
             </p>
             <div>
@@ -5531,7 +5594,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 htmlFor="delete-project-confirm"
                 style={{
                   display: 'block',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                   marginBottom: 4,
@@ -5624,7 +5687,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               id="project-background-picker-title"
               style={{
                 margin: 0,
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 653,
                 color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
@@ -5650,7 +5713,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           <div style={{ padding: '8px 16px 12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
             {/* Solid colors section */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), marginBottom: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), marginBottom: 8 }}>
                 Solid colors
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
@@ -5697,7 +5760,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
             {/* Gradients section */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), marginBottom: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'), marginBottom: 8 }}>
                 Gradients
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
@@ -5916,10 +5979,10 @@ function GroupByControl({
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
-          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
-          background: (isOpen || value !== 'none') ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-          color: (isOpen || value !== 'none') ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
-          fontSize: 13,
+          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', 'var(--ds-link, var(--ds-link, #0C66E4))') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
+          background: (isOpen || value !== 'none') ? token('color.background.selected', 'var(--ds-background-selected, var(--ds-background-information, #E9F2FF))') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+          color: (isOpen || value !== 'none') ? token('color.text.selected', 'var(--ds-link, var(--ds-link, #0C66E4))') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           fontFamily: 'inherit',
           cursor: 'pointer',
@@ -5952,7 +6015,7 @@ function GroupByControl({
             padding: '8px 0',
             zIndex: 9999,
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         >
           {OPTIONS.map((opt, i) => {
@@ -5980,9 +6043,9 @@ function GroupByControl({
                     : focused
                       ? token('color.background.neutral.subtle.hovered', '#091E4208')
                       : 'transparent',
-                  color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                  color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                   fontWeight: active ? 500 : 400,
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontFamily: 'inherit',
                   textAlign: 'left',
                   cursor: 'pointer',
@@ -6091,12 +6154,12 @@ function ColumnFilterMultiSelect({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 220 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px' }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{title}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{title}</span>
         {selected.length > 0 && (
           <button
             type="button"
             onClick={() => onChange([])}
-            style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 12, cursor: 'pointer', padding: '4px 4px' }}
+            style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 'var(--ds-font-size-200)', cursor: 'pointer', padding: '4px 4px' }}
           >Clear</button>
         )}
       </div>
@@ -6106,7 +6169,7 @@ function ColumnFilterMultiSelect({
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search…"
         style={{
-          padding: '4px 8px', fontSize: 13,
+          padding: '4px 8px', fontSize: 'var(--ds-font-size-300)',
           border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
           outline: 'none', fontFamily: 'inherit',
         }}
@@ -6114,7 +6177,7 @@ function ColumnFilterMultiSelect({
       />
       <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {filtered.length === 0 && (
-          <div style={{ padding: '8px 8px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>No matches</div>
+          <div style={{ padding: '8px 8px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B6E76)' }}>No matches</div>
         )}
         {filtered.map((opt) => {
           const isChecked = selected.includes(opt);
@@ -6123,7 +6186,7 @@ function ColumnFilterMultiSelect({
               key={opt}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '8px 8px', cursor: 'pointer', fontSize: 14,
+                padding: '8px 8px', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)',
                 borderRadius: 3,
                 background: isChecked ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
               }}
@@ -6145,7 +6208,7 @@ function ColumnFilterMultiSelect({
           onClick={onClose}
           style={{
             border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'transparent',
-            padding: '4px 12px', borderRadius: 3, cursor: 'pointer', fontSize: 13,
+            padding: '4px 12px', borderRadius: 3, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
           }}
         >Done</button>
       </div>
@@ -6485,7 +6548,7 @@ function InlineGroupCreateRow({
             borderRadius: 3,
             background: 'transparent',
             color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'inherit',
             cursor: 'pointer',
             flexShrink: 0,
@@ -6516,7 +6579,7 @@ function InlineGroupCreateRow({
               padding: '8px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             {types.map((t, i) => {
@@ -6550,9 +6613,9 @@ function InlineGroupCreateRow({
                     // selected AND hovered/focused states (Jira parity). boxShadow
                     // inset doesn't shift layout, so content alignment is preserved.
                     boxShadow: highlight ? 'inset 3px 0 0 0 var(--ds-border-focused, #0C66E4)' : undefined,
-                    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, #172B4D)'),
+                    color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
                     fontWeight: active ? 500 : 400,
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontFamily: 'inherit',
                     textAlign: 'left',
                     cursor: 'pointer',
@@ -6581,7 +6644,7 @@ function InlineGroupCreateRow({
           border: 'none',
           outline: 'none',
           background: 'transparent',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           fontFamily: 'inherit',
         }}
@@ -6648,7 +6711,7 @@ function InlineGroupCreateRow({
               fontFamily: 'var(--cp-font-body)',
             }}
           >
-            <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 8 }}>
               Due date
             </div>
             <div style={{ position: 'relative', marginBottom: 12 }}>
@@ -6666,7 +6729,7 @@ function InlineGroupCreateRow({
                   width: '100%',
                   height: 32,
                   padding: '0 32px 0 8px',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   border: dateInputFocused
                     ? `2px solid ${token('color.border.focused', 'var(--ds-link, #0C66E4)')}`
                     : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
@@ -6709,30 +6772,30 @@ function InlineGroupCreateRow({
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto auto 1fr auto auto', alignItems: 'center', gap: 4, marginBottom: 8 }}>
               <button type="button" aria-label="Previous year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() - 1, d.getMonth(), 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1, borderRadius: 3 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >«</button>
               <button type="button" aria-label="Previous month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1, borderRadius: 3 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >‹</button>
-              <span style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{monthLabel}</span>
+              <span style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{monthLabel}</span>
               <button type="button" aria-label="Next month" onClick={() => setDisplayMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1, borderRadius: 3 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >›</button>
               <button type="button" aria-label="Next year" onClick={() => setDisplayMonth(d => new Date(d.getFullYear() + 1, d.getMonth(), 1))}
-                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 16, lineHeight: 1, borderRadius: 3 }}
+                style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-500)', lineHeight: 1, borderRadius: 3 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-border, #DFE1E6)'); }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >»</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-                <div key={d} style={{ fontSize: 11, fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>{d}</div>
+                <div key={d} style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, textAlign: 'center', padding: '4px 0', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>{d}</div>
               ))}
               {dayCells.map((cell) => {
                 const highlight = cell.isSelected || (cell.isToday && !dueDate);
@@ -6749,7 +6812,7 @@ function InlineGroupCreateRow({
                         : '2px solid transparent',
                       background: 'transparent',
                       cursor: 'pointer',
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       fontFamily: 'inherit',
                       color: cell.outside
                         ? token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)')
@@ -6832,7 +6895,7 @@ function InlineGroupCreateRow({
                   padding: 8,
                   zIndex: 9999,
                   fontFamily: 'var(--cp-font-body)',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 4,
@@ -6845,7 +6908,7 @@ function InlineGroupCreateRow({
                   onChange={(e) => setAssigneeQuery(e.target.value)}
                   placeholder="Search people…"
                   style={{
-                    padding: '8px 8px', fontSize: 13,
+                    padding: '8px 8px', fontSize: 'var(--ds-font-size-300)',
                     border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                     borderRadius: 3, outline: 'none', fontFamily: 'inherit',
                   }}
@@ -6862,7 +6925,7 @@ function InlineGroupCreateRow({
                       border: 'none', outline: 'none',
                       background: assigneeIdx === -1 ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
                       color: token('color.text', 'var(--ds-text, #172B4D)'),
-                      fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
+                      fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', textAlign: 'left',
                       cursor: 'pointer', borderRadius: 3,
                     }}
                   >
@@ -6870,7 +6933,7 @@ function InlineGroupCreateRow({
                     <span>Unassigned</span>
                   </button>
                   {filteredMembers.length === 0 && assigneeQuery && (
-                    <div style={{ padding: '8px 8px', fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
+                    <div style={{ padding: '8px 8px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>
                       No matches
                     </div>
                   )}
@@ -6890,10 +6953,10 @@ function InlineGroupCreateRow({
                           border: 'none', outline: 'none',
                           background: isActive ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
                           color: token('color.text', 'var(--ds-text, #172B4D)'),
-                          fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
+                          fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', textAlign: 'left',
                           cursor: 'pointer', borderRadius: 3,
                         }}
-                        onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, #F7F8F9)'); }}
+                        onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
                         onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                       >
                         <Avatar size="xsmall" src={m.src} name={m.name} />
@@ -6926,14 +6989,14 @@ function InlineGroupCreateRow({
           color: canSubmit
             ? token('color.text.inverse', 'var(--ds-surface, #FFFFFF)')
             : token('color.text.disabled', 'var(--ds-text-subtlest, #6B6E76)'),
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           fontFamily: 'inherit',
           cursor: canSubmit ? 'pointer' : 'not-allowed',
           flexShrink: 0,
         }}
-        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', 'var(--ds-link, #0C66E4)'); }}
-        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'); }}
+        onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold.hovered', 'var(--ds-link, var(--ds-link, #0C66E4))'); }}
+        onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.background = token('color.background.brand.bold', 'var(--ds-link, var(--ds-link, #0C66E4))'); }}
       >
         <span>{isSubmitting ? 'Creating…' : 'Create'}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -7073,7 +7136,7 @@ function BottomCreateRow({
             width: '100%', height: 40, padding: '0 16px',
             border: 'none', background: 'transparent',
             color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
-            fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
+            fontSize: 'var(--ds-font-size-400)', fontWeight: 500, fontFamily: 'inherit',
             cursor: 'pointer', textAlign: 'left',
           }}
           onMouseEnter={(e) => {
@@ -7170,7 +7233,7 @@ function BottomCreateRow({
         style={{
           flex: 1, height: 28,
           border: 'none', outline: 'none',
-          fontSize: 14, lineHeight: '20px',
+          fontSize: 'var(--ds-font-size-400)', lineHeight: '20px',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           fontFamily: 'inherit', background: 'transparent',
           padding: 0, minWidth: 0,
@@ -7278,11 +7341,11 @@ function InlineCreateRow({
           width: '100%', padding: '8px 12px', marginTop: 4,
           border: '1px dashed transparent', borderRadius: 4,
           background: 'transparent', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-          fontSize: 13, fontWeight: 500, textAlign: 'left',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 500, textAlign: 'left',
           cursor: 'pointer', fontFamily: 'inherit',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
           (e.currentTarget as HTMLElement).style.borderColor = token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))');
         }}
         onMouseLeave={(e) => {
@@ -7316,7 +7379,7 @@ function InlineCreateRow({
         placeholder="What needs to be done?"
         style={{
           flex: 1, height: 28, border: 'none', outline: 'none',
-          fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: 'inherit', background: 'transparent',
+          fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text, #172B4D)'), fontFamily: 'inherit', background: 'transparent',
         }}
       />
     </div>
@@ -7406,7 +7469,7 @@ function BulkActionsBar({
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12))',
           fontFamily: 'var(--cp-font-body)',
           overflow: 'hidden',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
         }}
       >
         {/* Close (X) */}
@@ -7438,7 +7501,7 @@ function BulkActionsBar({
         <span
           style={{
             padding: '0 16px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
             letterSpacing: '-0.01em',
@@ -7464,7 +7527,7 @@ function BulkActionsBar({
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 cursor: 'pointer',
                 borderRadius: 4,
@@ -7492,7 +7555,7 @@ function BulkActionsBar({
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 cursor: 'pointer',
                 borderRadius: 4,
@@ -7510,7 +7573,7 @@ function BulkActionsBar({
         <BulkPopover label="Change status" width={240}>
           {(close) => (
             <>
-              <div style={{ padding: '8px 8px 4px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>Status</div>
+              <div style={{ padding: '8px 8px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.08em', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>Status</div>
               {statusOptions.map((opt) => (
                 <BulkMenuItem
                   key={opt.value}
@@ -7552,7 +7615,7 @@ function BulkActionsBar({
             background: 'transparent',
             border: 'none',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             cursor: isBusy ? 'default' : 'pointer',
             opacity: isBusy ? 0.5 : 1,
@@ -7650,7 +7713,7 @@ function BulkPopover({
           background: 'transparent',
           border: 'none',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-text-inverse, #FFFFFF))))',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           cursor: 'pointer',
           fontFamily: 'inherit',
@@ -7723,7 +7786,7 @@ function DetailNavIconButton({
         justifyContent: 'center',
         border: 'none',
         background: 'transparent',
-        color: isDisabled ? token('color.text.disabled', '#C1C7D0') : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
+        color: isDisabled ? token('color.text.disabled', '#C1C7D0') : token('color.text.subtle', 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))'),
         cursor: isDisabled ? 'default' : 'pointer',
         borderRadius: 3,
       }}
@@ -7751,13 +7814,13 @@ function BulkMenuItem({ onClick, children }: { onClick: () => void; children: Re
         border: 'none',
         background: 'transparent',
         color: token('color.text', 'var(--ds-text, #172B4D)'),
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily: 'inherit',
         borderRadius: 3,
       }}
-      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
     >
       {children}
@@ -7802,7 +7865,7 @@ function EditBacklogItemModal({
             </ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>
               Title
             </label>
             <Textfield
@@ -7812,7 +7875,7 @@ function EditBacklogItemModal({
               placeholder="Item title"
             />
 
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginTop: 16, marginBottom: 4 }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginTop: 16, marginBottom: 4 }}>
               Status
             </label>
             <select
@@ -7825,7 +7888,7 @@ function EditBacklogItemModal({
                 padding: '0 8px',
                 border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))')}`,
                 borderRadius: 3,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontFamily: 'inherit',
                 background: isJiraSynced ? token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                 color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -7838,7 +7901,7 @@ function EditBacklogItemModal({
             </select>
 
             {isJiraSynced && (
-              <p style={{ marginTop: 12, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontStyle: 'italic' }}>
+              <p style={{ marginTop: 12, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontStyle: 'italic' }}>
                 This item is synced from Jira and must be edited there.
               </p>
             )}
@@ -7913,7 +7976,7 @@ function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFilter
   return (
     <>
       <Button ref={triggerRef} appearance="subtle" onClick={openMenu}>
-        <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), fontSize: 13 }}>
+        <span style={{ color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), fontSize: 'var(--ds-font-size-300)' }}>
           Saved filters ({jqlFilters.length})
         </span>
       </Button>
@@ -7961,9 +8024,9 @@ function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFilter
                 onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
-                <span style={{ display: 'block', fontSize: 14 }}>{f.name}</span>
+                <span style={{ display: 'block', fontSize: 'var(--ds-font-size-400)' }}>{f.name}</span>
                 {f.description && (
-                  <span style={{ display: 'block', fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                  <span style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                     {f.description}
                   </span>
                 )}

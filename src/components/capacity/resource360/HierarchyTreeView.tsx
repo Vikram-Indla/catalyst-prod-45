@@ -46,7 +46,7 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
     const iconMap: Record<string, { icon: React.ReactNode; bg: string }> = {
       theme: { 
         icon: <Layers className="w-4 h-4 text-white" />, 
-        bg: 'bg-[#4d8b4d]' 
+        bg: 'bg-[var(--ds-background-success-bold, #4d8b4d)]' 
       },
       epic: { 
         icon: <Zap className="w-4 h-4 text-white" />, 

@@ -98,7 +98,7 @@ export default function AssignedPanel({ items, isLoading, isRefreshing, onSelect
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '8px 16px',
           color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
         }}>
           <Spinner size="small" /> Refreshing…
         </div>

@@ -79,7 +79,7 @@ export function RoadmapFilters({
               className="h-7 px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
               style={{
                 borderRadius: 20,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: isActive ? 600 : 500,
                 background: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                 color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : ink[2],

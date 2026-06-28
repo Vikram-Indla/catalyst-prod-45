@@ -90,7 +90,7 @@ export function UnifiedToolbar({
               // Text color
               "text-[var(--ds-surface,#0a0a0a)] dark:text-[var(--ds-surface-sunken, #FAFAFA)]",
               // Placeholder - CRITICAL FIX: brighter in dark mode
-              "placeholder:text-[var(--ds-text-subtlest, #626F86)] dark:placeholder:text-[#8a8a8a]",
+              "placeholder:text-[var(--ds-text-subtlest, #626F86)] dark:placeholder:text-[var(--ds-text-disabled, #8a8a8a)]",
               "!outline-none !border-none !ring-0 !shadow-none",
               "focus:!outline-none focus:!border-none focus:!ring-0 focus:!shadow-none"
             )}
@@ -98,7 +98,7 @@ export function UnifiedToolbar({
           {searchValue ? (
             <button
               onClick={() => onSearchChange("")}
-              className={cn("p-0.5 rounded hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[#2a2a2a]", focusRingClass)}
+              className={cn("p-0.5 rounded hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface, #2a2a2a)]", focusRingClass)}
             >
               <X className="h-3 w-3 text-[var(--ds-text-subtlest, #626F86)] dark:text-[var(--ds-text-disabled, #8590A2)]" />
             </button>
@@ -108,7 +108,7 @@ export function UnifiedToolbar({
               // Light mode: visible badge
               "bg-[var(--ds-surface-sunken, #F7F8F9)] text-[var(--ds-text-subtle, #44546F)] border border-[var(--ds-border, #DFE1E6)]",
               // Dark mode: MORE VISIBLE badge
-              "dark:bg-[#2a2a2a] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border-[var(--ds-text-subtle, #44546F)]"
+              "dark:bg-[var(--ds-surface, #2a2a2a)] dark:text-[var(--ds-text-disabled, #8590A2)] dark:border-[var(--ds-text-subtle, #44546F)]"
             )}>
               {navigator.platform.includes("Mac") ? "⌘" : "⌃"}K
             </kbd>

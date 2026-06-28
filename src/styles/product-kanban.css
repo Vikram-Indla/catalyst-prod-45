@@ -376,7 +376,7 @@
 }
 .pk-empty-icon { color: var(--pk-border-strong); margin-bottom: 8px; }
 .pk-empty-text { font-size: 13px; color: var(--ds-text-subtlest, #626F86); margin-bottom: 4px; }
-.pk-empty-hint { font-size: 12px; color: #A1A1AA; }
+.pk-empty-hint { font-size: 12px; color: #A1A1AA; } /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
 
 /* Collapsed column */
 .pk-column-collapsed {

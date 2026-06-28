@@ -23,10 +23,10 @@ const getStatusStylesFromColor = (colorValue: string | null | undefined) => {
   const b = parseInt(hex.slice(5, 7), 16);
   
   return {
-    bg: `rgba(${r}, ${g}, ${b}, 0.12)`,
+    bg: `rgba(${r}, ${g}, ${b}, 0.12)`, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     text: hex,
     dot: hex,
-    border: `rgba(${r}, ${g}, ${b}, 0.25)`,
+    border: `rgba(${r}, ${g}, ${b}, 0.25)`, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   };
 };
 

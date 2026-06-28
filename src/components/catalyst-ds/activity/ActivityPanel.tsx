@@ -287,7 +287,7 @@ function ActivityPanel({
             >
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtle, #44546F)',
                   marginBottom: 6,
@@ -341,7 +341,7 @@ function ActivityPanel({
       <div className="flex items-center justify-between mb-4">
         <h2
           className="text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)]"
-          style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', fontFamily: 'var(--cp-font-body)' }}
+          style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', fontFamily: 'var(--cp-font-body)' }}
         >
           Activity
         </h2>
@@ -357,7 +357,7 @@ function ActivityPanel({
               className={cn(
                 'px-3 py-1.5 rounded text-[14px] font-normal transition-colors duration-150',
                 activeTab === tab.key
-                  ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[#1C3A5C] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
+                  ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[var(--ds-background-information, #1C3A5C)] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
                   : 'text-[var(--ds-text-subtle,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
               )}
             >
@@ -391,7 +391,7 @@ function ActivityPanel({
                     className={cn(
                       'w-full text-left px-3 py-1.5 text-[14px] transition-colors',
                       order === sortOrder
-                        ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[#1C3A5C] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
+                        ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[var(--ds-background-information, #1C3A5C)] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
                         : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
                     )}
                   >

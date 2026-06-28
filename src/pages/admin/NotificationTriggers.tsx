@@ -208,7 +208,7 @@ export default function NotificationTriggers() {
         <div className="flex items-center gap-3 flex-wrap">
           {/* Search */}
           <div className="relative flex-1 min-w-[240px]">
-            <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtlest, #626F86)', zIndex: 1, pointerEvents: 'none' }}><SearchIcon label="" size="small" /></span>
+            <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))', zIndex: 1, pointerEvents: 'none' }}><SearchIcon label="" size="small" /></span>
             <div style={{ paddingLeft: '32px' }}>
               <Textfield
                 placeholder="Search triggers by name, key, or description..."
@@ -484,7 +484,7 @@ function TriggerRow({
         if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-shadow-raised, rgba(0,0,0,0.02))';
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.background = isSelected ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent';
+        (e.currentTarget as HTMLElement).style.background = isSelected ? 'var(--ds-background-selected, var(--ds-background-information, #E9F2FF))' : 'transparent';
       }}
     >
       {/* Checkbox */}

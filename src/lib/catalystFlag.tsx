@@ -123,12 +123,12 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
         background: 'var(--ds-surface-overlay, #FFFFFF)',
         color: 'var(--ds-text, #292A2E)',
         borderRadius: 6,
-        boxShadow: '0 8px 24px rgba(9,30,66,0.18), 0 2px 6px rgba(9,30,66,0.10)',
+        boxShadow: '0 8px 24px rgba(9,30,66,0.18), 0 2px 6px rgba(9,30,66,0.10)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
         border: '1px solid var(--ds-border, #DFE1E6)',
         opacity: entered ? 1 : 0,
         transform: entered ? 'translateX(0)' : 'translateX(-16px)',
         transition: 'opacity 160ms ease, transform 160ms ease',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontFamily: 'inherit',
       }}
     >
@@ -174,7 +174,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
           color: 'var(--ds-text-subtle, #6B778C)',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+          (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'transparent';

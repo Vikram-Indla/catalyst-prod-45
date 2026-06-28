@@ -86,7 +86,7 @@ export const WithImproveDropdown: StoryObj = {
         issue={mockIssue as any} itemId="BAU-5972"
         onStatusChange={fn()} onClose={fn()} onDelete={fn()}
         statusPill={<CatalystStatusPill status="In Development" statusCategory="indeterminate" onStatusChange={fn()} issueType="Story" />}
-        improveDropdown={<button style={{ fontSize: 12, padding: '4px 8px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #fff)', cursor: 'pointer' }}>Improve</button>}
+        improveDropdown={<button style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #fff)', cursor: 'pointer' }}>Improve</button>}
       />
     </Frame>
   ),

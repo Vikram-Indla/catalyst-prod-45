@@ -11,7 +11,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Avatar from "@atlaskit/avatar";
-import { UnassignedAvatar, toStatusCategory } from "@/components/ads";
+import { UnassignedAvatar, toStatusCategory, isTerminalStatus } from "@/components/ads";
 import CommentIcon from "@atlaskit/icon/glyph/comment";
 import DragHandleIcon from "@atlaskit/icon/glyph/drag-handler";
 import MoreIcon from "@atlaskit/icon/glyph/more";
@@ -24,6 +24,7 @@ import DropdownMenu, {
 } from "@atlaskit/dropdown-menu";
 import { IssueHoverCard } from "@/components/shared/IssueHoverCard";
 import { CatalystStatusPill } from "@/components/catalyst-detail-views/shared/sections";
+import { useCanonicalIssueWorkflow } from "@/hooks/useCanonicalIssueWorkflow";
 import type { CellProps } from "./types";
 
 // ─── Checkbox Cell ─────────────────────────────────────────────────────────
@@ -302,7 +303,7 @@ export function makeKeyCell(
           fontFamily: "inherit",
           fontWeight: 400,
           color: token("color.link", "var(--ds-link, #0C66E4)"),
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           letterSpacing: 0,
           whiteSpace: "nowrap",
           cursor: "pointer",
@@ -318,35 +319,42 @@ export function makeKeyCell(
           fontFamily: "inherit",
           fontWeight: 400,
           color: token("color.link", "var(--ds-link, #0C66E4)"),
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           lineHeight: 1,
           letterSpacing: 0,
           whiteSpace: "nowrap",
           cursor: "pointer",
           textDecoration: "underline",
         };
+    // 2026-06-28: keyNode is a plain <span> — no <a href>, no navigation
+     // semantics. Click opens the modal via onOpen. Previously used <a> with
+     // preventDefault, but some downstream handler still triggered navigation.
+     // Removing the anchor element entirely guarantees no nav can fire.
     let keyNode: React.ReactNode;
     if (onOpen) {
-      const href = getHref ? getHref(row) : "#";
       keyNode = (
-        <a
-          data-jira-table-row-open
-          href={href}
+        <span
+          role="button"
+          tabIndex={0}
           onClick={(e) => {
-            // Middle-click or modifier click → let browser open in new tab.
-            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
-            e.preventDefault();
             e.stopPropagation();
             onOpen(row);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              onOpen(row);
+            }
           }}
           style={sharedStyle}
         >
           {key || "—"}
-        </a>
+        </span>
       );
     } else {
       keyNode = (
-        <span data-jira-table-row-open style={sharedStyle}>
+        <span style={sharedStyle}>
           {key || "—"}
         </span>
       );
@@ -395,10 +403,13 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
     return (
       <span
         title={summary}
-        // dir="auto" — Arabic summaries render RTL, English LTR, mixed rows
-        // pick direction from the first strong char. App-wide RTL fix
-        // (Vikram 2026-06-18); no-op for Latin text.
-        dir="auto"
+        // Jira parity (2026-06-28): summary cell stays LTR/left-aligned, NO
+        // dir="auto". Verified against live Jira (digital-transformation
+        // MDT-281/282, Arabic summaries): every ancestor span→td→tr→table is
+        // direction:ltr; text-align:start with no dir attribute. The browser's
+        // Unicode bidi algorithm orders Arabic glyphs inside the run on its
+        // own; the block itself is LTR. dir="auto" right-aligned Arabic and
+        // diverged from Jira. See JiraTable/editors.tsx for the matching cells.
         style={{
           overflow: "hidden",
           textOverflow: "ellipsis",
@@ -433,9 +444,11 @@ export type LozengeAppearance =
 export function StatusPill({
   appearance,
   children,
+  trailingIcon,
 }: {
   appearance: LozengeAppearance;
   children: React.ReactNode;
+  trailingIcon?: React.ReactNode;
 }) {
   // Map LozengeAppearance back to a statusCategory for CatalystStatusPill
   const appearanceToCategory: Record<LozengeAppearance, string | undefined> = {
@@ -454,6 +467,7 @@ export function StatusPill({
       statusCategory={category}
       interactive={false}
       compact={true}
+      trailingIcon={trailingIcon}
     />
   );
 }
@@ -498,6 +512,12 @@ export function makeStatusEditCell<T>(opts: {
   canEdit?: (row: T) => boolean;
   /** 2026-06-21 (Vikram canonical): once done, frozen. Default true. */
   lockWhenDone?: boolean;
+  /**
+   * Per-row issue type. When it resolves to a canonical-engine entity (Story),
+   * the editor sources options + labels from ph_wf_* (canonical transitions)
+   * instead of `options`. Non-canonical rows are unchanged.
+   */
+  getIssueType?: (row: T) => string | null;
 }) {
   return function StatusEditCell({ row }: CellProps<T>) {
     const [open, setOpen] = React.useState(false);
@@ -505,9 +525,20 @@ export function makeStatusEditCell<T>(opts: {
     const triggerRef = React.useRef<HTMLButtonElement>(null);
     const popupRef = React.useRef<HTMLDivElement>(null);
     const status = opts.getStatus(row);
+    const issueType = opts.getIssueType ? opts.getIssueType(row) : null;
+    const canonical = useCanonicalIssueWorkflow(issueType);
+    // Canonical (Story): options = allowed transitions; else caller options.
+    const effectiveOptions = canonical.isCanonical
+      ? canonical.getAvailableStatuses(status)
+      : opts.options;
+    const isUnmapped = canonical.isCanonical && !!status && !canonical.resolveStatusKey(status);
+    const displayLabel = (s: string | null): string =>
+      canonical.isCanonical ? canonical.labelForStatus(s) : (opts.labelFor && s ? opts.labelFor(s) : (s ?? ""));
     const callerEditable = opts.canEdit ? opts.canEdit(row) : true;
     const lockWhenDone = opts.lockWhenDone !== false;
-    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    // 2026-06-28: freeze on done category OR any terminal outcome
+     // (rejected / declined / cancelled / won't do, etc).
+    const frozen = lockWhenDone && !!status && isTerminalStatus(status);
     const editable = callerEditable && !frozen;
 
     React.useEffect(() => {
@@ -525,15 +556,59 @@ export function makeStatusEditCell<T>(opts: {
       return () => document.removeEventListener("mousedown", handler);
     }, [open]);
 
+    // 2026-06-28: dropdown tracks trigger 1:1 on scroll. Walk DOM up from
+     // trigger, attach scroll listener to every scrollable ancestor (table
+     // viewport, virtualized rows, page) — window-only capture misses inner
+     // table scrolls. RAF-coalesced; imperative DOM mutation on popupRef.
+    React.useLayoutEffect(() => {
+      if (!open) return;
+      const getScrollParents = (node: HTMLElement | null): (HTMLElement | Window)[] => {
+        const out: (HTMLElement | Window)[] = [window];
+        let el: HTMLElement | null = node?.parentElement ?? null;
+        while (el) {
+          const cs = getComputedStyle(el);
+          if (/(auto|scroll|overlay)/.test(cs.overflowY + cs.overflowX)) out.push(el);
+          el = el.parentElement;
+        }
+        return out;
+      };
+      let raf = 0;
+      let lastTop = NaN;
+      let lastLeft = NaN;
+      const apply = () => {
+        raf = 0;
+        const t = triggerRef.current;
+        if (!t) return;
+        const r = t.getBoundingClientRect();
+        const top = r.bottom + 4;
+        const left = r.left;
+        if (top === lastTop && left === lastLeft) return;
+        lastTop = top; lastLeft = left;
+        const p = popupRef.current;
+        if (p) {
+          p.style.top = `${top}px`;
+          p.style.left = `${left}px`;
+        } else {
+          setPos({ top, left });
+        }
+      };
+      const schedule = () => { if (!raf) raf = requestAnimationFrame(apply); };
+      apply();
+      const parents = getScrollParents(triggerRef.current);
+      parents.forEach(p => p.addEventListener('scroll', schedule, { passive: true }));
+      window.addEventListener('resize', schedule);
+      return () => {
+        if (raf) cancelAnimationFrame(raf);
+        parents.forEach(p => p.removeEventListener('scroll', schedule));
+        window.removeEventListener('resize', schedule);
+      };
+    }, [open]);
+
     const handleOpen = (e: React.MouseEvent) => {
       if (!editable) return;
       e.stopPropagation();
       const rect = triggerRef.current?.getBoundingClientRect();
-      if (rect)
-        setPos({
-          top: rect.bottom + window.scrollY + 4,
-          left: rect.left + window.scrollX,
-        });
+      if (rect) setPos({ top: rect.bottom + 4, left: rect.left });
       setOpen((o) => !o);
     };
 
@@ -559,30 +634,30 @@ export function makeStatusEditCell<T>(opts: {
         >
           {status ? (
             <CatalystStatusPill
-              status={opts.labelFor ? opts.labelFor(status) : status}
+              status={displayLabel(status)}
               interactive={false}
               compact={true}
+              trailingIcon={editable ? (
+                <svg
+                  width="8"
+                  height="8"
+                  viewBox="0 0 8 8"
+                  fill="none"
+                  aria-hidden
+                  style={{ flexShrink: 0, opacity: 0.7 }}
+                >
+                  <path
+                    d="M1 2.5L4 5.5L7 2.5"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : undefined}
             />
           ) : (
             <span style={{ color: token("color.text.subtlest", "var(--ds-text-subtlest, #626F86)") }}>—</span>
-          )}
-          {editable && (
-            <svg
-              width="8"
-              height="8"
-              viewBox="0 0 8 8"
-              fill="none"
-              aria-hidden
-              style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}
-            >
-              <path
-                d="M1 2.5L4 5.5L7 2.5"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
           )}
         </button>
         {open &&
@@ -591,7 +666,7 @@ export function makeStatusEditCell<T>(opts: {
             <div
               ref={popupRef}
               style={{
-                position: "absolute",
+                position: "fixed",
                 top: pos.top,
                 left: pos.left,
                 zIndex: 9999,
@@ -605,7 +680,21 @@ export function makeStatusEditCell<T>(opts: {
                 padding: "4px 0",
               }}
             >
-              {opts.options.map((s) => {
+              {isUnmapped && (
+                <div
+                  style={{
+                    padding: "4px 12px 8px",
+                    fontSize: 'var(--ds-font-size-100)',
+                    color: token("color.text.warning", "var(--ds-text-warning)"),
+                    borderBottom: `1px solid ${token("color.border", "var(--ds-border)")}`,
+                    marginBottom: 4,
+                  }}
+                >
+                  Legacy status “{status}” is not yet mapped to the canonical Story
+                  workflow — pick a canonical status to move it onto the workflow.
+                </div>
+              )}
+              {effectiveOptions.map((s) => {
                 const isActive = s === status;
                 return (
                   <button
@@ -646,7 +735,7 @@ export function makeStatusEditCell<T>(opts: {
                     }}
                   >
                     <CatalystStatusPill
-                      status={opts.labelFor ? opts.labelFor(s) : s}
+                      status={displayLabel(s)}
                       interactive={false}
                       compact={true}
                     />
@@ -777,7 +866,7 @@ export function makeParentCell(
           borderRadius: 3,
           background: "var(--cp-jira-epic-chip-bg)",
           color: "var(--cp-jira-epic-chip-fg)",
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           lineHeight: "16px",
           overflow: "hidden",
@@ -997,7 +1086,7 @@ export function makeDateCell(
         title={fullIso}
         style={{
           color: token("color.text.subtle", "var(--ds-text-subtle, #42526E)"),
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           lineHeight: "20px",
           fontWeight: 400,
           whiteSpace: "nowrap",
@@ -1034,7 +1123,7 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
               padding: "0 4px",
               borderRadius: 4,
               border: `1px solid ${token("color.border", "var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))")}`,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               lineHeight: "20px",
               color: token("color.text", "var(--ds-text, #172B4D)"),
@@ -1086,7 +1175,7 @@ export function makeSprintReleaseCell(
                 "0.556px solid var(--ds-border-neutral, rgb(183,185,190))",
               borderRadius: 4,
               padding: "0px 4px",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               color: token("color.text", "var(--ds-text, #172B4D)"),
               whiteSpace: "nowrap",

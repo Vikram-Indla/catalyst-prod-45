@@ -267,7 +267,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
 
       {/* Filter context banner */}
       {(activeFilter || isCreateMode) && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-background-information, #E9F2FF)', borderBottom: '1px solid var(--ds-border-information, #CCE0FF)', fontSize: 13, color: 'var(--ds-text-information, #0055CC)', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-background-information, #E9F2FF)', borderBottom: '1px solid var(--ds-border-information, #CCE0FF)', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-information, #0055CC)', flexShrink: 0 }}>
           {isCreateMode ? (
             <>
               <span style={{ fontWeight: 500 }}>Creating filter</span>
@@ -277,7 +277,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
             <>
               <span>Filter:</span>
               <span style={{ fontWeight: 500 }}>{activeFilter.name}</span>
-              <button onClick={() => { setToolbarFilters(EMPTY_FILTERS); setSearchParams({}); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', padding: '0 4px' }}>Clear filter</button>
+              <button onClick={() => { setToolbarFilters(EMPTY_FILTERS); setSearchParams({}); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #42526E))', padding: '0 4px' }}>Clear filter</button>
             </>
           ) : null}
         </div>
@@ -344,7 +344,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '8px 8px', borderTop: '1px solid var(--ds-border, #DFE1E6)',
-            background: 'var(--cp-bg-sunken, #F6F7F8)', gap: 8, fontSize: 12,
+            background: 'var(--cp-bg-sunken, #F6F7F8)', gap: 8, fontSize: 'var(--ds-font-size-200)',
             color: 'var(--cp-text-secondary, #6B778C)', flexShrink: 0,
           }}>
             <span data-testid="product-allwork-count">
@@ -358,7 +358,7 @@ export default function ProductAllWorkView({ productCode, productId, productName
         {!isNarrow && (
           activeItem ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, background: 'var(--cp-bg-elevated, #ffffff)', borderRadius: '0 10px 10px 0', overflow: 'hidden' }}>
-              <Suspense fallback={<div style={{ padding: 24, color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 14 }}>Loading…</div>}>
+              <Suspense fallback={<div style={{ padding: 24, color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>}>
                 <CatalystDetailRouter
                   isOpen={true}
                   onClose={() => selectItem(null)}
@@ -384,8 +384,8 @@ export default function ProductAllWorkView({ productCode, productId, productName
                 <path d="M56 46v6l4 2" stroke="var(--ds-icon-information, #1868DB)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <div style={{ textAlign: 'center' }}>
-                <p style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: '20px' }}>Select a business request</p>
-                <p style={{ margin: 0, fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle, #44546F)', lineHeight: '20px', maxWidth: 280 }}>Choose a request from the list to view its details, comments, and related work.</p>
+                <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', lineHeight: '20px' }}>Select a business request</p>
+                <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtle, #44546F)', lineHeight: '20px', maxWidth: 280 }}>Choose a request from the list to view its details, comments, and related work.</p>
               </div>
             </div>
           )

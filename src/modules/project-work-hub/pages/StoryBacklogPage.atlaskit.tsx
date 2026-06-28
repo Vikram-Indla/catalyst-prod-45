@@ -925,7 +925,7 @@ export default function AtlaskitStoryBacklogPage({
               position: 'relative',
               zIndex: 10,
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))')}
             onMouseLeave={(e) => { if (!isDraggingPanel.current) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             <div style={{ width: 2, height: 40, borderRadius: 1, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
@@ -1078,7 +1078,7 @@ function InlineCreateRow({
           borderRadius: 4,
           background: 'transparent',
           color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           textAlign: 'left',
           cursor: 'pointer',
@@ -1131,7 +1131,7 @@ function InlineCreateRow({
           height: 28,
           border: 'none',
           outline: 'none',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           fontFamily: 'inherit',
           background: 'transparent',
@@ -1195,7 +1195,7 @@ function AssigneeStackFilter({
             border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             color: 'var(--ds-text-subtle, #42526E)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             display: 'inline-flex',
             alignItems: 'center',
@@ -1249,14 +1249,14 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
           borderRadius: 4,
           background: isSelected ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           color: isSelected ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, #42526E)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           cursor: 'pointer',
           fontFamily: 'inherit',
           transition: 'background 100ms, border-color 100ms, color 100ms',
           outline: 'none',
         }}
-        onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+        onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
         onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
       >
         {iconBefore}
@@ -1344,7 +1344,7 @@ function MenuItem({
         border: 'none',
         background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
         color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: active ? 600 : 400,
         textAlign: 'left',
         cursor: 'pointer',
@@ -1352,7 +1352,7 @@ function MenuItem({
         borderRadius: 3,
         outline: 'none',
       }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {icon && <span style={{ display: 'inline-flex', width: 16, color: active ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{icon}</span>}
@@ -1365,7 +1365,7 @@ function MenuLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       padding: '8px 10px 4px',
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 700,
       letterSpacing: '0.08em',
       textTransform: 'uppercase',
@@ -1427,7 +1427,7 @@ function ColumnPickerButton({
                   border: 'none',
                   background: 'transparent',
                   color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   textAlign: 'left',
                   cursor: 'pointer',
                   fontFamily: 'inherit',

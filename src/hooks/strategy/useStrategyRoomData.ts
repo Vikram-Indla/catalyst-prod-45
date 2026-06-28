@@ -102,7 +102,7 @@ function useWorkforce() {
       });
       const types: WorkforceType[] = Array.from(typeCounts.entries())
         .sort((a, b) => b[1] - a[1])
-        .map(([label, count]) => ({ label, count, color: TYPE_COLORS[label] || 'var(--ds-text-subtlest, #626F86)' }));
+        .map(([label, count]) => ({ label, count, color: TYPE_COLORS[label] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))' }));
 
       // Departments
       const deptCounts = new Map<string, number>();
@@ -232,7 +232,7 @@ function useContracts() {
             { pct: Math.round((active / total) * 100), color: 'var(--cp-success, #16A34A)' },
             { pct: Math.round((exp90 / total) * 100), color: 'var(--cp-amber, #F59E0B)' },
             { pct: Math.round((exp30 / total) * 100), color: 'var(--cp-danger, #DC2626)' },
-            { pct: Math.round((expired / total) * 100), color: 'var(--ds-text-subtlest, #626F86)' },
+            { pct: Math.round((expired / total) * 100), color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))' },
           ]
         : [];
 

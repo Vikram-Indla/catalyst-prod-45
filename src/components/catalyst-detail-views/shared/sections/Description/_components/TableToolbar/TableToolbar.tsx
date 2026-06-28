@@ -418,7 +418,7 @@ function MenuItem({
           : active
             ? ICON_COLOR_ACTIVE
             : 'var(--ds-text, #292A2E)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: active ? 500 : 400,
         cursor: 'pointer',
         textAlign: 'start',
@@ -498,7 +498,7 @@ function TableOptionsButton({
         <PreferencesThinIcon />
         <span
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             marginInlineStart: 4,
             color: 'inherit',

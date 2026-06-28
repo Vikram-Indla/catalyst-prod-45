@@ -131,7 +131,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
             className="relative truncate"
             style={{
               zIndex: 1,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               paddingLeft: 10,
@@ -151,7 +151,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           <span
             className="absolute right-2 top-1/2 -translate-y-1/2"
             style={{
-              fontSize: 10,
+              fontSize: 'var(--ds-font-size-50)',
               fontWeight: 700,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               background: 'var(--ds-surface, rgba(255,255,255,0.2))',
@@ -186,17 +186,17 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.12))', pointerEvents: 'none',
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>
-          <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 6 }}>
             {item.request_key}: {item.title}
           </div>
-          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4 }}>
+          <div className="flex items-center gap-1.5" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {formatDate(item.start_date)} → {formatDate(item.end_date)}
-            {endDateIsEstimated && <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontStyle: 'italic' }}>(est.)</span>}
+            {endDateIsEstimated && <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
               {(item as any).initiative_type_label || typeKey}
             </span>
             {item.progress > 0 && (
@@ -204,7 +204,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
                 <div style={{ width: 60, height: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: finalColor, borderRadius: 999 }} />
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{item.progress}%</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{item.progress}%</span>
               </div>
             )}
           </div>

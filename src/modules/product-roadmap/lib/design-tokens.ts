@@ -51,7 +51,7 @@ export const catalystTokens = {
     },
     bronze: {
       base: 'var(--ds-text-subtlest, #626F86)',
-      bg: 'rgba(107, 114, 128, 0.15)',
+      bg: 'rgba(107, 114, 128, 0.15)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     },
     champagne: {
       base: 'var(--ds-text-disabled, #8590A2)',
@@ -59,7 +59,7 @@ export const catalystTokens = {
     },
     grey: {
       base: 'var(--ds-border, #DFE1E6)',
-      bg: 'rgba(200, 204, 208, 0.15)',
+      bg: 'rgba(200, 204, 208, 0.15)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
     },
   },
 

@@ -7,7 +7,7 @@ import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
 
 // ── Avatar colours — cycling through 6 brand colours ─────────────────────────
 
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', '#00A3BF', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-danger-bold, #C9372C)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-chart-teal-bold, #00A3BF)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-danger-bold, #C9372C)'];
 
 function avatarColor(name: string): string {
   let h = 0;
@@ -44,7 +44,7 @@ function WorkloadRow({
   const barColor = isHeavy
     ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
     : isMedium
-    ? '#F5A623'
+    ? 'var(--ds-background-warning-bold, #F5A623)'
     : 'var(--ds-chart-purple-bold, #8A7CFF)';
 
   return (
@@ -67,7 +67,7 @@ function WorkloadRow({
             borderRadius: '50%',
             background: avatarColor(name),
             color: 'var(--ds-text-inverse, #FFFFFF)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             display: 'inline-flex',
             alignItems: 'center',
@@ -79,7 +79,7 @@ function WorkloadRow({
         </span>
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -111,7 +111,7 @@ function WorkloadRow({
 
       <div
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 700,
           textAlign: 'right',
           fontVariantNumeric: 'tabular-nums',
@@ -142,7 +142,7 @@ function WorkloadCol({
           margin: '0 0 12px',
           paddingBottom: 8,
           borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
           color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           textTransform: 'uppercase',
@@ -154,7 +154,7 @@ function WorkloadCol({
       {rows.length === 0 ? (
         <div
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             padding: '12px 0',
           }}
@@ -275,7 +275,7 @@ export function WhoCarriesWhatWidget() {
           data-testid="workload-empty"
           style={{
             padding: 24,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             textAlign: 'center',
           }}

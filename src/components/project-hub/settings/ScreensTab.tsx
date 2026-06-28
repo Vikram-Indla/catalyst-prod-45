@@ -33,14 +33,14 @@ function OperationCell({ op, screen }: { op: 'create' | 'edit' | 'view'; screen:
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 8px 12px 0', minWidth: 0 }}>
       <span
         style={{
-          flexShrink: 0, fontSize: 10, fontWeight: 700, padding: '2px 7px',
+          flexShrink: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 7px',
           borderRadius: 10, background: bg, color: text,
           textTransform: 'uppercase', letterSpacing: '0.04em',
         }}
       >
         {label}
       </span>
-      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {screen ?? '—'}
       </span>
     </div>
@@ -70,7 +70,7 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
       {/* Scheme info card */}
       <div className="ph-card" style={{ padding: '16px 20px' }}>
         <h3 className="ph-card-title" style={{ marginBottom: 4 }}>Screen Scheme</h3>
-        <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', margin: 0 }}>
           Each work type maps to a screen scheme that defines which screens are used for Create, Edit, and View operations.
         </p>
       </div>
@@ -89,10 +89,10 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
                 display: 'flex', alignItems: 'center', gap: 10,
               }}
             >
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                 {schemeName}
               </span>
-              <span style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
                 {schemeRows.length} {schemeRows.length === 1 ? 'type' : 'types'}
               </span>
             </div>
@@ -112,7 +112,7 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
                   key={h}
                   style={{
                     padding: '7px 8px 7px 0',
-                    fontSize: 11, fontWeight: 700, letterSpacing: '0.05em',
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.05em',
                     textTransform: 'uppercase', color: 'var(--fg-3)',
                     fontFamily: 'var(--cp-font-body)',
                   }}
@@ -124,9 +124,9 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
 
             {/* Rows */}
             {isLoading ? (
-              <div style={{ padding: '20px', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>Loading…</div>
+              <div style={{ padding: '20px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>Loading…</div>
             ) : schemeRows.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>No screen config found</div>
+              <div style={{ padding: '20px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>No screen config found</div>
             ) : (
               schemeRows.map((row, i) => (
                 <div
@@ -143,7 +143,7 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 8px 12px 0' }}>
                     <WorkItemTypeIcon type={row.ph_work_types?.icon ?? 'story'} size={16} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', whiteSpace: 'nowrap' }}>
                       {row.ph_work_types?.name}
                     </span>
                   </div>

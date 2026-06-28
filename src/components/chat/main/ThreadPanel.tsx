@@ -52,13 +52,13 @@ export function ThreadPanel({
           borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         }}
       >
-        <div style={{ fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'baseline', gap: 6, minWidth: 0 }}>
+        <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', display: 'flex', alignItems: 'baseline', gap: 6, minWidth: 0 }}>
           <span>Thread</span>
           {conversationTitle && (
             <span
               style={{
                 fontWeight: 400,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-subtle, #44546F)',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -91,22 +91,22 @@ export function ThreadPanel({
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
           <Avatar name={parentMessage.authorName} seed={parentMessage.authorId} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 500, fontSize: 13 }}>{parentMessage.authorName || initialsOf(parentMessage.authorName)}</div>
-            <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', marginTop: 2 }}>{parentMessage.bodyText}</div>
+            <div style={{ fontWeight: 500, fontSize: 'var(--ds-font-size-300)' }}>{parentMessage.authorName || initialsOf(parentMessage.authorName)}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', marginTop: 2 }}>{parentMessage.bodyText}</div>
           </div>
         </div>
 
         {/* Replies */}
-        {isLoading && <div style={{ color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>Loading…</div>}
+        {isLoading && <div style={{ color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>Loading…</div>}
         {!isLoading && messages.length === 0 && (
-          <div style={{ color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>No replies yet.</div>
+          <div style={{ color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>No replies yet.</div>
         )}
         {messages.map((m) => (
           <div key={m.id} style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <Avatar name={m.authorName} seed={m.authorId} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 500, fontSize: 13 }}>{m.authorName}</div>
-              <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{m.bodyText}</div>
+              <div style={{ fontWeight: 500, fontSize: 'var(--ds-font-size-300)' }}>{m.authorName}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>{m.bodyText}</div>
             </div>
           </div>
         ))}

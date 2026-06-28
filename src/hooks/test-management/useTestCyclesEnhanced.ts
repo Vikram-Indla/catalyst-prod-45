@@ -28,6 +28,8 @@ export interface CycleWithDetails {
   environment: string;
   release_id: string | null;
   release: { id: string; name: string } | null;
+  sprint_id: string | null;
+  sprint: { id: string; name: string; status: string } | null;
   assigned_to: string | null;
   assignee: { id: string; full_name: string | null; avatar_url: string | null } | null;
   planned_start: string | null;
@@ -58,6 +60,7 @@ export interface CycleKPIs {
 export interface CycleFilterParams {
   search?: string;
   releaseId?: string;
+  sprintId?: string;
   status?: string;
   environment?: string;
 }
@@ -67,6 +70,7 @@ export interface CreateCycleInput {
   name: string;
   description?: string;
   release_id?: string;
+  sprint_id?: string | null;
   environment: string;
   environment_id?: string;
   assigned_to?: string;
@@ -119,6 +123,8 @@ export function useTestCyclesEnhanced(projectId: string | undefined, filters?: C
           environment,
           release_id,
           release:releases(id, name),
+          sprint_id,
+          sprint:ph_jira_sprints(id, name, status),
           assigned_to,
           assignee:profiles!tm_test_cycles_assigned_to_fkey(id, full_name, avatar_url),
           planned_start,
@@ -147,6 +153,10 @@ export function useTestCyclesEnhanced(projectId: string | undefined, filters?: C
         query = query.eq('release_id', filters.releaseId);
       }
 
+      if (filters?.sprintId && filters.sprintId !== 'all') {
+        query = query.eq('sprint_id', filters.sprintId);
+      }
+
       if (filters?.environment && filters.environment !== 'all') {
         query = query.eq('environment', filters.environment);
       }
@@ -171,6 +181,8 @@ export function useTestCyclesEnhanced(projectId: string | undefined, filters?: C
         environment: row.environment || 'staging',
         release_id: row.release_id,
         release: row.release,
+        sprint_id: row.sprint_id,
+        sprint: row.sprint,
         assigned_to: row.assigned_to,
         assignee: row.assignee,
         planned_start: row.planned_start,
@@ -291,6 +303,7 @@ export function useCreateCycleEnhanced() {
           environment: input.environment || 'staging',
           environment_id: input.environment_id || null,
           release_id: input.release_id || null,
+          sprint_id: input.sprint_id || null,
           assigned_to: input.assigned_to || null,
           planned_start: input.planned_start || null,
           planned_end: input.planned_end || null,
@@ -305,6 +318,8 @@ export function useCreateCycleEnhanced() {
           environment,
           release_id,
           release:releases(id, name),
+          sprint_id,
+          sprint:ph_jira_sprints(id, name, status),
           assigned_to,
           assignee:profiles!tm_test_cycles_assigned_to_fkey(id, full_name, avatar_url),
           planned_start,
@@ -334,6 +349,8 @@ export function useCreateCycleEnhanced() {
         environment: data.environment || 'staging',
         release_id: data.release_id,
         release: data.release as any,
+        sprint_id: data.sprint_id,
+        sprint: data.sprint as any,
         assigned_to: data.assigned_to,
         assignee: data.assignee as any,
         planned_start: data.planned_start,
@@ -424,6 +441,7 @@ export function useCloneCycleEnhanced() {
           status: 'planned',
           environment: original.environment,
           release_id: original.release_id,
+          sprint_id: original.sprint_id,
           assigned_to: original.assigned_to,
           created_by: user.id,
         })
@@ -436,6 +454,8 @@ export function useCloneCycleEnhanced() {
           environment,
           release_id,
           release:releases(id, name),
+          sprint_id,
+          sprint:ph_jira_sprints(id, name, status),
           assigned_to,
           assignee:profiles!tm_test_cycles_assigned_to_fkey(id, full_name, avatar_url),
           planned_start,
@@ -465,6 +485,8 @@ export function useCloneCycleEnhanced() {
         environment: data.environment || 'staging',
         release_id: data.release_id,
         release: data.release as any,
+        sprint_id: data.sprint_id,
+        sprint: data.sprint as any,
         assigned_to: data.assigned_to,
         assignee: data.assignee as any,
         planned_start: data.planned_start,

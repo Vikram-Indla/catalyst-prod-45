@@ -82,7 +82,7 @@ function FilterDropdown({ label, value, options, onChange }: {
               onClick={() => { onChange(o.key); setOpen(false); }}
               style={{
                 display: 'block', width: '100%', textAlign: 'left',
-                padding: '6px 10px', fontSize: 12, fontWeight: value === o.key ? 600 : 400,
+                padding: '6px 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: value === o.key ? 600 : 400,
                 color: value === o.key ? 'var(--cp-blue)' : 'var(--fg-2)',
                 background: value === o.key ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
                 border: 'none', borderRadius: 4, cursor: 'pointer',
@@ -105,9 +105,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
   selectedProject = 'all', onProjectChange,
 }) => {
   const tabStyle = (active: boolean): React.CSSProperties => ({
-    padding: '6px 14px', fontSize: 12, fontWeight: active ? 700 : 600,
+    padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 700 : 600,
     color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--r360-text-3, #3D3D56)',
-    background: active ? '#1A1A2E' : 'transparent',
+    background: active ? 'var(--ds-surface-overlay, #1A1A2E)' : 'transparent',
     border: 'none', borderRadius: 6, cursor: 'pointer',
     boxShadow: active ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.15))' : 'none',
     transition: 'all 150ms',
@@ -219,7 +219,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         style={{
           background: 'var(--cp-blue)',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 20,
-          padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
+          padding: '0 16px', height: 32, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           letterSpacing: '0.3px', cursor: 'pointer',
           display: 'inline-flex', alignItems: 'center', gap: 6,
           transition: 'all 200ms ease',

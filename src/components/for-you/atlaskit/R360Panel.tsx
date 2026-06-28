@@ -102,15 +102,15 @@ function SidebarMemberRow({
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontSize: 13, fontWeight: active ? 600 : 400,
-          color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, #172B4D)'),
+          fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 600 : 400,
+          color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {name}
         </div>
         {sublabel && (
           <div style={{
-            fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
+            fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {sublabel}
@@ -122,7 +122,7 @@ function SidebarMemberRow({
           alignItems: 'center',
           padding: '2px 8px',
           borderRadius: 8,
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 500,
           background: pillBg,
           color: pillColor,
@@ -139,7 +139,7 @@ function SidebarMemberRow({
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontSize: 11, fontWeight: 600,
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
       color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
     }}>
       {children}
@@ -202,8 +202,8 @@ function SidebarRoster({
             width: '100%',
             marginTop: 8,
             padding: '4px 8px',
-            fontSize: 12,
-            border: `2px solid ${focused ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border.input', 'var(--ds-text-disabled, #8590A2)')}`,
+            fontSize: 'var(--ds-font-size-200)',
+            border: `2px solid ${focused ? token('color.border.focused', 'var(--ds-border-focused, #388BFF)') : token('color.border.input', 'var(--ds-text-disabled, var(--ds-border-bold, #8590A2))')}`,
             borderRadius: 3,
             background: token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
             color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -234,7 +234,7 @@ function SidebarRoster({
         {search.trim() && filtered.length === 0 && (
           <div style={{
             padding: '12px',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             textAlign: 'center' as const,
           }}>
@@ -245,7 +245,7 @@ function SidebarRoster({
         {!search.trim() && filtered.length === 0 && (
           <div style={{
             padding: '12px',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             textAlign: 'center' as const,
           }}>
@@ -265,7 +265,7 @@ function SidebarRoster({
         justifyContent: 'center',
       }}>
         <span style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
           fontVariantNumeric: 'tabular-nums',
@@ -305,11 +305,11 @@ function MemberPill({
         cursor: 'pointer', transition: 'all 120ms ease', gap: 0,
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, #172B4D)'), whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--ds-link, #0052CC)') : token('color.text', 'var(--ds-text, var(--ds-text, #172B4D))'), whiteSpace: 'nowrap' }}>
         {label}
       </span>
       {sublabel && (
-        <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), whiteSpace: 'nowrap' }}>
           {sublabel}
         </span>
       )}
@@ -344,7 +344,7 @@ export function R360PanelView({ resourceId, isLoading }: R360PanelViewProps) {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
-        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 14,
+        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 'var(--ds-font-size-400)',
       }}>
         No resource profile found for your account.
       </div>
@@ -416,10 +416,10 @@ export default function R360Panel() {
     return (
       <div style={{
         padding: '48px 24px', textAlign: 'center',
-        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 14,
+        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), fontSize: 'var(--ds-font-size-400)',
       }}>
         No resource profile found for your account.{' '}
-        <span style={{ fontSize: 12, display: 'block', marginTop: 8 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', display: 'block', marginTop: 8 }}>
           Ask your admin to link your profile to a resource entry.
         </span>
       </div>
@@ -469,7 +469,7 @@ export default function R360Panel() {
       ) : null}
 
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)') }}>
-        <CatyWorkloadRisk teamMembers={(teamResources.length > 0 ? teamResources : myResourceId ? [{ id: myResourceId, profile_id: '', name: 'You', role_name: null, avatar_url: null }] : []).map(r => ({ userId: r.id, name: r.name, allocationPct: 80, allocationColor: 'var(--ds-background-success-bold, #1F845A)', isYou: r.id === myResourceId, projectBreakdown: [] }))} />
+        <CatyWorkloadRisk teamMembers={(teamResources.length > 0 ? teamResources : myResourceId ? [{ id: myResourceId, profile_id: '', name: 'You', role_name: null, avatar_url: null }] : []).map(r => ({ userId: r.id, name: r.name, allocationPct: 80, allocationColor: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', isYou: r.id === myResourceId, projectBreakdown: [] }))} />
         <R360MemberDetail
           resourceId={activeResourceId}
           embedded

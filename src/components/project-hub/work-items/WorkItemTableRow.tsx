@@ -147,7 +147,7 @@ export function WorkItemTableRow({
         return (
           <td key={col.key} style={{ width: 70, padding: '0 4px' }}>
             <span style={{
-              fontSize: 10, fontFamily: 'var(--cp-font-mono)',
+              fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)',
               color: isDone ? 'var(--fg-4)' : 'var(--fg-3)',
               textDecoration: isDone ? 'line-through' : 'none',
               whiteSpace: 'nowrap',
@@ -168,7 +168,7 @@ export function WorkItemTableRow({
             ) : (
               <div className="flex items-center gap-1.5 min-w-0">
                 <span className="truncate" style={{
-                  fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   color: isDone ? 'var(--fg-4)' : 'var(--fg-1)',
                   textDecoration: isDone ? 'line-through' : 'none',
                 }} title={item.title || item.summary}>
@@ -199,7 +199,7 @@ export function WorkItemTableRow({
               style={{
                 height: 20, lineHeight: '20px',
                 padding: '0 6px', borderRadius: 4,
-                fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                 backgroundColor: statusStyle.bg, color: statusStyle.color,
                 whiteSpace: 'nowrap',
               }}
@@ -228,7 +228,7 @@ export function WorkItemTableRow({
                 {releaseLabel}
               </span>
             ) : (
-              <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>—</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>—</span>
             )}
           </td>
         );
@@ -239,12 +239,12 @@ export function WorkItemTableRow({
               {item.assignee_name ? (
                 <div className="flex items-center gap-1.5 min-w-0">
                   <AssigneeAvatar name={item.assignee_name} />
-                  <span className="truncate" style={{ fontSize: 11, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
+                  <span className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
                     {item.assignee_name}
                   </span>
                 </div>
               ) : (
-                <span style={{ fontSize: 11, color: 'var(--divider)' }}>—</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--divider)' }}>—</span>
               )}
             </div>
             {editingField === 'assignee' && (
@@ -262,12 +262,12 @@ export function WorkItemTableRow({
                 <div className="flex items-center gap-1">
                   <Calendar size={11} style={{ color: overdue ? 'var(--sem-danger)' : 'var(--fg-4)' }} />
                   <span style={{
-                    fontSize: 10, fontFamily: 'var(--cp-font-mono)',
+                    fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)',
                     color: overdue ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: overdue ? 600 : 400,
                   }}>{formatDue(item.due_date)}</span>
                 </div>
               ) : (
-                <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>—</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>—</span>
               )}
             </div>
             {editingField === 'dueDate' && (
@@ -282,7 +282,7 @@ export function WorkItemTableRow({
           <td key={col.key} style={{ width: 84, padding: '0 4px' }} onClick={e => handleCellClick('priority', e)}>
             <div ref={priorityRef} className="flex items-center gap-1 cursor-pointer">
               <PriorityIcon priority={item.priority} />
-              <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
                 {priorityLabel(item.priority)}
               </span>
             </div>

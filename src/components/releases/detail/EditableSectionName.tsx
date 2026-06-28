@@ -84,14 +84,14 @@ export function EditableSectionName({
                 maxWidth: 320,
                 height: 32,
                 padding: '0 8px',
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 700,
                 color: TEXT,
                 border: `1px solid ${BLUE}`,
                 borderRadius: 3,
                 outline: 'none',
                 background: 'var(--ds-surface, #FFFFFF)',
-                boxShadow: '0 0 0 1px rgba(24,104,219,0.2)',
+                boxShadow: '0 0 0 1px rgba(24,104,219,0.2)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
               }}
             />
             <button
@@ -118,7 +118,7 @@ export function EditableSectionName({
           </>
         ) : (
           <>
-            <span style={{ fontSize: 16, fontWeight: 700, color: TEXT }}>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: TEXT }}>
               {name || 'Give this section a name'}
             </span>
             <button

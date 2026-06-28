@@ -103,7 +103,7 @@ export const WeeklyStory: React.FC<Props> = ({ data, selectedDate, onPrevWeek, o
                   </div>
 
                   {day.events.length === 0 && (
-                    <div style={{ fontSize: 12, color: 'var(--rai-ink-muted)', fontStyle: 'italic', paddingLeft: 4 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--rai-ink-muted)', fontStyle: 'italic', paddingLeft: 4 }}>
                       No activity
                     </div>
                   )}
@@ -132,7 +132,7 @@ export const WeeklyStory: React.FC<Props> = ({ data, selectedDate, onPrevWeek, o
       )}
 
       {!isLoading && !data && (
-        <p style={{ fontSize: 13, color: 'var(--rai-ink-muted)', fontStyle: 'italic' }}>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--rai-ink-muted)', fontStyle: 'italic' }}>
           No weekly data available for this period. Try navigating to a different week.
         </p>
       )}

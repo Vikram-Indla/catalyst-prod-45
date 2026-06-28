@@ -108,7 +108,7 @@ export function T10PriorityCard({
             alignItems: 'center',
             gap: 2,
             padding: '2px 8px',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             borderRadius: 4,
             background: rankDiff > 0 ? 'var(--ds-background-success, #dcfce7)' : 'var(--ds-background-danger, #FFECEB)',

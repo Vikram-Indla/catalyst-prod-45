@@ -79,10 +79,10 @@ function Swatch({ tokenName, fallback, label }: { tokenName: string; fallback: s
         }}
       />
       <div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
           {label}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'monospace' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'monospace' }}>
           var({tokenName}, {fallback})
         </div>
       </div>
@@ -93,12 +93,12 @@ function Swatch({ tokenName, fallback, label }: { tokenName: string; fallback: s
 function ColorPalette() {
   return (
     <div style={{ padding: 24, fontFamily: 'Atlassian Sans, -apple-system, sans-serif' }}>
-      <h1 style={{ fontSize: 24, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: '0 0 24px' }}>
+      <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: '0 0 24px' }}>
         ADS Color Tokens
       </h1>
       {TOKEN_GROUPS.map((group) => (
         <div key={group.name} style={{ marginBlockEnd: 32 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: '0 0 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', paddingBlockEnd: 8 }}>
+          <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 653, color: 'var(--ds-text, #172B4D)', margin: '0 0 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)', paddingBlockEnd: 8 }}>
             {group.name}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 8 }}>

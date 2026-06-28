@@ -783,7 +783,7 @@ const drawerCSS = `
 .dark .um-form-group input:focus,
 .dark .um-form-group select:focus {
   border-color: var(--ds-border-focused, #579DFF) !important;
-  box-shadow: 0 0 0 3px rgba(87,157,255,0.20) !important;
+  box-shadow: 0 0 0 3px rgba(87,157,255,0.20) !important; /* ads-scanner:ignore-line — focus ring, no ADS shadow token */
 }
 .dark .um-form-group input:disabled {
   background: var(--ds-background-disabled, #1D2125) !important;

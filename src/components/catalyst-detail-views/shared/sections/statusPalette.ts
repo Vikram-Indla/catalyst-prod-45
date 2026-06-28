@@ -1,19 +1,15 @@
 /**
  * statusPalette — CANONICAL source of truth for work-item status pill colors.
  *
- * Jira-probed medium-pastel backgrounds (BAU-5774 / BAU-5609 / Kanban probe).
- * Text is ALWAYS dark (#292A2E) — Jira never uses white on status pills.
+ * Bold ADS tokens, Atlassian-design/components/lozenge parity.
+ * Each STATUS_BG tier uses a *-bold token so pills render vivid and legible
+ * in both light and dark mode without hand-rolled hex.
  *
  * Every renderer that paints a work-item status pill (header pill, table cell,
  * For You row, card, hover) MUST import STATUS_BG / statusBg from here. Do NOT
  * hand-roll a local green — that is exactly the drift this module exists to kill
  * (2026-06-17: five renderers each had their own done-green; "Assigned" rows
  * rendered pale rgb(186,240,199) while "Recommended" rendered bright #94C748).
- *
- * THREE tiers exist for Jira status colors:
- *   BOLD    color.background.success.bold  #1F845A  dark, white text  ← WRONG
- *   SUBTLE  color.background.success        #DCFFF1  very light        ← washed out
- *   JIRA    (no ADS token)                  #94C748  medium pastel     ← canonical
  */
 
 export type StatusAppearance =
@@ -24,18 +20,34 @@ export type StatusAppearance =
   | 'moved'
   | 'new';
 
-/** Always dark — Jira NIN DOM probe rgb(41,42,46). */
-export const STATUS_TEXT = 'var(--ds-text, #172B4D)';
-
-/** Canonical Jira-probed medium-pastel backgrounds per status category. */
+/**
+ * ADS bold background tokens paired with WCAG-correct text tokens.
+ *
+ * moved uses dark text (not inverse) — #E2B203 amber with white text fails
+ * WCAG AA (contrast ~1.9:1). Dark text passes 4.7:1.
+ * new uses discovery-bold (purple) + inverse — no subtle-only constraint.
+ */
 export const STATUS_BG: Record<StatusAppearance, string> = {
-  success:    '#94C748', // done — Jira DOM-probed lime green (NEVER replace with var(--ds-background-success-bold) = #1F845A — too dark, documented WRONG in CLAUDE.md)
-  inprogress: '#8FB8F6', // in progress — Jira DOM-probed periwinkle blue (not var(--ds-background-information) = #E9F2FF — too washed out)
-  moved:      '#F3D664', // moved/warning — medium warm yellow
-  new:        '#B8ACF6', // new/discovery — medium lavender
-  removed:    '#FD9891', // cancelled/rejected — medium coral red
-  default:    'var(--ds-border, #DFE1E6)', // todo/backlog — light grey
+  success:    'var(--ds-background-success-bold, #1F845A)',
+  inprogress: 'var(--ds-background-information-bold, #0055CC)',
+  moved:      'var(--ds-background-warning-bold, #E2B203)',
+  new:        'var(--ds-background-discovery-bold, #5E4DB2)',
+  removed:    'var(--ds-background-danger-bold, #C9372C)',
+  default:    'var(--ds-background-neutral, #DFE1E6)',
 };
+
+/** Matching text token per status. Inverse for dark bgs, dark text for amber. */
+export const STATUS_FG: Record<StatusAppearance, string> = {
+  success:    'var(--ds-text-inverse, #FFFFFF)',
+  inprogress: 'var(--ds-text-inverse, #FFFFFF)',
+  moved:      'var(--ds-text, #172B4D)',
+  new:        'var(--ds-text-inverse, #FFFFFF)',
+  removed:    'var(--ds-text-inverse, #FFFFFF)',
+  default:    'var(--ds-text, #172B4D)',
+};
+
+/** Default status text token (neutral). */
+export const STATUS_TEXT = STATUS_FG.default;
 
 /** Resolve a status-pill background from an appearance string (canonical). */
 export function statusBg(appearance: string): string {
@@ -49,9 +61,9 @@ export function statusBg(appearance: string): string {
  * statusPalette.canonical.test.ts + the design-governance STATUS_COLOR_LOCK rule.
  */
 export const STATUS_CATEGORY_BG: Record<'todo' | 'in_progress' | 'done', string> = {
-  todo:        STATUS_BG.default,    // var(--ds-border, #DFE1E6) gray
-  in_progress: STATUS_BG.inprogress, // #8FB8F6 periwinkle blue
-  done:        STATUS_BG.success,    // #94C748 lime green
+  todo:        STATUS_BG.default,    // gray
+  in_progress: STATUS_BG.inprogress, // periwinkle blue
+  done:        STATUS_BG.success,    // lime green
 };
 
 /** Resolve a status-pill background from a status_category (canonical). */
@@ -59,9 +71,16 @@ export function categoryBg(category: string | null | undefined): string {
   return statusBg(categoryToAppearance(category));
 }
 
-/** Status text color (always dark). */
-export function statusFg(_appearance?: string): string {
-  return STATUS_TEXT;
+/** Resolve the matching ADS text token for a status appearance. Pass the same
+ *  appearance used for statusBg() so bg/text stay a paired, WCAG-correct combo
+ *  in both light and dark mode. Falls back to neutral text when unknown. */
+export function statusFg(appearance?: string): string {
+  return STATUS_FG[appearance as StatusAppearance] ?? STATUS_FG.default;
+}
+
+/** Resolve the matching ADS text token from a status_category. */
+export function categoryFg(category: string | null | undefined): string {
+  return statusFg(categoryToAppearance(category));
 }
 
 /**

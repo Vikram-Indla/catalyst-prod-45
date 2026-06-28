@@ -652,7 +652,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
           padding: '8px 12px',
           background: 'var(--ds-background-information, #E9F2FF)',
           borderBottom: '1px solid var(--ds-border-information, #CCE0FF)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--ds-text-information, #0055CC)',
           flexShrink: 0,
         }}>
@@ -677,7 +677,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtle, #42526E)',
                   padding: '0 4px',
                 }}
@@ -802,14 +802,14 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
               background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F6F7F8))',
               gap: '8px',
               // ads-scanner:ignore-next-line
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cp-text-secondary, var(--cp-text-tertiary, #6B778C))',
             }}>
               {/* Jira-style range label: "1–25 of 656" */}
               <span
                 data-testid="allwork-pagination-count"
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtle, var(--cp-text-tertiary, #6B778C))',
                   fontFamily: 'var(--cp-font-body)',
                   whiteSpace: 'nowrap',
@@ -854,7 +854,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                     ...base,
                     minHeight: '28px',
                     // ads-scanner:ignore-next-line
-                    fontSize: '12px',
+                    fontSize: 'var(--ds-font-size-200)',
                   }),
                 }}
                 aria-label="Rows per page"
@@ -871,7 +871,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                 borderRadius: '0 10px 10px 0', overflow: 'hidden',
               }}>
                 <Suspense fallback={
-                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', fontSize: 14 }}>
+                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', fontSize: 'var(--ds-font-size-400)' }}>
                     Loading…
                   </div>
                 }>
@@ -927,7 +927,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                 <div style={{ textAlign: 'center' }}>
                   <p style={{
                     margin: '0 0 8px',
-                    fontSize: 16, fontWeight: 600,
+                    fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
                     color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                     lineHeight: '20px',
                   }}>
@@ -943,7 +943,7 @@ export default function ProjectAllWorkView({ projectKey, projectId, mode = 'proj
                     data-testid="allwork-empty-state-subtitle"
                     style={{
                       margin: 0,
-                      fontSize: 14, fontWeight: 400,
+                      fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
                       color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
                       lineHeight: '20px', maxWidth: 280,
                     }}

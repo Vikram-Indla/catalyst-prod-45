@@ -88,7 +88,7 @@ export function PresenceAvatar({ name, size = 36, presence = null, displayLabel 
               presence === 'online'
                 ? 'var(--cv2-presence-online)'
                 : presence === 'away'
-                ? '#E8A87C'
+                ? '#E8A87C' // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                 : 'transparent',
             border:
               presence === 'offline'

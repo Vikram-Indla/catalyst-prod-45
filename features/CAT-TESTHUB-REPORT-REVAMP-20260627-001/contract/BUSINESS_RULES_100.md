@@ -1,0 +1,110 @@
+# BUSINESS RULES — 100 to validate against Catalyst reality
+
+> Source: the requirements handover (Section 21). These are STARTING rules, not truth.
+> Each must be validated against real Catalyst evidence. Status: UNVALIDATED / VALIDATED / REFUTED / NEEDS-USER.
+> Do not encode any rule into a report until VALIDATED or user-CONFIRMED.
+
+| Rule # | Status | Evidence / decision id |
+|--------|--------|------------------------|
+| BR-001 | UNVALIDATED | — |
+| BR-002 | UNVALIDATED | — |
+| BR-003 | UNVALIDATED | — |
+| BR-004 | UNVALIDATED | — |
+| BR-005 | UNVALIDATED | — |
+| BR-006 | UNVALIDATED | — |
+| BR-007 | UNVALIDATED | — |
+| BR-008 | UNVALIDATED | — |
+| BR-009 | UNVALIDATED | — |
+| BR-010 | UNVALIDATED | — |
+| BR-011 | UNVALIDATED | — |
+| BR-012 | UNVALIDATED | — |
+| BR-013 | UNVALIDATED | — |
+| BR-014 | UNVALIDATED | — |
+| BR-015 | UNVALIDATED | — |
+| BR-016 | UNVALIDATED | — |
+| BR-017 | UNVALIDATED | — |
+| BR-018 | UNVALIDATED | — |
+| BR-019 | UNVALIDATED | — |
+| BR-020 | UNVALIDATED | — |
+| BR-021 | UNVALIDATED | — |
+| BR-022 | UNVALIDATED | — |
+| BR-023 | UNVALIDATED | — |
+| BR-024 | UNVALIDATED | — |
+| BR-025 | UNVALIDATED | — |
+| BR-026 | UNVALIDATED | — |
+| BR-027 | UNVALIDATED | — |
+| BR-028 | UNVALIDATED | — |
+| BR-029 | UNVALIDATED | — |
+| BR-030 | UNVALIDATED | — |
+| BR-031 | UNVALIDATED | — |
+| BR-032 | UNVALIDATED | — |
+| BR-033 | UNVALIDATED | — |
+| BR-034 | UNVALIDATED | — |
+| BR-035 | UNVALIDATED | — |
+| BR-036 | UNVALIDATED | — |
+| BR-037 | UNVALIDATED | — |
+| BR-038 | UNVALIDATED | — |
+| BR-039 | UNVALIDATED | — |
+| BR-040 | UNVALIDATED | — |
+| BR-041 | UNVALIDATED | — |
+| BR-042 | UNVALIDATED | — |
+| BR-043 | UNVALIDATED | — |
+| BR-044 | UNVALIDATED | — |
+| BR-045 | UNVALIDATED | — |
+| BR-046 | UNVALIDATED | — |
+| BR-047 | UNVALIDATED | — |
+| BR-048 | UNVALIDATED | — |
+| BR-049 | UNVALIDATED | — |
+| BR-050 | UNVALIDATED | — |
+| BR-051 | UNVALIDATED | — |
+| BR-052 | UNVALIDATED | — |
+| BR-053 | UNVALIDATED | — |
+| BR-054 | UNVALIDATED | — |
+| BR-055 | UNVALIDATED | — |
+| BR-056 | UNVALIDATED | — |
+| BR-057 | UNVALIDATED | — |
+| BR-058 | UNVALIDATED | — |
+| BR-059 | UNVALIDATED | — |
+| BR-060 | UNVALIDATED | — |
+| BR-061 | UNVALIDATED | — |
+| BR-062 | UNVALIDATED | — |
+| BR-063 | UNVALIDATED | — |
+| BR-064 | UNVALIDATED | — |
+| BR-065 | UNVALIDATED | — |
+| BR-066 | UNVALIDATED | — |
+| BR-067 | UNVALIDATED | — |
+| BR-068 | UNVALIDATED | — |
+| BR-069 | UNVALIDATED | — |
+| BR-070 | UNVALIDATED | — |
+| BR-071 | UNVALIDATED | — |
+| BR-072 | UNVALIDATED | — |
+| BR-073 | UNVALIDATED | — |
+| BR-074 | UNVALIDATED | — |
+| BR-075 | UNVALIDATED | — |
+| BR-076 | UNVALIDATED | — |
+| BR-077 | UNVALIDATED | — |
+| BR-078 | UNVALIDATED | — |
+| BR-079 | UNVALIDATED | — |
+| BR-080 | UNVALIDATED | — |
+| BR-081 | UNVALIDATED | — |
+| BR-082 | UNVALIDATED | — |
+| BR-083 | UNVALIDATED | — |
+| BR-084 | UNVALIDATED | — |
+| BR-085 | UNVALIDATED | — |
+| BR-086 | UNVALIDATED | — |
+| BR-087 | UNVALIDATED | — |
+| BR-088 | UNVALIDATED | — |
+| BR-089 | UNVALIDATED | — |
+| BR-090 | UNVALIDATED | — |
+| BR-091 | UNVALIDATED | — |
+| BR-092 | UNVALIDATED | — |
+| BR-093 | UNVALIDATED | — |
+| BR-094 | UNVALIDATED | — |
+| BR-095 | UNVALIDATED | — |
+| BR-096 | UNVALIDATED | — |
+| BR-097 | UNVALIDATED | — |
+| BR-098 | UNVALIDATED | — |
+| BR-099 | UNVALIDATED | — |
+| BR-100 | UNVALIDATED | — |
+
+_Full rule text lives in the requirements handover Section 21. Map each BR-### number to its text there._

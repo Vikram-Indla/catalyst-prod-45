@@ -23,7 +23,7 @@ export function SelectAllRow({ totalCount, selectedCount, onToggle }: SelectAllR
         border: 'none',
         cursor: 'pointer',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: 'var(--cv2-text)',
         fontWeight: 500,
         textAlign: 'left',

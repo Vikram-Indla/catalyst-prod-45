@@ -68,6 +68,34 @@ export default function CatalystDetailRouter({
   onConvert, hideSidebar, entityKind,
 }: CatalystDetailRouterProps) {
 
+  // ── HOOKS FIRST (rules-of-hooks) ──
+  // This router is a SHARED swappable panel: the same fiber is reused while
+  // entityKind flips (e.g. test_cycle → story in the timeline side panel).
+  // The entityKind short-circuits below return before any hook, so this
+  // useQuery MUST run unconditionally above them — otherwise the hook count
+  // changes between renders ("Rendered more hooks than during the previous
+  // render"). It's already gated by `enabled`, so always-calling is a no-op
+  // for the short-circuited entity kinds.
+  //
+  // F-iter9 PK fix: ph_issues' primary key is `issue_key` (text), not `id`.
+  // itemId here is the row's issue_key (e.g. "BAU-5485"). Phase 6 (2026-05-02):
+  // the lookup is skipped for idea entities (ph_ideas uses idea_key) — callers
+  // that open an idea must pass itemType="idea" explicitly.
+  const { data: lookedUpType } = useQuery({
+    queryKey: ['cv-item-type-lookup', itemId],
+    enabled: !!itemId && isOpen && !itemType && !entityKind,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('issue_type')
+        .eq('issue_key', itemId)
+        .is('deleted_at', null)
+        .maybeSingle();
+      return data?.issue_type ?? null;
+    },
+    staleTime: 120000,
+  });
+
   // Task 1.5d (2026-06-16) — short-circuit for Tasks Hub.
   // Tasks live in a separate table (`tasks`) and have their own canonical
   // detail surface. We do NOT look up itemType for entityKind='task' — the
@@ -141,30 +169,6 @@ export default function CatalystDetailRouter({
       </Suspense>
     );
   }
-
-  // F-iter9 PK fix: ph_issues' primary key is `issue_key` (text), not `id`.
-  // The codebase had been silently no-op'ing on .eq('id', ...) since there's
-  // no `id` column. itemId here is the row's issue_key (e.g. "BAU-5485")
-  // — see BacklogPage.openDetail wiring and useBacklogData population.
-  //
-  // Phase 6 (2026-05-02): the lookup is skipped for idea entities since
-  // ph_ideas uses idea_key (different table). Callers that open an idea
-  // are required to pass itemType="idea" explicitly. Without that, the
-  // probe below would hit ph_issues and miss.
-  const { data: lookedUpType } = useQuery({
-    queryKey: ['cv-item-type-lookup', itemId],
-    enabled: !!itemId && isOpen && !itemType,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('ph_issues')
-        .select('issue_type')
-        .eq('issue_key', itemId)
-        .is('deleted_at', null)
-        .maybeSingle();
-      return data?.issue_type ?? null;
-    },
-    staleTime: 120000,
-  });
 
   const resolved = resolveItemType(itemType || lookedUpType);
 

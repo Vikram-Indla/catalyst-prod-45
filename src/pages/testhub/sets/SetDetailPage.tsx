@@ -48,6 +48,7 @@ interface CycleSet {
     status: string;
     planned_start_date: string | null;
     planned_end_date: string | null;
+    sprint?: { id: string; name: string; status: string } | null;
   } | null;
 }
 
@@ -81,7 +82,7 @@ const CYCLE_STATUS_APPEARANCE: Record<string, 'default' | 'inprogress' | 'succes
 const thStyle: React.CSSProperties = {
   padding: '8px 12px',
   textAlign: 'left',
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
   color: 'var(--ds-text-subtle, #42526E)',
 };
@@ -169,7 +170,7 @@ function AddCasesModal({
         fontFamily: 'var(--ds-font-family-body)',
       }}>
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-          <h2 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          <h2 style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
             Add cases to set
           </h2>
           <input
@@ -183,7 +184,7 @@ function AddCasesModal({
               padding: '6px 10px',
               border: '2px solid var(--ds-border, #DFE1E6)',
               borderRadius: 4,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontFamily: 'var(--ds-font-family-body)',
               boxSizing: 'border-box',
               color: 'var(--ds-text, #172B4D)',
@@ -193,7 +194,7 @@ function AddCasesModal({
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px' }}>
           {filtered.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, padding: '16px 0' }}>
+            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)', padding: '16px 0' }}>
               {available.length === 0 ? 'All cases are already in this set.' : 'No cases match your search.'}
             </p>
           ) : (
@@ -210,10 +211,10 @@ function AddCasesModal({
                 }}
               >
                 <input type="checkbox" checked={selected.has(c.id)} onChange={() => toggle(c.id)} />
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)', minWidth: 72 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)', minWidth: 72 }}>
                   {c.key}
                 </span>
-                <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', flex: 1 }}>{c.title}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', flex: 1 }}>{c.title}</span>
               </label>
             ))
           )}
@@ -227,7 +228,7 @@ function AddCasesModal({
               border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: 4,
               cursor: 'pointer',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text, #172B4D)',
             }}
           >
@@ -243,7 +244,7 @@ function AddCasesModal({
               border: 'none',
               borderRadius: 4,
               cursor: selected.size === 0 || saving ? 'not-allowed' : 'pointer',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               opacity: selected.size === 0 ? 0.7 : 1,
             }}
@@ -328,7 +329,7 @@ function AddToCycleDropdown({
       }}
     >
       {cycles.length === 0 ? (
-        <div style={{ padding: '10px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <div style={{ padding: '10px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
           No cycles available
         </div>
       ) : (
@@ -345,7 +346,7 @@ function AddToCycleDropdown({
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--ds-text, #172B4D)',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
@@ -485,7 +486,7 @@ export default function SetDetailPage() {
                   border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: 4,
                   cursor: 'pointer',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text, #172B4D)',
                 }}
               >
@@ -501,7 +502,7 @@ export default function SetDetailPage() {
                     border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: 4,
                     cursor: 'pointer',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color: 'var(--ds-text, #172B4D)',
                   }}
                 >
@@ -524,7 +525,7 @@ export default function SetDetailPage() {
                   border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: 4,
                   cursor: 'pointer',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text, #172B4D)',
                 }}
               >
@@ -553,7 +554,7 @@ export default function SetDetailPage() {
               border: 'none',
               background: 'none',
               cursor: 'pointer',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: activeTab === tab ? 600 : 400,
               color: activeTab === tab ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #42526E)',
               borderBottom: activeTab === tab ? '2px solid var(--ds-border-brand, #0052CC)' : '2px solid transparent',
@@ -585,7 +586,7 @@ export default function SetDetailPage() {
                     border: 'none',
                     borderRadius: 4,
                     cursor: 'pointer',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
                   }}
                 >
@@ -595,7 +596,7 @@ export default function SetDetailPage() {
             />
           ) : (
             <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
                 <thead>
                   <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
                     <th style={thStyle}>Key</th>
@@ -609,7 +610,7 @@ export default function SetDetailPage() {
                     const tc = sc.tm_test_cases;
                     return (
                       <tr key={sc.id} style={{ borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-                        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                           {tc?.case_key ?? '—'}
                         </td>
                         <td style={{ ...tdStyle, color: 'var(--ds-text, #172B4D)' }}>
@@ -658,7 +659,7 @@ export default function SetDetailPage() {
             <EmptyState message="This set has not been added to any cycles yet." />
           ) : (
             <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
                 <thead>
                   <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
                     <th style={thStyle}>Cycle name</th>
@@ -683,6 +684,9 @@ export default function SetDetailPage() {
                             </Lozenge>
                           ) : '—'}
                         </td>
+                        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-200)' }}>
+                          {cycle?.sprint?.name ?? '—'}
+                        </td>
                         <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)' }}>
                           {cycle?.planned_start_date ? formatDate(cycle.planned_start_date) : '—'}
                         </td>
@@ -697,7 +701,7 @@ export default function SetDetailPage() {
                                 background: 'none',
                                 border: 'none',
                                 cursor: 'pointer',
-                                fontSize: 12,
+                                fontSize: 'var(--ds-font-size-200)',
                                 color: 'var(--ds-link, #0052CC)',
                                 padding: 0,
                               }}
@@ -740,10 +744,10 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
       background: 'var(--ds-surface, #FFFFFF)',
       minWidth: 140,
     }}>
-      <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>
         {value}
       </div>
-      <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
         {label}
       </div>
     </div>
@@ -756,7 +760,7 @@ function EmptyState({ message, action }: { message: string; action?: React.React
       textAlign: 'center',
       padding: '64px 32px',
       color: 'var(--ds-text-subtlest, #6B778C)',
-      fontSize: 14,
+      fontSize: 'var(--ds-font-size-400)',
       border: '1px dashed var(--ds-border, #DFE1E6)',
       borderRadius: 8,
     }}>

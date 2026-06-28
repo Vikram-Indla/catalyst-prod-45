@@ -1,0 +1,6 @@
+=== ads-color-gate.cjs ===
+✅ ads-color-gate: 693 = baseline 693. No new hard-coded colors.
+
+=== ads-audit-gate.cjs ===
+✅ ads-audit-gate: no category above baseline — tokens 28924/28966, typography 2204/2214, spacing 1118/1118, fontImports 0/0.
+   2 categories dropped (tokens, typography). Ratchet down: `node scripts/ads-audit-gate.cjs --update` then commit audit-baseline.json.

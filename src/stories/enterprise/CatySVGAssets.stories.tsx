@@ -23,7 +23,7 @@ const sizes = [24, 32, 48, 64, 96, 128] as const;
 function AssetRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 32 }}>
-      <p style={{ margin: '0 0 12px', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+      <p style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         {label}
       </p>
       <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
@@ -39,7 +39,7 @@ function SizeChip({ size, bg, src, alt }: { size: number; bg: string; src: strin
       <div style={{ background: bg, borderRadius: 8, padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <img src={src} alt={alt} width={size} height={size} />
       </div>
-      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>{size}px</span>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>{size}px</span>
     </div>
   );
 }
@@ -54,6 +54,7 @@ export const AskCaty: StoryObj = {
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={askCatyLight} alt="Ask Caty dark" />)}
       </AssetRow>
       <AssetRow label="Ask Caty — Light (on dark bg)">
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={askCatyDark} alt="Ask Caty light" />)}
       </AssetRow>
     </div>
@@ -70,6 +71,7 @@ export const Caty: StoryObj = {
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={catyLight} alt="Caty dark" />)}
       </AssetRow>
       <AssetRow label="Caty — Light (on dark bg)">
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyDark} alt="Caty light" />)}
       </AssetRow>
     </div>
@@ -81,28 +83,28 @@ export const AllVariants: StoryObj = {
   render: () => (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
       <div>
-        <h3 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Ask Caty</h3>
+        <h3 style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Ask Caty</h3>
         {[
           { label: 'gradient', src: askCatyGradient, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
           { label: 'dark (light bg)', src: askCatyLight, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
-          { label: 'light (dark bg)', src: askCatyDark, bg: '#2A2832', textColor: '#F6F4EF' },
+          { label: 'light (dark bg)', src: askCatyDark, bg: '#2A2832', textColor: '#F6F4EF' }, // ads-scanner:ignore-line — Storybook design demo
         ].map(({ label, src, bg, textColor }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, background: bg, borderRadius: 8, padding: '12px 16px' }}>
             <img src={src} alt={`Ask Caty ${label}`} width={48} height={48} />
-            <span style={{ fontSize: 13, color: textColor }}>{label}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: textColor }}>{label}</span>
           </div>
         ))}
       </div>
       <div>
-        <h3 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Caty</h3>
+        <h3 style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Caty</h3>
         {[
           { label: 'gradient', src: catyGradient, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
           { label: 'dark (light bg)', src: catyLight, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
-          { label: 'light (dark bg)', src: catyDark, bg: '#2A2832', textColor: '#F6F4EF' },
+          { label: 'light (dark bg)', src: catyDark, bg: '#2A2832', textColor: '#F6F4EF' }, // ads-scanner:ignore-line — Storybook design demo
         ].map(({ label, src, bg, textColor }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, background: bg, borderRadius: 8, padding: '12px 16px' }}>
             <img src={src} alt={`Caty ${label}`} width={48} height={48} />
-            <span style={{ fontSize: 13, color: textColor }}>{label}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: textColor }}>{label}</span>
           </div>
         ))}
       </div>
@@ -115,16 +117,19 @@ export const BrandLogoMark: StoryObj = {
   render: () => (
     <div>
       <AssetRow label="Caty AI — with background (dark canvas)">
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAIBg} alt="Caty AI with bg" />)}
       </AssetRow>
       <AssetRow label="Caty AI — no background (transparent)">
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface-sunken, #F7F8F9)" src={catyAI} alt="Caty AI" />)}
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#2A2832" src={catyAI} alt="Caty AI on dark" />)}
       </AssetRow>
       <AssetRow label="Logo Mark — Light (on light bg)">
         {sizes.map(s => <SizeChip key={s} size={s} bg="var(--ds-surface, #FFFFFF)" src={logoMarkLight} alt="Logo mark light" />)}
       </AssetRow>
       <AssetRow label="Logo Mark — Dark (on dark bg)">
+        {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
         {sizes.map(s => <SizeChip key={s} size={s} bg="#1E2A3A" src={logoMarkDark} alt="Logo mark dark" />)}
       </AssetRow>
     </div>
@@ -136,14 +141,16 @@ export const BrandComparison: StoryObj = {
   render: () => (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
       {[
+        // ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg
         { label: 'Caty AI BG', src: catyAIBg, bg: '#2A2832', textColor: '#F6F4EF' },
         { label: 'Caty AI', src: catyAI, bg: 'var(--ds-surface-sunken, #F7F8F9)', textColor: 'var(--ds-text-subtle, #6B778C)' },
         { label: 'Logo Mark Light', src: logoMarkLight, bg: 'var(--ds-surface, #FFFFFF)', textColor: 'var(--ds-text-subtle, #6B778C)' },
+        // ads-scanner:ignore-next-line — Storybook design demo, intentional dark bg
         { label: 'Logo Mark Dark', src: logoMarkDark, bg: '#1E2A3A', textColor: '#F6F4EF' },
       ].map(({ label, src, bg, textColor }) => (
         <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, background: bg, borderRadius: 12, padding: 24 }}>
           <img src={src} alt={label} width={80} height={80} />
-          <span style={{ fontSize: 12, color: textColor, fontWeight: 600 }}>{label}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: textColor, fontWeight: 600 }}>{label}</span>
         </div>
       ))}
     </div>
@@ -154,7 +161,7 @@ export const CatyFabIconStory: StoryObj = {
   name: 'FAB Icon — Animated Component',
   render: () => (
     <div>
-      <p style={{ margin: '0 0 16px', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+      <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         CatyFabIcon — inline SVG with CSS animation states
       </p>
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -163,25 +170,26 @@ export const CatyFabIconStory: StoryObj = {
             <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8, padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))' }}>
               <CatyFabIcon size={s} />
             </div>
-            <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>{s}px</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>{s}px</span>
           </div>
         ))}
       </div>
       <div style={{ marginTop: 32, display: 'flex', gap: 32, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>Default (breathing)</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>Default (breathing)</span>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))' }}>
             <CatyFabIcon size={56} />
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>On dark bg</span>
-          <div style={{ background: '#2A2832', borderRadius: 12, padding: 16 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>On dark bg</span>
+          {/* ads-scanner:ignore-line — Storybook design demo, intentional dark bg */}
+        <div style={{ background: '#2A2832', borderRadius: 12, padding: 16 }}>
             <CatyFabIcon size={56} />
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>Awake state (hover)</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)' }}>Awake state (hover)</span>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))' }}>
             <span className="cc-fab-icon" style={{ display: 'inline-block', width: 56, height: 56 }}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width={56} height={56} className="is-awake" role="img" aria-label="Ask Caty awake">
@@ -221,7 +229,7 @@ export const CatyFabIconStory: StoryObj = {
           </div>
         </div>
       </div>
-      <p style={{ marginTop: 16, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+      <p style={{ marginTop: 16, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
         Hover/active on the default size chips to see live animation states.
       </p>
     </div>
@@ -242,8 +250,8 @@ export const InteractivePreview: StoryObj = {
           <div style={{ background: bg, borderRadius: 12, padding: 16 }}>
             <img src={src} alt={label} width={96} height={96} />
           </div>
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>{label}</span>
-          <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>SVG hover animations active</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>{label}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>SVG hover animations active</span>
         </div>
       ))}
     </div>

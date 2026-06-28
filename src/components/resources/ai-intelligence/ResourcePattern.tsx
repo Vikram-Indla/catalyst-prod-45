@@ -26,7 +26,7 @@ export const ResourcePattern: React.FC<ResourcePatternProps> = ({ summary, warni
     {summary ? (
       <p className="rai-pattern-text" style={{ margin: 0 }}>{summary}</p>
     ) : (
-      <p style={{ fontSize: 13, color: 'var(--rai-ink-muted)', margin: 0, fontStyle: 'italic' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--rai-ink-muted)', margin: 0, fontStyle: 'italic' }}>
         Click "Refresh AI" to generate resource pattern analysis.
       </p>
     )}

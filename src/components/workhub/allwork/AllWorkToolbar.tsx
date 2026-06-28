@@ -103,8 +103,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
     </div>
   );
 }
-
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 
 export function AllWorkToolbar({
   filters, onFilterChange, onSearch, viewMode, onViewModeChange,

@@ -327,7 +327,7 @@ function ColumnHandle({ editor, anchor }: HandleProps) {
             left: HIT_WIDTH / 2,
             width: 1,
             height: '100%',
-            background: '#85B8FF',
+            background: 'var(--ds-border-focused, #85B8FF)',
             pointerEvents: 'none',
           }}
         />

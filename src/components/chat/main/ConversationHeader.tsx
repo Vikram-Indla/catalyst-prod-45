@@ -70,7 +70,7 @@ function ConversationMenuItem({
         border: 'none',
         borderRadius: 4,
         cursor: 'pointer',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #172B4D)',
       }}
       onMouseEnter={(e) => {
@@ -389,7 +389,7 @@ export function ConversationHeader({ conversation, members = [], onAskCaty, onOp
             {!isDm && (
               <>
                 <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '4px 0' }} />
-                <div style={{ padding: '4px 10px', fontSize: 11, color: 'var(--ds-text-subtle, #44546F)' }}>
+                <div style={{ padding: '4px 10px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)' }}>
                   Notifications
                 </div>
                 <ConversationMenuItem

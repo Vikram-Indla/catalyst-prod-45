@@ -276,7 +276,7 @@ export function RichTextCommentEditor({
           data-placeholder={placeholder}
           style={{
             minHeight: 80, padding: '12px 14px', outline: 'none',
-            fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', lineHeight: 1.6, fontFamily: 'inherit',
+            fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', lineHeight: 1.6, fontFamily: 'inherit',
             background: 'var(--ds-surface, #FFF)', overflowY: 'auto', maxHeight: 300,
             position: 'relative',
           }}
@@ -295,7 +295,7 @@ export function RichTextCommentEditor({
                 onMouseDown={e => { e.preventDefault(); insertMention(m); }}
                 style={{
                   width: '100%', padding: '8px 12px', border: 'none', textAlign: 'left', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                   background: idx === mentionIndex ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                 }}
                 onMouseEnter={() => setMentionIndex(idx)}
@@ -303,7 +303,7 @@ export function RichTextCommentEditor({
                 {m.avatar_url ? (
                   <img src={m.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-background-brand-bold, #0747A6)', color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-background-brand-bold, #0747A6)', color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>
                     {m.full_name?.slice(0, 2).toUpperCase()}
                   </div>
                 )}
@@ -315,7 +315,7 @@ export function RichTextCommentEditor({
       </div>
 
       {uploading && (
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginTop: 4 }}>Uploading image…</div>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginTop: 4 }}>Uploading image…</div>
       )}
 
       {/* Save / Cancel */}
@@ -326,16 +326,16 @@ export function RichTextCommentEditor({
           style={{
             padding: '6px 16px', borderRadius: 4, border: 'none', cursor: isEmpty || isSubmitting ? 'not-allowed' : 'pointer',
             background: isEmpty || isSubmitting ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', color: isEmpty || isSubmitting ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-surface, #FFF)',
-            fontSize: 14, fontWeight: 600, transition: 'background 0.15s',
+            fontSize: 'var(--ds-font-size-400)', fontWeight: 600, transition: 'background 0.15s',
           }}
-          onMouseEnter={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #0747A6)'; }}
+          onMouseEnter={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, var(--ds-link-pressed, #0747A6))'; }}
           onMouseLeave={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))'; }}
         >Save</button>
         <button
           onClick={handleCancel}
           style={{
             padding: '6px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
-            background: 'transparent', color: 'var(--ds-text-subtle, #42526E)', fontSize: 14, fontWeight: 500,
+            background: 'transparent', color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}

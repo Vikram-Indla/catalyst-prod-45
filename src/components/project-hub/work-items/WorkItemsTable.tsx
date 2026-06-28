@@ -251,7 +251,7 @@ export function WorkItemsTable({
                     className="text-left px-1 select-none"
                     style={{
                       width: col.width ?? undefined,
-                      fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em',
                       textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)',
                       borderBottom: '1px solid var(--divider)',
                       cursor: col.sortable ? 'pointer' : 'default',
@@ -323,10 +323,10 @@ export function WorkItemsTable({
                     /* No search results */
                     <div className="flex flex-col items-center justify-center py-16">
                       <SearchX size={32} style={{ color: 'var(--divider)', marginBottom: 8 }} />
-                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>No items match your search</p>
+                      <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>No items match your search</p>
                       <button
                         onClick={onClearFilters}
-                        style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer' }}
                       >
                         Clear filters
                       </button>
@@ -335,14 +335,14 @@ export function WorkItemsTable({
                     /* Jira filter with no Jira items */
                     <div className="flex flex-col items-center justify-center py-16">
                       <Link2 size={32} style={{ color: 'var(--divider)', marginBottom: 8 }} />
-                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>No Jira-sourced items in this project</p>
-                      <p style={{ fontSize: 12, color: 'var(--fg-4)' }}>Connect Jira to start syncing.</p>
+                      <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>No Jira-sourced items in this project</p>
+                      <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>Connect Jira to start syncing.</p>
                     </div>
                   ) : sourceFilter === 'catalyst' ? (
                     /* Catalyst filter with no Catalyst items */
                     <div className="flex flex-col items-center justify-center py-16">
                       <FileText size={32} style={{ color: 'var(--divider)', marginBottom: 8 }} />
-                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>All items in this project come from Jira.</p>
+                      <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>All items in this project come from Jira.</p>
                     </div>
                   ) : (
                     /* No items at all */
@@ -350,13 +350,13 @@ export function WorkItemsTable({
                       <div className="flex items-center justify-center mb-3 bg-[var(--cp-bd-zone)]" style={{ width: 56, height: 56, borderRadius: '50%' }}>
                         <FileText size={28} style={{ color: 'var(--fg-4)' }} />
                       </div>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items yet</p>
-                      <p style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 12 }}>Create your first work item to get started</p>
+                      <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items yet</p>
+                      <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', marginBottom: 12 }}>Create your first work item to get started</p>
                       {onCreateClick && (
                         <button
                           onClick={onCreateClick}
                           className="bg-[var(--cp-blue)]"
-                          style={{ padding: '6px 16px', fontSize: 12, fontWeight: 600, borderRadius: 4, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer' }}
+                          style={{ padding: '6px 16px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, borderRadius: 4, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer' }}
                         >
                           Create work item
                         </button>

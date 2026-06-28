@@ -393,7 +393,7 @@ export function ReleasesPage() {
         >
           Releases
         </h1>
-        <span style={{ fontSize: '14px', color: 'var(--ds-text-subtle, #505258)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #505258)' }}>
           This space has {releases.filter((r) => productProjectIds.has(r.project_id)).length} releases
         </span>
       </div>

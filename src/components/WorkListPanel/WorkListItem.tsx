@@ -67,7 +67,7 @@ export const WorkListItem = memo(function WorkListItem({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            fontSize: '12px',
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: 'var(--ds-text-subtlest, #6B778C)',
             marginBottom: '2px',
@@ -78,7 +78,7 @@ export const WorkListItem = memo(function WorkListItem({
         <div
           dir="auto"
           style={{
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 400,
             color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
             whiteSpace: 'nowrap',
@@ -92,10 +92,10 @@ export const WorkListItem = memo(function WorkListItem({
 
       <div
         style={{
-          fontSize: '11px',
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 500,
           padding: '2px 6px',
-          backgroundColor: '#E6EDFA',
+          backgroundColor: 'var(--ds-background-information, #E6EDFA)',
           color: 'var(--ds-link, #0C66E4)',
           borderRadius: '3px',
           flexShrink: 0,

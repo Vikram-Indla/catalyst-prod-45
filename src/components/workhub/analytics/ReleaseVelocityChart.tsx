@@ -23,7 +23,7 @@ function VelocityTooltip({ active, payload }: any) {
   const d = payload[0].payload as VelocityData;
   return (
     <div style={CHART_TOOLTIP_STYLE}>
-      <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 13 }}>{d.name}</div>
+      <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 'var(--ds-font-size-300)' }}>{d.name}</div>
       <div>Completion: <strong>{d.completion}%</strong></div>
       <div>Items: {d.doneItems}/{d.totalItems} done</div>
     </div>
@@ -42,7 +42,7 @@ export function ReleaseVelocityChart({ data }: Props) {
     }}>
       <h3 style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 16, fontWeight: 600,
+        fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 20,
       }}>
         Release Velocity
@@ -51,9 +51,9 @@ export function ReleaseVelocityChart({ data }: Props) {
       <ResponsiveContainer width="100%" height={320}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 12, fontFamily: 'var(--cp-font-body)' }} />
-          <YAxis yAxisId="left" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 12 }} />
-          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
+          <XAxis dataKey="name" tick={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)' }} />
+          <YAxis yAxisId="left" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 'var(--ds-font-size-200)' }} />
+          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 'var(--ds-font-size-200)' }} />
           <Tooltip content={<VelocityTooltip />} />
           <Legend />
           <Bar yAxisId="left" dataKey="completion" name="Completion %" radius={[4, 4, 0, 0]} barSize={40}>

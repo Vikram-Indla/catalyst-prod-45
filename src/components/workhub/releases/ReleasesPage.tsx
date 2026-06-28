@@ -52,7 +52,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
           padding: '6px 12px', borderRadius: 8,
           border: '1px solid var(--divider)',
           background: selected.length > 0 ? 'var(--cp-primary-5)' : 'var(--cp-float)',
-          fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
           color: selected.length > 0 ? 'var(--cp-blue)' : 'var(--fg-3)',
         }}
       >
@@ -61,7 +61,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
         {selected.length > 0 && (
           <span style={{
             background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 9999,
-            fontSize: 10, fontWeight: 700, padding: '1px 6px', minWidth: 18, textAlign: 'center',
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '1px 6px', minWidth: 18, textAlign: 'center',
           }}>{selected.length}</span>
         )}
         <ChevronDown size={14} />
@@ -89,7 +89,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
                 autoFocus
                 style={{
                   border: 'none', outline: 'none', background: 'transparent',
-                  fontSize: 12, width: '100%', color: 'var(--fg-1)',
+                  fontSize: 'var(--ds-font-size-200)', width: '100%', color: 'var(--fg-1)',
                 }}
               />
             </div>
@@ -98,14 +98,14 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
           {/* Select All / Clear */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', padding: '6px 12px',
-            borderBottom: '1px solid var(--bg-1)', fontSize: 11, fontWeight: 600,
+            borderBottom: '1px solid var(--bg-1)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
           }}>
             <button onClick={() => onChange([...options])}
-              style={{ border: 'none', background: 'none', color: 'var(--cp-blue)', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+              style={{ border: 'none', background: 'none', color: 'var(--cp-blue)', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
               Select All
             </button>
             <button onClick={() => onChange([])}
-              style={{ border: 'none', background: 'none', color: 'var(--fg-3)', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+              style={{ border: 'none', background: 'none', color: 'var(--fg-3)', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
               Clear
             </button>
           </div>
@@ -117,8 +117,8 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
               return (
                 <label key={opt} style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
-                  cursor: 'pointer', fontSize: 12, color: 'var(--fg-1)',
-                  background: checked ? '#f0f9ff' : 'transparent',
+                  cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)',
+                  background: checked ? 'var(--ds-background-information, #f0f9ff)' : 'transparent',
                 }}>
                   <input
                     type="checkbox"
@@ -133,7 +133,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
               );
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: '12px', fontSize: 12, color: 'var(--fg-4)', textAlign: 'center' }}>
+              <div style={{ padding: '12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', textAlign: 'center' }}>
                 No matches
               </div>
             )}
@@ -195,7 +195,7 @@ export function ReleasesPage() {
         height: '100%', color: 'var(--fg-3)',
       }}>
         <Loader2 className="animate-spin" size={24} />
-        <span style={{ marginLeft: 8, fontSize: 14 }}>Loading releases...</span>
+        <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-400)' }}>Loading releases...</span>
       </div>
     );
   }
@@ -206,10 +206,10 @@ export function ReleasesPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         height: '100%', gap: 12,
       }}>
-        <p style={{ color: 'var(--sem-danger)', fontSize: 14 }}>Failed to load releases</p>
+        <p style={{ color: 'var(--sem-danger)', fontSize: 'var(--ds-font-size-400)' }}>Failed to load releases</p>
         <button onClick={() => refetch()} style={{
           padding: '8px 16px', borderRadius: 6, border: '1px solid var(--divider)',
-          background: 'var(--cp-float)', fontSize: 13, cursor: 'pointer',
+          background: 'var(--cp-float)', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer',
         }}>
           Retry
         </button>
@@ -236,7 +236,7 @@ export function ReleasesPage() {
           return (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: '6px 16px', borderRadius: 9999, border: 'none',
-              fontSize: 13, fontWeight: 500, cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
               background: isActive ? 'var(--cp-blue)' : 'var(--bg-1)',
               color: isActive ? 'var(--bg-app)' : 'var(--fg-3)',
               transition: 'background 150ms, color 150ms',
@@ -271,7 +271,7 @@ export function ReleasesPage() {
             <span key={`${chip.type}-${chip.label}`} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '3px 10px', borderRadius: 9999,
-              fontSize: 11, fontWeight: 600,
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               background: chip.type === 'project' ? 'var(--ds-background-success, #DFFCF0)' : 'var(--cp-primary-5)',
               color: chip.type === 'project' ? 'var(--ds-background-success-bold, #1F845A)' : 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
               border: `1px solid ${chip.type === 'project' ? 'var(--ds-background-success, #DFFCF0)' : 'var(--cp-primary-20)'}`,
@@ -285,7 +285,7 @@ export function ReleasesPage() {
             </span>
           ))}
           <button onClick={() => { setSelectedProjects([]); setSelectedReleases([]); }}
-            style={{ border: 'none', background: 'none', fontSize: 11, color: 'var(--fg-3)', cursor: 'pointer', fontWeight: 600 }}>
+            style={{ border: 'none', background: 'none', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', cursor: 'pointer', fontWeight: 600 }}>
             Clear all
           </button>
         </div>
@@ -295,7 +295,7 @@ export function ReleasesPage() {
       {filtered.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '48px 0',
-          color: 'var(--fg-4)', fontSize: 14,
+          color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-400)',
         }}>
           No {activeTab === 'All' ? '' : activeTab.toLowerCase() + ' '}releases found
         </div>

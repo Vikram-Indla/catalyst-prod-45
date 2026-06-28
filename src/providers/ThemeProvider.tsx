@@ -32,13 +32,14 @@ function resolveTheme(mode: ThemeMode): ResolvedTheme {
 }
 
 function applyTheme(resolved: ResolvedTheme) {
-  // Rule 2 (DARK_MODE_HANDOFF): Catalyst owns ONLY the `.dark` class.
-  // `data-theme` is owned by Atlaskit's setGlobalTheme — never write it here.
-  if (resolved === 'dark') {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
+  // Catalyst owns the dark scope directly. Atlaskit's setGlobalTheme is never
+  // invoked in this app, so the `.dark` class alone left ~100+ [data-theme="dark"]
+  // rules dead. Mirror the attribute so the existing dark CSS actually applies.
+  const de = document.documentElement;
+  const isDark = resolved === 'dark';
+  de.classList.toggle('dark', isDark);
+  de.setAttribute('data-theme', resolved);
+  de.setAttribute('data-color-mode', resolved);
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

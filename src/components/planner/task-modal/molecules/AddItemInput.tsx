@@ -70,7 +70,7 @@ export const AddItemInput: React.FC<AddItemInputProps> = ({
           flex: 1,
           border: 'none',
           backgroundColor: 'transparent',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           color: COLORS.textPrimary,
           fontFamily: 'inherit',
           outline: 'none'

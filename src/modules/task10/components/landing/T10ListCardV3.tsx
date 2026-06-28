@@ -106,7 +106,7 @@ export function T10ListCardV3({
           <span
             style={{
               padding: '4px 10px',
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               fontFamily: 'monospace',
               color: 'var(--ds-text-brand, #3b82f6)',
@@ -119,14 +119,14 @@ export function T10ListCardV3({
           </span>
           
           {/* Name */}
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)', margin: 0 }}>
+          <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #0f172a)', margin: 0 }}>
             {list.name}
           </h3>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {/* Created Date (kept in header to avoid extra vertical space) */}
-          <span style={{ fontSize: '12px', color: 'var(--t10-text-tertiary)' }}>{createdLabel}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--t10-text-tertiary)' }}>{createdLabel}</span>
 
           {/* Status Badge */}
           <span
@@ -135,7 +135,7 @@ export function T10ListCardV3({
               alignItems: 'center',
               gap: '6px',
               padding: '4px 10px',
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
@@ -211,7 +211,7 @@ export function T10ListCardV3({
                     alignItems: 'center',
                     gap: '8px',
                     padding: '8px 10px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     color: 'var(--ds-text-subtle, #475569)',
                     backgroundColor: 'transparent',
                     border: 'none',
@@ -234,7 +234,7 @@ export function T10ListCardV3({
                     alignItems: 'center',
                     gap: '8px',
                     padding: '8px 10px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     color: 'var(--ds-text-danger, #ef4444)',
                     backgroundColor: 'transparent',
                     border: 'none',
@@ -257,7 +257,7 @@ export function T10ListCardV3({
       {/* Current Week Section */}
       {hasCurrentWeek ? (
         <div style={{ marginBottom: pastWeeks.length > 0 ? '8px' : '0' }}>
-          <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #64748b)', margin: '0 0 8px 0' }}>
+          <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, #64748b)', margin: '0 0 8px 0' }}>
             Week of <strong style={{ color: 'var(--ds-text, #0f172a)', fontWeight: 600 }}>{weekLabel}</strong>
           </p>
           
@@ -277,7 +277,7 @@ export function T10ListCardV3({
           </div>
           
           {/* Stats */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'var(--ds-font-size-300)' }}>
             <span style={{ color: 'var(--ds-text-brand, #3b82f6)', fontWeight: 600 }}>{completedCount}</span>
             <span style={{ color: 'var(--ds-text-subtlest, #64748b)' }}>of {totalCount} completed</span>
             {slotsAvailable > 0 && totalCount > 0 && (
@@ -304,7 +304,7 @@ export function T10ListCardV3({
         >
           <span
             style={{
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--t10-text-tertiary)',
               whiteSpace: 'nowrap',
             }}
@@ -324,7 +324,7 @@ export function T10ListCardV3({
               padding: '8px 12px',
               backgroundColor: 'var(--t10-accent)',
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               border: 'none',
               borderRadius: '8px',
@@ -355,7 +355,7 @@ export function T10ListCardV3({
               backgroundColor: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               color: 'var(--ds-text-subtlest, #64748b)',
               width: '100%',
@@ -374,7 +374,7 @@ export function T10ListCardV3({
               style={{
                 marginLeft: '4px',
                 padding: '2px 8px',
-                fontSize: '11px',
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--ds-text-brand, #3b82f6)',
                 backgroundColor: 'var(--ds-background-information-bold, rgba(59, 130, 246, 0.08))',
@@ -428,10 +428,10 @@ export function T10ListCardV3({
                         flexShrink: 0,
                       }}
                     />
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtle, #475569)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle, #475569)' }}>
                       {formatT10Date(week.week_start)} - {formatT10Date(week.week_end)}
                     </span>
-                    <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #94a3b8)', marginLeft: 'auto' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #94a3b8)', marginLeft: 'auto' }}>
                       {week.completed_count}/{week.total_count} completed
                     </span>
                   </div>

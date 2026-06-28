@@ -578,7 +578,7 @@ export function CatalystViewBase({
                         style={{
                           display: 'block', width: '100%', textAlign: 'left',
                           padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
-                          fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit',
+                          fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -592,7 +592,7 @@ export function CatalystViewBase({
                             style={{
                               display: 'block', width: '100%', textAlign: 'left',
                               padding: '8px 16px', background: 'none', border: 'none', cursor: 'pointer',
-                              fontSize: 14, color: 'var(--ds-text-danger, #AE2A19)', fontFamily: 'inherit',
+                              fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-danger, #AE2A19)', fontFamily: 'inherit',
                             }}
                             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,.06))')}
                             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -691,8 +691,8 @@ export function CatalystViewBase({
             ) : isNotFound ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
                 <span style={{ fontSize: 32 }}>⚠️</span>
-                <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Issue not found</div>
-                <div style={{ fontSize: 14 }}>This issue may have been deleted or the key is invalid.</div>
+                <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Issue not found</div>
+                <div style={{ fontSize: 'var(--ds-font-size-400)' }}>This issue may have been deleted or the key is invalid.</div>
               </div>
             ) : (
               <>
@@ -788,9 +788,9 @@ export function CatalystViewBase({
                 isDraggingRef.current = true;
                 document.body.style.cursor = 'col-resize';
                 document.body.style.userSelect = 'none';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link, #1868DB))';
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, #1868DB)'; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'inset 1px 0 0 0 var(--ds-link, var(--ds-link, #1868DB))'; }}
               onMouseLeave={e => { if (!isDraggingRef.current) (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
               style={{
                 position: 'absolute',

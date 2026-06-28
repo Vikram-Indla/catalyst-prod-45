@@ -87,7 +87,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         {/* NAME */}
         <h3
           style={{
-            fontSize: '16px',
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 600,
             color: COLORS.textPrimary,
             margin: 0,
@@ -107,7 +107,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
             backgroundColor: healthConfig.bgColor,
             border: `1px solid ${healthConfig.borderColor}`,
             borderRadius: '6px',
-            fontSize: '12px',
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: healthConfig.color,
             flexShrink: 0
@@ -130,7 +130,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         <label
           style={{
             display: 'block',
-            fontSize: '11px',
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             color: COLORS.textMuted,
             textTransform: 'uppercase',
@@ -162,7 +162,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         <div>
           <div
             style={{
-              fontSize: '20px',
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 600,
               color: COLORS.textPrimary,
               lineHeight: 1
@@ -172,7 +172,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           </div>
           <div
             style={{
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               color: COLORS.textMuted,
               marginTop: '4px'
             }}
@@ -185,7 +185,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         <div>
           <div
             style={{
-              fontSize: '20px',
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 600,
               color: (workstream.overdueCount || 0) > 0 ? COLORS.danger : COLORS.textPrimary,
               lineHeight: 1
@@ -195,7 +195,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           </div>
           <div
             style={{
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               color: COLORS.textMuted,
               marginTop: '4px'
             }}
@@ -208,7 +208,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
         <div>
           <div
             style={{
-              fontSize: '20px',
+              fontSize: 'var(--ds-font-size-700)',
               fontWeight: 600,
               color: COLORS.textPrimary,
               lineHeight: 1
@@ -218,7 +218,7 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           </div>
           <div
             style={{
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               color: COLORS.textMuted,
               marginTop: '4px'
             }}
@@ -337,7 +337,7 @@ const MenuOption: React.FC<{
           : 'transparent',
         border: 'none',
         borderRadius: '6px',
-        fontSize: '14px',
+        fontSize: 'var(--ds-font-size-400)',
         color: disabled ? 'var(--ds-text-subtlest, #94a3b8)' : (danger ? 'var(--ds-text-danger, #dc2626)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'inherit',

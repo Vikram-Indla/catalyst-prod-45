@@ -155,7 +155,7 @@ function ActivityItemDisplay({ item, jiraUserMap, showTypeBadge = false, classNa
                 (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold-hovered, #0055CC)';
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold, #0C66E4)';
+                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))';
               }}
               className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium no-underline hover:no-underline transition-colors"
               style={{

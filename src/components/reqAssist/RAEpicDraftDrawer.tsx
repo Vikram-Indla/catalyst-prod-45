@@ -37,7 +37,7 @@ function StatusLozenge({ status }: { status: string | null }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       padding: '0 6px', height: 20, borderRadius: 4,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: m.bg, color: m.color,
       fontFamily: 'var(--cp-font-body)',
@@ -156,7 +156,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
               <ChevronLeft size={18} />
             </button>
             <h2 style={{
-              fontSize: 16, fontWeight: 650, color: 'var(--fg-1)', margin: 0,
+              fontSize: 'var(--ds-font-size-500)', fontWeight: 650, color: 'var(--fg-1)', margin: 0,
               fontFamily: 'var(--cp-font-heading)', whiteSpace: 'nowrap',
               overflow: 'hidden', textOverflow: 'ellipsis',
             }}>
@@ -166,7 +166,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
               display: 'inline-flex', alignItems: 'center',
               padding: '1px 8px', borderRadius: 12,
               border: '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: 'var(--bg-app)',
-              fontSize: 12, fontWeight: 600, color: 'var(--fg-2)',
+              fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)',
               fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
             }}>
               {epics.length}
@@ -186,7 +186,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
           <div style={{
             margin: '12px 20px 0', background: 'var(--ds-link, #0C66E4)', border: '1px solid var(--ds-background-information, #E9F2FF)',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: '8px 12px',
-            display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
+            display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--cp-font-body)',
           }}>
             <Clock size={14} style={{ flexShrink: 0 }} />
@@ -201,7 +201,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
               <Loader2 size={20} color="var(--fg-3)" style={{ animation: 'ra-epic-spin 0.8s linear infinite' }} />
             </div>
           ) : epics.length === 0 ? (
-            <p style={{ textAlign: 'center', color: 'var(--fg-4)', fontSize: 13, padding: 40 }}>No epics found</p>
+            <p style={{ textAlign: 'center', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)', padding: 40 }}>No epics found</p>
           ) : (
             epics.map((epic, epicIdx) => {
               const isEditing = editingId === epic.id;
@@ -237,7 +237,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                       borderRadius: 4,
                       padding: '2px 8px',
                       fontFamily: 'var(--cp-font-mono)',
-                      fontSize: 11, fontWeight: 600, color: 'var(--fg-2)',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)',
                     }}>
                       {epic.ra_tag || `DFT-${String(epicIdx + 1).padStart(3, '0')}`}
                     </span>
@@ -250,7 +250,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                         value={editTitle}
                         onChange={e => setEditTitle(e.target.value)}
                         style={{
-                          width: '100%', fontSize: 14, fontWeight: 650, color: 'var(--fg-1)',
+                          width: '100%', fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: 'var(--fg-1)',
                           border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '6px 8px',
                           fontFamily: 'var(--cp-font-body)', outline: 'none',
                         }}
@@ -262,7 +262,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                         onChange={e => setEditDesc(e.target.value)}
                         rows={3}
                         style={{
-                          width: '100%', fontSize: 13, color: 'var(--fg-2)', marginTop: 6,
+                          width: '100%', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', marginTop: 6,
                           border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '6px 8px',
                           fontFamily: 'var(--cp-font-body)', resize: 'vertical', outline: 'none',
                           lineHeight: 1.5,
@@ -272,12 +272,12 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                       />
                       <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'flex-end' }}>
                         <button onClick={cancelEdit} style={{
-                          padding: '4px 12px', fontSize: 12, fontWeight: 500, borderRadius: 6,
+                          padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, borderRadius: 6,
                           border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: 'var(--bg-app)',
                           color: 'var(--fg-3)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                         }}>Cancel</button>
                         <button onClick={saveEdit} disabled={savingEdit} style={{
-                          padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 6,
+                          padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, borderRadius: 6,
                           border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                           cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                         }}>{savingEdit ? 'Saving…' : 'Save'}</button>
@@ -286,14 +286,14 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                   ) : (
                     <>
                       <p style={{
-                        fontSize: 14, fontWeight: 650, color: 'var(--fg-1)',
+                        fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: 'var(--fg-1)',
                         margin: '8px 0 0', fontFamily: 'var(--cp-font-body)',
                       }}>
                         {epic.title}
                       </p>
                       {epic.description && (
                         <p style={{
-                          fontSize: 13, fontWeight: 400, color: 'var(--fg-2)',
+                          fontSize: 'var(--ds-font-size-300)', fontWeight: 400, color: 'var(--fg-2)',
                           margin: '4px 0 0', lineHeight: 1.5,
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                           overflow: 'hidden', fontFamily: 'var(--cp-font-body)',
@@ -304,17 +304,17 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                       {isArchiveConfirm ? (
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: 8,
-                          marginTop: 10, fontSize: 12,
+                          marginTop: 10, fontSize: 'var(--ds-font-size-200)',
                         }}>
                           <span style={{ color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}>Archive this epic?</span>
                           <button onClick={() => setArchiveConfirmId(null)} style={{
-                            height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+                            height: 28, padding: '0 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                             borderRadius: 6, border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))',
                             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--fg-2)', cursor: 'pointer',
                             fontFamily: 'var(--cp-font-body)',
                           }}>Cancel</button>
                           <button onClick={() => handleArchiveEpic(epic.id)} style={{
-                            height: 28, padding: '0 10px', fontSize: 12, fontWeight: 600,
+                            height: 28, padding: '0 10px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                             borderRadius: 6, border: '0.75px solid var(--ds-background-danger-bold, rgba(220,38,38,0.3))',
                             background: 'var(--ds-background-danger-bold, rgba(220,38,38,0.04))', color: 'var(--sem-danger)',
                             cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -327,7 +327,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                             style={{
                               height: 28, padding: '0 10px',
                               display: 'inline-flex', alignItems: 'center', gap: 4,
-                              fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
+                              fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)',
                               border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', borderRadius: 6,
                               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                               fontFamily: 'var(--cp-font-body)',
@@ -342,7 +342,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                             style={{
                               height: 28, padding: '0 10px',
                               display: 'inline-flex', alignItems: 'center', gap: 4,
-                              fontSize: 12, fontWeight: 500, color: 'var(--fg-3)',
+                              fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)',
                               border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', borderRadius: 6,
                               background: 'var(--bg-app)', cursor: 'pointer',
                               fontFamily: 'var(--cp-font-body)',
@@ -375,7 +375,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
           background: 'var(--cp-float)', flexShrink: 0,
         }}>
           <div style={{
-            fontSize: 12, color: 'var(--fg-3)', marginBottom: 10,
+            fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginBottom: 10,
             fontFamily: 'var(--cp-font-body)',
           }}>
             {epics.length} draft{epics.length !== 1 ? 's' : ''}{jiraKey ? ` · ${jiraKey}` : ''}
@@ -386,7 +386,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                 onClick={handleMarkReviewed}
                 disabled={markingReviewed}
                 style={{
-                  flex: 1, height: 50, fontSize: 13, fontWeight: 600,
+                  flex: 1, height: 50, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                   borderRadius: 6, border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))',
                   background: 'var(--bg-app)', color: 'var(--fg-2)',
                   cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -400,7 +400,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
             <button
               onClick={() => setShowPublish(true)}
               style={{
-                flex: 1, height: 50, fontSize: 13, fontWeight: 600,
+                flex: 1, height: 50, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                 borderRadius: 6, border: 'none',
                 background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 cursor: 'pointer', fontFamily: 'var(--cp-font-body)',

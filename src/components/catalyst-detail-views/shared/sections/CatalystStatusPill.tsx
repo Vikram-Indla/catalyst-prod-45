@@ -25,7 +25,7 @@ import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozeng
 import { CatalystWorkflowModal } from '../workflow/CatalystWorkflowModal';
 import type { WorkItemType } from '@/hooks/useTypeWorkflow';
 import { toStatusCategory } from '@/components/ads';
-import { useIssueTypeWorkflow } from '@/hooks/useIssueTypeWorkflow';
+import { useCanonicalIssueWorkflow } from '@/hooks/useCanonicalIssueWorkflow';
 import { statusBg, statusFg } from './statusPalette';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -50,10 +50,10 @@ if (typeof document !== 'undefined') {
         border: none;
         cursor: pointer;
         font-family: inherit;
-        font-size: 14px;
-        font-weight: 500;
-        letter-spacing: normal;
-        text-transform: none;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
         outline: none;
         transition: filter 0.15s ease;
         background: var(--csp-bg);
@@ -62,7 +62,7 @@ if (typeof document !== 'undefined') {
       .${PILL_CLASS}[data-csp-compact="true"] {
         height: 24px;
         padding: 0 6px;
-        font-size: 12px;
+        font-size: 11px;
         gap: 3px;
       }
       .${PILL_CLASS}:hover,
@@ -87,7 +87,7 @@ if (typeof document !== 'undefined') {
  * SECTION 2: COLOR SYSTEM — Jira-probed (BAU-5774 / BAU-5609)
  *
  * THREE tiers exist for Jira status colors:
- *   BOLD    color.background.success.bold  #1F845A  dark, white text  ← BAU-5774 flagged WRONG
+ *   BOLD    color.background.success.bold  var(--ds-background-success-bold, #1F845A)  dark, white text  ← BAU-5774 flagged WRONG
  *   SUBTLE  color.background.success       #DCFFF1  very light        ← too washed out vs Jira
  *   JIRA    (no ADS token)                 #94C748  medium pastel     ← DOM-probed, used here
  *
@@ -185,12 +185,13 @@ export function CatalystStatusPill({
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  // Workflow-driven statuses from admin/workflows (ph_workflow_* tables)
+  // Workflow-driven statuses. Canonical ph_wf_* for migrated entities (Story);
+  // legacy ph_workflow_* delegate for everything else.
   const {
     statusGroups: workflowGroups,
     getAvailableStatuses,
     hasConfig,
-  } = useIssueTypeWorkflow(issueType);
+  } = useCanonicalIssueWorkflow(issueType);
 
   // Caller-injected options (e.g. from CreateStoryModal resolvedStatusOptions).
   // When provided, these take precedence and bypass transition filtering.
@@ -419,7 +420,7 @@ export function CatalystStatusPill({
                   <div
                     style={{
                       padding: '8px 8px 4px',
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                       letterSpacing: '0.06em',
@@ -443,7 +444,7 @@ export function CatalystStatusPill({
                         data-testid={`catalyst-status-option-${st}`}
                         onClick={() => pick(st)}
                         onFocus={(e) => {
-                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.background = isSelected
@@ -451,7 +452,7 @@ export function CatalystStatusPill({
                             : 'transparent';
                         }}
                         onMouseEnter={(e) => {
-                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)');
+                          if (!isSelected) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))');
                         }}
                         onMouseLeave={(e) => {
                           const isFocused = e.currentTarget === document.activeElement;
@@ -480,9 +481,10 @@ export function CatalystStatusPill({
                             height: 20,
                             padding: '0 8px',
                             borderRadius: 3,
-                            fontSize: 11,
-                            fontWeight: 600,
-                            letterSpacing: '0.06em',
+                            fontSize: 'var(--ds-font-size-100)',
+                            fontWeight: 700,
+                            letterSpacing: '0.04em',
+                            textTransform: 'uppercase' as const,
                             background: bg,
                             color: fg,
                           }}
@@ -490,7 +492,7 @@ export function CatalystStatusPill({
                           {st}
                         </span>
                         {isSelected && (
-                          <span style={{ fontSize: 12, color: token('color.text.brand', 'var(--ds-link, #0C66E4)'), fontWeight: 600 }}>✓</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.brand', 'var(--ds-link, #0C66E4)'), fontWeight: 600 }}>✓</span>
                         )}
                       </button>
                     );
@@ -514,9 +516,9 @@ export function CatalystStatusPill({
               setIsOpen(false);
               setWorkflowViewerOpen(true);
             }}
-            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
             onBlur={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
             onMouseLeave={(e) => {
               if (e.currentTarget !== document.activeElement) e.currentTarget.style.background = 'transparent';
             }}
@@ -531,7 +533,7 @@ export function CatalystStatusPill({
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               outline: 'none',
             }}
@@ -548,9 +550,9 @@ export function CatalystStatusPill({
             tabIndex={-1}
             data-testid="catalyst-status-explain-workflow"
             onClick={() => close(true)}
-            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+            onFocus={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
             onBlur={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
             onMouseLeave={(e) => {
               if (e.currentTarget !== document.activeElement) e.currentTarget.style.background = 'transparent';
             }}
@@ -565,7 +567,7 @@ export function CatalystStatusPill({
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               outline: 'none',
             }}

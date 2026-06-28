@@ -80,8 +80,8 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           <MessageCircle size={14} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 700, color: 'var(--fg-1)' }}>Ask Catalyst</div>
-          <div style={{ fontSize: 10, color: 'var(--fg-3)' }}>Knowledge assistant</div>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1)' }}>Ask Catalyst</div>
+          <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-3)' }}>Knowledge assistant</div>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'var(--fg-3)' }}
           onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-shadow-overlay, rgba(15,23,42,0.04))'}
@@ -94,7 +94,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
       {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         {messages.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--fg-4)', fontSize: 12 }}>
+          <div style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)' }}>
             Ask anything about ministry regulations, processes, or policies.
           </div>
         )}
@@ -122,13 +122,13 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
                 {m.sources.map((s, i) => (
                   <div key={i} onClick={() => s.slug && navigate(`/wiki/${s.slug}`)}
                     style={{
-                      fontSize: 10, color: 'var(--cp-blue)', cursor: s.slug ? 'pointer' : 'default',
+                      fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-blue)', cursor: s.slug ? 'pointer' : 'default',
                       display: 'flex', alignItems: 'center', gap: 4,
                     }}
                   >
                     <span style={{ fontWeight: 600 }}>📄 {s.title}</span>
                     {s.confidence != null && (
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 9, color: 'var(--fg-3)' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>
                         {Math.round((s.confidence ?? 0) * 100)}%
                       </span>
                     )}

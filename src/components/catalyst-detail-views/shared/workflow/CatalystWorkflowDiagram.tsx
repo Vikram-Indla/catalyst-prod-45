@@ -140,7 +140,7 @@ export function CatalystWorkflowDiagram({
         {/* START node */}
         <rect x={startX} y={startY} width={START_W} height={START_H} rx={START_H / 2} fill="var(--ds-text, #172B4D)" />
         <text x={startX + START_W / 2} y={startY + START_H / 2 + 1} textAnchor="middle" dominantBaseline="middle"
-          fontSize={10} fontWeight={600} fill="var(--ds-surface, #FFFFFF)">START</text>
+          fontSize={'var(--ds-font-size-50)'} fontWeight={600} fill="var(--ds-surface, #FFFFFF)">START</text>
 
         {/* Arrow from START to initial */}
         {initialStatusId && (() => {
@@ -212,7 +212,7 @@ export function CatalystWorkflowDiagram({
                 <>
                   <circle cx={midX} cy={midY} r={8} fill="var(--ds-background-danger-bold, #C9372C)" />
                   <text x={midX} y={midY + 1} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={11} fontWeight={600} fill="var(--ds-surface, #FFFFFF)" style={{ pointerEvents: 'none' }}>
+                    fontSize={'var(--ds-font-size-100)'} fontWeight={600} fill="var(--ds-surface, #FFFFFF)" style={{ pointerEvents: 'none' }}>
                     ×
                   </text>
                 </>
@@ -260,7 +260,7 @@ export function CatalystWorkflowDiagram({
               <text
                 x={node.pos.x + NODE_W / 2} y={node.pos.y + NODE_H / 2 + 1}
                 textAnchor="middle" dominantBaseline="middle"
-                fontSize={11} fontWeight={500} fill={STATUS_TEXT}
+                fontSize={'var(--ds-font-size-100)'} fontWeight={500} fill={STATUS_TEXT}
                 style={{ pointerEvents: 'none' }}
               >
                 {node.name.length > 22 ? `${node.name.slice(0, 21)}…` : node.name}

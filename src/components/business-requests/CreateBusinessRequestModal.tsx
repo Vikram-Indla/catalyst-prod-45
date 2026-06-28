@@ -47,6 +47,7 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
   ModalDialog,
@@ -88,6 +89,8 @@ import {
 } from '@/types/business-request';
 // Canonical Catalyst icon — backed by useIconOverrides (admin overrides via /admin/icons).
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+// Canonical product icon — user-picked icon_key, else Saudi-landmark default by code.
+import { ProductAvatar } from '@/components/icons/ProductAvatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons/PriorityIcon';
 import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
@@ -198,6 +201,7 @@ export interface CreateBusinessRequestModalProps {
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface FormState {
+  product_id: string;
   title: string;
   descriptionAdf: object | null;
   description: string;
@@ -217,6 +221,7 @@ interface FormState {
 }
 
 const INITIAL: FormState = {
+  product_id: '',
   title: '', descriptionAdf: null, description: '',
   process_step: '', request_type: '', urgency: '', category: '',
   theme: '', project_manager_user_id: '', po_user_id: '', stakeholders: [],
@@ -236,6 +241,29 @@ function useProfiles() {
       icon: <MiniAvatar name={p.name} avatarUrl={p.avatarUrl} />,
     } as IconOption)),
   };
+}
+
+// Products for the container selector — a BR resides in a product
+// (business_requests.product_id). Canonical query mirrors BrMoveProductDialog.
+function useProductOptions() {
+  return useQuery({
+    queryKey: ['br-modal-products'],
+    queryFn: async (): Promise<IconOption[]> => {
+      const { data, error } = await (supabase as any)
+        .from('products')
+        .select('id, name, code, icon_key')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return (data ?? []).map((p: { id: string; name: string; code: string; icon_key?: string | null }) => ({
+        value: p.id,
+        label: p.name,
+        sublabel: p.code,
+        icon: <ProductAvatar code={p.code} iconKey={p.icon_key ?? null} size={16} />,
+      } as IconOption));
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 }
 
 function useReleases() {
@@ -416,7 +444,7 @@ function MoreActionsButton() {
               background: 'none',
               cursor: 'pointer',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               transition: 'background 120ms',
             }}
             onMouseEnter={(e) => {
@@ -444,7 +472,7 @@ function MoreActionsButton() {
               background: 'none',
               cursor: 'pointer',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               transition: 'background 120ms',
             }}
             onMouseEnter={(e) => {
@@ -498,7 +526,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         style={{
           border: `2px dashed ${dragOver ? token('color.border.brand', 'var(--ds-link, #1868DB)') : token('color.border', 'var(--ds-border, #DFE1E6)')}`,
           borderRadius: 4, padding: '24px 16px', textAlign: 'center', cursor: 'pointer',
-          background: dragOver ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.input', 'var(--ds-surface-sunken, #F7F8F9)'),
+          background: dragOver ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : token('color.background.input', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'),
           transition: 'border-color 120ms, background 120ms',
         }}
       >
@@ -506,13 +534,13 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 8px', display: 'block', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
           <path d="M12 4v12m-4-4l4-4 4 4M4 20h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <p style={{ fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
-        <p style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
       </div>
       {files.length > 0 && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {files.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'), borderRadius: 3, fontSize: 12 }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'), borderRadius: 3, fontSize: 'var(--ds-font-size-200)' }}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', 'var(--ds-link, #1868DB)')} strokeWidth="1.2" fill="none"/>
                 <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', 'var(--ds-link, #1868DB)')} strokeWidth="1.2" fill="none"/>
@@ -560,15 +588,25 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkTypeChange }: CreateBusinessRequestModalProps) {
+  const navigate = useNavigate();
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
   const { data: releaseOptions = [] } = useReleases();
+  const { data: productOptions = [], isLoading: productsLoading } = useProductOptions();
   const [form, setForm] = useState<FormState>(INITIAL);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [titleBlurred, setTitleBlurred] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  // Seed the container from the caller's product context (when opened from a
+  // product surface). When absent, the user picks the product in-modal.
+  useEffect(() => {
+    if (productId && !form.product_id) {
+      setForm(prev => ({ ...prev, product_id: productId }));
+    }
+  }, [productId, form.product_id]);
 
   // Seed initial process_step from ph_workflow_* config
   const { initialStatus: brInitialStatus } = useIssueTypeWorkflow('Business Request');
@@ -593,6 +631,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
   // ── Validation ─────────────────────────────────────────────────────────────
   // 2026-06-01: arabic_title deprecated. Single English title required.
   const validate = () => {
+    if (!form.product_id) return false;
     if (!form.title.trim()) return false;
     if (!form.request_type) return false;
     if (!form.urgency) return false;
@@ -622,7 +661,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
         impl_target_end_date: form.end_date || null,
         targeted_feature: form.targeted_feature,
         import_source: 'manual',
-        product_id: productId || null,
+        product_id: form.product_id || productId || null,
       };
       const created = await createMutation.mutateAsync(payload as any);
       if (form.attachments.length && (created as any)?.id) {
@@ -633,11 +672,17 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
       }
       const key = (created as any)?.request_key || 'BR';
       flag.success(`${key} created`, `"${form.title.slice(0, 60)}"`);
+      // Resolve the product code (option sublabel) for the product-hub URL.
+      const productCode = productOptions.find(o => o.value === form.product_id)?.sublabel;
       setForm(INITIAL);
       setSubmitAttempted(false);
       setTitleBlurred(false);
       setTouchedFields(new Set());
       onClose();
+      // Land on the created BR's detail view in product hub.
+      if (productCode && (created as any)?.request_key) {
+        navigate(`/product-hub/${productCode}/backlog/${(created as any).request_key}`);
+      }
     } catch (err: any) {
       setUploading(false);
       setFormError(err?.message ?? 'Failed to create Business Request');
@@ -724,6 +769,30 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                 </Field>
               )}
 
+              {/* ── Product — the container a BR resides in
+                  (business_requests.product_id). Locked when the caller
+                  supplied product context; otherwise user-selectable. ── */}
+              <Field name="product_id" label="Product" isRequired>
+                {({ fieldProps }) => (
+                  <>
+                    <Select<IconOption>
+                      {...(fieldProps as any)}
+                      inputId="br-product"
+                      options={productOptions}
+                      value={productOptions.find(o => o.value === form.product_id) ?? null}
+                      onChange={(opt: any) => set('product_id', opt?.value ?? '')}
+                      onBlur={() => markTouched('product_id')}
+                      isLoading={productsLoading}
+                      isDisabled={!!productId}
+                      formatOptionLabel={formatIconOption}
+                      placeholder="Select product"
+                      isSearchable
+                    />
+                    {isTouched('product_id') && !form.product_id && <ErrorMessage>Product is required</ErrorMessage>}
+                  </>
+                )}
+              </Field>
+
               {/* ── 2026-06-01: Single English title field — Arabic title
                   deprecated. The bilingual TitleTranslateWrapper pattern
                   collapsed when arabic_title was dropped from the DB. */}
@@ -752,7 +821,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                     </TitleTranslateWrapper>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                       {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
-                      <span style={{ fontSize: 11, color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'), marginLeft: 'auto' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'), marginLeft: 'auto' }}>
                         {form.title.length} / {TITLE_MAX}
                       </span>
                     </div>

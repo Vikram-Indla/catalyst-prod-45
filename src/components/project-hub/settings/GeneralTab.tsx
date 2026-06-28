@@ -99,7 +99,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
   };
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', height: 40, padding: '8px 12px', fontSize: 13,
+    width: '100%', height: 40, padding: '8px 12px', fontSize: 'var(--ds-font-size-300)',
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: 'var(--cp-font-body)',
     transition: 'border-color 150ms ease, box-shadow 150ms ease',
@@ -115,7 +115,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6,
+    fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6,
     fontFamily: 'var(--cp-font-body)',
   };
 
@@ -188,8 +188,8 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             {/* Feature Layer Toggle */}
             <div className="flex items-start justify-between gap-4 pt-2">
               <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>Feature Layer</div>
-                <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>Adds Feature between Epic and Story</div>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>Feature Layer</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 2 }}>Adds Feature between Epic and Story</div>
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, feature_layer: !f.feature_layer }))}
@@ -203,8 +203,8 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             {/* AI Assist Toggle */}
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>AI Assist</div>
-                <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>Enable AI features for this project</div>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>AI Assist</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 2 }}>Enable AI features for this project</div>
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, ai_assist: !f.ai_assist }))}
@@ -224,7 +224,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             disabled={!isDirty || saving}
             className={`transition-all disabled:opacity-40 ${isDirty && !saving ? 'bg-[var(--cp-blue)]' : 'bg-[var(--cp-blue-muted)]'}`}
             style={{
-              height: 50, padding: '0 20px', fontSize: 13, fontWeight: 600,
+              height: 50, padding: '0 20px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6,
               cursor: isDirty && !saving ? 'pointer' : 'default',
             }}

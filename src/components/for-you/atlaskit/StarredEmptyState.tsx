@@ -63,8 +63,8 @@ function Tile({ bg, fg, icon, label, hint }: { bg: string; fg: string; icon: Rea
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', border: `1px solid ${BORDER}`, borderRadius: 8 }}>
       <span style={{ width: 28, height: 28, borderRadius: 6, background: bg, color: fg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</span>
       <div style={{ minWidth: 0 }}>
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>{label}</p>
-        <p style={{ margin: 0, fontSize: 11, color: TEXT_SUBTLEST, fontFamily: BODY_FONT }}>{hint}</p>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>{label}</p>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: TEXT_SUBTLEST, fontFamily: BODY_FONT }}>{hint}</p>
       </div>
     </div>
   );
@@ -78,7 +78,7 @@ function GhostRow({ bg, fg, icon, badge, badgeBg, badgeTxt, w1, w2 }: { bg: stri
         <div style={{ width: w1, height: 9, borderRadius: 4, background: SUNKEN }} />
         <div style={{ width: w2, height: 7, borderRadius: 4, background: SUNKEN, marginTop: 4 }} />
       </div>
-      <span style={{ fontSize: 10, padding: '4px 8px', borderRadius: 6, background: badgeBg, color: badgeTxt, fontFamily: BODY_FONT }}>{badge}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-50)', padding: '4px 8px', borderRadius: 6, background: badgeBg, color: badgeTxt, fontFamily: BODY_FONT }}>{badge}</span>
       <Star size={14} color={STAR_GOLD} fill={STAR_GOLD} />
     </div>
   );
@@ -87,7 +87,7 @@ function GhostRow({ bg, fg, icon, badge, badgeBg, badgeTxt, w1, w2 }: { bg: stri
 export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }: StarredEmptyStateProps) {
   const ctaBase: React.CSSProperties = {
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-    padding: '8px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+    padding: '8px 16px', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
     cursor: 'pointer', fontFamily: BODY_FONT,
   };
 
@@ -102,8 +102,8 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
               <Plus size={11} color="var(--ds-text-inverse, #FFFFFF)" />
             </span>
           </span>
-          <p style={{ margin: 0, fontSize: 18, fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>Build your starred shortcuts</p>
-          <p data-testid="starred-empty-description" style={{ margin: '8px 0 0', fontSize: 14, color: TEXT_SUBTLE, lineHeight: 1.5, maxWidth: 420, fontFamily: BODY_FONT }}>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-600)', fontWeight: 500, color: TEXT, fontFamily: BODY_FONT }}>Build your starred shortcuts</p>
+          <p data-testid="starred-empty-description" style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-400)', color: TEXT_SUBTLE, lineHeight: 1.5, maxWidth: 420, fontFamily: BODY_FONT }}>
             Star anything you return to often — boards, backlogs, filters, dashboards, products, or work items. It lands here and pins to your sidebar.
           </p>
         </div>
@@ -116,7 +116,7 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '16px 0 8px' }}>
-          <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: 0.4, color: TEXT_SUBTLEST, fontFamily: BODY_FONT }}>PREVIEW</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, letterSpacing: 0.4, color: TEXT_SUBTLEST, fontFamily: BODY_FONT }}>PREVIEW</span>
           <span style={{ flex: 1, height: 1, background: BORDER }} />
         </div>
 
@@ -139,7 +139,7 @@ export function StarredEmptyState({ onBrowseWork, onOpenBoard, onBrowseFilters }
           )}
         </div>
 
-        <p style={{ margin: '16px 0 0', fontSize: 12, color: TEXT_SUBTLEST, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, fontFamily: BODY_FONT }}>
+        <p style={{ margin: '16px 0 0', fontSize: 'var(--ds-font-size-200)', color: TEXT_SUBTLEST, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, fontFamily: BODY_FONT }}>
           Look for the <Star size={13} color={STAR_GOLD} /> on any board, backlog, filter, or work item
         </p>
 

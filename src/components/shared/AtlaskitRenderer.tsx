@@ -74,7 +74,7 @@ const SMART_LINK_OVERRIDES = {
   blockCard: (props: any) => (
     <div style={{
       padding: '12px 16px', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4,
-      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', margin: '8px 0', fontSize: 14,
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', margin: '8px 0', fontSize: 'var(--ds-font-size-400)',
     }}>
       <PlainSmartLink {...props} />
     </div>

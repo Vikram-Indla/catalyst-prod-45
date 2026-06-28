@@ -76,13 +76,13 @@ function ReactionPill({ reaction, onClick }: { reaction: ChatReaction; onClick: 
         }`,
         borderRadius: 12,
         fontFamily: 'var(--cv2-font)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         cursor: 'pointer',
         transition: 'background var(--cv2-transition-fast)',
       }}
     >
-      <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>
+      <span aria-hidden="true" style={{ fontSize: 'var(--ds-font-size-400)', lineHeight: 1 }}>
         {reaction.emoji}
       </span>
       <span>{reaction.count}</span>

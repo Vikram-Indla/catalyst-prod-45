@@ -40,7 +40,7 @@ type Action = 'move' | 'ignore' | null;
 const labelStyle: React.CSSProperties = {
   display: 'block',
   fontWeight: 600,
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   color: 'var(--ds-text, #172B4D)',
   marginBottom: 6,
 };
@@ -50,7 +50,7 @@ const radioRow: React.CSSProperties = {
   alignItems: 'center',
   gap: 8,
   cursor: 'pointer',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   color: 'var(--ds-text, #292A2E)',
   userSelect: 'none',
 };
@@ -221,7 +221,7 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
                 This {config.label.lowerSingular} contains{' '}
                 <span style={{ color: 'var(--ds-link, #0052CC)', fontWeight: 500 }}>
                   {unresolvedCount} unresolved work item{unresolvedCount === 1 ? '' : 's'}

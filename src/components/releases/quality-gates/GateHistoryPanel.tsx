@@ -170,8 +170,8 @@ export function GateHistoryPanel({ open, gate, onClose }: GateHistoryPanelProps)
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} className="text-muted-foreground" />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} className="text-muted-foreground" />
+                <XAxis dataKey="date" tick={{ fontSize: 'var(--ds-font-size-50)' }} className="text-muted-foreground" />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 'var(--ds-font-size-50)' }} className="text-muted-foreground" />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--background))',

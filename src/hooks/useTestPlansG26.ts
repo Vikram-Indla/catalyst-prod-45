@@ -13,12 +13,13 @@ export function useTestPlans(filters?: PlanFilters) {
     queryFn: async (): Promise<TestPlan[]> => {
       let query = supabase
         .from('tm_test_plans' as any)
-        .select(`*, creator:profiles!tm_test_plans_created_by_fkey(id, full_name, avatar_url), release:releases!tm_test_plans_release_id_fkey(id, name)`)
+        .select(`*, creator:profiles!tm_test_plans_created_by_fkey(id, full_name, avatar_url), release:releases!tm_test_plans_release_id_fkey(id, name), sprint:ph_jira_sprints(id, name, status)`)
         .eq('is_template', false)
         .order('created_at', { ascending: false });
 
       if (filters?.status?.length) query = query.in('status', filters.status);
       if (filters?.releaseId) query = query.eq('release_id', filters.releaseId);
+      if (filters?.sprintId) query = query.eq('sprint_id', filters.sprintId);
       if (filters?.search) query = query.or(`name.ilike.%${filters.search}%,plan_key.ilike.%${filters.search}%`);
 
       const { data, error } = await query;
@@ -36,7 +37,7 @@ export function useTestPlan(planId: string | undefined) {
       if (!planId) return null;
       const { data, error } = await supabase
         .from('tm_test_plans' as any)
-        .select(`*, creator:profiles!tm_test_plans_created_by_fkey(id, full_name, avatar_url), release:releases!tm_test_plans_release_id_fkey(id, name)`)
+        .select(`*, creator:profiles!tm_test_plans_created_by_fkey(id, full_name, avatar_url), release:releases!tm_test_plans_release_id_fkey(id, name), sprint:ph_jira_sprints(id, name, status)`)
         .eq('id', planId)
         .single();
       if (error) throw new Error(error.message);

@@ -108,7 +108,7 @@ export function CatalystListToolbar({
             background: 'none',
             border: 'none',
             padding: '0 4px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: token('color.link'),
             cursor: 'pointer',
             whiteSpace: 'nowrap',

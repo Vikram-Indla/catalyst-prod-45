@@ -191,14 +191,14 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           <CatyPulseIcon size={16} />
-          <span style={{ fontFamily: RH.fontDisplay, fontSize: 15, fontWeight: 600, color: T.text, flexShrink: 0 }}>AI release risk summary</span>
+          <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, flexShrink: 0 }}>AI release risk summary</span>
           {!isLoading && !expanded && (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {summary.headline}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {summary.headline}</span>
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
           {!isLoading && (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: status.fg, background: status.bg, padding: '4px 8px', borderRadius: 12 }}>{status.label}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: status.fg, background: status.bg, padding: '4px 8px', borderRadius: 12 }}>{status.label}</span>
           )}
           {expanded ? <ChevronUp size={20} style={{ color: T.subtlest }} /> : <ChevronDown size={20} style={{ color: T.subtlest }} />}
         </div>
@@ -208,15 +208,15 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
         <>
           {/* Basis */}
           <div style={{ padding: '8px 16px', borderBottom: `1px solid ${T.border}`, background: T.sunken }}>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>{basis}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{basis}</span>
           </div>
 
           {/* Metric tiles */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, padding: '16px', borderBottom: `1px solid ${T.border}` }}>
             {tiles.map((tile) => (
               <div key={tile.label} style={{ background: T.sunken, borderRadius: 6, padding: '8px 12px' }}>
-                <p style={{ fontFamily: RH.fontDisplay, fontSize: 22, fontWeight: 600, color: T.text, margin: 0, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{tile.value}</p>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, margin: '4px 0 0' }}>{tile.label}</p>
+                <p style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: T.text, margin: 0, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{tile.value}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, margin: '4px 0 0' }}>{tile.label}</p>
               </div>
             ))}
           </div>
@@ -229,8 +229,8 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
               </div>
             ) : (
               <>
-                <p style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text, margin: '0 0 8px' }}>{summary.headline}</p>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: 0, lineHeight: 1.65 }}>{summary.narrative}</p>
+                <p style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, margin: '0 0 8px' }}>{summary.headline}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text, margin: 0, lineHeight: 1.65 }}>{summary.narrative}</p>
               </>
             )}
           </div>
@@ -238,18 +238,18 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
           {/* What needs attention */}
           {!isLoading && summary.drivers.length > 0 && (
             <div style={{ padding: '16px 16px 8px' }}>
-              <p style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>What needs attention</p>
+              <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>What needs attention</p>
               {summary.drivers.slice(0, 4).map((d, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.subtlest, marginTop: 4, flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 600, color: T.text, margin: 0 }}>{d.title}</p>
-                    <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, margin: '4px 0 0' }}>{d.action}</p>
+                    <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, margin: 0 }}>{d.title}</p>
+                    <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, margin: '4px 0 0' }}>{d.action}</p>
                   </div>
                   {d.link && (
                     <button
                       onClick={() => goLink(d.link)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, whiteSpace: 'nowrap', flexShrink: 0 }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, whiteSpace: 'nowrap', flexShrink: 0 }}
                     >
                       {d.link === 'freeze' ? 'Resolve' : d.link === 'signoff' ? 'Review' : 'Open'}
                       <ChevronRight size={14} />
@@ -267,7 +267,7 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
               <Button appearance="subtle" iconBefore={Copy} onClick={copy}>Copy</Button>
               <Button appearance="subtle" iconBefore={StickyNote} isDisabled={saveNote.isPending} isLoading={saveNote.isPending} onClick={save}>Save as note</Button>
             </div>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest }}>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>
               {usedFallback ? 'Estimated from live release data' : 'Generated by Caty'}
             </span>
           </div>

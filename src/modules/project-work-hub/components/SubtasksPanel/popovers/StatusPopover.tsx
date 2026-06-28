@@ -116,7 +116,7 @@ export function StatusPopover({ status, issueType, onChange, children, showActiv
               width: 260,
               maxHeight: 360,
               overflowY: 'auto',
-              background: token('elevation.surface.overlay', '#FFFFFF'),
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
@@ -128,8 +128,8 @@ export function StatusPopover({ status, issueType, onChange, children, showActiv
             {displayGroups.map((group) => (
               <div key={group.category}>
                 <div style={{
-                  fontSize: 11, fontWeight: 700,
-                  color: token('color.text.subtle', '#6B6E76'),
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
+                  color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                   textTransform: 'uppercase', letterSpacing: '0.06em',
                   padding: '8px 12px 4px', marginTop: 4,
                 }}>
@@ -146,10 +146,10 @@ export function StatusPopover({ status, issueType, onChange, children, showActiv
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         width: '100%', height: 36, padding: '0 12px',
-                        background: active ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                        background: active ? token('color.background.selected', 'var(--ds-background-information, #E9F2FF)') : 'transparent',
                         border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
                       }}
-                      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+                      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
                       onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
                       onClick={() => {
                         onChange(s, group.category as 'todo' | 'in_progress' | 'done');

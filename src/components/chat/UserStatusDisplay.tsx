@@ -69,7 +69,7 @@ export function UserStatusDisplay({
       {showName && name && (
         <span
           style={{
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             color: 'var(--ds-text, #172B4D)',
             fontWeight: 500,
           }}

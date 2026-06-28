@@ -33,7 +33,7 @@ export const EnhancedHeatmapLegend = memo(function EnhancedHeatmapLegend({
         
         <div className="flex items-center gap-4">
           <ContractStatusItem 
-            color="#be123c" 
+            color="var(--ds-text-danger, #be123c)" 
             label="<30d" 
             pulse 
           />

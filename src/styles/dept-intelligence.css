@@ -295,11 +295,11 @@
 .day-tue { background: var(--ds-chart-teal-bolder, #0f766e); color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))); }
 .day-wed { background: var(--ds-background-discovery-bold, #6d28d9); color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))); }
 .day-thu { background: var(--ds-text-warning, #974F0C); color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF)))); }
-.dark .day-sun , [data-theme="dark"] .day-sun { background: rgba(30,58,95,0.5); color: var(--ds-background-information-bold, #0C66E4); }
-.dark .day-mon , [data-theme="dark"] .day-mon { background: rgba(30,64,175,0.4); color: var(--ds-background-information-bold, #0C66E4); }
+.dark .day-sun , [data-theme="dark"] .day-sun { background: rgba(30,58,95,0.5); color: var(--ds-background-information-bold, var(--ds-link, #0C66E4)); }
+.dark .day-mon , [data-theme="dark"] .day-mon { background: rgba(30,64,175,0.4); color: var(--ds-background-information-bold, var(--ds-link, #0C66E4)); }
 .dark .day-tue , [data-theme="dark"] .day-tue { background: rgba(15,118,110,0.4); color: var(--ds-background-success, #DCFFF1); }
 .dark .day-wed , [data-theme="dark"] .day-wed { background: rgba(109,40,217,0.3); color: var(--ds-background-discovery, #F3F0FF); }
-.dark .day-thu , [data-theme="dark"] .day-thu { background: rgba(146,64,14,0.4); color: var(--ds-background-warning, #FFF7D6); }
+.dark .day-thu , [data-theme="dark"] .day-thu { background: rgba(146,64,14,0.4); color: var(--ds-background-warning, var(--ds-background-warning, #FFF7D6)); }
 
 .di-day-label { font: 600 13px var(--di-font-heading); color: var(--di-ink); }
 .di-day-date  { font: 400 12px var(--di-font-mono); color: var(--di-ink-muted); }
@@ -345,7 +345,7 @@
 .dark .hub-prd , [data-theme="dark"] .hub-prd { background: var(--ds-text, #172B4D); color: var(--ds-background-success, #DFFCF0); }
 .dark .hub-prj , [data-theme="dark"] .hub-prj { background: var(--ds-text, #172B4D); color: var(--ds-background-information-bold, #0C66E4); }
 .dark .hub-tst , [data-theme="dark"] .hub-tst { background: var(--ds-background-discovery-bold, rgba(167,139,250,0.10)); color: var(--ds-background-discovery, #F3F0FF); }
-.dark .hub-rel , [data-theme="dark"] .hub-rel { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, #FFF7D6); }
+.dark .hub-rel , [data-theme="dark"] .hub-rel { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, var(--ds-background-warning, #FFF7D6)); }
 .dark .hub-oth , [data-theme="dark"] .hub-oth { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 
 .di-ev-content { flex: 1; }
@@ -474,8 +474,8 @@
 .dark .role-dev  .di-role-icon , [data-theme="dark"] .role-dev  .di-role-icon { background: var(--ds-background-information-bold, rgba(59,130,246,0.10)); color: var(--ds-text-brand, #60A5FA); }
 .dark .role-qa   .di-role-icon , [data-theme="dark"] .role-qa   .di-role-icon { background: var(--ds-background-success-bold, rgba(74,222,128,0.10)); color: var(--ds-background-success, #DFFCF0); }
 .dark .role-po   .di-role-icon , [data-theme="dark"] .role-po   .di-role-icon { background: var(--ds-background-success, rgba(13,148,136,0.10)); color: var(--ds-background-success, #DCFFF1); }
-.dark .role-ux   .di-role-icon , [data-theme="dark"] .role-ux   .di-role-icon { background: rgba(219,39,119,0.10); color: var(--ds-background-accent-magenta-subtle, #FCE7F3); }
-.dark .role-mgmt .di-role-icon , [data-theme="dark"] .role-mgmt .di-role-icon { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, #FFF7D6); }
+.dark .role-ux   .di-role-icon , [data-theme="dark"] .role-ux   .di-role-icon { background: rgba(219,39,119,0.10); color: var(--ds-background-accent-magenta-subtle, var(--ds-background-accent-magenta-subtle, #fce7f3)); }
+.dark .role-mgmt .di-role-icon , [data-theme="dark"] .role-mgmt .di-role-icon { background: var(--ds-background-warning, rgba(253,230,138,0.10)); color: var(--ds-background-warning, var(--ds-background-warning, #FFF7D6)); }
 .dark .role-devops .di-role-icon , [data-theme="dark"] .role-devops .di-role-icon { background: var(--ds-background-success-bold, rgba(74,222,128,0.10)); color: var(--ds-background-success, #DFFCF0); }
 .di-role-title { font: 600 14px var(--di-font-heading); color: var(--di-ink); }
 .di-role-count { font: 500 11px var(--di-font-mono); color: var(--di-ink-muted); }

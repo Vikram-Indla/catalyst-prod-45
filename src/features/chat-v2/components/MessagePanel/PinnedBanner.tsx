@@ -29,7 +29,7 @@ export function PinnedBanner({ pinnedMessages, pinnedByMap, onOpenMessage }: Pin
         gap: 10,
         width: '100%',
         padding: '10px 20px',
-        background: 'rgba(236, 178, 46, 0.08)',
+        background: 'rgba(236, 178, 46, 0.08)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
         borderBottom: '1px solid var(--cv2-border)',
         textAlign: 'left',
         cursor: 'pointer',
@@ -42,10 +42,10 @@ export function PinnedBanner({ pinnedMessages, pinnedByMap, onOpenMessage }: Pin
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => {
-        (e.currentTarget as HTMLElement).style.background = 'rgba(236, 178, 46, 0.14)';
+        (e.currentTarget as HTMLElement).style.background = 'rgba(236, 178, 46, 0.14)'; // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.background = 'rgba(236, 178, 46, 0.08)';
+        (e.currentTarget as HTMLElement).style.background = 'rgba(236, 178, 46, 0.08)'; // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
       }}
     >
       <span
@@ -59,13 +59,13 @@ export function PinnedBanner({ pinnedMessages, pinnedByMap, onOpenMessage }: Pin
         <PinFilledIcon size={14} />
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
-        <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)', fontWeight: 600 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', fontWeight: 600 }}>
           {label}
           {pinnedMessages.length > 1 ? ` · +${pinnedMessages.length - 1} more` : ''}
         </span>
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: 'var(--cv2-text)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

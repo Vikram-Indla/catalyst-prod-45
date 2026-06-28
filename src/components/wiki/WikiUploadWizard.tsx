@@ -36,21 +36,21 @@ function DocStatusPoller({ docId, fileName }: { docId: string; fileName: string 
 
   return (
     <div style={{ marginBottom: 16, padding: 12, borderRadius: 6, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)' }}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', marginBottom: 8 }}>{fileName}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', marginBottom: 8 }}>{fileName}</div>
       {isFailed ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--cp-danger-60)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-danger-60)' }}>
           <AlertCircle size={12} /> Processing failed: {status?.error_message || 'Unknown error'}
         </div>
       ) : (
         steps.map((s, si) => (
-          <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', fontSize: 11, color: s.done ? 'var(--cp-success-60)' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)') }}>
+          <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', fontSize: 'var(--ds-font-size-100)', color: s.done ? 'var(--cp-success-60)' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)') }}>
             {s.done ? <Check size={12} /> : <span style={{ width: 8, height: 8, borderRadius: '50%', background: si === 0 && !isDone ? 'var(--cp-primary-60)' : (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--cp-border-default)'), animation: si === 0 && !isDone ? 'wiki-pulse 1.5s ease-in-out infinite' : 'none' }} />}
             {s.label}
           </div>
         ))
       )}
       {isDone && status && (
-        <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', marginTop: 6, fontFamily: 'var(--cp-font-mono)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', marginTop: 6, fontFamily: 'var(--cp-font-mono)' }}>
           {status.pages_extracted ?? 0} pages · {status.words_extracted ?? 0} words · {status.chunks_generated ?? 0} chunks
         </div>
       )}
@@ -138,7 +138,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
         {/* Header + Progress */}
         <div style={{ padding: '16px 20px 0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <span style={{ fontSize: 16, fontWeight: 650, fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>Upload Documents</span>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 650, fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>Upload Documents</span>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', padding: 4 }}><X size={16} /></button>
           </div>
           <div style={{ height: 3, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)', borderRadius: 4, overflow: 'hidden' }}>
@@ -147,7 +147,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
           <div style={{ display: 'flex', gap: 4, marginTop: 8, marginBottom: 12 }}>
             {['Select Files', 'Classify', 'Review', 'Processing'].map((label, i) => (
               <span key={i} style={{
-                fontSize: 10, fontWeight: step > i ? 650 : 500, flex: 1, textAlign: 'center',
+                fontSize: 'var(--ds-font-size-50)', fontWeight: step > i ? 650 : 500, flex: 1, textAlign: 'center',
                 color: step > i ? 'var(--cp-primary-60)' : step === i + 1 ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)') : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)'),
               }}>{label}</span>
             ))}
@@ -168,8 +168,8 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                 onClick={() => document.getElementById('wiki-file-input')?.click()}
               >
                 <Upload size={28} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', margin: '0 auto 8px' }} />
-                <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)' }}>Drop files here or click to browse</div>
-                <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', marginTop: 4 }}>PDF, DOCX, XLSX, PPTX, MD, TXT, CSV · Max 50MB · Up to 5 files</div>
+                <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)' }}>Drop files here or click to browse</div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', marginTop: 4 }}>PDF, DOCX, XLSX, PPTX, MD, TXT, CSV · Max 50MB · Up to 5 files</div>
                 <input id="wiki-file-input" type="file" multiple accept={ACCEPT} onChange={handleFileInput} style={{ display: 'none' }} />
               </div>
               {files.map((f, i) => (
@@ -178,9 +178,9 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                   borderRadius: 4, border: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border-subtle)', marginBottom: 4,
                 }}>
                   <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }} />
-                  <span style={{ flex: 1, fontSize: 12, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.file.name}</span>
-                  <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}>{(f.file.size / 1024 / 1024).toFixed(1)} MB</span>
-                  <button onClick={() => removeFile(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}><X size={12} /></button>
+                  <span style={{ flex: 1, fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.file.name}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}>{(f.file.size / 1024 / 1024).toFixed(1)} MB</span>
+                  <button onClick={() => removeFile(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--cp-text-muted)' }}><X size={12} /></button>
                 </div>
               ))}
             </>
@@ -188,13 +188,13 @@ export function WikiUploadWizard({ open, onClose }: Props) {
 
           {step === 2 && files.map((f, idx) => (
             <div key={idx} style={{ marginBottom: 20, padding: 12, borderRadius: 6, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)' }}>
-              <div style={{ fontSize: 13, fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', marginBottom: 12 }}>{f.file.name}</div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Domain</label>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', marginBottom: 12 }}>{f.file.name}</div>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Domain</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
                 {DOMAINS.map(d => (
                   <button key={d.code} onClick={() => updateFile(idx, 'domain', d.code)}
                     style={{
-                      fontSize: 11, fontWeight: 500, padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 500, padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                       border: f.domain === d.code ? '1.5px solid var(--cp-primary-60)' : (isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border-default)'),
                       background: f.domain === d.code ? 'var(--cp-primary-5)' : 'transparent',
                       color: f.domain === d.code ? 'var(--cp-primary-60)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)'),
@@ -203,12 +203,12 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                   </button>
                 ))}
               </div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Document Type</label>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Document Type</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
                 {DOC_TYPES.map(t => (
                   <button key={t} onClick={() => updateFile(idx, 'docType', t)}
                     style={{
-                      fontSize: 11, fontWeight: 500, padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 500, padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                       border: f.docType === t ? '1.5px solid var(--cp-primary-60)' : (isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--cp-border-default)'),
                       background: f.docType === t ? 'var(--cp-primary-5)' : 'transparent',
                       color: f.docType === t ? 'var(--cp-primary-60)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)'),
@@ -216,21 +216,21 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                     }}>{t.replace(/_/g, ' ')}</button>
                 ))}
               </div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Purpose</label>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Purpose</label>
               <textarea value={f.purpose} onChange={e => updateFile(idx, 'purpose', e.target.value)} rows={2}
-                style={{ width: '100%', fontSize: 12, padding: 8, borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)', resize: 'vertical', outline: 'none', marginBottom: 8 }}
+                style={{ width: '100%', fontSize: 'var(--ds-font-size-200)', padding: 8, borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)', resize: 'vertical', outline: 'none', marginBottom: 8 }}
                 placeholder="Brief description of this document's purpose..." />
               <div style={{ display: 'flex', gap: 12 }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Version</label>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Version</label>
                   <input value={f.version} onChange={e => updateFile(idx, 'version', e.target.value)}
-                    style={{ width: '100%', fontSize: 12, padding: '6px 8px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)', outline: 'none' }} />
+                    style={{ width: '100%', fontSize: 'var(--ds-font-size-200)', padding: '6px 8px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)', outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Language</label>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Language</label>
                   <div style={{ display: 'flex', gap: 4 }}>
                     <div style={{
-                      flex: 1, fontSize: 11, fontWeight: 500, padding: '5px 8px', borderRadius: 4,
+                      flex: 1, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, padding: '5px 8px', borderRadius: 4,
                       border: '1.5px solid var(--cp-primary-60)',
                       background: 'var(--cp-primary-5)',
                       color: 'var(--cp-primary-60)', textAlign: 'center',
@@ -243,7 +243,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
 
           {step === 3 && (
             <>
-              <div style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 16 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', marginBottom: 16 }}>
                 Review your uploads before processing:
               </div>
               <div style={{ border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', borderRadius: 6, overflow: 'hidden' }}>
@@ -253,13 +253,13 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                     borderBottom: i < files.length - 1 ? (isDark ? '0.75px solid var(--ds-text, #172B4D)' : '0.75px solid var(--cp-border-subtle)') : 'none',
                   }}>
                     <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }} />
-                    <span style={{ flex: 1, fontSize: 12, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>{f.file.name}</span>
+                    <span style={{ flex: 1, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>{f.file.name}</span>
                     <DomainBadge code={f.domain} />
-                    <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', textTransform: 'capitalize' }}>{f.docType.replace(/_/g, ' ')}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', textTransform: 'capitalize' }}>{f.docType.replace(/_/g, ' ')}</span>
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 16, padding: 12, borderRadius: 6, background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : 'var(--cp-primary-5)', fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)' }}>
+              <div style={{ marginTop: 16, padding: 12, borderRadius: 6, background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.08))' : 'var(--cp-primary-5)', fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)' }}>
                 <strong>What happens next:</strong> Each file will be uploaded to storage, parsed, chunked into semantic segments, and embedded into the knowledge base for AI-powered search and article generation.
               </div>
             </>
@@ -268,13 +268,13 @@ export function WikiUploadWizard({ open, onClose }: Props) {
           {step === 4 && (
             <div>
               {uploading && (
-                <div style={{ padding: 24, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', fontSize: 12 }}>
+                <div style={{ padding: 24, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', fontSize: 'var(--ds-font-size-200)' }}>
                   Uploading files to storage...
                 </div>
               )}
 
               {uploadError && (
-                <div style={{ padding: 12, borderRadius: 6, background: 'var(--cp-danger-5)', color: 'var(--cp-danger-60)', fontSize: 12, marginBottom: 16 }}>
+                <div style={{ padding: 12, borderRadius: 6, background: 'var(--cp-danger-5)', color: 'var(--cp-danger-60)', fontSize: 'var(--ds-font-size-200)', marginBottom: 16 }}>
                   {uploadError}
                 </div>
               )}
@@ -285,10 +285,10 @@ export function WikiUploadWizard({ open, onClose }: Props) {
 
               {!uploading && uploadedDocs.length === files.length && uploadedDocs.length > 0 && (
                 <div style={{ padding: 16, borderRadius: 6, background: 'var(--cp-lozenge-green-bg)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-lozenge-green-text)', marginBottom: 8 }}>✓ All documents uploaded</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: 'var(--cp-lozenge-green-text)', marginBottom: 8 }}>✓ All documents uploaded</div>
                   <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                    <button onClick={onClose} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', background: 'var(--cp-primary-60)', color: 'var(--cp-on-primary)', cursor: 'pointer' }}>View in Wiki</button>
-                    <button onClick={handleReset} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', cursor: 'pointer' }}>Upload More</button>
+                    <button onClick={onClose} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', background: 'var(--cp-primary-60)', color: 'var(--cp-on-primary)', cursor: 'pointer' }}>View in Wiki</button>
+                    <button onClick={handleReset} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', cursor: 'pointer' }}>Upload More</button>
                   </div>
                 </div>
               )}
@@ -299,12 +299,12 @@ export function WikiUploadWizard({ open, onClose }: Props) {
         {/* Footer */}
         {step < 4 && (
           <div style={{ padding: '12px 20px', borderTop: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            {step > 1 && <button onClick={() => setStep(s => s - 1)} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', cursor: 'pointer' }}>Back</button>}
+            {step > 1 && <button onClick={() => setStep(s => s - 1)} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '1px solid var(--cp-border-default)', background: 'transparent', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)', cursor: 'pointer' }}>Back</button>}
             <button
               disabled={step === 1 && files.length === 0}
               onClick={() => { if (step === 3) { setStep(4); handleProcess(); } else setStep(s => s + 1); }}
               style={{
-                fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
                 background: files.length === 0 && step === 1 ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--cp-border-default)') : 'var(--cp-primary-60)', color: 'var(--cp-on-primary)',
                 display: 'flex', alignItems: 'center', gap: 4, opacity: files.length === 0 && step === 1 ? 0.5 : 1,
               }}>

@@ -121,7 +121,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
             backgroundColor: isHovered ? COLORS.accentLight : COLORS.surfaceHover,
             border: `1.5px ${isHovered ? 'solid' : 'dashed'} ${isHovered ? COLORS.accent : COLORS.borderDefault}`,
             borderRadius: '8px',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             color: isHovered ? COLORS.accent : COLORS.textMuted,
             cursor: 'pointer',
@@ -173,7 +173,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                   flex: 1,
                   border: 'none',
                   backgroundColor: 'transparent',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   color: COLORS.textPrimary,
                   outline: 'none',
                   fontFamily: 'inherit'
@@ -189,7 +189,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                 <Loader2 size={20} style={{ color: COLORS.textMuted, animation: 'spin 1s linear infinite' }} />
               </div>
             ) : filteredLabels.length === 0 ? (
-              <div style={{ padding: '16px', textAlign: 'center', color: COLORS.textMuted, fontSize: '14px' }}>
+              <div style={{ padding: '16px', textAlign: 'center', color: COLORS.textMuted, fontSize: 'var(--ds-font-size-400)' }}>
                 {searchQuery ? 'No labels found' : 'No labels available'}
               </div>
             ) : (
@@ -222,7 +222,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                     padding: '10px 12px',
                     border: `1px solid ${COLORS.borderDefault}`,
                     borderRadius: '8px',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     color: COLORS.textPrimary,
                     outline: 'none',
                     fontFamily: 'inherit'
@@ -265,7 +265,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                       backgroundColor: COLORS.surfaceHover,
                       border: 'none',
                       borderRadius: '8px',
-                      fontSize: '13px',
+                      fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 500,
                       color: COLORS.textSecondary,
                       cursor: 'pointer',
@@ -283,7 +283,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                       backgroundColor: newLabelName.trim() ? COLORS.accent : COLORS.surfaceHover,
                       border: 'none',
                       borderRadius: '8px',
-                      fontSize: '13px',
+                      fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 500,
                       color: newLabelName.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : COLORS.textMuted,
                       cursor: newLabelName.trim() ? 'pointer' : 'not-allowed',
@@ -306,7 +306,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                   backgroundColor: 'transparent',
                   border: 'none',
                   borderRadius: '8px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: COLORS.accent,
                   cursor: 'pointer',
@@ -365,7 +365,7 @@ const LabelOption: React.FC<{
       />
 
       {/* LABEL NAME */}
-      <span style={{ flex: 1, fontSize: '14px', color: COLORS.textPrimary }}>
+      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>
         {label.name}
       </span>
 

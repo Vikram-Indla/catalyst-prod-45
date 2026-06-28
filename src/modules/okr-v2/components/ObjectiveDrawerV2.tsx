@@ -95,7 +95,7 @@ function PremiumProgressBar({ progress, health }: { progress: number; health: st
     };
     return {
       // §L38 hex only — hsl(217 91% 65%) → Atlaskit blue.bolder.hovered
-      fill: 'linear-gradient(90deg, hsl(var(--primary)) 0%, var(--ds-background-information-bold, #0C66E4) 100%)',
+      fill: 'linear-gradient(90deg, hsl(var(--primary)) 0%, var(--ds-background-information-bold, var(--ds-link, #0C66E4)) 100%)',
       glow: '0 0 16px hsl(var(--primary) / 0.3)',
       text: 'hsl(var(--primary))'
     };
@@ -572,7 +572,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
       // §L38 hex-only. Raw-HSL → Atlaskit semantic fallbacks at 12% alpha.
       in_progress: { label: 'In Progress', bg: 'rgba(38, 132, 255, 0.12)', text: 'hsl(var(--primary))' },
       on_track: { label: 'On Track', bg: 'rgba(0, 135, 90, 0.12)', text: 'hsl(var(--success))' },
-      at_risk: { label: 'At Risk', bg: 'rgba(255, 153, 31, 0.12)', text: 'var(--ds-text-warning, #974F0C)' },
+      at_risk: { label: 'At Risk', bg: 'rgba(255, 153, 31, 0.12)', text: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))' },
       off_track: { label: 'Off Track', bg: 'rgba(222, 53, 11, 0.12)', text: 'hsl(var(--destructive))' },
       completed: { label: 'Completed', bg: 'rgba(0, 135, 90, 0.12)', text: 'hsl(var(--success))' },
     };

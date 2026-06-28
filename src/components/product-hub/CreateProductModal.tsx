@@ -195,7 +195,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
         <div style={{ padding: '20px 24px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2
             id="create-product-title"
-            style={{ fontSize: 18, fontWeight: 600, margin: 0, color: token('color.text') }}
+            style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, margin: 0, color: token('color.text') }}
           >
             Create product line
           </h2>
@@ -213,7 +213,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
         <div style={{ padding: '8px 24px 16px', overflowY: 'auto', flex: 1 }}>
           {/* Name */}
           <div style={{ marginBottom: 16 }}>
-            <label htmlFor="product-name" style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label htmlFor="product-name" style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
               Name <span style={{ color: token('color.text.danger') }}>*</span>
             </label>
             <input
@@ -230,7 +230,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
 
           {/* Code */}
           <div style={{ marginBottom: 16 }}>
-            <label htmlFor="product-code" style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label htmlFor="product-code" style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
               Code <span style={{ color: token('color.text.danger') }}>*</span>
             </label>
             <input
@@ -243,7 +243,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
               maxLength={20}
               style={{ ...inputStyle, fontFamily: 'var(--cp-font-mono)', textTransform: 'uppercase' }}
             />
-            <p style={{ fontSize: 11, color: token('color.text.subtle'), margin: '4px 0 0' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle'), margin: '4px 0 0' }}>
               Used in URLs: /product-hub/{code || 'CODE'}/backlog
             </p>
           </div>
@@ -254,7 +254,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
               local state; on submit we JSON.stringify(adf) and write
               that to products.description. */}
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
               Description <span style={{ fontWeight: 400, color: token('color.text.subtle') }}>(optional)</span>
             </label>
             <div
@@ -285,7 +285,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
 
           {/* Icon */}
           <div style={{ marginBottom: 4 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
               Icon
             </label>
             <IconPickerGrid
@@ -305,7 +305,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
                 background: token('color.background.danger'),
                 color: token('color.text.danger'),
                 borderRadius: 4,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
               }}
             >
               {errorMsg}
@@ -346,7 +346,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '8px 10px',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   borderRadius: 4,
   border: `1px solid ${token('color.border.input')}`,
   background: token('color.background.input'),
@@ -357,7 +357,7 @@ const inputStyle: React.CSSProperties = {
 
 const secondaryBtnStyle: React.CSSProperties = {
   padding: '6px 14px',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   fontWeight: 500,
   borderRadius: 3,
   border: 'none',
@@ -368,7 +368,7 @@ const secondaryBtnStyle: React.CSSProperties = {
 
 const primaryBtnStyle: React.CSSProperties = {
   padding: '6px 14px',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   fontWeight: 500,
   borderRadius: 3,
   border: 'none',

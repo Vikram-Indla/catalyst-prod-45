@@ -125,8 +125,8 @@ export function ManageWarningsDialog({ isOpen, onClose }: Props) {
   ) => (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{title}</div>
-        <div style={{ fontSize: 13, color: SUBTLE }}>{desc}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: TEXT, marginBottom: 4 }}>{title}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: SUBTLE }}>{desc}</div>
       </div>
       <Toggle
         checked={settings[key]}
@@ -144,7 +144,7 @@ export function ManageWarningsDialog({ isOpen, onClose }: Props) {
             <ModalTitle>Manage warnings</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <p style={{ margin: 0, fontSize: 14, color: TEXT }}>
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: TEXT }}>
               Warnings will be displayed when the status of a Jira work item doesn't accurately reflect related development activity.
             </p>
             <div
@@ -158,7 +158,7 @@ export function ManageWarningsDialog({ isOpen, onClose }: Props) {
                 border: '1px solid var(--ds-border-warning, #F5CD47)',
                 borderRadius: 4,
                 color: TEXT,
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
               }}
             >
               <span style={{ color: 'var(--ds-icon-warning, #E2B203)', display: 'inline-flex' }}>

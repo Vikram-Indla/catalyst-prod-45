@@ -58,7 +58,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
     const ringStyles: Record<string, string> = {
       healthy: 'ring-[var(--ds-chart-teal-bold, #0d9488)]',
       warning: 'ring-[var(--ds-text-warning, #974F0C)]',
-      critical: 'ring-[#be123c]',
+      critical: 'ring-[var(--ds-text-danger, #be123c)]',
       expired: 'ring-muted-foreground/40',
       permanent: 'ring-muted-foreground/30'
     };
@@ -292,13 +292,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
 
         // Department-specific colors from style guide
         const deptStyles: Record<string, { bg: string; text: string }> = {
-          'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, #216E4E)' },
-          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, #6d28d9)' },
-          'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
+          'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, var(--ds-chart-green-bold, #216E4E))' },
+          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #6d28d9))' },
+          'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' }, // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           'SUPPORT': { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))', text: 'var(--quality-high, #059669)' },
         };
 
-        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest, rgba(100,116,139,0.12))', text: 'var(--ds-text-subtle, #475569)' };
+        const style = deptStyles[deptUpper] || { bg: 'var(--ds-text-subtlest, rgba(100,116,139,0.12))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #44546F))' };
 
         return (
           <span

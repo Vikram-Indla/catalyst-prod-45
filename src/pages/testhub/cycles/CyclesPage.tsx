@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useProjects } from '@/hooks/test-management/useProjects';
 import { useReleases } from '@/hooks/test-management/useReleases';
+import { useSprintsByProject } from '@/hooks/test-management/useSprintsByProject';
 import { useTestCases } from '@/hooks/test-management/useTestCases';
 import {
   useTestCycles, useCreateCycle, useDeleteCycle, useAddCasesToScope,
@@ -30,7 +31,7 @@ const columns: Column<TMCycle>[] = [
     width: 8,
     alwaysVisible: true,
     cell: ({ row }) => (
-      <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtlest)', fontSize: 12, whiteSpace: 'nowrap' }}>
+      <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)', whiteSpace: 'nowrap' }}>
         {row.key}
       </span>
     ),
@@ -51,6 +52,16 @@ const columns: Column<TMCycle>[] = [
     cell: ({ row }) => <CycleStatusPill status={row.status} />,
   },
   {
+    id: 'sprint',
+    label: 'Sprint',
+    width: 18,
+    cell: ({ row }) => (
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
+        {(row as any).sprint?.name ?? '—'}
+      </span>
+    ),
+  },
+  {
     id: 'progress',
     label: 'Progress',
     width: 16,
@@ -69,7 +80,7 @@ const columns: Column<TMCycle>[] = [
     label: 'Date range',
     width: 20,
     cell: ({ row }) => (
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
         {row.planned_start_date ? new Date(row.planned_start_date).toLocaleDateString() : '—'}
         {row.planned_start_date && row.planned_end_date ? ' – ' : ''}
         {row.planned_end_date ? new Date(row.planned_end_date).toLocaleDateString() : ''}
@@ -107,7 +118,7 @@ export default function CyclesPage() {
 
       {selectedIds.size > 0 && (
         <div style={{ padding: '8px 0 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-information)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-information)' }}>
             {selectedIds.size} selected
           </span>
           <DropdownMenu
@@ -116,7 +127,7 @@ export default function CyclesPage() {
                 ref={triggerRef as React.Ref<HTMLButtonElement>}
                 {...props}
                 style={{
-                  padding: '5px 12px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+                  padding: '5px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
                   border: '1px solid var(--ds-border)', background: 'var(--ds-surface)',
                   color: 'var(--ds-text)', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 6,
@@ -152,7 +163,7 @@ export default function CyclesPage() {
           </DropdownMenu>
           <button
             onClick={() => setSelectedIds(new Set())}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 13 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-300)' }}
           >
             Clear
           </button>
@@ -196,7 +207,7 @@ function CycleProgressBar({ cycle }: { cycle: TMCycle }) {
       <div style={{ flex: 1, height: 6, background: 'var(--ds-background-neutral)', borderRadius: 3, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: 'var(--ds-background-brand-bold)', borderRadius: 3 }} />
       </div>
-      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>{pct}%</span>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', whiteSpace: 'nowrap' }}>{pct}%</span>
     </div>
   );
 }
@@ -244,6 +255,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
   const [name, setName] = useState('');
   const [objective, setObjective] = useState('');
   const [releaseId, setReleaseId] = useState('');
+  const [sprintId, setSprintId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -256,6 +268,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
   const createCycle = useCreateCycle();
   const addCases = useAddCasesToScope();
   const { data: releases = [] } = useReleases();
+  const { data: sprints = [] } = useSprintsByProject(projectId);
   const { data: casesResult } = useTestCases(projectId, { per_page: 200 });
   const allCases = casesResult?.cases ?? [];
   const { data: profiles = [] } = useQuery({
@@ -277,6 +290,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
       project_id: projectId,
       name: name.trim(),
       description: objective || undefined,
+      sprint_id: sprintId || null,
       planned_start_date: startDate || undefined,
       planned_end_date: endDate || undefined,
     });
@@ -294,11 +308,11 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
 
   const fieldStyle: React.CSSProperties = {
     width: '100%', border: '1px solid var(--ds-border)', borderRadius: 4,
-    padding: '6px 10px', fontSize: 14, fontFamily: 'var(--ds-font-family-body)',
+    padding: '6px 10px', fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--ds-font-family-body)',
     color: 'var(--ds-text)', background: 'var(--ds-surface)', boxSizing: 'border-box',
   };
   const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4,
+    display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4,
   };
 
   const tabLabels = [
@@ -342,12 +356,21 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
+                  <label style={labelStyle}>Sprint</label>
+                  <select value={sprintId} onChange={e => setSprintId(e.target.value)} style={fieldStyle}>
+                    <option value="">— No sprint —</option>
+                    {sprints.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                </div>
+                <div>
                   <label style={labelStyle}>Release</label>
                   <select value={releaseId} onChange={e => setReleaseId(e.target.value)} style={fieldStyle}>
                     <option value="">— None —</option>
                     {releases.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                   </select>
                 </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={labelStyle}>Owner</label>
                   <select value={ownerId} onChange={e => setOwnerId(e.target.value)} style={fieldStyle}>
@@ -377,13 +400,13 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
                   {tags.map(tag => (
                     <span key={tag} style={{
-                      padding: '2px 8px', borderRadius: 10, fontSize: 12,
+                      padding: '2px 8px', borderRadius: 10, fontSize: 'var(--ds-font-size-200)',
                       background: 'var(--ds-background-neutral)', color: 'var(--ds-text)',
                       display: 'flex', alignItems: 'center', gap: 4,
                     }}>
                       {tag}
                       <button onClick={() => setTags(prev => prev.filter(t => t !== tag))}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1, color: 'var(--ds-text-subtlest)', fontSize: 12 }}>×</button>
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1, color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)' }}>×</button>
                     </span>
                   ))}
                 </div>
@@ -424,17 +447,17 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                   }}
                   style={{ cursor: 'pointer' }}
                 />
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>
                   Select all ({filteredCases.length} cases)
                 </span>
                 {selectedCaseIds.size > 0 && (
-                  <span style={{ fontSize: 12, color: 'var(--ds-link)', marginLeft: 'auto' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link)', marginLeft: 'auto' }}>
                     {selectedCaseIds.size} selected
                   </span>
                 )}
               </div>
               {filteredCases.length === 0 ? (
-                <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 14, padding: '16px 0' }}>No published cases found.</p>
+                <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: '16px 0' }}>No published cases found.</p>
               ) : (
                 <div style={{ maxHeight: 400, overflowY: 'auto' }}>
                   {filteredCases.map(c => (
@@ -452,11 +475,11 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                           });
                         }}
                       />
-                      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code)', minWidth: 70 }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code)', minWidth: 70 }}>
                         {c.key}
                       </span>
-                      <span style={{ fontSize: 14, color: 'var(--ds-text)', flex: 1 }}>{c.title}</span>
-                      <span style={{ fontSize: 11, padding: '1px 6px', borderRadius: 10, background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtlest)' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', flex: 1 }}>{c.title}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 10, background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtlest)' }}>
                         v{c.current_version ?? 1}
                       </span>
                     </label>
@@ -469,7 +492,7 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
           {/* ── Assignees ── */}
           <TabPanel>
             <div style={{ paddingTop: 16 }}>
-              <p style={{ fontSize: 13, color: 'var(--ds-text-subtle)', marginTop: 0, marginBottom: 12 }}>
+              <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle)', marginTop: 0, marginBottom: 12 }}>
                 Select team members to assign to this cycle.
               </p>
               {(profiles as Array<{ id: string; full_name: string | null; email: string | null; avatar_url: string | null }>).length === 0 ? (
@@ -494,14 +517,14 @@ function CreateCycleModal({ projectId, onClose }: { projectId: string; onClose: 
                       {p.avatar_url
                         ? <img src={p.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />
                         : <span style={{
-                            width: 28, height: 28, borderRadius: '50%', fontSize: 12, fontWeight: 600,
+                            width: 28, height: 28, borderRadius: '50%', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             background: 'var(--ds-background-neutral)', color: 'var(--ds-text)',
                           }}>
                             {(p.full_name || p.email || '?').charAt(0).toUpperCase()}
                           </span>
                       }
-                      <span style={{ fontSize: 14, color: 'var(--ds-text)' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
                         {p.full_name || p.email}
                       </span>
                     </label>

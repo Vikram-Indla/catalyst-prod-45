@@ -84,7 +84,7 @@ function severityAppearance(value: string): React.ComponentProps<typeof Lozenge>
    WCAG AA for body text. */
 function Empty({ text = 'None' }: { text?: string }) {
   return (
-    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{text}</span>
+    <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{text}</span>
   );
 }
 
@@ -174,7 +174,7 @@ export function CatalystDefectKeyRows({
 
       {hasRootCause && (
         <KeyDetailsFieldRow label="Root cause" alignBlock="center">
-          <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{rootCause}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>{rootCause}</span>
         </KeyDetailsFieldRow>
       )}
 
@@ -192,7 +192,7 @@ export function CatalystDefectKeyRows({
    ═══════════════════════════════════════════════════════════ */
 
 const BODY_STYLE: React.CSSProperties = {
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   fontWeight: 400,
   color: 'var(--ds-text, #292A2E)',
   lineHeight: 1.5,

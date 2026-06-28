@@ -107,10 +107,10 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
         }
         {icon()}
         {mode === 'epic' && group.groupKey !== 'NO_EPIC' && (
-          <span style={{ fontSize: 13, fontWeight: 600, color: tk.textSecondary, fontFamily: 'var(--cp-font-mono)' }}>{group.groupKey}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: tk.textSecondary, fontFamily: 'var(--cp-font-mono)' }}>{group.groupKey}</span>
         )}
-        <span style={{ fontSize: 14, fontWeight: 500, color: tk.textPrimary }}>{group.groupLabel}</span>
-        <span style={{ fontSize: 12, color: tk.textMuted, marginLeft: -2 }}>({group.issueIds.length})</span>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: tk.textPrimary }}>{group.groupLabel}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textMuted, marginLeft: -2 }}>({group.issueIds.length})</span>
         {/* Epic status lozenge — Jira parity */}
         {epicIssue && (
           <span style={{ marginLeft: 4 }}>
@@ -213,7 +213,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
         transition: 'background 100ms',
       }}>
           {issueIds.length === 0 && isDraggedOver && (
-            <div className="flex items-center justify-center" style={{ minHeight: 40, color: tk.textDisabled, fontSize: 11 }}>Drop here</div>
+            <div className="flex items-center justify-center" style={{ minHeight: 40, color: tk.textDisabled, fontSize: 'var(--ds-font-size-100)' }}>Drop here</div>
           )}
           {issueIds.map(id => {
             const issue = issuesById.get(id);

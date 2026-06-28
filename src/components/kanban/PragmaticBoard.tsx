@@ -316,10 +316,10 @@ const PragmaticCard = memo(function PragmaticCard({
                 display: 'block', width: '100%',
                 padding: '8px 16px', background: 'transparent',
                 border: 'none', cursor: 'pointer', textAlign: 'left',
-                fontSize: 14, lineHeight: '20px',
+                fontSize: 'var(--ds-font-size-400)', lineHeight: '20px',
                 color: item.danger ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               {item.label}
@@ -446,7 +446,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
         flexShrink: 0,
       }}>
         <span style={{
-          fontSize: 11, fontWeight: 600,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
           color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
           lineHeight: '16px',
           letterSpacing: '0.04em',
@@ -462,7 +462,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
           </svg>
         ) : issueIds.length > 0 ? (
           <span style={{
-            fontSize: 11, fontWeight: 600,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
             color: tk.textMuted,
             background: 'var(--ds-background-neutral, #F1F2F4)',
             padding: '1px 6px',
@@ -478,7 +478,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
           <span
             data-testid={`kanban-column-wip-${column.id}`}
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               color: issueIds.length > column.wipLimit ? 'var(--ds-text-danger, #AE2A19)' : tk.textMuted,
               fontFamily: 'var(--cp-font-body)',
@@ -539,18 +539,18 @@ const PragmaticColumn = memo(function PragmaticColumn({
           >
             {/* Column name header */}
             <div style={{
-              padding: '4px 16px 8px', fontSize: 11, fontWeight: 700, color: tk.textMuted,
+              padding: '4px 16px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: tk.textMuted,
               letterSpacing: 0.5,
               borderBottom: `1px solid ${tk.border}`, marginBottom: 4,
             }}>{column.name}</div>
             {/* Column stats — non-interactive info rows */}
-            <div style={{ padding: '8px 16px', fontSize: 12, color: tk.textPrimary, display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-200)', color: tk.textPrimary, display: 'flex', justifyContent: 'space-between' }}>
               <span>Cards</span>
               <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>{issueIds.length}</span>
             </div>
             {column.wipLimit != null && (
               <div style={{
-                padding: '8px 16px', fontSize: 12, display: 'flex', justifyContent: 'space-between',
+                padding: '8px 16px', fontSize: 'var(--ds-font-size-200)', display: 'flex', justifyContent: 'space-between',
                 color: issueIds.length > column.wipLimit ? 'var(--ds-text-danger, #AE2A19)' : tk.textPrimary,
               }}>
                 <span>WIP limit</span>
@@ -587,7 +587,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
                   display: 'flex',
                   width: '100%',
                   padding: '8px 16px',
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: tk.textPrimary,
                   background: 'none',
                   border: 'none',
@@ -803,7 +803,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         {issueIds.length === 0 && !isLoading && isOver && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            minHeight: 60, color: tk.selectedAccent, fontSize: 13, fontWeight: 600,
+            minHeight: 60, color: tk.selectedAccent, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
             fontFamily: 'var(--cp-font-body)',
           }}>
             Drop here
@@ -881,7 +881,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 border: 'none',
                 background: 'transparent',
                 color: tk.textMuted,
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 fontFamily: 'var(--cp-font-body)',
                 borderRadius: 4,
@@ -893,7 +893,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               tabIndex={showCreate ? 0 : -1}
               aria-hidden={!showCreate}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, #F1F2F4)';
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))';
                 (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
               }}
               onMouseLeave={(e) => {
@@ -1042,7 +1042,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               border: 'none',
               background: 'transparent',
               color: tk.textMuted,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               fontFamily: 'var(--cp-font-body)',
               borderRadius: 4,
@@ -1053,7 +1053,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
             tabIndex={showCreate ? 0 : -1}
             aria-hidden={!showCreate}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, #F1F2F4)';
+              (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))';
               (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
             }}
             onMouseLeave={(e) => {
@@ -1319,7 +1319,7 @@ export function PragmaticBoard({
                   background: tk.surfaceAlt,
                   borderBottom: `1px solid ${tk.border}`,
                   borderRadius: 4,
-                  fontSize: 12, fontWeight: 600,
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                   color: tk.textPrimary,
                   fontFamily: 'var(--cp-font-body)',
                   letterSpacing: '0.02em',

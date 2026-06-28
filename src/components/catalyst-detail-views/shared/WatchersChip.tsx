@@ -112,7 +112,7 @@ export function WatchersChip({ issueKey }: Props) {
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               padding: '0 6px', minWidth: 16, textAlign: 'center',
-              fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
+              fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
               fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
               lineHeight: '32px', borderRadius: 3,
             }}
@@ -140,7 +140,7 @@ export function WatchersChip({ issueKey }: Props) {
           }}
         >
           <div style={{
-            padding: '0 16px 8px', fontSize: 11, fontWeight: 600,
+            padding: '0 16px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
             color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',
             letterSpacing: '0.04em',
           }}>
@@ -148,14 +148,14 @@ export function WatchersChip({ issueKey }: Props) {
           </div>
           <div style={{ maxHeight: 240, overflowY: 'auto' }}>
             {watchers.length === 0 ? (
-              <div style={{ padding: '8px 16px', fontSize: 13, color: 'var(--ds-text-subtle, #6B6E76)' }}>
+              <div style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #6B6E76)' }}>
                 No watchers yet.
               </div>
             ) : (
               watchers.map(w => (
                 <div key={w.user_id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '6px 16px', fontSize: 13,
+                  padding: '6px 16px', fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 }}>
                   <CatalystAvatar size="small" name={w.full_name ?? w.email ?? 'Unknown'} src={resolveAvatarUrl(w.full_name ?? w.email) ?? w.avatar_url} />

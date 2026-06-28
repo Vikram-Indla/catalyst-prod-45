@@ -1575,7 +1575,7 @@
 .dark .awToolbarAvatarOverflow { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #A1A1A1); border-color: var(--cp-bg-page, var(--ds-surface, #FFFFFF)); }
 .dark .awViewToggleBtn { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))); color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awViewToggleBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); }
-.dark .awViewToggleBtn.active { background: var(--ds-link, rgba(12,102,228,0.12)); color: var(--ds-background-information-bold, #0C66E4); }
+.dark .awViewToggleBtn.active { background: var(--ds-link, rgba(12,102,228,0.12)); color: var(--ds-background-information-bold, var(--ds-link, #0C66E4)); }
 .dark .awViewToggle { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awShell, .dark .awCol, .dark .awHeader,
 .dark .awIssueContent, .dark .awDetailsSidebar { background: var(--cp-bg-page, var(--ds-surface, #FFFFFF)); }
@@ -1621,7 +1621,7 @@
 .dark .awTimelineName { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awTimelineTime { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awTypeBadgeHistory { background: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .awTypeBadgeComment { background: var(--ds-link, rgba(12,102,228,0.15)); color: var(--ds-background-information-bold, #0C66E4); }
+.dark .awTypeBadgeComment { background: var(--ds-link, rgba(12,102,228,0.15)); color: var(--ds-background-information-bold, var(--ds-link, #0C66E4)); }
 .dark .awTypeBadgeWorklog { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .awStatusLoz { border-color: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awAssigneeChip { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }

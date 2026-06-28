@@ -450,7 +450,7 @@ export function SidebarBase({
                 <span
                   style={{
                     fontFamily: 'var(--ds-font-family-code, monospace)',
-                    fontSize: '10px',
+                    fontSize: 'var(--ds-font-size-50)',
                     fontWeight: 700,
                     color: 'var(--ds-text-subtlest, #626F86)',
                     letterSpacing: '0.5px',

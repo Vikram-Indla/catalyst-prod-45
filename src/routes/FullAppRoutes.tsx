@@ -61,6 +61,7 @@ const FilterPreviewPageLazy = lazy(() => import("../pages/project-hub/filters/Fi
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
 const ReleasesPageLazy = lazy(() => import("../pages/project-hub/ReleasesPage").then(m => ({ default: m.ReleasesPage })));
+const ReleasesPageWrapperLazy = lazy(() => import("../pages/project-hub/ReleasesPageWrapper").then(m => ({ default: m.ReleasesPageWrapper })));
 const ReleaseDetailPageLazy = lazy(() => import("../pages/release-hub/ReleaseDetailPage").then(m => ({ default: m.ReleaseDetailPage })));
 const ReleaseWorkNavigatorPageLazy = lazy(() => import("../pages/release-hub/ReleaseWorkNavigatorPage").then(m => ({ default: m.ReleaseWorkNavigatorPage })));
 const DependenciesPageLazy = lazy(() => import("../pages/project-hub/DependenciesPage"));
@@ -169,6 +170,14 @@ const TestHubSetDetailPage = lazy(() => import("../pages/testhub/sets/SetDetailP
 const TestHubTraceabilityPage = lazy(() => import("../pages/testhub/traceability/TraceabilityPage"));
 const TestHubReportsPage = lazy(() => import("../pages/testhub/reports/ReportsPage"));
 const TestHubReportDetailPage = lazy(() => import("../pages/testhub/reports/ReportDetailPage"));
+const TestHubReportsCommandCenterPage = lazy(() => import("../pages/testhub/reports/lab/ReportsCommandCenterPage"));
+const TestHubProjectTestingStatusPage = lazy(() => import("../pages/testhub/reports/ProjectTestingStatusPage"));
+const TestHubSprintTestingStatusPage = lazy(() => import("../pages/testhub/reports/SprintTestingStatusPage"));
+const TestHubTesterPerformancePage = lazy(() => import("../pages/testhub/reports/TesterPerformancePage"));
+const TestHubTeamPerformancePage = lazy(() => import("../pages/testhub/reports/TeamPerformancePage"));
+const TestHubDefectsIncidentsPage = lazy(() => import("../pages/testhub/reports/DefectsIncidentsPage"));
+const TestHubGovernancePage = lazy(() => import("../pages/testhub/reports/GovernancePage"));
+const TestHubProductStatusPage = lazy(() => import("../pages/testhub/reports/ProductStatusPage"));
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
@@ -226,6 +235,9 @@ const KanbanPage = lazy(() => import("../modules/tasks").then(m => ({ default: m
 /* 2026-06-17: Tasks Hub filters — canonical FiltersListPage / FilterDetailPage
    / FilterPreviewPage mounted with hubType='tasks' / mode='tasks'. */
 const TasksFiltersListPage = lazy(() => import("../modules/tasks/pages/TasksFiltersListPage"));
+// CAT-TASKS-20260627-001 Slice 5: canonical Workstreams CRUD page (replaces the
+// deprecated /tasks/workstreams 404).
+const WorkstreamsManagerPage = lazy(() => import("../modules/tasks/components/workstreams/WorkstreamsManagerPage"));
 const TasksFilterPreviewPage = lazy(() => import("../modules/tasks/pages/TasksFilterPreviewPage"));
 const TasksFilterDetailPage = lazy(() => import("../modules/tasks/pages/TasksFilterDetailPage"));
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -234,7 +246,6 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 // Plan Hub module — DEPRECATED 2026-06-25
 // All planhub routes removed; modules-dormant/planhub remains in codebase for historical reference.
 
-const Defects = lazy(() => import("../pages/Defects"));
 const Tasks = lazy(() => import("../pages/Tasks"));
 const Impediments = lazy(() => import("../pages/Impediments"));
 const ReleaseVehicles = lazy(() => import("../pages/ReleaseVehicles"));
@@ -276,6 +287,7 @@ const NotionConnectionPage = lazy(() => import("../pages/admin/connections/Notio
 const VercelConnectionPage = lazy(() => import("../pages/admin/connections/VercelConnectionPage"));
 // WorkHubSyncLogs DEPRECATED 2026-06-20 — route removed
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
+const WorkflowVersioningPage = lazy(() => import("../pages/admin/workflows/WorkflowVersioningPage"));
 const AiTranslationsAuditPage = lazy(() => import("../pages/admin/AiTranslationsAuditPage"));
 const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 const FieldRegistryPage = lazy(() => import("../pages/admin/FieldRegistryPage"));
@@ -527,6 +539,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/:key/timeline/:issueKey" element={<MG k="producthub" t="ProductHub"><S><ProductTimelineDetailPage /></S></MG>} />
         <Route path="/product-hub/:key/timeline" element={<MG k="producthub" t="ProductHub"><S><ProductHubTimelinePage /></S></MG>} />
         <Route path="/product-hub/:key/dependencies" element={<MG k="producthub" t="ProductHub"><S><ProductDependenciesPageLazy /></S></MG>} />
+        <Route path="/product-hub/:key/releases" element={<MG k="producthub" t="ProductHub"><S><ReleasesPageWrapperLazy /></S></MG>} />
         <Route path="/product-hub/:key/cards" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:key/filters" element={<MG k="producthub" t="ProductHub"><S><FiltersListPageLazy hubType="product" /></S></MG>} />
@@ -645,9 +658,10 @@ export default function FullAppRoutes() {
         <Route path="/tasks/filters/create" element={<S><TasksFilterPreviewPage /></S>} />
         <Route path="/tasks/filters/:filterId" element={<S><TasksFilterDetailPage /></S>} />
         <Route path="/tasks/:view" element={<ModuleGuard moduleCode="planner"><S><PlannerPage /></S></ModuleGuard>} />
-        {/* Deprecated 2026-06-17: My Tasks + Workstreams removed. Static segment outranks /tasks/:view in RR6 → 404. */}
+        {/* Deprecated 2026-06-17: My Tasks removed. Static segment outranks /tasks/:view in RR6 → 404. */}
         <Route path="/tasks/my-tasks" element={<S><NotFound /></S>} />
-        <Route path="/tasks/workstreams" element={<S><NotFound /></S>} />
+        {/* CAT-TASKS-20260627-001 Slice 5: Workstreams restored as a canonical CRUD page. */}
+        <Route path="/tasks/workstreams" element={<ModuleGuard moduleCode="planner"><S><WorkstreamsManagerPage /></S></ModuleGuard>} />
 
         {/* Backward-compat redirects from old /taskhub routes */}
         <Route path="/taskhub" element={<Navigate to="/tasks/overview" replace />} />
@@ -676,7 +690,15 @@ export default function FullAppRoutes() {
         <Route path="/testhub/sets/:id" element={<S><TestHubSetDetailPage /></S>} />
         <Route path="/testhub/traceability" element={<S><TestHubTraceabilityPage /></S>} />
         <Route path="/testhub/defects" element={<S><TestHubDefectsPage /></S>} />
+        <Route path="/testhub/reports-lab" element={<S><TestHubReportsCommandCenterPage /></S>} />
         <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
+        <Route path="/testhub/reports/project-status" element={<S><TestHubProjectTestingStatusPage /></S>} />
+        <Route path="/testhub/reports/sprint-status" element={<S><TestHubSprintTestingStatusPage /></S>} />
+        <Route path="/testhub/reports/tester-status" element={<S><TestHubTesterPerformancePage /></S>} />
+        <Route path="/testhub/reports/team-status" element={<S><TestHubTeamPerformancePage /></S>} />
+        <Route path="/testhub/reports/defects-incidents" element={<S><TestHubDefectsIncidentsPage /></S>} />
+        <Route path="/testhub/reports/governance" element={<S><TestHubGovernancePage /></S>} />
+        <Route path="/testhub/reports/product-status" element={<S><TestHubProductStatusPage /></S>} />
         <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
             Static segments BEFORE :id-style routes. */}
@@ -805,7 +827,6 @@ export default function FullAppRoutes() {
         <Route path="/items/epics/:epicId/responsibility-matrix" element={<S><EpicResponsibilityMatrix /></S>} />
         <Route path="/items/epics/:epicId/planning" element={<S><EpicPlanningPage /></S>} />
         <Route path="/items/epics/estimation" element={<S><EpicEstimationPage /></S>} />
-        <Route path="/items/defects" element={<S><Defects /></S>} />
         <Route path="/items/tasks" element={<S><Tasks /></S>} />
         <Route path="/items/impediments" element={<S><Impediments /></S>} />
         <Route path="/items/release-vehicles" element={<S><ReleaseVehicles /></S>} />
@@ -825,8 +846,8 @@ export default function FullAppRoutes() {
         <Route path="/capacity" element={<S><CapacityPlanningPage /></S>} />
         <Route path="/risks" element={<S><RisksGridPage /></S>} />
         <Route path="/risk-roam-report" element={<S><RiskRoamReportPage /></S>} />
-        <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
-        <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
+        <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
+        <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
 
         <Route path="/projects" element={<Navigate to="/project-hub/projects" replace />} />
         <Route path="/projects/:projectKey" element={<Navigate to="/project-hub/projects" replace />} />
@@ -923,6 +944,7 @@ export default function FullAppRoutes() {
           <Route path="access" element={<S><AdminAccessPage /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
+          <Route path="workflows/versions" element={<S><WorkflowVersioningPage /></S>} />
           <Route path="release-ops" element={<S><ReleaseOpsAdminPage /></S>} />
           {/* ── Connections hub (/admin/connections/*) — 2026-06-21 ─────────────
               Replaces the old /admin/workhub/* section. Each integration owns

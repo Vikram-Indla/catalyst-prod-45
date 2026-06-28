@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     // Look up the invitation
     const { data: invitation } = await supabaseAdmin
       .from('user_invitations')
-      .select('id, email, role, status, expires_at, module_access, full_name')
+      .select('id, email, role, status, expires_at, module_access, full_name, department_id')
       .eq('token_hash', tokenHash)
       .eq('status', 'pending')
       .maybeSingle();
@@ -57,15 +57,34 @@ Deno.serve(async (req) => {
 
     const userId = newUserData.user.id;
 
-    // Allow handle_new_user trigger to seed profiles + user_roles
+    // Allow handle_new_user trigger to seed the profiles row (it does NOT touch user_roles).
     await new Promise(resolve => setTimeout(resolve, 600));
 
-    // Apply invited role if not the default 'user'
-    if (invitation.role && invitation.role !== 'user') {
-      await supabaseAdmin
-        .from('user_roles')
-        .update({ role: invitation.role })
-        .eq('user_id', userId);
+    // CAT-RBAC-RESOLVE-20260627-001 Phase 1 — resolve the invited role across ALL THREE models so
+    // the new user is consistent everywhere and visible to /admin/roles:
+    //   - user_roles          (legacy app_role; read by check_permission until the Phase 2 cutover)
+    //   - user_product_roles  (product-role model; the post-cutover source of truth)
+    //   - profiles.role        (legacy text shown on /admin/access — set in the upsert below)
+    // invitation.role and user_roles.role share the app_role enum, so it inserts directly.
+    const invitedRole = invitation.role || 'user';
+
+    // Legacy app_role row — unique is (user_id, role); reset to exactly the invited role.
+    await supabaseAdmin.from('user_roles').delete().eq('user_id', userId);
+    await supabaseAdmin.from('user_roles').insert({ user_id: userId, role: invitedRole });
+
+    // Product-role row. Prefer an exact code match (app_role labels mostly mirror product_roles.code);
+    // admin -> super_admin; otherwise fall back to the 'developer' baseline. Parity-safe: only
+    // super_admin is all-Allow, every other target is all-Deny.
+    let productCode = invitedRole === 'admin' ? 'super_admin' : invitedRole;
+    let { data: pr } = await supabaseAdmin
+      .from('product_roles').select('id').eq('code', productCode).maybeSingle();
+    if (!pr?.id && productCode !== 'developer') {
+      ({ data: pr } = await supabaseAdmin
+        .from('product_roles').select('id').eq('code', 'developer').maybeSingle());
+    }
+    if (pr?.id) {
+      await supabaseAdmin.from('user_product_roles')
+        .upsert({ user_id: userId, role_id: pr.id, business_lines: [] }, { onConflict: 'user_id,role_id' });
     }
 
     // Upsert profile: full_name + module_access + mark approved (bypasses pending-approval gate).
@@ -77,6 +96,8 @@ Deno.serve(async (req) => {
         id: userId,
         email: normalizedEmail,
         full_name: full_name || invitation.full_name || normalizedEmail,
+        role: invitedRole,
+        department_id: invitation.department_id ?? null,
         module_access: invitation.module_access || {},
         approval_status: 'APPROVED',
       }, { onConflict: 'id' });

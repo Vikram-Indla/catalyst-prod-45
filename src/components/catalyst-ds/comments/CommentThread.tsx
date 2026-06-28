@@ -204,7 +204,7 @@ function CommentThread({
             <div style={{ paddingLeft: 44, paddingTop: 8, paddingBottom: 8 }}>
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtle, #44546F)',
                   marginBottom: 6,

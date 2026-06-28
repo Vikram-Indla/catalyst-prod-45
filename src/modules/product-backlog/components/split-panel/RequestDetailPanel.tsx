@@ -94,7 +94,7 @@ const STATUS_COLORS: Record<string, string> = {
   on_hold: 'bg-[var(--ds-text-warning,#d97706)]',          // Orange
 };
 
-const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[var(--ds-text-subtlest, #626F86)]';
+const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))]';
 
 // Quarter options (canonical storage format: "Q1-2026"; display: "Q1 2026")
 const QUARTER_OPTIONS = [

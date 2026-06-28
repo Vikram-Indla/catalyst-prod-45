@@ -45,19 +45,19 @@ const DATE_RANGE_LABELS: Record<DateRange, string> = {
 
 const TH: React.CSSProperties = {
   padding: '8px 16px',
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
-  color: 'var(--ds-text-subtle, #42526E)',
+  color: 'var(--ds-text-subtle)',
   textAlign: 'left',
-  borderBottom: '2px solid var(--ds-border, #DFE1E6)',
+  borderBottom: '2px solid var(--ds-border)',
   whiteSpace: 'nowrap',
 };
 
 const TD: React.CSSProperties = {
   padding: '10px 16px',
-  fontSize: 14,
-  color: 'var(--ds-text, #172B4D)',
-  borderBottom: '1px solid var(--ds-border-subtle, #F1F2F4)',
+  fontSize: 'var(--ds-font-size-400)',
+  color: 'var(--ds-text)',
+  borderBottom: '1px solid var(--ds-border-subtle)',
   verticalAlign: 'middle',
 };
 
@@ -68,8 +68,8 @@ const TD_RIGHT: React.CSSProperties = {
 };
 
 const CARD: React.CSSProperties = {
-  background: 'var(--ds-surface, #FFFFFF)',
-  border: '1px solid var(--ds-border, #DFE1E6)',
+  background: 'var(--ds-surface)',
+  border: '1px solid var(--ds-border)',
   borderRadius: 8,
   overflow: 'hidden',
 };
@@ -121,10 +121,10 @@ function useActiveProject(): string | undefined {
 function EmptyState() {
   return (
     <div style={{ padding: '48px 24px', textAlign: 'center' }}>
-      <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '0 0 8px' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 8px' }}>
         No data available for this report.
       </p>
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: 0 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', margin: 0 }}>
         Run some test cycles and executions to generate report data.
       </p>
     </div>
@@ -143,7 +143,7 @@ function LoadingState() {
 
 function DateRangePicker({ value, onChange }: { value: DateRange; onChange: (v: DateRange) => void }) {
   return (
-    <div style={{ display: 'flex', gap: 0, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, overflow: 'hidden' }}>
+    <div style={{ display: 'flex', gap: 0, border: '1px solid var(--ds-border)', borderRadius: 4, overflow: 'hidden' }}>
       {(['7d', '30d', '90d'] as DateRange[]).map(opt => (
         <button
           key={opt}
@@ -151,12 +151,12 @@ function DateRangePicker({ value, onChange }: { value: DateRange; onChange: (v: 
           onClick={() => onChange(opt)}
           style={{
             padding: '6px 12px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: value === opt ? 600 : 400,
-            color: value === opt ? 'var(--ds-text-selected, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
-            background: value === opt ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)',
+            color: value === opt ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
+            background: value === opt ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
             border: 'none',
-            borderRight: opt !== '90d' ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
+            borderRight: opt !== '90d' ? '1px solid var(--ds-border)' : 'none',
             cursor: 'pointer',
           }}
         >
@@ -752,26 +752,26 @@ function ReportTable({ headers, rows, emptyMessage }: {
 
 function StatusBadge({ status }: { status: string }) {
   const colorMap: Record<string, string> = {
-    passed: 'var(--ds-text-success, #006644)',
-    failed: 'var(--ds-text-danger, #AE2A19)',
-    blocked: 'var(--ds-text-warning, #974F0C)',
-    not_run: 'var(--ds-text-subtlest, #6B778C)',
-    skipped: 'var(--ds-text-subtlest, #6B778C)',
-    in_progress: 'var(--ds-link, #0052CC)',
+    passed: 'var(--ds-text-success)',
+    failed: 'var(--ds-text-danger)',
+    blocked: 'var(--ds-text-warning)',
+    not_run: 'var(--ds-text-subtlest)',
+    skipped: 'var(--ds-text-subtlest)',
+    in_progress: 'var(--ds-link)',
   };
   const bgMap: Record<string, string> = {
-    passed: 'var(--ds-background-success, #E3FCEF)',
-    failed: 'var(--ds-background-danger, #FFEBE6)',
-    blocked: 'var(--ds-background-warning, #FFFAE6)',
-    not_run: 'var(--ds-background-neutral, #F1F2F4)',
-    skipped: 'var(--ds-background-neutral, #F1F2F4)',
-    in_progress: 'var(--ds-background-information, #DEEBFF)',
+    passed: 'var(--ds-background-success)',
+    failed: 'var(--ds-background-danger)',
+    blocked: 'var(--ds-background-warning)',
+    not_run: 'var(--ds-background-neutral)',
+    skipped: 'var(--ds-background-neutral)',
+    in_progress: 'var(--ds-background-information)',
   };
   const label = status.replace(/_/g, ' ');
-  const color = colorMap[status] ?? 'var(--ds-text-subtle, #42526E)';
-  const bg = bgMap[status] ?? 'var(--ds-background-neutral, #F1F2F4)';
+  const color = colorMap[status] ?? 'var(--ds-text-subtle)';
+  const bg = bgMap[status] ?? 'var(--ds-background-neutral)';
   return (
-    <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, padding: '2px 8px', borderRadius: 3, background: bg, color }}>
+    <span style={{ display: 'inline-block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '2px 8px', borderRadius: 3, background: bg, color }}>
       {label}
     </span>
   );
@@ -1260,7 +1260,7 @@ function ReportBody({ type, projectId, from, dateRange }: {
     case 'user-activity': return <UserActivityReport projectId={projectId} from={from} />;
     default:
       return (
-        <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ds-text-subtle, #42526E)' }}>
+        <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ds-text-subtle)' }}>
           Unknown report type: {type}
         </div>
       );
@@ -1335,7 +1335,7 @@ export default function ReportDetailPage() {
       style={{
         fontFamily: 'var(--ds-font-family-body)',
         minHeight: '100vh',
-        background: 'var(--ds-surface-sunken, #F7F8F9)',
+        background: 'var(--ds-surface-sunken)',
         display: 'flex',
         flexDirection: 'column',
         paddingTop: 16,

@@ -121,7 +121,7 @@ export function GlobalMobileDrawer({
         >
           <span
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               color: 'var(--ds-text, var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))))',
             }}

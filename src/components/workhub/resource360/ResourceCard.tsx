@@ -39,13 +39,13 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <AvatarChip name={r.full_name} size={36} avatarUrl={r.avatar_url} />
           <div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--fg-1)' }}>
               {r.full_name}
             </div>
-            <div style={{ fontSize: 13, color: 'var(--fg-3)', marginTop: 1 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', marginTop: 1 }}>
               {r.role || 'Team Member'}
               {r.assignment_type && (
-                <span style={{ marginLeft: 6, fontSize: 11, padding: '1px 6px', borderRadius: 4, background: 'var(--ds-text-subtlest, rgba(100,116,139,0.1))', color: 'var(--fg-2)', fontWeight: 500 }}>
+                <span style={{ marginLeft: 6, fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 4, background: 'var(--ds-text-subtlest, rgba(100,116,139,0.1))', color: 'var(--fg-2)', fontWeight: 500 }}>
                   {r.assignment_type}
                 </span>
               )}
@@ -58,7 +58,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
       </div>
 
       {/* Row 2: Active/Done counts */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--ds-font-size-300)', marginBottom: 8 }}>
         <div style={{ color: 'var(--fg-3)' }}>
           <span style={{ fontWeight: 600, color: 'var(--fg-1)' }}>{r.active_subtasks}</span> active
           <span style={{ margin: '0 6px', color: 'var(--divider)' }}>·</span>
@@ -70,14 +70,14 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
             </>
           )}
         </div>
-        <div style={{ color: 'var(--fg-3)', fontSize: 12 }}>
+        <div style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-200)' }}>
           {nextDue ? `Next due: ${nextDue}` : 'No upcoming'}
         </div>
       </div>
 
       {/* Row 3: Releases */}
       {r.release_names.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, fontSize: 11 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, fontSize: 'var(--ds-font-size-100)' }}>
           {r.release_names.map(name => (
             <span
               key={name}

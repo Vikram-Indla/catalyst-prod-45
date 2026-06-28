@@ -177,7 +177,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         color: token('color.text', 'var(--ds-text, #172B4D)'),
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 120ms ease',
         outline: 'none',
-        // WCAG 2.4.7 — keyboard focus indicator. ADS border.focused (#388BFF)
+        // WCAG 2.4.7 — keyboard focus indicator. ADS border.focused (var(--ds-border-focused, #388BFF))
         // routed via inset ring so it sits on top of the row's hover bg without
         // shifting layout. Only renders on actual keyboard focus, not hover.
         boxShadow: isFocused
@@ -432,7 +432,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
               ? `0 0 0 2px ${token('color.border.focused', 'var(--ds-border-focused, #388BFF)')}`
               : 'none',
           }}
-          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -472,10 +472,10 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                 display: 'flex', alignItems: 'center', gap: 8,
                 width: '100%', padding: '8px 8px', border: 'none',
                 background: 'transparent', color: token('color.text', 'var(--ds-text, #172B4D)'),
-                fontSize: 14, textAlign: 'left', cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-400)', textAlign: 'left', cursor: 'pointer',
                 fontFamily: 'inherit', borderRadius: 3, outline: 'none',
               }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
             >
               {a.icon}
@@ -495,10 +495,10 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                     display: 'flex', alignItems: 'center', gap: 8,
                     width: '100%', padding: '8px 8px', border: 'none',
                     background: 'transparent', color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-                    fontSize: 14, textAlign: 'left', cursor: 'pointer',
+                    fontSize: 'var(--ds-font-size-400)', textAlign: 'left', cursor: 'pointer',
                     fontFamily: 'inherit', borderRadius: 3, outline: 'none',
                   }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'))}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))'))}
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   {a.icon}
@@ -539,7 +539,7 @@ export function JiraForYouLozenge({ status, statusCategory }: { status: string; 
     }}>
       <span style={{
         font: `653 11px/16px var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif`,
-        color: statusFg(),
+        color: statusFg(ap),
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         padding: '2px',

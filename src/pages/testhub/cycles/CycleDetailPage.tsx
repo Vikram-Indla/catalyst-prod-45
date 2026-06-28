@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import Select from '@atlaskit/select';
+import { DatePicker } from '@atlaskit/datetime-picker';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useTestCycle,
@@ -41,29 +44,7 @@ export default function CycleDetailPage() {
   const [showAddCases, setShowAddCases] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
-  const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'scope' | 'planning'>('scope');
-  const bulkStatusBtnRef = useRef<HTMLButtonElement>(null);
-  const bulkMoveBtnRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!bulkStatusOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (!bulkStatusBtnRef.current?.contains(e.target as Node)) setBulkStatusOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [bulkStatusOpen]);
-
-  useEffect(() => {
-    if (!bulkMoveOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (!bulkMoveBtnRef.current?.contains(e.target as Node)) setBulkMoveOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [bulkMoveOpen]);
 
   const { data: teamMembers = [] } = useQuery({
     queryKey: ['team-members'],
@@ -128,7 +109,6 @@ export default function CycleDetailPage() {
   ];
 
   const handleBulkStatusChange = async (newStatus: RunStatus) => {
-    setBulkStatusOpen(false);
     const ids = Array.from(selectedIds);
     const { error } = await (supabase.from('tm_cycle_scope') as any).update({ status: newStatus }).in('id', ids);
     if (error) { catalystToast.error(error.message); return; }
@@ -138,7 +118,6 @@ export default function CycleDetailPage() {
   };
 
   const handleMoveRuns = async (targetCycle: { id: string; name: string }) => {
-    setBulkMoveOpen(false);
     const ids = Array.from(selectedIds);
     const selectedItems = scopeItems.filter(i => ids.includes(i.id));
 
@@ -185,12 +164,14 @@ export default function CycleDetailPage() {
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <button
                 onClick={() => {
-                  const headers = ['Key', 'Title', 'Status', 'Assignee'];
+                  const sprintName = (cycle as any)?.sprint?.name ?? '';
+                  const headers = ['Key', 'Title', 'Status', 'Assignee', 'Sprint'];
                   const rows = scopeItems.map(i => [
                     i.test_case?.key ?? '',
                     i.test_case?.title ?? '',
                     i.status,
                     i.assignee?.full_name ?? 'Unassigned',
+                    sprintName,
                   ]);
                   const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
                   const blob = new Blob([csv], { type: 'text/csv' });
@@ -201,7 +182,7 @@ export default function CycleDetailPage() {
                 }}
                 style={{
                   padding: '6px 12px', background: 'none', border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 4, cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                  borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)',
                 }}
               >
                 Export CSV
@@ -217,7 +198,7 @@ export default function CycleDetailPage() {
                     border: 'none',
                     borderRadius: 4,
                     cursor: startCycle.isPending ? 'not-allowed' : 'pointer',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
@@ -239,7 +220,7 @@ export default function CycleDetailPage() {
                       border: 'none',
                       borderRadius: 4,
                       cursor: 'pointer',
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 6,
@@ -257,7 +238,7 @@ export default function CycleDetailPage() {
                       border: '1px solid var(--ds-border, #DFE1E6)',
                       borderRadius: 4,
                       cursor: completeCycle.isPending ? 'not-allowed' : 'pointer',
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       color: 'var(--ds-text, #172B4D)',
                       display: 'flex',
                       alignItems: 'center',
@@ -292,12 +273,12 @@ export default function CycleDetailPage() {
             borderRadius: 4,
           }} />
         </div>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
           {pct}% — {executed}/{total} executed
         </span>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-success, #006644)' }}>{passed} passed</span>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)' }}>{failed} failed</span>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-warning, #974F0C)' }}>{blocked} blocked</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-success, #006644)' }}>{passed} passed</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)' }}>{failed} failed</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning, #974F0C)' }}>{blocked} blocked</span>
       </div>
 
       {/* Tab bar */}
@@ -313,7 +294,7 @@ export default function CycleDetailPage() {
               borderBottom: activeTab === tab ? '2px solid var(--ds-link, #0052CC)' : '2px solid transparent',
               marginBottom: -2,
               cursor: 'pointer',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: activeTab === tab ? 600 : 400,
               color: activeTab === tab ? 'var(--ds-link, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
             }}
@@ -336,7 +317,7 @@ export default function CycleDetailPage() {
 
       {/* Scope section header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+        <h2 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
           {statusFilter === 'ALL'
             ? `Scope (${scopeItems.length} ${scopeItems.length === 1 ? 'case' : 'cases'})`
             : `Scope (${filteredItems.length} of ${scopeItems.length})`}
@@ -349,7 +330,7 @@ export default function CycleDetailPage() {
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
             cursor: 'pointer',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text, #172B4D)',
             display: 'flex',
             alignItems: 'center',
@@ -367,7 +348,7 @@ export default function CycleDetailPage() {
           background: 'var(--ds-background-selected, #E9F2FF)',
           border: '1px solid var(--ds-border-selected, #4C9AFF)',
           borderRadius: 6, padding: '8px 16px', marginBottom: 8,
-          display: 'flex', alignItems: 'center', gap: 12, fontSize: 13,
+          display: 'flex', alignItems: 'center', gap: 12, fontSize: 'var(--ds-font-size-300)',
           color: 'var(--ds-text, #172B4D)',
         }}>
           <span style={{ fontWeight: 500 }}>{selectedIds.size} case{selectedIds.size > 1 ? 's' : ''} selected</span>
@@ -376,110 +357,32 @@ export default function CycleDetailPage() {
               removeCases.mutate({ cycle_id: cycleId!, scope_ids: Array.from(selectedIds) });
               setSelectedIds(new Set());
             }}
-            style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}
+            style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}
           >
             Remove from scope
           </button>
-          <div style={{ position: 'relative' }}>
-            <button
-              ref={bulkStatusBtnRef}
-              onClick={() => setBulkStatusOpen(v => !v)}
-              style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}
-            >
-              Change status ▾
-            </button>
-            {bulkStatusOpen && bulkStatusBtnRef.current && createPortal(
-              <div
-                style={{
-                  position: 'fixed',
-                  top: bulkStatusBtnRef.current.getBoundingClientRect().bottom + 4,
-                  left: bulkStatusBtnRef.current.getBoundingClientRect().left,
-                  background: 'var(--ds-surface-overlay, #FFFFFF)',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 6,
-                  boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
-                  padding: '4px 0',
-                  minWidth: 160,
-                  zIndex: 9999,
-                }}
-                onMouseDown={e => e.stopPropagation()}
-              >
-                {(['PASSED', 'FAILED', 'BLOCKED', 'SKIPPED'] as RunStatus[]).map(s => (
-                  <button
-                    key={s}
-                    role="menuitem"
-                    onClick={() => handleBulkStatusChange(s)}
-                    style={{
-                      display: 'block', width: '100%', textAlign: 'left',
-                      padding: '8px 16px', background: 'none', border: 'none',
-                      cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                  >
-                    {s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}
-                  </button>
-                ))}
-              </div>,
-              document.body
-            )}
-          </div>
-          <div style={{ position: 'relative' }}>
-            <button
-              ref={bulkMoveBtnRef}
-              onClick={() => setBulkMoveOpen(v => !v)}
-              style={{ background: 'none', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)' }}
-            >
-              Move to cycle ▾
-            </button>
-            {bulkMoveOpen && bulkMoveBtnRef.current && createPortal(
-              <div
-                style={{
-                  position: 'fixed',
-                  top: bulkMoveBtnRef.current.getBoundingClientRect().bottom + 4,
-                  left: bulkMoveBtnRef.current.getBoundingClientRect().left,
-                  background: 'var(--ds-surface-overlay, #FFFFFF)',
-                  border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 6,
-                  boxShadow: '0 8px 28px var(--ds-shadow-raised, rgba(9,30,66,0.25))',
-                  padding: '4px 0',
-                  minWidth: 200,
-                  maxHeight: 240,
-                  overflowY: 'auto',
-                  zIndex: 9999,
-                }}
-                onMouseDown={e => e.stopPropagation()}
-              >
-                {otherCycles.length === 0 ? (
-                  <div style={{ padding: '10px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                    No other cycles
-                  </div>
-                ) : (otherCycles as Array<{ id: string; name: string; status: string }>).map(c => (
-                  <button
-                    key={c.id}
-                    role="menuitem"
-                    onClick={() => handleMoveRuns(c)}
-                    style={{
-                      display: 'block', width: '100%', textAlign: 'left',
-                      padding: '8px 16px', background: 'none', border: 'none',
-                      cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F7F8F9)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                  >
-                    <span>{c.name}</span>
-                    <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                      {c.status}
-                    </span>
-                  </button>
-                ))}
-              </div>,
-              document.body
-            )}
-          </div>
+          <DropdownMenu trigger="Change status ▾" triggerType="button">
+            <DropdownItemGroup>
+              {(['PASSED', 'FAILED', 'BLOCKED', 'SKIPPED'] as RunStatus[]).map(s => (
+                <DropdownItem key={s} onClick={() => handleBulkStatusChange(s)}>
+                  {s.charAt(0) + s.slice(1).toLowerCase().replace('_', ' ')}
+                </DropdownItem>
+              ))}
+            </DropdownItemGroup>
+          </DropdownMenu>
+          <DropdownMenu trigger="Move to cycle ▾" triggerType="button" isDisabled={otherCycles.length === 0}>
+            <DropdownItemGroup>
+              {(otherCycles as Array<{ id: string; name: string; status: string }>).map(c => (
+                <DropdownItem key={c.id} onClick={() => handleMoveRuns(c)}>
+                  {c.name}
+                  <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>{c.status}</span>
+                </DropdownItem>
+              ))}
+            </DropdownItemGroup>
+          </DropdownMenu>
           <button
             onClick={() => setSelectedIds(new Set())}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text-subtle, #42526E)', marginLeft: 'auto' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #42526E)', marginLeft: 'auto' }}
           >
             ✕ Clear
           </button>
@@ -496,7 +399,7 @@ export default function CycleDetailPage() {
               padding: '5px 12px',
               borderRadius: 16,
               cursor: 'pointer',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               border: statusFilter === pill.value ? 'none' : '1px solid var(--ds-border, #DFE1E6)',
               background: statusFilter === pill.value ? 'var(--ds-background-brand-bold, #0052CC)' : 'none',
@@ -511,16 +414,16 @@ export default function CycleDetailPage() {
       {scopeLoading ? (
         <Spinner size="medium" />
       ) : scopeItems.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>
           No cases in scope yet. Add cases to start executing.
         </div>
       ) : filteredItems.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+        <div style={{ textAlign: 'center', padding: 48, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)' }}>
           No cases match the selected status filter.
         </div>
       ) : (
         <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'hidden', background: 'var(--ds-surface, #FFFFFF)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
             <thead>
               <tr style={{ background: 'var(--ds-surface-sunken, #F7F8F9)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
                 <th style={{ ...thStyle, width: 36 }}>
@@ -535,7 +438,8 @@ export default function CycleDetailPage() {
                 <th style={thStyle}>Key</th>
                 <th style={thStyle}>Title</th>
                 <th style={thStyle}>Status</th>
-                <th style={thStyle}>Assignee</th>
+                <th style={{ ...thStyle, minWidth: 130 }}>Assignee</th>
+                <th style={{ ...thStyle, minWidth: 120 }}>Due Date</th>
                 <th style={{ ...thStyle, width: 96 }}>Actions</th>
                 <th style={{ ...thStyle, width: 40 }}></th>
               </tr>
@@ -589,7 +493,7 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
         background: panel === p ? 'var(--ds-background-selected, #E9F2FF)' : 'none',
         border: '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 4, cursor: 'pointer', padding: '2px 6px',
-        fontSize: 14, lineHeight: 1, color: panel === p ? 'var(--ds-text-brand, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
+        fontSize: 'var(--ds-font-size-400)', lineHeight: 1, color: panel === p ? 'var(--ds-text-brand, #0052CC)' : 'var(--ds-text-subtle, #42526E)',
       }}
     >
       {emoji}
@@ -607,7 +511,7 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
             style={{ width: 16, height: 16, cursor: 'pointer' }}
           />
         </td>
-        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12 }}>
+        <td style={{ ...tdStyle, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-200)' }}>
           {item.test_case?.key ?? '—'}
         </td>
         <td style={{ ...tdStyle, color: 'var(--ds-text, #172B4D)' }}>
@@ -616,10 +520,11 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
         <td style={tdStyle}>
           <RunStatusPill status={item.status} />
         </td>
-        <td style={{ ...tdStyle, color: 'var(--ds-text-subtle, #42526E)' }}>
-          {item.assignee?.full_name ?? (
-            <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>Unassigned</span>
-          )}
+        <td style={tdStyle}>
+          <AssigneeCell scopeId={item.id} cycleId={cycleId} assignee={item.assignee ?? null} />
+        </td>
+        <td style={tdStyle}>
+          <DueDateCell scopeId={item.id} cycleId={cycleId} dueDate={item.due_date} />
         </td>
         <td style={tdStyle}>
           <div style={{ display: 'flex', gap: 4 }}>
@@ -642,6 +547,82 @@ function ScopeRow({ item, cycleId, onRemove, selected, onToggle }: {
       {panel === 'comments' && <CommentsPanel item={item} onClose={() => setPanel(null)} />}
       {panel === 'evidence' && <EvidencePanel item={item} onClose={() => setPanel(null)} />}
     </>
+  );
+}
+
+// ── AssigneeCell ────────────────────────────────────────────────────────────
+function AssigneeCell({ scopeId, cycleId, assignee }: {
+  scopeId: string;
+  cycleId: string;
+  assignee: { id: string; full_name: string; avatar_url?: string } | null;
+}) {
+  const [users, setUsers] = useState<{ id: string; full_name: string }[]>([]);
+  const [saving, setSaving] = useState(false);
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    supabase.from('profiles').select('id, full_name').order('full_name').limit(50)
+      .then(({ data }) => setUsers(data ?? []));
+  }, []);
+
+  const assign = useCallback(async (userId: string | null) => {
+    setSaving(true);
+    const { error } = await supabase
+      .from('tm_cycle_scope')
+      .update({ assigned_to: userId })
+      .eq('id', scopeId);
+    setSaving(false);
+    if (error) { catalystToast.error('Failed to assign'); return; }
+    qc.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] });
+  }, [scopeId, cycleId, qc]);
+
+  return (
+    <Select
+      menuPosition="fixed"
+      placeholder="Unassigned"
+      value={assignee ? { label: assignee.full_name, value: assignee.id } : null}
+      options={[
+        { label: 'Unassigned', value: null as any },
+        ...users.map(u => ({ label: u.full_name, value: u.id }))
+      ]}
+      onChange={(opt) => assign(opt?.value ?? null)}
+      isDisabled={saving}
+      isClearable
+      styles={{ container: (b: any) => ({ ...b, minWidth: 140 }) }}
+    />
+  );
+}
+
+// ── DueDateCell ──────────────────────────────────────────────────────────────
+function DueDateCell({ scopeId, cycleId, dueDate }: {
+  scopeId: string;
+  cycleId: string;
+  dueDate: string | null;
+}) {
+  const [saving, setSaving] = useState(false);
+  const qc = useQueryClient();
+
+  const inputVal = dueDate ? dueDate.slice(0, 10) : '';
+
+  const save = useCallback(async (value: string) => {
+    setSaving(true);
+    const iso = value ? new Date(value).toISOString() : null;
+    const { error } = await supabase
+      .from('tm_cycle_scope')
+      .update({ due_date: iso })
+      .eq('id', scopeId);
+    setSaving(false);
+    if (error) { catalystToast.error('Failed to set due date'); return; }
+    qc.invalidateQueries({ queryKey: ['tm-cycle-scope', cycleId] });
+  }, [scopeId, cycleId, qc]);
+
+  return (
+    <DatePicker
+      value={inputVal}
+      onChange={(val) => save(val)}
+      isDisabled={saving}
+      placeholder="Set date"
+    />
   );
 }
 
@@ -671,10 +652,10 @@ function RightPanel({ title, subtitle, onClose, children }: {
           display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--ds-text, #172B4D)' }}>{title}</div>
-            <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{subtitle}</div>
+            <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-500)', color: 'var(--ds-text, #172B4D)' }}>{title}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{subtitle}</div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: 'var(--ds-text-subtle, #42526E)', padding: '0 4px' }}>✕</button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-600)', color: 'var(--ds-text-subtle, #42526E)', padding: '0 4px' }}>✕</button>
         </div>
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
@@ -687,7 +668,7 @@ function RightPanel({ title, subtitle, onClose, children }: {
 }
 
 const NO_RUN_MSG = (
-  <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, margin: 0 }}>
+  <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)', margin: 0 }}>
     No execution run yet. Execute this case first.
   </p>
 );
@@ -754,7 +735,7 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
         <>
           {/* Existing defects */}
           {isLoading ? <Spinner size="small" /> : defects.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13 }}>No defects logged.</p>
+            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)' }}>No defects logged.</p>
           ) : (
             <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {defects.map((d: { id: string; defect_key: string; title: string; severity: string; status: string }) => (
@@ -764,11 +745,11 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
                   background: 'var(--ds-surface-sunken, #F7F8F9)',
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest, #6B778C)' }}>{d.defect_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: SEVERITY_COLORS[d.severity] ?? 'inherit' }}>{d.severity}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-text-subtlest, #6B778C)' }}>{d.defect_key}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: SEVERITY_COLORS[d.severity] ?? 'inherit' }}>{d.severity}</span>
                   </div>
-                  <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>{d.title}</div>
-                  <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{d.status}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', fontWeight: 500 }}>{d.title}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>{d.status}</div>
                 </div>
               ))}
             </div>
@@ -776,23 +757,23 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
 
           {/* New defect form */}
           <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)', paddingTop: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 10 }}>Log new defect</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 10 }}>Log new defect</div>
             <div style={{ marginBottom: 10 }}>
               <label style={labelStyle}>Title</label>
               <Textfield value={title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} placeholder="Describe the defect…" />
             </div>
             <div style={{ marginBottom: 12 }}>
               <label style={labelStyle}>Severity</label>
-              <select
-                value={severity}
-                onChange={e => setSeverity(e.target.value as typeof severity)}
-                style={{ width: '100%', padding: '6px 8px', borderRadius: 4, border: '2px solid var(--ds-border, #DFE1E6)', fontSize: 13, fontFamily: 'var(--ds-font-family-body)' }}
-              >
-                <option value="critical">Critical</option>
-                <option value="major">Major</option>
-                <option value="minor">Minor</option>
-                <option value="trivial">Trivial</option>
-              </select>
+              <Select
+                value={{ label: severity.charAt(0).toUpperCase() + severity.slice(1), value: severity }}
+                options={[
+                  { label: 'Critical', value: 'critical' },
+                  { label: 'Major', value: 'major' },
+                  { label: 'Minor', value: 'minor' },
+                  { label: 'Trivial', value: 'trivial' },
+                ]}
+                onChange={(opt) => opt && setSeverity(opt.value as typeof severity)}
+              />
             </div>
             <button
               onClick={handleFile}
@@ -801,7 +782,7 @@ function DefectPanel({ item, onClose }: { item: TMCycleScope; onClose: () => voi
                 padding: '8px 16px', borderRadius: 4, border: 'none',
                 background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)',
                 cursor: (!title.trim() || saving) ? 'not-allowed' : 'pointer',
-                fontSize: 13, fontWeight: 500, opacity: saving ? 0.7 : 1,
+                fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: saving ? 0.7 : 1,
               }}
             >
               {saving ? 'Saving…' : 'File defect'}
@@ -863,20 +844,20 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
       {!runId ? NO_RUN_MSG : (
         <>
           {isLoading ? <Spinner size="small" /> : comments.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13 }}>No comments yet.</p>
+            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)' }}>No comments yet.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
               {comments.map((c: { id: string; content: string; created_at: string; author: { full_name: string } | null }) => (
                 <div key={c.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)', paddingBottom: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
                       {c.author?.full_name ?? 'Unknown'}
                     </span>
-                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                       {new Date(c.created_at).toLocaleString()}
                     </span>
                   </div>
-                  <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text, #172B4D)', lineHeight: 1.5 }}>{c.content}</p>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', lineHeight: 1.5 }}>{c.content}</p>
                 </div>
               ))}
             </div>
@@ -895,7 +876,7 @@ function CommentsPanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
                 marginTop: 8, padding: '7px 14px', borderRadius: 4, border: 'none',
                 background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #FFFFFF)',
                 cursor: (!text.trim() || posting) ? 'not-allowed' : 'pointer',
-                fontSize: 13, fontWeight: 500, opacity: posting ? 0.7 : 1,
+                fontSize: 'var(--ds-font-size-300)', fontWeight: 500, opacity: posting ? 0.7 : 1,
               }}
             >
               {posting ? 'Posting…' : 'Post comment'}
@@ -970,7 +951,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
           <div style={{ marginBottom: 16 }}>
             <label style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '7px 14px', borderRadius: 4, cursor: 'pointer', fontSize: 13,
+              padding: '7px 14px', borderRadius: 4, cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
               border: '1px solid var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #172B4D)',
               background: uploading ? 'var(--ds-background-neutral, #F1F2F4)' : 'var(--ds-surface, #FFFFFF)',
             }}>
@@ -981,7 +962,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
           </div>
 
           {isLoading ? <Spinner size="small" /> : attachments.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13 }}>No evidence attached.</p>
+            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)' }}>No evidence attached.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {attachments.map((a: { id: string; file_name: string; file_path: string; file_size: number; mime_type: string; created_at: string }) => (
@@ -992,8 +973,8 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{a.file_name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{a.file_name}</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
                       {fmtSize(a.file_size)} · {a.mime_type}
                     </div>
                   </div>
@@ -1001,7 +982,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
                     href={supabase.storage.from('tm-attachments').getPublicUrl(a.file_path).data.publicUrl}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ fontSize: 12, color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
+                    style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-link, #0052CC)', textDecoration: 'none' }}
                   >
                     Download
                   </a>
@@ -1016,7 +997,7 @@ function EvidencePanel({ item, onClose }: { item: TMCycleScope; onClose: () => v
 }
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 11, fontWeight: 600,
+  display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
   color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4,
 };
 
@@ -1035,7 +1016,35 @@ function AddCasesModal({
   const allCases = casesResult?.cases ?? [];
   const available = allCases.filter(c => !existingCaseIds.includes(c.id));
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  // locked version per case: null = latest (default)
+  const [lockedVersions, setLockedVersions] = useState<Record<string, number | null>>({});
   const addCases = useAddCasesToScope();
+
+  // Batch-load version numbers for all available cases (just id + version_number — no snapshot)
+  const availableIds = available.map(c => c.id);
+  const { data: versionRows = [] } = useQuery({
+    queryKey: ['case-version-numbers', availableIds.join(',')],
+    queryFn: async () => {
+      if (availableIds.length === 0) return [];
+      const { data } = await supabase
+        .from('tm_test_case_versions')
+        .select('test_case_id, version_number')
+        .in('test_case_id', availableIds)
+        .order('version_number', { ascending: false });
+      return data ?? [];
+    },
+    enabled: availableIds.length > 0,
+  });
+
+  // Map: caseId → sorted-desc version numbers
+  const versionsByCase = React.useMemo(() => {
+    const m: Record<string, number[]> = {};
+    for (const r of versionRows as Array<{ test_case_id: string; version_number: number }>) {
+      if (!m[r.test_case_id]) m[r.test_case_id] = [];
+      m[r.test_case_id].push(r.version_number);
+    }
+    return m;
+  }, [versionRows]);
 
   const toggle = (id: string) => {
     setSelected(prev => {
@@ -1048,7 +1057,18 @@ function AddCasesModal({
 
   const handleAdd = async () => {
     if (selected.size === 0) return;
-    await addCases.mutateAsync({ cycle_id: cycleId, case_ids: Array.from(selected) });
+    const caseIds = Array.from(selected);
+    // Build lockedVersions map (only for cases where user picked a specific version)
+    const locked: Record<string, number> = {};
+    for (const id of caseIds) {
+      const v = lockedVersions[id];
+      if (v != null) locked[id] = v;
+    }
+    await addCases.mutateAsync({
+      cycle_id: cycleId,
+      case_ids: caseIds,
+      lockedVersions: Object.keys(locked).length > 0 ? locked : undefined,
+    });
     onClose();
   };
 
@@ -1056,66 +1076,86 @@ function AddCasesModal({
     <>
       <div
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised, rgba(9,30,66,0.32))', zIndex: 300 }}
+        style={{ position: 'fixed', inset: 0, background: 'var(--ds-shadow-raised)', zIndex: 300 }}
       />
       <div style={{
         position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 560,
+        width: 620,
         maxHeight: '80vh',
-        background: 'var(--ds-surface-overlay, #FFFFFF)',
+        background: 'var(--ds-surface-overlay)',
         borderRadius: 8,
-        boxShadow: '0 8px 32px var(--ds-shadow-raised, rgba(9,30,66,0.32))',
+        boxShadow: 'var(--ds-shadow-overlay)',
         zIndex: 301,
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border)' }}>
+          <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text)' }}>
             Add cases to scope
           </h2>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
           {available.length === 0 ? (
-            <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>
+            <p style={{ color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)' }}>
               No cases available to add
             </p>
           ) : (
-            available.map(c => (
-              <label
-                key={c.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '8px 0',
-                  cursor: 'pointer',
-                  borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-                }}
-              >
-                <input type="checkbox" checked={selected.has(c.id)} onChange={() => toggle(c.id)} />
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code)' }}>
-                  {c.key}
-                </span>
-                <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{c.title}</span>
-              </label>
-            ))
+            available.map(c => {
+              const versions = versionsByCase[c.id] ?? [];
+              const latestVer = versions[0];
+              const versionOptions = [
+                { label: latestVer ? `Latest (v${latestVer})` : 'Latest', value: null as number | null },
+                ...versions.map(v => ({ label: `v${v}`, value: v })),
+              ];
+              const isSelected = selected.has(c.id);
+              return (
+                <div
+                  key={c.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '8px 0',
+                    borderBottom: '1px solid var(--ds-border)',
+                  }}
+                >
+                  <input type="checkbox" checked={isSelected} onChange={() => toggle(c.id)} style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', fontFamily: 'var(--ds-font-family-code)', flexShrink: 0 }}>
+                    {c.key}
+                  </span>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {c.title}
+                  </span>
+                  {isSelected && versions.length > 1 && (
+                    <div style={{ minWidth: 130, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+                      <Select
+                        menuPosition="fixed"
+                        value={versionOptions.find(o => o.value === (lockedVersions[c.id] ?? null)) ?? versionOptions[0]}
+                        options={versionOptions}
+                        onChange={opt => setLockedVersions(prev => ({ ...prev, [c.id]: opt?.value ?? null }))}
+                        menuPortalTarget={document.body}
+                      />
+                    </div>
+                  )}
+                  {isSelected && versions.length <= 1 && latestVer && (
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', flexShrink: 0 }}>v{latestVer}</span>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
-        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border, #DFE1E6)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ds-border)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           <button
             onClick={onClose}
             style={{
-              padding: '8px 16px',
-              background: 'none',
-              border: '1px solid var(--ds-border, #DFE1E6)',
-              borderRadius: 4,
-              cursor: 'pointer',
-              fontSize: 14,
-              color: 'var(--ds-text, #172B4D)',
+              padding: '8px 16px', background: 'none',
+              border: '1px solid var(--ds-border)', borderRadius: 4,
+              cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)',
             }}
           >
             Cancel
@@ -1125,13 +1165,11 @@ function AddCasesModal({
             disabled={selected.size === 0 || addCases.isPending}
             style={{
               padding: '8px 20px',
-              background: 'var(--ds-background-brand-bold, #0052CC)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
-              border: 'none',
-              borderRadius: 4,
+              background: 'var(--ds-background-brand-bold)',
+              color: 'var(--ds-text-inverse)',
+              border: 'none', borderRadius: 4,
               cursor: selected.size === 0 || addCases.isPending ? 'not-allowed' : 'pointer',
-              fontSize: 14,
-              fontWeight: 500,
+              fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               opacity: selected.size === 0 ? 0.7 : 1,
             }}
           >
@@ -1163,7 +1201,7 @@ function RunStatusPill({ status }: { status: RunStatus }) {
 const thStyle: React.CSSProperties = {
   padding: '8px 12px',
   textAlign: 'left',
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
   color: 'var(--ds-text-subtle, #42526E)',
 };

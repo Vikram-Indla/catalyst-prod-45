@@ -14,8 +14,8 @@ import { getT10Initials } from '../../utils';
 // CLAUDE.md §L38 — hex literals only (no HSL).
 // Fixed 10-colour Catalyst avatar palette (shared with MentionTextarea / SidebarFields).
 const AVATAR_PALETTE = [
-  '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
-  '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+  'var(--ds-link, #2A6DF4)', 'var(--ds-background-discovery-bold, #7C3BED)', 'var(--ds-background-success-bold, #25A777)', 'var(--ds-background-danger-bold, #E92063)', 'var(--ds-background-warning-bold, #F97015)',
+  'var(--ds-chart-green-bold, #21C45D)', 'var(--ds-chart-blue-bold, #0DA2E7)', 'var(--ds-chart-yellow-bold, #FAC814)', 'var(--ds-chart-purple-bold, #BB36D3)', 'var(--ds-chart-teal-bold, #1DAFA1)',
 ];
 function getAvatarColor(name: string | null): string {
   if (!name) return AVATAR_PALETTE[0];
@@ -178,7 +178,7 @@ export function T10AssigneeFieldNew({
               border: '1px solid var(--ds-border-danger, #fecaca)',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-danger, #dc2626)',
             }}
           >
@@ -193,7 +193,7 @@ export function T10AssigneeFieldNew({
               padding: '20px',
               textAlign: 'center',
               color: 'var(--ds-text-subtlest, #9ca3af)',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             Loading...
@@ -206,7 +206,7 @@ export function T10AssigneeFieldNew({
               padding: '20px',
               textAlign: 'center',
               color: 'var(--ds-text-subtlest, #9ca3af)',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             No users found
@@ -233,7 +233,7 @@ export function T10AssigneeFieldNew({
                   border: isSelected ? '1px solid var(--ds-border-selected, #bfdbfe)' : '1px solid transparent',
                   borderRadius: '6px',
                   cursor: 'pointer',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   color: 'var(--ds-text, #111827)',
                 }}
               >
@@ -246,7 +246,7 @@ export function T10AssigneeFieldNew({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '12px',
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     flexShrink: 0,
@@ -273,7 +273,7 @@ export function T10AssigneeFieldNew({
                     {user.full_name || 'Unknown User'}
                   </div>
                   {user.email && (
-                    <div style={{ fontSize: '12px', color: 'var(--ds-text-subtle, #6b7280)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6b7280)' }}>
                       {user.email}
                     </div>
                   )}
@@ -318,7 +318,7 @@ export function T10AssigneeFieldNew({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   overflow: 'hidden',
@@ -339,10 +339,10 @@ export function T10AssigneeFieldNew({
                   getT10Initials(assigneeName)
                 )}
               </div>
-              <span style={{ fontSize: '14px', color: 'var(--ds-text, #111827)', fontWeight: 500 }}>{assigneeName}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #111827)', fontWeight: 500 }}>{assigneeName}</span>
             </>
           ) : (
-            <span style={{ color: 'var(--ds-text-subtlest, #9ca3af)', fontSize: '14px' }}>Select assignee</span>
+            <span style={{ color: 'var(--ds-text-subtlest, #9ca3af)', fontSize: 'var(--ds-font-size-400)' }}>Select assignee</span>
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>

@@ -54,12 +54,12 @@ export function LinkUnfurl({ bodyText }: LinkUnfurlProps) {
             />
           )}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)' }}>
               {p.domain}
             </div>
             <div
               style={{
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: 'var(--ds-text, #172B4D)',
                 overflow: 'hidden',
@@ -72,7 +72,7 @@ export function LinkUnfurl({ bodyText }: LinkUnfurlProps) {
             {p.description && (
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtle, #44546F)',
                   marginTop: 2,
                   display: '-webkit-box',

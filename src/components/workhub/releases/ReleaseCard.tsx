@@ -18,9 +18,9 @@ function formatDate(dateStr: string): string {
 
 /** Derive a status from the data */
 function deriveStatus(r: JiraRelease): { label: string; bg: string; fg: string; dot: string } {
-  if (r.totalItems > 0 && r.doneItems === r.totalItems) return { label: 'Completed', bg: 'var(--ds-background-success, #DFFCF0)', fg: 'var(--ds-background-success-bold, #1F845A)', dot: 'var(--ds-text-success, #16a34a)' };
-  if (r.blockedItems > 0) return { label: 'At Risk', bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #991b1b)', dot: 'var(--ds-text-danger, #ef4444)' };
-  if (r.inProgressItems > 0 || r.inReviewItems > 0) return { label: 'Active', bg: 'var(--ds-background-information, #E9F2FF)', fg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' };
+  if (r.totalItems > 0 && r.doneItems === r.totalItems) return { label: 'Completed', bg: 'var(--ds-background-success, #DFFCF0)', fg: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', dot: 'var(--ds-text-success, #16a34a)' };
+  if (r.blockedItems > 0) return { label: 'At Risk', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))', fg: 'var(--ds-text-danger, #991b1b)', dot: 'var(--ds-text-danger, #ef4444)' };
+  if (r.inProgressItems > 0 || r.inReviewItems > 0) return { label: 'Active', bg: 'var(--ds-background-information, var(--ds-background-information, #E9F2FF))', fg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' };
   return { label: 'Planned', bg: 'var(--ds-surface-sunken, #f1f5f9)', fg: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, #94a3b8)' };
 }
 
@@ -77,7 +77,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontFamily: 'var(--cp-font-heading)',
-            fontSize: 18, fontWeight: 700,
+            fontSize: 'var(--ds-font-size-600)', fontWeight: 700,
             color: 'var(--fg-1)',
           }}>
             {release.versionName}
@@ -86,7 +86,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           padding: '4px 12px', borderRadius: 9999,
-          fontSize: 12, fontWeight: 600,
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
           background: status.bg, color: status.fg,
           flexShrink: 0,
         }}>
@@ -98,14 +98,14 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
       {/* Date + Overdue */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         {release.releaseDate && (
-          <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)' }}>
             Due: {formatDate(release.releaseDate)}
           </span>
         )}
         {isOverdue && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 12, fontWeight: 600, color: 'var(--sem-danger)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--sem-danger)',
           }}>
             <AlertTriangle size={14} />
             Overdue
@@ -131,7 +131,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
             <span key={proj} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '2px 8px', borderRadius: 4,
-              fontSize: 11, fontWeight: 600,
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               background: `${getProjectColor(i)}10`,
               color: getProjectColor(i),
               border: `1px solid ${getProjectColor(i)}30`,
@@ -159,7 +159,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
                 <span style={{
                   width: 28, height: 28, borderRadius: '50%',
                   background: 'var(--divider)', color: 'var(--fg-2)',
-                  fontSize: 10, fontWeight: 700,
+                  fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   marginLeft: -6, border: '2px solid white',
                   zIndex: 1,
@@ -169,7 +169,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
               )}
             </div>
           )}
-          <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>
             {release.totalItems} items · {release.assignees.length} assignees · {release.projects.length} projects
           </span>
         </div>
@@ -178,7 +178,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
           onClick={(e) => { e.stopPropagation(); onClick(); }}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 13, fontWeight: 500, color: 'var(--cp-blue)',
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-blue)',
             cursor: 'pointer',
           }}
           className="wh-view-detail"
@@ -221,7 +221,7 @@ function AvatarChip({ assignee, index }: { assignee: { displayName: string; avat
           width: '100%', height: '100%',
           background: bg, color: 'var(--bg-app)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 9, fontWeight: 700,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
         }}>
           {initials}
         </div>

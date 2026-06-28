@@ -94,7 +94,7 @@ export function EmptyState({
             role="heading"
             aria-level={4}
             style={{
-              fontSize: 15,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               color: token('color.text'),
               letterSpacing: '-0.002em',
@@ -106,7 +106,7 @@ export function EmptyState({
         {description != null && (
           <div
             style={{
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.text.subtle'),
               maxWidth: 320,
               lineHeight: 1.4,

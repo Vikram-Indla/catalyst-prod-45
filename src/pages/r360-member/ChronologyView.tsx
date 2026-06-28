@@ -12,7 +12,7 @@ import { getFromTagClass, getFromTagPrefix } from './helpers';
 import { toStatusCategory } from '@/components/ads';
 
 const STATUS_COLORS: Record<string, { background: string; color: string }> = {
-  todo: { background: token('color.background.neutral', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'), color: token('color.text.subtle', 'var(--ds-icon, #44546F)') },
+  todo: { background: token('color.background.neutral', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'), color: token('color.text.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))') },
   inProgress: { background: token('color.background.information.bold', 'var(--ds-link, #0C66E4)'), color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)') },
   done: { background: token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)'), color: token('color.text.inverse', 'var(--ds-surface, #FFFFFF)') },
 };
@@ -114,7 +114,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
               <MiniAvatar name={item.assignee_name} size={18} />
             )}
             {item.carried_from_label && (
-              <span className={`r3-from-tag ${fromClass}`} style={{ fontSize: '10px' }}>
+              <span className={`r3-from-tag ${fromClass}`} style={{ fontSize: 'var(--ds-font-size-50)' }}>
                 {getFromTagPrefix(item.age_days)}{item.carried_from_label}
               </span>
             )}
@@ -140,7 +140,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
                 height: '20px',
                 padding: '0 8px',
                 borderRadius: '4px',
-                fontSize: '11px',
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 textTransform: 'none',
                 letterSpacing: '0.03em',
@@ -152,7 +152,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
               {statusText || 'To do'}
             </span>
           </div>
-          <span style={{ fontSize: 11, fontWeight: 400, color: item.age_days > 60 ? 'var(--ds-text-warning, #974F0C)' : 'var(--ds-text-subtlest, #626F86)', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: item.age_days > 60 ? 'var(--ds-text-warning, #974F0C)' : 'var(--ds-text-subtlest, #626F86)', whiteSpace: 'nowrap' }}>
             since {item.age_days} days
           </span>
         </div>
@@ -218,7 +218,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
       <div data-testid="r360-chrono-today" ref={el => { groupRefs.current[todayStr] = el; }} className="r3-date-group">
         <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has('__today__') ? n.delete('__today__') : n.add('__today__'); return n; })}>
           <span className="r3-date-dot r3-date-dot--today" />
-          <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>{todayLabel}</span>
+          <span className="r3-date-label" style={{ fontWeight: 650, fontSize: 'var(--ds-font-size-300)' }}>{todayLabel}</span>
           <span className="r3-date-count">{todayGroup ? todayGroup[1].items.length : 0} items</span>
           {todayGroup && (() => {
             const total = todayGroup[1].items.length;
@@ -246,7 +246,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
               {todayGroup[1].items.map(renderChronoCard)}
             </div>
           ) : (
-            <div style={{ paddingLeft: '28px', fontSize: '12px', fontStyle: 'italic', color: 'var(--ds-text-subtlest, #626F86)', padding: '8px 0 8px 28px' }}>
+            <div style={{ paddingLeft: '28px', fontSize: 'var(--ds-font-size-200)', fontStyle: 'italic', color: 'var(--ds-text-subtlest, #626F86)', padding: '8px 0 8px 28px' }}>
               No activity yet today
             </div>
           )
@@ -272,9 +272,9 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
             });
           }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--ds-text-warning, var(--cp-warning, #D97706))', background: 'transparent', flexShrink: 0 }} />
-            <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
+            <span className="r3-date-label" style={{ fontWeight: 650, fontSize: 'var(--ds-font-size-300)' }}>Carried Over</span>
             <span className="r3-date-count">{carryoverItems.length} items</span>
-            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: 'var(--ds-surface-sunken, #F8FAFC)', color: 'var(--ds-text-subtlest, #626F86)' }}>No activity this week</span>
+            <span style={{ fontSize: 'var(--ds-font-size-50)', padding: '2px 6px', borderRadius: '4px', background: 'var(--ds-surface-sunken, #F8FAFC)', color: 'var(--ds-text-subtlest, #626F86)' }}>No activity this week</span>
             <ChevronDown size={16} className={`r3-date-chevron ${collapsed.has('__carryover__') ? 'r3-date-chevron--collapsed' : ''}`} />
           </div>
           {!collapsed.has('__carryover__') && (
@@ -288,7 +288,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
                     style={{
                       display: 'block', width: '100%', padding: '8px 0',
                       background: 'transparent', border: 'none', cursor: 'pointer',
-                      fontSize: 12, fontWeight: 500,
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                       color: 'var(--ds-link, #0052CC)',
                     }}
                   >

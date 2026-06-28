@@ -22,8 +22,8 @@ import { EmptyState } from '@/components/ads';
 import { LABEL, SMALL, STRONG, H_NUM } from '../dashboardTypography';
 
 function confidenceColor(score: number): string {
-  if (score >= 80) return 'var(--ds-text-accent-green-bolder, #216E4E)';
-  if (score >= 50) return 'var(--ds-text-accent-orange-bolder, #974F0C)';
+  if (score >= 80) return 'var(--ds-text-accent-green-bolder, var(--ds-chart-green-bold, #216E4E))';
+  if (score >= 50) return 'var(--ds-text-accent-orange-bolder, var(--ds-text-warning, #974F0C))';
   return 'var(--ds-text-accent-red-bolder, #AE2A19)';
 }
 
@@ -34,7 +34,7 @@ function confidenceBg(score: number): string {
 }
 
 function confidenceBar(score: number): string {
-  if (score >= 80) return 'var(--ds-background-accent-green-bolder, #1F845A)';
+  if (score >= 80) return 'var(--ds-background-accent-green-bolder, var(--ds-background-success-bold, #1F845A))';
   if (score >= 50) return 'var(--ds-background-accent-orange-bolder, #C25100)';
   return 'var(--ds-background-accent-red-bolder, #C9372C)';
 }
@@ -96,7 +96,7 @@ export default function ReleaseConfidenceWidget({
               style={{
                 height: 72,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -143,7 +143,7 @@ export default function ReleaseConfidenceWidget({
                 flex: 1,
                 height: 12,
                 borderRadius: 6,
-                background: token('color.background.neutral', '#F1F2F4'),
+                background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
                 overflow: 'hidden',
               }}
             >
@@ -163,9 +163,9 @@ export default function ReleaseConfidenceWidget({
           <div
             style={{
               display: 'flex',
-              background: token('elevation.surface.sunken', '#F7F8F9'),
+              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
               borderRadius: token('border.radius', '4px'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               overflow: 'hidden',
             }}
           >
@@ -199,7 +199,7 @@ export default function ReleaseConfidenceWidget({
                   flexDirection: 'column',
                   gap: 2,
                   padding: '10px 10px',
-                  borderRight: i < arr.length - 1 ? `1px solid ${token('color.border', '#DFE1E6')}` : 'none',
+                  borderRight: i < arr.length - 1 ? `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` : 'none',
                   minWidth: 0,
                 }}
               >

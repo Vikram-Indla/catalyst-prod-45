@@ -58,14 +58,22 @@ export default function CapacityDepartmentsPage() {
   const checkLinkedRecords = async (departmentId: string) => {
     setCheckingLinks(true);
     try {
-      // Check profiles linked to this department
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .eq('department_id', departmentId);
+      // Check profiles AND pending invitations linked to this department.
+      // (CAT-RBAC-RESOLVE-20260627-001 Phase 1 — user_invitations.department_id was previously
+      // unchecked, so a department could be deleted while invites still referenced it.)
+      const [profilesResult, invitesResult] = await Promise.all([
+        supabase.from('profiles').select('id, full_name').eq('department_id', departmentId),
+        supabase.from('user_invitations').select('id, email').eq('department_id', departmentId).eq('status', 'pending'),
+      ]);
 
-      if (error) throw error;
-      return profiles || [];
+      if (profilesResult.error) throw profilesResult.error;
+      if (invitesResult.error) throw invitesResult.error;
+
+      const inviteRows = (invitesResult.data || []).map((i) => ({
+        id: i.id,
+        full_name: `Pending invite: ${i.email}`,
+      }));
+      return [...(profilesResult.data || []), ...inviteRows];
     } catch (error) {
       console.error('Error checking linked records:', error);
       catalystToast.error('Failed to check linked records');
@@ -155,7 +163,7 @@ export default function CapacityDepartmentsPage() {
                           onClick={() => copyToClipboard(dept.department_id)}
                           className="w-6 h-6 rounded flex items-center justify-center transition-colors"
                           style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
                         >
                           <CopyIcon label="" size="small" />
@@ -172,7 +180,7 @@ export default function CapacityDepartmentsPage() {
                         onClick={() => openEdit(dept)}
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
                         style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, var(--ds-background-neutral, #F1F2F4))'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
                       >
                         <EditIcon label="" size="small" />
@@ -181,7 +189,7 @@ export default function CapacityDepartmentsPage() {
                         onClick={() => handleDeleteClick(dept)}
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
                         style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }} // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))'; }}
                       >
                         <TrashIcon label="" size="small" />

@@ -8,11 +8,15 @@
   },
   "scripts": {
     "sync-deps": "node scripts/sync-deps.js",
-    "dev": "node scripts/sync-deps.js && vite",
+    "dev": "node scripts/sync-deps.js && node --max-old-space-size=8192 node_modules/vite/bin/vite.js",
     "verify:sw-chunks": "node scripts/verify-sw-chunks.js",
     "build": "node scripts/sync-deps.js && npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "build:dev": "node scripts/sync-deps.js && npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode development",
     "lint": "eslint .",
+    "lint:colors": "node scripts/no-hardcoded-colors.cjs",
+    "lint:colors:gate": "node scripts/ads-color-gate.cjs",
+    "audit:ads": "node design-governance/rules/audit.js src",
+    "audit:ads:gate": "node scripts/ads-audit-gate.cjs",
     "preview": "vite preview",
     "test:visual": "playwright test --config=playwright.ads.config.ts --project=visual",
     "test:visual:webkit": "playwright test --config=playwright.ads.config.ts --project=visual-webkit",
@@ -243,6 +247,7 @@
     "@atlaskit/visually-hidden": "3.0.5",
     "@atlaskit/editor-plugins": "13.0.120",
     "@atlaskit/editor-plugin-paste": "9.1.18",
-    "@atlaskit/editor-plugin-table": "19.0.0"
+    "@atlaskit/editor-plugin-table": "19.0.0",
+    "@atlassian/assets-workspace-host": "npm:@atlaskit/visually-hidden@3.0.5"
   }
 }

@@ -145,7 +145,7 @@ export default function IdeationPage() {
             <AIIntelligenceButton onClick={() => setIntelligenceOpen(true)} />
             <button style={{
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: dk.t2, border: `1px solid ${dk.border}`,
-              borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
+              borderRadius: '6px', padding: '7px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
               fontFamily: 'var(--cp-font-body)',
             }}>
@@ -155,7 +155,7 @@ export default function IdeationPage() {
               onClick={() => setWizardOpen(true)}
               style={{
                 background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
-                borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
+                borderRadius: '6px', padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
                 fontFamily: 'var(--cp-font-body)',
               }}
@@ -173,30 +173,30 @@ export default function IdeationPage() {
       }}>
         {/* Total Ideas */}
         <div style={{ padding: '14px 24px', borderRight: `1px solid ${dk.divider}` }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>
             TOTAL IDEAS
           </div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.t1 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.t1 }}>
             {stats.total}
           </span>
         </div>
 
         {/* Converted */}
         <div style={{ padding: '14px 24px', borderRight: `1px solid ${dk.divider}` }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>
             CONVERTED
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.greenText }}>
+            <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.greenText }}>
               {stats.converted}
             </span>
-            <span style={{ fontSize: '11px', color: dk.t3 }}>→ Requests</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3 }}>→ Requests</span>
           </div>
         </div>
 
         {/* By Quarter */}
         <div style={{ flex: 1, padding: '14px 24px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>
             BY QUARTER
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -208,10 +208,10 @@ export default function IdeationPage() {
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     height: '20px', minWidth: '26px', padding: '0 4px',
-                    borderRadius: '4px', fontSize: '11px', fontWeight: 700,
+                    borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                     background: qb.bg, color: qb.text,
                   }}>{q}</span>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '16px', fontWeight: 700, color: dk.t1 }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: dk.t1 }}>
                     {count}
                   </span>
                 </div>
@@ -219,8 +219,8 @@ export default function IdeationPage() {
             })}
             <div style={{ width: '1px', height: '20px', background: dk.border }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '11px', color: dk.t3, fontWeight: 500 }}>Unassigned</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '16px', fontWeight: 700, color: dk.t3 }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, fontWeight: 500 }}>Unassigned</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: dk.t3 }}>
                 {stats.unassigned}
               </span>
             </div>
@@ -231,11 +231,11 @@ export default function IdeationPage() {
       {/* Filtered context indicator */}
       {activeFilter !== 'all' && (
         <div style={{ padding: '6px 28px', background: 'var(--cp-primary-light, #EFF6FF)', borderBottom: `1px solid ${'var(--cp-primary-light, #DBEAFE)'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>
           <span style={{ color: dk.t3 }}>·</span>
-          <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <button onClick={() => setActiveFilter('all')} style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             Clear filter
           </button>
         </div>
@@ -255,7 +255,7 @@ export default function IdeationPage() {
             style={{
               width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px',
               background: 'var(--cp-bg-page, #F8FAFC)', border: `1px solid ${dk.border}`, borderRadius: '6px',
-              fontSize: '13px', color: dk.t1, outline: 'none',
+              fontSize: 'var(--ds-font-size-300)', color: dk.t1, outline: 'none',
             }}
             onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px var(--ds-background-information, rgba(37,99,235,0.08))'; e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
             onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))'; }}
@@ -273,7 +273,7 @@ export default function IdeationPage() {
                 background: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                 color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
                 border: `1px solid ${isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : dk.border}`,
-                borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500,
+                borderRadius: '20px', padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
                 transition: 'all 150ms',
               }}
@@ -374,7 +374,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               { label: 'UPDATED', width: '90px' },
             ].map(col => (
               <th key={col.label} style={{
-                textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+                textAlign: 'left', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
                 letterSpacing: '0.06em', color: dk.t2, padding: '10px 12px',
                 borderBottom: `0.75px solid ${dk.divider}`,
                 whiteSpace: 'nowrap', width: col.width,
@@ -402,7 +402,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
                 <input type="checkbox" checked={selectedRows.has(idea.key)} onChange={() => toggleRow(idea.key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
               </td>
               <td style={{ padding: '8px 12px' }}>
-                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
+                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
                   onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                   onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                 >
@@ -411,7 +411,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               </td>
               <td style={{ padding: '8px 12px', maxWidth: '400px' }}>
                 <div style={{
-                  fontSize: '13px', fontWeight: 500, color: dk.t1,
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: dk.t1,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>
                   {idea.title}
@@ -419,7 +419,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               </td>
               <td style={{ padding: '8px 12px' }}>
                 <span style={{
-                  fontSize: '12px', fontWeight: 500, color: idea.theme ? dk.t2 : dk.t3,
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: idea.theme ? dk.t2 : dk.t3,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                   display: 'block', maxWidth: '150px',
                 }}>
@@ -443,7 +443,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
         padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         borderTop: `0.75px solid ${dk.divider}`,
       }}>
-        <span style={{ fontSize: '12px', color: dk.t3 }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
       </div>
     </div>
   );
@@ -456,7 +456,7 @@ function StatusBadge({ status }: { status: IdeaStatus }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', background: c.bg, color: c.text,
       height: 20, padding: '0 8px', borderRadius: 4,
-      fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, whiteSpace: 'nowrap',
       textTransform: 'uppercase', letterSpacing: '0',
     }}>
       {c.label}
@@ -469,7 +469,7 @@ function TypeBadge({ type }: { type: Idea['type'] }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
-      borderRadius: 4, fontSize: '11px', fontWeight: 500,
+      borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
       background: c.bg, color: c.text, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
     }}>
       {c.label}
@@ -483,7 +483,7 @@ function PriorityBadge({ priority }: { priority: string }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4,
-      fontSize: '11px', fontWeight: 650,
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 650,
       background: c.bg, color: c.text, border: `1px solid ${c.border}`,
     }}>
       {priority}
@@ -495,7 +495,7 @@ function ImpactCell({ score }: { score: number }) {
   const textColor = score >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : score >= 3 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : score >= 2 ? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
   return (
     <span style={{
-      fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 500,
+      fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
       color: textColor,
     }}>
       {score.toFixed(2)}
@@ -505,15 +505,15 @@ function ImpactCell({ score }: { score: number }) {
 
 function QuarterBadge({ quarter }: { quarter?: string | null }) {
   if (!quarter) {
-    return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
+    return <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
   }
   const qb = QUARTER_BADGE[quarter];
-  if (!qb) return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{quarter}</span>;
+  if (!qb) return <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{quarter}</span>;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4,
-      fontSize: '11px', fontWeight: 700,
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
       background: qb.bg, color: qb.text,
     }}>
       {quarter}
@@ -525,16 +525,16 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
   const { isDark } = useTheme();
   const dk = isDark ? DK : LK;
   if (!assignee) {
-    return <span style={{ fontSize: '13px', color: dk.t3, fontStyle: 'italic' }}>Unassigned</span>;
+    return <span style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t3, fontStyle: 'italic' }}>Unassigned</span>;
   }
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <div style={{
         width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'var(--ds-surface, #FFF)', fontSize: '10px', fontWeight: 700, flexShrink: 0,
+        color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flexShrink: 0,
       }}>{assignee.initials}</div>
-      <span style={{ fontSize: '13px', color: dk.t2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: dk.t2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {assignee.name}
       </span>
     </div>
@@ -544,11 +544,11 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
 function DateCell({ date }: { date?: string | null }) {
   const { isDark } = useTheme();
   const dk = isDark ? DK : LK;
-  if (!date) return <span style={{ color: dk.t3, fontSize: '12px' }}>—</span>;
+  if (!date) return <span style={{ color: dk.t3, fontSize: 'var(--ds-font-size-200)' }}>—</span>;
   const d = new Date(date);
   const str = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   return (
-    <span style={{ fontSize: '12px', color: dk.t3 }}>
+    <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>
       {str}
     </span>
   );

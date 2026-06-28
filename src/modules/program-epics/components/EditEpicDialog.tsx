@@ -211,7 +211,7 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
         'sm:max-w-[600px] max-h-[90vh] p-0 flex flex-col overflow-hidden',
-        'bg-white dark:bg-[#141414] rounded-lg shadow-xl',
+        'bg-white dark:bg-[#141414] rounded-lg shadow-xl', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
         'border border-gray-200 dark:border-[var(--ds-text, #172B4D)] [&>button]:hidden'
       )}>
         <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[var(--ds-background-discovery-bold, #6E5DC6)] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />

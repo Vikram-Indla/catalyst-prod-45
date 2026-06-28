@@ -20,7 +20,7 @@ import { createPortal } from 'react-dom';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import Avatar from '@atlaskit/avatar';
-import { UnassignedAvatar, ProfilePicker, toStatusCategory, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
+import { UnassignedAvatar, ProfilePicker, toStatusCategory, isTerminalStatus, type ProfilePickerMember, type ProfilePickerSelection } from '@/components/ads';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
@@ -59,23 +59,58 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
 
   const close = useCallback(() => setIsOpen(false), []);
 
-  // Compute popover position when opening / on resize / scroll.
+  // Position the popover. We attach scroll listeners to EVERY scrollable
+   // ancestor of the trigger (not just window) — JiraTable's body scrolls
+   // inside its own .jira-table-viewport, which doesn't fire a window scroll.
+   // Plus a RAF loop guarantees tracking during virtualizer re-renders.
   useLayoutEffect(() => {
     if (!isOpen) return;
-    const update = () => {
+    const getScrollParents = (node: HTMLElement | null): (HTMLElement | Window)[] => {
+      const out: (HTMLElement | Window)[] = [window];
+      let el: HTMLElement | null = node?.parentElement ?? null;
+      while (el) {
+        const cs = getComputedStyle(el);
+        const oy = cs.overflowY;
+        const ox = cs.overflowX;
+        if (/(auto|scroll|overlay)/.test(oy + ox)) out.push(el);
+        el = el.parentElement;
+      }
+      return out;
+    };
+    let raf = 0;
+    let lastTop = NaN;
+    let lastLeft = NaN;
+    let lastRight = NaN;
+    const apply = () => {
+      raf = 0;
       const t = triggerRef.current;
       if (!t) return;
       const r = t.getBoundingClientRect();
-      setAnchor({ top: r.bottom + 4, left: r.left, right: window.innerWidth - r.right });
+      const top = r.bottom + 4;
+      const left = r.left;
+      const right = window.innerWidth - r.right;
+      if (top === lastTop && left === lastLeft && right === lastRight) return;
+      lastTop = top; lastLeft = left; lastRight = right;
+      const p = popRef.current;
+      if (p) {
+        p.style.top = `${top}px`;
+        if (align === 'end') { p.style.right = `${right}px`; p.style.left = 'auto'; }
+        else { p.style.left = `${left}px`; p.style.right = 'auto'; }
+      } else {
+        setAnchor({ top, left, right });
+      }
     };
-    update();
-    const ro = window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(apply); };
+    apply();
+    const parents = getScrollParents(triggerRef.current);
+    parents.forEach(p => p.addEventListener('scroll', schedule, { passive: true }));
+    window.addEventListener('resize', schedule);
     return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
+      if (raf) cancelAnimationFrame(raf);
+      parents.forEach(p => p.removeEventListener('scroll', schedule));
+      window.removeEventListener('resize', schedule);
     };
-  }, [isOpen]);
+  }, [isOpen, align]);
 
   // Outside-click + Esc.
   useEffect(() => {
@@ -89,10 +124,6 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
       if (document.querySelector('.atlaskit-portal-container')?.contains(target)) return;
       setIsOpen(false);
     };
-    // Capture-phase so Escape closes the popover before any parent modal's
-    // bubble-phase Escape handler fires (prevents CatalystViewBase modal
-    // or @atlaskit/modal-dialog from closing when user dismisses popover).
-    // Per CLAUDE.md 2026-05-08 WatchersChip lesson.
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setIsOpen(false); } };
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey, true);
@@ -157,14 +188,14 @@ function MenuItemBtn({
         border: 'none',
         background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
         color: 'var(--ds-text, #172B4D)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily: 'inherit',
         borderRadius: 3,
         outline: 'none',
       }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {children}
@@ -176,7 +207,7 @@ function MenuLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       padding: '8px 10px 4px',
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 700,
       letterSpacing: '0.08em',
       textTransform: 'uppercase',
@@ -226,14 +257,29 @@ export function makeStatusEditCell<T>({
   return function StatusEditCell({ row }: CellProps<T>) {
     const status = getStatus(row);
     const callerEditable = canEdit ? canEdit(row) : true;
-    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    // 2026-06-28: freeze on done-category OR any terminal outcome
+     // (rejected / declined / cancelled / won't do, etc). Colour mapping is
+     // unchanged — only the lock + chevron suppression broadens.
+    const frozen = lockWhenDone && !!status && isTerminalStatus(status);
     const editable = callerEditable && !frozen;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>—</span>;
+    if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
+
+    // 2026-06-28: chevron lives INSIDE the pill (trailingIcon) so it inherits
+     // the pill's bg/colour. CatalystStatusPill suppresses trailingIcon when
+     // status maps to the done category — frozen pills never show a chevron.
+    const chevron = (
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.7 }}>
+        <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
 
     const lozenge = status ? (
-      <StatusPill appearance={appearanceFor(status)}>
+      <StatusPill
+        appearance={appearanceFor(status)}
+        trailingIcon={editable ? chevron : undefined}
+      >
         {labelFor ? labelFor(status) : status}
       </StatusPill>
     ) : null;
@@ -279,14 +325,10 @@ export function makeStatusEditCell<T>({
             }}
           >
             {lozenge ?? (
-              <span data-jira-cell-ghost style={{ fontSize: 13 }}>
+              <span data-jira-cell-ghost style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 Set status
               </span>
             )}
-            {/* status chevron ▾ — Jira parity */}
-            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
-              <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
           </button>
         )}
       >
@@ -347,7 +389,7 @@ function StatusPopupCell<T>({
 }: StatusPopupCellProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>—</span>;
+  if (!status && !editable) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
   if (!editable && lozenge) return <>{lozenge}</>;
 
   return (
@@ -402,7 +444,7 @@ function StatusPopupCell<T>({
           }}
         >
           {lozenge ?? (
-            <span data-jira-cell-ghost style={{ fontSize: 13 }}>
+            <span data-jira-cell-ghost style={{ fontSize: 'var(--ds-font-size-300)' }}>
               Set status
             </span>
           )}
@@ -444,7 +486,10 @@ export function makeStatusEditCellAkPopup<T>({
   return function StatusEditCellAkPopupCell({ row }: CellProps<T>) {
     const status = getStatus(row);
     const callerEditable = canEdit ? canEdit(row) : true;
-    const frozen = lockWhenDone && status && toStatusCategory(status) === 'done';
+    // 2026-06-28: freeze on done-category OR any terminal outcome
+     // (rejected / declined / cancelled / won't do, etc). Colour mapping is
+     // unchanged — only the lock + chevron suppression broadens.
+    const frozen = lockWhenDone && !!status && isTerminalStatus(status);
     const editable = callerEditable && !frozen;
     const lozenge = status ? (
       <StatusPill appearance={appearanceFor(status)}>
@@ -536,7 +581,8 @@ export function makeSummaryInlineEditCell<T>({
       const readOnlyTooltip = getReadOnlyTooltip?.(row) ?? null;
       const display = (
         <span
-          dir="auto"
+          // Jira parity (2026-06-28): LTR/left-aligned, no dir="auto" — see
+          // JiraTable/cells.tsx makeSummaryCell for the verified rationale.
           style={{
             ...wrapStyle,
             flex: 1,
@@ -614,7 +660,8 @@ export function makeSummaryInlineEditCell<T>({
             readView={() => (
               <span
                 title={summary || undefined}
-                dir="auto"
+                // Jira parity (2026-06-28): LTR/left-aligned, no dir="auto" —
+                // see JiraTable/cells.tsx makeSummaryCell for the rationale.
                 style={{
                   display: 'block',
                   padding: '0 2px',
@@ -684,7 +731,7 @@ export function makeSummaryInlineEditCell<T>({
                     color: 'var(--ds-text-subtle, #505258)',
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
                     (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
                   }}
                   onMouseLeave={(e) => {
@@ -737,7 +784,7 @@ export function makeSummaryInlineEditCell<T>({
                     color: 'var(--ds-text-subtle, #505258)',
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))';
                     (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
                   }}
                   onMouseLeave={(e) => {
@@ -899,9 +946,9 @@ export function makeAssigneeEditCell<T>({
 //   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=var(--cp-warning, #D97706),
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: '#E5484D', label: 'Critical'  },
-  highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: '#E5484D', label: 'Highest'   },
-  high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: '#E2730D', label: 'High'      },
+  critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: 'var(--ds-text-danger, #E5484D)', label: 'Critical'  },
+  highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: 'var(--ds-text-danger, #E5484D)', label: 'Highest'   },
+  high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: 'var(--ds-text-warning, #E2730D)', label: 'High'      },
   medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: 'var(--cp-warning, #D97706)', label: 'Medium'    },
   low:       { icon: <AkPriorityLowIcon      label="" size="small" />, color: 'var(--ds-link, #0065FF)', label: 'Low'       },
   lowest:    { icon: <AkPriorityLowestIcon   label="" size="small" />, color: 'var(--ds-text-subtlest, #626F86)', label: 'Lowest'    },
@@ -912,13 +959,13 @@ function PriorityBars({ priority }: { priority: string | null }) {
   const cfg = PRIORITY_CONFIG[p];
   if (!cfg) {
     return (
-      <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 14 }}>—</span>
+      <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>—</span>
     );
   }
   return (
     <span
       title={cfg.label}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 14, whiteSpace: 'nowrap' }}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 'var(--ds-font-size-400)', whiteSpace: 'nowrap' }}
     >
       {cfg.icon}
       <span style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{cfg.label}</span>
@@ -1039,7 +1086,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         padding: '2px 8px',
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 3,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         fontWeight: 400,
         color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -1094,7 +1141,7 @@ export function makeParentEditCell<T>({
     const filledDisplay = current ? <ParentChip choice={current} /> : null;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>—</span>;
+    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
     if (!editable && filledDisplay) return filledDisplay;
 
     return (
@@ -1123,7 +1170,7 @@ export function makeParentEditCell<T>({
           >
             {/* Jira renders "None" when there's no parent — plain muted text. */}
             {filledDisplay ?? (
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 14 }}>None</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>None</span>
             )}
           </button>
         )}
@@ -1157,7 +1204,7 @@ export function makeParentEditCell<T>({
               </MenuItemBtn>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
             )}
           </>
         )}
@@ -1199,7 +1246,7 @@ function WorkstreamChip({ choice }: { choice: WorkstreamChoice }) {
         padding: '2px 8px',
         border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderRadius: 3,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         fontWeight: 400,
         color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -1256,7 +1303,7 @@ export function makeWorkstreamEditCell<T>({
     const filledDisplay = current ? <WorkstreamChip choice={current} /> : null;
 
     // Non-editable + empty: just a dash, no affordance.
-    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>—</span>;
+    if (!editable && !filledDisplay) return <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, var(--ds-text-subtlest, #626F86))') }}>—</span>;
     if (!editable && filledDisplay) return filledDisplay;
 
     return (
@@ -1285,7 +1332,7 @@ export function makeWorkstreamEditCell<T>({
             }}
           >
             {filledDisplay ?? (
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 14 }}>None</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>None</span>
             )}
           </button>
         )}
@@ -1319,7 +1366,7 @@ export function makeWorkstreamEditCell<T>({
               </MenuItemBtn>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
             )}
           </>
         )}
@@ -1385,7 +1432,7 @@ export function makeRowActionsCell<T>({
               opacity: 1,
               transition: 'background 100ms',
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
           >
             <AkMoreIcon label="" size="small" />
@@ -1425,13 +1472,13 @@ export function makeRowActionsCell<T>({
                       border: 'none',
                       background: 'transparent',
                       color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       textAlign: 'left',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       borderRadius: 3,
                     }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'))}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))'))}
                     onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                   >
                     {a.icon}
@@ -1473,7 +1520,7 @@ export function makeDateEditCell<T>({
       : null;
 
     const display = formatted
-      ? <span style={{ fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{formatted}</span>
+      ? <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{formatted}</span>
       : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />;
 
     if (!editable) {
@@ -1539,12 +1586,12 @@ export function makeDateEditCell<T>({
                   border: 'none',
                   background: 'transparent',
                   color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   cursor: 'pointer',
                   textAlign: 'left',
                   borderRadius: 3,
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 Clear date
@@ -1585,7 +1632,7 @@ export function makeLabelsEditCell<T>({
                   borderRadius: 3,
                   background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
                   color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   whiteSpace: 'nowrap',
                 }}
               >{l}</span>
@@ -1685,7 +1732,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
               borderRadius: 3,
               background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
               color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
             }}
           >
             {l}
@@ -1715,7 +1762,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
         <button
           type="button"
           onClick={close}
-          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}
+          style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}
         >
           Done
         </button>

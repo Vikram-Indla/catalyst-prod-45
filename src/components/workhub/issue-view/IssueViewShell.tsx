@@ -69,7 +69,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
     });
 
     const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-    const PALETTE = ['var(--ds-text-selected, #1868DB)', '#E2631E', 'var(--ds-background-discovery-bold, #6E5DC6)', '#1B3459', '#0D7C66', '#B34D00', '#943A79', 'var(--ds-link, #0C66E4)'];
+    const PALETTE = ['var(--ds-text-selected, #1868DB)', 'var(--ds-text-warning, #E2631E)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-text, #1B3459)', 'var(--ds-icon-success, #0D7C66)', 'var(--ds-text-warning, #B34D00)', 'var(--ds-background-discovery-bold, #943A79)', 'var(--ds-link, #0C66E4)'];
     const pickColor = (name: string) => { let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h); return PALETTE[Math.abs(h) % PALETTE.length]; };
 
     // Build assignee → avatar URL map from items
@@ -219,7 +219,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
                 height: 28, padding: '0 8px 0 10px',
                 background: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-link-pressed, #0747A6)',
                 border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 3,
-                fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
                 fontFamily: 'inherit',
               }}
             >
@@ -229,8 +229,8 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 14, height: 14, borderRadius: '50%',
-                  background: 'rgba(7, 71, 166, 0.12)', color: 'var(--ds-link-pressed, #0747A6)',
-                  fontSize: 11, lineHeight: 1,
+                  background: 'rgba(7, 71, 166, 0.12)', color: 'var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))',
+                  fontSize: 'var(--ds-font-size-100)', lineHeight: 1,
                 }}
               >×</span>
             </button>

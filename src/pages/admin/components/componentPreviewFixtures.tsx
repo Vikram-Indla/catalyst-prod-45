@@ -89,7 +89,7 @@ const JIRA_TABLE_COLUMNS: Column<MockRow>[] = [
     cell: ({ row }) => (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <JiraIssueTypeIcon type={row.type} size={14} />
-        <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: token('color.link', '#0C66E4') }}>
+        <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: token('color.link', 'var(--ds-link, #0C66E4)') }}>
           {row.key}
         </span>
       </div>
@@ -102,7 +102,7 @@ const JIRA_TABLE_COLUMNS: Column<MockRow>[] = [
     alwaysVisible: true,
     accessor: r => r.summary,
     cell: ({ row }) => (
-      <span style={{ fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{row.summary}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text, #172B4D)') }}>{row.summary}</span>
     ),
   },
   {
@@ -122,7 +122,7 @@ const JIRA_TABLE_COLUMNS: Column<MockRow>[] = [
     cell: ({ row }) => (
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <UserAvatar name={row.assignee} size="small" />
-        <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{row.assignee}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{row.assignee}</span>
       </div>
     ),
   },
@@ -151,7 +151,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
       {['Story', 'Task', 'Bug', 'Epic', 'Feature', 'Production Incident', 'Change Request'].map(type => (
         <div key={type} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
           <JiraIssueTypeIcon type={type} size={16} />
-          <span style={{ fontSize: 11 }}>{type}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)' }}>{type}</span>
         </div>
       ))}
     </div>
@@ -160,33 +160,33 @@ export const previewFixtures: Record<string, PreviewFixture> = {
   'user-avatar': () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
           SIZE SCALE
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap' }}>
           {(['xsmall', 'small', 'medium', 'large', 'xlarge', 'xxlarge'] as const).map(size => (
             <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <UserAvatar name="Vikram Indla" size={size} />
-              <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{size}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{size}</span>
             </div>
           ))}
         </div>
       </div>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
           DETERMINISTIC COLOUR INITIALS
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
           {['Amadou Ndiaye', 'Vikram Indla', 'Sara Patel', 'Yazeed Daraz', 'Maria Rodriguez', 'Hiroshi Tanaka'].map(name => (
             <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <UserAvatar name={name} size="large" />
-              <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{name.split(' ')[0]}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{name.split(' ')[0]}</span>
             </div>
           ))}
         </div>
       </div>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
           COUNTRY FLAG OVERLAY
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -199,7 +199,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
           ].map(({ name, country }) => (
             <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <UserAvatar name={name} country={country} size="large" />
-              <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{country}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{country}</span>
             </div>
           ))}
         </div>
@@ -212,7 +212,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
   'watchers-chip': () => (
     <MockAppProvider>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
           WATCHERS CHIP — PREVIEW MODE (Supabase offline → empty watcher list)
         </div>
         <WatchersChip issueKey="BAU-1234" />
@@ -224,7 +224,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
 
   'jira-table': () => (
     <MockAppProvider>
-      <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
         JIRA TABLE — 6 mock rows · key / summary / status / assignee
       </div>
       <JiraTable<MockRow>
@@ -242,7 +242,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
 
   'catalyst-key-details': () => (
     <MockAppProvider>
-      <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
         CATALYST KEY DETAILS — mock Story issue · read-only preview (mutations no-op)
       </div>
       <CatalystKeyDetails
@@ -256,7 +256,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
 
   'catalyst-sidebar-details': () => (
     <MockAppProvider>
-      <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)'), marginBottom: 8 }}>
         CATALYST SIDEBAR DETAILS — mock Story · right-rail fields in read-only preview
       </div>
       <CatalystSidebarDetails
@@ -277,7 +277,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
   'catalyst-view-base': () => (
     <MockAppProvider>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>
           CATALYST VIEW BASE — shell layout preview (modal mode, no Supabase)
         </div>
         <div
@@ -302,12 +302,12 @@ export const previewFixtures: Record<string, PreviewFixture> = {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <JiraIssueTypeIcon type="Story" size={16} />
-              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: token('color.link', '#0C66E4') }}>BAU-1234</span>
+              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-200)', color: token('color.link', 'var(--ds-link, #0C66E4)') }}>BAU-1234</span>
               <CatalystStatusPill status="In Progress" statusCategory="indeterminate" />
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <WatchersChip issueKey="BAU-1234" />
-              <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>⋯</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>⋯</span>
             </div>
           </div>
           {/* Body mock — two-column layout */}
@@ -352,7 +352,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
           <div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                 marginBottom: 8,
@@ -379,7 +379,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
           <div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                 marginBottom: 8,
@@ -406,7 +406,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
           <div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                 marginBottom: 8,
@@ -433,7 +433,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
           <div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                 marginBottom: 8,

@@ -36,7 +36,7 @@ export function QuickSearchInput({ value, onChange, resultCount, totalCount }: Q
                 onClick={() => { onChange(''); inputRef.current?.focus(); }}
                 style={{
                   background: 'transparent', border: 'none', cursor: 'pointer',
-                  padding: '0 8px', fontSize: 14, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
+                  padding: '0 8px', fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
                   lineHeight: 1,
                 }}
                 aria-label="Clear search"
@@ -49,7 +49,7 @@ export function QuickSearchInput({ value, onChange, resultCount, totalCount }: Q
       </div>
       {resultCount !== undefined && (
         <span style={{
-          fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap',
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 500, whiteSpace: 'nowrap',
           color: resultCount === 0
             ? token('color.text.warning', 'var(--ds-text-warning, #974F0C)')
             : token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),

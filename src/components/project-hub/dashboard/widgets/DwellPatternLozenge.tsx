@@ -85,7 +85,7 @@ export function DwellPatternLozenge({
         borderRadius: compact ? 3 : 9,
         background: meta.bg,
         color: meta.color,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 653,
         fontFamily: 'Atlassian Sans, -apple-system, system-ui, sans-serif',
         letterSpacing: 0,

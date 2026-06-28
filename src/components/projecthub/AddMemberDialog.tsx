@@ -92,11 +92,11 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[520px] p-0" style={{ fontFamily: 'var(--cp-font-body)' }}>
         <DialogHeader className="px-5 pt-5 pb-0">
-          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16 }}>Add Team Member</DialogTitle>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)' }}>Add Team Member</DialogTitle>
         </DialogHeader>
 
         <div className="px-5 pb-2">
-          <p className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 12, marginBottom: 12 }}>
+          <p className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 'var(--ds-font-size-200)', marginBottom: 12 }}>
             Select users from the organization directory to add to this project.
           </p>
 
@@ -107,7 +107,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, role, or email..."
               className="flex-1 bg-transparent outline-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[var(--ds-text-subtlest, #626F86)]"
-              style={{ fontSize: 13 }}
+              style={{ fontSize: 'var(--ds-font-size-300)' }}
               autoFocus
             />
           </div>
@@ -119,7 +119,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
               <Loader2 size={20} className="animate-spin text-slate-400 dark:text-[var(--ds-text-subtlest, #626F86)]" />
             </div>
           ) : available.length === 0 ? (
-            <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 13 }}>
+            <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-300)' }}>
               {search ? `No users match "${search}"` : 'All users are already members'}
             </div>
           ) : (
@@ -133,14 +133,14 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
                   {u.avatar_url ? (
                     <img src={u.avatar_url} alt={u.name} className="flex-shrink-0" style={{ width: 36, height: 50, borderRadius: '50%', objectFit: 'cover' }} />
                   ) : (
-                    <div className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 50, borderRadius: '50%', background: getColor(u.name), color: 'var(--ds-surface, #FFF)', fontSize: 12, fontWeight: 700 }}>
+                    <div className="flex items-center justify-center flex-shrink-0" style={{ width: 36, height: 50, borderRadius: '50%', background: getColor(u.name), color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-200)', fontWeight: 700 }}>
                       {getInitials(u.name)}
                     </div>
                   )}
 
                   <div className="flex-1 min-w-0">
-                    <div className="text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 13, fontWeight: 600, lineHeight: '18px' }}>{u.name}</div>
-                    <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 11, lineHeight: '16px' }}>
+                    <div className="text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, lineHeight: '18px' }}>{u.name}</div>
+                    <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 'var(--ds-font-size-100)', lineHeight: '16px' }}>
                       {u.role_name || 'No role'}
                       {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
                       {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]">{u.department_name}</span>}
@@ -148,12 +148,12 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
                   </div>
 
                   {u.email && (
-                    <span className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11 }}>{u.email.split('@')[0]}</span>
+                    <span className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-100)' }}>{u.email.split('@')[0]}</span>
                   )}
 
                   <button
                     className="flex items-center gap-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                    style={{ height: 28, padding: '0 10px', background: 'var(--cp-blue)', border: 'none', fontSize: 11, fontWeight: 600, color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}
+                    style={{ height: 28, padding: '0 10px', background: 'var(--cp-blue)', border: 'none', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}
                     onClick={e => { e.stopPropagation(); handleAdd(u); }}
                   >
                     <UserPlus size={12} /> Add
@@ -165,13 +165,13 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
         </div>
 
         <div className="px-5 py-3 flex items-center justify-between border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-          <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11 }}>
+          <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-100)' }}>
             {available.length} user{available.length !== 1 ? 's' : ''} available
           </span>
           <button
             onClick={onClose}
             className="rounded-md bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtle,#475569)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
-            style={{ height: 32, padding: '0 16px', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
+            style={{ height: 32, padding: '0 16px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer' }}
           >
             Done
           </button>

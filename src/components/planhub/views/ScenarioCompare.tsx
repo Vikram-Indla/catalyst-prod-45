@@ -137,7 +137,7 @@ export default function ScenarioCompare() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ 
                       fontWeight: 500, 
-                      fontSize: '13px',
+                      fontSize: 'var(--ds-font-size-300)',
                       color: 'var(--ph-text)',
                       display: 'flex',
                       alignItems: 'center',
@@ -145,18 +145,18 @@ export default function ScenarioCompare() {
                     }}>
                       {version.tag}
                       {version.is_baseline && (
-                        <span className="ph-badge ph-badge-blue" style={{ fontSize: '10px' }}>Baseline</span>
+                        <span className="ph-badge ph-badge-blue" style={{ fontSize: 'var(--ds-font-size-50)' }}>Baseline</span>
                       )}
                     </div>
                     <div style={{ 
-                      fontSize: '12px', 
+                      fontSize: 'var(--ds-font-size-200)', 
                       color: 'var(--ph-text-muted)',
                       marginTop: '2px'
                     }}>
                       {version.plan?.name || 'Unknown Plan'}
                     </div>
                     <div style={{ 
-                      fontSize: '11px', 
+                      fontSize: 'var(--ds-font-size-100)', 
                       color: 'var(--ph-text-muted)',
                       marginTop: '4px'
                     }}>
@@ -175,10 +175,10 @@ export default function ScenarioCompare() {
             <div className="ph-card">
               <div className="ph-empty" style={{ padding: 'var(--ph-space-10)' }}>
                 <GitCompare size={48} style={{ color: 'var(--ph-text-muted)', marginBottom: 'var(--ph-space-4)' }} />
-                <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 'var(--ph-space-2)' }}>
+                <h3 style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, marginBottom: 'var(--ph-space-2)' }}>
                   Select Versions to Compare
                 </h3>
-                <p style={{ fontSize: '13px', color: 'var(--ph-text-muted)' }}>
+                <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ph-text-muted)' }}>
                   Choose up to 3 versions from the list to see a side-by-side comparison
                 </p>
               </div>
@@ -199,7 +199,7 @@ export default function ScenarioCompare() {
                       {selectedData.map(v => (
                         <th key={v.id} style={{ textAlign: 'center' }}>
                           <div>{v.tag}</div>
-                          <div style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ph-text-muted)' }}>
+                          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 400, color: 'var(--ph-text-muted)' }}>
                             {v.plan?.code}
                           </div>
                         </th>
@@ -276,7 +276,7 @@ export default function ScenarioCompare() {
                     <tr>
                       <td style={{ fontWeight: 500 }}>Created</td>
                       {selectedData.map(v => (
-                        <td key={v.id} style={{ textAlign: 'center', fontSize: '12px' }}>
+                        <td key={v.id} style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-200)' }}>
                           {new Date(v.created_at).toLocaleDateString()}
                         </td>
                       ))}
@@ -284,7 +284,7 @@ export default function ScenarioCompare() {
                     <tr>
                       <td style={{ fontWeight: 500 }}>Notes</td>
                       {selectedData.map(v => (
-                        <td key={v.id} style={{ textAlign: 'center', fontSize: '12px' }}>
+                        <td key={v.id} style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-200)' }}>
                           {v.notes || '-'}
                         </td>
                       ))}
@@ -320,14 +320,14 @@ export default function ScenarioCompare() {
                         />
                         <div style={{ 
                           marginTop: 'var(--ph-space-2)', 
-                          fontSize: '11px', 
+                          fontSize: 'var(--ds-font-size-100)', 
                           fontWeight: 500,
                           textAlign: 'center'
                         }}>
                           {formatCurrency(v.snapshot?.budget)}
                         </div>
                         <div style={{ 
-                          fontSize: '10px', 
+                          fontSize: 'var(--ds-font-size-50)', 
                           color: 'var(--ph-text-muted)',
                           textAlign: 'center',
                           maxWidth: '80px',

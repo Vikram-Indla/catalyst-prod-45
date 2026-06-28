@@ -25,7 +25,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
 
   const getTagStyle = (isRequired: boolean, isTypeSpecific: boolean) => {
     if (isRequired) return { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Required' };
-    if (isTypeSpecific) return { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Type-specific' };
+    if (isTypeSpecific) return { bg: 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Type-specific' };
     return { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', label: 'Optional' };
   };
 
@@ -38,7 +38,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
       }}
     >
       <div className="flex items-center justify-between mb-4">
-        <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>
+        <h4 style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>
           {typeName} — Field Layout
         </h4>
         <button
@@ -51,16 +51,16 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
       </div>
 
       {isLoading ? (
-        <div style={{ fontSize: 13, color: 'var(--fg-4)', padding: '12px 0' }}>Loading fields...</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)', padding: '12px 0' }}>Loading fields...</div>
       ) : fields.length === 0 ? (
-        <div style={{ fontSize: 13, color: 'var(--fg-4)', padding: '12px 0' }}>No fields configured for this type.</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)', padding: '12px 0' }}>No fields configured for this type.</div>
       ) : (
         <div className="space-y-0">
           {/* Header */}
           <div className="flex items-center gap-4 px-2 pb-2" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
-            <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Field Name</span>
-            <span style={{ width: 120, fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</span>
-            <span style={{ width: 100, fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</span>
+            <span style={{ flex: 1, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Field Name</span>
+            <span style={{ width: 120, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</span>
+            <span style={{ width: 100, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</span>
           </div>
 
           {fields.map((field: any) => {
@@ -71,16 +71,16 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
                 className="flex items-center gap-4 px-2 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
                 style={{ height: 40, borderBottom: '1px solid var(--bg-1)' }}
               >
-                <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>
+                <span className="flex-1 truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--fg-1)' }}>
                   {field.field_name}
                 </span>
-                <span style={{ width: 120, fontSize: 12, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
+                <span style={{ width: 120, fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
                   {field.field_type}
                 </span>
                 <span style={{ width: 100 }}>
                   <span
                     className="rounded-full"
-                    style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', background: tag.bg, color: tag.text }}
+                    style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 8px', background: tag.bg, color: tag.text }}
                   >
                     {tag.label}
                   </span>

@@ -34,7 +34,7 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
-      borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      borderRadius: 4, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap', background: s.bg, color: s.color,
     }}>
       {s.label}
@@ -43,10 +43,10 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
 }
 
 // Icons
-const BugIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--ds-background-danger-bold, #C9372C)"/><circle cx="8" cy="8" r="3" fill="white"/></svg>;
+const BugIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--ds-background-danger-bold, var(--ds-background-danger-bold, #C9372C))"/><circle cx="8" cy="8" r="3" fill="white"/></svg>;
 const TaskIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-information-bold, #1D7AFC)"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const StoryIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
-const EpicIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#904EE2"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
+const StoryIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
+const EpicIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-discovery-bold, var(--ds-background-discovery-bold, #6E5DC6))"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
 function JiraIcon({ type }: { type: string }) {
   const t = (type || '').toLowerCase();
   if (t.includes('bug')) return <BugIcon />;
@@ -92,8 +92,8 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
   if (items.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--fg-3)' }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
-        <div style={{ fontSize: 13 }}>Items assigned to {memberName || 'this member'} will appear here.</div>
+        <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)' }}>Items assigned to {memberName || 'this member'} will appear here.</div>
       </div>
     );
   }
@@ -129,7 +129,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               marginLeft: -32, paddingLeft: 10, marginBottom: 10, userSelect: 'none',
             }}>
               <div style={dotStyle} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{dateLabel}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{dateLabel}</span>
               <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{total} items</span>
               {/* Mini bar */}
               <div style={{ display: 'flex', height: '4px', borderRadius: '4px', overflow: 'hidden', width: '80px', background: 'var(--bg-3)', flexShrink: 0 }}>
@@ -177,19 +177,19 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                           {item.project_key && (
-                            <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
+                            <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
                           )}
                         </div>
                         <div style={{
-                          fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '1.4',
+                          fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '1.4',
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                         } as React.CSSProperties}>
                           {item.title}
                         </div>
                         {item.parent_key && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--fg-2)', marginTop: '3px', fontWeight: 500 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', marginTop: '3px', fontWeight: 500 }}>
                             ↳
-                            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', fontWeight: 600, color: 'var(--fg-3)' }}>{item.parent_key}</span>
+                            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-3)' }}>{item.parent_key}</span>
                             <span>{item.parent_title && item.parent_title.length > 40 ? item.parent_title.slice(0, 40) + '…' : item.parent_title}</span>
                           </div>
                         )}
@@ -200,7 +200,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                         <div style={{
                           width: '20px', height: '20px', borderRadius: '50%', overflow: 'hidden',
                           background: 'var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '8px', fontWeight: 700, color: 'var(--fg-2)', flexShrink: 0,
+                          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-2)', flexShrink: 0,
                         }}>
                           {getInitials(item.assigner_name)}
                         </div>
@@ -208,7 +208,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                           {item.assigner_name ? item.assigner_name.split(' ')[0] : 'Unassigned'}
                         </span>
                         <StatusLozenge status={item.status_name || item.status || ''} statusCategory={item.status_category} />
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                           {item.age_days ?? 0}d
                         </span>
                       </div>

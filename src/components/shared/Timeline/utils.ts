@@ -125,7 +125,7 @@ export function hasAnyDates(issues: TimelineIssue[]): boolean {
 export function barColor(issue: TimelineIssue): string {
   if (issue.epicColor) return issue.epicColor;
   const cat = (issue.statusCategory ?? '').toLowerCase();
-  if (cat.includes('done')) return 'var(--ds-background-success-bold, #1F845A)';
+  if (cat.includes('done')) return 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))';
   if (cat.includes('progress')) return 'var(--ds-background-information-bold, #0055CC)';
   return 'var(--ds-background-neutral-bold, #626F86)';
 }

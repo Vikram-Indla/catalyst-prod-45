@@ -16,27 +16,27 @@ import { CatalystViewBase } from '@/components/catalyst-detail-views/shared/Cata
 
 const leftContent = (
   <div style={{ padding: 16 }}>
-    <h3 style={{ fontSize: 20, fontWeight: 500, margin: '0 0 16px' }}>Industrial Capabilities: Add Item Interface</h3>
+    <h3 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 500, margin: '0 0 16px' }}>Industrial Capabilities: Add Item Interface</h3>
     <div style={{ padding: '16px 0', borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
-      <p style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Implement the add item interface for industrial capabilities module with full validation, error handling, and i18n support.</p>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>Implement the add item interface for industrial capabilities module with full validation, error handling, and i18n support.</p>
     </div>
   </div>
 );
 
 const rightContent = (
   <div style={{ padding: 16 }}>
-    <div style={{ fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>Details</div>
+    <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>Details</div>
     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Assignee</span>
-      <span style={{ fontSize: 14 }}>Vikram Indla</span>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>Assignee</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)' }}>Vikram Indla</span>
     </div>
     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Reporter</span>
-      <span style={{ fontSize: 14 }}>Yazeed Daraz</span>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>Reporter</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)' }}>Yazeed Daraz</span>
     </div>
     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Priority</span>
-      <span style={{ fontSize: 14 }}>High</span>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>Priority</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)' }}>High</span>
     </div>
   </div>
 );

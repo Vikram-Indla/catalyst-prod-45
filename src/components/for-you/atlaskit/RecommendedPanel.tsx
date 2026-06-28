@@ -148,7 +148,7 @@ function SkeletonLine({ width = '100%', height = 12 }: { width?: string | number
         width,
         height,
         borderRadius: 4,
-        background: `linear-gradient(90deg, ${token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)')} 25%, ${token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)')} 50%, ${token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)')} 75%)`,
+        background: `linear-gradient(90deg, ${token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)')} 25%, ${token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))')} 50%, ${token('color.background.neutral', 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))')} 75%)`,
         backgroundSize: '200% 100%',
         animation: 'catalyst-shimmer 1.4s infinite',
       }}
@@ -514,7 +514,7 @@ function FeedSection({
             style={{
               // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20.
               // DOM probe 2026-05-29 confirmed fontWeight 653 (not 600).
-              fontSize: 16,
+              fontSize: 'var(--ds-font-size-500)',
               lineHeight: '20px',
               fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
               fontWeight: 653,
@@ -1605,7 +1605,7 @@ function EmojiPickerPopover({
               display: 'flex',
               justifyContent: 'center',
               padding: '4px 0 8px',
-              fontSize: 16,
+              fontSize: 'var(--ds-font-size-500)',
               cursor: 'pointer',
               borderBottom: `2px solid ${activeCategory === cat.key && !search
                 ? token('color.border.brand', 'var(--ds-link, #0C66E4)')
@@ -1631,7 +1631,7 @@ function EmojiPickerPopover({
             border: `1px solid ${token('color.border.input', 'var(--ds-text-disabled, #8590A2)')}`,
             borderRadius: 4,
             padding: '4px 8px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             outline: 'none',
             fontFamily: 'inherit',
             color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -1647,7 +1647,7 @@ function EmojiPickerPopover({
         <div
           style={{
             padding: '4px 8px',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             letterSpacing: '0.5px',
@@ -1674,7 +1674,7 @@ function EmojiPickerPopover({
               gridColumn: '1 / -1',
               padding: '16px 8px',
               textAlign: 'center',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             }}
           >
@@ -1693,7 +1693,7 @@ function EmojiPickerPopover({
               justifyContent: 'center',
               width: 32,
               height: 32,
-              fontSize: 20,
+              fontSize: 'var(--ds-font-size-700)',
               borderRadius: 4,
               cursor: 'pointer',
               transition: 'background 100ms ease',
@@ -2025,7 +2025,7 @@ function ForYouReplyTree({
         {replyingToId === c.id && (
           <div style={{ paddingLeft: 44, paddingTop: 8 }}>
             <div style={{
-              fontSize: 12, fontWeight: 500,
+              fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
               color: 'var(--ds-text-subtle, #44546F)',
               marginBottom: 6,
             }}>Replying to {c.author.name}</div>
@@ -3272,7 +3272,7 @@ function ReactionChip({
         borderRadius: 4,
         fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
         // DOM-probed Jira 2026-05-29: emoji chip font-size = 13.3px (≈13). 16 was Catalyst opinion.
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         lineHeight: 1,
         // DOM-probed Jira 2026-05-29: idle chips are opacity:1 — dimming to 0.6 when
         // count===0 made chips look disabled. Only truly-disabled chips get 0.4.
@@ -3286,7 +3286,7 @@ function ReactionChip({
           aria-hidden="true"
           style={{
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 400,
             color: isActive
               ? token('color.text.selected', 'var(--ds-link, #0C66E4)')

@@ -96,7 +96,7 @@ export function SnoozeSubmenu({ anchorRect, onPick, onClose }: SnoozeSubmenuProp
           <div
             style={{
               padding: '6px 16px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cv2-text-muted)',
               textTransform: 'none',
             }}
@@ -165,12 +165,12 @@ function SubItem({
         cursor: 'pointer',
         textAlign: 'left',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
       }}
     >
       <span>{label}</span>
       {detail && (
-        <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)' }}>{detail}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>{detail}</span>
       )}
     </button>
   );

@@ -109,7 +109,7 @@ export function StepBasics({
                 <span
                   style={{
                     fontFamily: 'var(--cp-font-mono)',
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     paddingRight: 8,
                     color: token('color.text.subtlest'),
                   }}

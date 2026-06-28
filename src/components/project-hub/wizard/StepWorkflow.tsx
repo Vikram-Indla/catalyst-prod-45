@@ -71,8 +71,8 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
           style={{ accentColor: 'var(--cp-blue)', marginTop: 2 }}
         />
         <div className="flex-1">
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Use default workflow</div>
-          <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>Standard project workflow with common statuses</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>Use default workflow</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 2 }}>Standard project workflow with common statuses</div>
         </div>
       </label>
 
@@ -90,7 +90,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
           style={{ accentColor: 'var(--cp-blue)', marginTop: 2 }}
         />
         <div className="flex-1">
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Copy from existing project</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>Copy from existing project</div>
           {!data.useDefault && projects.length > 0 && (
             <select
               value={data.copyFromProject || ''}
@@ -100,7 +100,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
                 width: '100%',
                 height: 50,
                 padding: '0 10px',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 border: '1px solid var(--divider)',
                 borderRadius: 6,
                 color: 'var(--fg-1)',
@@ -114,7 +114,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
             </select>
           )}
           {!data.useDefault && projects.length === 0 && (
-            <div style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 4 }}>No other projects available</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', marginTop: 4 }}>No other projects available</div>
           )}
         </div>
       </label>
@@ -122,7 +122,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
       {/* Workflow preview */}
       {workflowToShow.length > 0 && (
         <div className="p-3 rounded-lg bg-[var(--bg-1)]" style={{ border: '1px solid var(--divider)' }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>
             Workflow Preview
           </div>
           <div className="flex items-center gap-1 flex-wrap">
@@ -131,7 +131,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
                 <span
                   className="inline-flex items-center rounded-full bg-[var(--bg-app)]"
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 500,
                     padding: '3px 10px',
                     border: `1px solid ${s.color}`,
@@ -157,8 +157,8 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
           style={{ accentColor: 'var(--cp-blue)', marginTop: 3 }}
         />
         <div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>Enable Feature Layer</div>
-          <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 1 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>Enable Feature Layer</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 1 }}>
             Adds Feature as an intermediate level between Epic and Story/Bug/Task
           </div>
         </div>

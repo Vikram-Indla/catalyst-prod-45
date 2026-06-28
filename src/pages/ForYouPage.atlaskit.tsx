@@ -463,7 +463,7 @@ export default function ForYouPageAtlaskit() {
               </span>
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtle, #505258)',
                   whiteSpace: 'nowrap',
@@ -497,7 +497,7 @@ export default function ForYouPageAtlaskit() {
                   color: 'var(--ds-text-subtle, #505258)',
                   transition: 'background-color 100ms ease',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -526,7 +526,7 @@ export default function ForYouPageAtlaskit() {
                 color: 'var(--ds-text-subtle, #505258)',
                 transition: 'background-color 100ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #EBECF0)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">
@@ -537,7 +537,7 @@ export default function ForYouPageAtlaskit() {
 
           {/* Detail content — the router handles its own internal scroll. */}
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)', fontSize: 14 }}>Loading…</div>}>
+            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)', fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>}>
               <CatalystDetailRouter
                 isOpen={true}
                 onClose={clearDetail}

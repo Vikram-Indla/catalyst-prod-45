@@ -221,7 +221,7 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
       <div style={{ paddingBlockEnd: 8 }}>
         <Heading size="medium">{currentStep.label}</Heading>
         <div style={{ paddingTop: 4 }}>
-          <span style={{ fontSize: 12, color: token('color.text.subtle') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle') }}>
             Step {stepIdx + 1} of {STEPS.length}
           </span>
         </div>

@@ -327,13 +327,13 @@ function TabBtn({
         borderBottom: active ? '2px solid var(--cv2-accent)' : '2px solid transparent',
         cursor: 'pointer',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: active ? 700 : 500,
       }}
     >
       <span>{label}</span>
       {typeof count === 'number' && count > 0 && (
-        <span style={{ fontSize: 13, color: active ? 'var(--cv2-text)' : 'var(--cv2-text-muted)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: active ? 'var(--cv2-text)' : 'var(--cv2-text-muted)' }}>
           {count}
         </span>
       )}
@@ -349,7 +349,7 @@ function Empty({ message }: { message: string }) {
         textAlign: 'center',
         color: 'var(--cv2-text-muted)',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
       }}
     >
       {message}

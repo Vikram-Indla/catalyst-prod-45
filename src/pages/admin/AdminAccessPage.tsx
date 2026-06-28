@@ -207,12 +207,11 @@ const SAFE_KEYS = ['home', 'project_hub', 'product_hub'];
 const GUEST_MAX_TTL = 172800; // 48 h in seconds
 
 // ─── Channel glyphs (real brand/line SVGs — never emoji) ──────────────────────
-
 // Official WhatsApp brand mark (simple-icons path), brand green #25D366.
 function WhatsAppGlyph({ size = 22 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" style={{ display: 'block' }}>
-      <path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+      <path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
     </svg>
   );
 }
@@ -380,7 +379,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
   };
 
   // ADS field label: sentence-case, 12px/600, subtle token — no all-caps, no tracking.
-  const lbl: React.CSSProperties = { display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 6 };
+  const lbl: React.CSSProperties = { display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 6 };
 
   const selectStyles = { menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 10000 }) };
   const deptOptions = [{ label: 'No department', value: '' }, ...departments.map(d => ({ label: d.name, value: d.id }))];
@@ -393,10 +392,10 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
       {/* Header */}
       <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #EBECF0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)', letterSpacing: '-0.01em' }}>
+          <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', letterSpacing: '-0.01em' }}>
             {result ? 'Setup link ready' : 'Create access'}
           </h2>
-          {!result && <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Creates the user and a one-time setup link</p>}
+          {!result && <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>Creates the user and a one-time setup link</p>}
         </div>
         <button onClick={onClose} aria-label="Close" style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
           <CloseIcon label="Close" size="medium" />
@@ -450,7 +449,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
             </div>
 
             {isGuest && (
-              <div style={{ padding: '8px 12px', background: 'var(--ds-background-warning, #FFF7D6)', borderRadius: 6, fontSize: 12, color: 'var(--ds-text-warning, #974F0C)' }}>
+              <div style={{ padding: '8px 12px', background: 'var(--ds-background-warning, #FFF7D6)', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning, #974F0C)' }}>
                 Guest access is read-only. Link lifetime is capped at 48 hours.
               </div>
             )}
@@ -495,10 +494,10 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
                   const active = channel === c.value;
                   const iconColor = active ? 'var(--ds-icon-information, #0C66E4)' : 'var(--ds-icon-subtle, #42526E)';
                   return (
-                    <button key={c.value} type="button" role="radio" aria-checked={active} aria-label={`${c.label} — ${c.sub}`} onClick={() => setChannel(c.value)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '12px 8px', borderRadius: 8, border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`, background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent', cursor: 'pointer', transition: 'all 0.1s' }}>
+                    <button key={c.value} type="button" role="radio" aria-checked={active} aria-label={`${c.label} — ${c.sub}`} onClick={() => setChannel(c.value)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '12px 8px', borderRadius: 8, border: `1px solid ${active ? 'var(--ds-border-selected, var(--ds-link, #0C66E4))' : 'var(--ds-border, #DFE1E6)'}`, background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent', cursor: 'pointer', transition: 'all 0.1s' }}>
                       <span style={{ display: 'flex' }}>{c.render(iconColor)}</span>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: active ? 'var(--ds-text-information, #0C66E4)' : 'var(--ds-text, #172B4D)' }}>{c.label}</span>
-                      <span style={{ fontSize: 10, color: 'var(--ds-text-subtle, #6B778C)' }}>{c.sub}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: active ? 'var(--ds-text-information, #0C66E4)' : 'var(--ds-text, #172B4D)' }}>{c.label}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle, #6B778C)' }}>{c.sub}</span>
                     </button>
                   );
                 })}
@@ -507,7 +506,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
                 <div style={{ marginTop: 12 }}>
                   <label style={lbl}>Phone <span style={{ color: 'var(--ds-text-subtlest, #97A0AF)' }}>(optional)</span></label>
                   <Textfield value={phone} onChange={e => setPhone((e.target as HTMLInputElement).value)} placeholder="+966 5x xxx xxxx" aria-label="Phone" />
-                  <p style={{ margin: '6px 0 0', fontSize: 11, color: 'var(--ds-text-disabled, #8590A2)' }}>Provider integration pending — the link is recorded and shown below for manual sharing.</p>
+                  <p style={{ margin: '6px 0 0', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled, #8590A2)' }}>Provider integration pending — the link is recorded and shown below for manual sharing.</p>
                 </div>
               )}
             </div>
@@ -526,7 +525,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
                   aria-label="Link validity"
                 />
               </div>
-              <p style={{ margin: 0, fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', paddingBottom: 8 }}>{expiryPreview}</p>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', paddingBottom: 8 }}>{expiryPreview}</p>
             </div>
 
           </div>
@@ -534,7 +533,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
           {/* Pending-link conflict banner — replaces the generic error toast */}
           {pendingConflict && (
             <div style={{ margin: '0 20px 4px', padding: '10px 14px', background: 'var(--ds-background-warning, #FFF7D6)', border: '1px solid var(--ds-border-warning, #F5CD47)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-              <div style={{ fontSize: 12, color: 'var(--ds-text-warning, #974F0C)', lineHeight: 1.4 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning, #974F0C)', lineHeight: 1.4 }}>
                 <strong>A pending link already exists for this email.</strong>
                 {' '}Replacing it will expire the old link immediately.
               </div>
@@ -546,7 +545,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
 
           {/* Footer — amber blockHint on the left, actions on the right */}
           <div style={{ padding: '14px 20px', borderTop: '1px solid var(--ds-border, #EBECF0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>
               {/* Guidance hint — only after the user has started, never on a pristine open (no premature error) */}
               {!pendingConflict && (email || fullName || roleOpt)
                 ? (!nameOk ? 'Enter the full name' : (!emailOk ? 'Enter an email' : (!roleOk ? 'Select a role' : (!safeOk ? 'Add a safe-landing module' : ''))))
@@ -565,10 +564,10 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
           <>
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ padding: 12, background: 'var(--ds-background-information, #F3F9FF)', borderRadius: 8, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 24, flexShrink: 0 }}>✅</span>
+                <span style={{ fontSize: 'var(--ds-font-size-800)', flexShrink: 0 }}>✅</span>
                 <div>
-                  <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Access created for {email}</p>
-                  <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                  <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Access created for {email}</p>
+                  <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                     Role: <strong>{roleOpt?.label}</strong> · Channel: <strong style={{ textTransform: 'capitalize' }}>{result.channel}{result.channelPending ? ' (manual share)' : ''}</strong>
                   </p>
                 </div>
@@ -577,21 +576,21 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
               <div>
                 <label style={lbl}>One-time setup link</label>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, background: 'var(--ds-background-neutral, #F1F2F4)', border: '1px solid var(--ds-border, #EBECF0)', borderRadius: 6, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-background-neutral, #F1F2F4)', border: '1px solid var(--ds-border, #EBECF0)', borderRadius: 6, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {result.link || 'Link expired — regenerate below'}
                   </div>
                   <Button appearance="primary" isDisabled={!result.link} onClick={copyLink}>{copied ? '✓ Copied' : 'Copy'}</Button>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: 24, fontSize: 13 }}>
+              <div style={{ display: 'flex', gap: 24, fontSize: 'var(--ds-font-size-300)' }}>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-disabled, #8590A2)', marginBottom: 2 }}>Expires</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-disabled, #8590A2)', marginBottom: 2 }}>Expires</div>
                   <div style={{ color: 'var(--ds-text, #172B4D)' }}>{result.expiresAt ? new Date(result.expiresAt).toLocaleString() : '—'}</div>
                 </div>
               </div>
 
-              <div style={{ padding: '10px 12px', background: 'var(--ds-background-warning, #FFF7D6)', borderRadius: 6, fontSize: 11, color: 'var(--ds-text-warning, #974F0C)', lineHeight: 1.5 }}>
+              <div style={{ padding: '10px 12px', background: 'var(--ds-background-warning, #FFF7D6)', borderRadius: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning, #974F0C)', lineHeight: 1.5 }}>
                 This link is single-use and expires after one click. If the recipient's contact details were wrong, expire it below and regenerate. Catalyst never stores the raw token.
               </div>
             </div>
@@ -848,11 +847,11 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
             size="large"
           />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.full_name || user.email}
             </div>
             {user.full_name && (
-              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.email}
               </div>
             )}
@@ -884,21 +883,21 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
               <div style={{ paddingTop: 20 }}>
                 {/* Identity */}
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Identity</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Identity</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>First name</label>
+                      <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>First name</label>
                       <Textfield value={firstName} onChange={e => setFirstName((e.target as HTMLInputElement).value)} isDisabled={isSuperAdmin || saving} placeholder="First" />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>Last name</label>
+                      <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>Last name</label>
                       <Textfield value={lastName} onChange={e => setLastName((e.target as HTMLInputElement).value)} isDisabled={isSuperAdmin || saving} placeholder="Last" />
                     </div>
                   </div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>Email</label>
+                  <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>Email</label>
                   <Textfield value={email} onChange={e => setEmail((e.target as HTMLInputElement).value)} isDisabled={isSuperAdmin || saving} placeholder="name@company.com" />
                   {isPlaceholderEmail && (
-                    <div style={{ marginTop: 6, fontSize: 11, color: 'var(--ds-text-warning, #974F0C)' }}>
+                    <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning, #974F0C)' }}>
                       Placeholder email — set a real address before generating a setup link.
                     </div>
                   )}
@@ -906,11 +905,11 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
                 {/* Role */}
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Role</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Role</div>
                   {isSuperAdmin ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <Lozenge appearance="removed">Super Admin</Lozenge>
-                      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Cannot be changed here</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>Cannot be changed here</span>
                     </div>
                   ) : (
                     <Select
@@ -926,8 +925,8 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
                 {/* Account info */}
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Account info</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', rowGap: 8, columnGap: 16, fontSize: 13, alignItems: 'center' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Account info</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', rowGap: 8, columnGap: 16, fontSize: 'var(--ds-font-size-300)', alignItems: 'center' }}>
                     <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Joined</span>
                     <span style={{ color: 'var(--ds-text, #172B4D)' }}>
                       {user.created_at
@@ -946,7 +945,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
             {/* Access tab */}
             <TabPanel>
               <div style={{ paddingTop: 20 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 12 }}>Module access</div>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 12 }}>Module access</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px' }}>
                   {MODULE_ITEMS.map(m => (
                     <Checkbox
@@ -955,7 +954,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                       isDisabled={!!m.default || saving}
                       onChange={() => toggleModule(m.key)}
                       label={
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-300)' }}>
                           <img
                             src={HUB_ICON_REGISTRY[hubKeyFor(m.key)]}
                             alt=""
@@ -964,13 +963,13 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                             style={{ display: 'block', flexShrink: 0, filter: moduleAccess[m.key] ? 'none' : 'grayscale(1) opacity(0.4)' }}
                           />
                           {m.label}
-                          {m.default && <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #97A0AF)' }}>always on</span>}
+                          {m.default && <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #97A0AF)' }}>always on</span>}
                         </span>
                       }
                     />
                   ))}
                 </div>
-                <div style={{ marginTop: 16, padding: '8px 12px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 4, fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
+                <div style={{ marginTop: 16, padding: '8px 12px', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', borderRadius: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>
                   {Object.values(moduleAccess).filter(Boolean).length} of {MODULE_ITEMS.length} modules enabled
                 </div>
               </div>
@@ -983,9 +982,9 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                   <>
                     {/* Setup link */}
                     <div style={{ marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Setup link</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Setup link</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>
                           Single-use link for the user to set their password (valid 24 h).
                         </div>
                         <Button appearance="default" isLoading={genLoading} isDisabled={busyAny || !emailValid} onClick={handleGenerateLink}>
@@ -994,7 +993,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                       </div>
                       {genLink && (
                         <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-                          <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, background: 'var(--ds-background-neutral, #F1F2F4)', border: '1px solid var(--ds-border, #EBECF0)', borderRadius: 6, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-background-neutral, #F1F2F4)', border: '1px solid var(--ds-border, #EBECF0)', borderRadius: 6, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {genLink}
                           </div>
                           <Button appearance="primary" onClick={async () => { try { await navigator.clipboard.writeText(genLink); setGenCopied(true); } catch { /* clipboard blocked */ } }}>
@@ -1006,9 +1005,9 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
                     {/* Password reset email */}
                     <div style={{ borderTop: '1px solid var(--ds-border-subtle, #F4F5F7)', paddingTop: 20, marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Password reset email</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Password reset email</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Send a reset link to {user.email}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>Send a reset link to {user.email}</div>
                         <Button appearance="default" isLoading={resetSending} isDisabled={busyAny && !resetSending} onClick={handleResetPassword}>
                           Send reset
                         </Button>
@@ -1017,10 +1016,10 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
                     {/* Set new password */}
                     <div style={{ borderTop: '1px solid var(--ds-border-subtle, #F4F5F7)', paddingTop: 20, marginBottom: 20 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Set new password</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Set new password</div>
                       {stagedPassword ? (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                          <div style={{ fontSize: 12, color: 'var(--ds-text-success, #216E4E)' }}>
+                          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-success, #216E4E)' }}>
                             ✓ New password staged — will be set on save
                           </div>
                           <Button appearance="subtle" onClick={() => setStagedPassword(null)}>Clear</Button>
@@ -1028,7 +1027,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                       ) : (
                         <>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
-                            <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Override password directly without sending email</div>
+                            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>Override password directly without sending email</div>
                             <Button appearance="default" isDisabled={busyAny && !pwOpen} onClick={() => { setPwOpen(v => !v); setNewPw(''); setConfirmPw(''); }}>
                               {pwOpen ? 'Cancel' : 'Set password'}
                             </Button>
@@ -1036,19 +1035,19 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                           {pwOpen && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                               <div>
-                                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>New password</label>
+                                <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>New password</label>
                                 <div style={{ position: 'relative' }}>
                                   <Textfield type={showPw ? 'text' : 'password'} value={newPw} onChange={e => setNewPw((e.target as HTMLInputElement).value)} placeholder="Min 8 characters" />
-                                  <button type="button" onClick={() => setShowPw(v => !v)} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)', padding: 0 }}>
+                                  <button type="button" onClick={() => setShowPw(v => !v)} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #6B778C)', padding: 0 }}>
                                     {showPw ? 'Hide' : 'Show'}
                                   </button>
                                 </div>
                               </div>
                               <div>
-                                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>Confirm password</label>
+                                <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>Confirm password</label>
                                 <Textfield type={showPw ? 'text' : 'password'} value={confirmPw} onChange={e => setConfirmPw((e.target as HTMLInputElement).value)} placeholder="Re-enter password" isInvalid={confirmPw.length > 0 && newPw !== confirmPw} />
                                 {confirmPw.length > 0 && newPw !== confirmPw && (
-                                  <div style={{ fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>Passwords do not match</div>
+                                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>Passwords do not match</div>
                                 )}
                               </div>
                               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -1064,20 +1063,20 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
                     {/* Account status */}
                     <div style={{ borderTop: '1px solid var(--ds-border-subtle, #F4F5F7)', paddingTop: 20, marginBottom: canDelete ? 20 : 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Account status</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 8 }}>Account status</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                            <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                               {isActive ? 'Account is active' : 'Account is suspended'}
                             </span>
                             {localApprovalStatus !== (user.approval_status ?? null) && (
-                              <span style={{ fontSize: 10, fontWeight: 500, padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, #974F0C)', border: '1px solid var(--ds-border-warning, #F5CD47)' }}>
+                              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, #974F0C)', border: '1px solid var(--ds-border-warning, #F5CD47)' }}>
                                 pending save
                               </span>
                             )}
                           </div>
-                          <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
+                          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>
                             {isActive ? 'Suspend to revoke all access. Change is committed on save.' : 'Reactivate to restore access. Change is committed on save.'}
                           </div>
                         </div>
@@ -1094,13 +1093,13 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                     {/* Danger zone */}
                     {canDelete && (
                       <div style={{ borderTop: '2px solid var(--ds-border-danger, #FF8F73)', paddingTop: 20 }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', letterSpacing: '0.04em', marginBottom: 8 }}>Danger zone</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', letterSpacing: '0.04em', marginBottom: 8 }}>Danger zone</div>
                         {deletePhase === 'confirm' ? (
                           <div style={{ background: 'var(--ds-background-danger, #FFEDEB)', border: '1px solid var(--ds-border-danger, #FF8F73)', borderRadius: 4, padding: '12px 16px' }}>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 4 }}>
+                            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 4 }}>
                               Delete {user.full_name || user.email}?
                             </div>
-                            <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 12 }}>
+                            <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 12 }}>
                               This permanently removes their account. This cannot be undone.
                             </div>
                             <div style={{ display: 'flex', gap: 8 }}>
@@ -1111,8 +1110,8 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                         ) : (
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                             <div>
-                              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', marginBottom: 2 }}>Delete account</div>
-                              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Permanently remove this user and all their data.</div>
+                              <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', marginBottom: 2 }}>Delete account</div>
+                              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)' }}>Permanently remove this user and all their data.</div>
                             </div>
                             <Button appearance="danger" isDisabled={busyAny} onClick={() => setDeletePhase('confirm')}>Delete user</Button>
                           </div>
@@ -1121,7 +1120,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                     )}
                   </>
                 ) : (
-                  <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--ds-text-subtle, #6B778C)', fontSize: 13 }}>
+                  <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--ds-text-subtle, #6B778C)', fontSize: 'var(--ds-font-size-300)' }}>
                     Security actions are not available for {isSelf ? 'your own account' : 'this account'}.
                   </div>
                 )}
@@ -1146,18 +1145,18 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                 return (
                   <div style={{ paddingTop: 20 }}>
                     {(lockedNow || fails > 0) && (
-                      <div style={{ marginBottom: 16, padding: '8px 12px', borderRadius: 6, fontSize: 12, background: lockedNow ? 'var(--ds-background-danger, #FFEDEB)' : 'var(--ds-background-warning, #FFF7D6)', color: lockedNow ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-warning, #974F0C)', border: `1px solid ${lockedNow ? 'var(--ds-border-danger, #FF8F73)' : 'var(--ds-border-warning, #F5CD47)'}` }}>
+                      <div style={{ marginBottom: 16, padding: '8px 12px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', background: lockedNow ? 'var(--ds-background-danger, #FFEDEB)' : 'var(--ds-background-warning, #FFF7D6)', color: lockedNow ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-warning, #974F0C)', border: `1px solid ${lockedNow ? 'var(--ds-border-danger, #FF8F73)' : 'var(--ds-border-warning, #F5CD47)'}` }}>
                         {lockedNow
                           ? `Account locked after ${fails} failed attempt${fails === 1 ? '' : 's'} — unlocks ${fmt(user.locked_until)}.`
                           : `${fails} failed login attempt${fails === 1 ? '' : 's'} recorded.`}
                       </div>
                     )}
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 12 }}>Onboarding journey</div>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', letterSpacing: '0.04em', marginBottom: 12 }}>Onboarding journey</div>
                     {steps.map(s => (
                       <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
                         <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: s.at ? 'var(--ds-icon-success, #36B37E)' : 'var(--ds-border, #C1C7D0)' }} />
-                        <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', flex: 1 }}>{s.label}</span>
-                        <span style={{ fontSize: 12, color: s.at ? 'var(--ds-text-subtle, #42526E)' : 'var(--ds-text-subtlest, #97A0AF)' }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', flex: 1 }}>{s.label}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-200)', color: s.at ? 'var(--ds-text-subtle, #42526E)' : 'var(--ds-text-subtlest, #97A0AF)' }}>
                           {s.at ? fmt(s.at) : (s.note || '—')}
                         </span>
                       </div>
@@ -1236,14 +1235,14 @@ function BulkGenerateModal({ users, onClose }: { users: CatalystUser[]; onClose:
     <ModalTransition>
       <Modal onClose={onClose} width="large" shouldScrollInViewport autoFocus={false} label="Bulk generate setup links">
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #EBECF0)' }}>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Bulk generate setup links</h2>
-          <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>Bulk generate setup links</h2>
+          <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
             For users with a real email who have never logged in. Placeholder (+jira) rows are excluded — give them a real email first.
           </p>
         </div>
         <div style={{ padding: 20 }}>
           {!running && !done && (
-            <p style={{ margin: 0, fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
+            <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>
               {eligible.length === 0
                 ? 'No eligible users — everyone has either logged in or lacks a real email.'
                 : `${eligible.length} user${eligible.length === 1 ? '' : 's'} will get a fresh single-use setup link (manual / copy).`}
@@ -1251,12 +1250,12 @@ function BulkGenerateModal({ users, onClose }: { users: CatalystUser[]; onClose:
           )}
           {(running || done) && (
             <div style={{ maxHeight: 360, overflowY: 'auto', border: '1px solid var(--ds-border, #EBECF0)', borderRadius: 6 }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-200)' }}>
                 <tbody>
                   {results.map((r, i) => (
                     <tr key={r.email} style={{ borderTop: i === 0 ? 'none' : '1px solid var(--ds-background-neutral, #F1F2F4)' }}>
                       <td style={{ padding: '8px 12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap' }}>{r.name}</td>
-                      <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 11, color: r.link ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-danger, #AE2A19)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0 }}>
+                      <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)', color: r.link ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-danger, #AE2A19)', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0 }}>
                         {r.link || r.error || '…'}
                       </td>
                     </tr>
@@ -1268,7 +1267,7 @@ function BulkGenerateModal({ users, onClose }: { users: CatalystUser[]; onClose:
               </table>
             </div>
           )}
-          {done && <p style={{ margin: '10px 0 0', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>{okCount} of {results.length} links generated.</p>}
+          {done && <p style={{ margin: '10px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>{okCount} of {results.length} links generated.</p>}
         </div>
         <div style={{ padding: '14px 20px', borderTop: '1px solid var(--ds-border, #EBECF0)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           {done
@@ -1301,7 +1300,7 @@ function PeopleTableSkeleton() {
   return (
     <>
       <style>{`@keyframes cp-skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, tableLayout: 'fixed' }} data-testid="people-skeleton" data-columns={COLS}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)', tableLayout: 'fixed' }} data-testid="people-skeleton" data-columns={COLS}>
         <tbody>
           {Array.from({ length: 8 }).map((_, rowIdx) => (
             <tr key={rowIdx} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
@@ -1399,10 +1398,10 @@ function AvatarCell({ userId, name, avatarUrl, hasOverride, uploadedBy, override
       {hovered && !busy && (
         <div style={{
           position: 'absolute', inset: 0, borderRadius: '50%',
-          background: 'rgba(0,0,0,0.45)',
+          background: 'rgba(0,0,0,0.45)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <span style={{ color: 'var(--ds-text-inverse, #fff)', fontSize: 9, fontWeight: 600, textAlign: 'center', lineHeight: 1.2 }}>
+          <span style={{ color: 'var(--ds-text-inverse, #fff)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textAlign: 'center', lineHeight: 1.2 }}>
             {hasOverride ? '✎' : '+'}
           </span>
         </div>
@@ -1413,7 +1412,7 @@ function AvatarCell({ userId, name, avatarUrl, hasOverride, uploadedBy, override
           style={{
             position: 'absolute', top: -4, right: -4, width: 14, height: 14,
             borderRadius: '50%', border: 'none', background: 'var(--ds-text-danger, #AE2A19)',
-            color: 'var(--ds-text-inverse, #fff)', fontSize: 8, fontWeight: 700, cursor: 'pointer',
+            color: 'var(--ds-text-inverse, #fff)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
           }}
           title="Remove custom photo"
@@ -1589,7 +1588,7 @@ function PeopleTab() {
       {isLoading ? (
         <PeopleTableSkeleton />
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, tableLayout: 'fixed' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)', tableLayout: 'fixed' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
               {[
@@ -1606,7 +1605,7 @@ function PeopleTab() {
                 <th key={i} style={{
                   textAlign: 'left', padding: '8px 12px',
                   fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
-                  fontSize: 12, width: h.width, overflow: 'hidden',
+                  fontSize: 'var(--ds-font-size-200)', width: h.width, overflow: 'hidden',
                 }}>
                   {h.label}
                 </th>
@@ -1657,7 +1656,7 @@ function PeopleTab() {
                       </Lozenge>
                     ) : '—'}
                   </td>
-                  <td style={{ padding: '8px 16px', fontSize: 12, color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {u.department_name ?? '—'}
                   </td>
                   <td style={{ padding: '8px 16px', overflow: 'hidden' }}>
@@ -1669,7 +1668,7 @@ function PeopleTab() {
                           <img key={k} src={HUB_ICON_REGISTRY[hubKeyFor(k)]} alt="" width={18} height={18} style={{ display: 'block', flexShrink: 0 }} />
                         ))}
                         {modKeys.length > 6 && (
-                          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle)', fontWeight: 500, flexShrink: 0 }}>+{modKeys.length - 6}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', fontWeight: 500, flexShrink: 0 }}>+{modKeys.length - 6}</span>
                         )}
                       </div>
                     )}
@@ -1677,7 +1676,7 @@ function PeopleTab() {
                   <td style={{ padding: '8px 16px', overflow: 'hidden' }}>
                     <StatusPill state={state} />
                   </td>
-                  <td style={{ padding: '8px 16px', color: 'var(--ds-text-subtle)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '8px 16px', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {relativeTime(u.last_login_at)}
                   </td>
                   <td style={{ padding: '8px 16px', overflow: 'hidden' }}>
@@ -1704,7 +1703,7 @@ function PeopleTab() {
 
       {/* Row count */}
       {!isLoading && filtered.length > 0 && (
-        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textAlign: 'right' }}>
+        <div style={{ marginTop: 12, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textAlign: 'right' }}>
           {filtered.length === users.length
             ? `${users.length} user${users.length !== 1 ? 's' : ''}`
             : `${filtered.length} of ${users.length} users`}
@@ -1788,11 +1787,11 @@ function InvitationsTab() {
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Spinner /></div>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
               {['Email', 'Sent', 'Expires', 'Status', 'Actions'].map(h => (
-                <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{h}</th>
+                <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontSize: 'var(--ds-font-size-200)' }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -1806,8 +1805,8 @@ function InvitationsTab() {
               return (
                 <tr key={inv.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))' }}>
                   <td style={{ padding: '12px 16px', fontWeight: 500 }}>{inv.email}</td>
-                  <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.created_at).toLocaleDateString()}</td>
-                  <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.expires_at).toLocaleDateString()}</td>
+                  <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>{new Date(inv.created_at).toLocaleDateString()}</td>
+                  <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>{new Date(inv.expires_at).toLocaleDateString()}</td>
                   <td style={{ padding: '12px 16px' }}>
                     {inv.accepted_at ? (
                       <Lozenge appearance="success">Accepted</Lozenge>
@@ -1819,7 +1818,7 @@ function InvitationsTab() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     {inv.accepted_at ? (
-                      <span style={{ fontSize: 12, color: 'var(--ds-text-disabled, #A5ADBA)' }}>—</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-disabled, #A5ADBA)' }}>—</span>
                     ) : (
                       <div style={{ display: 'flex', gap: 6 }}>
                         {(isPending || expired) && (
@@ -1828,7 +1827,7 @@ function InvitationsTab() {
                             disabled={!!loading}
                             style={{
                               background: 'none', border: '1px solid var(--ds-border, #EBECF0)',
-                              borderRadius: 3, padding: '4px 8px', fontSize: 12, fontWeight: 500,
+                              borderRadius: 3, padding: '4px 8px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                               color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
                             }}
@@ -1842,7 +1841,7 @@ function InvitationsTab() {
                             disabled={!!loading}
                             style={{
                               background: 'none', border: '1px solid var(--ds-border-danger, #FF8F73)',
-                              borderRadius: 3, padding: '4px 8px', fontSize: 12, fontWeight: 500,
+                              borderRadius: 3, padding: '4px 8px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                               color: 'var(--ds-text-danger, #AE2A19)',
                               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
                             }}
@@ -1893,11 +1892,11 @@ function EmailLogTab() {
 
   return (
     <div style={{ paddingTop: 16 }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-400)' }}>
         <thead>
           <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
             {['To', 'Subject', 'Status', 'Sent'].map(h => (
-              <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{h}</th>
+              <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontSize: 'var(--ds-font-size-200)' }}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -1911,7 +1910,7 @@ function EmailLogTab() {
                   {log.status}
                 </Lozenge>
               </td>
-              <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>
+              <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-200)' }}>
                 {new Date(log.created_at).toLocaleString()}
               </td>
             </tr>
@@ -1931,7 +1930,7 @@ export default function AdminAccessPage() {
       <div style={{ padding: '24px 32px', maxWidth: 1100 }}>
         <div style={{ marginBottom: 24 }}>
           <Heading size="large">Access Management</Heading>
-          <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>
+          <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>
             Manage Catalyst user accounts, send invitations, and review email activity.
           </p>
         </div>

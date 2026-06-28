@@ -17,7 +17,7 @@ export function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   return (
     <div style={CHART_TOOLTIP_STYLE}>
       {label && (
-        <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 13 }}>{label}</div>
+        <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 'var(--ds-font-size-300)' }}>{label}</div>
       )}
       {payload.map((entry: any, i: number) => (
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>

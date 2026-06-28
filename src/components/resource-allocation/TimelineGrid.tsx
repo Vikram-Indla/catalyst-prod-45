@@ -302,7 +302,7 @@ export function TimelineGrid({
                           width: 'calc(100% - 8px)',
                           backgroundColor: 'var(--ds-background-success, #DFFCF0)',
                           color: 'var(--quality-high, #059669)',
-                          border: '1px solid #a7f3d0',
+                          border: '1px solid var(--ds-background-success, #a7f3d0)',
                         }}
                       >
                         {available}%

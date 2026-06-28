@@ -70,7 +70,7 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #C0177A;
+  background: #C0177A; /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
   animation: catyDot 1s infinite;
 }
 

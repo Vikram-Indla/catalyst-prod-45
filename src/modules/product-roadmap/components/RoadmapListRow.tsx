@@ -99,15 +99,15 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       <div className="flex-1 min-w-0 pl-1">
         <div className="flex items-center gap-1.5">
           {/* ID */}
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700, color: typeColor, letterSpacing: '0.02em' }} className="flex-shrink-0">
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: typeColor, letterSpacing: '0.02em' }} className="flex-shrink-0">
             {item.request_key}
           </span>
           {/* P0 badge */}
           {isCritical && (
-            <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-danger, #EF4444)', borderRadius: 4, padding: '1px 4px' }}>P0</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-danger, #EF4444)', borderRadius: 4, padding: '1px 4px' }}>P0</span>
           )}
           {/* Title */}
-          <span className="truncate" style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', letterSpacing: '-0.01em' }}>
+          <span className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', letterSpacing: '-0.01em' }}>
             {item.title}
           </span>
         </div>
@@ -121,7 +121,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
             width: 28, height: 28,
             background: avatarColor,
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            fontSize: 10,
+            fontSize: 'var(--ds-font-size-50)',
             fontWeight: 700,
             letterSpacing: '0.02em',
             boxShadow: '0 0 0 2px var(--ds-surface, #FFFFFF)',

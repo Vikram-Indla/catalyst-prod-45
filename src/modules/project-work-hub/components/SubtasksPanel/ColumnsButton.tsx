@@ -105,7 +105,7 @@ export function ColumnsButton({ columns, onChange }: ColumnsButtonProps) {
                 background: 'transparent',
                 border: 'none',
                 cursor: disabled ? 'not-allowed' : 'pointer',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: 'var(--ds-text, #172B4D)',
                 textAlign: 'left',
                 opacity: disabled ? 0.5 : 1,

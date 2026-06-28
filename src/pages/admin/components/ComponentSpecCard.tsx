@@ -72,7 +72,7 @@ function CategoryBadge({ category }: { category: ComponentRegistryEntry['categor
   return (
     <span
       style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
         padding: '2px 8px',
         borderRadius: 3,
@@ -95,7 +95,7 @@ function VscodeLink({ path, label }: { path: string; label?: string }) {
         color: token('color.link', 'var(--ds-link, #0C66E4)'),
         textDecoration: 'none',
         fontFamily: 'var(--ds-font-family-code)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
       }}
     >
       {label ?? path}
@@ -115,7 +115,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
           overflow: 'hidden',
         }}
       >
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-300)' }}>
           <thead>
             <tr style={{ background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)') }}>
               <th style={{ textAlign: 'left', padding: token('space.100', '8px'), fontWeight: 600 }}>Flag</th>
@@ -130,7 +130,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                   style={{
                     padding: token('space.100', '8px'),
                     fontFamily: 'var(--ds-font-family-code)',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     verticalAlign: 'top',
                   }}
@@ -174,7 +174,7 @@ function ConsumerList({ name }: { name: string }) {
       <div
         style={{
           color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontStyle: 'italic',
         }}
       >
@@ -199,7 +199,7 @@ function ConsumerList({ name }: { name: string }) {
         <Heading size="xsmall">Consumers</Heading>
         <Badge>{consumers.length}</Badge>
         {variants.length > 1 && (
-          <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
             across {variants.length} import source{variants.length === 1 ? '' : 's'}
           </span>
         )}
@@ -271,7 +271,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
           <Heading size="large">{entry.name}</Heading>
           <StatusBadge status={entry.status} />
           <CategoryBadge category={entry.category} />
-          <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
             v{entry.version}
           </span>
         </div>
@@ -286,7 +286,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
           <div
             style={{
               marginTop: token('space.075', '6px'),
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
@@ -302,7 +302,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
               rel="noreferrer"
               style={{
                 color: token('color.link', 'var(--ds-link, #0C66E4)'),
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 textDecoration: 'none',
               }}
             >
@@ -315,7 +315,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
           <p
             style={{
               marginTop: token('space.200', '16px'),
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: '20px',
               color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             }}
@@ -332,7 +332,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
             borderRadius: 6,
             background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
             color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)'),
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           Deprecated. Migrate consumers to{' '}
@@ -365,7 +365,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
             <span
               key={tag}
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 padding: '2px 8px',
                 borderRadius: 12,
                 background: token('color.background.neutral', '#091E420F'),

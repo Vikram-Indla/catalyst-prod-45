@@ -538,7 +538,7 @@ function MenuRow({
           ? 'var(--ds-text-danger, #AE2A19)'
           : 'var(--ds-text, #172B4D)',
         cursor: 'pointer',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         textAlign: 'left',
       }}
     >
@@ -620,7 +620,7 @@ function BorderMenu({
           '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
       }}
     >
-      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 6 }}>Color</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 6 }}>Color</div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
         {COLORS.map((c) => (
           <button
@@ -642,7 +642,7 @@ function BorderMenu({
           />
         ))}
       </div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 6 }}>Size</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 6 }}>Size</div>
       <div style={{ display: 'flex', gap: 6 }}>
         {SIZES.map(([s, icon]) => (
           <button

@@ -64,7 +64,7 @@ function Chip({ ev, onClick, pred }: { ev: CalendarEvent; onClick: () => void; p
     <button
       onClick={onClick}
       title={ev.label}
-      style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', textAlign: 'left', background: T.sunken, color: T.text, boxShadow: `inset 2px 0 0 ${RAIL[ev.lane]}`, border: 'none', cursor: ev.link ? 'pointer' : 'default', fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, borderRadius: 4, padding: '0 4px', marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', lineHeight: '16px' }}
+      style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', textAlign: 'left', background: T.sunken, color: T.text, boxShadow: `inset 2px 0 0 ${RAIL[ev.lane]}`, border: 'none', cursor: ev.link ? 'pointer' : 'default', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, borderRadius: 4, padding: '0 4px', marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', lineHeight: '16px' }}
     >
       {showPred && <span style={{ width: 6, height: 6, borderRadius: '50%', flex: 'none', background: RISK_DOT[pred!.risk] }} />}
       <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{ev.label}</span>
@@ -78,7 +78,7 @@ function SprintBandRow({ band, pred, onClick }: { band: SprintBand; pred?: Predi
   return (
     <button
       onClick={onClick}
-      style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', background: T.sunken, color: T.text, boxShadow: `inset 3px 0 0 ${RAIL.sprint}`, border: 'none', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, borderRadius: 4, padding: '0 8px', marginTop: 4, lineHeight: '18px' }}
+      style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', background: T.sunken, color: T.text, boxShadow: `inset 3px 0 0 ${RAIL.sprint}`, border: 'none', cursor: 'pointer', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, borderRadius: 4, padding: '0 8px', marginTop: 4, lineHeight: '18px' }}
     >
       {showPred && <span style={{ width: 7, height: 7, borderRadius: '50%', flex: 'none', background: RISK_DOT[pred!.risk] }} />}
       <span style={{ color: T.text }}>{band.name}</span>
@@ -92,7 +92,7 @@ function Seg({ options, value, onChange }: { options: { v: string; label: string
   return (
     <div style={{ display: 'flex', border: `0.5px solid ${T.border}`, borderRadius: 6, overflow: 'hidden' }}>
       {options.map((o, i) => (
-        <button key={o.v} onClick={() => onChange(o.v)} style={{ padding: '4px 12px', fontFamily: RH.fontBody, fontSize: 12, cursor: 'pointer', border: 'none', borderLeft: i ? `0.5px solid ${T.border}` : 'none', background: value === o.v ? T.sunken : 'transparent', color: value === o.v ? T.text : T.subtle }}>{o.label}</button>
+        <button key={o.v} onClick={() => onChange(o.v)} style={{ padding: '4px 12px', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', cursor: 'pointer', border: 'none', borderLeft: i ? `0.5px solid ${T.border}` : 'none', background: value === o.v ? T.sunken : 'transparent', color: value === o.v ? T.text : T.subtle }}>{o.label}</button>
       ))}
     </div>
   );
@@ -173,19 +173,19 @@ export default function ReleaseCalendarPage() {
         {frozen && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: T.freeze, opacity: 0.55 }} />}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {isToday ? (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', background: T.info, borderRadius: 999, padding: '0 8px' }}>Today</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', background: T.info, borderRadius: 999, padding: '0 8px' }}>Today</span>
           ) : (
-            <span style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: inMonth ? T.subtle : T.subtlest }}>{format(day, 'd')}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: inMonth ? T.subtle : T.subtlest }}>{format(day, 'd')}</span>
           )}
         </div>
         {conflict && !compact && (
-          <div style={{ fontFamily: RH.fontBody, fontSize: 10, fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>Freeze conflict</div>
+          <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>Freeze conflict</div>
         )}
         {compact
           ? dayEvents.slice(0, 3).map((ev) => <span key={ev.id} title={ev.label} style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: RAIL[ev.lane], marginRight: 4, marginTop: 4 }} />)
           : dayEvents.slice(0, 4).map((ev) => <Chip key={`${ev.id}-${format(day, 'yyyyMMdd')}`} ev={ev} pred={predForRelease(ev)} onClick={() => onChipClick(ev)} />)}
         {!compact && dayEvents.length > 4 && (
-          <span style={{ fontFamily: RH.fontBody, fontSize: 10, color: T.subtlest, padding: '0 4px' }}>+{dayEvents.length - 4} more</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-50)', color: T.subtlest, padding: '0 4px' }}>+{dayEvents.length - 4} more</span>
         )}
       </div>
     );
@@ -195,7 +195,7 @@ export default function ReleaseCalendarPage() {
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4, marginBottom: 4 }}>
         {WEEKDAYS.map((w) => (
-          <div key={w} style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, textAlign: 'center', padding: 4 }}>{compact ? w[0] : w}</div>
+          <div key={w} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, textAlign: 'center', padding: 4 }}>{compact ? w[0] : w}</div>
         ))}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
@@ -231,19 +231,19 @@ export default function ReleaseCalendarPage() {
             {calFetching ? 'Refreshing…' : '↻ Re-run all'}
           </Button>
           <button onClick={() => setMonth((m) => subMonths(m, view === 'quarter' ? 3 : 1))} aria-label="Previous" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 6, border: `0.5px solid ${T.border}`, background: T.card, cursor: 'pointer', color: T.subtle }}><ChevronLeft size={16} /></button>
-          <button onClick={() => setMonth(startOfMonth(new Date()))} style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.text, background: T.card, border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '0 12px', height: 32, cursor: 'pointer' }}>Today</button>
-          <span style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, minWidth: 160, textAlign: 'center' }}>{view === 'quarter' ? `${format(month, 'MMM')} – ${format(addMonths(month, 2), 'MMM yyyy')}` : format(month, 'MMMM yyyy')}</span>
+          <button onClick={() => setMonth(startOfMonth(new Date()))} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.text, background: T.card, border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '0 12px', height: 32, cursor: 'pointer' }}>Today</button>
+          <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, minWidth: 160, textAlign: 'center' }}>{view === 'quarter' ? `${format(month, 'MMM')} – ${format(addMonths(month, 2), 'MMM yyyy')}` : format(month, 'MMMM yyyy')}</span>
           <button onClick={() => setMonth((m) => addMonths(m, view === 'quarter' ? 3 : 1))} aria-label="Next" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 6, border: `0.5px solid ${T.border}`, background: T.card, cursor: 'pointer', color: T.subtle }}><ChevronRight size={16} /></button>
         </div>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
         {perspective === 'project' ? (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 12, color: T.subtle }}><span style={{ width: 3, height: 11, borderRadius: 1, background: RAIL.sprint }} />Sprint</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}><span style={{ width: 3, height: 11, borderRadius: 1, background: RAIL.sprint }} />Sprint</span>
         ) : (Object.keys(LANE_LABEL) as CalendarLane[]).map((k) => (
-          <span key={k} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 12, color: T.subtle }}><span style={{ width: 3, height: 11, borderRadius: 1, background: RAIL[k] }} />{LANE_LABEL[k]}</span>
+          <span key={k} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}><span style={{ width: 3, height: 11, borderRadius: 1, background: RAIL[k] }} />{LANE_LABEL[k]}</span>
         ))}
-        <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 12, color: T.subtle }}>
+        <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>
           Health <span style={{ width: 8, height: 8, borderRadius: '50%', background: RISK_DOT.on_track }} />on track <span style={{ width: 8, height: 8, borderRadius: '50%', background: RISK_DOT.at_risk }} />at risk <span style={{ width: 8, height: 8, borderRadius: '50%', background: RISK_DOT.off_track }} />off track
         </span>
       </div>
@@ -254,7 +254,7 @@ export default function ReleaseCalendarPage() {
             const m = addMonths(month, i);
             return (
               <div key={i}>
-                <div style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 8 }}>{format(m, 'MMMM yyyy')}</div>
+                <div style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, marginBottom: 8 }}>{format(m, 'MMMM yyyy')}</div>
                 {renderMonthGrid(m, true)}
               </div>
             );
@@ -269,8 +269,8 @@ export default function ReleaseCalendarPage() {
         <div onClick={() => setPeek(null)} style={{ position: 'fixed', inset: 0, background: 'var(--ds-blanket, rgba(9,30,66,0.36))', zIndex: 400, display: 'flex', justifyContent: 'flex-end' }}>
           <div onClick={(e) => e.stopPropagation()} style={{ width: 440, maxWidth: '92vw', height: '100%', background: T.surface, borderLeft: `1px solid ${T.border}`, padding: 16, overflowY: 'auto', boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.18))' }}>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-              <span style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, flex: 1 }}>{peek.label}</span>
-              <button onClick={() => setPeek(null)} aria-label="Close" style={{ fontFamily: RH.fontBody, fontSize: 16, color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', lineHeight: 1 }}>×</button>
+              <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, flex: 1 }}>{peek.label}</span>
+              <button onClick={() => setPeek(null)} aria-label="Close" style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-500)', color: T.subtle, background: 'transparent', border: 'none', cursor: 'pointer', lineHeight: 1 }}>×</button>
             </div>
             <ReleasePredictorCard kind="sprint" id={peek.id} label={peek.label} prediction={predictions?.get(`sprint:${peek.id}`) ?? null} />
           </div>

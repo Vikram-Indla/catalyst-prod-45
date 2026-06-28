@@ -54,7 +54,7 @@ const StoryIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
 );
 const EpicIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#904EE2"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-discovery-bold, #904EE2)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
 );
 function JiraIcon({ type }: { type: string }) {
   const t = (type || '').toLowerCase();
@@ -143,8 +143,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         borderRadius: 12, border: '1px solid var(--divider)',
       }}>
         <div style={{ textAlign: 'center', color: 'var(--fg-3)' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No active items</div>
-          <div style={{ fontSize: 13 }}>Assigned work items will orbit here.</div>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No active items</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)' }}>Assigned work items will orbit here.</div>
         </div>
       </div>
     );
@@ -183,7 +183,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           <div key={`label-${i}`} style={{
             position: 'absolute', left: `${mx}%`, top: `${my}%`,
             transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
-            fontSize: '11px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
             padding: '2px 8px', borderRadius: '12px', border: '1px solid var(--divider)',
             whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)',
             fontVariantNumeric: 'tabular-nums',
@@ -210,8 +210,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             {getInitials(memberName)}
           </div>
         </div>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--fg-1)' }}>{memberName}</div>
-        <div style={{ fontSize: '11px', fontWeight: 500, color: 'var(--fg-2)' }}>{memberRole}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>{memberName}</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-2)' }}>{memberRole}</div>
       </div>
 
       {/* ORBITAL CARDS */}
@@ -239,11 +239,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               <span style={{ fontSize: '10.5px', fontWeight: 500, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
               {item.project_key && (
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', background: projColor }}>{item.project_key}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', background: projColor }}>{item.project_key}</span>
               )}
-              <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
+              <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
             <div style={{
               fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, var(--ds-text, #172B4D))', lineHeight: '1.35', marginBottom: '5px',
@@ -280,7 +280,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           >
             <div style={{
               width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
-              fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 'var(--ds-font-size-600)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: showDone
                 ? '0 0 0 3px var(--ds-background-success-bold, rgba(22,163,74,.25)), 0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))'
                 : '0 2px 8px var(--ds-background-success-bold, rgba(22,163,74,.3))',
@@ -314,7 +314,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{
                     width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-                    color: 'var(--ds-surface, #FFF)', fontSize: '12px', fontWeight: 700,
+                    color: 'var(--ds-surface, #FFF)', fontSize: 'var(--ds-font-size-200)', fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>✓</div>
                   <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--cp-text-primary, var(--ds-text, #172B4D))' }}>
@@ -322,7 +322,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                   </span>
                 </div>
                 <span style={{
-                  fontSize: '11px', fontWeight: 700, color: 'var(--ds-text-success, #216E4E)',
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-success, #216E4E)',
                   background: 'var(--ds-background-success, #DFFCF0)', padding: '2px 10px', borderRadius: '12px',
                 }}>
                   {doneCount}
@@ -367,7 +367,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                           {item.item_key}
                         </span>
                         <span style={{
-                          fontSize: '10px', fontWeight: 700, padding: '1px 5px',
+                          fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '1px 5px',
                           borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                         }}>
                           DONE
@@ -379,13 +379,13 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                       }}>
                         {item.title}
                       </div>
-                      <div style={{ fontSize: '11px', color: 'var(--fg-3)', marginTop: '2px' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: '2px' }}>
                         Resolved · {formatResolvedDate(item.resolved_at || item.updated_at)}
                       </div>
                     </div>
 
                     {/* Age */}
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--sem-success)', flexShrink: 0 }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--sem-success)', flexShrink: 0 }}>
                       {item.age_days ?? 0}d
                     </span>
                   </div>

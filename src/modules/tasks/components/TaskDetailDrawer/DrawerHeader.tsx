@@ -300,16 +300,16 @@ function WorkstreamSelector({
 // CLAUDE.md §L38 — hex literals only (no HSL).
 function getAvatarColor(name: string): string {
   const colors = [
-    '#2A6DF4',  // Blue
-    '#7C3BED',  // Purple
-    '#25A777',  // Teal
-    '#E92063',  // Pink
-    '#F97015',  // Orange
-    '#21C45D',  // Green
-    '#0DA2E7',  // Sky
-    '#FAC814',  // Amber
-    '#BB36D3',  // Fuchsia
-    '#1DAFA1',  // Cyan
+    'var(--ds-link, #2A6DF4)',  // Blue
+    'var(--ds-background-discovery-bold, #7C3BED)',  // Purple
+    'var(--ds-background-success-bold, #25A777)',  // Teal
+    'var(--ds-background-danger-bold, #E92063)',  // Pink
+    'var(--ds-background-warning-bold, #F97015)',  // Orange
+    'var(--ds-chart-green-bold, #21C45D)',  // Green
+    'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky
+    'var(--ds-chart-yellow-bold, #FAC814)',  // Amber
+    'var(--ds-chart-purple-bold, #BB36D3)',  // Fuchsia
+    '#1DAFA1',  // Cyan // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   ];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {

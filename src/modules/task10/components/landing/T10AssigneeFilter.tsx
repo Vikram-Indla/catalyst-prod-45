@@ -13,8 +13,8 @@ import { getT10Initials } from '../../utils';
 // CLAUDE.md §L38 — hex literals only (no HSL).
 // Fixed 10-colour Catalyst avatar palette (shared across T10 / Mention / Sidebar).
 const AVATAR_PALETTE = [
-  '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
-  '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+  'var(--ds-link, #2A6DF4)', 'var(--ds-background-discovery-bold, #7C3BED)', 'var(--ds-background-success-bold, #25A777)', 'var(--ds-background-danger-bold, #E92063)', 'var(--ds-background-warning-bold, #F97015)',
+  'var(--ds-chart-green-bold, #21C45D)', 'var(--ds-chart-blue-bold, #0DA2E7)', 'var(--ds-chart-yellow-bold, #FAC814)', 'var(--ds-chart-purple-bold, #BB36D3)', 'var(--ds-chart-teal-bold, #1DAFA1)',
 ];
 function getAvatarColor(name: string | null): string {
   if (!name) return AVATAR_PALETTE[0];

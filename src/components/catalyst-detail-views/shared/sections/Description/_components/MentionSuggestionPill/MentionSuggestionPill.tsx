@@ -234,7 +234,7 @@ function UserChip({
         borderRadius: 4,
         background: "var(--ds-surface, #FFFFFF)",
         color: "var(--ds-text, #292A2E)",
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 500,
         cursor: "pointer",
         flexShrink: 0,
@@ -257,7 +257,7 @@ function UserChip({
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 10,
+          fontSize: 'var(--ds-font-size-50)',
           fontWeight: 600,
           overflow: "hidden",
           flexShrink: 0,
@@ -277,7 +277,7 @@ function UserChip({
         aria-hidden
         style={{
           color: "var(--ds-text-subtle, #44546F)",
-          fontSize: 16,
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 600,
           lineHeight: 1,
         }}

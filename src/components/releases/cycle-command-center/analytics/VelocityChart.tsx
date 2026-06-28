@@ -59,19 +59,19 @@ export function VelocityChart({ cycleId, days = 14 }: VelocityChartProps) {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e5e7eb)" />
               <XAxis 
                 dataKey="dateLabel" 
-                tick={{ fontSize: 11 }} 
+                tick={{ fontSize: 'var(--ds-font-size-100)' }} 
                 stroke="var(--ds-text-disabled, #8590A2)"
               />
               <YAxis 
                 yAxisId="left"
-                tick={{ fontSize: 11 }} 
+                tick={{ fontSize: 'var(--ds-font-size-100)' }} 
                 stroke="var(--ds-text-disabled, #8590A2)"
                 allowDecimals={false}
               />
               <YAxis 
                 yAxisId="right"
                 orientation="right"
-                tick={{ fontSize: 11 }} 
+                tick={{ fontSize: 'var(--ds-font-size-100)' }} 
                 stroke="var(--ds-text-disabled, #8590A2)"
                 allowDecimals={false}
               />
@@ -80,7 +80,7 @@ export function VelocityChart({ cycleId, days = 14 }: VelocityChartProps) {
                   backgroundColor: 'white', 
                   border: '1px solid var(--ds-border, #DFE1E6)',
                   borderRadius: '8px',
-                  fontSize: '12px'
+                  fontSize: 'var(--ds-font-size-200)'
                 }}
               />
               <Legend 

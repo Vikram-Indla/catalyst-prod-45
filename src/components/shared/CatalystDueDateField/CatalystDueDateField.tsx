@@ -328,7 +328,7 @@ export function CatalystDueDateField({
             color: overdue
               ? "var(--ds-text-danger, #AE2E24)"
               : "var(--ds-text, #172B4D)",
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
             lineHeight: "20px",
           }}
@@ -345,7 +345,7 @@ export function CatalystDueDateField({
       ) : (
         <span
           style={{
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
             lineHeight: "20px",
             color: "var(--ds-text-subtlest, #626F86)",

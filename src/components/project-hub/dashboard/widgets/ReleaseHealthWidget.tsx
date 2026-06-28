@@ -147,7 +147,7 @@ export default function ReleaseHealthWidget({
         background: 'transparent',
         border: 0,
         cursor: 'pointer',
-        color: token('color.link', '#0C66E4'),
+        color: token('color.link', 'var(--ds-link, #0C66E4)'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -178,7 +178,7 @@ export default function ReleaseHealthWidget({
               style={{
                 height: 56,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -221,9 +221,9 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', '#F7F8F9'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         overflow: 'hidden',
       }}
     >
@@ -262,7 +262,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 10px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         minWidth: 0,
       }}
     >
@@ -346,7 +346,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
             flex: 1,
             height: 14,
             borderRadius: 7,
-            background: token('color.background.neutral', '#F1F2F4'),
+            background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
             overflow: 'hidden',
             position: 'relative',
           }}
@@ -383,7 +383,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          color: token('color.text.subtle', '#626F86'),
+          color: token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -401,7 +401,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
               gap: 4,
               color: atRisk
                 ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
-                : token('color.text.subtle', '#626F86'),
+                : token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
             }}
           >
             {atRisk && <AlertTriangle size={11} aria-hidden />}

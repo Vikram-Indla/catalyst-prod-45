@@ -31,13 +31,13 @@ function getCellStyle(avgPct: number, isDark = false) {
   if (isDark) {
     if (avgPct >= 80) return { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.20))', text: 'var(--ds-background-success, #DFFCF0)', border: 'none' };
     if (avgPct >= 60) return { bg: 'var(--ds-background-success-bold, rgba(22,163,74,0.12))', text: 'var(--ds-background-success, #DFFCF0)', border: 'none' };
-    if (avgPct >= 40) return { bg: 'var(--ds-background-warning, rgba(217,119,6,0.12))', text: 'var(--ds-background-warning-bold, #E2B203)', border: '3px solid var(--ds-background-warning, rgba(217,119,6,0.3))' };
+    if (avgPct >= 40) return { bg: 'var(--ds-background-warning, rgba(217,119,6,0.12))', text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))', border: '3px solid var(--ds-background-warning, rgba(217,119,6,0.3))' };
     if (avgPct >= 20) return { bg: 'var(--ds-background-danger, rgba(239,68,68,0.12))', text: 'var(--ds-border-danger, #FCA5A5)', border: '3px solid var(--ds-background-danger, rgba(239,68,68,0.3))' };
     return { bg: 'var(--ds-background-danger, rgba(239,68,68,0.20))', text: 'var(--ds-border-danger, #FCA5A5)', border: '3px solid var(--ds-background-danger, rgba(239,68,68,0.4))' };
   }
-  if (avgPct >= 80) return { bg: 'var(--ds-background-success-bold, rgba(22, 163, 74, 0.20))', text: 'var(--ds-background-success-bold, #1F845A)', border: 'none' };
+  if (avgPct >= 80) return { bg: 'var(--ds-background-success-bold, rgba(22, 163, 74, 0.20))', text: 'var(--ds-background-success-bold, var(--ds-background-success-bold, #1F845A))', border: 'none' };
   if (avgPct >= 60) return { bg: 'var(--ds-background-success-bold, rgba(22, 163, 74, 0.12))', text: 'var(--ds-text-success, var(--cp-success, #16A34A))', border: 'none' };
-  if (avgPct >= 40) return { bg: 'var(--ds-background-warning, rgba(217, 119, 6, 0.12))', text: 'var(--ds-background-warning-bold, #b45309)', border: '3px solid var(--ds-background-warning, rgba(217,119,6,0.3))' };
+  if (avgPct >= 40) return { bg: 'var(--ds-background-warning, rgba(217, 119, 6, 0.12))', text: 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #b45309))', border: '3px solid var(--ds-background-warning, rgba(217,119,6,0.3))' };
   if (avgPct >= 20) return { bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.12))', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: '3px solid var(--ds-background-danger, rgba(239,68,68,0.3))' };
   return { bg: 'var(--ds-background-danger, rgba(239, 68, 68, 0.20))', text: 'var(--ds-text-danger, #991B1B)', border: '3px solid var(--ds-background-danger, rgba(239,68,68,0.4))' };
 }
@@ -75,7 +75,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
         display: 'grid', gridTemplateColumns: gridCols,
         height: 40, alignItems: 'center',
         background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${tableBorder}`,
-        fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase',
         letterSpacing: '0.05em', color: isDark ? DK.t3 : 'var(--fg-3)',
       }}>
         <span style={{ paddingLeft: 16 }}>Theme</span>
@@ -88,7 +88,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
       </div>
 
       {/* Current quarter legend */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 16px', fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-4)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 16px', fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t3 : 'var(--fg-4)' }}>
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)', marginRight: 6 }} />
         Current quarter
       </div>
@@ -116,7 +116,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
               borderRight: `1px solid ${rowBorder}`,
             }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span>
             </div>
 
             {/* Cells */}
@@ -126,7 +126,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
                 return (
                   <div key={q} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: isDark ? DK.t3 : 'var(--ds-text-disabled, #CBD5E1)', fontSize: 12,
+                    color: isDark ? DK.t3 : 'var(--ds-text-disabled, #CBD5E1)', fontSize: 'var(--ds-font-size-200)',
                     background: isDark ? 'transparent' : 'var(--bg-app)',
                     borderRight: `1px solid ${rowBorder}`,
                   }}>
@@ -153,8 +153,8 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
                     transition: 'outline 150ms, box-shadow 150ms',
                   }}
                 >
-                  <span style={{ fontSize: 18, fontWeight: 700, color: style.text, lineHeight: 1.2 }}>{avgPct}%</span>
-                  <span style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: style.text, lineHeight: 1.2 }}>{avgPct}%</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
                 </div>
               );
             })}

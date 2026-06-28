@@ -52,7 +52,7 @@ export function QuickFilterAvatars({ members, selected, onToggle }: QuickFilterA
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 cursor: 'pointer',
                 border: '2px solid white',
@@ -125,13 +125,13 @@ export function FilterDropdown({
           borderRadius: '6px',
           backgroundColor: isActive ? KANBAN_COLORS.bgSelected : KANBAN_COLORS.bgCard,
           color: isActive ? KANBAN_COLORS.gold : KANBAN_COLORS.textSecondary,
-          fontSize: '13px',
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           cursor: 'pointer',
           transition: 'all 0.15s',
         }}
       >
-        {icon && <span style={{ fontSize: '14px' }}>{icon}</span>}
+        {icon && <span style={{ fontSize: 'var(--ds-font-size-400)' }}>{icon}</span>}
         {label}
         {!singleSelect && selected?.length > 0 && (
           <span style={{
@@ -139,7 +139,7 @@ export function FilterDropdown({
             borderRadius: '12px',
             backgroundColor: KANBAN_COLORS.gold,
             color: 'white',
-            fontSize: '10px',
+            fontSize: 'var(--ds-font-size-50)',
             fontWeight: 700,
           }}>
             {selected.length}
@@ -186,7 +186,7 @@ export function FilterDropdown({
                     ? KANBAN_COLORS.bgSelected 
                     : 'transparent',
                   color: KANBAN_COLORS.textPrimary,
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'background-color 0.1s',
@@ -208,7 +208,7 @@ export function FilterDropdown({
                     backgroundColor: (opt as any)[colorKey],
                   }} />
                 )}
-                {opt.icon && <span style={{ fontSize: '14px' }}>{opt.icon}</span>}
+                {opt.icon && <span style={{ fontSize: 'var(--ds-font-size-400)' }}>{opt.icon}</span>}
                 <span style={{ fontWeight: (singleSelect ? value === opt.id : selected?.includes(opt.id)) ? 600 : 400 }}>
                   {opt.label || opt.name}
                 </span>
@@ -229,7 +229,7 @@ export function FilterDropdown({
                   borderRadius: '6px',
                   backgroundColor: 'transparent',
                   color: KANBAN_COLORS.textMuted,
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   cursor: 'pointer',
                 }}
               >
@@ -279,7 +279,7 @@ export function GroupByDropdown({ value, onChange, iconOnly }: GroupByDropdownPr
           borderRadius: '6px',
           backgroundColor: value !== 'none' ? KANBAN_COLORS.bgSelected : KANBAN_COLORS.bgCard,
           color: value !== 'none' ? KANBAN_COLORS.gold : KANBAN_COLORS.textSecondary,
-          fontSize: '13px',
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           cursor: 'pointer',
           transition: 'all 0.15s',
@@ -319,14 +319,14 @@ export function GroupByDropdown({ value, onChange, iconOnly }: GroupByDropdownPr
                   borderRadius: '6px',
                   backgroundColor: value === opt.id ? KANBAN_COLORS.bgSelected : 'transparent',
                   color: value === opt.id ? KANBAN_COLORS.gold : KANBAN_COLORS.textPrimary,
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: value === opt.id ? 600 : 400,
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'background-color 0.1s',
                 }}
               >
-                <span style={{ fontSize: '16px' }}>{opt.icon}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-500)' }}>{opt.icon}</span>
                 {opt.label}
               </button>
             ))}

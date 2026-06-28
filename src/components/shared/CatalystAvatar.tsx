@@ -53,7 +53,7 @@ const PALETTE = [
   'var(--ds-background-success-bold, #1F845A)', // green
   'var(--ds-background-discovery-bold, #6E5DC6)', // purple
   'var(--ds-link, #0C66E4)', // blue
-  '#206A83', // teal.bold
+  'var(--ds-chart-teal-bold, #206A83)', // teal.bold
 ];
 
 export function getInitials(name: string): string {

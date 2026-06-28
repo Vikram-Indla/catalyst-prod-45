@@ -97,11 +97,11 @@ export const getStatusStyle = getStatusStyleFallback;
 /** Priority config */
 export function getPriorityColor(priority: string): string {
   switch (priority?.toLowerCase()) {
-    case 'critical': return '#BE123C';
+    case 'critical': return 'var(--ds-text-danger, #BE123C)';
     case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     case 'high': return 'var(--ds-background-warning-bold, #E2B203)';
     case 'medium': return 'var(--ds-text-warning, #974F0C)';
-    case 'low': return '#57534E';
+    case 'low': return 'var(--ds-text-subtle, #57534E)';
     default: return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
   }
 }

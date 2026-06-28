@@ -3,10 +3,10 @@
  * CIO Executive Cockpit - Refined Colors
  * 
  * STATUS COLORS (Catalyst V5):
- * - Available: Teal #0d9488
+ * - Available: Teal var(--ds-chart-teal-bold, #0d9488)
  * - Optimal: Blue var(--cp-workstream-catalyst-primary, #2563eb)
- * - Over-allocated: Orange #d97706
- * - Error: Red #ef4444
+ * - Over-allocated: Orange var(--ds-background-warning-bold, #d97706)
+ * - Error: Red var(--ds-background-danger-bold, #ef4444)
  * 
  * DEPRECATED: olive, bronze, gold, champagne, grey (Golden Hour palette)
  */

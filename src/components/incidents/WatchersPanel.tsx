@@ -59,7 +59,7 @@ export function WatchersPanel({
       <Button 
         variant="ghost" 
         size="sm" 
-        className="w-full mt-2 h-8 text-[var(--ds-text-brand,#3b82f6)] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.1))] dark:text-[var(--ds-text-brand,#60a5fa)] dark:hover:text-[var(--ds-background-information, #E9F2FF)]"
+        className="w-full mt-2 h-8 text-[var(--ds-text-brand,#3b82f6)] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-information-bold, rgba(59,130,246,0.1))] dark:text-[var(--ds-text-brand,#60a5fa)] dark:hover:text-[var(--ds-background-information, var(--ds-background-information, #E9F2FF))]"
         onClick={onAddWatcher}
       >
         <Plus className="w-3.5 h-3.5 mr-1" />

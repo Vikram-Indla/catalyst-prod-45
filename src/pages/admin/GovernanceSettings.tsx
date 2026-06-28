@@ -155,8 +155,8 @@ export default function GovernanceSettings() {
           style={{
             borderColor: 'var(--cp-border-default)',
             backgroundColor: localEnforceStrictly
-              ? 'rgba(31, 132, 90, 0.04)'
-              : 'rgba(212, 53, 28, 0.04)',
+              ? 'rgba(31, 132, 90, 0.04)' // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+              : 'rgba(212, 53, 28, 0.04)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
           }}
         >
           <div className="flex items-start justify-between mb-4">

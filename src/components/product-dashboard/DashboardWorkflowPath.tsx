@@ -45,7 +45,7 @@ export function DashboardWorkflowPath() {
     >
       <span
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
           color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
           whiteSpace: 'nowrap',
@@ -101,7 +101,7 @@ export function DashboardWorkflowPath() {
                 />
                 <span
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 500,
                     color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                     whiteSpace: 'nowrap',

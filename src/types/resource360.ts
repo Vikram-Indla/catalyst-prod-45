@@ -2,6 +2,7 @@
  * Resource 360° Drawer Types
  * Complete work context visualization for resources
  */
+import type { CatalystPriority } from '@/lib/catalyst-priority';
 
 export interface Resource360Data {
   id: string;
@@ -99,8 +100,8 @@ export type R360WorkItemType =
   | 'Test Case' | 'Test Plan' | 'Incident' | 'Release' | 'Requirement';
 
 export type R360StatusCategory = 'todo' | 'progress' | 'done';
-/** @deprecated Use CatalystPriority from '@/lib/catalyst-priority' instead. */
-export type R360Priority = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
+/** Canonical Catalyst priority (Highest..Lowest). Aliased to the single source. */
+export type R360Priority = CatalystPriority;
 export type R360ResourceRole = 'assigned' | 'reported';
 export type R360ContractType = 'Fixed' | 'Variable' | 'Freelance';
 export type R360LocationType = 'Onsite' | 'Off-Shore' | 'Hybrid';
@@ -500,8 +501,8 @@ export type StatusCategory = 'all' | 'todo' | 'progress' | 'done';
 export function getStaleIndicator(ageDays: number, status: string, statusCategory?: string): { icon: string; color: string; label: string } | null {
   const cat = getStatusCategory(status, statusCategory);
   if (cat === 'done') return null;
-  if (ageDays > 21) return { icon: '⚠️', color: 'var(--ds-text-warning, #974F0C)', label: 'Critically stale (>21d)' };
-  if (ageDays > 14) return { icon: '🔴', color: '#E23636', label: 'Stale (>14d)' };
+  if (ageDays > 21) return { icon: '⚠️', color: 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', label: 'Critically stale (>21d)' };
+  if (ageDays > 14) return { icon: '🔴', color: '#E23636', label: 'Stale (>14d)' }; // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
   return null;
 }
 

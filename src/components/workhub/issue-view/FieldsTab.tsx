@@ -14,10 +14,14 @@ interface Props {
   item?: AllWorkItem | null;
 }
 
-const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, #EF4444)', High: 'var(--ds-background-warning-bold, #E2B203)', Medium: 'var(--ds-text-brand, #3B82F6)', Low: 'var(--ds-text-success, #22C55E)', Lowest: 'var(--ds-text-subtlest, #8C8F96)',
+const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
+  Highest: { bg: 'var(--ds-background-danger-bold, #C9372C)',    text: 'var(--ds-text-inverse, #FFFFFF)' },
+  High:    { bg: 'var(--ds-background-danger, #FFECEB)',         text: 'var(--ds-text-danger, #AE2A19)' },
+  Medium:  { bg: 'var(--ds-background-warning, #FFF7D6)',        text: 'var(--ds-text-warning, #974F0C)' },
+  Low:     { bg: 'var(--ds-background-information, #E9F2FF)',    text: 'var(--ds-link, #0C66E4)' },
+  Lowest:  { bg: 'var(--ds-background-neutral, #F1F2F4)',        text: 'var(--ds-text-subtlest, #626F86)' },
 };
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 
 function formatDate(d: string | null): string {
   if (!d) return 'None';
@@ -29,7 +33,7 @@ function formatRel(d: string | null): string {
 }
 
 function Avatar({ name }: { name: string | null }) {
-  if (!name) return <span style={{ color: 'var(--aw-text-subtle)', fontSize: 13 }}>Unassigned</span>;
+  if (!name) return <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>Unassigned</span>;
   const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const bg = AVATAR_COLORS[hash % AVATAR_COLORS.length];
@@ -38,9 +42,9 @@ function Avatar({ name }: { name: string | null }) {
       <div style={{
         width: 24, height: 24, borderRadius: '50%', background: bg,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)', flexShrink: 0,
+        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface, #fff)', flexShrink: 0,
       }}>{initials}</div>
-      <span style={{ fontSize: 13, color: 'var(--aw-text)' }}>{name}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--aw-text)' }}>{name}</span>
     </div>
   );
 }
@@ -48,10 +52,10 @@ function Avatar({ name }: { name: string | null }) {
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 12px', minHeight: 32 }}>
-      <span style={{ width: 120, flexShrink: 0, fontSize: 12, fontWeight: 500, color: 'var(--aw-text-subtle)' }}>
+      <span style={{ width: 120, flexShrink: 0, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--aw-text-subtle)' }}>
         {label}
       </span>
-      <div style={{ flex: 1, minWidth: 0, fontSize: 13, color: 'var(--aw-text)' }}>
+      <div style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-300)', color: 'var(--aw-text)' }}>
         {children}
       </div>
     </div>
@@ -72,7 +76,7 @@ function FieldGroup({ title, children }: { title: string; children: React.ReactN
 }
 
 function EmptyVal() {
-  return <span style={{ color: 'var(--aw-text-subtle)', fontSize: 13 }}>None</span>;
+  return <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>None</span>;
 }
 
 export function FieldsTab({ issueKey, isDark, item }: Props) {
@@ -124,9 +128,9 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
         <FieldRow label="Parent">
           {item.parent_key ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: 'var(--aw-blue)', fontWeight: 600, fontSize: 12 }}>{item.parent_key}</span>
+              <span style={{ color: 'var(--aw-blue)', fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>{item.parent_key}</span>
               {item.parent_summary && (
-                <span style={{ color: 'var(--aw-text-subtle)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {item.parent_summary}
                 </span>
               )}
@@ -141,7 +145,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
           {item.jira_created_at ? (
             <div>
               <span>{formatDate(item.jira_created_at)}</span>
-              <span style={{ color: 'var(--aw-text-subtle)', fontSize: 11, marginLeft: 6 }}>({formatRel(item.jira_created_at)})</span>
+              <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-100)', marginLeft: 6 }}>({formatRel(item.jira_created_at)})</span>
             </div>
           ) : <EmptyVal />}
         </FieldRow>
@@ -149,7 +153,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
           {item.jira_updated_at ? (
             <div>
               <span>{formatDate(item.jira_updated_at)}</span>
-              <span style={{ color: 'var(--aw-text-subtle)', fontSize: 11, marginLeft: 6 }}>({formatRel(item.jira_updated_at)})</span>
+              <span style={{ color: 'var(--aw-text-subtle)', fontSize: 'var(--ds-font-size-100)', marginLeft: 6 }}>({formatRel(item.jira_updated_at)})</span>
             </div>
           ) : <EmptyVal />}
         </FieldRow>
@@ -172,7 +176,7 @@ export function FieldsTab({ issueKey, isDark, item }: Props) {
               {item.labels.map(l => (
                 <span key={l} style={{
                   display: 'inline-flex', padding: '2px 8px', borderRadius: 4,
-                  fontSize: 11, fontWeight: 500,
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                   background: 'var(--aw-hover)', color: 'var(--aw-text)',
                 }}>{l}</span>
               ))}

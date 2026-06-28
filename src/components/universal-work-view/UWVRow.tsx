@@ -40,7 +40,7 @@ const CELL_BASE: React.CSSProperties = {
   alignItems: 'center',
   height: JIRA_ROW_HEIGHT,
   padding: '0 8px',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 400,
   color: 'var(--ds-text, #172B4D)',
   overflow: 'hidden',
@@ -76,7 +76,7 @@ function KeyLink({ keyText, onClick }: { keyText: string; onClick: () => void })
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 600,
         color: 'var(--cp-blue)',
         fontFamily: 'var(--cp-font-mono)',
@@ -159,7 +159,7 @@ function renderCell(
           dir="auto"
           style={{
             color: 'var(--ds-text, #172B4D)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 400,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -181,7 +181,7 @@ function renderCell(
         <span
           style={{
             color: 'var(--ds-text-subtle, #505258)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -200,7 +200,7 @@ function renderCell(
             background: c.bg,
             color: c.text,
             border: `1px solid ${c.border}20`,
-            fontSize: 10,
+            fontSize: 'var(--ds-font-size-50)',
             fontWeight: 600,
             padding: '2px 8px',
             borderRadius: 3,
@@ -226,7 +226,7 @@ function renderCell(
         <span
           style={{
             color: 'var(--ds-text-subtle, #505258)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontFamily: 'var(--cp-font-mono)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -240,7 +240,7 @@ function renderCell(
       const display = item.assigneeName ?? null;
       if (!display) {
         return (
-          <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 12, fontStyle: 'italic' }}>
+          <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 'var(--ds-font-size-200)', fontStyle: 'italic' }}>
             Unassigned
           </span>
         );
@@ -255,7 +255,7 @@ function renderCell(
           />
           <span
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text, #172B4D)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -276,7 +276,7 @@ function renderCell(
             alignItems: 'center',
             gap: 6,
             color: 'var(--ds-text-subtlest, #6B6E76)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -297,7 +297,7 @@ function renderCell(
         <span
           style={{
             color: overdue ? 'var(--sem-danger)' : 'var(--ds-text-subtle, #505258)',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           {formatDate(item.dueDate)}
@@ -306,7 +306,7 @@ function renderCell(
     }
     case 'created':
       return (
-        <span style={{ color: 'var(--ds-text-subtle, #505258)', fontSize: 13 }}>
+        <span style={{ color: 'var(--ds-text-subtle, #505258)', fontSize: 'var(--ds-font-size-300)' }}>
           {formatDate(item.created)}
         </span>
       );
@@ -315,7 +315,7 @@ function renderCell(
         <span
           style={{
             color: 'var(--ds-text-subtle, #505258)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--cp-font-mono)',
             maxWidth: 260,
             overflow: 'hidden',
@@ -342,8 +342,8 @@ export const UWVRow = React.memo(function UWVRow({
   onToggleExpand,
   onClick,
 }: UWVRowProps) {
-  const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 #E4E6EA';
-  const restShadow = 'inset 0 -1px 0 0 #E4E6EA';
+  const selectedShadow = 'inset 3px 0 0 var(--ds-link, #0C66E4), inset 0 -1px 0 0 var(--ds-border, #E4E6EA)';
+  const restShadow = 'inset 0 -1px 0 0 var(--ds-border, #E4E6EA)';
 
   return (
     <div
@@ -360,7 +360,7 @@ export const UWVRow = React.memo(function UWVRow({
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, #F7F8F9)';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))';
         }
       }}
       onMouseLeave={(e) => {
