@@ -319,7 +319,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   cursor: 'pointer',
-                  padding: '2px 4px',
+                  padding: '0px 4px',
                   fontFamily: 'inherit',
                 }}
               >
@@ -497,7 +497,7 @@ function Section({
           fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           color: token('color.text', 'var(--ds-text)'),
-          marginBottom: 10,
+          marginBottom: 8,
         }}
       >
         {label}
@@ -628,7 +628,7 @@ function StatusChipGrid({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              padding: '6px 12px',
+              padding: '4px 12px',
               borderRadius: 16,
               border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link)') : token('color.border', 'var(--ds-border)')}`,
               background: isSel ? token('color.background.selected', 'var(--ds-background-selected)') : token('elevation.surface', 'var(--ds-surface)'),
@@ -704,7 +704,7 @@ function WorkTypeChipGrid({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              padding: '6px 12px',
+              padding: '4px 12px',
               borderRadius: 16,
               border: `1px solid ${isSel ? token('color.border.selected', 'var(--ds-link)') : token('color.border', 'var(--ds-border)')}`,
               background: isSel ? token('color.background.selected', 'var(--ds-background-selected)') : token('color.background.neutral.subtle', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle))'),

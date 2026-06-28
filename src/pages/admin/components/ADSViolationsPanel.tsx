@@ -103,7 +103,7 @@ export default function ADSViolationsPanel() {
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
       }}
     >
       {label}

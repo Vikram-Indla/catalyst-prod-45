@@ -249,7 +249,7 @@ function ColorBtn({ editor }: { editor: Editor }) {
         className="jde-tb-btn"
         title="Text color"
       >
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
           <Type size={13} />
           <div style={{ width: 12, height: 3, borderRadius: 1, background: currentColor ?? 'var(--cp-text-primary, var(--cp-text-inverse))' }} />
         </div>
@@ -313,7 +313,7 @@ function LinkBtn({ editor }: { editor: Editor }) {
       </TbBtn>
       {open && (
         <div className="jde-link-dialog">
-          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, marginBottom: 6, color: 'var(--ds-text-subtle)' }}>Link URL</div>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, marginBottom: 4, color: 'var(--ds-text-subtle)' }}>Link URL</div>
           <input
             ref={inputRef}
             value={url}
@@ -322,7 +322,7 @@ function LinkBtn({ editor }: { editor: Editor }) {
             placeholder="https://example.com"
             className="jde-link-input"
           />
-          <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+          <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
             <button onMouseDown={e => { e.preventDefault(); apply(); }} className="jde-btn-primary">Apply</button>
             {editor.isActive('link') && (
               <button onMouseDown={e => { e.preventDefault(); editor.chain().focus().unsetLink().run(); setOpen(false); }} className="jde-btn-ghost">Remove</button>
@@ -555,7 +555,7 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
         onMouseDown={e => { e.preventDefault(); setOpen(v => !v); }}
         className="jde-tb-style-btn"
         title="Improve"
-        style={{ color: 'var(--cp-purple-60)', gap: 3 }}
+        style={{ color: 'var(--cp-purple-60)', gap: 4 }}
       >
         <Sparkles size={13} style={{ color: 'var(--cp-purple-60)' }} />
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--cp-purple-60)' }}>Improve</span>

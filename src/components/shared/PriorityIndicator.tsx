@@ -54,7 +54,7 @@ interface PriorityBarsProps {
 export function PriorityBars({ priority, isDark = false, barWidth = 4, barHeight = 14 }: PriorityBarsProps) {
   const cfg = PRIORITY_MAP[priority];
   return (
-    <span style={{ display: 'inline-flex', gap: 2, alignItems: 'flex-end', flexShrink: 0 }}>
+    <span style={{ display: 'inline-flex', gap: 0, alignItems: 'flex-end', flexShrink: 0 }}>
       {[1, 2, 3, 4].map((i) => (
         <span
           key={i}
@@ -96,7 +96,7 @@ export function PriorityIndicator({
   const cfg = PRIORITY_MAP[p];
 
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
       <PriorityBars priority={p} isDark={isDark} barWidth={barWidth} barHeight={barHeight} />
       {showLabel && (
         <span style={{

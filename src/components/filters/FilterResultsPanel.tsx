@@ -445,10 +445,10 @@ export function FilterResultsPanel({
             <span key={i} style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 2,
+              gap: 0,
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
-              padding: '2px 6px',
+              padding: '0px 6px',
               borderRadius: 3,
               background: `var(--ds-background-neutral)`,
               color: token('color.text.subtle'),

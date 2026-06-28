@@ -265,7 +265,7 @@ function SystemFolderItem({ label, selected, onClick }: {
       onClick={onClick}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClick(); }}
       style={{
-        padding: '6px 12px', cursor: 'pointer',
+        padding: '4px 12px', cursor: 'pointer',
         background: selected ? 'var(--ds-background-selected)' : 'transparent',
         color: selected ? 'var(--ds-text-selected)' : 'var(--ds-text)',
         fontSize: 'var(--ds-font-size-300)', display: 'flex', alignItems: 'center', gap: 8, userSelect: 'none',
@@ -358,7 +358,7 @@ function FolderNode({
           <span
             style={{
               flexShrink: 0, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, minWidth: 18, textAlign: 'center',
-              padding: '0 6px', borderRadius: 10, marginRight: 2,
+              padding: '0 6px', borderRadius: 10, marginRight: 0,
               background: 'var(--ds-background-neutral)', color: 'var(--ds-text-subtle)',
             }}
             title={`${rollupCount} case${rollupCount === 1 ? '' : 's'} (incl. subfolders)`}
@@ -376,7 +376,7 @@ function FolderNode({
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
                   color: 'var(--ds-text-subtlest)',
-                  padding: 2, display: 'flex', alignItems: 'center',
+                  padding: 0, display: 'flex', alignItems: 'center',
                   borderRadius: 3, flexShrink: 0, opacity: 0,
                   transition: 'opacity 0.1s',
                 }}
@@ -422,14 +422,14 @@ function FolderNode({
           <ModalFooter>
             <button
               onClick={() => setConfirmingDelete(false)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 12px', fontWeight: 500, color: 'var(--ds-text-subtle)' }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 12px', fontWeight: 500, color: 'var(--ds-text-subtle)' }}
             >
               Cancel
             </button>
             <button
               onClick={() => { handleDelete(); setConfirmingDelete(false); }}
               disabled={deleteFolder.isPending}
-              style={{ background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '6px 14px', fontWeight: 600 }}
+              style={{ background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '4px 14px', fontWeight: 600 }}
             >
               {deleteFolder.isPending ? 'Deleting…' : 'Delete'}
             </button>
@@ -520,7 +520,7 @@ function CaseStatusPill({ status }: { status: CaseStatus }) {
 function PriorityChip({ priority }: { priority: TMCasePriority }) {
   return (
     <span style={{
-      fontSize: 'var(--ds-font-size-100)', padding: '2px 8px', borderRadius: 12,
+      fontSize: 'var(--ds-font-size-100)', padding: '0px 8px', borderRadius: 12,
       background: 'var(--ds-background-neutral)',
       color: 'var(--ds-text-subtle)', fontWeight: 500,
     }}>
@@ -537,28 +537,28 @@ const labelStyle: React.CSSProperties = {
 };
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '6px 8px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
+  width: '100%', padding: '4px 8px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
   border: '2px solid var(--ds-border-focused)',
   background: 'var(--ds-surface)',
   color: 'var(--ds-text)', outline: 'none', boxSizing: 'border-box',
 };
 
 const selectStyle: React.CSSProperties = {
-  width: '100%', padding: '6px 8px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
+  width: '100%', padding: '4px 8px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
   border: '2px solid var(--ds-border)',
   background: 'var(--ds-surface)',
   color: 'var(--ds-text)', outline: 'none', boxSizing: 'border-box',
 };
 
 const cancelBtnStyle: React.CSSProperties = {
-  padding: '6px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
+  padding: '4px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
   border: '2px solid var(--ds-border)',
   background: 'var(--ds-surface)',
   color: 'var(--ds-text)', cursor: 'pointer',
 };
 
 const primaryBtnStyle = (disabled: boolean): React.CSSProperties => ({
-  padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
+  padding: '4px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
   border: 'none',
   background: disabled ? 'var(--ds-background-disabled)' : 'var(--ds-background-brand-bold)',
   color: disabled ? 'var(--ds-text-disabled)' : 'var(--ds-text-inverse)',
@@ -688,7 +688,7 @@ export default function RepositoryPage() {
       width: 8,
       alwaysVisible: true,
       cell: ({ row }) => (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
           <WorkItemTypeIcon type="test-case" size={14} />
           <span style={{
             fontFamily: 'var(--ds-font-family-code, monospace)',
@@ -811,7 +811,7 @@ export default function RepositoryPage() {
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: 'var(--ds-text-subtlest)',
-                padding: 2, display: 'flex', alignItems: 'center',
+                padding: 0, display: 'flex', alignItems: 'center',
               }}
             >
               <Plus size={13} />
@@ -840,7 +840,7 @@ export default function RepositoryPage() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Search + actions bar */}
           <div style={{
-            padding: '10px 16px',
+            padding: '8px 16px',
             borderBottom: '1px solid var(--ds-border)',
             display: 'flex', alignItems: 'center', gap: 12,
             background: 'var(--ds-surface)',
@@ -870,12 +870,12 @@ export default function RepositoryPage() {
               <button
                 onClick={() => { setSelectMode(s => !s); setSelectedIds(new Set()); }}
                 style={{
-                  padding: '6px 10px',
+                  padding: '4px 10px',
                   background: selectMode ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
                   color: selectMode ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
                   border: '1px solid var(--ds-border)',
                   borderRadius: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  display: 'flex', alignItems: 'center', gap: 4,
                 }}
               >
                 <Edit2 size={13} />
@@ -884,11 +884,11 @@ export default function RepositoryPage() {
               <button
                 onClick={() => { setEditingCase(null); setDrawerOpen(true); }}
                 style={{
-                  padding: '6px 12px',
+                  padding: '4px 12px',
                   background: 'var(--ds-background-brand-bold)',
                   color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4,
                   fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  display: 'flex', alignItems: 'center', gap: 4,
                 }}
               >
                 <Plus size={14} />
@@ -975,7 +975,7 @@ export default function RepositoryPage() {
           <ModalFooter>
             <button
               onClick={() => setCaseToDelete(null)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 12px', fontWeight: 500, color: 'var(--ds-text-subtle)' }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 12px', fontWeight: 500, color: 'var(--ds-text-subtle)' }}
             >
               Cancel
             </button>
@@ -985,7 +985,7 @@ export default function RepositoryPage() {
                 setCaseToDelete(null);
               }}
               disabled={deleteCase.isPending}
-              style={{ background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '6px 14px', fontWeight: 600 }}
+              style={{ background: 'var(--ds-background-danger-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '4px 14px', fontWeight: 600 }}
             >
               {deleteCase.isPending ? 'Deleting…' : 'Delete'}
             </button>

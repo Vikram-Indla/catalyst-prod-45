@@ -97,7 +97,7 @@ describe('computeCatyState — state buckets', () => {
 
 describe('computeCatyState — personalised across every work item type', () => {
   it('weights change requests, bugs and gaps into the score', () => {
-    const m = computeCatyState(sig({ changeRequestsOpen: 1, bugsOpen: 3, gapsOpen: 1, totalOpen: 10 }));
+    const m = computeCatyState(sig({ changeRequestsOpen: 1, bugsOpen: 3, gapsOpen: 0, totalOpen: 10 }));
     // 1×2 + 3×1 + 1×1 = 6
     expect(m.score).toBe(1 * WEIGHTS.changeRequestsOpen + 3 * WEIGHTS.bugsOpen + 1 * WEIGHTS.gapsOpen);
     expect(m.state).toBe('focused');

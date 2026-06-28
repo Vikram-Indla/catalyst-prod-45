@@ -142,7 +142,7 @@ export function ProjectPageHeader({
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        gap: 2,
+        gap: 0,
         minHeight: 56,
         flexShrink: 0,
       }}

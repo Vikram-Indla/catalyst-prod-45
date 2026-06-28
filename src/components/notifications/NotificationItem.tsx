@@ -458,7 +458,7 @@ function NotificationItemInner({
         marginBottom: 8,
       }}
     >
-      <div style={{ display: "flex", gap: 10 }}>
+      <div style={{ display: "flex", gap: 8 }}>
         {/* C-03: Avatar */}
         {renderAvatar()}
 
@@ -496,7 +496,7 @@ function NotificationItemInner({
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 6,
+                gap: 4,
                 flexShrink: 0,
               }}
             >
@@ -565,7 +565,7 @@ function NotificationItemInner({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 6,
+              gap: 4,
               marginTop: 4,
             }}
           >
@@ -597,7 +597,7 @@ function NotificationItemInner({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 6,
+              gap: 4,
               marginTop: 4,
             }}
           >
@@ -650,7 +650,7 @@ function NotificationItemInner({
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 6,
+                gap: 4,
                 marginTop: 8,
                 background: "var(--ds-background-warning, rgba(217,119,6,.08))",
                 borderRadius: 4,

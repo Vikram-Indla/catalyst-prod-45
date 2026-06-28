@@ -56,7 +56,7 @@ export function ReleaseDeleteDialog({ isOpen, release, onClose, onSuccess, confi
             <ModalTitle>Delete {config.label.lowerSingular}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
                 You are about to permanently delete <strong>{release.name}</strong>. This action cannot be undone.
               </p>

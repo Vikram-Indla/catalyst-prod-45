@@ -325,7 +325,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
       defaultVisible: true,
       accessor: f => f.name,
       cell: ({ row: f }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, overflow: 'hidden' }}>
           <Link
             to={detailHref(f)}
             onClick={e => e.stopPropagation()}

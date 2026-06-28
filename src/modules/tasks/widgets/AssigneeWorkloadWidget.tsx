@@ -70,7 +70,7 @@ export default function AssigneeWorkloadWidget({ collapsed, onToggleCollapse }: 
           description="Workload is clear."
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {/* Sub-header */}
           <div
             style={{

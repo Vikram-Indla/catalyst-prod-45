@@ -49,7 +49,7 @@ export function DraftsAndSentTabs({
             onClick={() => onSelect(t.id)}
             style={{
               position: 'relative',
-              padding: '10px 12px',
+              padding: '8px 12px',
               background: 'transparent',
               border: 'none',
               borderBottom: isActive
@@ -63,7 +63,7 @@ export function DraftsAndSentTabs({
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
             }}
           >
             {t.label}

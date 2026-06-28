@@ -106,7 +106,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
         </div>
 
         {/* Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
           {children}
         </div>
       </div>

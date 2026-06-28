@@ -198,8 +198,8 @@ export function AtlaskitAvatar({
         <span
           style={{
             position: 'absolute',
-            bottom: '2px',
-            right: '2px',
+            bottom: '0px',
+            right: '0px',
             width: `${Math.max(6, Math.round(effectivePixelSize * 0.25))}px`,
             height: `${Math.max(6, Math.round(effectivePixelSize * 0.25))}px`,
             borderRadius: '50%',

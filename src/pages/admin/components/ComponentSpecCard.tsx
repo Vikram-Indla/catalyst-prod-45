@@ -74,7 +74,7 @@ function CategoryBadge({ category }: { category: ComponentRegistryEntry['categor
       style={{
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
-        padding: '2px 8px',
+        padding: '0px 8px',
         borderRadius: 3,
         background: token('color.background.neutral', '#091E420F'),
         color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
@@ -218,7 +218,7 @@ function ConsumerList({ name }: { name: string }) {
           const hub = getHubForConsumer(path);
           const hubColor = SPEC_HUB_COLORS[hub] ?? 'var(--ds-text-disabled)';
           return (
-            <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span
                 title={hub}
                 style={{
@@ -366,7 +366,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
               key={tag}
               style={{
                 fontSize: 'var(--ds-font-size-100)',
-                padding: '2px 8px',
+                padding: '0px 8px',
                 borderRadius: 12,
                 background: token('color.background.neutral', '#091E420F'),
                 color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),

@@ -78,7 +78,7 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
 
   const inputStyle = (focused: boolean, error: boolean): React.CSSProperties => ({
     width: '100%',
-    padding: '6px 8px',
+    padding: '4px 8px',
     fontSize: 'var(--ds-font-size-400)',
     fontFamily: 'var(--cp-font-body)',
     color: 'var(--ds-text)',
@@ -187,7 +187,7 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
           onClick={handleSubmit}
           disabled={!canSubmit}
           style={{
-            padding: '6px 14px',
+            padding: '4px 14px',
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: canSubmit
@@ -220,7 +220,7 @@ export const WebLinkForm = forwardRef<WebLinkFormHandle, WebLinkFormProps>(funct
           style={{
             background: 'transparent',
             border: 'none',
-            padding: '6px 12px',
+            padding: '4px 12px',
             fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: 'var(--ds-text-subtle)',

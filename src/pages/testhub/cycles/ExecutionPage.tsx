@@ -559,7 +559,7 @@ function StepRunner({
       {/* Offline banner */}
       {(!isOnline || offlineQueueCount > 0) && (
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 10,
+          display: 'flex', alignItems: 'center', gap: 8,
           padding: '8px 14px', marginBottom: 12, borderRadius: 6,
           background: isOnline
             ? 'var(--ds-background-warning)'
@@ -590,7 +590,7 @@ function StepRunner({
         }}>
           {timer.fmt(timer.elapsed)}
         </span>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 4 }}>
           {!timer.running ? (
             <button onClick={timer.start} style={timerBtnStyle('var(--ds-text-success)')}>▶ Start</button>
           ) : (

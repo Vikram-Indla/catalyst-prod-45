@@ -43,7 +43,7 @@ function RunningCard({ r, onCancel }: { r: RunState; onCancel: () => void }) {
       </div>
 
       {thinking ? (
-        <div style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 9, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>
+        <div style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>
           <span style={{ color: T.link, animation: 'cc-spin 1s linear infinite', display: 'inline-flex' }}><Icon path={ICONS.spinner} size={15} w={2.4} /></span>
           Understanding your request…
         </div>
@@ -54,7 +54,7 @@ function RunningCard({ r, onCancel }: { r: RunState; onCancel: () => void }) {
             let detail = kind === 'done' ? 'Done' : kind === 'active' ? 'Working…' : 'Waiting';
             if (label.startsWith('Applying')) detail = kind === 'done' ? (r.bulk ? `${r.count} of ${r.count} done` : 'Applied') : kind === 'active' ? (r.bulk ? `${r.count} of ${r.count}…` : 'Applying…') : detail;
             return (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '8px 0' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
                 <StepDot kind={kind} />
                 <span style={{ fontSize: 'var(--ds-font-size-300)', color: kind === 'pending' ? T.subtlest : T.text, fontWeight: kind === 'active' ? 600 : kind === 'done' ? 500 : 400 }}>{label}</span>
                 <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{detail}</span>
@@ -95,12 +95,12 @@ function HistoryCard({ h, onAgain, onBulk }: { h: ConfirmationEntry; onAgain: ()
         <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, marginBottom: 8, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>"{h.request}"</div>
         <div style={{ fontSize: 'var(--ds-font-size-300)', color: T.text, lineHeight: 1.5 }}>{h.summary}</div>
         {h.novel && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 8, fontSize: 'var(--ds-font-size-200)', color: T.textDiscovery, background: T.bgDiscovery, borderRadius: 6, padding: '8px 8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, fontSize: 'var(--ds-font-size-200)', color: T.textDiscovery, background: T.bgDiscovery, borderRadius: 6, padding: '8px 8px' }}>
             <span style={{ display: 'inline-flex', flex: '0 0 auto' }}><Icon path={ICONS.spark} size={14} fill={T.textDiscovery} /></span>
             Saved so you can reuse this next time.
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 12, paddingTop: 8, borderTop: `1px solid ${T.borderSubtle}`, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12, paddingTop: 8, borderTop: `1px solid ${T.borderSubtle}`, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle }}>Audit <span style={{ fontFamily: 'var(--ds-font-family-monospace, monospace)', fontWeight: 600, color: T.text }}>{h.auditId}</span></span>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
             <Button appearance="default" onClick={onAgain}>Run again</Button>
@@ -118,7 +118,7 @@ export function AiActivityFeed({ c }: { c: Console }) {
   const empty = !c.running && c.history.length === 0;
   return (
     <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, minHeight: 340 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderBottom: `1px solid ${T.borderSubtle}` }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderBottom: `1px solid ${T.borderSubtle}` }}>
         <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>Activity</span>
         <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{empty ? 'Nothing run yet' : `${c.history.length} recent · this session`}</span>
       </div>

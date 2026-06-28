@@ -82,7 +82,7 @@ export function WorkspaceSearchModal({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: 60,
+        paddingTop: 48,
         zIndex: 'var(--cv2-modal-z, 1000)' as never,
       }}
     >
@@ -162,7 +162,7 @@ function Input({
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        padding: '14px 16px',
+        padding: '12px 16px',
         borderBottom: '1px solid var(--cv2-divider)',
       }}
     >
@@ -238,7 +238,7 @@ function EmptyState({
       {recents.length === 0 ? (
         <div
           style={{
-            padding: '14px 18px 20px',
+            padding: '12px 18px 20px',
             fontSize: 'var(--ds-font-size-300)',
             color: 'var(--cv2-text-muted)',
           }}
@@ -285,7 +285,7 @@ function TypingState({
   return (
     <>
       {people.length > 0 && (
-        <ul style={{ margin: 0, padding: '6px 0', listStyle: 'none' }}>
+        <ul style={{ margin: 0, padding: '4px 0', listStyle: 'none' }}>
           {people.map((p, idx) => (
             <PeopleRow
               key={p.id}
@@ -324,7 +324,7 @@ function TypingState({
           {peopleLoading ? 'Searching…' : 'No recent messages match.'}
         </div>
       ) : (
-        <ul style={{ margin: 0, padding: '6px 12px 14px', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <ul style={{ margin: 0, padding: '4px 12px 14px', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
           {topMessages.map(m => (
             <MessageRow key={m.id} hit={m} query={query} onSelect={onSelectMessage} />
           ))}
@@ -389,11 +389,11 @@ function MessageRow({
         onClick={() => onSelect?.({ id: hit.id, conversationId: hit.conversationId, parentId: hit.parentId })}
         style={{
           width: '100%',
-          padding: '10px 12px',
+          padding: '8px 12px',
           background: 'var(--cv2-bg-row-hover)',
           borderRadius: 8,
           display: 'flex',
-          gap: 10,
+          gap: 8,
           border: 'none',
           cursor: 'pointer',
           textAlign: 'left',
@@ -436,19 +436,19 @@ function ScopeRow({
     <button
       type="button"
       onClick={onSubmit}
-      style={{ ...rowBtnStyle(), padding: '14px 16px' }}
+      style={{ ...rowBtnStyle(), padding: '12px 16px' }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       <SearchIcon size={16} style={{ color: 'var(--cv2-text-subtle)' }} />
-      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--cv2-text)', display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: 'var(--cv2-text)', display: 'inline-flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
         Search in
         <span
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            padding: '2px 8px',
+            padding: '0px 8px',
             background: 'var(--cv2-bg-row-active)',
             color: 'var(--cv2-text-link)',
             borderRadius: 4,
@@ -493,7 +493,7 @@ function EnterChip() {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2px 10px',
+        padding: '0px 10px',
         background: 'transparent',
         color: 'var(--cv2-text-strong)',
         border: '1px solid var(--cv2-border-strong)',
@@ -511,7 +511,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        padding: '14px 18px 6px',
+        padding: '12px 18px 6px',
         fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         color: 'var(--cv2-text-muted)',
@@ -528,7 +528,7 @@ function rowBtnStyle(): React.CSSProperties {
     alignItems: 'center',
     gap: 12,
     width: '100%',
-    padding: '10px 18px',
+    padding: '8px 18px',
     background: 'transparent',
     color: 'var(--cv2-text)',
     border: 'none',
@@ -575,7 +575,7 @@ function iconBtnStyle(): React.CSSProperties {
 
 function emptyHintStyle(): React.CSSProperties {
   return {
-    padding: '14px 18px 22px',
+    padding: '12px 18px 22px',
     fontSize: 'var(--ds-font-size-300)',
     color: 'var(--cv2-text-muted)',
   };

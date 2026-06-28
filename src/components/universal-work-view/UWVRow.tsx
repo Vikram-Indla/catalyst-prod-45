@@ -82,7 +82,7 @@ function KeyLink({ keyText, onClick }: { keyText: string; onClick: () => void })
         fontFamily: 'var(--cp-font-mono)',
         textDecoration: hover ? 'underline' : 'none',
         background: hover ? 'var(--ds-background-selected)' : 'transparent',
-        padding: '1px 4px',
+        padding: '0px 4px',
         borderRadius: 3,
         whiteSpace: 'nowrap',
       }}
@@ -107,7 +107,7 @@ function renderCell(
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             minWidth: 0,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -202,7 +202,7 @@ function renderCell(
             border: `1px solid ${c.border}20`,
             fontSize: 'var(--ds-font-size-50)',
             fontWeight: 600,
-            padding: '2px 8px',
+            padding: '0px 8px',
             borderRadius: 3,
             textTransform: 'uppercase',
             letterSpacing: '0.02em',
@@ -246,7 +246,7 @@ function renderCell(
         );
       }
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
           <CatalystAvatar
             appearance="circle"
             size="small"
@@ -274,7 +274,7 @@ function renderCell(
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             color: 'var(--ds-text-subtlest)',
             fontSize: 'var(--ds-font-size-300)',
           }}

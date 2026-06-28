@@ -70,7 +70,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
           style={{
             fontSize: 'var(--ds-font-size-200)',
             color: 'var(--cv2-text-muted)',
-            marginBottom: 6,
+            marginBottom: 4,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
@@ -80,7 +80,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
             <span
               style={{
                 display: 'inline-block',
-                padding: '2px 8px',
+                padding: '0px 8px',
                 background: 'rgba(155, 89, 182, 0.25)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                 color: '#C9A4F0', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
                 borderRadius: 10,
@@ -97,7 +97,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
           <Avatar name={item.authorName} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
@@ -105,7 +105,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
                 fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 700,
                 color: 'var(--cv2-text-strong)',
-                marginBottom: 2,
+                marginBottom: 0,
               }}
             >
               {item.authorName}
@@ -146,7 +146,7 @@ export function LaterRow({ item, tab, selected, onSelect, onComplete, onSnooze, 
             right: 12,
             display: 'flex',
             alignItems: 'center',
-            gap: 2,
+            gap: 0,
             background: 'var(--cv2-bg-toolbar)',
             border: '1px solid var(--cv2-border-strong)',
             borderRadius: 8,

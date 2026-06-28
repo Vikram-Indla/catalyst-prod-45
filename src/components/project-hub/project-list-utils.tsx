@@ -76,7 +76,7 @@ export function HealthBadge({ health }: { health: string | null }) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 5,
+        gap: 4,
         height: 20,
         lineHeight: '20px',
         fontSize: 'var(--ds-font-size-100)',
@@ -116,7 +116,7 @@ export function AvatarStack({ names }: { names: string[] }) {
   const overflow = names.length - show;
 
   return (
-    <div className="flex items-center" style={{ paddingLeft: 2 }}>
+    <div className="flex items-center" style={{ paddingLeft: 0 }}>
       {names.slice(0, show).map((name, i) => (
         <div
           key={name}

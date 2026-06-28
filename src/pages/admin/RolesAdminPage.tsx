@@ -91,7 +91,7 @@ export default function RolesAdminPage() {
           {/* Main panel */}
           <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px', minWidth: 0 }}>
             {rolesLoading && !selectedRole ? (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
                 <Spinner size="large" />
               </div>
             ) : selectedRole ? (
@@ -99,7 +99,7 @@ export default function RolesAdminPage() {
                 background: 'var(--ds-surface)',
                 border: `1px solid var(--ds-border)`,
                 borderRadius: 4,
-                padding: '20px 24px',
+                padding: '16px 24px',
                 boxShadow: 'var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31))',
               }}>
                 {/* Role heading + Assign button */}
@@ -109,7 +109,7 @@ export default function RolesAdminPage() {
                       {selectedRole.name}
                     </h2>
                     {selectedRole.description && (
-                      <p style={{ margin: '2px 0 0', fontSize: 13, color: T.subtle }}>
+                      <p style={{ margin: '0px 0 0', fontSize: 13, color: T.subtle }}>
                         {selectedRole.description}
                       </p>
                     )}
@@ -132,7 +132,7 @@ export default function RolesAdminPage() {
                   </TabList>
 
                   <TabPanel>
-                    <div style={{ paddingTop: 20 }}>
+                    <div style={{ paddingTop: 16 }}>
                       <RbacUsersTable
                         users={usersData}
                         isLoading={usersLoading}
@@ -142,7 +142,7 @@ export default function RolesAdminPage() {
                   </TabPanel>
 
                   <TabPanel>
-                    <div style={{ paddingTop: 20 }}>
+                    <div style={{ paddingTop: 16 }}>
                       <PermissionsMatrix
                         roles={[selectedRole]}
                         permissions={rolePermsData}

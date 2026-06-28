@@ -87,7 +87,7 @@ export function OkrTree() {
       <div className="flex justify-end mb-2">
         <button
           onClick={toggleAll}
-          style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-blue-700)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+          style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-blue-700)', background: 'none', border: 'none', cursor: 'pointer', padding: '0px 6px' }}
         >
           {Object.values(expanded).every(Boolean) ? 'Collapse All' : 'Expand All'}
         </button>
@@ -122,13 +122,13 @@ export function OkrTree() {
               </button>
 
               {isOpen && (
-                <div style={{ paddingLeft: 20 }}>
+                <div style={{ paddingLeft: 16 }}>
                   {theme.goals.map(goal => (
                     <div
                       key={goal.id}
                       className="flex items-center gap-2"
                       style={{
-                        padding: '6px 4px',
+                        padding: '4px 4px',
                         cursor: 'pointer',
                         borderRadius: 4,
                         transition: 'background-color 120ms ease',

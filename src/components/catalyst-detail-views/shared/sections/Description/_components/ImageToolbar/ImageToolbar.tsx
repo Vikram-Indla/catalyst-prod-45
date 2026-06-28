@@ -246,7 +246,7 @@ export function ImageToolbar({
           visibility: pos ? 'visible' : 'hidden',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 2,
+          gap: 0,
           padding: 4,
           background: 'var(--ds-surface-overlay)',
           border: '1px solid var(--ds-border)',
@@ -612,7 +612,7 @@ function BorderMenu({
         top: pos.top,
         left: pos.left,
         zIndex: 2147483600,
-        padding: 10,
+        padding: 8,
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 4,
@@ -620,8 +620,8 @@ function BorderMenu({
           '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))',
       }}
     >
-      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>Color</div>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Color</div>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
         {COLORS.map((c) => (
           <button
             key={c}
@@ -642,8 +642,8 @@ function BorderMenu({
           />
         ))}
       </div>
-      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>Size</div>
-      <div style={{ display: 'flex', gap: 6 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Size</div>
+      <div style={{ display: 'flex', gap: 4 }}>
         {SIZES.map(([s, icon]) => (
           <button
             key={s}

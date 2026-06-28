@@ -87,7 +87,7 @@ const thStyle: React.CSSProperties = {
   color: 'var(--ds-text-subtle)',
 };
 
-const tdStyle: React.CSSProperties = { padding: '10px 12px' };
+const tdStyle: React.CSSProperties = { padding: '8px 12px' };
 
 // ── Add Cases Modal ───────────────────────────────────────────────────────────
 
@@ -156,8 +156,8 @@ function AddCasesModal({
       />
       <div style={{
         position: 'fixed',
-        top: '50%',
-        left: '50%',
+        top: '48%',
+        left: '48%',
         transform: 'translate(-50%, -50%)',
         width: 560,
         maxHeight: '80vh',
@@ -169,7 +169,7 @@ function AddCasesModal({
         flexDirection: 'column',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ds-border)' }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border)' }}>
           <h2 style={{ margin: '0 0 12px', fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text)' }}>
             Add cases to set
           </h2>
@@ -181,7 +181,7 @@ function AddCasesModal({
             autoFocus
             style={{
               width: '100%',
-              padding: '6px 10px',
+              padding: '4px 10px',
               border: '2px solid var(--ds-border)',
               borderRadius: 4,
               fontSize: 'var(--ds-font-size-300)',
@@ -329,7 +329,7 @@ function AddToCycleDropdown({
       }}
     >
       {cycles.length === 0 ? (
-        <div style={{ padding: '10px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
+        <div style={{ padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)' }}>
           No cycles available
         </div>
       ) : (
@@ -481,7 +481,7 @@ export default function SetDetailPage() {
               <button
                 onClick={() => setShowAddCases(true)}
                 style={{
-                  padding: '7px 14px',
+                  padding: '8px 14px',
                   background: 'none',
                   border: '1px solid var(--ds-border)',
                   borderRadius: 4,
@@ -497,7 +497,7 @@ export default function SetDetailPage() {
                   ref={addToCycleBtnRef}
                   onClick={() => setAddToCycleOpen(v => !v)}
                   style={{
-                    padding: '7px 14px',
+                    padding: '8px 14px',
                     background: 'none',
                     border: '1px solid var(--ds-border)',
                     borderRadius: 4,
@@ -520,7 +520,7 @@ export default function SetDetailPage() {
               <button
                 onClick={() => navigate(`/testhub/${projectKey}/sets`)}
                 style={{
-                  padding: '7px 14px',
+                  padding: '8px 14px',
                   background: 'none',
                   border: '1px solid var(--ds-border)',
                   borderRadius: 4,
@@ -544,13 +544,13 @@ export default function SetDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border)', marginBottom: 20 }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid var(--ds-border)', marginBottom: 16 }}>
         {(['cases', 'cycles'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
-              padding: '10px 20px',
+              padding: '8px 20px',
               border: 'none',
               background: 'none',
               cursor: 'pointer',
@@ -758,7 +758,7 @@ function EmptyState({ message, action }: { message: string; action?: React.React
   return (
     <div style={{
       textAlign: 'center',
-      padding: '64px 32px',
+      padding: '48px 32px',
       color: 'var(--ds-text-subtlest)',
       fontSize: 'var(--ds-font-size-400)',
       border: '1px dashed var(--ds-border)',

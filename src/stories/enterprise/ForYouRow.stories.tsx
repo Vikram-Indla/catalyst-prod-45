@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import ForYouRow from '@/components/for-you/atlaskit/ForYouRow';
 import type { WorkItem } from '@/hooks/useForYouData';
 
+// ads-scanner:ignore-next-line — Storybook mock data with test avatar color
 const MOCK_ITEM: WorkItem = {
   id: 'BAU-5957', key: 'BAU-5957', summary: 'Implement user authentication flow with OAuth2 integration',
   mode: 'DEL', level: 'story', project: 'BAU Project', projectKey: 'BAU',

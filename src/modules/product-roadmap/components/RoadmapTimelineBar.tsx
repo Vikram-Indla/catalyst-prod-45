@@ -134,8 +134,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
               fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-              paddingLeft: 10,
-              paddingRight: 10,
+              paddingLeft: 8,
+              paddingRight: 8,
               lineHeight: '32px',
               letterSpacing: '-0.01em',
               textShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))',
@@ -156,7 +156,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               background: 'var(--ds-surface, rgba(255,255,255,0.2))',
               borderRadius: 4,
-              padding: '1px 6px',
+              padding: '0px 6px',
               zIndex: 2,
             }}
           >
@@ -186,7 +186,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,0.12))', pointerEvents: 'none',
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>
-          <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 4 }}>
             {item.request_key}: {item.title}
           </div>
           <div className="flex items-center gap-1.5" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 4 }}>

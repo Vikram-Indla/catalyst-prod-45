@@ -86,7 +86,7 @@
   line-height: 20px;
   background: var(--c-chat-surface-sunken);
   color: var(--c-chat-text);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   margin-bottom: 8px;
   font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
 }
@@ -103,7 +103,7 @@
   gap: 4px;
   padding-bottom: 8px;
   margin-bottom: 4px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
 }
 
 .c-emoji-picker__tab {
@@ -247,7 +247,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 10vh;
+  padding-top: 8vh;
   background: var(--ds-blanket, rgba(9, 30, 66, 0.54));
 }
 
@@ -269,7 +269,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border-bottom: 1px solid var(--c-chat-border);
+  border-bottom: 0px solid var(--c-chat-border);
 }
 
 .c-forward-modal__title {
@@ -304,7 +304,7 @@
   line-height: 20px;
   background: var(--c-chat-surface-sunken);
   color: var(--c-chat-text);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
 }
 

@@ -124,7 +124,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'var(--ds-shadow-overlay, rgba(15, 23, 42, 0.3))' }} />
 
       <div style={{
-        position: 'fixed', top: '50%', left: '50%',
+        position: 'fixed', top: '48%', left: '48%',
         transform: 'translate(-50%, -50%)',
         zIndex: 70, width: 640, maxHeight: '85vh',
         background: 'var(--cp-float)', borderRadius: 12,
@@ -299,7 +299,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
 
         {/* Footer — sticky */}
         <div className="flex items-center justify-end gap-2 shrink-0" style={{
-          padding: '14px 24px', borderTop: '1px solid var(--divider)',
+          padding: '12px 24px', borderTop: '1px solid var(--divider)',
           background: 'var(--cp-float)', borderRadius: '0 0 12px 12px',
         }}>
           <button onClick={onClose} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>

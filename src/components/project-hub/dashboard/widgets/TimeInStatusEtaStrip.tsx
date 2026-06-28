@@ -80,7 +80,7 @@ export function TimeInStatusEtaStrip({
         display: 'flex',
         alignItems: 'center',
         gap: 4,
-        marginTop: 1,
+        marginTop: 0,
         fontSize: 'var(--ds-font-size-100)',
         lineHeight: '14px',
         fontWeight: 500,

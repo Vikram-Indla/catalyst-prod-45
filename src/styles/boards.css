@@ -101,7 +101,7 @@
      SPACING
      ======================================== */
   
-  --boards-page-padding: 20px;
+  --boards-page-padding: 16px;
   --boards-column-gap: 16px;
   --boards-column-width: 280px;
   --boards-card-gap: 8px;
@@ -263,7 +263,7 @@
   font-weight: 500;
   color: var(--boards-column-count-color);
   background-color: var(--ds-surface-sunken);
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: 12px;
 }
 
@@ -326,8 +326,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px;
+  gap: 4px;
+  padding: 8px;
   background-color: transparent;
   border: 1px dashed var(--ds-border);
   border-radius: var(--boards-card-radius);
@@ -462,7 +462,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 /* Task ID — Monospace, NO badge background (Linear style) */
@@ -536,7 +536,7 @@
 .boards-card__date {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   font-size: var(--boards-date-size);
   font-weight: var(--boards-date-weight);
 }
@@ -662,7 +662,7 @@
 }
 
 .boards-card__label {
-  padding: 2px 8px;
+  padding: 0px 8px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
@@ -751,7 +751,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 48px 20px;
   color: var(--ds-text-subtlest);
   font-size: 14px;
 }
@@ -887,7 +887,7 @@
   cursor: pointer;
   transition: all var(--boards-transition-normal);
   flex-shrink: 0;
-  margin-top: 44px; /* Align with column body */
+  margin-top: 40px; /* Align with column body */
 }
 
 .boards-add-column:hover {

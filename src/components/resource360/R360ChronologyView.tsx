@@ -91,7 +91,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
 
   if (items.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--fg-3)' }}>
+      <div style={{ textAlign: 'center', padding: '48px 20px', color: 'var(--fg-3)' }}>
         <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
         <div style={{ fontSize: 'var(--ds-font-size-300)' }}>Items assigned to {memberName || 'this member'} will appear here.</div>
       </div>
@@ -101,7 +101,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
   return (
     <div style={{ position: 'relative', paddingLeft: 32 }}>
       {/* Vertical timeline line */}
-      <div style={{ position: 'absolute', left: '15px', top: '28px', bottom: '20px', width: '2px', background: 'var(--divider)', borderRadius: '1px' }} />
+      <div style={{ position: 'absolute', left: '16px', top: '24px', bottom: '16px', width: '2px', background: 'var(--divider)', borderRadius: '1px' }} />
 
       {Array.from(groups.entries()).map(([dateLabel, groupItems]) => {
         const isCollapsed = collapsed.has(dateLabel);
@@ -122,15 +122,15 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
         const blockC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '', i.status_category) === 'blocked').length;
 
         return (
-          <div key={dateLabel} style={{ marginBottom: 20, position: 'relative' }}>
+          <div key={dateLabel} style={{ marginBottom: 16, position: 'relative' }}>
             {/* DATE HEADER */}
             <div onClick={() => toggleGroup(dateLabel)} style={{
-              display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer',
-              marginLeft: -32, paddingLeft: 10, marginBottom: 10, userSelect: 'none',
+              display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
+              marginLeft: -32, paddingLeft: 8, marginBottom: 8, userSelect: 'none',
             }}>
               <div style={dotStyle} />
               <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>{dateLabel}</span>
-              <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{total} items</span>
+              <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '0px 8px', borderRadius: '12px' }}>{total} items</span>
               {/* Mini bar */}
               <div style={{ display: 'flex', height: '4px', borderRadius: '4px', overflow: 'hidden', width: '80px', background: 'var(--bg-3)', flexShrink: 0 }}>
                 {doneC > 0 && <div style={{ width: `${(doneC/total)*100}%`, background: 'var(--sem-success)' }} />}
@@ -149,15 +149,15 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
 
             {/* ITEMS */}
             {!isCollapsed && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {groupItems.map((item: any) => {
                   const cat = getCatFromStatus(item.status_name || item.status || '', item.status_category);
                   const accentDot = cat === 'done' ? 'var(--ds-text-success, var(--cp-success))' : cat === 'progress' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : cat === 'blocked' ? 'var(--ds-text-danger)' : 'var(--ds-text-warning, var(--cp-warning))';
                   const projColor = pColor(item.project_key, item.project_color);
                   return (
                     <div key={item.id} onClick={() => onItemClick(item)} style={{
-                      display: 'flex', alignItems: 'flex-start', gap: '10px',
-                      padding: '10px 14px 10px 17px', background: 'var(--bg-app)',
+                      display: 'flex', alignItems: 'flex-start', gap: '8px',
+                      padding: '8px 14px 10px 17px', background: 'var(--bg-app)',
                       border: '1px solid var(--divider)', borderRadius: '8px', cursor: 'pointer', position: 'relative',
                       transition: 'border-color .15s, box-shadow .15s',
                     }}
@@ -168,16 +168,16 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: accentDot }} />
 
                       {/* Jira Icon */}
-                      <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
+                      <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '0px' }}>
                         <JiraIcon type={item.item_type} />
                       </div>
 
                       {/* Body */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0px', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                           {item.project_key && (
-                            <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
+                            <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
                           )}
                         </div>
                         <div style={{
@@ -187,7 +187,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                           {item.title}
                         </div>
                         {item.parent_key && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', marginTop: '3px', fontWeight: 500 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', marginTop: '4px', fontWeight: 500 }}>
                             ↳
                             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--fg-3)' }}>{item.parent_key}</span>
                             <span>{item.parent_title && item.parent_title.length > 40 ? item.parent_title.slice(0, 40) + '…' : item.parent_title}</span>
@@ -196,7 +196,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       </div>
 
                       {/* Right meta */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, marginTop: '2px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginTop: '0px' }}>
                         <div style={{
                           width: '20px', height: '20px', borderRadius: '50%', overflow: 'hidden',
                           background: 'var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'center',

@@ -81,7 +81,7 @@ export function Resource360Page() {
   }, [filtered]);
 
   const pillStyle = (active: boolean): React.CSSProperties => ({
-    padding: '6px 16px',
+    padding: '4px 16px',
     borderRadius: 9999,
     border: 'none',
     fontSize: 'var(--ds-font-size-300)',
@@ -112,7 +112,7 @@ export function Resource360Page() {
       />
 
       {/* Department Tabs */}
-      <div style={{ padding: '16px 24px', display: 'flex', flexWrap: 'wrap', gap: 6, flexShrink: 0 }}>
+      <div style={{ padding: '16px 24px', display: 'flex', flexWrap: 'wrap', gap: 4, flexShrink: 0 }}>
         <button onClick={() => setActiveDeptId('all')} style={pillStyle(isAll)}>
           All ({people.length})
         </button>
@@ -139,9 +139,9 @@ export function Resource360Page() {
             background: 'var(--cp-float)',
             border: '1px solid var(--divider)',
             borderRadius: 'var(--wh-radius-lg, 8px)',
-            padding: '14px 16px',
+            padding: '12px 16px',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
               <kpi.icon style={{ width: 14, height: 14, color: 'var(--fg-4)' }} />
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>{kpi.label}</span>
             </div>

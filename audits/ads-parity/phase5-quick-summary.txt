@@ -1,0 +1,121 @@
+===============================================================================
+                    PHASE 5 QUICK SUMMARY
+                 Hardcoded Color Violation Audit
+===============================================================================
+
+TOTAL VIOLATIONS:    28,137 (46.9x over target)
+TARGET:              <600
+REDUCTION NEEDED:    27,537
+
+VIOLATION BREAKDOWN BY TYPE:
+  TSX files:         18,606 (66.1%) — inline styles in React components
+  CSS files:         7,350  (26.1%) — token fallbacks in stylesheets
+  TS files:          2,181  (7.8%)  — color constant definitions
+
+FILES AFFECTED:      1,715 unique files
+
+===============================================================================
+                          TOP 10 FILES
+===============================================================================
+
+RANK  COUNT   FILE
+────  ─────   ──────────────────────────────────────────────────────────
+  1   1,061   src/index.css
+  2     374   src/components/caty-ai/CatyOverrides.css
+  3     299   src/modules/task10/styles/task10.css
+  4     289   src/components/resource360/r360-member.css
+  5     263   src/modules/task10/styles/task10-detail.css
+  6     245   src/components/chat/chat.css
+  7     225   src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx
+  8     211   src/pages/releases/AllReleasesPage.tsx
+  9     207   src/styles/r360.css
+  10    204   src/styles/allwork.css
+
+Cumulative (top 10): 3,978 violations (14.1% of total)
+
+===============================================================================
+                        PHASING STRATEGY
+===============================================================================
+
+PHASE    FILES    EST. VIOLATIONS    EST. EFFORT    AUTOMATION
+─────    ─────    ───────────────    ───────────    ──────────────
+ 5A       1            1,061            45 min        HIGH ✓
+ 5B       6            1,948            60 min        HIGH ✓
+ 5C      10            1,543            60 min        MEDIUM
+ 5D      20            1,607            75 min        LOW
+ 5E      ...          20,980            6+ hrs        LOW
+
+Top 50 files = 8,098 violations (28.8%)
+Remaining 1,665 files = 20,039 violations (71.2%)
+
+===============================================================================
+                      VIOLATION PATTERNS
+===============================================================================
+
+1. ADS TOKEN FALLBACKS (5,000+ violations)
+   Example: var(--ds-surface, #FFFFFF)
+   Root cause: Migration debt; fallbacks added but now flagged
+   Fix: Remove hex fallbacks or migrate to token() helper
+
+2. INLINE STYLE OBJECTS IN TSX (8,000+ violations)
+   Example: style={{ backgroundColor: '#E9F2FE' }}
+   Root cause: Direct hex in style prop
+   Fix: Move to CSS modules with var() or className-based colors
+
+3. COLOR CONSTANTS IN TS (1,500+ violations)
+   Example: const COLOR_MAP = { epic: '#7c3aed' }
+   Root cause: Color logic hard-coded in TypeScript
+   Fix: Convert to ADS token references or CSS custom properties
+
+4. TAILWIND UTILITIES (500+ violations)
+   Example: bg-slate-100, text-gray-500
+   Root cause: Legacy Tailwind utilities
+   Fix: Replace with ADS tokens
+
+===============================================================================
+                      VALIDATION COMMANDS
+===============================================================================
+
+Current state (baseline):
+  grep -rn "#[0-9a-fA-F]\{3,6\}" src/ --include="*.tsx" --include="*.ts" \
+    --include="*.css" 2>/dev/null | grep -v node_modules | grep -v ".snap" | \
+    wc -l
+  # Expected: 28137
+
+After Phase 5A (index.css only):
+  # Expected: ~27076
+
+After Phase 5B–5D (top 50 files):
+  # Expected: ~20039
+
+Final gate (<600):
+  npm run lint:colors:gate
+  # Must show zero increase vs. baseline
+
+===============================================================================
+                        NEXT STEPS
+===============================================================================
+
+☐ Phase 5A (45 min):  Migrate src/index.css — token fallback cleanup
+☐ Phase 5B (60 min):  Migrate top CSS files (2-6) — batch find-replace
+☐ Phase 5C (60 min):  Migrate files 7-16 — TSX inline style refactor
+☐ Phase 5D (75 min):  Migrate files 17-36 — component-level migration
+☐ Phase 5E+ (6+ hrs): Remaining files (37+) — deferred to follow-up sessions
+
+Ratchet gate baseline: 709 (hold or below)
+Time box per slice: 2 hours max (enforce stop/split/rebuild rule)
+
+Dark mode verification: After each phase, toggle dark mode in DevTools
+
+===============================================================================
+NOTES
+===============================================================================
+
+• NO FIXES APPLIED YET — this is discovery-only
+• Token fallbacks are defensive; audit flags them for eventual removal
+• Ratchet gate enforces no NEW violations at commit
+• Full scope requires 5+ phases; focus on high-automation phases first
+
+Generated: 2026-06-28
+Auditor: Claude Code (Haiku 4.5)
+File: audits/ads-parity/phase5-file-manifest.md (full details)

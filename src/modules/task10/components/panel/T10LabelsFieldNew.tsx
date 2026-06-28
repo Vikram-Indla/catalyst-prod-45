@@ -239,7 +239,7 @@ export function T10LabelsFieldNew({
         {isLoading && (
           <div
             style={{
-              padding: '20px',
+              padding: '16px',
               textAlign: 'center',
               color: 'var(--ds-text-disabled)',
               fontSize: 'var(--ds-font-size-400)',
@@ -252,7 +252,7 @@ export function T10LabelsFieldNew({
         {!isLoading && allLabels && allLabels.length === 0 && (
           <div
             style={{
-              padding: '20px',
+              padding: '16px',
               textAlign: 'center',
               color: 'var(--ds-text-disabled)',
               fontSize: 'var(--ds-font-size-400)',
@@ -273,9 +273,9 @@ export function T10LabelsFieldNew({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
+                  gap: '8px',
                   width: '100%',
-                  padding: '10px 12px',
+                  padding: '8px 12px',
                   marginBottom: '4px',
                   backgroundColor: isSelected ? 'var(--ds-background-selected)' : 'transparent',
                   border: isSelected ? '1px solid var(--ds-background-information)' : '1px solid transparent',
@@ -327,8 +327,8 @@ export function T10LabelsFieldNew({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '6px 10px',
+              gap: '4px',
+              padding: '4px 10px',
               fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               backgroundColor: `${label.color}20`,
@@ -360,7 +360,7 @@ export function T10LabelsFieldNew({
                 color: 'inherit',
                 opacity: 0.6,
                 cursor: 'pointer',
-                marginLeft: '2px',
+                marginLeft: '0px',
               }}
             >
               <X size={10} />
@@ -376,7 +376,7 @@ export function T10LabelsFieldNew({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '4px',
-            padding: '6px 12px',
+            padding: '4px 12px',
             fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             color: 'var(--ds-text-subtlest)',

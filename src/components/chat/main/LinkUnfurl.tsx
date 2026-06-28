@@ -19,7 +19,7 @@ export function LinkUnfurl({ bodyText }: LinkUnfurlProps) {
   if (urls.length === 0) return null;
 
   return (
-    <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4 }}>
       {previews.map((p) => (
         <a
           key={p.url}
@@ -28,8 +28,8 @@ export function LinkUnfurl({ bodyText }: LinkUnfurlProps) {
           rel="noopener noreferrer"
           style={{
             display: 'flex',
-            gap: 10,
-            padding: 10,
+            gap: 8,
+            padding: 8,
             border: '1px solid var(--ds-border)',
             borderLeft: '4px solid var(--ds-border-brand)',
             borderRadius: 4,
@@ -74,7 +74,7 @@ export function LinkUnfurl({ bodyText }: LinkUnfurlProps) {
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtle)',
-                  marginTop: 2,
+                  marginTop: 0,
                   display: '-webkit-box',
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: 'vertical',

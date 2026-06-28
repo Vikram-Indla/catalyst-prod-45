@@ -113,12 +113,12 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
   const labelStyle: React.CSSProperties = {
     fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--cp-text-secondary)',
-    textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block',
+    textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px', display: 'block',
     fontFamily: 'var(--cp-font-body)',
   };
   const inputStyle: React.CSSProperties = {
     width: '100%', border: `1.5px solid ${'var(--cp-border-strong)'}`, borderRadius: '8px',
-    padding: '10px 12px', fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', outline: 'none',
+    padding: '8px 12px', fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', outline: 'none',
     fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
   };
   const errorStyle: React.CSSProperties = {
@@ -138,7 +138,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
         width: '640px', maxHeight: '90vh', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
         borderRadius: '16px', display: 'flex', flexDirection: 'column',
         boxShadow: isDark ? 'none' : '0 25px 50px -12px var(--ds-shadow-raised, rgba(0,0,0,0.25))',
-        padding: '28px',
+        padding: '24px',
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
@@ -233,8 +233,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     type="button"
                     onClick={() => setStatus(s)}
                     style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '6px',
-                      padding: '6px 16px', borderRadius: '20px', cursor: 'pointer',
+                      display: 'inline-flex', alignItems: 'center', gap: '4px',
+                      padding: '4px 16px', borderRadius: '20px', cursor: 'pointer',
                       fontSize: 'var(--ds-font-size-300)', fontWeight: isSelected ? 600 : 500,
                       border: isSelected
                         ? (isActive ? '1.5px solid var(--cp-success)' : `1.5px solid ${'var(--cp-border-strong)'}`)
@@ -354,14 +354,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
         {/* Footer */}
         <div style={{
-          paddingTop: '20px', borderTop: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))'}`, marginTop: '24px',
-          display: 'flex', justifyContent: 'flex-end', gap: '10px',
+          paddingTop: '16px', borderTop: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))'}`, marginTop: '24px',
+          display: 'flex', justifyContent: 'flex-end', gap: '8px',
         }}>
           <button
             type="button"
             onClick={onClose}
             style={{
-              padding: '10px 20px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
+              padding: '8px 20px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               color: 'var(--cp-text-secondary)', background: 'transparent', border: 'none',
               borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
@@ -375,12 +375,12 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             onClick={handleSubmit}
             disabled={!isValid || createMutation.isPending}
             style={{
-              padding: '10px 24px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
+              padding: '8px 24px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               background: (!isValid || createMutation.isPending) ? 'var(--ds-background-information-bold, var(--ds-link))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
-              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              display: 'inline-flex', alignItems: 'center', gap: '4px',
               boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.05))',
               transition: 'background 150ms ease', fontFamily: 'var(--cp-font-body)',
             }}

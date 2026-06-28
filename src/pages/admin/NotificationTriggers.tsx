@@ -208,7 +208,7 @@ export default function NotificationTriggers() {
         <div className="flex items-center gap-3 flex-wrap">
           {/* Search */}
           <div className="relative flex-1 min-w-[240px]">
-            <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest))', zIndex: 1, pointerEvents: 'none' }}><SearchIcon label="" size="small" /></span>
+            <span style={{ position: 'absolute', left: 12, top: '48%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest))', zIndex: 1, pointerEvents: 'none' }}><SearchIcon label="" size="small" /></span>
             <div style={{ paddingLeft: '32px' }}>
               <Textfield
                 placeholder="Search triggers by name, key, or description..."

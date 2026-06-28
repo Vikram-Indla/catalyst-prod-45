@@ -61,7 +61,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                     <rect x="2" y="2" width="12" height="12" rx="2" fill={t.color} opacity="0.8" />
                   </svg>
                 </div>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 2 }}>{t.label}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 0 }}>{t.label}</div>
                 <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{t.desc}</div>
               </button>
             ))}

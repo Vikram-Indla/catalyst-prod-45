@@ -44,7 +44,7 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({
       </span>
 
       {/* SAVE INDICATOR */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         {isSaving ? (
           <>
             <Loader2 

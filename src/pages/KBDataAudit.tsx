@@ -40,7 +40,7 @@ const SimpleTable = ({ rows, columns }: { rows: any[]; columns: { key: string; l
     <thead>
       <tr>
         {columns.map((c) => (
-          <th key={c.key} style={{ textAlign: "left", padding: "6px 14px", fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: "var(--fg-2)", textTransform: "uppercase", borderBottom: "1px solid var(--divider)" }}>{c.label}</th>
+          <th key={c.key} style={{ textAlign: "left", padding: "4px 14px", fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: "var(--fg-2)", textTransform: "uppercase", borderBottom: "1px solid var(--divider)" }}>{c.label}</th>
         ))}
       </tr>
     </thead>
@@ -145,7 +145,7 @@ export default function KBDataAudit() {
 
   return (
     <div style={{ maxWidth: 900, margin: "40px auto", padding: "0 24px", color: "var(--fg-1)" }}>
-      <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, marginBottom: 6, letterSpacing: 0.5 }}>KB Data Connectivity Audit</h1>
+      <h1 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, marginBottom: 4, letterSpacing: 0.5 }}>KB Data Connectivity Audit</h1>
       <p style={{ color: "var(--fg-2)", fontSize: 'var(--ds-font-size-300)', marginBottom: 24 }}>Real-time data layer diagnostics</p>
 
       <SectionCard title="1 · Training Questions" loading={training.loading} error={training.error}>
@@ -195,7 +195,7 @@ export default function KBDataAudit() {
         <p style={{ fontSize: 'var(--ds-font-size-100)', color: "var(--fg-3)", marginBottom: 8 }}>Query: "What is a Gold License?" · Language: en</p>
         {liveTest.error && <p style={{ color: "var(--ds-text-danger)", fontSize: 'var(--ds-font-size-300)' }}>{liveTest.error}</p>}
         {liveTest.data && (
-          <pre style={{ background: "var(--bg-1)", borderRadius: 6, padding: 14, fontSize: 'var(--ds-font-size-200)', overflow: "auto", maxHeight: 400, color: "var(--fg-1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          <pre style={{ background: "var(--bg-1)", borderRadius: 6, padding: 12, fontSize: 'var(--ds-font-size-200)', overflow: "auto", maxHeight: 400, color: "var(--fg-1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
             {JSON.stringify(liveTest.data, null, 2)}
           </pre>
         )}

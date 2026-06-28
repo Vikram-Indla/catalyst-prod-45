@@ -163,7 +163,7 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
   return (
     <aside style={{ width: 280, minWidth: 280, flexShrink: 0, border: `1px solid ${token('color.border', '#091E4224')}`, borderRadius: 8, position: 'sticky', top: 0, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 180px)', display: 'flex', flexDirection: 'column', background: token('elevation.surface', 'var(--ds-surface)'), overflowY: 'auto' }}>
       {/* Header: title + settings */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px 10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px 10px' }}>
         <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>Standup</span>
         <button
           ref={settingsTriggerRef}
@@ -194,11 +194,11 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
 
       {/* Session timer */}
       {enableTimer && (
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, padding: '0 16px 12px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, padding: '0 16px 12px' }}>
           <span style={{ fontSize: 36, fontWeight: 400, fontVariantNumeric: 'tabular-nums', lineHeight: '40px', color: timerDanger ? token('color.text.danger', 'var(--ds-text-danger)') : token('color.text', 'var(--ds-text, var(--ds-text))') }}>
             {mm}:{ss}
           </span>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, paddingBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, paddingBottom: 4 }}>
             <CircleBtn label={running ? 'Pause' : 'Play'} onClick={() => { if (seconds === 0) setSeconds(timerSec); setRunning((r) => !r); }}>
               {running ? <VidPauseIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon)')} /> : <VidPlayIcon label="" size="small" primaryColor={token('color.icon.subtle', 'var(--ds-icon, var(--ds-icon))')} />}
             </CircleBtn>
@@ -211,7 +211,7 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
         <IconGhostBtn label="Shuffle order" onClick={shuffle}>
           <IcShuffle size={16} color={token('color.icon.subtle', 'var(--ds-icon)')} />
         </IconGhostBtn>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <NavStepBtn label="Previous" disabled={step === 0} onClick={() => advance(-1)} />
           <NavStepBtn label="Next" disabled={step >= order.length - 1} onClick={() => advance(1)} />
         </div>
@@ -235,7 +235,7 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
               onMouseEnter={() => setHoveredRow(b.name)}
               onMouseLeave={() => setHoveredRow(null)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: rowPad, marginBottom: 2,
+                display: 'flex', alignItems: 'center', gap: 8, padding: rowPad, marginBottom: 0,
                 borderRadius: 6, cursor: 'pointer',
                 background: isSelected ? token('color.background.selected', 'var(--ds-background-selected)') : isHovered ? token('color.background.neutral.subtle.hovered', '#091E420F') : 'transparent',
                 border: `1px solid ${isSelected ? token('color.border.selected', 'var(--ds-link)') : 'transparent'}`,
@@ -257,7 +257,7 @@ export const StandupPanel: React.FC<Props> = ({ issues, avatars, onPersonChange,
                 <div style={{ fontSize: compact ? 13 : 14, fontWeight: isSelected ? 600 : 500, color: isSelected ? token('color.text.selected', 'var(--ds-link)') : token('color.text', 'var(--ds-text, var(--ds-text))'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {b.name}
                 </div>
-                <div style={{ fontSize: compact ? 10 : 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginTop: 1 }}>
+                <div style={{ fontSize: compact ? 10 : 11, color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginTop: 0 }}>
                   {b.total} issue{b.total !== 1 ? 's' : ''}{b.inProgress > 0 ? ` · ${b.inProgress} in progress` : ''}
                 </div>
               </div>
@@ -351,7 +351,7 @@ function SettingsDropdown({
       ref={panelRef}
       role="menu"
       onMouseDown={(e) => e.stopPropagation()}
-      style={{ position: 'fixed', top, left, width: PANEL_W, background: token('elevation.surface.overlay', 'var(--ds-surface)'), border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 6, padding: '10px 0', zIndex: 10000, boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))') }}
+      style={{ position: 'fixed', top, left, width: PANEL_W, background: token('elevation.surface.overlay', 'var(--ds-surface)'), border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 6, padding: '8px 0', zIndex: 10000, boxShadow: token('elevation.shadow.overlay', '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))') }}
     >
       <div style={{ padding: '0 14px 8px' }}>
         <SectionLabel>Density</SectionLabel>
@@ -395,13 +395,13 @@ function SettingsDropdown({
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>{children}</div>;
+  return <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>{children}</div>;
 }
-function Divider() { return <div style={{ height: 1, background: token('color.border', '#091E4224'), margin: '6px 0' }} />; }
+function Divider() { return <div style={{ height: 1, background: token('color.border', '#091E4224'), margin: '4px 0' }} />; }
 
 function RadioOption({ checked, onSelect, label }: { checked: boolean; onSelect: () => void; label: string }) {
   return (
-    <button type="button" role="radio" aria-checked={checked} onClick={onSelect} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 0', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}>
+    <button type="button" role="radio" aria-checked={checked} onClick={onSelect} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '4px 0', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}>
       <span style={{ width: 16, height: 16, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${checked ? token('color.border.selected', 'var(--ds-link)') : token('color.border', '#C1C7D0')}`, flexShrink: 0 }}>
         {checked && <span style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.border.selected', 'var(--ds-link)') }} />}
       </span>
@@ -412,21 +412,21 @@ function RadioOption({ checked, onSelect, label }: { checked: boolean; onSelect:
 
 function ToggleRow({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0' }}>
       <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--ds-text)'), lineHeight: '18px' }}>{label}</span>
       <button
         type="button" role="switch" aria-checked={value} onClick={() => onChange(!value)}
-        style={{ width: 44, height: 24, borderRadius: 12, border: 'none', padding: 2, background: value ? token('color.background.success.bold', 'var(--ds-background-success-bold)') : token('color.background.neutral.bold', 'var(--ds-icon, var(--ds-icon))'), display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', flexShrink: 0 }}
+        style={{ width: 44, height: 24, borderRadius: 12, border: 'none', padding: 0, background: value ? token('color.background.success.bold', 'var(--ds-background-success-bold)') : token('color.background.neutral.bold', 'var(--ds-icon, var(--ds-icon))'), display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', flexShrink: 0 }}
       >
         {value ? (
           <>
-            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, marginLeft: 2 }}><CheckIcon label="" size="small" primaryColor="var(--ds-surface)" /></span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, marginLeft: 0 }}><CheckIcon label="" size="small" primaryColor="var(--ds-surface)" /></span>
             <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface)' }} />
           </>
         ) : (
           <>
             <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--ds-surface)' }} />
-            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, marginRight: 2 }}><CrossIcon label="" size="small" primaryColor="var(--ds-surface)" /></span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, marginRight: 0 }}><CrossIcon label="" size="small" primaryColor="var(--ds-surface)" /></span>
           </>
         )}
       </button>

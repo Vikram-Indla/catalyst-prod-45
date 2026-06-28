@@ -671,7 +671,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       [data-jira-cell-ghost] {
         color: var(--ds-text-subtlest);
         font-style: italic;
-        padding-right: 2px;
+        padding-right: 0px;
         transition: color 80ms ease;
       }
       /* 2026-06-01 (catalyst-clone F1 fix): hide Atlaskit InlineEdit's
@@ -842,7 +842,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         white-space: nowrap;
         user-select: none;
         /* 2026-05-17: Added vertical column dividers matching tbody. */
-        border-right: 1px solid var(--ds-border);
+        border-right: 0px solid var(--ds-border);
       }
       .jira-table-grid thead th.jira-th-sortable { cursor: pointer; }
       /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded var(--ds-background-neutral) */
@@ -910,7 +910,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            the table appears as plain rows without grid structure. Jira
            uses 1px solid var(--ds-border) (Atlaskit border.subtle) on the right
            edge of each cell. */
-        border-right: 1px solid var(--ds-border);
+        border-right: 0px solid var(--ds-border);
       }
       /* Column resize handle — 6px hit area on the right edge of each
          sortable/resizable header. Highlights on hover to advertise. */
@@ -987,7 +987,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          (select / type / key) with hardcoded left offsets
          (0 / 48px / 151px) that assumed Type col was 103px wide.
          When Type was tightened to ~43px (icon-only column), col 3
-         (Key) still tried to float at left:151px while col 2 ended
+         (Key) still tried to float at left:48px while col 2 ended
          at x ~ 91px, leaving a 60px hole between every Type icon and
          the Key text. The DOM probe caught this exactly. Frozen
          columns are valuable on Jira narrow-viewport list views
@@ -1038,7 +1038,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         text-align: center;
         padding-left: 0 !important;
         padding-right: 0 !important;
-        border-right: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border))) !important;
+        border-right: 0px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border))) !important;
       }
       .jira-table-grid.has-select-col table thead > tr > th:first-child > span,
       .jira-table-grid.has-select-col table tbody > tr > td:first-child > [data-jira-table-editor],
@@ -1623,7 +1623,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   Jira layout: checkbox > chevron > LABEL > +
                   Prior Catalyst layout had + before label — wrong. */}
               {(g as any).labelNode != null ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   {(g as any).labelNode}
                 </span>
               ) : (
@@ -2480,7 +2480,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     justifySelf: 'start',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 4,
                     height: 28,
                     padding: '0 8px',
                     border: 'none',
@@ -2500,7 +2500,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     justifySelf: 'center',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 4,
                     fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: 'var(--ds-text)',
@@ -2659,7 +2659,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 10,
+                    gap: 8,
                     width: '100%',
                     padding: '8px 10px',
                     border: 'none',
@@ -3019,7 +3019,7 @@ function ColumnManagerTrigger<TRow>({
             color: 'var(--ds-text)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0px 4px 6px' }}>
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
               Columns
             </span>
@@ -3036,7 +3036,7 @@ function ColumnManagerTrigger<TRow>({
                 fontSize: 'var(--ds-font-size-200)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                padding: '2px 4px',
+                padding: '0px 4px',
                 borderRadius: 3,
               }}
               title="Reset to defaults"
@@ -3053,7 +3053,7 @@ function ColumnManagerTrigger<TRow>({
               gap: 0,
               borderBottom: '2px solid transparent',
               padding: '0 4px',
-              marginBottom: 6,
+              marginBottom: 4,
             }}
           >
             {[
@@ -3072,7 +3072,7 @@ function ColumnManagerTrigger<TRow>({
                     background: 'transparent',
                     border: 'none',
                     borderBottom: `2px solid ${isActive ? 'var(--ds-link)' : 'transparent'}`,
-                    padding: '6px 10px',
+                    padding: '4px 10px',
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                     fontSize: 'var(--ds-font-size-200)',
@@ -3114,9 +3114,9 @@ function ColumnManagerTrigger<TRow>({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 10,
+                    gap: 8,
                     width: '100%',
-                    padding: '6px 8px',
+                    padding: '4px 8px',
                     cursor: 'pointer',
                     borderRadius: 3,
                     fontSize: 'var(--ds-font-size-400)',
@@ -3138,14 +3138,14 @@ function ColumnManagerTrigger<TRow>({
           {/* 2026-05-12 Jira parity: "X of Y" count display at the bottom */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)',
+            padding: '4px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)',
             borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border)))', marginTop: 4,
           }}>
             <span>{matchCount} of {totalInTab}</span>
           </div>
           {/* Locked columns hint */}
           {columns.some((c) => c.alwaysVisible) && (
-            <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+            <div style={{ padding: '4px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
               {columns.filter((c) => c.alwaysVisible && !c.id.startsWith('__')).map((c) => c.label || c.id).join(', ')} are required.
             </div>
           )}

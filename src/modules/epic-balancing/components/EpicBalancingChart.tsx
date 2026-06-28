@@ -166,7 +166,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
     <div className="h-full w-full flex flex-col">
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 60 }}>
+          <ScatterChart margin={{ top: 16, right: 16, bottom: 16, left: 48 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           
           <XAxis 

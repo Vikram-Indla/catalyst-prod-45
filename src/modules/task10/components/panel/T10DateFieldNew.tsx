@@ -159,7 +159,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
             style={{
               display: 'block',
               width: '100%',
-              padding: '10px 12px',
+              padding: '8px 12px',
               textAlign: 'left',
               backgroundColor: 'transparent',
               border: 'none',
@@ -193,7 +193,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
           onChange={handleCustomDateChange}
           style={{
             width: '100%',
-            padding: '10px 12px',
+            padding: '8px 12px',
             border: '1px solid var(--ds-border)',
             borderRadius: '6px',
             fontSize: 'var(--ds-font-size-400)',
@@ -215,7 +215,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          padding: '10px 14px',
+          padding: '8px 14px',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
           border: isOpen ? '1px solid var(--ds-link)' : '1px solid var(--ds-border)',
           borderRadius: '8px',
@@ -223,7 +223,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
           boxShadow: isOpen ? '0 0 0 3px var(--ds-background-information)' : 'none',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
           {value ? (
             <>
               <Calendar size={16} style={{ color: 'var(--ds-text-subtlest)' }} />

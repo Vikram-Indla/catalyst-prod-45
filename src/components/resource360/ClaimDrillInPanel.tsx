@@ -188,7 +188,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
               );
             })()}
             <div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--ds-text-subtlest)', marginBottom: 2 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--ds-text-subtlest)', marginBottom: 0 }}>
                 DRILL-IN
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
@@ -232,19 +232,19 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                     background: 'var(--ds-surface-sunken)',
                     cursor: 'default',
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <JiraIssueTypeIcon type={t.issue_type} size={16} />
                       <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, fontFamily: 'monospace', color: 'var(--cp-blue)' }}>
                         {t.issue_key}
                       </span>
                       <span style={{
                         fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
-                        padding: '2px 8px', borderRadius: 12,
+                        padding: '0px 8px', borderRadius: 12,
                         background: sc.bg, color: sc.text,
                       }}>
                         {t.status}
                       </span>
-                      <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest)', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest)', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
                         <Clock size={10} />
                         {t.jira_updated_at ? formatDistanceToNow(new Date(t.jira_updated_at), { addSuffix: true }) : '—'}
                       </span>
@@ -252,7 +252,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                     <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)', lineHeight: 1.4 }}>
                       {t.summary}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                       <span>{t.project_key}</span>
                       {t.priority && (
                         <>
@@ -276,7 +276,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
 
         {/* Footer */}
         <div style={{
-          padding: '10px 20px',
+          padding: '8px 20px',
           borderTop: '1px solid var(--ds-border)',
           fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)',
           flexShrink: 0,

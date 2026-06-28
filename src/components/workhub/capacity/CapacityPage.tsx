@@ -48,7 +48,7 @@ export function CapacityPage() {
         {/* KPI ROW */}
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: 16, marginBottom: 28,
+          gap: 16, marginBottom: 24,
         }}>
           {kpis.map(kpi => (
             <div
@@ -57,8 +57,8 @@ export function CapacityPage() {
                 backgroundColor: 'var(--cp-float)',
                 border: '1px solid var(--divider)',
                 borderRadius: 'var(--wh-radius-xl, 16px)',
-                padding: '20px 20px',
-                display: 'flex', alignItems: 'center', gap: 14,
+                padding: '16px 20px',
+                display: 'flex', alignItems: 'center', gap: 12,
               }}
             >
               <div style={{
@@ -77,7 +77,7 @@ export function CapacityPage() {
                 </div>
                 <div style={{
                   fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)',
-                  color: 'var(--fg-4)', marginTop: 2,
+                  color: 'var(--fg-4)', marginTop: 0,
                 }}>
                   {kpi.label}
                 </div>
@@ -87,7 +87,7 @@ export function CapacityPage() {
         </div>
 
         {/* DEPARTMENT UTILIZATION CHART */}
-        <div style={{ marginBottom: 28 }}>
+        <div style={{ marginBottom: 24 }}>
           <DepartmentUtilizationChart departments={departments} />
         </div>
 

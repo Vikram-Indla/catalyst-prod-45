@@ -86,7 +86,7 @@ function MetadataLine({
         alignItems: 'center',
         flexWrap: 'wrap',
         marginTop: 0,
-        paddingInlineStart: 44, // 32px avatar + 12px gap
+        paddingInlineStart: 40, // 32px avatar + 12px gap
         fontFamily: 'var(--cp-font-body, inherit)',
         fontSize: 'var(--ds-font-size-200)',
         lineHeight: '16px',
@@ -299,7 +299,7 @@ export default function MentionActivityCard({
               display: 'flex',
               alignItems: 'center',
               flexWrap: 'wrap',
-              gap: 6,
+              gap: 4,
               fontSize: 'var(--ds-font-size-400)',
               lineHeight: '20px',
               color: primaryText,
@@ -378,7 +378,7 @@ export default function MentionActivityCard({
             <div
               style={{
                 marginTop: 16,
-                paddingInlineStart: 44, // align with text column
+                paddingInlineStart: 40, // align with text column
               }}
             >
               {/* Comment body with @mention highlighting */}

@@ -139,7 +139,7 @@ const menuItemBase: React.CSSProperties = {
   textAlign: 'left',
   border: 'none',
   background: 'none',
-  padding: '6px 12px',
+  padding: '4px 12px',
   fontSize: 'var(--ds-font-size-300)',
   cursor: 'pointer',
   fontFamily: 'inherit',
@@ -322,8 +322,8 @@ function StatusRow({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '6px',
-        padding: '7px 8px 7px 12px',
+        gap: '4px',
+        padding: '8px 8px 7px 12px',
         background: hovered && !editing ? T.bgHover : 'transparent',
         transition: 'background 0.1s',
         minHeight: '36px',
@@ -363,7 +363,7 @@ function StatusRow({
             color: T.text,
             border: `1px solid var(--ds-border-focused)`,
             borderRadius: '3px',
-            padding: '1px 4px',
+            padding: '0px 4px',
             outline: 'none',
             fontFamily: 'inherit',
             minWidth: 0,
@@ -506,7 +506,7 @@ function StatusColumn({
             color: T.textSubtlest,
             background: T.bgNeutral,
             borderRadius: '10px',
-            padding: '1px 7px',
+            padding: '0px 7px',
             fontWeight: 500,
           }}
         >
@@ -548,7 +548,7 @@ function StatusColumn({
               display: 'flex',
               gap: '4px',
               alignItems: 'center',
-              padding: '6px 8px',
+              padding: '4px 8px',
               background: T.bgNeutral,
               borderRadius: '4px',
             }}
@@ -632,9 +632,9 @@ function StatusColumn({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '4px',
               width: '100%',
-              padding: '6px 8px',
+              padding: '4px 8px',
               border: 'none',
               background: 'transparent',
               cursor: 'pointer',
@@ -762,7 +762,7 @@ function AssignmentBadge({
         background: assignment.is_customized ? T.bgNeutral : T.bgSelected,
         border: `1px solid ${assignment.is_customized ? T.border : 'var(--ds-border-brand)'}`,
         borderRadius: 3,
-        padding: '2px 6px',
+        padding: '0px 6px',
         flexShrink: 0,
       }}
       title={
@@ -831,7 +831,7 @@ function TemplateCard({
           display: 'flex',
           alignItems: 'center',
           gap: 8,
-          padding: '10px 14px',
+          padding: '8px 14px',
           cursor: 'pointer',
           background: expanded ? T.bgNeutral : 'transparent',
         }}
@@ -850,7 +850,7 @@ function TemplateCard({
               background: T.bgSelected,
               border: `1px solid var(--ds-border-brand)`,
               borderRadius: 3,
-              padding: '1px 5px',
+              padding: '0px 5px',
             }}
           >
             DEFAULT
@@ -866,7 +866,7 @@ function TemplateCard({
           ) : (
             <>
               {/* Status list */}
-              <div style={{ marginBottom: 10 }}>
+              <div style={{ marginBottom: 8 }}>
                 <div
                   style={{
                     fontSize: 'var(--ds-font-size-100)',
@@ -874,7 +874,7 @@ function TemplateCard({
                     color: T.textSubtlest,
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
-                    marginBottom: 6,
+                    marginBottom: 4,
                     paddingTop: 8,
                   }}
                 >
@@ -888,7 +888,7 @@ function TemplateCard({
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 4,
-                        padding: '2px 8px',
+                        padding: '0px 8px',
                         borderRadius: 3,
                         fontSize: 'var(--ds-font-size-100)',
                         fontWeight: 500,
@@ -925,7 +925,7 @@ function TemplateCard({
                   onClick={handleApply}
                   disabled={applying}
                   style={{
-                    padding: '5px 12px',
+                    padding: '4px 12px',
                     borderRadius: 4,
                     border: 'none',
                     background: 'var(--ds-background-brand-bold)',
@@ -944,7 +944,7 @@ function TemplateCard({
                   onClick={handlePush}
                   disabled={pushTemplate.isPending || pushed}
                   style={{
-                    padding: '5px 12px',
+                    padding: '4px 12px',
                     borderRadius: 4,
                     border: `1px solid ${T.border}`,
                     background: T.surface,
@@ -1037,7 +1037,7 @@ function TemplatesView({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               marginBottom: 8,
             }}
           >
@@ -1061,7 +1061,7 @@ function TemplatesView({
                   color: T.textSubtlest,
                   background: T.bgNeutral,
                   borderRadius: 3,
-                  padding: '1px 5px',
+                  padding: '0px 5px',
                   border: `1px solid ${T.border}`,
                 }}
               >
@@ -1122,7 +1122,7 @@ export default function WorkflowAdminPage() {
       >
         <div
           style={{
-            padding: '20px 24px 0',
+            padding: '16px 24px 0',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
@@ -1155,8 +1155,8 @@ export default function WorkflowAdminPage() {
                 display: 'flex',
                 background: T.bgNeutral,
                 borderRadius: 6,
-                padding: 2,
-                gap: 2,
+                padding: 0,
+                gap: 0,
               }}
             >
               {(['workflows', 'templates'] as const).map((mode) => (
@@ -1164,7 +1164,7 @@ export default function WorkflowAdminPage() {
                   key={mode}
                   onClick={() => setPageMode(mode)}
                   style={{
-                    padding: '3px 12px',
+                    padding: '4px 12px',
                     borderRadius: 4,
                     border: 'none',
                     fontSize: 'var(--ds-font-size-200)',
@@ -1273,7 +1273,7 @@ export default function WorkflowAdminPage() {
             style={{
               padding: '16px 24px 0',
               display: 'flex',
-              gap: '6px',
+              gap: '4px',
               flexWrap: 'wrap',
               flexShrink: 0,
             }}
@@ -1285,7 +1285,7 @@ export default function WorkflowAdminPage() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '5px',
+                  gap: '4px',
                   padding: '4px 8px 4px 8px',
                   borderRadius: '20px',
                   border: `1px solid ${typeIdx === i ? T.iconBrand : T.border}`,
@@ -1321,8 +1321,8 @@ export default function WorkflowAdminPage() {
                   display: 'flex',
                   background: T.bgNeutral,
                   borderRadius: 6,
-                  padding: 2,
-                  gap: 2,
+                  padding: 0,
+                  gap: 0,
                 }}
               >
                 {(['board', 'diagram'] as const).map((mode) => (
@@ -1330,7 +1330,7 @@ export default function WorkflowAdminPage() {
                     key={mode}
                     onClick={() => setViewMode(mode)}
                     style={{
-                      padding: '3px 12px',
+                      padding: '4px 12px',
                       borderRadius: 4,
                       border: 'none',
                       fontSize: 'var(--ds-font-size-200)',

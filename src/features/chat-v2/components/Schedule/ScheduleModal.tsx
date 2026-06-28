@@ -69,7 +69,7 @@ export function ScheduleModal({ onCancel, onConfirm }: ScheduleModalProps) {
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '14vh',
+        paddingTop: '12vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
       onMouseDown={e => { if (e.target === e.currentTarget) onCancel(); }}
@@ -83,7 +83,7 @@ export function ScheduleModal({ onCancel, onConfirm }: ScheduleModalProps) {
           boxShadow: 'var(--cv2-shadow-modal)',
           fontFamily: 'var(--cv2-font)',
           color: 'var(--cv2-text)',
-          padding: 22,
+          padding: 24,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -116,7 +116,7 @@ export function ScheduleModal({ onCancel, onConfirm }: ScheduleModalProps) {
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: 12, marginTop: 18 }}>
+        <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
           <div style={{ position: 'relative', flex: 1 }}>
             <PickerButton
               icon={<CalendarIcon size={15} />}
@@ -150,7 +150,7 @@ export function ScheduleModal({ onCancel, onConfirm }: ScheduleModalProps) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 22 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
           <SecondaryBtn onClick={onCancel}>Cancel</SecondaryBtn>
           <PrimaryBtn onClick={handleConfirm}>Schedule Message</PrimaryBtn>
         </div>
@@ -235,7 +235,7 @@ function CalendarPopover({
       aria-label="Pick a date"
       style={{
         position: 'absolute',
-        top: 44,
+        top: 40,
         left: 0,
         width: 280,
         background: 'var(--cv2-bg-modal)',
@@ -278,7 +278,7 @@ function CalendarHeader({
   onShift: (dy: number, dm: number) => void;
 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
       <div style={{ display: 'inline-flex', gap: 4 }}>
         <NavBtn label="Previous year" onClick={() => onShift(-1, 0)}>
           <ChevronLeftDoubleIcon size={14} />
@@ -343,7 +343,7 @@ function CalendarGrid({
 }) {
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2, marginBottom: 4 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0, marginBottom: 4 }}>
         {WEEKDAY_LABELS.map(d => (
           <div
             key={d}
@@ -359,7 +359,7 @@ function CalendarGrid({
           </div>
         ))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0 }}>
         {grid.map((cell, idx) => {
           if (!cell.date) return <div key={idx} />;
           const isSel = isSameDay(cell.date, selected);
@@ -438,7 +438,7 @@ function TimeDropdown({
       aria-label="Pick a time"
       style={{
         position: 'absolute',
-        top: 44,
+        top: 40,
         left: 0,
         right: 0,
         maxHeight: 260,
@@ -465,7 +465,7 @@ function TimeDropdown({
               display: 'block',
               width: '100%',
               textAlign: 'left',
-              padding: '6px 16px',
+              padding: '4px 16px',
               background: sel ? 'var(--cv2-accent)' : 'transparent',
               color: sel ? 'var(--ds-text-inverse)' : 'var(--cv2-text)',
               border: 'none',

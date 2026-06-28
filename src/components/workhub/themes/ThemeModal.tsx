@@ -84,7 +84,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
       />
       {/* Modal */}
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%, -50%)',
         background: 'var(--cp-float)', borderRadius: 12, width: 480, maxWidth: '95vw',
         boxShadow: '0 20px 60px var(--ds-shadow-raised, rgba(0,0,0,.2))', zIndex: 9999,
         fontFamily: 'var(--cp-font-body)',
@@ -103,7 +103,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
         </div>
 
         {/* Body */}
-        <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Name */}
           <div>
             <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
@@ -163,7 +163,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
 
           {/* Color */}
           <div>
-            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
+            <label style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               Color
             </label>
             <div style={{ display: 'flex', gap: 8 }}>

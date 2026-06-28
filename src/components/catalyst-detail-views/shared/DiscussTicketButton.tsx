@@ -38,7 +38,7 @@ export function DiscussTicketButton({ issueKey, variant = 'icon' }: DiscussTicke
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           padding: '4px 10px',
           border: '1px solid var(--ds-border)',
           borderRadius: 4,

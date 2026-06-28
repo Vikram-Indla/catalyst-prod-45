@@ -91,7 +91,7 @@ export function MessagePanelHeader({
             background: 'transparent',
             border: 'none',
             borderRadius: 'var(--cv2-radius-sm)',
-            color: isStarred ? '#E8A87C' : 'var(--cv2-text-subtle)',
+            color: isStarred ? 'var(--cv2-accent, #FF9500)' : 'var(--cv2-text-subtle)',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -229,7 +229,7 @@ function PanelTabBtn({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 'var(--cv2-tabs-h, 40px)',
         padding: '0 10px',
         background: 'transparent',

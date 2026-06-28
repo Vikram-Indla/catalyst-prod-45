@@ -155,24 +155,24 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--fg-3)" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>
           </div>
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px' }}>
             {/* Status pill — INLINE */}
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: '4px',
-              padding: '3px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
+              padding: '4px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
               background: s.bg, color: s.tx,
             }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
               {statusLabel}
             </span>
-            <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
+            <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '0px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10.5px', fontWeight: 600, padding: '0px 8px', borderRadius: '4px', background: 'var(--ds-background-danger)', color: 'var(--ds-text-danger)' }}>
               {getJiraIcon(item.item_type)} <span style={{ textTransform: 'uppercase' }}>{item.item_type}</span>
             </span>
             {item.project_key && (
-              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
             )}
           </div>
           <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', lineHeight: '1.4' }}>{item.title}</div>
@@ -197,7 +197,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
               }}>
                 <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '4px' }}>{cell.label}</div>
                 {cell.hasAvatar ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <div style={{
                       width: '18px', height: '18px', borderRadius: '50%',
                       background: 'linear-gradient(135deg,var(--cp-blue),var(--sem-success))',
@@ -221,7 +221,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 ) : (
                   <div>
                     <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)', wordBreak: 'break-word' }}>{cell.value}</div>
-                    {cell.sub && <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-2)', marginTop: '2px' }}>{cell.sub}</div>}
+                    {cell.sub && <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-2)', marginTop: '0px' }}>{cell.sub}</div>}
                   </div>
                 )}
               </div>
@@ -230,19 +230,19 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
 
           {/* Hierarchy */}
           <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken)))' }}>
-            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
+            <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '8px' }}>Hierarchy</div>
             {item.parent_key ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {/* Parent */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--divider)', background: 'var(--bg-app)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--divider)', background: 'var(--bg-app)' }}>
                   {getJiraIcon(item.parent_type || 'epic')}
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
                   <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
                 </div>
-                <div style={{ paddingLeft: '20px', color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-100)', margin: '2px 0' }}>↳</div>
+                <div style={{ paddingLeft: '16px', color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-100)', margin: '0px 0' }}>↳</div>
                 {/* Current */}
                 <div style={{
-                  display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
+                  display: 'flex', alignItems: 'flex-start', gap: '4px', padding: '4px 8px',
                   borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: 'var(--ds-background-selected)',
                 }}>
                   {getJiraIcon(item.item_type)}
@@ -262,9 +262,9 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           {/* Siblings */}
           {siblings.length > 0 && (
             <div style={{ padding: '16px 20px', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
-                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '12px' }}>{doneSiblings}/{siblings.length} done</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '0px 8px', borderRadius: '12px' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
               <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'var(--ds-border) transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
@@ -273,8 +273,8 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                   const isCurrent = sib.item_key === item.item_key;
                   return (
                     <div key={sib.id || sib.item_key} onClick={() => !isCurrent && onSiblingClick(sib)} style={{
-                      display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '6px',
-                      cursor: isCurrent ? 'default' : 'pointer', marginBottom: '2px',
+                      display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', borderRadius: '6px',
+                      cursor: isCurrent ? 'default' : 'pointer', marginBottom: '0px',
                       border: isCurrent ? '1px solid var(--cp-blue)' : '1px solid transparent',
                       background: isCurrent ? 'var(--ds-background-selected)' : 'transparent',
                     }}
@@ -285,8 +285,8 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-blue)', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
                       {/* Status pill — INLINE, small */}
                       <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '3px',
-                        padding: '2px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 600, lineHeight: '1',
+                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                        padding: '0px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 600, lineHeight: '1',
                         background: sibS.bg, color: sibS.tx, flexShrink: 0,
                       }}>
                         <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sibS.dot, flexShrink: 0 }} />

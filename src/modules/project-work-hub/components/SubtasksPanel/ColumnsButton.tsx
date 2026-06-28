@@ -101,7 +101,7 @@ export function ColumnsButton({ columns, onChange }: ColumnsButtonProps) {
                 alignItems: 'center',
                 gap: 8,
                 width: '100%',
-                padding: '6px 12px',
+                padding: '4px 12px',
                 background: 'transparent',
                 border: 'none',
                 cursor: disabled ? 'not-allowed' : 'pointer',

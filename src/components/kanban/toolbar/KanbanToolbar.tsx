@@ -72,7 +72,7 @@ function BoardMenuItem({
       onClick={onClick}
       className="flex items-center gap-3 w-full"
       style={{
-        padding: '10px 16px', background: 'transparent', border: 'none',
+        padding: '8px 16px', background: 'transparent', border: 'none',
         cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))', fontWeight: 500,
         textAlign: 'left', fontFamily: 'var(--cp-font-body)',
         transition: 'background 80ms ease',
@@ -85,7 +85,7 @@ function BoardMenuItem({
       {badge !== undefined && badge > 0 && (
         <span style={{
           fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
-          background: 'var(--cp-primary-60)', borderRadius: 10, padding: '1px 8px',
+          background: 'var(--cp-primary-60)', borderRadius: 10, padding: '0px 8px',
           lineHeight: '18px',
         }}>{badge}</span>
       )}
@@ -273,7 +273,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
           type="text" placeholder="Search board" value={search}
           onChange={e => onSearchChange(e.target.value)}
           style={{
-            width: '100%', height: 32, paddingLeft: 30, paddingRight: 8,
+            width: '100%', height: 32, paddingLeft: 32, paddingRight: 8,
             border: `1px solid ${tk.border}`, borderRadius: 3,
             fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
             color: tk.textPrimary, background: tk.surfaceBg,
@@ -430,16 +430,16 @@ export function KanbanToolbar<TGroupBy extends string = string>({
         {showBoardMenu && (
           <div
             style={{
-              position: 'absolute', top: '100%', right: 0, marginTop: 6,
+              position: 'absolute', top: '48%', right: 0, marginTop: 4,
               width: 240, background: tk.surfaceBg,
               border: `1px solid ${tk.border}`, borderRadius: 10,
               boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,0.18)), 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
               zIndex: 50,
-              padding: '6px 0', fontFamily: 'var(--cp-font-body)',
+              padding: '4px 0', fontFamily: 'var(--cp-font-body)',
             }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ padding: '6px 16px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted, letterSpacing: '0.04em' }}>
+            <div style={{ padding: '4px 16px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted, letterSpacing: '0.04em' }}>
               Board options
             </div>
             {onRenameBoard && (
@@ -464,7 +464,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
             />
             {onStartStandup && (
               <>
-                <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
+                <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 12px' }} />
                 <BoardMenuItem
                   icon={<VideoIcon label="" size="small" primaryColor={tk.textSecondary} />}
                   label="Start standup"
@@ -474,7 +474,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
             )}
             {canArchive && (
               <>
-                <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
+                <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 12px' }} />
                 <BoardMenuItem
                   icon={<ArchiveBoxIcon label="" size="small" primaryColor={showArchived ? 'var(--cp-primary-60)' : tk.textSecondary} />}
                   label={showArchived ? 'Hide archived issues' : 'Show archived issues'}

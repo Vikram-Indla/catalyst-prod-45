@@ -435,7 +435,7 @@ export function RichTextEditor({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              padding: '6px 14px',
+              padding: '4px 14px',
               borderRadius: 999,
               background: 'var(--ds-surface-overlay)',
               border: '1px solid var(--ds-border)',
@@ -454,7 +454,7 @@ export function RichTextEditor({
             />
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-information)', whiteSpace: 'nowrap' }}>
               Caty is listening
-              <span aria-hidden style={{ display: 'inline-flex', gap: 2, marginLeft: 3, verticalAlign: 'middle' }}>
+              <span aria-hidden style={{ display: 'inline-flex', gap: 0, marginLeft: 4, verticalAlign: 'middle' }}>
                 {[0,1,2].map((i) => (
                   <span key={i} style={{ display: 'inline-block', width: 3, height: 3, borderRadius: '50%', background: 'currentColor', animation: `caty-mic-dot 1.2s ease-in-out ${i*0.2}s infinite` }} />
                 ))}
@@ -489,7 +489,7 @@ export function RichTextEditor({
                 : undefined
             }
             style={{
-              padding: '6px 12px',
+              padding: '4px 12px',
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               border: 'none',
@@ -506,7 +506,7 @@ export function RichTextEditor({
             type="button"
             onClick={onCancel}
             style={{
-              padding: '6px 12px',
+              padding: '4px 12px',
               fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               border: 'none',

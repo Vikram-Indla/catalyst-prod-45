@@ -152,7 +152,7 @@ export function SummarizeDigestModal({
     /* Rainbow border around the title row — keeps the AI affordance visible. */
     <div style={{
       display: 'inline-flex',
-      padding: 1.8,
+      padding: 0.8,
       borderRadius: 20,
       background: ASK_CATY_RAINBOW,
     }}>
@@ -229,7 +229,7 @@ export function SummarizeDigestModal({
             style={{
               all: 'unset',
               cursor: 'pointer',
-              padding: '2px 8px',
+              padding: '0px 8px',
               borderRadius: 3,
               fontSize: 'var(--ds-font-size-600)',
               lineHeight: 1,
@@ -294,9 +294,9 @@ function DigestRow({
         <div style={{
           display: 'flex',
           alignItems: 'baseline',
-          gap: 6,
+          gap: 4,
           fontSize: 'var(--ds-font-size-300)',
-          marginBlockEnd: 6,
+          marginBlockEnd: 4,
         }}>
           <span style={{ fontWeight: 600, color: token('color.text', 'var(--ds-text)') }}>{mention.mentionerName}</span>
           <span style={{ color: token('color.text.subtle', 'var(--ds-icon)') }}>on</span>
@@ -324,7 +324,7 @@ function DigestRow({
           fontSize: 'var(--ds-font-size-400)',
           lineHeight: '20px',
           color: token('color.text', 'var(--ds-text)'),
-          marginBlockEnd: 10,
+          marginBlockEnd: 8,
           minHeight: 20,
         }}>
           {state.phase === 'loading' && (

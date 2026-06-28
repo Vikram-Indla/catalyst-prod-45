@@ -147,7 +147,7 @@ function DefectWorkflowTab() {
         (never widened). Remap preview below shows how existing enum values fold onto canonical keys.
       </Note>
       <DynamicTable head={stHead} rows={stRows} isFixedSize />
-      <div style={{ marginTop: 20 }}>
+      <div style={{ marginTop: 16 }}>
         <H>Remap preview (existing defects → canonical)</H>
         <DynamicTable
           head={{ cells: [{ key: 'o', content: 'Enum status' }, { key: 'n', content: 'Canonical key' }, { key: 'c', content: 'Count' }, { key: 'm', content: 'Mapped' }] }}

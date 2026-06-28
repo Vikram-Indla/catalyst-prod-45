@@ -17,7 +17,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
     <div style={{
       display: 'flex',
       alignItems: 'center',
-      gap: 6,
+      gap: 4,
       marginTop: 8,
       fontFamily: 'var(--cp-font-body)',
     }}>
@@ -34,7 +34,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
             onMouseDown={() => setPressed(emoji)}
             onMouseUp={() => setPressed(null)}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 2,
+              display: 'inline-flex', alignItems: 'center', gap: 0,
               padding: '4px 8px',
               border: `0.5px solid ${isHov ? 'var(--ds-link)' : 'var(--ds-border)'}`,
               borderRadius: 20,

@@ -99,7 +99,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
     <div onClick={onClose} role="dialog" aria-modal="true" aria-label="Wiki search" style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       background: isDark ? 'var(--ds-shadow-raised, rgba(0,0,0,0.6))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.4))', backdropFilter: 'blur(4px)',
-      display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 120,
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 48,
       opacity: 1, transition: 'opacity 150ms ease',
     }}>
       <div onClick={e => e.stopPropagation()} style={{
@@ -112,7 +112,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
       }}>
         {/* Search input */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 10,
+          display: 'flex', alignItems: 'center', gap: 8,
           padding: '12px 16px', borderBottom: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border-default)',
         }}>
           <Search size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--cp-text-muted)', flexShrink: 0 }} />
@@ -145,7 +145,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
               onClick={() => handleSelect(item.path)}
               onMouseEnter={() => setSelectedIdx(idx)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 10,
+                display: 'flex', alignItems: 'center', gap: 8,
                 padding: '8px 12px', borderRadius: 6, cursor: 'pointer',
                 background: idx === selectedIdx ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--cp-interact-selected)') : 'transparent',
                 transition: 'background 80ms',
@@ -163,9 +163,9 @@ export function WikiCommandPalette({ open, onClose }: Props) {
           padding: '8px 16px', borderTop: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border-default)',
           display: 'flex', gap: 16, fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--cp-text-muted)',
         }}>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page)' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page)' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page)' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '0px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page)' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '0px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page)' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '0px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page)' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
         </div>
       </div>
     </div>

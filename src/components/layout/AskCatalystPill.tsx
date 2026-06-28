@@ -140,7 +140,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
           <div
             style={{
               display: 'inline-flex',
-              padding: 2,
+              padding: 0,
               borderRadius: 9999,
               background: STATIC_RAINBOW,
               opacity: isForYou ? 1 : 0.55,
@@ -198,16 +198,16 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
         <div
           style={{
             position: 'absolute',
-            top: '100%',
+            top: '48%',
             right: 0,
-            marginTop: 6,
+            marginTop: 4,
             background: 'var(--ds-surface-overlay, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated))))',
             border: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, var(--cp-border-neutral))))',
             borderRadius: 12,
             // ADS canonical overlay shadow — works in both modes via the token resolver
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 30px rgba(0,0,0,0.12))',
             minWidth: 220,
-            padding: 6,
+            padding: 4,
             zIndex: 1000,
           }}
         >
@@ -234,9 +234,9 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 10,
+                gap: 8,
                 width: '100%',
-                padding: '9px 12px',
+                padding: '8px 12px',
                 border: 'none',
                 background: 'transparent',
                 borderRadius: 8,

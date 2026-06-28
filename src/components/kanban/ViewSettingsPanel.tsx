@@ -69,7 +69,7 @@ function SectionHeader({ title, tk }: { title: string; tk: KanbanThemeTokens }) 
     <div style={{
       fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       color: tk.textMuted, letterSpacing: '0.06em',
-      padding: '10px 0 4px',
+      padding: '8px 0 4px',
       fontFamily: 'var(--cp-font-heading)',
     }}>
       {title}
@@ -133,7 +133,7 @@ export function ViewSettingsPanel({
       tabIndex={-1}
       style={{
         position: 'absolute',
-        top: '100%',
+        top: '48%',
         right: 0,
         marginTop: 4,
         width: 320,
@@ -176,7 +176,7 @@ export function ViewSettingsPanel({
           <div
             role="radiogroup"
             aria-label="Card density"
-            style={{ display: 'flex', gap: 8, padding: '6px 0 4px' }}
+            style={{ display: 'flex', gap: 8, padding: '4px 0 4px' }}
           >
             {(['compact', 'dense', 'comfortable'] as const).map((d) => {
               const selected = density === d;
@@ -214,7 +214,7 @@ export function ViewSettingsPanel({
 
       {/* Quick Filters section — Jira parity: Board config → Quick Filters */}
       <SectionHeader title="Quick filters" tk={tk} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 0' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: '4px 0' }}>
         {ALL_QUICK_FILTERS.map(({ key, label }) => {
           const enabled = (settings.enabledQuickFilters ?? []).includes(key as QuickFilterKey);
           const toggle = () => {
@@ -233,7 +233,7 @@ export function ViewSettingsPanel({
 
       {/* Card colors section — Jira parity: Board config → Card colors */}
       <SectionHeader title="Card colors" tk={tk} />
-      <div role="radiogroup" aria-label="Card color rule" style={{ display: 'flex', gap: 8, padding: '6px 0 4px' }}>
+      <div role="radiogroup" aria-label="Card color rule" style={{ display: 'flex', gap: 8, padding: '4px 0 4px' }}>
         {([
           { value: 'none',      label: 'None' },
           { value: 'priority',  label: 'Priority' },
@@ -268,7 +268,7 @@ export function ViewSettingsPanel({
         <>
           <Divider tk={tk} />
           <SectionHeader title="Swimlanes" tk={tk} />
-          <div className="flex items-center gap-4" style={{ padding: '6px 0 4px' }}>
+          <div className="flex items-center gap-4" style={{ padding: '4px 0 4px' }}>
             <button
               onClick={canExpandAll ? onExpandAll : undefined}
               disabled={!canExpandAll}

@@ -23,15 +23,15 @@ function Palette({ groups, empty, query, entitySuggestions, onPickEntity }: {
 }) {
   const hasEntities = entitySuggestions.length > 0;
   return (
-    <div style={{ marginTop: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, maxHeight: 360, overflowY: 'auto', padding: 6 }}>
+    <div style={{ marginTop: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, maxHeight: 360, overflowY: 'auto', padding: 4 }}>
       {hasEntities && (
         <div>
-          <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>People, roles &amp; departments</div>
+          <div style={{ padding: '4px 8px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>People, roles &amp; departments</div>
           {entitySuggestions.map((s, i) => {
             const badge = ENTITY_BADGE[s.type] ?? ENTITY_BADGE.department;
             return (
               <button key={i} onMouseDown={() => onPickEntity(s)}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 5, padding: '8px 10px', cursor: 'pointer', font: 'inherit' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 5, padding: '8px 10px', cursor: 'pointer', font: 'inherit' }}
                 onMouseEnter={e => (e.currentTarget.style.background = T.selected)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 <span style={{ width: 22, height: 22, borderRadius: '50%', background: badge.color, color: 'var(--ds-text-inverse)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flex: '0 0 auto' }}>
@@ -49,19 +49,19 @@ function Palette({ groups, empty, query, entitySuggestions, onPickEntity }: {
         </div>
       )}
       {empty && (
-        <div style={{ padding: 14, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-          <span style={{ color: T.textDiscovery, flex: '0 0 auto', marginTop: 1 }}><Icon path={ICONS.spark} size={16} fill={T.textDiscovery} /></span>
+        <div style={{ padding: 12, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+          <span style={{ color: T.textDiscovery, flex: '0 0 auto', marginTop: 0 }}><Icon path={ICONS.spark} size={16} fill={T.textDiscovery} /></span>
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>Not a saved request — run it anyway</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 2 }}>The assistant will prepare "{query}", run it step by step, and remember it so it's quicker next time.</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 0 }}>The assistant will prepare "{query}", run it step by step, and remember it so it's quicker next time.</div>
           </div>
         </div>
       )}
       {groups.map(g => (
         <div key={g.cat}>
-          <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>{g.cat}</div>
+          <div style={{ padding: '4px 8px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>{g.cat}</div>
           {g.items.map((it, i) => (
-            <button key={i} onMouseDown={it.onPick} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 5, padding: '8px 10px', cursor: 'pointer', font: 'inherit' }}
+            <button key={i} onMouseDown={it.onPick} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 5, padding: '8px 10px', cursor: 'pointer', font: 'inherit' }}
               onMouseEnter={e => (e.currentTarget.style.background = T.selected)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <span style={{ color: T.iconSubtle, flex: '0 0 auto' }}><Icon path={catIcon(it.cat)} size={15} w={1.8} /></span>
               <span style={{ minWidth: 0, flex: 1 }}>
@@ -87,17 +87,17 @@ function InlineConfirm({ confirm, onCancel, onConfirm }: { confirm: ConfirmState
   const iconPath = high ? ICONS.warn : ICONS.spark;
   return (
     <div style={{ marginTop: 12, padding: '12px 14px', borderRadius: 6, background: bg, border: `1px solid ${high ? T.textDanger : T.borderSubtle}` }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-        <span style={{ color: accent, flex: '0 0 auto', marginTop: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        <span style={{ color: accent, flex: '0 0 auto', marginTop: 0 }}>
           <Icon path={iconPath} size={16} w={2} fill={high ? undefined : accent} />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>{confirm.title}</div>
-          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, marginTop: 2, lineHeight: 1.4 }}>{confirm.body}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, marginTop: 0, lineHeight: 1.4 }}>{confirm.body}</div>
           {confirm.steps && confirm.steps.length > 0 && (
             <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
               {confirm.steps.map((s, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
                   <span style={{ width: 5, height: 5, borderRadius: '50%', background: accent, flex: '0 0 auto' }} />
                   {s}
                 </div>
@@ -129,7 +129,7 @@ function ChipInput({ chips, onRemove, onRemoveLast, composer, onChange, onFocus,
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div
-      style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, cursor: 'text' }}
+      style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4, flex: 1, minWidth: 0, cursor: 'text' }}
       onClick={() => inputRef.current?.focus()}
     >
       {chips.map((chip, i) => (
@@ -202,7 +202,7 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
 
   return (
     <div style={{ background: 'var(--ds-surface-raised)', border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
-      <div style={{ padding: '14px 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ padding: '12px 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtle }}>Your request</span>
         <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>Type <Kbd>/</Kbd> to browse · <Kbd>Enter</Kbd> to run</span>
         <span style={{ marginLeft: 'auto' }}>{statusLoz}</span>
@@ -269,8 +269,8 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
         {c.confirm && <InlineConfirm confirm={c.confirm} onCancel={c.cancelConfirm} onConfirm={c.confirmRun} />}
 
         {!hasContent && !c.focused && !c.running && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, alignSelf: 'center', marginRight: 2 }}>Try:</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 12 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, alignSelf: 'center', marginRight: 0 }}>Try:</span>
             {c.quickChips.map((chip, i) => (
               <button key={i} onClick={chip.onPick}
                 style={{ display: 'inline-flex', alignItems: 'center', height: 28, padding: '0 12px', border: `1px solid ${T.border}`, background: T.surface, color: T.subtle, borderRadius: 14, font: 'inherit', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer' }}

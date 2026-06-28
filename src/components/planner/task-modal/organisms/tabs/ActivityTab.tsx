@@ -76,7 +76,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '20px',
+            gap: '16px',
             marginBottom: '24px'
           }}
         >

@@ -121,8 +121,8 @@ export function T10CheckoutModalNew({
       <div
         style={{
           position: 'fixed',
-          top: '50%',
-          left: '50%',
+          top: '48%',
+          left: '48%',
           transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '520px',
@@ -179,7 +179,7 @@ export function T10CheckoutModalNew({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
-                padding: '20px 24px',
+                padding: '16px 24px',
                 background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary)) 0%, var(--ds-background-brand-bold-hovered) 100%)',
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               }}
@@ -239,7 +239,7 @@ export function T10CheckoutModalNew({
                   gap: '8px',
                   maxHeight: '240px',
                   overflowY: 'auto',
-                  marginBottom: '20px',
+                  marginBottom: '16px',
                 }}
               >
                 {completedItems.map(item => {
@@ -335,7 +335,7 @@ export function T10CheckoutModalNew({
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '10px',
+                      gap: '8px',
                       cursor: 'pointer',
                     }}
                   >
@@ -365,7 +365,7 @@ export function T10CheckoutModalNew({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px',
+                    gap: '8px',
                     cursor: 'pointer',
                   }}
                 >
@@ -405,7 +405,7 @@ export function T10CheckoutModalNew({
                 type="button"
                 onClick={handleClose}
                 style={{
-                  padding: '10px 20px',
+                  padding: '8px 20px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtle)',
@@ -425,7 +425,7 @@ export function T10CheckoutModalNew({
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '10px 20px',
+                  padding: '8px 20px',
                   fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',

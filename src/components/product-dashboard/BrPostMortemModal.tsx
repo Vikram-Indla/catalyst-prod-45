@@ -111,7 +111,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 10,
+                gap: 8,
               }}
             >
               {[80, 60, 90, 50].map((w, i) => (
@@ -198,7 +198,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                   >
                     Lessons Learned
                   </h3>
-                  <ul style={{ margin: 0, paddingLeft: 20 }}>
+                  <ul style={{ margin: 0, paddingLeft: 16 }}>
                     {data.lessons.map((lesson, i) => (
                       <li
                         key={i}

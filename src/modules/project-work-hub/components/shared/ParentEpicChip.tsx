@@ -19,7 +19,7 @@ export const ParentEpicChip: React.FC<ParentEpicChipProps> = ({ epicId, epicKey,
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 24,
         padding: '0 10px',
         borderRadius: 4,

@@ -417,7 +417,7 @@ export function Description({
   }, [catyActiveForThisIssue, stopCatyStream, stopCatyImprove]);
 
   return (
-    <div style={{ marginBottom: 24, paddingLeft: 20 }}>
+    <div style={{ marginBottom: 24, paddingLeft: 16 }}>
       <div
         className="catalyst-description-header"
         style={{

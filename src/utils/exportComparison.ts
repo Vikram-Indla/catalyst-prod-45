@@ -107,19 +107,19 @@ async function exportAsPdf(releases: ComparedRelease[], generatedAt: string): Pr
     <head>
       <title>Release Comparison Report</title>
       <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: var(--ds-text); border-bottom: 2px solid var(--ds-background-information-bold); padding-bottom: 10px; }
-        .generated { color: var(--ds-text-subtlest); font-size: 12px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        body { font-family: Arial, sans-serif; margin: 16px; }
+        h1 { color: var(--ds-text); border-bottom: 0px solid var(--ds-background-information-bold); padding-bottom: 8px; }
+        .generated { color: var(--ds-text-subtlest); font-size: 12px; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
         th { background: var(--ds-surface-sunken); color: var(--ds-text-subtle); text-align: left; padding: 12px 8px; border: 1px solid var(--cp-bg-sunken); }
-        td { padding: 10px 8px; border: 1px solid var(--cp-bg-sunken); }
+        td { padding: 8px 8px; border: 1px solid var(--cp-bg-sunken); }
         .health-healthy { background: var(--ds-background-success); color: var(--ds-text-success); }
         .health-attention { background: var(--ds-background-warning); color: var(--ds-text-warning); }
         .health-at_risk { background: var(--ds-background-warning); color: var(--ds-text-danger); }
         .health-critical { background: var(--ds-background-danger); color: var(--ds-text-danger); }
         .metric-label { font-weight: 600; color: var(--ds-text-subtle); }
-        .section { margin-top: 30px; }
-        .section-title { font-size: 16px; font-weight: 600; color: var(--cp-ink-2, var(--cp-ink-2)); margin-bottom: 10px; }
+        .section { margin-top: 32px; }
+        .section-title { font-size: 16px; font-weight: 600; color: var(--cp-ink-2, var(--cp-ink-2)); margin-bottom: 8px; }
       </style>
     </head>
     <body>

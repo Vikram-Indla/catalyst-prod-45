@@ -177,7 +177,7 @@ export function CatyStarredDigest({ starredKeys, lastVisit }: CatyStarredDigestP
               }}>
                 {row.summary}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 0 }}>
                 {row.issueType && (
                   <span style={{ font: `400 12px/16px ${BODY}`, color: SUBTLEST }}>{row.issueType}</span>
                 )}
@@ -217,7 +217,7 @@ function NeutralPill({ children }: { children: React.ReactNode }) {
       letterSpacing: '0.165px',
       color: SUBTLE,
       background: PILL_BG,
-      padding: '2px 6px',
+      padding: '0px 6px',
       borderRadius: 3,
     }}>
       {children}
@@ -230,11 +230,11 @@ function NeutralPill({ children }: { children: React.ReactNode }) {
 function ChangeChip({ row }: { row: ChangeRow }) {
   if (row.field === 'assignee') {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
         <span style={{ font: `400 12px/16px ${BODY}`, color: SUBTLEST }}>Assigned</span>
         <ArrowRight />
         {row.newValue ? (
-          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <CatalystAvatar size="small" src={resolveAvatarUrl(row.newValue) || undefined} name={row.newValue} />
             <span style={{ font: `500 12px/16px ${BODY}`, color: TEXT }}>{row.newValue}</span>
           </span>
@@ -245,7 +245,7 @@ function ChangeChip({ row }: { row: ChangeRow }) {
     );
   }
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
       {row.oldValue && <NeutralPill>{row.oldValue}</NeutralPill>}
       {row.oldValue && row.newValue && <ArrowRight />}
       {row.newValue && <JiraForYouLozenge status={row.newValue} />}

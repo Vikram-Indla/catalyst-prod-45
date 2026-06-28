@@ -313,7 +313,7 @@ export const TaskBoardModal: React.FC<TaskBoardModalProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '20px',
+          padding: '16px',
           zIndex: 9999,
           backdropFilter: 'blur(4px)'
         }}
@@ -361,7 +361,7 @@ export const TaskBoardModal: React.FC<TaskBoardModalProps> = ({
             style={{
               flex: 1,
               overflowY: 'auto',
-              padding: '28px'
+              padding: '24px'
             }}
           >
             {renderTabContent()}

@@ -151,7 +151,7 @@ export function ManageWarningsDialog({ isOpen, onClose }: Props) {
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
-                gap: 10,
+                gap: 8,
                 padding: '12px 14px',
                 marginTop: 12,
                 background: 'var(--ds-background-warning)',

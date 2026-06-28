@@ -196,15 +196,15 @@ export function LoginFormPanel({
           role="alert"
           aria-live="assertive"
           style={{
-            display: 'flex', alignItems: 'flex-start', gap: 10,
-            padding: '11px 14px', borderRadius: 8, marginBottom: 4,
+            display: 'flex', alignItems: 'flex-start', gap: 8,
+            padding: '12px 14px', borderRadius: 8, marginBottom: 4,
             background: 'var(--ds-background-danger)',
             border: '1.5px solid var(--ds-border-danger)',
             color: 'var(--ds-text-danger)',
             fontSize: 'var(--ds-font-size-300)', fontWeight: 500, lineHeight: '1.45',
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0, marginTop: 1 }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0, marginTop: 0 }}>
             <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
             <path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
           </svg>

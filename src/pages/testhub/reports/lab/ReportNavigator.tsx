@@ -26,7 +26,7 @@ function StatusPill({ status }: { status: ReportStatus }) {
         fontSize: 'var(--ds-font-size-50)',
         fontWeight: 700,
         letterSpacing: '0.03em',
-        padding: '1px 6px',
+        padding: '0px 6px',
         borderRadius: 3,
         background: bg,
         color: text,
@@ -48,9 +48,9 @@ function NavItem({ def, selected, onSelect }: { def: ReportDef; selected: boolea
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: 6,
+        gap: 4,
         width: '100%',
-        padding: '7px 12px',
+        padding: '8px 12px',
         background: selected ? 'var(--ds-background-selected)' : 'transparent',
         border: 'none',
         borderLeft: selected ? '2px solid var(--ds-border-focused)' : '2px solid transparent',
@@ -101,7 +101,7 @@ export default function ReportNavigator({ selected, onSelect }: Props) {
     >
       <div
         style={{
-          padding: '14px 16px 10px',
+          padding: '12px 16px 10px',
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           color: 'var(--ds-text-subtlest)',
@@ -119,7 +119,7 @@ export default function ReportNavigator({ selected, onSelect }: Props) {
           <div key={cat}>
             <div
               style={{
-                padding: '10px 14px 4px',
+                padding: '8px 14px 4px',
                 fontSize: 'var(--ds-font-size-50)',
                 fontWeight: 700,
                 color: 'var(--ds-text-subtlest)',

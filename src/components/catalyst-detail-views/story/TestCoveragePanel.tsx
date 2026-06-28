@@ -119,7 +119,7 @@ export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: 
 
   return (
     <div style={{ marginBottom: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <Heading size="small">{heading}</Heading>
         {data.covered
           ? <Lozenge appearance="success">Covered</Lozenge>

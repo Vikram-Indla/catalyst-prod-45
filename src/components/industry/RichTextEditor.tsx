@@ -344,7 +344,7 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           onClick={() => {
             const selection = window.getSelection();
             if (selection && selection.toString()) {
-              execCommand('insertHTML', `<code style="background: var(--surface-3); padding: 2px 4px; border-radius: 3px; font-family: monospace;">${selection.toString()}</code>`);
+              execCommand('insertHTML', `<code style="background: var(--surface-3); padding: 0px 4px; border-radius: 3px; font-family: monospace;">${selection.toString()}</code>`);
             }
           }}
           title="Inline Code"
@@ -403,7 +403,7 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
         }
         [contentEditable] code {
           background: var(--surface-3);
-          padding: 2px 4px;
+          padding: 0px 4px;
           border-radius: 3px;
         }
         [contentEditable] blockquote {

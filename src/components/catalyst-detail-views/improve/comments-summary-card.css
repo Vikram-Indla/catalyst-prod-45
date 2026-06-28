@@ -15,7 +15,7 @@
 .csc-root {
   position: relative;
   border-radius: 8px;
-  padding: 1.5px;
+  padding: 0.5px;
   overflow: hidden;
   isolation: isolate;
   background: transparent;
@@ -35,8 +35,8 @@
   position: absolute;
   width: 250%;
   aspect-ratio: 1 / 1;
-  top: 50%;
-  left: 50%;
+  top: 48%;
+  left: 48%;
   transform: translate(-50%, -50%) rotate(0deg);
   z-index: -2;
   background: conic-gradient(
@@ -60,7 +60,7 @@
 .csc-root.csc-streaming::after {
   content: "";
   position: absolute;
-  inset: 1.5px;
+  inset: 0.5px;
   border-radius: 6.5px;
   background: var(--ds-surface);
   z-index: -1;
@@ -155,7 +155,7 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
   background: var(--ds-background-neutral);
-  padding: 1px 4px;
+  padding: 0px 4px;
   border-radius: 3px;
 }
 
@@ -170,7 +170,7 @@
 .csc-bouncing-dots {
   display: inline-flex;
   align-items: flex-end;
-  gap: 3px;
+  gap: 4px;
   height: 14px;
 }
 
@@ -196,7 +196,7 @@
   width: 1px;
   height: 14px;
   background: var(--ds-text-subtle);
-  margin-left: 2px;
+  margin-left: 0px;
   vertical-align: middle;
   animation: csc-blink 1s steps(2) infinite;
 }
@@ -236,8 +236,8 @@
 
 .csc-auto__switch__knob {
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 0px;
+  left: 0px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -248,7 +248,7 @@
 
 .csc-auto__switch__icon {
   position: absolute;
-  top: 50%;
+  top: 48%;
   width: 10px;
   height: 10px;
   transform: translateY(-50%);
@@ -261,12 +261,12 @@
 
 /* Cross sits on the right when OFF (the knob is on the left). */
 .csc-auto__switch__icon--cross {
-  right: 3px;
+  right: 4px;
 }
 
 /* Check sits on the left when ON (the knob is on the right). */
 .csc-auto__switch__icon--check {
-  left: 3px;
+  left: 4px;
 }
 
 /* Only show the icon that's on the opposite side of the knob. */

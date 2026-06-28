@@ -136,7 +136,7 @@ export default function EvidenceToExecutionSimple() {
                   borderRadius: '4px',
                   cursor: 'pointer',
                 }}>
-                  <input type="checkbox" defaultChecked={item.checked} style={{ marginTop: '2px', cursor: 'pointer' }} />
+                  <input type="checkbox" defaultChecked={item.checked} style={{ marginTop: '0px', cursor: 'pointer' }} />
                   <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)' }}>
                     <div style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{item.name}</div>
                     <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle)' }}>{item.type} • {item.lang}</div>

@@ -60,7 +60,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
         <div className="truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--fg-1)' }}>
           {name}
           {isCurrentUser && (
-            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontWeight: 400, marginLeft: 6 }}>(you)</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontWeight: 400, marginLeft: 4 }}>(you)</span>
           )}
         </div>
         <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)' }}>{email}</div>
@@ -72,7 +72,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
           onClick={() => !isCurrentUser && setDropdownOpen(!dropdownOpen)}
           className="rounded-full transition-colors"
           style={{
-            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '3px 10px',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '4px 10px',
             background: rs.bg, color: rs.text,
             border: 'none', cursor: isCurrentUser ? 'default' : 'pointer',
           }}

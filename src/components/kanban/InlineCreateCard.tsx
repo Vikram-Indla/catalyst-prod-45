@@ -620,8 +620,8 @@ function InlineCreateCardComponent({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 6,
-        padding: '10px 12px',
+        gap: 4,
+        padding: '8px 12px',
         background: 'var(--ds-surface)',
         borderRadius: 6,
         /* Jira-parity: full clean blue outline around the whole card. */
@@ -735,7 +735,7 @@ function InlineCreateCardComponent({
               ...iconBtnStyle,
               width: 'auto',
               padding: '0 8px',
-              gap: 6,
+              gap: 4,
             } : iconBtnStyle}
             aria-label="Due date"
             title="Due date"
@@ -754,7 +754,7 @@ function InlineCreateCardComponent({
             )}
           </button>
           <SmartPopover isOpen={showDatePicker} triggerRef={dateTriggerRef}>
-            <div style={{ padding: 6 }}>
+            <div style={{ padding: 4 }}>
               <Calendar
                 selected={dueDate ? [dueDate] : []}
                 defaultSelected={dueDate ? [dueDate] : []}
@@ -829,7 +829,7 @@ function InlineCreateCardComponent({
                   placeholder="Search a user…"
                   autoFocus
                   style={{
-                    width: '100%', padding: '6px 8px',
+                    width: '100%', padding: '4px 8px',
                     border: '1px solid var(--ds-border)',
                     borderRadius: 4, fontSize: 'var(--ds-font-size-300)',
                     fontFamily: 'var(--cp-font-body)', outline: 'none',

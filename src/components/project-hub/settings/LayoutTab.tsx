@@ -100,18 +100,18 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
                       key={f.id}
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '7px 12px',
+                        padding: '8px 12px',
                         borderBottom: i < sectionFields.length - 1 ? '1px solid var(--divider)' : 'none',
                         opacity: f.is_visible ? 1 : 0.5,
                       }}
                     >
                       <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                         {f.field_label}
-                        {f.is_required && <span style={{ color: 'var(--cp-danger)', marginLeft: 3 }}>*</span>}
+                        {f.is_required && <span style={{ color: 'var(--cp-danger)', marginLeft: 4 }}>*</span>}
                       </span>
                       <span
                         style={{
-                          fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 7px', borderRadius: 10,
+                          fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '0px 7px', borderRadius: 10,
                           background: f.is_visible ? 'var(--ds-background-success)' : 'var(--cp-bg-sunken, var(--cp-bg-sunken))',
                           color: f.is_visible ? 'var(--ds-background-success-bold)' : 'var(--cp-ink-4, var(--cp-border-neutral-light))',
                         }}
@@ -174,7 +174,7 @@ export function LayoutTab({ projectId }: LayoutTabProps) {
             {/* Group header */}
             <div
               style={{
-                padding: '10px 20px',
+                padding: '8px 20px',
                 borderBottom: '1px solid var(--divider)',
                 background: 'var(--ds-surface-sunken)',
                 display: 'flex', alignItems: 'center', gap: 8,
@@ -199,7 +199,7 @@ export function LayoutTab({ projectId }: LayoutTabProps) {
                   <button
                     onClick={() => setExpanded(isOpen ? null : t.id)}
                     style={{
-                      width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                      width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                       padding: '12px 20px', border: 'none', cursor: 'pointer',
                       background: isOpen ? 'var(--ds-background-selected)' : 'transparent',
                       borderBottom: (!isOpen && i < groupTypes.length - 1) ? '1px solid var(--divider)' : 'none',

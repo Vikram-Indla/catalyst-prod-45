@@ -45,10 +45,10 @@ export function ComposerFooter({
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 8,
-        padding: '6px 8px',
+        padding: '4px 8px',
       }}
     >
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 0 }}>
         <FooterBtn label="Attach" onClick={onAttach}>
           <PlusIcon size={16} />
         </FooterBtn>
@@ -248,14 +248,14 @@ function MicFooterBtn({
           style={{
             position: 'absolute',
             bottom: 'calc(100% + 6px)',
-            left: '50%',
+            left: '48%',
             transform: 'translateX(-50%)',
             display: 'flex',
             gap: 4,
             background: 'var(--cv2-bg-panel)',
             border: '1px solid var(--cv2-border-strong)',
             borderRadius: 999,
-            padding: '3px 6px',
+            padding: '4px 6px',
             boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.14))',
             whiteSpace: 'nowrap',
             pointerEvents: 'all',
@@ -274,7 +274,7 @@ function MicFooterBtn({
                   onVoiceModeChange(id);
                 }}
                 style={{
-                  padding: '2px 8px',
+                  padding: '0px 8px',
                   border: 'none',
                   borderRadius: 999,
                   fontSize: 'var(--ds-font-size-100)',

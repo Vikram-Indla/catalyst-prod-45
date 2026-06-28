@@ -87,7 +87,7 @@ export default function TaskGrid({ tasks, onUpdate }: Props) {
                 onKeyDown={handleKeyDown}
                 autoFocus
                 className="ph-form-input"
-                style={{ padding: '2px 6px', fontSize: 'var(--ph-text-sm)', height: 28, width: '100%' }}
+                style={{ padding: '0px 6px', fontSize: 'var(--ph-text-sm)', height: 28, width: '100%' }}
               />
             ) : (
               <span
@@ -112,7 +112,7 @@ export default function TaskGrid({ tasks, onUpdate }: Props) {
                   autoFocus
                   min={0}
                   className="ph-form-input"
-                  style={{ width: 50, padding: '2px 6px', fontSize: 'var(--ph-text-sm)', height: 28, textAlign: 'center' }}
+                  style={{ width: 50, padding: '0px 6px', fontSize: 'var(--ph-text-sm)', height: 28, textAlign: 'center' }}
                 />
               ) : (
                 <span onDoubleClick={() => startEdit(task.id, 'days', task.days)} style={{ cursor: 'text' }}>
@@ -135,7 +135,7 @@ export default function TaskGrid({ tasks, onUpdate }: Props) {
                 onKeyDown={handleKeyDown}
                 autoFocus
                 className="ph-form-input"
-                style={{ padding: '2px 6px', fontSize: 'var(--ph-text-xs)', height: 28 }}
+                style={{ padding: '0px 6px', fontSize: 'var(--ph-text-xs)', height: 28 }}
               />
             ) : (
               <span
@@ -158,7 +158,7 @@ export default function TaskGrid({ tasks, onUpdate }: Props) {
                 onKeyDown={handleKeyDown}
                 autoFocus
                 className="ph-form-input"
-                style={{ padding: '2px 6px', fontSize: 'var(--ph-text-xs)', height: 28 }}
+                style={{ padding: '0px 6px', fontSize: 'var(--ph-text-xs)', height: 28 }}
               />
             ) : (
               <span
@@ -191,7 +191,7 @@ export default function TaskGrid({ tasks, onUpdate }: Props) {
                     min={0}
                     max={100}
                     className="ph-form-input"
-                    style={{ width: 45, padding: '2px 4px', fontSize: 'var(--ph-text-xs)', height: 24, textAlign: 'center' }}
+                    style={{ width: 45, padding: '0px 4px', fontSize: 'var(--ph-text-xs)', height: 24, textAlign: 'center' }}
                   />
                 ) : (
                   <span

@@ -224,7 +224,7 @@ export function BrAttachmentsSection({ request }: Props) {
   return (
     <section
       data-cv-section="br-attachments"
-      style={{ marginBottom: 20 }}
+      style={{ marginBottom: 16 }}
       aria-label="Attachments"
     >
       {/* Section header — matches SubtasksPanel + LinkedWorkItemsHeader:
@@ -234,7 +234,7 @@ export function BrAttachmentsSection({ request }: Props) {
       <div
         className="br-att-header"
         style={{
-          display: 'flex', alignItems: 'center', gap: 0, padding: '6px 0',
+          display: 'flex', alignItems: 'center', gap: 0, padding: '4px 0',
           marginBottom: 4, userSelect: 'none',
         }}
       >
@@ -293,7 +293,7 @@ export function BrAttachmentsSection({ request }: Props) {
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: 84,
-          padding: '14px 16px',
+          padding: '12px 16px',
           borderRadius: 6,
           border: `2px dashed ${
             dragging
@@ -387,13 +387,13 @@ export function BrAttachmentsSection({ request }: Props) {
           marginTop: 12,
           display: 'flex',
           flexDirection: 'column',
-          gap: 6,
+          gap: 4,
         }}
       >
         {files.length === 0 ? (
           <div
             style={{
-              padding: '20px 12px',
+              padding: '16px 12px',
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
               borderRadius: 6,
               textAlign: 'center',
@@ -403,7 +403,7 @@ export function BrAttachmentsSection({ request }: Props) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
             }}
           >
             <AttachmentIcon label="" size="medium" />
@@ -461,7 +461,7 @@ export function BrAttachmentsSection({ request }: Props) {
                     style={{
                       fontSize: 'var(--ds-font-size-100)',
                       color: token('color.text.subtlest', 'var(--ds-text-subtlest)'),
-                      marginTop: 2,
+                      marginTop: 0,
                     }}
                   >
                     {formatSize(f.file_size || 0)} · {ft.label}

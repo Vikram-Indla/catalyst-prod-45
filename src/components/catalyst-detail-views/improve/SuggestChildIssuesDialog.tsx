@@ -235,7 +235,7 @@ export function SuggestChildIssuesDialog({
                   }}
                   onClick={() => toggleCheck(i)}
                 >
-                  <div style={{ flexShrink: 0, paddingTop: 1 }}>
+                  <div style={{ flexShrink: 0, paddingTop: 0 }}>
                     <Checkbox
                       isChecked={checked.has(i)}
                       onChange={() => toggleCheck(i)}

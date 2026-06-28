@@ -24,7 +24,7 @@ const getAvatarColor = (key: string) => PROJECT_COLORS[key] || 'var(--ds-text-su
 function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
   const { data: count } = useProjectTicketCount(projectKey);
   return (
-    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
+    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, borderRadius: 4, padding: '0px 6px', fontFamily: 'var(--cp-font-body)' }}>
       {count ?? '…'}
     </span>
   );
@@ -52,7 +52,7 @@ function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg
   const s = styles[label] || { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', color: 'var(--ds-text-subtle)' };
   return (
     <span title={label} style={{
-      display: 'inline-block', padding: '2px 6px', borderRadius: 4,
+      display: 'inline-block', padding: '0px 6px', borderRadius: 4,
       fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       background: s.bg, color: s.color, lineHeight: '16px', height: 20,
       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -188,7 +188,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               position: 'fixed',
               top: 48,
               left: 0,
-              right: 600,
+              right: 48,
               bottom: 0,
               background: 'var(--ds-shadow-raised, rgba(0,0,0,0.4))',
               zIndex: 49,
@@ -226,13 +226,13 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 650, color: 'var(--ds-text)', fontFamily: 'var(--cp-font-heading)' }}>Import from Jira</span>
             <span style={{ flex: 1 }} />
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 4, padding: '2px 8px' }}>AI-Assisted Import</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 4, padding: '0px 8px' }}>AI-Assisted Import</span>
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Step {step} of 2</span>
             <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}>
               <X size={16} />
             </button>
           </div>
-          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>Connected via Catalyst integration</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 0 }}>Connected via Catalyst integration</span>
         </div>
 
         {/* BODY */}
@@ -299,7 +299,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                   fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                   cursor: selectedTickets.length > 0 ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--cp-font-body)', opacity: selectedTickets.length > 0 ? 1 : 0.6,
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  display: 'flex', alignItems: 'center', gap: 4,
                 }}
               >
                 {importMutation.isPending && <Loader2 size={14} className="animate-spin" />}
@@ -428,7 +428,7 @@ function Step1({
               background: addInput.trim() ? 'var(--cp-blue)' : 'var(--ds-border)', color: 'var(--bg-app)',
               border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
               fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'not-allowed',
-              fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 6,
+              fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 4,
               opacity: addInput.trim() ? 1 : 0.6,
             }}
           >
@@ -439,26 +439,26 @@ function Step1({
         {/* Verify feedback */}
         <div style={{ marginTop: 8 }}>
           {verifyState === 'loading' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <Loader2 size={14} className="animate-spin" style={{ color: 'var(--fg-3)' }} />
               <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Verifying with Jira...</span>
             </div>
           )}
           {verifyState === 'success' && verifyResult && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <CheckCircle size={14} style={{ color: 'var(--sem-success)' }} />
               <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--sem-success)', fontFamily: 'var(--cp-font-body)' }}>{verifyResult.project_name} found · {verifyResult.count} tickets</span>
             </div>
           )}
           {verifyState === 'not_found' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <XCircle size={14} style={{ color: 'var(--sem-danger)' }} />
               <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--sem-danger)', fontFamily: 'var(--cp-font-body)' }}>Project not found. Check the key and try again.</span>
             </div>
           )}
           {verifyState === 'not_configured' && (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'var(--ds-surface)', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
-              <AlertTriangle size={14} style={{ color: 'var(--sem-warning)', flexShrink: 0, marginTop: 2 }} />
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'var(--ds-surface)', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '8px 12px', marginTop: 4 }}>
+              <AlertTriangle size={14} style={{ color: 'var(--sem-warning)', flexShrink: 0, marginTop: 0 }} />
               <div>
                 <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', fontFamily: 'var(--cp-font-body)' }}>Jira integration not configured. Go to Settings → Integrations. </span>
                 <a href="/settings/integrations" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-blue)', textDecoration: 'underline', fontFamily: 'var(--cp-font-body)' }}>Go to Settings →</a>
@@ -517,7 +517,7 @@ function Step2({
       {/* Filter bar */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         <div style={{ flex: 1, position: 'relative' }}>
-          <Search size={14} style={{ position: 'absolute', left: 12, top: 11, color: 'var(--fg-4)' }} />
+          <Search size={14} style={{ position: 'absolute', left: 12, top: 12, color: 'var(--fg-4)' }} />
           <input
             value={search}
             onChange={e => onSearch(e.target.value)}
@@ -546,7 +546,7 @@ function Step2({
 
       {/* Table */}
       {loading || syncing ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {[1, 2, 3].map(i => (
             <div key={i} className="animate-pulse" style={{ height: 50, background: 'var(--ds-background-neutral)', borderRadius: 4 }} />
           ))}
@@ -565,7 +565,7 @@ function Step2({
               marginTop: 12, height: 32, borderRadius: 6, padding: '0 16px',
               fontSize: 'var(--ds-font-size-300)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
               color: 'var(--cp-blue)', background: 'transparent', border: '1px solid var(--cp-blue)',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
             }}
           >
             {syncing && <Loader2 size={14} className="animate-spin" />}
@@ -593,7 +593,7 @@ function Step2({
             ].map(col => (
               <div key={col.label} style={{
                 width: col.w, flex: col.w ? undefined : 1,
-                padding: '10px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)',
+                padding: '8px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)',
                 textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)',
               }}>{col.label}</div>
             ))}
@@ -641,10 +641,10 @@ function Step2({
                 </div>
                 <div style={{ width: 100, padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   {reActivated ? (
-                    <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4, background: 'var(--ds-text)', color: 'var(--bg-app)', fontFamily: 'var(--cp-font-body)' }}>Re-import</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '0px 6px', borderRadius: 4, background: 'var(--ds-text)', color: 'var(--bg-app)', fontFamily: 'var(--cp-font-body)' }}>Re-import</span>
                   ) : imported ? (
                     <>
-                      <span className="group-hover:hidden" style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 6px', borderRadius: 4, background: 'var(--ds-background-neutral)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Imported</span>
+                      <span className="group-hover:hidden" style={{ fontSize: 'var(--ds-font-size-100)', padding: '0px 6px', borderRadius: 4, background: 'var(--ds-background-neutral)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Imported</span>
                       <button
                         className="hidden group-hover:inline-flex"
                         onClick={(e) => { e.stopPropagation(); onReImport(t.ticket_key); }}

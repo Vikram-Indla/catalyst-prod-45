@@ -107,7 +107,7 @@ export function StatusDropdown({ currentStatusId, currentStatus, onChange }: Sta
             borderRadius: '12px',
             boxShadow: '0 10px 40px var(--ds-shadow-raised, rgba(0, 0, 0, 0.2))',
             zIndex: 100001,
-            padding: '6px',
+            padding: '4px',
             minWidth: '160px',
           }}
         >
@@ -142,8 +142,8 @@ function DropdownItem({ value, color, isSelected, onClick }: { value: string; co
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
-        padding: '10px 12px',
+        gap: '8px',
+        padding: '8px 12px',
         borderRadius: '8px',
         cursor: 'pointer',
         backgroundColor: isSelected ? COLORS.accentLight : (isHovered ? COLORS.surfaceHover : 'transparent'),

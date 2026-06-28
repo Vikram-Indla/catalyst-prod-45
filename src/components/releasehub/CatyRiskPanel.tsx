@@ -189,7 +189,7 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded((v) => !v); } }}
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: '16px', borderBottom: expanded ? `1px solid ${T.border}` : 'none', cursor: 'pointer' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           <CatyPulseIcon size={16} />
           <span style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text, flexShrink: 0 }}>AI release risk summary</span>
           {!isLoading && !expanded && (
@@ -240,7 +240,7 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
             <div style={{ padding: '16px 16px 8px' }}>
               <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, margin: '0 0 8px' }}>What needs attention</p>
               {summary.drivers.slice(0, 4).map((d, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.subtlest, marginTop: 4, flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, margin: 0 }}>{d.title}</p>
@@ -249,7 +249,7 @@ export function CatyRiskPanel({ context, metrics, basis, fallbackNarrative }: Ca
                   {d.link && (
                     <button
                       onClick={() => goLink(d.link)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 2, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, whiteSpace: 'nowrap', flexShrink: 0 }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 0, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, whiteSpace: 'nowrap', flexShrink: 0 }}
                     >
                       {d.link === 'freeze' ? 'Resolve' : d.link === 'signoff' ? 'Review' : 'Open'}
                       <ChevronRight size={14} />

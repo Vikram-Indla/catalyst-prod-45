@@ -465,7 +465,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           background: 'var(--bg-app)', color: 'var(--fg-2)',
           border: '1.5px solid var(--divider)', borderRadius: '8px',
           padding: '8px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
-          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
           transition: 'border-color 150ms',
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))'; }}
@@ -479,7 +479,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
       {/* Panel */}
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', right: 0, marginTop: 6,
+          position: 'absolute', top: '48%', right: 0, marginTop: 4,
           width: 330, borderRadius: 14,
           background: dk ? 'var(--ds-surface-raised, var(--cp-ink-1))' : 'var(--ds-surface)', border: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border)'}`,
           boxShadow: dk ? '0 12px 40px var(--ds-shadow-raised, rgba(0,0,0,0.50)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.30))' : '0 12px 40px rgba(27,42,74,0.16), 0 2px 8px rgba(27,42,74,0.08)',
@@ -488,18 +488,18 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
         }}>
           {/* Header */}
           <div style={{
-            background: 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered), var(--cp-blue))', padding: '14px 16px',
+            background: 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered), var(--cp-blue))', padding: '12px 16px',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--ds-background-information)" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
               <span style={{ color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700 }}>Export Work Items</span>
             </div>
-            <div style={{ color: 'var(--ds-background-information)', fontSize: 'var(--ds-font-size-100)', marginLeft: 26 }}>Select months · Sheet 1 = Resources</div>
+            <div style={{ color: 'var(--ds-background-information)', fontSize: 'var(--ds-font-size-100)', marginLeft: 24 }}>Select months · Sheet 1 = Resources</div>
           </div>
 
           {/* Month selection */}
-          <div style={{ padding: '14px 16px 8px' }}>
-            <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest)', letterSpacing: '0.06em', marginBottom: 10 }}>
+          <div style={{ padding: '12px 16px 8px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest)', letterSpacing: '0.06em', marginBottom: 8 }}>
               SELECT PERIOD
             </div>
 
@@ -509,7 +509,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                 <label
                   key={opt.offset}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
+                    display: 'flex', alignItems: 'center', gap: 8,
                     padding: '8px 10px', borderRadius: 8, marginBottom: 4,
                     cursor: 'pointer', transition: 'background 100ms',
                     background: checked ? (dk ? 'var(--ds-background-success-bold, rgba(74, 222, 128, 0.06))' : 'var(--ds-background-success)') : 'transparent',
@@ -537,13 +537,13 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   {opt.isCurrent && (
                     <span style={{
                       fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-surface)',
-                      background: 'var(--cp-blue)', borderRadius: 4, padding: '2px 7px',
+                      background: 'var(--cp-blue)', borderRadius: 4, padding: '0px 7px',
                     }}>CURRENT</span>
                   )}
                   {opt.isFuture && (
                     <span style={{
                       fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: dk ? 'var(--ds-background-warning-bold)' : 'var(--ds-background-warning-bold)',
-                      background: dk ? 'var(--ds-background-warning-bold, rgba(251, 191, 36, 0.10))' : 'var(--ds-background-warning, var(--ds-background-warning))', borderRadius: 4, padding: '2px 7px',
+                      background: dk ? 'var(--ds-background-warning-bold, rgba(251, 191, 36, 0.10))' : 'var(--ds-background-warning, var(--ds-background-warning))', borderRadius: 4, padding: '0px 7px',
                     }}>UPCOMING</span>
                   )}
                 </label>
@@ -558,7 +558,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               onClick={handleGenerate}
               disabled={!canGenerate}
               style={{
-                width: '100%', padding: '11px 16px', borderRadius: 8,
+                width: '100%', padding: '12px 16px', borderRadius: 8,
                 border: 'none', cursor: canGenerate ? 'pointer' : 'not-allowed',
                 fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-surface)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -583,7 +583,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               )}
             </button>
             {totalSelected > 0 && (
-              <div style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest)', marginTop: 6 }}>
+              <div style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest)', marginTop: 4 }}>
                 {totalSelected} {totalSelected === 1 ? 'month' : 'months'} selected
               </div>
             )}

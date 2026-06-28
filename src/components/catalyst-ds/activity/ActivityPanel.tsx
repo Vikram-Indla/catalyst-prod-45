@@ -280,7 +280,7 @@ function ActivityPanel({
           {replyingToId === c.id && (
             <div
               style={{
-                paddingLeft: 44,
+                paddingLeft: 40,
                 paddingTop: 8,
                 paddingBottom: 8,
               }}
@@ -290,7 +290,7 @@ function ActivityPanel({
                   fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtle)',
-                  marginBottom: 6,
+                  marginBottom: 4,
                 }}
               >
                 Replying to {c.author.name}

@@ -27,7 +27,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
         background: 'var(--cp-float)',
         border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-xl, 12px)',
-        padding: 20,
+        padding: 16,
         cursor: 'pointer',
         transition: 'box-shadow 150ms ease, border-color 150ms ease',
         fontFamily: 'var(--cp-font-body)',
@@ -35,17 +35,17 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
       className="wh-resource-card"
     >
       {/* Row 1: Avatar + Name + Department */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <AvatarChip name={r.full_name} size={36} avatarUrl={r.avatar_url} />
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--fg-1)' }}>
               {r.full_name}
             </div>
-            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', marginTop: 1 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', marginTop: 0 }}>
               {r.role || 'Team Member'}
               {r.assignment_type && (
-                <span style={{ marginLeft: 6, fontSize: 'var(--ds-font-size-100)', padding: '1px 6px', borderRadius: 4, background: 'var(--ds-text-subtlest, rgba(100,116,139,0.1))', color: 'var(--fg-2)', fontWeight: 500 }}>
+                <span style={{ marginLeft: 4, fontSize: 'var(--ds-font-size-100)', padding: '0px 6px', borderRadius: 4, background: 'var(--ds-text-subtlest, rgba(100,116,139,0.1))', color: 'var(--fg-2)', fontWeight: 500 }}>
                   {r.assignment_type}
                 </span>
               )}
@@ -82,7 +82,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
             <span
               key={name}
               style={{
-                padding: '2px 8px',
+                padding: '0px 8px',
                 borderRadius: 9999,
                 background: 'var(--ds-background-information, rgba(37, 99, 235, 0.08))',
                 color: 'var(--cp-blue)',

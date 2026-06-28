@@ -77,7 +77,7 @@ export function StepFeatures({ draft, onChange }: Props) {
                         display: 'block',
                         color: token('color.text.subtle'),
                         fontSize: 'var(--ds-font-size-200)',
-                        marginTop: 2,
+                        marginTop: 0,
                       }}
                     >
                       {feature.description}

@@ -49,7 +49,7 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
               display: 'flex',
               alignItems: 'flex-start',
               gap: 8,
-              padding: '10px 12px',
+              padding: '8px 12px',
               borderBottom: '1px solid var(--ds-border)',
             }}
           >
@@ -70,7 +70,7 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 4,
                   fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text)',
                 }}
@@ -84,7 +84,7 @@ export function ChatBookmarksPanel({ onOpenConversation }: ChatBookmarksPanelPro
                 style={{
                   fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtle)',
-                  marginTop: 2,
+                  marginTop: 0,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   display: '-webkit-box',

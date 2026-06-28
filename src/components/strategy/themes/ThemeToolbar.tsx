@@ -44,7 +44,7 @@ export function ThemeToolbar(props: Props) {
     <div
       className="flex items-center gap-2 flex-wrap"
       style={{
-        padding: '10px 0',
+        padding: '8px 0',
         borderBottom: `1px solid ${borderColor}`,
         marginBottom: 16,
       }}
@@ -63,7 +63,7 @@ export function ThemeToolbar(props: Props) {
             border: `1px solid ${borderColor}`,
             background: isDark ? DK.bg : 'var(--bg-app)',
             color: isDark ? DK.t1 : 'var(--fg-2)',
-            paddingLeft: 30, paddingRight: 8, outline: 'none',
+            paddingLeft: 32, paddingRight: 8, outline: 'none',
           }}
         />
       </div>
@@ -196,7 +196,7 @@ export function ThemeToolbar(props: Props) {
             borderRadius: 20, padding: '0 16px', height: 32,
             fontSize: 'var(--ds-font-size-200)', fontWeight: 600, letterSpacing: '0.3px',
             cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', gap: 4,
             transition: 'all 200ms ease',
             fontFamily: 'var(--cp-font-body)',
           }}

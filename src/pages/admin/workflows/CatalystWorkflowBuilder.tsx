@@ -154,14 +154,14 @@ function StatusNode({ data, selected }: NodeProps) {
         <div style={{
           position: 'absolute',
           top: -16,
-          left: '50%',
+          left: '48%',
           transform: 'translateX(-50%)',
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           letterSpacing: '0.08em',
           color: DARK.textBrand,
           background: DARK.canvas,
-          padding: '1px 5px',
+          padding: '0px 5px',
           borderRadius: 2,
           whiteSpace: 'nowrap',
         }}>
@@ -172,14 +172,14 @@ function StatusNode({ data, selected }: NodeProps) {
         <div style={{
           position: 'absolute',
           bottom: -16,
-          left: '50%',
+          left: '48%',
           transform: 'translateX(-50%)',
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           letterSpacing: '0.08em',
           color: 'var(--ds-link)',
           background: DARK.canvas,
-          padding: '1px 5px',
+          padding: '0px 5px',
           borderRadius: 2,
           whiteSpace: 'nowrap',
         }}>
@@ -558,7 +558,7 @@ export function CatalystWorkflowBuilder({
       }}>
         {/* Add status button / inline form */}
         {addingStatus ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <select
               value={newStatusCat}
               onChange={(e) => setNewStatusCat(e.target.value as StatusCategory)}
@@ -707,7 +707,7 @@ export function CatalystWorkflowBuilder({
           }
           .react-flow__controls-button {
             background: ${DARK.surface};
-            border-bottom: 1px solid ${DARK.border};
+            border-bottom: 0px solid ${DARK.border};
             fill: ${DARK.text};
           }
           .react-flow__controls-button:hover {

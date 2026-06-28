@@ -15,7 +15,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
   return (
     <button
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
-      className="relative flex flex-col text-left rounded-[6px] transition-shadow duration-150 p-4 cursor-pointer bg-[var(--ds-surface-raised)] dark:bg-[var(--ds-surface-raised)] border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken)))] dark:border-[var(--ds-border,var(--cp-ink-1))] shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]"
+      className="relative flex flex-col text-left rounded-[6px] transition-shadow duration-150 p-4 cursor-pointer bg-[var(--ds-surface-raised)] dark:bg-[var(--ds-surface-raised)] border border-[var(--ds-border)] dark:border-[var(--ds-border)] shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
     >
       {/* Star top-right */}
       <div className="absolute top-3 right-3">
@@ -33,7 +33,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
           style={{
             fontFamily: 'var(--ds-font-family-heading)',
             width: 36,
-            backgroundColor: project.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
+            backgroundColor: project.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             borderRadius: 6,
             fontSize: project.key.length > 2 ? 10 : 11,
             letterSpacing: project.key.length > 2 ? '-0.02em' : undefined,
@@ -42,10 +42,10 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
           {project.key}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1)))] dark:text-[var(--ds-text,var(--cp-bg-neutral))]" style={{ fontFamily: 'var(--ds-font-family-heading)' }}>
+          <div className="truncate text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontFamily: 'var(--ds-font-family-heading)' }}>
             {project.name}
           </div>
-          <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-[var(--ds-text-subtlest,var(--cp-text-secondary))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]">
+          <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
             {project.key}
           </span>
         </div>
@@ -60,7 +60,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
       {/* Footer: avatars + updated */}
       <div className="flex items-center justify-between mt-auto">
         <AvatarStack names={project.member_names || []} />
-        <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-text-secondary))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary))]">
+        <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
           {formatRelativeTime(project.updated_at)}
         </span>
       </div>

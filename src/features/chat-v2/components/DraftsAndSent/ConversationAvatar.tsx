@@ -72,7 +72,7 @@ export function ConversationTitle({ kind, isPrivate, title, weight = 700 }: Conv
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         minWidth: 0,
         overflow: 'hidden',
         textOverflow: 'ellipsis',

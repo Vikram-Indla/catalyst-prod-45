@@ -80,7 +80,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
                 <span style={{ width: 100 }}>
                   <span
                     className="rounded-full"
-                    style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 8px', background: tag.bg, color: tag.text }}
+                    style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '0px 8px', background: tag.bg, color: tag.text }}
                   >
                     {tag.label}
                   </span>

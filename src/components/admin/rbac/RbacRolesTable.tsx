@@ -63,7 +63,7 @@ export function RbacRolesTable({
                 onKeyDown={(e) => e.key === 'Enter' && onSelect(role.id)}
                 style={{
                   position: 'relative',
-                  padding: '10px 12px',
+                  padding: '8px 12px',
                   cursor: 'pointer',
                   background: isSelected ? T.selected : 'transparent',
                   borderLeft: isSelected ? `3px solid ${T.brandBorder}` : '3px solid transparent',
@@ -99,12 +99,12 @@ export function RbacRolesTable({
                 </div>
 
                 {/* Role code */}
-                <div style={{ fontSize: 11, color: T.subtlest, fontFamily: 'monospace', marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: T.subtlest, fontFamily: 'monospace', marginTop: 0 }}>
                   {role.code}
                 </div>
 
                 {/* Stats + active badge */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 5 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
                   <span style={{ fontSize: 11, color: T.subtlest }}>
                     {role.user_count ?? 0} users
                   </span>
@@ -119,7 +119,7 @@ export function RbacRolesTable({
       </div>
 
       {/* Footer */}
-      <div style={{ padding: '10px 12px', borderTop: `1px solid ${T.border}`, flexShrink: 0 }}>
+      <div style={{ padding: '8px 12px', borderTop: `1px solid ${T.border}`, flexShrink: 0 }}>
         <Button
           appearance="primary"
           spacing="compact"

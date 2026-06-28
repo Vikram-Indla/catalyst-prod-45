@@ -179,7 +179,7 @@ export default function ResetPassword() {
             fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: 'var(--ds-text-subtlest, var(--cp-text-secondary))',
-            marginTop: 2,
+            marginTop: 0,
             fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
           }}
         >

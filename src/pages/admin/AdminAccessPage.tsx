@@ -379,7 +379,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
   };
 
   // ADS field label: sentence-case, 12px/600, subtle token — no all-caps, no tracking.
-  const lbl: React.CSSProperties = { display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 };
+  const lbl: React.CSSProperties = { display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 };
 
   const selectStyles = { menuPortal: (base: Record<string, unknown>) => ({ ...base, zIndex: 10000 }) };
   const deptOptions = [{ label: 'No department', value: '' }, ...departments.map(d => ({ label: d.name, value: d.id }))];
@@ -395,7 +395,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
           <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', letterSpacing: '-0.01em' }}>
             {result ? 'Setup link ready' : 'Create access'}
           </h2>
-          {!result && <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>Creates the user and a one-time setup link</p>}
+          {!result && <p style={{ margin: '0px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>Creates the user and a one-time setup link</p>}
         </div>
         <button onClick={onClose} aria-label="Close" style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'var(--ds-text-subtlest)', display: 'flex' }}>
           <CloseIcon label="Close" size="medium" />
@@ -404,7 +404,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
 
       {!result ? (
         <>
-          <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
             {/* Identity */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -494,7 +494,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
                   const active = channel === c.value;
                   const iconColor = active ? 'var(--ds-icon-information)' : 'var(--ds-icon-subtle)';
                   return (
-                    <button key={c.value} type="button" role="radio" aria-checked={active} aria-label={`${c.label} — ${c.sub}`} onClick={() => setChannel(c.value)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '12px 8px', borderRadius: 8, border: `1px solid ${active ? 'var(--ds-border-selected, var(--ds-link))' : 'var(--ds-border)'}`, background: active ? 'var(--ds-background-selected)' : 'transparent', cursor: 'pointer', transition: 'all 0.1s' }}>
+                    <button key={c.value} type="button" role="radio" aria-checked={active} aria-label={`${c.label} — ${c.sub}`} onClick={() => setChannel(c.value)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '12px 8px', borderRadius: 8, border: `1px solid ${active ? 'var(--ds-border-selected, var(--ds-link))' : 'var(--ds-border)'}`, background: active ? 'var(--ds-background-selected)' : 'transparent', cursor: 'pointer', transition: 'all 0.1s' }}>
                       <span style={{ display: 'flex' }}>{c.render(iconColor)}</span>
                       <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: active ? 'var(--ds-text-information)' : 'var(--ds-text)' }}>{c.label}</span>
                       <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)' }}>{c.sub}</span>
@@ -506,7 +506,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
                 <div style={{ marginTop: 12 }}>
                   <label style={lbl}>Phone <span style={{ color: 'var(--ds-text-subtlest)' }}>(optional)</span></label>
                   <Textfield value={phone} onChange={e => setPhone((e.target as HTMLInputElement).value)} placeholder="+966 5x xxx xxxx" aria-label="Phone" />
-                  <p style={{ margin: '6px 0 0', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled)' }}>Provider integration pending — the link is recorded and shown below for manual sharing.</p>
+                  <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-disabled)' }}>Provider integration pending — the link is recorded and shown below for manual sharing.</p>
                 </div>
               )}
             </div>
@@ -532,7 +532,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
 
           {/* Pending-link conflict banner — replaces the generic error toast */}
           {pendingConflict && (
-            <div style={{ margin: '0 20px 4px', padding: '10px 14px', background: 'var(--ds-background-warning)', border: '1px solid var(--ds-border-warning)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ margin: '0 20px 4px', padding: '8px 14px', background: 'var(--ds-background-warning)', border: '1px solid var(--ds-border-warning)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-warning)', lineHeight: 1.4 }}>
                 <strong>A pending link already exists for this email.</strong>
                 {' '}Replacing it will expire the old link immediately.
@@ -544,7 +544,7 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
           )}
 
           {/* Footer — amber blockHint on the left, actions on the right */}
-          <div style={{ padding: '14px 20px', borderTop: '1px solid var(--ds-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <div style={{ padding: '12px 20px', borderTop: '1px solid var(--ds-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', fontWeight: 500 }}>
               {/* Guidance hint — only after the user has started, never on a pristine open (no premature error) */}
               {!pendingConflict && (email || fullName || roleOpt)
@@ -562,12 +562,12 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
       ) : (
           /* ─ Link result pane ─ */
           <>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ padding: 12, background: 'var(--ds-background-information)', borderRadius: 8, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 'var(--ds-font-size-800)', flexShrink: 0 }}>✅</span>
                 <div>
                   <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text)' }}>Access created for {email}</p>
-                  <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
+                  <p style={{ margin: '0px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
                     Role: <strong>{roleOpt?.label}</strong> · Channel: <strong style={{ textTransform: 'capitalize' }}>{result.channel}{result.channelPending ? ' (manual share)' : ''}</strong>
                   </p>
                 </div>
@@ -585,17 +585,17 @@ function CreateAccessInline({ onClose, onCreated }: { onClose: () => void; onCre
 
               <div style={{ display: 'flex', gap: 24, fontSize: 'var(--ds-font-size-300)' }}>
                 <div>
-                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-disabled)', marginBottom: 2 }}>Expires</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-disabled)', marginBottom: 0 }}>Expires</div>
                   <div style={{ color: 'var(--ds-text)' }}>{result.expiresAt ? new Date(result.expiresAt).toLocaleString() : '—'}</div>
                 </div>
               </div>
 
-              <div style={{ padding: '10px 12px', background: 'var(--ds-background-warning)', borderRadius: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning)', lineHeight: 1.5 }}>
+              <div style={{ padding: '8px 12px', background: 'var(--ds-background-warning)', borderRadius: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning)', lineHeight: 1.5 }}>
                 This link is single-use and expires after one click. If the recipient's contact details were wrong, expire it below and regenerate. Catalyst never stores the raw token.
               </div>
             </div>
 
-            <div style={{ padding: '14px 24px', borderTop: '1px solid var(--ds-border)', display: 'flex', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
+            <div style={{ padding: '12px 24px', borderTop: '1px solid var(--ds-border)', display: 'flex', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button appearance="default" isLoading={isLoading} onClick={() => submit(true)}>Regenerate</Button>
                 <Button appearance="subtle" isDisabled={!result.link} onClick={expireNow}>Expire now</Button>
@@ -880,9 +880,9 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
             {/* Profile tab */}
             <TabPanel>
-              <div style={{ paddingTop: 20 }}>
+              <div style={{ paddingTop: 16 }}>
                 {/* Identity */}
-                <div style={{ marginBottom: 20 }}>
+                <div style={{ marginBottom: 16 }}>
                   <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', letterSpacing: '0.04em', marginBottom: 8 }}>Identity</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
                     <div>
@@ -897,14 +897,14 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                   <label style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>Email</label>
                   <Textfield value={email} onChange={e => setEmail((e.target as HTMLInputElement).value)} isDisabled={isSuperAdmin || saving} placeholder="name@company.com" />
                   {isPlaceholderEmail && (
-                    <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning)' }}>
+                    <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning)' }}>
                       Placeholder email — set a real address before generating a setup link.
                     </div>
                   )}
                 </div>
 
                 {/* Role */}
-                <div style={{ marginBottom: 20 }}>
+                <div style={{ marginBottom: 16 }}>
                   <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', letterSpacing: '0.04em', marginBottom: 8 }}>Role</div>
                   {isSuperAdmin ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -944,7 +944,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
             {/* Access tab */}
             <TabPanel>
-              <div style={{ paddingTop: 20 }}>
+              <div style={{ paddingTop: 16 }}>
                 <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', letterSpacing: '0.04em', marginBottom: 12 }}>Module access</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px' }}>
                   {MODULE_ITEMS.map(m => (
@@ -977,11 +977,11 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
             {/* Security tab */}
             <TabPanel>
-              <div style={{ paddingTop: 20, display: 'flex', flexDirection: 'column', gap: 0 }}>
+              <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {canModify ? (
                   <>
                     {/* Setup link */}
-                    <div style={{ marginBottom: 20 }}>
+                    <div style={{ marginBottom: 16 }}>
                       <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', letterSpacing: '0.04em', marginBottom: 8 }}>Setup link</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                         <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>
@@ -992,7 +992,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                         </Button>
                       </div>
                       {genLink && (
-                        <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+                        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                           <div style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-background-neutral)', border: '1px solid var(--ds-border)', borderRadius: 6, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {genLink}
                           </div>
@@ -1004,7 +1004,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                     </div>
 
                     {/* Password reset email */}
-                    <div style={{ borderTop: '1px solid var(--ds-border-subtle)', paddingTop: 20, marginBottom: 20 }}>
+                    <div style={{ borderTop: '1px solid var(--ds-border-subtle)', paddingTop: 16, marginBottom: 16 }}>
                       <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', letterSpacing: '0.04em', marginBottom: 8 }}>Password reset email</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                         <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>Send a reset link to {user.email}</div>
@@ -1015,7 +1015,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                     </div>
 
                     {/* Set new password */}
-                    <div style={{ borderTop: '1px solid var(--ds-border-subtle)', paddingTop: 20, marginBottom: 20 }}>
+                    <div style={{ borderTop: '1px solid var(--ds-border-subtle)', paddingTop: 16, marginBottom: 16 }}>
                       <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', letterSpacing: '0.04em', marginBottom: 8 }}>Set new password</div>
                       {stagedPassword ? (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
@@ -1033,12 +1033,12 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                             </Button>
                           </div>
                           {pwOpen && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                               <div>
                                 <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>New password</label>
                                 <div style={{ position: 'relative' }}>
                                   <Textfield type={showPw ? 'text' : 'password'} value={newPw} onChange={e => setNewPw((e.target as HTMLInputElement).value)} placeholder="Min 8 characters" />
-                                  <button type="button" onClick={() => setShowPw(v => !v)} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', padding: 0 }}>
+                                  <button type="button" onClick={() => setShowPw(v => !v)} style={{ position: 'absolute', right: 8, top: '48%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)', padding: 0 }}>
                                     {showPw ? 'Hide' : 'Show'}
                                   </button>
                                 </div>
@@ -1062,16 +1062,16 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                     </div>
 
                     {/* Account status */}
-                    <div style={{ borderTop: '1px solid var(--ds-border-subtle)', paddingTop: 20, marginBottom: canDelete ? 20 : 0 }}>
+                    <div style={{ borderTop: '1px solid var(--ds-border-subtle)', paddingTop: 16, marginBottom: canDelete ? 20 : 0 }}>
                       <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', letterSpacing: '0.04em', marginBottom: 8 }}>Account status</div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                         <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
                             <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)' }}>
                               {isActive ? 'Account is active' : 'Account is suspended'}
                             </span>
                             {localApprovalStatus !== (user.approval_status ?? null) && (
-                              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, padding: '1px 6px', borderRadius: 3, background: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)', border: '1px solid var(--ds-border-warning)' }}>
+                              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, padding: '0px 6px', borderRadius: 3, background: 'var(--ds-background-warning)', color: 'var(--ds-text-warning)', border: '1px solid var(--ds-border-warning)' }}>
                                 pending save
                               </span>
                             )}
@@ -1092,7 +1092,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
 
                     {/* Danger zone */}
                     {canDelete && (
-                      <div style={{ borderTop: '2px solid var(--ds-border-danger)', paddingTop: 20 }}>
+                      <div style={{ borderTop: '2px solid var(--ds-border-danger)', paddingTop: 16 }}>
                         <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-danger)', letterSpacing: '0.04em', marginBottom: 8 }}>Danger zone</div>
                         {deletePhase === 'confirm' ? (
                           <div style={{ background: 'var(--ds-background-danger)', border: '1px solid var(--ds-border-danger)', borderRadius: 4, padding: '12px 16px' }}>
@@ -1110,7 +1110,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                         ) : (
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                             <div>
-                              <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)', marginBottom: 2 }}>Delete account</div>
+                              <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text)', marginBottom: 0 }}>Delete account</div>
                               <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)' }}>Permanently remove this user and all their data.</div>
                             </div>
                             <Button appearance="danger" isDisabled={busyAny} onClick={() => setDeletePhase('confirm')}>Delete user</Button>
@@ -1143,7 +1143,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                   { label: 'Password set / logged in', at: user.last_login_at },
                 ];
                 return (
-                  <div style={{ paddingTop: 20 }}>
+                  <div style={{ paddingTop: 16 }}>
                     {(lockedNow || fails > 0) && (
                       <div style={{ marginBottom: 16, padding: '8px 12px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', background: lockedNow ? 'var(--ds-background-danger)' : 'var(--ds-background-warning)', color: lockedNow ? 'var(--ds-text-danger)' : 'var(--ds-text-warning)', border: `1px solid ${lockedNow ? 'var(--ds-border-danger)' : 'var(--ds-border-warning)'}` }}>
                         {lockedNow
@@ -1153,7 +1153,7 @@ function UserEditPanel({ user, currentUserId, adminCount, onClose, onSaved }: Us
                     )}
                     <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', letterSpacing: '0.04em', marginBottom: 12 }}>Onboarding journey</div>
                     {steps.map(s => (
-                      <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: '1px solid var(--ds-border-subtle)' }}>
+                      <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: '1px solid var(--ds-border-subtle)' }}>
                         <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: s.at ? 'var(--ds-icon-success)' : 'var(--ds-border)' }} />
                         <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', flex: 1 }}>{s.label}</span>
                         <span style={{ fontSize: 'var(--ds-font-size-200)', color: s.at ? 'var(--ds-text-subtle)' : 'var(--ds-text-subtlest)' }}>
@@ -1236,11 +1236,11 @@ function BulkGenerateModal({ users, onClose }: { users: CatalystUser[]; onClose:
       <Modal onClose={onClose} width="large" shouldScrollInViewport autoFocus={false} label="Bulk generate setup links">
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ds-border)' }}>
           <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)' }}>Bulk generate setup links</h2>
-          <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
+          <p style={{ margin: '0px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>
             For users with a real email who have never logged in. Placeholder (+jira) rows are excluded — give them a real email first.
           </p>
         </div>
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: 16 }}>
           {!running && !done && (
             <p style={{ margin: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)' }}>
               {eligible.length === 0
@@ -1267,9 +1267,9 @@ function BulkGenerateModal({ users, onClose }: { users: CatalystUser[]; onClose:
               </table>
             </div>
           )}
-          {done && <p style={{ margin: '10px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{okCount} of {results.length} links generated.</p>}
+          {done && <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>{okCount} of {results.length} links generated.</p>}
         </div>
-        <div style={{ padding: '14px 20px', borderTop: '1px solid var(--ds-border)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--ds-border)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           {done
             ? <Button appearance="default" isDisabled={okCount === 0} onClick={copyAll}>{copied ? '✓ Copied all' : 'Copy all links'}</Button>
             : <Button appearance="primary" isLoading={running} isDisabled={eligible.length === 0} onClick={run}>Generate {eligible.length} link{eligible.length === 1 ? '' : 's'}</Button>}
@@ -1820,7 +1820,7 @@ function InvitationsTab() {
                     {inv.accepted_at ? (
                       <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-disabled)' }}>—</span>
                     ) : (
-                      <div style={{ display: 'flex', gap: 6 }}>
+                      <div style={{ display: 'flex', gap: 4 }}>
                         {(isPending || expired) && (
                           <button
                             onClick={() => handleResend(inv)}

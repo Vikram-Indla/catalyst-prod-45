@@ -141,7 +141,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
       ref={ref}
       style={{
         position: 'absolute',
-        top: '100%',
+        top: '48%',
         left: 0,
         zIndex: 9999,
         width: 260,
@@ -197,9 +197,9 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 10,
+                  gap: 8,
                   width: '100%',
-                  padding: '7px 12px',
+                  padding: '8px 12px',
                   border: 'none',
                   cursor: 'pointer',
                   background: isCurrent
@@ -283,7 +283,7 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
           display: 'flex',
           alignItems: 'center',
           width: '100%',
-          padding: '6px 12px',
+          padding: '4px 12px',
           border: 'none',
           background: 'transparent',
           cursor: 'pointer',

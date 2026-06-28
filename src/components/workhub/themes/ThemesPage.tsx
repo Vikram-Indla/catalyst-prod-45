@@ -76,7 +76,7 @@ export function ThemesPage() {
           <button
             onClick={() => setModalOpen(true)}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
+              display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '8px 16px', borderRadius: 8, border: 'none',
               background: 'var(--cp-blue)', color: 'var(--bg-app)',
               fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
@@ -97,7 +97,7 @@ export function ThemesPage() {
           const isActive = activeTab === tab;
           return (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              padding: '6px 16px', borderRadius: 9999, border: 'none',
+              padding: '4px 16px', borderRadius: 9999, border: 'none',
               fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
               background: isActive ? 'var(--cp-blue)' : 'var(--bg-1)',
               color: isActive ? 'var(--bg-app)' : 'var(--fg-3)',
@@ -121,7 +121,7 @@ export function ThemesPage() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-          gap: 20,
+          gap: 16,
         }}>
           {filtered.map(t => (
             <ThemeCard

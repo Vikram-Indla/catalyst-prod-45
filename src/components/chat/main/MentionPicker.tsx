@@ -98,9 +98,9 @@ export function MentionPicker({ textareaRef, value, onChange }: MentionPickerPro
       aria-label="Mention picker"
       style={{
         position: 'absolute',
-        bottom: '100%',
+        bottom: '48%',
         left: 8,
-        marginBottom: 6,
+        marginBottom: 4,
         background: 'var(--ds-surface-overlay)',
         border: '1px solid var(--ds-border)',
         borderRadius: 6,
@@ -121,7 +121,7 @@ export function MentionPicker({ textareaRef, value, onChange }: MentionPickerPro
             alignItems: 'center',
             gap: 8,
             width: '100%',
-            padding: '6px 10px',
+            padding: '4px 10px',
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',

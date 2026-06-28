@@ -56,7 +56,7 @@ const COLUMNS: Column<ActionRow>[] = [
     cell: ({ row }) => (
       <div>
         <div style={{ fontSize: 13, fontWeight: 500, color: T.text }}>{row.label}</div>
-        <div style={{ fontSize: 11, color: T.subtlest, marginTop: 1 }}>{row.module}</div>
+        <div style={{ fontSize: 11, color: T.subtlest, marginTop: 0 }}>{row.module}</div>
       </div>
     ),
   },
@@ -136,7 +136,7 @@ export default function PermissionsAdminPage() {
         </div>
 
         {isLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
             <Spinner size="large" />
           </div>
         ) : (

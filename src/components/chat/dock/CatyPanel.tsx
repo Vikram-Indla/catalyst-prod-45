@@ -617,7 +617,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
         <button
           type="button"
           style={{
-            padding: '6px 16px',
+            padding: '4px 16px',
             background: 'var(--ds-background-brand-bold)',
             color: 'var(--ds-text-inverse)',
             border: 'none',

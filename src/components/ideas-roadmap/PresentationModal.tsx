@@ -78,7 +78,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
             border: 'none', color: 'var(--ds-surface)', cursor: 'pointer', opacity: slide === 0 ? 0.3 : 1,
             fontSize: 'var(--ds-font-size-400)',
           }}>←</button>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           {Array.from({ length: TOTAL_SLIDES }, (_, i) => (
             <div key={i} onClick={() => setSlide(i)} style={{
               width: 6, height: 6, borderRadius: '50%', cursor: 'pointer',
@@ -101,7 +101,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
 
       {/* Close button */}
       <button onClick={onClose} style={{
-        position: 'absolute', top: 10, right: 16, background: 'none', border: 'none',
+        position: 'absolute', top: 8, right: 16, background: 'none', border: 'none',
         color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-700)', cursor: 'pointer', zIndex: 1,
       }}>✕</button>
     </div>
@@ -114,7 +114,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
   const qColors = ['var(--cp-purple-60)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'var(--cp-teal-60)', 'var(--ds-text-warning, var(--cp-warning))'];
 
   return (
-    <div style={{ display: 'flex', gap: 60, alignItems: 'center', maxWidth: 1200, width: '100%' }}>
+    <div style={{ display: 'flex', gap: 48, alignItems: 'center', maxWidth: 1200, width: '100%' }}>
       {/* Left */}
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
@@ -136,9 +136,9 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
               background: 'var(--ds-border, var(--cp-ink-1))', border: '1px solid var(--ds-text)',
               borderRadius: 8, padding: '16px 20px', minWidth: 140,
             }}>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bg-app)', fontFamily: 'var(--cp-font-heading)' }}>{s.value}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', marginTop: 2 }}>{s.sub}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', marginTop: 0 }}>{s.sub}</div>
             </div>
           ))}
         </div>
@@ -157,7 +157,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
             }}>
               <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', marginBottom: 8 }}>{q} {Q_LABELS[q]}</div>
               <div style={{ fontSize: 36, fontWeight: 800, color: qColors[i], fontFamily: 'var(--cp-font-heading)' }}>{qs[q]}</div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: 2 }}>committed ideas</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', marginTop: 0 }}>committed ideas</div>
             </div>
           ))}
         </div>

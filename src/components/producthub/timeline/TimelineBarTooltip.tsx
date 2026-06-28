@@ -41,13 +41,13 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
         minWidth: '280px',
       }}
     >
-      <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flexWrap: 'wrap' }}>
           <span
             style={{
               flexShrink: 0,
-              padding: '2px 6px',
+              padding: '0px 6px',
               borderRadius: '4px',
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
@@ -82,8 +82,8 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '2px 8px',
+              gap: '4px',
+              padding: '0px 8px',
               fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               borderRadius: '12px',

@@ -79,7 +79,7 @@ export function DescriptionEditMode({
             color: 'var(--ds-text-danger)',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
+            gap: '4px',
           }}
           role="alert"
         >
@@ -100,9 +100,9 @@ export function DescriptionEditMode({
 
       {/* Markdown Hint */}
       <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle)' }}>
-        <strong>Formatting:</strong> <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '2px 4px', borderRadius: '3px' }}>**bold**</code>{' '}
-        <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '2px 4px', borderRadius: '3px' }}>_italic_</code>{' '}
-        <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '2px 4px', borderRadius: '3px' }}>`code`</code> • @mention users and
+        <strong>Formatting:</strong> <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '0px 4px', borderRadius: '3px' }}>**bold**</code>{' '}
+        <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '0px 4px', borderRadius: '3px' }}>_italic_</code>{' '}
+        <code style={{ backgroundColor: 'var(--ds-background-neutral)', padding: '0px 4px', borderRadius: '3px' }}>`code`</code> • @mention users and
         paste links
       </div>
 

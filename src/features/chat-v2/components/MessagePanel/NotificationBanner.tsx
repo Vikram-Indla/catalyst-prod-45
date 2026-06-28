@@ -13,7 +13,7 @@ export function NotificationBanner({ message }: NotificationBannerProps) {
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        padding: '6px 16px',
+        padding: '4px 16px',
         background: 'var(--cv2-bg-banner)',
         color: 'var(--cv2-text-muted)',
         fontFamily: 'var(--cv2-font)',

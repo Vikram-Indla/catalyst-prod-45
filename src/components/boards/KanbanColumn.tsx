@@ -24,7 +24,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
       minHeight: 80,
     }}>
       <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {cards.map(card => (
             <KanbanCardComponent key={card.id} card={card} onCardClick={onCardClick} />
           ))}
@@ -60,7 +60,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
       {/* Add button */}
       <button style={{
         display: 'flex', alignItems: 'center', gap: 4,
-        padding: '6px 8px', marginTop: 6,
+        padding: '4px 8px', marginTop: 4,
         border: 'none', background: 'transparent', cursor: 'pointer',
         fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)',
         borderRadius: 4, transition: 'background 80ms',

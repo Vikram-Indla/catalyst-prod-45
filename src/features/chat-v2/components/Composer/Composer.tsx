@@ -239,7 +239,7 @@ export function Composer({
           <div
             role="alert"
             style={{
-              margin: '6px 12px 0',
+              margin: '4px 12px 0',
               padding: '8px 12px',
               background: 'rgba(224, 30, 90, 0.12)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
               border: '1px solid rgba(224, 30, 90, 0.45)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
@@ -248,7 +248,7 @@ export function Composer({
               borderRadius: 6,
               display: 'flex',
               flexDirection: 'column',
-              gap: 2,
+              gap: 0,
             }}
           >
             {attachments
@@ -265,8 +265,8 @@ export function Composer({
             style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: 10,
-              padding: '6px 12px 10px',
+              gap: 8,
+              padding: '4px 12px 10px',
             }}
           >
             {attachments.map(a => (

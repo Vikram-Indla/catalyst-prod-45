@@ -264,7 +264,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px 16px',
+          padding: '16px 24px 16px',
           borderBottom: `1px solid ${T.border}`,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
@@ -281,15 +281,15 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
           <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-700)', color: T.textSubtle, padding: 4 }} aria-label="Close">✕</button>
         </div>
         {/* Body */}
-        <form onSubmit={handleSubmit} style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <form onSubmit={handleSubmit} style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
           {error && (
-            <div style={{ padding: '10px 14px', background: 'var(--ds-background-danger)', borderRadius: 4, color: T.danger, fontSize: 'var(--ds-font-size-400)' }}>
+            <div style={{ padding: '8px 14px', background: 'var(--ds-background-danger)', borderRadius: 4, color: T.danger, fontSize: 'var(--ds-font-size-400)' }}>
               {error}
             </div>
           )}
 
           {/* Name */}
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Name <span style={{ color: T.danger }}>*</span></span>
             <input
               value={form.name}
@@ -305,7 +305,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
           </label>
 
           {/* Field type — only editable on create */}
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Field type</span>
             <select
               value={form.field_type}
@@ -329,7 +329,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
 
           {/* Options (for select-type fields) */}
           {needsOptions && (
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Options (JSON array)</span>
               <textarea
                 value={form.options_raw}
@@ -346,7 +346,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
           )}
 
           {/* Description */}
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Description</span>
             <textarea
               value={form.description}
@@ -362,7 +362,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
           </label>
 
           {/* Help text */}
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Help text</span>
             <input
               value={form.help_text}
@@ -377,7 +377,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
           </label>
 
           {/* Global toggle */}
-          <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <input
               type="checkbox"
               checked={form.is_global}
@@ -385,7 +385,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
             />
             <div>
               <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: T.text }}>Apply to all work item types</span>
-              <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: T.textSubtle }}>When checked, this field can be added to any layout.</p>
+              <p style={{ margin: '0px 0 0', fontSize: 'var(--ds-font-size-200)', color: T.textSubtle }}>When checked, this field can be added to any layout.</p>
             </div>
           </label>
 
@@ -477,7 +477,7 @@ export default function FieldRegistryPage() {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
             <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: T.text, lineHeight: '28px' }}>Fields</h1>
-            <p style={{ margin: '6px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
+            <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
               Custom fields extend work items beyond Jira system fields. Add them to layouts per work item type.
             </p>
           </div>
@@ -540,7 +540,7 @@ export default function FieldRegistryPage() {
               style={{
                 display: 'grid',
                 gridTemplateColumns: '2fr 1.4fr 2fr 1fr 48px',
-                padding: '10px 16px',
+                padding: '8px 16px',
                 borderBottom: idx < filtered.length - 1 ? `1px solid ${T.borderSubtle}` : 'none',
                 alignItems: 'center',
               }}
@@ -550,7 +550,7 @@ export default function FieldRegistryPage() {
               <div>
                 <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: T.text }}>{field.name}</div>
                 {field.description && (
-                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest, marginTop: 2 }}>{field.description}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest, marginTop: 0 }}>{field.description}</div>
                 )}
               </div>
               <span style={{ fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>

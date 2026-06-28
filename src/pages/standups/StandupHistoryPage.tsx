@@ -110,7 +110,7 @@ function SessionRow({ s, onOpenTicket }: { s: StandupSession; onOpenTicket: (key
       {/* Tickets touched */}
       {tickets.length > 0 && (
         <div>
-          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginBottom: 6 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: token('color.text.subtlest', 'var(--ds-icon-subtle)'), marginBottom: 4 }}>
             Tickets touched
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -120,7 +120,7 @@ function SessionRow({ s, onOpenTicket }: { s: StandupSession; onOpenTicket: (key
                 type="button"
                 onClick={() => onOpenTicket(t.key)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px',
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px',
                   border: 'none', background: 'transparent', borderRadius: 4,
                   cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
                   fontSize: 'var(--ds-font-size-300)', color: token('color.text', 'var(--ds-text)'),
@@ -233,7 +233,7 @@ export default function StandupHistoryPage() {
                 type="button"
                 onClick={() => toggleDay(label)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 6, width: '100%',
+                  display: 'flex', alignItems: 'center', gap: 4, width: '100%',
                   border: 'none', background: 'transparent', padding: '4px 0 12px',
                   cursor: label === 'Today' ? 'default' : 'pointer', fontFamily: 'inherit',
                 }}

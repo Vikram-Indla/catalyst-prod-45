@@ -261,7 +261,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingTop: 60,
+    paddingTop: 48,
   };
   const dialogStyle: React.CSSProperties = {
     width: 480,
@@ -277,7 +277,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '20px 24px 12px',
+    padding: '16px 24px 12px',
     borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
   };
   const modalTitleStyle: React.CSSProperties = {
@@ -302,7 +302,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           padding: '0 24px',
           height: 32,
           background: 'transparent',
@@ -380,7 +380,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               borderRadius: 4,
               boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
               minWidth: 220,
-              padding: '6px 0',
+              padding: '4px 0',
             }}
           >
             {[
@@ -400,7 +400,7 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
               },
             ].map((item) => {
               if ((item as any).divider) {
-                return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))'), margin: '6px 0' }} />;
+                return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))'), margin: '4px 0' }} />;
               }
               return (
                 <button
@@ -482,8 +482,8 @@ export function ProjectHeaderChip({ projectKey, adapter }: Props) {
                       <div
                         key={m.id}
                         style={{
-                          display: 'flex', alignItems: 'center', gap: 10,
-                          padding: '6px 8px', borderRadius: 4,
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          padding: '4px 8px', borderRadius: 4,
                           background: token('elevation.surface', 'var(--ds-surface)'),
                         }}
                       >

@@ -371,7 +371,7 @@ export default function CascadeImpactPanel() {
                   <div
                     key={path}
                     style={{
-                      padding: '6px 12px',
+                      padding: '4px 12px',
                       borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                       display: 'flex',
                       alignItems: 'center',

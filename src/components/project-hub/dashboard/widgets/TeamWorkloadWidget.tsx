@@ -350,11 +350,11 @@ function KpiCell({
         display: 'flex',
         flexDirection: 'column',
         gap: 4,
-        padding: '10px 12px',
+        padding: '8px 12px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}
     >
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         {accent && <span aria-hidden style={{ width: 8, height: 8, borderRadius: 2, background: accent }} />}
         <span
           style={{
@@ -467,7 +467,7 @@ function WorkloadRow({
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          padding: '10px 8px',
+          padding: '8px 8px',
           marginInline: -8,
           borderRadius: token('border.radius', '4px'),
           cursor: 'pointer',

@@ -164,7 +164,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
       }}>
         {/* Search */}
         <div style={{ position: 'relative', flex: '0 0 320px' }}>
-          <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: T.textMuted }} />
+          <Search size={14} style={{ position: 'absolute', left: 8, top: '48%', transform: 'translateY(-50%)', color: T.textMuted }} />
           <input
             type="text"
             value={searchText}

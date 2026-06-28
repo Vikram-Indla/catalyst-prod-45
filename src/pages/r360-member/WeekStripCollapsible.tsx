@@ -45,9 +45,9 @@ export function WeekStripCollapsible({
   const dayCells = useMemo(() => periodType === 'weekly' ? getSaudiWorkDays(period.start) : getWeekCells(period.start), [periodType, period.start]);
 
   return (
-    <div style={{ padding: '10px 0', borderBottom: `1px solid ${'var(--ds-surface-sunken)'}` }}>
+    <div style={{ padding: '8px 0', borderBottom: `1px solid ${'var(--ds-surface-sunken)'}` }}>
       {/* Top toolbar: Toggle + Date + Mode Badge + Nav arrows */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' as const }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' as const }}>
         {/* Prominent Period Toggle */}
         <div className="r3-period-toggle">
           <button className={periodType === 'weekly' ? 'active' : ''} onClick={() => onPeriodTypeChange('weekly')}>Weekly</button>
@@ -55,7 +55,7 @@ export function WeekStripCollapsible({
         </div>
 
         <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' }} />
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}><Calendar size={16} color="currentColor" /> {period.label}</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' }}><Calendar size={16} color="currentColor" /> {period.label}</span>
         <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))' }}>{period.range}</span>
 
         {/* Mode Badge */}
@@ -82,7 +82,7 @@ export function WeekStripCollapsible({
           const isActive = statusFilter === f.key || (f.key === null && !statusFilter);
           return (
             <span key={f.key ?? 'all'} onClick={() => setStatusFilter(statusFilter === f.key ? null : f.key)} style={{
-              padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
+              padding: '4px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all 120ms ease',
               background: isActive ? 'var(--ds-background-information, rgba(37,99,235,0.10))' : 'transparent',
               color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : ('var(--ds-text-subtlest)'),

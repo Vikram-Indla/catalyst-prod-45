@@ -46,8 +46,8 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
       <button
         onClick={() => setOpen(true)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 6, width: 'calc(100% - 16px)',
-          padding: '6px 8px', margin: '2px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
+          display: 'flex', alignItems: 'center', gap: 4, width: 'calc(100% - 16px)',
+          padding: '4px 8px', margin: '0px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
           background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon)'),
           fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer',
         }}
@@ -62,7 +62,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
 
   return (
     <div style={{
-      margin: '2px 8px 4px', padding: 8, display: 'flex', flexDirection: 'column', gap: 8,
+      margin: '0px 8px 4px', padding: 8, display: 'flex', flexDirection: 'column', gap: 8,
       background: token('elevation.surface.raised', 'var(--ds-surface)'),
       border: `2px solid ${token('color.border.focused', 'var(--ds-background-information-bold)')}`, borderRadius: SIZES.CARD_RADIUS,
       boxShadow: token('elevation.shadow.raised', '0 1px 1px #091E4240, 0 0 1px #091E424F'),
@@ -84,7 +84,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         {/* Type picker */}
         <PortalMenu ariaLabel="Work type" minWidth={160} trigger={() => (
-          <span role="button" aria-label={`Work type: ${issueType}`} style={{ display: 'inline-flex', cursor: 'pointer', padding: 2, borderRadius: 3 }}>
+          <span role="button" aria-label={`Work type: ${issueType}`} style={{ display: 'inline-flex', cursor: 'pointer', padding: 0, borderRadius: 3 }}>
             <IssueTypeIcon issueType={issueType} size={16} />
           </span>
         )}>
@@ -99,7 +99,7 @@ export const InlineCreate: React.FC<Props> = ({ status, onCreate }) => {
         <button
           aria-label="Set due date"
           onClick={() => setShowDue((v) => !v)}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 2, border: 'none', background: dueDate ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent', borderRadius: 3, padding: 2, cursor: 'pointer' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 0, border: 'none', background: dueDate ? token('color.background.selected', 'var(--ds-background-selected)') : 'transparent', borderRadius: 3, padding: 0, cursor: 'pointer' }}
         >
           <CalendarIcon label="" size="small" primaryColor={dueDate ? token('color.icon.selected', 'var(--ds-link)') : token('color.icon.subtle', 'var(--ds-icon-subtle, var(--ds-text-subtlest))')} />
           {dueDate && <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.selected', 'var(--ds-link)') }}>{dueDate.slice(5)}</span>}

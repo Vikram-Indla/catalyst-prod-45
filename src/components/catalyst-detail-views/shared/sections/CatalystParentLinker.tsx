@@ -54,7 +54,7 @@ function SidebarAddTrigger({
         display: "flex",
         alignItems: "center",
         width: "100%",
-        padding: "2px 6px",
+        padding: "0px 6px",
         background: "none",
         border: "2px solid transparent",
         borderRadius: 4,
@@ -183,7 +183,7 @@ function ParentLozenge({
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 6,
+        gap: 4,
         maxWidth: 360,
         cursor: onClick ? "pointer" : "default",
       }}
@@ -204,7 +204,7 @@ function ParentLozenge({
         }}
         style={{
           display: "inline-block",
-          padding: "2px 8px",
+          padding: "0px 8px",
           borderRadius: 4,
           background: tok.bg,
           color: tok.text,
@@ -282,7 +282,7 @@ interface BrCandidate {
 /* ═══════════════════════════════════════════════════════════════════════════
    PORTAL POSITIONING HOOK (jira-compare 2026-05-11 — Vikram defect "Priority
    click shows long text box"). The parent picker's dropdown was rendered
-   `position: absolute; top: 100%` INSIDE the trigger's relative container,
+   `position: absolute; top: 48%` INSIDE the trigger's relative container,
    which placed it visually over the next FieldRow (Priority).  Clicks on
    the visually-Priority pixels landed on the picker dropdown (higher
    z-index), so the click-outside handler treated them as "inside" the
@@ -442,7 +442,7 @@ function BusinessRequestParentPicker({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 6,
+            gap: 4,
             cursor: "pointer",
           }}
           onClick={() => setShowPicker(!showPicker)}
@@ -515,7 +515,7 @@ function BusinessRequestParentPicker({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 4,
                   border: "2px solid var(--ds-border-focused)",
                   borderRadius: 4,
                   padding: "4px 8px",
@@ -599,7 +599,7 @@ function BusinessRequestParentPicker({
                     display: "block",
                     width: "100%",
                     textAlign: "left",
-                    padding: "6px 12px",
+                    padding: "4px 12px",
                     background: "none",
                     border: "none",
                     cursor: "pointer",
@@ -846,10 +846,10 @@ function SingleParentPicker({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 6,
+            gap: 4,
             border: "2px solid var(--ds-border-focused)",
             borderRadius: 4,
-            padding: "2px 6px",
+            padding: "0px 6px",
             background: "var(--ds-background-input)",
           }}
         >
@@ -965,7 +965,7 @@ function SingleParentPicker({
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                padding: "10px 12px",
+                padding: "8px 12px",
                 borderBottom: "1px solid var(--ds-border)",
                 cursor: "pointer",
                 fontSize: 'var(--ds-font-size-400)',
@@ -1151,7 +1151,7 @@ function MultiLinkPicker({
             {existingLinks.map((link: any) => (
               <div
                 key={link.id}
-                style={{ display: "flex", alignItems: "center", gap: 6 }}
+                style={{ display: "flex", alignItems: "center", gap: 4 }}
               >
                 <IssueIcon type={link.issue_type} size={16} />
                 <span
@@ -1191,7 +1191,7 @@ function MultiLinkPicker({
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    padding: 2,
+                    padding: 0,
                     color:
                       "var(--ds-text-subtlest, var(--cp-text-secondary))",
                     display: "flex",
@@ -1248,7 +1248,7 @@ function MultiLinkPicker({
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 6,
+                    gap: 4,
                     border: "2px solid var(--ds-border-focused)",
                     borderRadius: 4,
                     padding: "4px 8px",
@@ -1357,7 +1357,7 @@ function renderGroup(
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: 2,
+              gap: 0,
               padding: "8px 12px",
               cursor: "pointer",
               background: isSelected
@@ -1376,7 +1376,7 @@ function renderGroup(
                 : "transparent";
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <span
                 aria-hidden
                 style={{

@@ -147,7 +147,7 @@ export function WiringAudit() {
         border: "1.5px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))",
         borderRadius: 8,
         backgroundColor: "var(--ds-surface-sunken)",
-        padding: 20,
+        padding: 16,
         fontFamily: 'var(--cp-font-body)',
       }}
     >
@@ -155,7 +155,7 @@ export function WiringAudit() {
         <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))", margin: 0 }}>
           P8 Wiring Audit — {checks.length} checks
         </h3>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {results.length > 0 && (
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--ds-text-subtle)" }}>
               <span style={{ color: "var(--ds-text-success)", fontWeight: 600 }}>{passCount} pass</span>
@@ -193,7 +193,7 @@ export function WiringAudit() {
             display: "flex",
             alignItems: "center",
             gap: 8,
-            padding: "6px 0",
+            padding: "4px 0",
             borderTop: i === 0 ? "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))" : "none",
             borderBottom: "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))",
             fontSize: 'var(--ds-font-size-200)',

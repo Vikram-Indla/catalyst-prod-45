@@ -60,7 +60,7 @@ export function DefectTrendChart({ cycleId, days = 14 }: DefectTrendChartProps) 
         ) : (
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+              <AreaChart data={chartData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" />
                 <XAxis 
                   dataKey="dateLabel" 

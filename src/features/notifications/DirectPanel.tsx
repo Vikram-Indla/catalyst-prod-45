@@ -177,7 +177,7 @@ function LoadingState({ isDark }: { isDark: boolean }) {
           aria-hidden="true"
         >
           <div style={{ width: 32, height: 32, borderRadius: '50%', background: skeletonBg, flexShrink: 0 }} />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
             <div style={{ width: '70%', height: 12, borderRadius: 3, background: skeletonBg }} />
             <div style={{ width: '40%', height: 10, borderRadius: 3, background: skeletonBg }} />
           </div>

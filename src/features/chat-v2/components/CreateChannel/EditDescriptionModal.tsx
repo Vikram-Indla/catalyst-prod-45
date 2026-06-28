@@ -81,7 +81,7 @@ export function EditDescriptionModal({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '18vh',
+        paddingTop: '16vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
     >
@@ -93,7 +93,7 @@ export function EditDescriptionModal({
           border: '1px solid var(--cv2-border-strong)',
           borderRadius: 'var(--cv2-radius-lg)',
           boxShadow: 'var(--cv2-shadow-modal)',
-          padding: 22,
+          padding: 24,
           fontFamily: 'var(--cv2-font)',
           color: 'var(--cv2-text)',
         }}
@@ -134,7 +134,7 @@ export function EditDescriptionModal({
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 22 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
           <button
             type="button"
             onClick={onClose}

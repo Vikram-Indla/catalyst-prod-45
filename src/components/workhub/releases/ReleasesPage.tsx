@@ -48,8 +48,8 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
       <button
         onClick={() => setOpen(o => !o)}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          padding: '6px 12px', borderRadius: 8,
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          padding: '4px 12px', borderRadius: 8,
           border: '1px solid var(--divider)',
           background: selected.length > 0 ? 'var(--cp-primary-5)' : 'var(--cp-float)',
           fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
@@ -61,7 +61,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
         {selected.length > 0 && (
           <span style={{
             background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 9999,
-            fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '1px 6px', minWidth: 18, textAlign: 'center',
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 6px', minWidth: 18, textAlign: 'center',
           }}>{selected.length}</span>
         )}
         <ChevronDown size={14} />
@@ -69,7 +69,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
 
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', left: 0, marginTop: 4,
+          position: 'absolute', top: '48%', left: 0, marginTop: 4,
           background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12,
           boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,.12))', zIndex: 9999,
           minWidth: 240, maxHeight: 320, overflow: 'hidden',
@@ -78,7 +78,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
           {/* Search */}
           <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--bg-1)' }}>
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 6,
+              display: 'flex', alignItems: 'center', gap: 4,
               background: 'var(--bg-1)', borderRadius: 6, padding: '4px 8px',
             }}>
               <Search size={13} color="var(--fg-4)" />
@@ -97,7 +97,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
 
           {/* Select All / Clear */}
           <div style={{
-            display: 'flex', justifyContent: 'space-between', padding: '6px 12px',
+            display: 'flex', justifyContent: 'space-between', padding: '4px 12px',
             borderBottom: '1px solid var(--bg-1)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
           }}>
             <button onClick={() => onChange([...options])}
@@ -116,7 +116,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
               const checked = selected.includes(opt);
               return (
                 <label key={opt} style={{
-                  display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px',
                   cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)',
                   background: checked ? 'var(--ds-background-information)' : 'transparent',
                 }}>
@@ -235,7 +235,7 @@ export function ReleasesPage() {
           const isActive = activeTab === tab;
           return (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              padding: '6px 16px', borderRadius: 9999, border: 'none',
+              padding: '4px 16px', borderRadius: 9999, border: 'none',
               fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
               background: isActive ? 'var(--cp-blue)' : 'var(--bg-1)',
               color: isActive ? 'var(--bg-app)' : 'var(--fg-3)',
@@ -266,11 +266,11 @@ export function ReleasesPage() {
 
       {/* Active filter chips */}
       {activeChips.length > 0 && (
-        <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' }}>
           {activeChips.map(chip => (
             <span key={`${chip.type}-${chip.label}`} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
-              padding: '3px 10px', borderRadius: 9999,
+              padding: '4px 10px', borderRadius: 9999,
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               background: chip.type === 'project' ? 'var(--ds-background-success)' : 'var(--cp-primary-5)',
               color: chip.type === 'project' ? 'var(--ds-background-success-bold)' : 'var(--ds-background-brand-bold-hovered)',

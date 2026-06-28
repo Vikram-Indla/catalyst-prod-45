@@ -4,12 +4,12 @@
   display: grid;
   grid-template-rows: auto 1fr;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
-  border-right: 1px solid var(--ds-border);
+  border-right: 0px solid var(--ds-border);
 }
 
 [data-testid='work-list-toolbar'] {
   flex: 0 0 auto;
-  border-bottom: 1px solid var(--ds-border);
+  border-bottom: 0px solid var(--ds-border);
 }
 
 [data-testid='work-list-items'] {

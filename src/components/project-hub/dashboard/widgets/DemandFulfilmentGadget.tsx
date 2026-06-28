@@ -790,7 +790,7 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
         ...SMALL_STRONG,
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 24,
         padding: '0 8px',
         background: c.bg,
@@ -881,18 +881,18 @@ function SettingsPopupBody({
     ...LABEL,
     letterSpacing: '0.04em',
     textTransform: 'none' as const,
-    marginBottom: 6,
+    marginBottom: 4,
   };
   const subLabelStyle = {
     ...LABEL,
     color: token('color.text.subtle', 'var(--ds-text-subtlest)'),
-    marginBottom: 2,
+    marginBottom: 0,
   };
 
   return (
     <div style={{ width: 300, padding: 12 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <span style={{ font: token('font.heading.small'), color: token('color.text', 'var(--ds-text, var(--ds-text))') }}>
           Gadget Settings
         </span>
@@ -961,13 +961,13 @@ function SettingsPopupBody({
         </div>
       )}
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}` }} />
+      <hr style={{ margin: '12px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}` }} />
 
       {/* Threshold */}
       <div style={sectionHeadingStyle}>
         At-risk threshold
       </div>
-      <div style={{ ...SMALL, display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ ...SMALL, display: 'flex', alignItems: 'center', gap: 4 }}>
         <span>Mark as At Risk when</span>
         <div style={{ width: 100 }}>
           <Select
@@ -980,7 +980,7 @@ function SettingsPopupBody({
         <span>or fewer days remain</span>
       </div>
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}` }} />
+      <hr style={{ margin: '12px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}` }} />
 
       {/* Item types */}
       <div style={sectionHeadingStyle}>
@@ -997,7 +997,7 @@ function SettingsPopupBody({
         label="Defects / Bugs"
       />
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}` }} />
+      <hr style={{ margin: '12px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}` }} />
 
       {/* Filter by status — grouped by status_category */}
       <div style={sectionHeadingStyle}>Filter by status</div>
@@ -1038,7 +1038,7 @@ function SettingsPopupBody({
       </div>
 
       {/* Footer */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginTop: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4, marginTop: 12 }}>
         <Button appearance="subtle" spacing="compact" onClick={onCancel}>
           Cancel
         </Button>
@@ -1103,8 +1103,8 @@ function KpiCell({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
-        padding: '10px 12px',
+        gap: 0,
+        padding: '8px 12px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
         minWidth: 0,
       }}
@@ -1354,7 +1354,7 @@ function DemandRowItem({
             background: token('elevation.surface', 'var(--ds-surface)'),
             borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
             paddingTop: 4,
-            paddingBottom: 6,
+            paddingBottom: 4,
           }}
         >
           {row.total === 0 ? (
@@ -1367,7 +1367,7 @@ function DemandRowItem({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '6px 16px 6px 28px',
+                padding: '4px 16px 6px 28px',
               }}
             >
               <InformationIcon label="" color={token('color.icon.subtle', 'var(--ds-icon-subtle)')} LEGACY_size="small" />
@@ -1393,7 +1393,7 @@ function DemandRowItem({
                     gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
                     alignItems: 'center',
                     gap: 12,
-                    padding: '10px 24px 10px 28px',
+                    padding: '8px 24px 10px 28px',
                     minHeight: 40,
                     borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                     borderLeft: `3px solid ${token('color.border.brand', 'var(--ds-link)')}`,
@@ -1485,7 +1485,7 @@ function DemandRowItem({
           ) : (
             // ── MODE 1: MDT — render epic sub-rows; each can expand to its stories ──
             <>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '4px 16px 8px 28px' }}>
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', margin: '4px 16px 8px 28px' }}>
                 <Lozenge appearance="default">To Do {row.todo}</Lozenge>
                 <Lozenge appearance="inprogress">In Progress {row.inprogress}</Lozenge>
                 {row.blocked > 0 && <Lozenge appearance="removed">Blocked {row.blocked}</Lozenge>}
@@ -1515,7 +1515,7 @@ function DemandRowItem({
                         gridTemplateColumns: '20px 90px 1fr 80px auto auto',
                         alignItems: 'center',
                         gap: 8,
-                        padding: '6px 16px 6px 28px',
+                        padding: '4px 16px 6px 28px',
                         borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                         cursor: hasStories ? 'pointer' : 'default',
                       }}
@@ -1598,7 +1598,7 @@ function DemandRowItem({
                             gridTemplateColumns: '28px 20px 120px 2fr 120px 1fr 100px 180px',
                             alignItems: 'center',
                             gap: 12,
-                            padding: '10px 24px 10px 28px',
+                            padding: '8px 24px 10px 28px',
                             minHeight: 40,
                             borderTop: `1px solid ${token('color.border', 'var(--ds-border-disabled)')}`,
                             borderLeft: `3px solid ${token('color.border.brand', 'var(--ds-link)')}`,
@@ -1882,7 +1882,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       headerBadges={
         <span
           onClick={(e) => e.stopPropagation()}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}
         >
           <WidgetGearButton
             gadgetType="demand"
@@ -1953,7 +1953,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 cursor: 'pointer',
                 userSelect: 'none',
                 borderRadius: token('border.radius', '4px'),
-                padding: 2,
+                padding: 0,
                 outline: isOn ? `1px solid ${ringToken}` : '1px solid transparent',
                 outlineOffset: 0,
                 transition: 'outline-color 80ms ease',
@@ -2043,7 +2043,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
 
       {/* List or empty / all-delivered states */}
       {isLoading ? (
-        <div style={{ padding: 20, font: token('font.body.small'), color: token('color.text.subtle') }}>Loading…</div>
+        <div style={{ padding: 16, font: token('font.body.small'), color: token('color.text.subtle') }}>Loading…</div>
       ) : mergedActive.length === 0 && delivered.length === 0 ? (
         // Empty state: differentiate Case A (MDTs exist but none linked → unlinked epics
         // are visible elsewhere) vs Case B (truly nothing in scope).
@@ -2075,7 +2075,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       ) : mergedActive.length === 0 && delivered.length > 0 ? (
         // All commitments met — show delivered list expanded.
         <div>
-          <div style={{ padding: '10px 16px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
+          <div style={{ padding: '8px 16px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
             ✓ All demand commitments met this period
           </div>
           {delivered.map((r) => (
@@ -2089,7 +2089,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
               double-scrollbar that resulted from a 300px inner + outer body. */}
           <div>
             {visibleRows.length === 0 ? (
-              <div style={{ ...SMALL, padding: 20, color: token('color.text.subtle', 'var(--ds-text-subtlest)'), textAlign: 'center' }}>
+              <div style={{ ...SMALL, padding: 16, color: token('color.text.subtle', 'var(--ds-text-subtlest)'), textAlign: 'center' }}>
                 Nothing in this filter.
               </div>
             ) : (
@@ -2109,7 +2109,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           </div>
 
           {visibleByTab.length > 10 && (
-            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}` }}>
+            <div style={{ padding: '4px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}` }}>
               <button
                 type="button"
                 onClick={() => {
@@ -2159,7 +2159,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                   width: '100%',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 4,
                   padding: '8px 16px',
                   background: 'transparent',
                   border: 0,
@@ -2204,7 +2204,7 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
         gridTemplateColumns: '20px 60px 1fr 90px 70px 80px',
         alignItems: 'center',
         gap: 8,
-        padding: '6px 16px',
+        padding: '4px 16px',
         borderTop: `1px solid ${token('color.border', 'var(--ds-border)')}`,
         font: token('font.body.small'),
       }}

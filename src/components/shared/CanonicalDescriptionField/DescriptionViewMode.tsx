@@ -65,7 +65,7 @@ function renderMarkdown(
   let rendered = text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/_([^_]+)_/g, '<em>$1</em>')
-    .replace(/`([^`]+)`/g, '<code style="background-color: var(--ds-background-neutral, var(--ds-background-neutral)); padding: 2px 4px; border-radius: 3px; font-size: 12px;">$1</code>');
+    .replace(/`([^`]+)`/g, '<code style="background-color: var(--ds-background-neutral, var(--ds-background-neutral)); padding: 0px 4px; border-radius: 3px; font-size: 12px;">$1</code>');
 
   // Render mentions as links/highlights
   mentions.forEach((mention) => {

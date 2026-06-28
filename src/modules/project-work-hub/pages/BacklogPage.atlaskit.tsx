@@ -2158,7 +2158,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const isUnassigned = !sample.assignee_name;
         const avatarUrl = sample.assignee_name ? (resolveAvatarUrl(sample.assignee_name) ?? avatarsByName?.get(sample.assignee_name)) : null;
         labelNode = (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             <Avatar size="small" name={k} src={avatarUrl || undefined} appearance={isUnassigned ? 'square' : 'circle'} />
             <span>{k}</span>
           </span>
@@ -2175,8 +2175,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         };
         const rank = PRIORITY_RANK[p] || { level: 0, color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' };
         labelNode = (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={k}>
-            <span style={{ display: 'inline-flex', gap: 2 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }} title={k}>
+            <span style={{ display: 'inline-flex', gap: 0 }}>
               {[1, 2, 3, 4].map((i) => (
                 <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))' }} />
               ))}
@@ -2210,7 +2210,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const parentStatus = isOrphan ? null : (parentRow?.status ?? null);
         const parentStatusAppearance = parentStatus ? statusAppearance(parentStatus) : 'default';
         labelNode = (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
             {!isOrphan && <JiraIssueTypeIcon type={parentType} size={14} />}
             {!isOrphan && parentKey && (
               <span style={{
@@ -5975,7 +5975,7 @@ function GroupByControl({
           // light + DARK MODE dark mode.
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
@@ -6152,7 +6152,7 @@ function ColumnFilterMultiSelect({
       : [...selected, opt]);
   };
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 220 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 220 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px' }}>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)' }}>{title}</span>
         {selected.length > 0 && (
@@ -6513,7 +6513,7 @@ function InlineGroupCreateRow({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         padding: '4px 8px',
         background: 'transparent',
       }}
@@ -6541,7 +6541,7 @@ function InlineGroupCreateRow({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 2,
+            gap: 0,
             height: 26,
             padding: '0 4px',
             border: 'none',
@@ -6748,8 +6748,8 @@ function InlineGroupCreateRow({
                   aria-label="Clear due date"
                   style={{
                     position: 'absolute',
-                    right: 6,
-                    top: '50%',
+                    right: 4,
+                    top: '48%',
                     transform: 'translateY(-50%)',
                     width: 20,
                     height: 20,
@@ -6978,7 +6978,7 @@ function InlineGroupCreateRow({
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           height: 28,
           padding: '0 12px',
           border: 'none',
@@ -7191,7 +7191,7 @@ function BottomCreateRow({
             type="button"
             aria-label={`Select work type. ${issueType} currently selected.`}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 2,
+              display: 'inline-flex', alignItems: 'center', gap: 0,
               height: 28, padding: '0 4px',
               border: 'none', background: 'transparent', borderRadius: 3,
               cursor: 'pointer', flexShrink: 0,
@@ -7449,7 +7449,7 @@ function BulkActionsBar({
       style={{
         position: 'fixed',
         bottom: 24,
-        left: '50%',
+        left: '48%',
         transform: 'translateX(-50%)',
         zIndex: 9999,
         animation: 'bau-bulk-slide-up 200ms cubic-bezier(0.16, 1, 0.3, 1)',
@@ -7609,7 +7609,7 @@ function BulkActionsBar({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             height: 44,
             padding: '0 16px',
             background: 'transparent',
@@ -8017,7 +8017,7 @@ function BacklogSavedFiltersDropdown({ projectKey, onApply }: BacklogSavedFilter
                   border: 'none',
                   background: 'transparent',
                   cursor: 'pointer',
-                  padding: '6px 16px',
+                  padding: '4px 16px',
                   font: 'inherit',
                   color: token('color.text', 'var(--ds-text)'),
                 }}

@@ -45,7 +45,7 @@ function AkBtn({
         fontFamily: 'inherit',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         whiteSpace: 'nowrap',
       }}
     >
@@ -136,7 +136,7 @@ export function ProductDashboardPage() {
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
-            gap: 20,
+            gap: 16,
           }}
         >
           {key && <ProductDashboardTimeline productId={key} />}

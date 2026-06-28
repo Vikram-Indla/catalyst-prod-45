@@ -75,7 +75,7 @@ export function ActivityHeader(props: ActivityHeaderProps) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          padding: '14px 16px 10px',
+          padding: '12px 16px 10px',
         }}
       >
         <h1
@@ -175,7 +175,7 @@ function Toolbar(props: ActivityHeaderProps) {
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        padding: '10px 14px',
+        padding: '8px 14px',
       }}
     >
       {inSearch ? (
@@ -224,7 +224,7 @@ function Toolbar(props: ActivityHeaderProps) {
           ) : (
             <>
               <ToggleChip active={props.unreadsOnly} onClick={props.onToggleUnreadsOnly}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   <UnreadDotIcon />
                   Unreads
                 </span>
@@ -400,7 +400,7 @@ function ActionPillButton({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 30,
         padding: '0 10px',
         background: 'transparent',
@@ -505,7 +505,7 @@ function ToolbarSearchInput({
         flex: 1,
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 36,
         padding: '0 10px',
         background: 'var(--cv2-bg-input)',
@@ -591,7 +591,7 @@ function SelectModeMenu({
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 6,
         boxShadow: 'var(--cv2-shadow-toolbar)',
-        padding: '6px 0',
+        padding: '4px 0',
         zIndex: 9999,
       }}
     >
@@ -836,7 +836,7 @@ function FilterRowItem({
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        padding: '6px 14px',
+        padding: '4px 14px',
         cursor: 'pointer',
       }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)'; }}
@@ -985,7 +985,7 @@ function TabBtn({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 38,
         padding: labelVisible ? '0 12px' : '0 8px',
         background: 'transparent',

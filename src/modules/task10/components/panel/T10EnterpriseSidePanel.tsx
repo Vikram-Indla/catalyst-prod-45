@@ -423,7 +423,7 @@ export function T10EnterpriseSidePanel({
             TITLE (NO edit icon - removed per spec)
         ═══════════════════════════════════════════════════════════════════ */}
         <div style={{ 
-          padding: '20px 20px 16px', 
+          padding: '16px 20px 16px', 
           borderBottom: `1px solid ${COLORS.gray100}` 
         }}>
           <h2
@@ -474,7 +474,7 @@ export function T10EnterpriseSidePanel({
         {/* ═══════════════════════════════════════════════════════════════════
             CONTENT
         ═══════════════════════════════════════════════════════════════════ */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
           {activeTab === 'details' ? (
             <>
               {/* STATUS */}
@@ -488,7 +488,7 @@ export function T10EnterpriseSidePanel({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    padding: '14px',
+                    padding: '12px',
                     background: isCompleted ? COLORS.green50 : COLORS.gray50,
                     border: `1px solid ${isCompleted ? 'var(--ds-background-success)' : COLORS.gray200}`,
                     borderRadius: '12px',
@@ -536,7 +536,7 @@ export function T10EnterpriseSidePanel({
                       width: '100%',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '10px',
+                      gap: '8px',
                       padding: '12px 14px',
                       background: COLORS.gray50,
                       border: `1px solid ${assigneeDropdownOpen ? COLORS.blue : COLORS.gray200}`,
@@ -647,7 +647,7 @@ export function T10EnterpriseSidePanel({
                       width: '100%',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '10px',
+                      gap: '8px',
                       padding: '12px 14px',
                       background: COLORS.gray50,
                       border: `1px solid ${COLORS.gray200}`,
@@ -706,7 +706,7 @@ export function T10EnterpriseSidePanel({
                           autoFocus
                           style={{
                             width: '100%',
-                            padding: '10px 12px',
+                            padding: '8px 12px',
                             border: `1px solid ${COLORS.gray200}`,
                             borderRadius: '8px',
                             fontSize: 'var(--ds-font-size-400)',
@@ -738,7 +738,7 @@ export function T10EnterpriseSidePanel({
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
-                          padding: '6px 10px',
+                          padding: '4px 10px',
                           background: 'transparent',
                           border: `1px dashed ${COLORS.gray300}`,
                           borderRadius: '6px',
@@ -805,7 +805,7 @@ export function T10EnterpriseSidePanel({
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: '12px',
-                                  padding: '10px 14px',
+                                  padding: '8px 14px',
                                   border: 'none',
                                   borderTop: `1px solid ${COLORS.gray100}`,
                                   background: 'transparent',
@@ -832,16 +832,16 @@ export function T10EnterpriseSidePanel({
                           borderTop: `1px solid ${COLORS.gray200}`,
                           background: COLORS.gray50,
                         }}>
-                          <div style={{ marginBottom: '10px' }}>
+                          <div style={{ marginBottom: '8px' }}>
                             <div style={{ 
                               fontSize: 'var(--ds-font-size-200)', 
                               fontWeight: 600, 
                               color: COLORS.gray600,
-                              marginBottom: '6px',
+                              marginBottom: '4px',
                             }}>
                               Choose a color
                             </div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                               {LABEL_COLORS.map(color => (
                                 <button
                                   key={color.value}
@@ -895,7 +895,7 @@ export function T10EnterpriseSidePanel({
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '6px',
+                                gap: '4px',
                               }}
                             >
                               {createLabelMutation.isPending && (
@@ -949,7 +949,7 @@ export function T10EnterpriseSidePanel({
                   style={{
                     width: '100%',
                     minHeight: '120px',
-                    padding: '14px',
+                    padding: '12px',
                     border: `1px solid ${COLORS.gray200}`,
                     borderRadius: '12px',
                     fontSize: 'var(--ds-font-size-400)',
@@ -1004,7 +1004,7 @@ export function T10EnterpriseSidePanel({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '4px',
                 padding: '8px 14px',
                 border: 'none',
                 background: 'transparent',
@@ -1052,13 +1052,13 @@ function FieldLabel({ icon, label }: { icon: React.ReactNode; label: string }) {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '6px',
+        gap: '4px',
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
         color: COLORS.gray500,
-        marginBottom: '10px',
+        marginBottom: '8px',
       }}
     >
       {icon}
@@ -1111,8 +1111,8 @@ function LabelChip({ label, onRemove }: { label: T10Label; onRemove?: () => void
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '6px',
-        padding: '6px 10px',
+        gap: '4px',
+        padding: '4px 10px',
         background: `${label.color}15`,
         border: `1px solid ${label.color}40`,
         borderRadius: '6px',
@@ -1159,8 +1159,8 @@ function MoreMenuItem({ icon, label, onClick }: { icon: React.ReactNode; label: 
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
-        padding: '10px 14px',
+        gap: '8px',
+        padding: '8px 14px',
         border: 'none',
         background: 'transparent',
         fontSize: 'var(--ds-font-size-400)',
@@ -1183,7 +1183,7 @@ function Dropdown({ children, style }: { children: React.ReactNode; style?: Reac
     <div
       style={{
         position: 'absolute',
-        top: '100%',
+        top: '48%',
         left: 0,
         right: 0,
         marginTop: '4px',
@@ -1207,7 +1207,7 @@ const DropdownSearch = React.forwardRef<HTMLInputElement, {
   placeholder: string 
 }>(({ value, onChange, placeholder }, ref) => {
   return (
-    <div style={{ padding: '10px', borderBottom: `1px solid ${COLORS.gray100}` }}>
+    <div style={{ padding: '8px', borderBottom: `1px solid ${COLORS.gray100}` }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -1260,7 +1260,7 @@ function DropdownList({ children }: { children: React.ReactNode }) {
 
 function DropdownLoading() {
   return (
-    <div style={{ padding: '20px', textAlign: 'center', color: COLORS.gray500 }}>
+    <div style={{ padding: '16px', textAlign: 'center', color: COLORS.gray500 }}>
       <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
     </div>
   );
@@ -1268,7 +1268,7 @@ function DropdownLoading() {
 
 function DropdownEmpty({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ padding: '20px', textAlign: 'center', color: COLORS.gray500, fontSize: 'var(--ds-font-size-400)' }}>
+    <div style={{ padding: '16px', textAlign: 'center', color: COLORS.gray500, fontSize: 'var(--ds-font-size-400)' }}>
       {children}
     </div>
   );
@@ -1291,7 +1291,7 @@ function DropdownItem({
         display: 'flex',
         alignItems: 'center',
         gap: '12px',
-        padding: '10px 14px',
+        padding: '8px 14px',
         border: 'none',
         background: selected ? COLORS.blue50 : 'transparent',
         cursor: 'pointer',

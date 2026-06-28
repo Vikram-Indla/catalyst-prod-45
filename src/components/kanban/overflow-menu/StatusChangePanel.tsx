@@ -26,7 +26,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
   return (
     <div
       style={{
-        position: 'absolute', left: '100%', top: 0, zIndex: 10000,
+        position: 'absolute', left: '48%', top: 0, zIndex: 10000,
         width: 240, maxHeight: 400, display: 'flex', flexDirection: 'column',
         background: tk.surfaceBg, border: `1px solid ${tk.border}`,
         borderRadius: 8, boxShadow: '0 4px 16px var(--ds-shadow-raised, rgba(0,0,0,0.24))',
@@ -37,14 +37,14 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
       {/* Search */}
       <div style={{ padding: '8px 8px 4px', borderBottom: `1px solid ${tk.borderSubtle}` }}>
         <div style={{ position: 'relative' }}>
-          <Search size={12} color={tk.textDisabled} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)' }} />
+          <Search size={12} color={tk.textDisabled} style={{ position: 'absolute', left: 8, top: '48%', transform: 'translateY(-50%)' }} />
           <input
             ref={inputRef}
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search statuses"
             style={{
-              width: '100%', height: 28, paddingLeft: 26, paddingRight: 8,
+              width: '100%', height: 28, paddingLeft: 24, paddingRight: 8,
               border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
               fontSize: 'var(--ds-font-size-200)', color: tk.textPrimary, background: tk.inputBg,
               outline: 'none', fontFamily: 'var(--cp-font-body)',
@@ -63,7 +63,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
           return (
             <div key={col.id}>
               <div style={{
-                padding: '6px 12px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
+                padding: '4px 12px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
                 textTransform: 'uppercase', color: tk.textDisabled,
                 letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 8,
               }}>
@@ -82,7 +82,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
                     }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
-                      width: '100%', padding: '6px 12px', border: 'none',
+                      width: '100%', padding: '4px 12px', border: 'none',
                       background: isCurrent ? tk.dropHighlight : 'transparent',
                       cursor: isCurrent ? 'default' : 'pointer',
                       fontSize: 'var(--ds-font-size-200)', color: isCurrent ? tk.selectedAccent : tk.textPrimary,

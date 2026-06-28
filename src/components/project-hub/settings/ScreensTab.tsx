@@ -33,7 +33,7 @@ function OperationCell({ op, screen }: { op: 'create' | 'edit' | 'view'; screen:
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 8px 12px 0', minWidth: 0 }}>
       <span
         style={{
-          flexShrink: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 7px',
+          flexShrink: 0, fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 7px',
           borderRadius: 10, background: bg, color: text,
           textTransform: 'uppercase', letterSpacing: '0.04em',
         }}
@@ -86,7 +86,7 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
                 padding: '12px 20px',
                 borderBottom: '1px solid var(--divider)',
                 background: 'var(--ds-surface-sunken)',
-                display: 'flex', alignItems: 'center', gap: 10,
+                display: 'flex', alignItems: 'center', gap: 8,
               }}
             >
               <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
@@ -111,7 +111,7 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
                 <div
                   key={h}
                   style={{
-                    padding: '7px 8px 7px 0',
+                    padding: '8px 8px 7px 0',
                     fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.05em',
                     textTransform: 'uppercase', color: 'var(--fg-3)',
                     fontFamily: 'var(--cp-font-body)',
@@ -124,9 +124,9 @@ export function ScreensTab({ projectId }: ScreensTabProps) {
 
             {/* Rows */}
             {isLoading ? (
-              <div style={{ padding: '20px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>Loading…</div>
+              <div style={{ padding: '16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>Loading…</div>
             ) : schemeRows.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>No screen config found</div>
+              <div style={{ padding: '16px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-4)' }}>No screen config found</div>
             ) : (
               schemeRows.map((row, i) => (
                 <div

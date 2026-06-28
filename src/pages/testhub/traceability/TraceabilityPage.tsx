@@ -168,7 +168,7 @@ export default function TraceabilityPage() {
           content: (
             <div>
               {g.displayKey && g.displayKey !== g.displayTitle && (
-                <div style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, marginBottom: 2 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-code)', color: 'var(--ds-link)', fontWeight: 500, marginBottom: 0 }}>
                   {g.displayKey}
                 </div>
               )}
@@ -181,9 +181,9 @@ export default function TraceabilityPage() {
         {
           key: 'test-cases',
           content: (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {g.links.map(l => (
-                <span key={l.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'var(--ds-background-neutral)', borderRadius: 3 }}>
+                <span key={l.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0px 8px', background: 'var(--ds-background-neutral)', borderRadius: 3 }}>
                   <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>
                     {l.case_key ?? '—'}
                   </span>
@@ -221,7 +221,7 @@ export default function TraceabilityPage() {
         {!isLoading && (
           <>
             {groups.length > 0 && (
-              <div style={{ display: 'flex', gap: 32, padding: '12px 0 20px', borderBottom: '1px solid var(--ds-border)', marginBottom: 20 }}>
+              <div style={{ display: 'flex', gap: 32, padding: '12px 0 20px', borderBottom: '1px solid var(--ds-border)', marginBottom: 16 }}>
                 <Stat label="Requirements" value={groups.length} />
                 <Stat label="Test cases linked" value={totalCases} />
                 <Stat label="With passing run" value={passed} accent="success" />
@@ -234,7 +234,7 @@ export default function TraceabilityPage() {
               rows={rows}
               isLoading={false}
               emptyView={
-                <div style={{ textAlign: 'center', padding: '64px 24px', color: 'var(--ds-text-subtlest)' }}>
+                <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--ds-text-subtlest)' }}>
                   <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500, marginBottom: 8 }}>No requirements linked</div>
                   <div style={{ fontSize: 'var(--ds-font-size-400)' }}>
                     Open a test case → Requirements tab → Link requirement to start tracking coverage.

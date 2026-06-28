@@ -91,11 +91,11 @@ export default function AgeingSkeleton() {
       {/* Toolbar skeleton — mimics filter pills */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '10px 14px',
+        padding: '8px 14px',
         borderBottom: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken))',
       }}>
         <ShimmerBar width={140} height={10} isDark={isDark} />
-        <div style={{ display: 'flex', gap: 5 }}>
+        <div style={{ display: 'flex', gap: 4 }}>
           {[40, 48, 36, 52].map((w, i) => (
             <ShimmerBar key={i} width={w} height={22} borderRadius={12} isDark={isDark} />
           ))}

@@ -6,7 +6,7 @@ const LAB_MSG = 'Export available after lab approval and real data wiring.';
 
 export default function ReportExportMenu() {
   return (
-    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
       <Tooltip content={LAB_MSG}>
         <Button appearance="subtle" isDisabled>
           Export CSV

@@ -10,7 +10,7 @@ export function ScheduledBadge({ scheduledFor, onCancel }: ScheduledBadgeProps) 
   return (
     <div
       style={{
-        marginTop: 6,
+        marginTop: 4,
         display: 'inline-flex',
         alignItems: 'center',
         gap: 8,

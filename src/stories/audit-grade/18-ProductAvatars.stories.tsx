@@ -22,7 +22,7 @@ export const AllLandmarks: StoryObj = {
     <Frame width={900}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
         {STOCK_PLACE_IDS.map((id) => (
-          <div key={id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 96 }}>
+          <div key={id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 96 }}>
             <img src={STOCK_PLACE_REGISTRY[id]} width={48} height={48} alt="" aria-hidden="true" style={{ borderRadius: 12 }} />
             <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtle)', textAlign: 'center', wordBreak: 'break-all' }}>{id}</span>
           </div>
@@ -53,7 +53,7 @@ export const RotationDemo: StoryObj = {
     <Frame width={700}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
         {['ALPHA', 'BETA', 'GAMMA', 'DELTA', 'OMEGA', 'ZETA', 'THETA', 'KAPPA'].map((code) => (
-          <div key={code} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div key={code} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <ProductAvatar code={code} size={40} />
             <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>{code}</span>
           </div>

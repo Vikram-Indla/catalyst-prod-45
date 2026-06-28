@@ -167,7 +167,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
 
     if (openCreateCol === colId) {
       return (
-        <div style={{ margin: '2px 8px 4px' }}>
+        <div style={{ margin: '0px 8px 4px' }}>
           <InlineCreateCard
             projectKey={key.toUpperCase()}
             columnId={colId}
@@ -206,8 +206,8 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
         type="button"
         onClick={() => setOpenCreateCol(colId)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 6, width: 'calc(100% - 16px)',
-          padding: '6px 8px', margin: '2px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
+          display: 'flex', alignItems: 'center', gap: 4, width: 'calc(100% - 16px)',
+          padding: '4px 8px', margin: '0px 8px 4px', border: 'none', borderRadius: SIZES.CARD_RADIUS,
           background: 'transparent', color: token('color.text.subtle', 'var(--ds-icon)'),
           fontSize: 'var(--ds-font-size-400)', fontFamily: 'inherit', cursor: 'pointer',
         }}
@@ -259,7 +259,7 @@ export default function KanbanPage({ mode = 'project', keyOverride }: KanbanPage
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', 'var(--ds-surface)') }}>
       {/* Header */}
-      <div style={{ height: SIZES.HEADER_HEIGHT, padding: `0 ${SIZES.PAGE_PADDING_X}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2, flexShrink: 0 }}>
+      <div style={{ height: SIZES.HEADER_HEIGHT, padding: `0 ${SIZES.PAGE_PADDING_X}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0, flexShrink: 0 }}>
         <Breadcrumbs>
           {/* Home root — every hub breadcrumb roots at Home (2026-06-18 nav
               mental-model, matches ProjectPageHeader). */}

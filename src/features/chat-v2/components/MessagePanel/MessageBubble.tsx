@@ -145,7 +145,7 @@ export function MessageBubble({
         display: 'grid',
         gridTemplateColumns: '44px 1fr',
         columnGap: 8,
-        padding: '2px var(--cv2-page-pad-x, 20px) 2px 16px',
+        padding: '0px var(--cv2-page-pad-x, 20px) 2px 16px',
         marginTop: showHeader ? 'var(--cv2-group-gap, 16px)' : 'var(--cv2-intra-gap, 2px)',
         background: isPinned
           ? 'rgba(236, 178, 46, 0.08)' // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
@@ -244,7 +244,7 @@ export function MessageBubble({
           />
         )}
         {message.editedAt && !editing && (
-          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cv2-text-muted)', marginLeft: 6 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cv2-text-muted)', marginLeft: 4 }}>
             (edited)
           </span>
         )}
@@ -323,14 +323,14 @@ export function MessageBubble({
           style={{
             position: 'fixed',
             bottom: 24,
-            left: '50%',
+            left: '48%',
             transform: 'translateX(-50%)',
             background: 'var(--cv2-bg-modal)',
             color: 'var(--cv2-text)',
             border: '1px solid var(--cv2-border-strong)',
             borderRadius: 'var(--cv2-radius-md)',
             boxShadow: 'var(--cv2-shadow-modal)',
-            padding: '10px 16px',
+            padding: '8px 16px',
             fontFamily: 'var(--cv2-font)',
             fontSize: 'var(--ds-font-size-400)',
             zIndex: 'var(--cv2-modal-z, 1000)' as unknown as number,
@@ -382,7 +382,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
       <div
         style={{
           display: 'flex',
-          gap: 10,
+          gap: 8,
           padding: '8px 12px',
           borderLeft: '3px solid var(--cv2-border-strong)',
           background: 'transparent',
@@ -396,7 +396,7 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
           {info.sourceBodyText && (
             <div
               style={{
-                marginTop: 2,
+                marginTop: 0,
                 fontSize: 'var(--ds-font-size-300)',
                 color: 'var(--cv2-text)',
                 whiteSpace: 'pre-wrap',
@@ -408,12 +408,12 @@ function ForwardCard({ info, onViewMessage }: { info: ForwardInfo; onViewMessage
           )}
           <div
             style={{
-              marginTop: 6,
+              marginTop: 4,
               fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cv2-text-muted)',
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               flexWrap: 'wrap',
             }}
           >

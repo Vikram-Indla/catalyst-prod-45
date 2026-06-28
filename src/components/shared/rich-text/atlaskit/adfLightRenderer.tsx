@@ -75,7 +75,7 @@ function renderMark(
       return (
         <code key={key} style={{
           background: token('color.background.neutral', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'),
-          padding: '1px 4px', borderRadius: 3,
+          padding: '0px 4px', borderRadius: 3,
           fontSize: '0.875em',
           fontFamily: 'var(--cp-font-mono, ui-monospace, monospace)',
         }}>
@@ -382,7 +382,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
             alignItems: 'flex-start',
           }}
         >
-          <input type="checkbox" readOnly checked={done} style={{ marginTop: 3 }} />
+          <input type="checkbox" readOnly checked={done} style={{ marginTop: 4 }} />
           <span style={{ flex: 1, unicodeBidi: 'plaintext' }}>
             {(node.content ?? []).map((c, i) => renderInline(c, i))}
           </span>
@@ -477,7 +477,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
           style={{
             display: 'flex',
             gap: 8,
-            padding: '10px 12px',
+            padding: '8px 12px',
             background: style.bg,
             border: `1px solid ${style.border}`,
             borderRadius: 4,
@@ -521,7 +521,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
           dir={dir}
           style={{
             border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-            padding: '6px 10px',
+            padding: '4px 10px',
             textAlign: 'start',
             background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
             fontWeight: 600,
@@ -540,7 +540,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
           dir={dir}
           style={{
             border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
-            padding: '6px 10px',
+            padding: '4px 10px',
             verticalAlign: 'top',
             color: token('color.text', 'rgb(41,42,46)'),
           }}

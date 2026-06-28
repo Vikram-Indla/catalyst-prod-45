@@ -503,7 +503,7 @@ export function BrActivitySection({
     <div
       style={{
         borderTop: '1px solid var(--ds-border-subtle)',
-        paddingTop: 20,
+        paddingTop: 16,
         marginTop: 8,
       }}
     >

@@ -145,8 +145,8 @@ export default function IdeationPage() {
             <AIIntelligenceButton onClick={() => setIntelligenceOpen(true)} />
             <button style={{
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', color: dk.t2, border: `1px solid ${dk.border}`,
-              borderRadius: '6px', padding: '7px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
-              cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+              borderRadius: '6px', padding: '8px 14px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
+              cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
               fontFamily: 'var(--cp-font-body)',
             }}>
               <Download size={14} /> Export
@@ -172,7 +172,7 @@ export default function IdeationPage() {
         display: 'flex', alignItems: 'stretch',
       }}>
         {/* Total Ideas */}
-        <div style={{ padding: '14px 24px', borderRight: `1px solid ${dk.divider}` }}>
+        <div style={{ padding: '12px 24px', borderRight: `1px solid ${dk.divider}` }}>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>
             TOTAL IDEAS
           </div>
@@ -182,11 +182,11 @@ export default function IdeationPage() {
         </div>
 
         {/* Converted */}
-        <div style={{ padding: '14px 24px', borderRight: `1px solid ${dk.divider}` }}>
+        <div style={{ padding: '12px 24px', borderRight: `1px solid ${dk.divider}` }}>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>
             CONVERTED
           </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
             <span style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.greenText }}>
               {stats.converted}
             </span>
@@ -195,7 +195,7 @@ export default function IdeationPage() {
         </div>
 
         {/* By Quarter */}
-        <div style={{ flex: 1, padding: '14px 24px' }}>
+        <div style={{ flex: 1, padding: '12px 24px' }}>
           <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>
             BY QUARTER
           </div>
@@ -204,7 +204,7 @@ export default function IdeationPage() {
               const qb = QUARTER_BADGE[q];
               const count = q === 'Q1' ? stats.q1 : q === 'Q2' ? stats.q2 : q === 'Q3' ? stats.q3 : stats.q4;
               return (
-                <div key={q} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div key={q} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     height: '20px', minWidth: '26px', padding: '0 4px',
@@ -218,7 +218,7 @@ export default function IdeationPage() {
               );
             })}
             <div style={{ width: '1px', height: '20px', background: dk.border }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ fontSize: 'var(--ds-font-size-100)', color: dk.t3, fontWeight: 500 }}>Unassigned</span>
               <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: dk.t3 }}>
                 {stats.unassigned}
@@ -230,7 +230,7 @@ export default function IdeationPage() {
 
       {/* Filtered context indicator */}
       {activeFilter !== 'all' && (
-        <div style={{ padding: '6px 28px', background: 'var(--cp-primary-light)', borderBottom: `1px solid ${'var(--cp-primary-light)'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ padding: '4px 28px', background: 'var(--cp-primary-light)', borderBottom: `1px solid ${'var(--cp-primary-light)'}`, display: 'flex', alignItems: 'center', gap: '4px' }}>
           <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary))' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>
@@ -244,16 +244,16 @@ export default function IdeationPage() {
       {/* ─── Toolbar ─── */}
       <div style={{
         background: dk.pageBg, borderBottom: `1px solid ${dk.border}`,
-        padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px',
+        padding: '8px 28px', display: 'flex', alignItems: 'center', gap: '8px',
       }}>
         <div style={{ position: 'relative', width: '220px' }}>
-          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: dk.t3 }} />
+          <Search size={14} style={{ position: 'absolute', left: '8px', top: '48%', transform: 'translateY(-50%)', color: dk.t3 }} />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search ideas..."
             style={{
-              width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px',
+              width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '8px',
               background: 'var(--cp-bg-page)', border: `1px solid ${dk.border}`, borderRadius: '6px',
               fontSize: 'var(--ds-font-size-300)', color: dk.t1, outline: 'none',
             }}
@@ -375,7 +375,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
             ].map(col => (
               <th key={col.label} style={{
                 textAlign: 'left', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
-                letterSpacing: '0.06em', color: dk.t2, padding: '10px 12px',
+                letterSpacing: '0.06em', color: dk.t2, padding: '8px 12px',
                 borderBottom: `0.75px solid ${dk.divider}`,
                 whiteSpace: 'nowrap', width: col.width,
               }}>
@@ -440,7 +440,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
 
       {/* Footer */}
       <div style={{
-        padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         borderTop: `0.75px solid ${dk.divider}`,
       }}>
         <span style={{ fontSize: 'var(--ds-font-size-200)', color: dk.t3 }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>

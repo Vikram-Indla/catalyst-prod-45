@@ -229,7 +229,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: 'var(--ds-border)', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1))]" />
 
         {!collapsed && (
-          <div className="dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '4px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
             Planning
           </div>
         )}
@@ -237,10 +237,10 @@ export function SidebarProjectNav({
           <NavItem key={item.path} icon={item.icon} label={item.label} isActive={isPathActive(item.path)} onClick={() => navigate(`${basePath}/${item.path}`)} collapsed={collapsed} />
         ))}
 
-        <div style={{ height: 1, background: 'var(--ds-border)', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1))]" />
+        <div style={{ height: 1, background: 'var(--ds-border)', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1))]" />
 
         {!collapsed && (
-          <div className="dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '4px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
             Tracking
           </div>
         )}
@@ -248,10 +248,10 @@ export function SidebarProjectNav({
           <NavItem key={item.path} icon={item.icon} label={item.label} isActive={isPathActive(item.path)} onClick={() => navigate(`${basePath}/${item.path}`)} collapsed={collapsed} />
         ))}
 
-        <div style={{ height: 1, background: 'var(--ds-border)', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1))]" />
+        <div style={{ height: 1, background: 'var(--ds-border)', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1))]" />
 
         {!collapsed && (
-          <div className="dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '4px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))' }}>
             AI Intelligence
           </div>
         )}
@@ -261,12 +261,12 @@ export function SidebarProjectNav({
         {/* ═══ RECENTS SECTION ═══ */}
         {!collapsed && recentItems.length > 0 && (
           <>
-            <div style={{ height: 1, background: 'var(--ds-border)', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1))]" />
+            <div style={{ height: 1, background: 'var(--ds-border)', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1))]" />
 
             <button
               onClick={() => setRecentsExpanded(p => !p)}
               className="flex items-center w-full"
-              style={{ padding: '6px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
+              style={{ padding: '4px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
             >
               <ChevronRight
                 size={12}
@@ -283,14 +283,14 @@ export function SidebarProjectNav({
             </button>
 
             {recentsExpanded && (
-              <div style={{ padding: '2px 0' }}>
+              <div style={{ padding: '0px 0' }}>
                 {recentItems.map(item => (
                   <div
                     key={item.id}
                     className="group"
                     style={{
                       display: 'flex', alignItems: 'flex-start',
-                      padding: '5px 8px 5px 12px',
+                      padding: '4px 8px 5px 12px',
                       cursor: 'pointer', gap: 8,
                       borderRadius: '0 6px 6px 0',
                       borderLeft: '3px solid transparent',
@@ -301,10 +301,10 @@ export function SidebarProjectNav({
                     onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08))'; }}
                     onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
-                    <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
+                    <span style={{ flexShrink: 0, marginTop: 0, lineHeight: 0 }}>
                       <JiraIssueTypeIcon type={item.entity_type} size={14} />
                     </span>
-                    <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 0 }}>
                       <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {(item.display_summary ?? '').replace(/^\[.*?\]\s*/, '') || item.display_summary}
                       </span>
@@ -315,7 +315,7 @@ export function SidebarProjectNav({
                     <button
                       className="opacity-0 group-hover:opacity-100 flex items-center justify-center"
                       onClick={(e) => { e.stopPropagation(); removeRecent.mutate(item.id); }}
-                      style={{ width: 18, height: 18, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', flexShrink: 0, color: 'var(--cp-text-tertiary, var(--cp-text-secondary))', marginTop: 1 }}
+                      style={{ width: 18, height: 18, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', flexShrink: 0, color: 'var(--cp-text-tertiary, var(--cp-text-secondary))', marginTop: 0 }}
                       title="Remove from recents"
                     >
                       <X size={12} />

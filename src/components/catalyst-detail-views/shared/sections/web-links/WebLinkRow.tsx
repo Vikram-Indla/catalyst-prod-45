@@ -220,7 +220,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
           {/* Header: link icon + link_text in blue (fallback to URL).
               Spec point #3: prefer the user's link_text over the raw URL. */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-            <span style={{ flexShrink: 0, marginTop: 2 }}>
+            <span style={{ flexShrink: 0, marginTop: 0 }}>
               <LinkIcon label="" color="var(--ds-link)" />
             </span>
             <a
@@ -266,7 +266,7 @@ export function WebLinkRow({ link, onUnlink }: WebLinkRowProps) {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: 4,
                 padding: '4px 8px',
                 border: 'none',
                 background: copyHovered

@@ -149,7 +149,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
                       setOpen(false);
                     }}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
+                      display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px',
                       cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))',
                       background: isActive ? 'var(--ds-background-information)' : 'transparent',
                     }}
@@ -178,7 +178,7 @@ function SortableHeader({ label, sortKey, currentSort, currentDir, onSort, align
     <button
       onClick={() => onSort(sortKey)}
       style={{
-        display: 'flex', alignItems: 'center', gap: 3, background: 'none', border: 'none',
+        display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none',
         cursor: 'pointer', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: isActive ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse)))' : 'var(--ds-text-subtlest, var(--cp-text-secondary))',
         textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'inherit', padding: 0,
         justifyContent: align === 'right' ? 'flex-end' : align === 'center' ? 'center' : 'flex-start',
@@ -211,7 +211,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
   return (
     <div className="sdm-child-row" role="listitem">
       {/* Work cell: icon + linked key + summary */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1, minWidth: 0, overflow: 'hidden' }}>
         <span className="sdm-type-icon"><JiraIssueTypeIcon type={item.issue_type} size={16} /></span>
         <button
           onClick={e => { e.stopPropagation(); onClickKey(item.id); }}
@@ -441,7 +441,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
 
         {/* Progress bar */}
         {children.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0 6px', marginBottom: 2 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0 6px', marginBottom: 0 }}>
             <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', overflow: 'hidden' }}>
               <div style={{ width: `${donePercent}%`, height: '100%', borderRadius: 3, background: 'var(--ds-background-success-bold)', transition: 'width 0.3s ease' }} />
             </div>
@@ -453,7 +453,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {sorted.length > 0 && (
           <div style={{
             display: 'flex', alignItems: 'center',
-            padding: '6px 12px 6px 40px', borderBottom: '2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+            padding: '4px 12px 6px 40px', borderBottom: '2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
           }}>
             <div style={{ flex: 1 }}>
               <SortableHeader label="Work" sortKey="work" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} />
@@ -541,7 +541,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
           </div>
         )}
         {creating && (
-          <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
+          <div style={{ textAlign: 'right', padding: '4px 0 2px' }}>
             <button onClick={() => { setCreating(false); setDraftSummary(''); }}
               style={{ background: 'none', border: 'none', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary))', cursor: 'pointer', fontFamily: 'inherit' }}>
               Cancel

@@ -651,7 +651,7 @@ function LanguageSelect({
                 style={{
                   maxHeight: DROPDOWN_HEIGHT,
                   overflowY: 'auto',
-                  padding: 2,
+                  padding: 0,
                 }}
               >
                 {filtered.length === 0 ? (
@@ -727,7 +727,7 @@ function LanguageRow({
       onClick={onPick}
       style={{
         position: 'relative',
-        padding: '7px 12px 7px 14px',
+        padding: '8px 12px 7px 14px',
         fontSize: 'var(--ds-font-size-300)',
         fontWeight: selected ? 500 : 400,
         color: selected
@@ -878,7 +878,7 @@ function Dropdown({
         padding: 4,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: 0,
         zIndex: 2147483647,
       }}
     >
@@ -906,7 +906,7 @@ function MenuItem({ label, icon, onClick, danger = false }: MenuItemProps) {
         alignItems: 'center',
         gap: 8,
         width: '100%',
-        padding: '7px 10px',
+        padding: '8px 10px',
         border: 'none',
         borderRadius: 4,
         background: 'transparent',

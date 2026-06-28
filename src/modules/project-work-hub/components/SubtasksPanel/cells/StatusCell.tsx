@@ -66,7 +66,7 @@ export const StatusCell = React.memo(function StatusCell({
         display: 'inline-flex',
         alignItems: 'center',
         gap: 4,
-        padding: '2px 6px',
+        padding: '0px 6px',
         borderRadius: 3,
         fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,

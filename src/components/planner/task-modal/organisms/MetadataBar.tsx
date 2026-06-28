@@ -32,8 +32,8 @@ export const MetadataBar: React.FC<MetadataBarProps> = ({
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '20px',
-        padding: '18px 28px',
+        gap: '16px',
+        padding: '16px 28px',
         backgroundColor: COLORS.surfacePage,
         borderBottom: `1px solid ${COLORS.borderLight}`
       }}

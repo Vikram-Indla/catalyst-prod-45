@@ -117,7 +117,7 @@ export const WeeklyStory: React.FC<Props> = ({ data, selectedDate, onPrevWeek, o
                           <span key={ref} className="rai-ticket-ref" style={{ marginLeft: 4 }}>{ref}</span>
                         ))}
                         {evt.statusBadge && (
-                          <span className={`rai-status-badge rai-status-${evt.statusBadge}`} style={{ marginLeft: 6 }}>
+                          <span className={`rai-status-badge rai-status-${evt.statusBadge}`} style={{ marginLeft: 4 }}>
                             {evt.statusBadge === 'progress' ? 'In Progress' : evt.statusBadge === 'done' ? 'Done' : 'In Review'}
                           </span>
                         )}

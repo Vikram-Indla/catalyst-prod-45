@@ -17,7 +17,7 @@ export function SelectAllRow({ totalCount, selectedCount, onToggle }: SelectAllR
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         padding: '8px 16px',
         background: 'transparent',
         border: 'none',

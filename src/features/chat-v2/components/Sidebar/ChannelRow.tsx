@@ -22,7 +22,7 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
         alignItems: 'center',
         gap: 8,
         width: '100%',
-        padding: '5px 12px 5px 30px',
+        padding: '4px 12px 5px 30px',
         background: isActive ? 'var(--cv2-bg-row-active)' : 'transparent',
         border: 'none',
         textAlign: 'left',

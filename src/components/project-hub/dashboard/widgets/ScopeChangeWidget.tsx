@@ -232,8 +232,8 @@ function KpiCell({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
-        padding: '10px 12px',
+        gap: 0,
+        padding: '8px 12px',
         borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}
     >
@@ -315,8 +315,8 @@ function ReleaseRow({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 6,
-        padding: '10px 8px',
+        gap: 4,
+        padding: '8px 8px',
         marginInline: -8,
         borderRadius: token('border.radius', '4px'),
         cursor: 'pointer',

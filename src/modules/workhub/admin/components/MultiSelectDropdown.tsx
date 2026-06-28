@@ -86,7 +86,7 @@ export function MultiSelectDropdown({
           onClick={() => setOpen(!open)}
           style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))',
+            padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))',
             background: 'var(--bg-app)', cursor: 'pointer', minHeight: '50px', gap: '8px',
           }}
         >
@@ -101,7 +101,7 @@ export function MultiSelectDropdown({
                     key={v}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '4px',
-                      padding: '2px 8px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
+                      padding: '0px 8px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                       background: accentBg, color: accentColor, fontFamily: 'var(--cp-font-body)',
                     }}
                   >
@@ -129,12 +129,12 @@ export function MultiSelectDropdown({
         {/* Dropdown */}
         {open && (
           <div style={{
-            position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '4px',
+            position: 'absolute', top: '48%', left: 0, right: 0, marginTop: '4px',
             background: 'var(--bg-app)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken)))', borderRadius: '8px',
             boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(0,0,0,.12))', zIndex: 9999, overflow: 'hidden',
           }}>
             {/* Search */}
-            <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <SearchIcon label="" size="small" />
               <input
                 ref={searchRef}
@@ -150,7 +150,7 @@ export function MultiSelectDropdown({
             </div>
 
             {/* Select All / Deselect All */}
-            <div style={{ padding: '6px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))', display: 'flex', gap: '12px' }}>
+            <div style={{ padding: '4px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken))', display: 'flex', gap: '12px' }}>
               <button
                 onClick={() => onChange(filtered.map(o => o.value))}
                 style={{ fontSize: 'var(--ds-font-size-50)', color: accentColor, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
@@ -208,7 +208,7 @@ export function MultiSelectDropdown({
                           {opt.label}
                         </span>
                         {opt.sublabel && (
-                          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginLeft: '6px', fontFamily: 'var(--cp-font-body)' }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginLeft: '4px', fontFamily: 'var(--cp-font-body)' }}>
                             {opt.sublabel}
                           </span>
                         )}

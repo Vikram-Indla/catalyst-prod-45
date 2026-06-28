@@ -37,7 +37,7 @@ function InterventionCard({
     <div
       data-testid={`intervention-item-${id}`}
       style={{
-        padding: '10px 12px',
+        padding: '8px 12px',
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         borderLeft: `3px solid ${PHASE_PAUSED}`,
         borderRadius: 6,
@@ -79,7 +79,7 @@ function InterventionCard({
           fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
-          marginTop: 2,
+          marginTop: 0,
         }}
       >
         {title}
@@ -123,7 +123,7 @@ function ApprovalCard({
     <div
       data-testid={`intervention-item-${id}`}
       style={{
-        padding: '10px 12px',
+        padding: '8px 12px',
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         borderLeft: `3px solid ${PHASE_APPROVAL}`,
         borderRadius: 6,
@@ -160,7 +160,7 @@ function ApprovalCard({
         </span>
       </div>
 
-      <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'), marginTop: 2 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'), marginTop: 0 }}>
         {title}
       </div>
 

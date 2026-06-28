@@ -138,7 +138,7 @@ function FieldWrapper({ label, required, children }: { label: string; required?:
   return (
     <div style={{ marginBottom: 16 }}>
       <label className="block text-[11px] font-semibold uppercase tracking-[0.06em] mb-1.5" style={{ color: T.inkSec }}>
-        {label}{required && <span style={{ color: T.danger, marginLeft: 2 }}>*</span>}
+        {label}{required && <span style={{ color: T.danger, marginLeft: 0 }}>*</span>}
       </label>
       {children}
     </div>
@@ -280,7 +280,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
 
       {/* Dialog */}
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        position: 'fixed', top: '48%', left: '48%', transform: 'translate(-50%,-50%)',
         zIndex: 610, width: 580, maxHeight: '90vh', display: 'flex', flexDirection: 'column',
         background: T.surface, borderRadius: 16,
         boxShadow: '0 24px 80px var(--ds-shadow-raised, rgba(0,0,0,.18))',
@@ -289,14 +289,14 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
       }}>
 
         {/* ─── HEADER ─── */}
-        <div style={{ padding: '20px 24px 16px', flexShrink: 0 }}>
+        <div style={{ padding: '16px 24px 16px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <div>
               <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)', letterSpacing: '-.02em' }}>New Business Request</div>
               {nextKey && (
                 <div style={{
-                  display: 'inline-block', marginTop: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
-                  color: T.primary, background: T.primaryBg, padding: '2px 10px',
+                  display: 'inline-block', marginTop: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+                  color: T.primary, background: T.primaryBg, padding: '0px 10px',
                   borderRadius: 4, fontFamily: 'var(--cp-font-mono)', lineHeight: '20px',
                 }}>{nextKey}</div>
               )}
@@ -432,17 +432,17 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
           justifyContent: 'space-between',
         }}>
           <button onClick={doClose} style={{
-            padding: '9px 20px', border: `1px solid ${T.border}`, borderRadius: 8,
+            padding: '8px 20px', border: `1px solid ${T.border}`, borderRadius: 8,
             background: T.surface, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
             color: T.inkSec,
           }}>Cancel</button>
 
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
             <button
               onClick={() => handleCreate(true)}
               disabled={createMutation.isPending}
               style={{
-                padding: '9px 20px', borderRadius: 8, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
+                padding: '8px 20px', borderRadius: 8, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                 cursor: 'pointer', border: `1.5px solid ${T.primary}`,
                 background: T.surface, color: T.primary, opacity: createMutation.isPending ? 0.5 : 1,
               }}
@@ -453,7 +453,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               disabled={createMutation.isPending || !form.title.trim()}
               className="flex items-center gap-2"
               style={{
-                padding: '9px 24px', border: 'none', borderRadius: 8,
+                padding: '8px 24px', border: 'none', borderRadius: 8,
                 background: T.primary, color: 'var(--ds-surface)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                 cursor: 'pointer', boxShadow: '0 2px 8px var(--ds-background-information, rgba(37,99,235,.25))',
                 opacity: (createMutation.isPending || !form.title.trim()) ? 0.5 : 1,

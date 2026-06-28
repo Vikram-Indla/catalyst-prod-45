@@ -103,7 +103,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                               fontSize: 'var(--ds-font-size-50)',
                               fontWeight: 500,
                               textTransform: 'none',
-                              padding: '1px 6px',
+                              padding: '0px 6px',
                               borderRadius: 3,
                               background: 'var(--ds-background-accent-purple-subtler)',
                               color: 'var(--ds-text-accent-purple)',

@@ -23,7 +23,7 @@ export function injectEditorStyles(): void {
   s.id = STYLE_ID;
   s.textContent = `
     .catalyst-tiptap-editor {
-      outline: none;
+      outline: 2px solid var(--ds-border-focused);
       font-size: 14px;
       line-height: 24px;
       color: var(--ds-text);
@@ -37,9 +37,9 @@ export function injectEditorStyles(): void {
     [data-cc-compact] .catalyst-tiptap-editor { --cc-editor-min: 48px; }
     .catalyst-tiptap-editor p { margin: 0 0 8px; }
     .catalyst-tiptap-editor h1 { font-size: 24px; font-weight: 700; margin: 16px 0 8px; line-height: 1.3; }
-    .catalyst-tiptap-editor h2 { font-size: 20px; font-weight: 600; margin: 14px 0 8px; line-height: 1.3; }
+    .catalyst-tiptap-editor h2 { font-size: 20px; font-weight: 600; margin: 12px 0 8px; line-height: 1.3; }
     .catalyst-tiptap-editor h3 { font-size: 16px; font-weight: 600; margin: 12px 0 6px; line-height: 1.4; }
-    .catalyst-tiptap-editor h4 { font-size: 14px; font-weight: 600; margin: 10px 0 4px; }
+    .catalyst-tiptap-editor h4 { font-size: 14px; font-weight: 600; margin: 8px 0 4px; }
     .catalyst-tiptap-editor h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; }
     .catalyst-tiptap-editor h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px;
                                  color: var(--ds-text-subtle); }
@@ -82,7 +82,7 @@ export function injectEditorStyles(): void {
       font-size: 13px;
       line-height: 20px;
       border: 0 !important;
-      outline: 0 !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       border-radius: 0 !important;
       box-shadow: none !important;
     }
@@ -97,7 +97,7 @@ export function injectEditorStyles(): void {
       font: inherit !important;
       font-variant-numeric: tabular-nums;
       border: 0 !important;
-      outline: 0 !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       border-radius: 0 !important;
     }
     .catalyst-tiptap-editor .catalyst-code-block-ln {
@@ -105,7 +105,7 @@ export function injectEditorStyles(): void {
       font: inherit !important;
       line-height: 20px !important;
       border: 0 !important;
-      outline: 0 !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       margin: 0 !important;
       padding: 0 !important;
     }
@@ -118,7 +118,7 @@ export function injectEditorStyles(): void {
       font: inherit !important;
       line-height: 20px !important;
       border: 0 !important;
-      outline: 0 !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       border-radius: 0 !important;
       box-shadow: none !important;
     }
@@ -134,7 +134,7 @@ export function injectEditorStyles(): void {
       font: inherit !important;
       line-height: 20px !important;
       border: 0 !important;
-      outline: 0 !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       border-radius: 0 !important;
       box-shadow: none !important;
     }
@@ -143,7 +143,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor .catalyst-code-block-pre code:focus,
     .catalyst-tiptap-editor .catalyst-code-block-pre code:focus-visible,
     .catalyst-tiptap-editor .catalyst-code-block-pre code:focus-within {
-      outline: 0 !important;
+      outline: 2px solid var(--ds-border-focused) !important;
       border: 0 !important;
       box-shadow: none !important;
     }
@@ -264,7 +264,7 @@ export function injectEditorStyles(): void {
     }
     .catalyst-tiptap-editor code {
       background: var(--ds-surface-sunken);
-      padding: 2px 4px;
+      padding: 0px 4px;
       border-radius: 3px;
       font-size: 12px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -277,7 +277,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor a:hover { text-decoration: underline; }
     .catalyst-tiptap-editor hr {
       border: none;
-      border-top: 1px solid var(--ds-border);
+      border-top: 0px solid var(--ds-border);
       margin: 16px 0;
     }
     .catalyst-tiptap-editor img {
@@ -343,7 +343,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor ul[data-type="taskList"] li {
       display: flex;
       align-items: flex-start;
-      gap: 6px;
+      gap: 4px;
     }
     .catalyst-tiptap-editor ul[data-type="taskList"] li > label {
       flex-shrink: 0;
@@ -435,7 +435,7 @@ export function injectEditorStyles(): void {
       content: '';
       position: absolute;
       left: -8px;
-      top: 50%;
+      top: 48%;
       width: 8px;
       height: 8px;
       margin-top: -4px;
@@ -458,7 +458,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor table td,
     .catalyst-tiptap-editor table th {
       border: 1px solid var(--ds-border);
-      padding: 6px 10px;
+      padding: 4px 10px;
       vertical-align: top;
       box-sizing: border-box;
       position: relative;
@@ -616,7 +616,7 @@ export function injectEditorStyles(): void {
     .catalyst-tiptap-editor .catalyst-panel {
       border-inline-start: 3px solid;
       border-radius: 4px;
-      padding-block: 10px;
+      padding-block: 8px;
       padding-inline: 40px 12px;
       margin: 12px 0;
       position: relative;

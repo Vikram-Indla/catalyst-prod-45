@@ -38,7 +38,7 @@ function ToggleGroup({
         display: 'inline-flex',
         background: token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle)'),
         borderRadius: 4,
-        padding: 2,
+        padding: 0,
       }}
     >
       {options.map(o => (
@@ -94,7 +94,7 @@ function SectionHeading({ label, count, danger }: { label: string; count: number
           color: danger
             ? token('color.text.danger', 'var(--ds-text-danger)')
             : token('color.text.warning', 'var(--ds-text-warning)'),
-          padding: '1px 8px',
+          padding: '0px 8px',
           borderRadius: 10,
           fontSize: 'var(--ds-font-size-100)',
           letterSpacing: 'normal',
@@ -133,7 +133,7 @@ function AttentionRow({
         gridTemplateColumns: '80px 1fr auto auto',
         gap: 12,
         alignItems: 'center',
-        padding: '10px 12px',
+        padding: '8px 12px',
         borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
         cursor: 'pointer',
       }}
@@ -155,7 +155,7 @@ function AttentionRow({
           {title}
         </div>
         {assignee && (
-          <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'), marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'), marginTop: 0 }}>
             {assignee}
           </div>
         )}
@@ -163,7 +163,7 @@ function AttentionRow({
       <span
         style={{
           display: 'inline-block',
-          padding: '2px 8px',
+          padding: '0px 8px',
           borderRadius: 3,
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,

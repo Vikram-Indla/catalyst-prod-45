@@ -20,14 +20,14 @@ export default function ReportFormulaDrawer({ reportSlug }: Props) {
         <div
           style={{
             position: 'absolute',
-            top: '100%',
+            top: '48%',
             right: 0,
             marginTop: 4,
             width: 340,
             background: 'var(--ds-surface-raised)',
             border: '1px solid var(--ds-border)',
             borderRadius: 6,
-            padding: '14px 16px',
+            padding: '12px 16px',
             boxShadow: 'var(--ds-shadow-overlay)',
             zIndex: 100,
           }}
@@ -50,7 +50,7 @@ export default function ReportFormulaDrawer({ reportSlug }: Props) {
           </p>
           <p
             style={{
-              margin: '10px 0 0',
+              margin: '8px 0 0',
               fontSize: 'var(--ds-font-size-100)',
               color: 'var(--ds-text-subtlest)',
               fontStyle: 'italic',

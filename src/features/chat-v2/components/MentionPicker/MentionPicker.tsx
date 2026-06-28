@@ -186,7 +186,7 @@ function MentionRow({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         width: '100%',
         height: ROW_H,
         padding: '0 12px',

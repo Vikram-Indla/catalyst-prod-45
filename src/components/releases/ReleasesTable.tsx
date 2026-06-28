@@ -107,7 +107,7 @@ function ProgressBar({ progress }: { progress: ReleaseProgress | null }) {
     <div
       style={{
         display: 'flex',
-        gap: 2,
+        gap: 0,
         height: 8,
         width: '100%',
         maxWidth: 220,
@@ -324,7 +324,7 @@ export interface ReleasesTableProps {
 
 const thStyle: React.CSSProperties = {
   textAlign: 'left',
-  padding: '10px 8px',
+  padding: '8px 8px',
   fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
   color: TEXT_SUBTLE,
@@ -344,7 +344,7 @@ const tdStyle: React.CSSProperties = {
 
 const tdStyleCompact: React.CSSProperties = {
   ...tdStyle,
-  padding: '6px 8px',
+  padding: '4px 8px',
 };
 
 function formatDate(iso?: string) {
@@ -495,7 +495,7 @@ export function ReleasesTable({
                       <td
                         colSpan={colSpan}
                         style={{
-                          padding: '14px 8px 6px',
+                          padding: '12px 8px 6px',
                           background: 'transparent',
                         }}
                       >

@@ -52,7 +52,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Delete message
           </div>
           <button
@@ -72,7 +72,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
         <p
           style={{
             margin: '12px 0 16px',
-            fontSize: 'var(--ds-font-size-400)',
+            fontSize: 'var(--ds-font-size-500)',
             lineHeight: 1.45,
             color: 'var(--cv2-text)',
           }}
@@ -82,7 +82,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
         <div
           style={{
             display: 'flex',
-            gap: 10,
+            gap: 8,
             padding: 12,
             border: '1px solid var(--cv2-border)',
             borderRadius: 'var(--cv2-radius-md)',
@@ -111,7 +111,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
             />
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
           <button
             type="button"
             onClick={onCancel}
@@ -138,7 +138,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
               height: 36,
               padding: '0 16px',
               background: 'var(--cv2-danger)',
-              color: 'var(--ds-text-inverse)',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               border: '1px solid var(--cv2-danger)',
               borderRadius: 'var(--cv2-radius-sm)',
               boxShadow: '0 0 0 3px rgba(224,30,90,0.30)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent

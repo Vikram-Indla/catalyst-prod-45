@@ -74,7 +74,7 @@ export const exportToPdf = async <T extends Record<string, any>>(
     alternateRowStyles: {
       fillColor: [250, 250, 250],
     },
-    margin: { top: 20, right: 14, bottom: 20, left: 14 },
+    margin: { top: 16, right: 12, bottom: 16, left: 12 },
   });
 
   // Footer

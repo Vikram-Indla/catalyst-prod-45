@@ -99,7 +99,7 @@
   font-family: var(--wh-fn);
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
 }
 .wh-readonly-banner strong { color: var(--wh-warn); }
 
@@ -118,7 +118,7 @@
 }
 .wh-input:focus {
   border-color: var(--wh-pri);
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   box-shadow: 0 0 0 3px var(--wh-pri-bg);
 }
 .wh-input.error {
@@ -171,11 +171,11 @@
   font-weight: 600;
   color: var(--wh-tx2);
   font-family: var(--wh-fn);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .wh-label .wh-required {
   color: var(--wh-dng);
-  margin-left: 2px;
+  margin-left: 0px;
 }
 
 /* ═══ CARD ═══ */

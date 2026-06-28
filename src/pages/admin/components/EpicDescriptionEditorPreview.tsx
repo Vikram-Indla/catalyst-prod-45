@@ -391,7 +391,7 @@ export function EpicDescriptionEditorPreview() {
       <div style={{ padding: '8px 12px', backgroundColor: token('color.background.neutral', 'var(--ds-background-neutral)'), borderRadius: 3, fontSize: 13 }}>
         <strong>{currentVariant.label}:</strong> {currentVariant.description}
         {isReadOnly && (
-          <div style={{ marginTop: 6, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
+          <div style={{ marginTop: 4, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle)') }}>
             🔒 Read-only — editor is locked in this variant
           </div>
         )}

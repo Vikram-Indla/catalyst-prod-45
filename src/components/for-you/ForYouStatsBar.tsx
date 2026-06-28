@@ -31,12 +31,12 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
       display: 'flex',
       alignItems: 'center',
       gap: 24,
-      padding: '10px 0',
+      padding: '8px 0',
       marginBottom: 12,
       borderBottom: '1px solid var(--cp-bd, var(--divider))',
     }}>
       {entries.map(([hub, count]) => (
-        <div key={hub} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+        <div key={hub} style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
           <span style={{
             width: 6, height: 6, borderRadius: '50%',
             background: HUB_DOT_COLORS[hub] || 'var(--ds-text-subtlest)',
@@ -47,11 +47,11 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
         </div>
       ))}
       <span style={{ color: 'var(--fg-4)' }}>|</span>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
         <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>{projectCount}</span>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)' }}>projects</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
         <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>{reporterCount}</span>
         <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-3)' }}>reporters</span>
       </div>

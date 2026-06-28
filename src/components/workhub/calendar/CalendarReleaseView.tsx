@@ -23,7 +23,7 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
 
   if (filtered.length === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
         <CalendarDays style={{ width: 48, height: 48, marginBottom: 16, color: 'var(--fg-4)' }} />
         <p style={{ fontSize: 'var(--ds-font-size-400)', margin: 0 }}>No release deadlines or work items due in {getMonthName(month)} {year}</p>
       </div>
@@ -37,10 +37,10 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
     const totalExtra = Math.max(0, releases.length - maxVisible) + Math.max(0, workitems.length - 4);
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
         {/* Release bars */}
         {releases.slice(0, maxVisible).map((r) => (
-          <div key={r.entity_id} style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <div key={r.entity_id} style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             <div
               style={{
                 height: 6,
@@ -66,7 +66,7 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
 
         {/* Work item dots */}
         {workitems.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 2 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 0 }}>
             {workitems.slice(0, 4).map((w) => (
               <div
                 key={w.entity_id}
@@ -103,12 +103,12 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
 
       {/* Legend */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 0', fontFamily: 'var(--wh-font-sans)', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <div style={{ width: 16, height: 6, borderRadius: 4, backgroundColor: 'var(--cp-blue)' }} />
           <span>Releases</span>
         </div>
         <span style={{ color: 'var(--fg-4)' }}>·</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--cp-blue)' }} />
           <span>Work Items</span>
         </div>

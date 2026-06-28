@@ -72,7 +72,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
         }
       `}</style>
 
-      <div style={{ padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+      <div style={{ padding: '12px 14px', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
         {/* Avatar */}
         <div style={{
           width: 36, height: 50, borderRadius: '50%', flexShrink: 0,
@@ -89,7 +89,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
             <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
             {getActionVerb(n.notification_type)}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
             <WorkItemIcon type={n.entity_icon_type} />
             {/* m-06: entity title truncation increased to 260px */}
             <span style={{
@@ -130,7 +130,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
         <button
           onClick={(e) => { e.stopPropagation(); onDismiss(t.id); }}
           style={{
-            background: 'none', border: 'none', cursor: 'pointer', padding: 2,
+            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
             color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', flexShrink: 0, borderRadius: 4,
             minWidth: 44, minHeight: 44, // responsive: min tap target
             display: 'flex', alignItems: 'center', justifyContent: 'center',

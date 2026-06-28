@@ -156,7 +156,7 @@ function FilterSection({
           color: dark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-text-secondary))',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
-          marginBottom: 6,
+          marginBottom: 4,
         }}
       >
         {title}
@@ -232,7 +232,7 @@ export function FilterChips({
           style={{
             fontSize: 'var(--ds-font-size-100)',
             fontWeight: 500,
-            padding: '2px 8px 2px 10px',
+            padding: '0px 8px 2px 10px',
           }}
         >
           {c.label}

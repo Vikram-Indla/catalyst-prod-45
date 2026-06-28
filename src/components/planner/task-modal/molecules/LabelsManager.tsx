@@ -185,7 +185,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
           {/* LABELS LIST */}
           <div style={{ maxHeight: '240px', overflowY: 'auto', padding: '8px' }}>
             {labelsLoading ? (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
                 <Loader2 size={20} style={{ color: COLORS.textMuted, animation: 'spin 1s linear infinite' }} />
               </div>
             ) : filteredLabels.length === 0 ? (
@@ -219,7 +219,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                   placeholder="Label name"
                   autoFocus
                   style={{
-                    padding: '10px 12px',
+                    padding: '8px 12px',
                     border: `1px solid ${COLORS.borderDefault}`,
                     borderRadius: '8px',
                     fontSize: 'var(--ds-font-size-400)',
@@ -234,7 +234,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                 />
 
                 {/* COLOR PICKER */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                   {LABEL_COLORS.map(color => (
                     <button
                       key={color.value}
@@ -302,7 +302,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                   alignItems: 'center',
                   gap: '8px',
                   width: '100%',
-                  padding: '10px 12px',
+                  padding: '8px 12px',
                   backgroundColor: 'transparent',
                   border: 'none',
                   borderRadius: '8px',
@@ -343,8 +343,8 @@ const LabelOption: React.FC<{
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
-        padding: '10px 12px',
+        gap: '8px',
+        padding: '8px 12px',
         borderRadius: '8px',
         cursor: 'pointer',
         backgroundColor: isSelected 

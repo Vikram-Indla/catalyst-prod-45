@@ -105,14 +105,14 @@ export const PAGE_SIZE = 8;
 
 // Slot positions as percentages/px for absolute placement (228x145 cards)
 export const SLOT_POSITIONS: { left: string; top: string }[] = [
-  { left: '4%',  top: '5%' },       // Slot 1: top-left
-  { left: '36%', top: '2%' },       // Slot 2: top-center
-  { left: '62%', top: '5%' },       // Slot 3: top-right
-  { left: '68%', top: '33%' },      // Slot 4: mid-right
-  { left: '62%', top: '61%' },      // Slot 5: bottom-right
-  { left: '36%', top: '65%' },      // Slot 6: bottom-center
-  { left: '4%',  top: '61%' },      // Slot 7: bottom-left
-  { left: '4%',  top: '33%' },      // Slot 8: mid-left
+  { left: '4%',  top: '4%' },       // Slot 1: top-left
+  { left: '32%', top: '0%' },       // Slot 2: top-center
+  { left: '48%', top: '4%' },       // Slot 3: top-right
+  { left: '48%', top: '32%' },      // Slot 4: mid-right
+  { left: '48%', top: '48%' },      // Slot 5: bottom-right
+  { left: '32%', top: '48%' },      // Slot 6: bottom-center
+  { left: '4%',  top: '48%' },      // Slot 7: bottom-left
+  { left: '4%',  top: '32%' },      // Slot 8: mid-left
 ];
 
 // Compute connector endpoints dynamically from card positions

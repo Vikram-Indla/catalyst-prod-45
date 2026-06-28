@@ -353,7 +353,7 @@ export function RoadmapView({ items, onItemClick, selectedYear }: RoadmapViewPro
       {/* Body */}
       <div className="flex-1 overflow-auto relative">
         {/* Quarter grid lines */}
-        <div className="absolute inset-0 flex pointer-events-none" style={{ left: '240px', right: 0 }}>
+        <div className="absolute inset-0 flex pointer-events-none" style={{ left: '48px', right: 0 }}>
           {quarters.map((_, i) => (
             <div key={i} className="flex-1 border-r border-border/20 last:border-r-0" />
           ))}

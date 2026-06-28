@@ -59,7 +59,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
         {config.is_default && (
           <span
             style={{
-              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 8px', borderRadius: 10,
+              fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 8px', borderRadius: 10,
               background: 'var(--ds-background-success)', color: 'var(--ds-text-success)',
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}
@@ -74,11 +74,11 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
         style={{
           padding: '8px 16px',
           borderBottom: '1px solid var(--divider)',
-          display: 'flex', gap: 20,
+          display: 'flex', gap: 16,
           background: 'var(--ds-surface)',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fg-3)' }}>
             Projects using this
           </span>
@@ -86,7 +86,7 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
             {config.project_count}
           </span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fg-3)' }}>
             Work types
           </span>
@@ -98,12 +98,12 @@ function ConfigCard({ config }: { config: FieldConfigRow }) {
 
       {/* Work type chips */}
       {config.work_type_names.length > 0 && (
-        <div style={{ padding: '10px 16px', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ padding: '8px 16px', display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {config.work_type_names.map(typeName => (
             <div
               key={typeName}
               style={{
-                display: 'flex', alignItems: 'center', gap: 5,
+                display: 'flex', alignItems: 'center', gap: 4,
                 padding: '4px 10px',
                 border: '1px solid var(--divider)',
                 borderRadius: 20,
@@ -159,14 +159,14 @@ export function FieldsTab({ projectId }: FieldsTabProps) {
             {/* Scheme header */}
             <div
               style={{
-                padding: '14px 20px',
+                padding: '12px 20px',
                 borderBottom: '1px solid var(--divider)',
                 background: 'var(--ds-surface-sunken)',
-                display: 'flex', alignItems: 'center', gap: 10,
+                display: 'flex', alignItems: 'center', gap: 8,
               }}
             >
               <div>
-                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 2 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 0 }}>
                   Field Scheme
                 </div>
                 <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>
@@ -179,7 +179,7 @@ export function FieldsTab({ projectId }: FieldsTabProps) {
             </div>
 
             {/* Config cards */}
-            <div style={{ padding: '16px 20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
+            <div style={{ padding: '16px 20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
               {(scheme.ph_field_config ?? [])
                 .slice()
                 .sort((a, b) => (b.is_default ? 1 : 0) - (a.is_default ? 1 : 0))

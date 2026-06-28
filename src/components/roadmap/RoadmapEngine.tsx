@@ -990,7 +990,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
               style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))', height: `${HEADER_HEIGHT}px`, minHeight: `${HEADER_HEIGHT}px` }}
             >
               {todayPosition !== null && (
-                <div className="absolute pointer-events-none z-20" style={{ left: `${todayPosition}%`, top: '6px', transform: 'translateX(-50%)' }}>
+                <div className="absolute pointer-events-none z-20" style={{ left: `${todayPosition}%`, top: '4px', transform: 'translateX(-50%)' }}>
                   <div className="px-2 py-0.5 text-[10px] font-semibold rounded-full whitespace-nowrap" style={{ backgroundColor: 'rgba(184,148,79,0.2)', color: 'hsl(var(--roadmap-status-new))', border: '1px solid rgba(184,148,79,0.4)' }}>
                     {isRTL ? 'اليوم' : 'Today'}
                   </div>
@@ -1117,7 +1117,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                       <Tooltip position="top" delay={200} content={tooltipContent}>
                         <div
                           className="absolute flex flex-col cursor-pointer"
-                          style={{ left: barPos.left, width: barPos.width, top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}
+                          style={{ left: barPos.left, width: barPos.width, top: '48%', transform: 'translateY(-50%)', zIndex: 10 }}
                           onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
                         >
                               {/* Labels Row */}
@@ -1157,7 +1157,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                       className="absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[8px] font-bold shadow-sm cursor-pointer hover:scale-110 transition-transform"
                                       style={{ 
                                         left: `${pos}%`, 
-                                        top: '50%', 
+                                        top: '48%', 
                                         transform: 'translate(-50%, -50%)',
                                         backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'white',
                                         borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-milestone-pending))',
@@ -1202,7 +1202,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
           .print\\:hidden { display: none !important; }
           .print\\:bg-white { background: white !important; }
           body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-          @page { size: A3 landscape; margin: 1cm; }
+          @page { size: A3 landscape; margin: 0cm; }
         }
       `}</style>
 

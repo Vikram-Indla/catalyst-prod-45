@@ -27,7 +27,7 @@ export function SidebarSection({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           padding: '8px 8px 8px 12px',
           color: 'var(--cv2-text-subtle)',
           fontFamily: 'var(--cv2-font)',
@@ -62,7 +62,7 @@ export function SidebarSection({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 2,
+            gap: 0,
             opacity: hover ? 1 : 0,
             transition: 'opacity var(--cv2-transition-fast)',
             pointerEvents: hover ? 'auto' : 'none',

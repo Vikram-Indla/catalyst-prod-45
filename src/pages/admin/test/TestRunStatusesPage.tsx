@@ -44,7 +44,7 @@ function StatusChip({ row }: { row: RunStatusRow }) {
   const color = STATUS_TYPE_TEXT[row.status_type] ?? 'var(--ds-text)';
   return (
     <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: 3, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
+      display: 'inline-block', padding: '0px 8px', borderRadius: 3, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
       background: bg, color,
     }}>
       {row.name}
@@ -133,10 +133,10 @@ export default function TestRunStatusesPage() {
               </tr>
             ) : statuses.map(row => (
               <tr key={row.id} style={{ borderBottom: '1px solid var(--ds-border)' }}>
-                <td style={{ padding: '10px 12px', width: 100 }}>
+                <td style={{ padding: '8px 12px', width: 100 }}>
                   <StatusChip row={row} />
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {editingId === row.id ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       <Textfield
@@ -166,28 +166,28 @@ export default function TestRunStatusesPage() {
                     <span style={{ fontWeight: 500, color: 'var(--ds-text)' }}>{row.name}</span>
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   <span style={{ fontSize: 'var(--ds-font-size-100)', fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtle)' }}>
                     {row.status_type}
                   </span>
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {row.execution_completed ? (
                     <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-success)' }}>✓ Yes</span>
                   ) : (
                     <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)' }}>—</span>
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {row.is_system ? (
                     <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>System</span>
                   ) : (
                     <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle)' }}>Custom</span>
                   )}
                 </td>
-                <td style={{ padding: '10px 12px' }}>
+                <td style={{ padding: '8px 12px' }}>
                   {editingId === row.id ? (
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 4 }}>
                       <Button
                         appearance="primary"
                         spacing="compact"

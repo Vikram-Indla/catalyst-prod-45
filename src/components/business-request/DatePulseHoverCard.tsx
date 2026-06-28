@@ -31,17 +31,17 @@ export function DatePulseHoverCard({ violations }: DatePulseHoverCardProps) {
 
   return (
     <div>
-      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         Violations
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {visible.map((v) => {
           const style = SEVERITY_COLORS[v.severity] ?? SEVERITY_COLORS.advisory;
           return (
             <div key={v.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               <span style={{
                 display: 'inline-block',
-                padding: '1px 6px',
+                padding: '0px 6px',
                 borderRadius: 3,
                 fontSize: 'var(--ds-font-size-50)',
                 fontWeight: 600,
@@ -49,7 +49,7 @@ export function DatePulseHoverCard({ violations }: DatePulseHoverCardProps) {
                 color: style.text,
                 whiteSpace: 'nowrap',
                 flexShrink: 0,
-                marginTop: 1,
+                marginTop: 0,
               }}>
                 {style.label}
               </span>
@@ -60,7 +60,7 @@ export function DatePulseHoverCard({ violations }: DatePulseHoverCardProps) {
           );
         })}
         {remaining > 0 && (
-          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', marginTop: 0 }}>
             +{remaining} more violation{remaining !== 1 ? 's' : ''}
           </div>
         )}

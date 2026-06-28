@@ -70,7 +70,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
 
   if (items.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--fg-3)' }}>
+      <div style={{ textAlign: 'center', padding: '48px 20px', color: 'var(--fg-3)' }}>
         <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
         <div style={{ fontSize: 'var(--ds-font-size-300)' }}>Items assigned to {memberName || 'this member'} will appear here.</div>
       </div>
@@ -78,13 +78,13 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'start' }}>
       {columns.map(col => (
         <div key={col.key}>
           {/* Column Header */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: '8px',
-            paddingBottom: '10px', marginBottom: '10px', borderBottom: `2px solid ${col.color}`,
+            paddingBottom: '8px', marginBottom: '8px', borderBottom: `2px solid ${col.color}`,
           }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color }} />
             <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--fg-1)' }}>{col.label}</span>
@@ -118,10 +118,10 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
                   <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.dot }} />
 
                   {/* Top: Key + Project + Age */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
                     <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                     {item.project_key && (
-                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 6px', borderRadius: '4px', color: 'var(--ds-surface)', background: projColor }}>{item.project_key}</span>
                     )}
                     <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ageCol(item.age_days ?? 0) }}>{item.age_days ?? 0}d</span>
                   </div>

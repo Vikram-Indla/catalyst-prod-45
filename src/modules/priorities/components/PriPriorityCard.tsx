@@ -105,7 +105,7 @@ export function PriPriorityCard({
           ))}
           {item.note_count > 0 && (
             <span className={styles['pri-card-date']}>
-              <MessageSquare size={11} style={{ marginRight: 2 }} />
+              <MessageSquare size={11} style={{ marginRight: 0 }} />
               {item.note_count}
             </span>
           )}

@@ -92,7 +92,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Header */}
       <div style={{ textAlign: 'center' }}>
         <h2 style={{
@@ -154,13 +154,13 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         {newPwd.length > 0 && (
           <ul style={{
             margin: 0,
-            padding: '10px 12px',
+            padding: '8px 12px',
             listStyle: 'none',
             background: 'var(--ds-background-neutral)',
             borderRadius: 'var(--ds-border-radius, 3px)',
             display: 'flex',
             flexDirection: 'column',
-            gap: 5,
+            gap: 4,
           }}>
             {ruleResults.map(r => (
               <li
@@ -169,7 +169,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
                   fontSize: 'var(--ds-font-size-200)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 4,
                   color: r.passed
                     ? 'var(--ds-text-success)'
                     : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary)))',
@@ -213,7 +213,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
             }
           />
           {confirmPwd.length > 0 && !passwordsMatch && (
-            <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>
+            <p style={{ margin: '0px 0 0', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger)' }}>
               Passwords do not match
             </p>
           )}

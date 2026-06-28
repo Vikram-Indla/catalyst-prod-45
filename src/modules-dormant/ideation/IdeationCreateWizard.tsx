@@ -87,7 +87,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
   };
   const labelBase: React.CSSProperties = {
     display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
-    color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: '6px',
+    color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: '4px',
   };
   const focusHandlers = isDark ? focusHandlersDark : focusHandlersLight;
 
@@ -284,7 +284,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             </div>
             <button style={{
               background: 'var(--cp-purple-60)', color: 'var(--ds-surface)', border: 'none',
-              borderRadius: '6px', padding: '6px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
+              borderRadius: '6px', padding: '4px 14px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
             }}>Auto-fill</button>
           </div>
 
@@ -295,7 +295,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            gap: '20px',
+            gap: '16px',
           }}>
             {/* Row 1: Title */}
             <div>
@@ -480,14 +480,14 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             <div>
               <label style={labelBase}>Tags</label>
               <div style={{
-                display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px',
+                display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px',
                 minHeight: '44px', border: `1px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken)))'}`, borderRadius: '8px',
-                padding: '6px 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+                padding: '4px 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
               }}>
                 {tags.map(tag => (
                   <span key={tag} style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
-                    padding: '2px 8px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))'}`,
+                    padding: '0px 8px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))'}`,
                     borderRadius: '4px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2)))',
                   }}>
                     {tag}
@@ -531,7 +531,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               style={{
                 background: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary)))',
                 border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken)))'}`, borderRadius: '8px',
-                padding: '10px 20px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, cursor: 'pointer',
+                padding: '8px 20px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, cursor: 'pointer',
               }}
             >Cancel</button>
             <button
@@ -539,7 +539,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               disabled={createIdea.isPending}
               style={{
                 background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--ds-surface)', border: 'none',
-                borderRadius: '8px', padding: '10px 24px', fontSize: 'var(--ds-font-size-400)',
+                borderRadius: '8px', padding: '8px 24px', fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 600, cursor: 'pointer',
                 opacity: createIdea.isPending ? 0.7 : 1,
               }}

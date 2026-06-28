@@ -74,7 +74,7 @@ export default function StakeholderLensWidget({
       onToggleCollapse={onToggleCollapse}
     >
       {isLoading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
@@ -103,7 +103,7 @@ export default function StakeholderLensWidget({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 10,
+                  gap: 8,
                   padding: '8px 10px',
                   borderRadius: token('border.radius', '4px'),
                   background: token('elevation.surface', 'var(--ds-surface)'),
@@ -160,7 +160,7 @@ export default function StakeholderLensWidget({
                     <span
                       style={{
                         ...LABEL,
-                        padding: '2px 6px',
+                        padding: '0px 6px',
                         borderRadius: 3,
                         background: 'var(--ds-background-accent-red-bolder)',
                         color: 'var(--ds-text-inverse)',
@@ -173,7 +173,7 @@ export default function StakeholderLensWidget({
                     <span
                       style={{
                         ...LABEL,
-                        padding: '2px 6px',
+                        padding: '0px 6px',
                         borderRadius: 3,
                         background: 'var(--ds-background-accent-orange-bolder)',
                         color: 'var(--ds-text-inverse)',
@@ -186,7 +186,7 @@ export default function StakeholderLensWidget({
                     <span
                       style={{
                         ...LABEL,
-                        padding: '2px 6px',
+                        padding: '0px 6px',
                         borderRadius: 3,
                         background: 'var(--ds-background-accent-green-bolder)',
                         color: 'var(--ds-text-inverse)',

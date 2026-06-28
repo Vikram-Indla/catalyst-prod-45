@@ -105,7 +105,7 @@ export function EmojiPicker({ mode, inlineQuery = '', coords, onSelect, onDismis
             onChange={(e) => setSearch(e.target.value)}
             style={{
               width: '100%',
-              padding: '6px 8px',
+              padding: '4px 8px',
               fontSize: 'var(--ds-font-size-400)',
               border: '1px solid var(--ds-border)',
               borderRadius: 3,
@@ -182,7 +182,7 @@ function EmojiSection({
           fontSize: 'var(--ds-font-size-100)',
           fontWeight: 600,
           color: 'var(--ds-text-subtle)',
-          marginBottom: 6,
+          marginBottom: 4,
           textTransform: 'none',
         }}
       >
@@ -205,7 +205,7 @@ function EmojiGrid({
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(8, 1fr)',
-        gap: 2,
+        gap: 0,
       }}
     >
       {emojis.map((e) => (

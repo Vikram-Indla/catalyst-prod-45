@@ -115,7 +115,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6,
+    fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4,
     fontFamily: 'var(--cp-font-body)',
   };
 
@@ -126,7 +126,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
         <h3 className="ph-card-title">General Settings</h3>
 
         {/* 2-column grid layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {/* Left column */}
           <div className="space-y-4">
             <div>
@@ -140,7 +140,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
                 <input
                   value={project.key} readOnly
                   className="bg-[var(--cp-bd-zone)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1))]"
-                  style={{ ...inputStyle, color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.05em', paddingRight: 36 }}
+                  style={{ ...inputStyle, color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.05em', paddingRight: 32 }}
                 />
                 <Lock size={14} color="var(--fg-4)" className="absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
@@ -189,14 +189,14 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             <div className="flex items-start justify-between gap-4 pt-2">
               <div>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>Feature Layer</div>
-                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 2 }}>Adds Feature between Epic and Story</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 0 }}>Adds Feature between Epic and Story</div>
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, feature_layer: !f.feature_layer }))}
                 className={`flex-shrink-0 rounded-full transition-colors ${form.feature_layer ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,var(--cp-ink-1))]'}`}
                 style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
-                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }} />
+                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 4, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }} />
               </button>
             </div>
 
@@ -204,14 +204,14 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>AI Assist</div>
-                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 2 }}>Enable AI features for this project</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', marginTop: 0 }}>Enable AI features for this project</div>
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, ai_assist: !f.ai_assist }))}
                 className={`flex-shrink-0 rounded-full transition-colors ${form.ai_assist ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,var(--cp-ink-1))]'}`}
                 style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
-                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }} />
+                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 4, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px var(--ds-shadow-raised, rgba(0,0,0,0.15))' }} />
               </button>
             </div>
           </div>

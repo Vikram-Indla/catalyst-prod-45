@@ -13,16 +13,16 @@ export function AiCommandLibrary({ c }: { c: Console }) {
   const tabs: Console['railTab'][] = ['All', 'Single', 'Bulk'];
   return (
     <div style={{ background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 48px)' }}>
-      <div style={{ padding: '14px 14px 10px', borderBottom: `1px solid ${T.borderSubtle}` }}>
+      <div style={{ padding: '12px 14px 10px', borderBottom: `1px solid ${T.borderSubtle}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>Command library</span>
-          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.subtle, background: T.btnDefault, borderRadius: 10, padding: '1px 8px' }}>{c.libCount}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: T.subtle, background: T.btnDefault, borderRadius: 10, padding: '0px 8px' }}>{c.libCount}</span>
         </div>
-        <div style={{ marginTop: 10 }}>
+        <div style={{ marginTop: 8 }}>
           <Textfield value={c.search} onChange={(e: React.ChangeEvent<HTMLInputElement>) => c.setSearch(e.target.value)} placeholder="Search commands…" aria-label="Search commands"
             elemBeforeInput={<span style={{ paddingLeft: 8, display: 'inline-flex', color: T.iconSubtle }}><Icon path={ICONS.search} size={14} w={2} /></span>} />
         </div>
-        <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
+        <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
           {tabs.map(t => (
             <button key={t} onClick={() => c.setRailTab(t)}
               style={{ flex: 1, height: 28, border: `1px solid ${c.railTab === t ? T.link : T.border}`, background: c.railTab === t ? T.selected : 'transparent', color: c.railTab === t ? T.link : T.subtle, borderRadius: 4, font: 'inherit', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer' }}>{t}</button>
@@ -31,10 +31,10 @@ export function AiCommandLibrary({ c }: { c: Console }) {
       </div>
 
       <div style={{ overflowY: 'auto', padding: '8px 10px 12px' }}>
-        {c.railGroups.length === 0 && <div style={{ padding: '20px 8px', textAlign: 'center', fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>No commands match "{c.search}".</div>}
+        {c.railGroups.length === 0 && <div style={{ padding: '16px 8px', textAlign: 'center', fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>No commands match "{c.search}".</div>}
         {c.railGroups.map(g => (
           <div key={g.cat} style={{ marginTop: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '4px 4px 6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 4px 6px' }}>
               <span style={{ color: T.iconSubtle, flex: '0 0 auto' }}><Icon path={catIcon(g.cat)} size={14} w={1.8} /></span>
               <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>{g.cat}</span>
               <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', color: T.disabled }}>{g.count}</span>
@@ -42,12 +42,12 @@ export function AiCommandLibrary({ c }: { c: Console }) {
             {g.items.map((it, i) => (
               <button key={i} onClick={it.onPick} style={{ display: 'block', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 6, padding: 8, cursor: 'pointer', font: 'inherit' }}
                 onMouseEnter={e => (e.currentTarget.style.background = T.selected)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text }}>{it.title}</span>
                   {it.bulk && <BulkTag />}
                   <span style={{ marginLeft: 'auto' }}><RiskLozenge risk={it.risk} /></span>
                 </div>
-                <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.desc}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.desc}</div>
               </button>
             ))}
           </div>
@@ -202,14 +202,14 @@ export function AiRecentActivity() {
             ? 'Pending'
             : 'Done';
           return (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 8px', borderRadius: 6 }}
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 8px', borderRadius: 6 }}
               onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <CatalystAvatar name={a.name} size="small" />
               <span style={{ minWidth: 0, flex: 1 }}>
                 <span style={{ display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
                 <span style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', color: isFailedLogin ? T.textDanger : isPendingInvite ? T.textWarning : T.subtle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action}</span>
-                <span style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', color: T.disabled, marginTop: 1 }}>{a.time}</span>
+                <span style={{ display: 'block', fontSize: 'var(--ds-font-size-100)', color: T.disabled, marginTop: 0 }}>{a.time}</span>
               </span>
               <ResultLozenge result={result} />
             </div>

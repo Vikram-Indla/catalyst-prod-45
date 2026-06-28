@@ -25,7 +25,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))',
+          padding: '16px 24px', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))',
           display: 'flex', alignItems: 'center', gap: 12,
         }}>
           <div style={{ width: 36, height: 50, borderRadius: 6, background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--cp-blue-wash)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -36,7 +36,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
             <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 'var(--ds-font-size-50)' }}>
               <span style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-blue)', fontWeight: 500 }}>{qr.domain_code}</span>
               <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--fg-3)' }}>{qr.steps} steps</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--fg-3)', display: 'flex', alignItems: 'center', gap: 3 }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--fg-3)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Eye size={10} /> {qr.view_count ?? qr.views ?? 0}
               </span>
             </div>
@@ -63,7 +63,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-blue)',
                 }}>{i + 1}</div>
-                <div style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--fg-2)', lineHeight: 1.5, paddingTop: 3 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--fg-2)', lineHeight: 1.5, paddingTop: 4 }}>
                   Step {i + 1} — Complete this action to proceed.
                 </div>
               </div>

@@ -14,8 +14,8 @@ export function HuddleEventRow({ message }: { message: ChatMessage }) {
     <div
       role="note"
       style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        padding: '8px 20px', margin: '2px 0',
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '8px 20px', margin: '0px 0',
         color: 'var(--cv2-text-muted, var(--ds-text-subtle))',
         fontFamily: 'var(--cv2-font)', fontSize: 13,
       }}

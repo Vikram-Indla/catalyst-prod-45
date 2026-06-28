@@ -87,7 +87,7 @@ export function AddPeopleModal() {
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: 60,
+        paddingTop: 48,
       }}
       onKeyDown={(e) => {
         if (e.key === 'Escape') handleClose();
@@ -106,7 +106,7 @@ export function AddPeopleModal() {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px 12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px 12px' }}>
           <h2
             id="add-people-modal-title"
             style={{

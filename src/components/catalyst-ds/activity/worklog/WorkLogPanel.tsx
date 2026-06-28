@@ -69,7 +69,7 @@ function LogWorkForm({
         background: 'var(--ds-surface)',
         display: 'flex',
         flexDirection: 'column',
-        gap: 10,
+        gap: 8,
         marginBottom: 12,
       }}
     >
@@ -172,11 +172,11 @@ function WorkLogEntry({
             <strong style={{ fontWeight: 600 }}>{formatJiraTime(entry.time_spent_minutes)}</strong>
           </span>
         </div>
-        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 2 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', marginTop: 0 }}>
           {formatAbsoluteDate(entry.work_date)}
         </div>
         {showPill && (
-          <div style={{ marginTop: 6 }}>
+          <div style={{ marginTop: 4 }}>
             <HistoryPill label="WORKLOG" />
           </div>
         )}
@@ -186,7 +186,7 @@ function WorkLogEntry({
           </div>
         )}
         {(canEdit || canDelete) && (
-          <div style={{ marginTop: 6, display: 'flex', gap: 4 }}>
+          <div style={{ marginTop: 4, display: 'flex', gap: 4 }}>
             {canEdit && (
               <Tooltip content="Edit work log">
                 <button
@@ -325,7 +325,7 @@ const labelStyle: React.CSSProperties = {
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '6px 8px',
+  padding: '4px 8px',
   border: '1px solid var(--ds-border)',
   borderRadius: 3,
   fontSize: 'var(--ds-font-size-300)',
@@ -341,7 +341,7 @@ const hintStyle: React.CSSProperties = {
 };
 
 const btnPrimary: React.CSSProperties = {
-  padding: '6px 12px',
+  padding: '4px 12px',
   fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   background: 'var(--ds-link)',
@@ -352,7 +352,7 @@ const btnPrimary: React.CSSProperties = {
 };
 
 const btnSubtle: React.CSSProperties = {
-  padding: '6px 12px',
+  padding: '4px 12px',
   fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   background: 'transparent',

@@ -460,7 +460,7 @@ export default function EpicDescriptionEditorPreview() {
         }}
       >
         <div style={{ fontWeight: 600, marginBottom: 4 }}>How to use:</div>
-        <ul style={{ margin: 0, paddingLeft: 20 }}>
+        <ul style={{ margin: 0, paddingLeft: 16 }}>
           <li>Click tabs to switch between variants</li>
           <li>Type or paste content to update the editor</li>
           <li>Click "ADF Output" to expand JSON viewer</li>

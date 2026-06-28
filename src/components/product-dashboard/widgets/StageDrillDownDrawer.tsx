@@ -233,7 +233,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                         cursor: 'pointer',
                         fontSize: 'var(--ds-font-size-100)',
                         color: token('color.text.subtle', 'var(--ds-text-subtle)'),
-                        padding: '2px 6px',
+                        padding: '0px 6px',
                         flexShrink: 0,
                         lineHeight: 1.4,
                       }}
@@ -261,7 +261,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           >
             Stage Handoff SLA
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {[
               { label: '≤ 7 days (on track)', color: slaColor(0), count: brs.filter(br => daysAgo(br.entered_step_at) <= 7).length },
               { label: '8–21 days (at risk)',  color: slaColor(14), count: brs.filter(br => { const d = daysAgo(br.entered_step_at); return d > 7 && d <= 21; }).length },
@@ -309,7 +309,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
         >
           Owner Accountability
         </span>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {ownerMap.size === 0 ? (
             <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled)') }}>—</span>
           ) : (
@@ -320,7 +320,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                   display: 'flex',
                   alignItems: 'center',
                   gap: 4,
-                  padding: '3px 8px',
+                  padding: '4px 8px',
                   background: token('color.background.neutral', 'var(--ds-background-neutral-subtle)'),
                   borderRadius: 12,
                   fontSize: 'var(--ds-font-size-200)',

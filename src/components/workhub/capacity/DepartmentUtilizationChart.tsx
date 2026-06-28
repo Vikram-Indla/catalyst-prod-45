@@ -48,14 +48,14 @@ export function DepartmentUtilizationChart({ departments }: Props) {
           fontSize: 'var(--ds-font-size-500)',
           fontWeight: 600,
           color: 'var(--fg-1)',
-          marginBottom: 20,
+          marginBottom: 16,
         }}
       >
         Department Utilization
       </h3>
 
       <ResponsiveContainer width="100%" height={departments.length * 60 + 40}>
-        <BarChart layout="vertical" data={departments} margin={{ left: 120, right: 20, top: 5, bottom: 5 }}>
+        <BarChart layout="vertical" data={departments} margin={{ left: 48, right: 16, top: 4, bottom: 4 }}>
           <CartesianGrid strokeDasharray="3 3" horizontal={false} />
           <XAxis type="number" domain={[0, 120]} tickFormatter={v => `${v}%`} />
           <YAxis

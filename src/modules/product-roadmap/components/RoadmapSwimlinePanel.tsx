@@ -147,7 +147,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
                         background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))',
                         borderRadius: 12,
-                        padding: '2px 7px',
+                        padding: '0px 7px',
                         fontFamily: 'var(--cp-font-mono)',
                       }}
                     >

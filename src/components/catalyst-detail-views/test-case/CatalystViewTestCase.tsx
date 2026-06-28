@@ -308,7 +308,7 @@ export default function CatalystViewTestCase({
               padding: 12,
               background: 'var(--ds-surface-raised)',
             }}>
-              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 6 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle)', marginBottom: 4 }}>
                 Step {s.step_number ?? i + 1}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 'var(--ds-font-size-300)' }}>
@@ -343,8 +343,8 @@ export default function CatalystViewTestCase({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {versions.map((v: any, idx: number) => (
             <div key={v.id} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '10px 12px',
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '8px 12px',
               border: '1px solid var(--ds-border)', borderRadius: 6,
               background: idx === 0 ? 'var(--ds-background-selected)' : 'var(--ds-surface-raised)',
             }}>
@@ -371,7 +371,7 @@ export default function CatalystViewTestCase({
                   onClick={() => restoreVersion.mutate({ testCaseId: itemId!, versionNumber: v.version_number })}
                   disabled={restoreVersion.isPending}
                   style={{
-                    padding: '3px 10px', fontSize: 'var(--ds-font-size-200)',
+                    padding: '4px 10px', fontSize: 'var(--ds-font-size-200)',
                     border: '1px solid var(--ds-border)', borderRadius: 4,
                     background: 'none', cursor: 'pointer',
                     color: 'var(--ds-text)', whiteSpace: 'nowrap',
@@ -445,7 +445,7 @@ export default function CatalystViewTestCase({
         </p>
       )}
       {reqLinks.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
           {reqLinks.map((l: any) => (
             <div key={l.id} style={{
               display: 'flex', alignItems: 'center', gap: 8,
@@ -467,7 +467,7 @@ export default function CatalystViewTestCase({
               <button
                 onClick={() => handleDeleteLink(l.id)}
                 title="Remove link"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: 2, flexShrink: 0 }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-400)', padding: 0, flexShrink: 0 }}
               >
                 ✕
               </button>
@@ -496,7 +496,7 @@ export default function CatalystViewTestCase({
               />
             </div>
           </div>
-          <div style={{ marginBottom: 10 }}>
+          <div style={{ marginBottom: 8 }}>
             <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>LINK TYPE</div>
             <Select
               value={{ label: linkForm.linkType, value: linkForm.linkType }}
@@ -513,13 +513,13 @@ export default function CatalystViewTestCase({
             <button
               onClick={handleAddLink}
               disabled={linkForm.saving || (!linkForm.extKey.trim() && !linkForm.extTitle.trim())}
-              style={{ padding: '6px 14px', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
+              style={{ padding: '4px 14px', background: 'var(--ds-background-brand-bold)', color: 'var(--ds-text-inverse)', border: 'none', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
             >
               {linkForm.saving ? 'Saving…' : 'Add link'}
             </button>
             <button
               onClick={() => setLinkForm(f => ({ ...f, open: false, extKey: '', extTitle: '' }))}
-              style={{ padding: '6px 14px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text)' }}
+              style={{ padding: '4px 14px', background: 'none', border: '1px solid var(--ds-border)', borderRadius: 4, fontSize: 'var(--ds-font-size-300)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', color: 'var(--ds-text)' }}
             >
               Cancel
             </button>
@@ -671,5 +671,5 @@ const miniLabel: React.CSSProperties = {
   color: 'var(--ds-text-subtlest)',
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
-  marginBottom: 2,
+  marginBottom: 0,
 };

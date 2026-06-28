@@ -401,7 +401,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
     <>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Section header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: TEXT }}>Work items</h2>
           <span
             style={{
@@ -409,7 +409,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
               fontWeight: 600,
               color: TEXT,
               background: 'var(--ds-background-neutral)',
-              padding: '1px 8px',
+              padding: '0px 8px',
               borderRadius: 3,
               minWidth: 18,
               textAlign: 'center',
@@ -571,7 +571,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
               {hasMore && (
                 <div
                   ref={sentinelRef}
-                  style={{ padding: '10px 12px', color: SUBTLEST, fontSize: 'var(--ds-font-size-200)', textAlign: 'center' }}
+                  style={{ padding: '8px 12px', color: SUBTLEST, fontSize: 'var(--ds-font-size-200)', textAlign: 'center' }}
                 >
                   Loading more…
                 </div>
@@ -604,7 +604,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
             border: `1px solid ${BORDER}`,
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
-            padding: '6px 0',
+            padding: '4px 0',
             minWidth: 220,
           }}
         >
@@ -635,7 +635,7 @@ export function WorkItemsSection({ releaseId, releaseName, projectId, projectKey
           >
             Manage warnings
           </button>
-          <div style={{ height: 1, background: BORDER, margin: '6px 0' }} />
+          <div style={{ height: 1, background: BORDER, margin: '4px 0' }} />
           <div style={{ padding: '4px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: SUBTLE, textTransform: 'none' }}>
             Display information
           </div>
@@ -672,7 +672,7 @@ function SearchField({ value, onChange }: { value: string; onChange: (v: string)
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         height: 32,
         padding: '0 8px',
         border: `1px solid ${focused ? BLUE : BORDER}`,
@@ -744,7 +744,7 @@ function DisplayCheckRow({
         gap: 8,
         width: '100%',
         boxSizing: 'border-box',
-        padding: '6px 12px',
+        padding: '4px 12px',
         cursor: 'pointer',
         background: checked
           ? 'var(--ds-background-selected)'
@@ -881,7 +881,7 @@ function CheckboxFilterPill({
                   onClick={() => onChange(checked ? value.filter((x) => x !== opt.id) : [...value, opt.id])}
                   style={{
                     all: 'unset', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                    width: '100%', boxSizing: 'border-box', padding: '6px 12px',
+                    width: '100%', boxSizing: 'border-box', padding: '4px 12px',
                     background: checked ? BLUE_BG : 'transparent', fontSize: 'var(--ds-font-size-300)', color: TEXT,
                   }}
                 >
@@ -969,7 +969,7 @@ function PillFilter({
             minWidth: 180,
             background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
-            padding: '6px 0',
+            padding: '4px 0',
           }}
         >
           {options.map((opt) => {
@@ -981,7 +981,7 @@ function PillFilter({
                 onClick={() => onChange(checked ? value.filter((x) => x !== opt.id) : [...value, opt.id])}
                 style={{
                   all: 'unset', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                  width: '100%', boxSizing: 'border-box', padding: '6px 12px',
+                  width: '100%', boxSizing: 'border-box', padding: '4px 12px',
                   background: checked ? BLUE_BG : 'transparent',
                 }}
               >
@@ -992,7 +992,7 @@ function PillFilter({
                     color: opt.pillColor,
                     fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 700,
-                    padding: '2px 8px',
+                    padding: '0px 8px',
                     borderRadius: 3,
                     letterSpacing: 0.4,
                   }}
@@ -1143,7 +1143,7 @@ function WorkItemRow({
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          padding: '10px 12px',
+          padding: '8px 12px',
           borderBottom: isLast ? 'none' : `1px solid ${BORDER}`,
           background: hover ? 'var(--ds-background-neutral-subtle-hovered)' : 'transparent',
           cursor: 'pointer',
@@ -1223,7 +1223,7 @@ function WorkItemRow({
             minWidth: 220,
             background: 'var(--ds-surface-overlay)', border: `1px solid ${BORDER}`, borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)', // ads-scanner:ignore-line — Atlassian elevation shadow rgba(9,30,66,*), no ds-shadow token for arbitrary alpha
-            padding: '6px 0',
+            padding: '4px 0',
           }}
         >
           {(siblings ?? []).length > 0 && (
@@ -1248,7 +1248,7 @@ function WorkItemRow({
               >
                 View all versions
               </button>
-              <div style={{ height: 1, background: BORDER, margin: '6px 0' }} />
+              <div style={{ height: 1, background: BORDER, margin: '4px 0' }} />
             </>
           )}
           <button
@@ -1306,7 +1306,7 @@ function ProgressSection({ items }: { items: Issue[] }) {
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: TEXT }}>Progress</h2>
       </div>
 
@@ -1318,7 +1318,7 @@ function ProgressSection({ items }: { items: Issue[] }) {
           aria-expanded={!collapsed}
         >
           <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: TEXT }}>Work items</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: SUBTLE, fontSize: 'var(--ds-font-size-300)' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: SUBTLE, fontSize: 'var(--ds-font-size-300)' }}>
             {counts.done} of {total} done
             {collapsed ? <ChevronRightIcon label="" size="small" /> : <ChevronDownIcon label="" size="small" />}
           </span>
@@ -1331,7 +1331,7 @@ function ProgressSection({ items }: { items: Issue[] }) {
           aria-valuemax={total}
           style={{
             display: 'flex',
-            gap: 2,
+            gap: 0,
             height: 8,
             width: '100%',
             borderRadius: 4,

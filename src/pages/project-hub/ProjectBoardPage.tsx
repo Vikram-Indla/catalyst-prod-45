@@ -146,7 +146,7 @@ export default function ProjectBoardPage() {
               >
                 {s.value}
               </div>
-              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-text-tertiary)', marginTop: 1 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-text-tertiary)', marginTop: 0 }}>
                 {s.label}
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function ProjectBoardPage() {
                 onClick={() => setActiveView(v.key)}
                 className="flex items-center gap-1.5"
                 style={{
-                  padding: '6px 14px', fontSize: 'var(--ds-font-size-200)',
+                  padding: '4px 14px', fontSize: 'var(--ds-font-size-200)',
                   fontWeight: isActive ? 600 : 500,
                   fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6, cursor: 'pointer', border: 'none',
@@ -195,7 +195,7 @@ export default function ProjectBoardPage() {
             placeholder="Search issues…"
             className="rounded-md"
             style={{
-              paddingLeft: 30, paddingRight: 10,
+              paddingLeft: 32, paddingRight: 8,
               height: 32, width: 200,
               fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
               border: '1px solid var(--cp-border-default)',
@@ -210,7 +210,7 @@ export default function ProjectBoardPage() {
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-1.5"
           style={{
-            padding: '6px 12px', height: 32,
+            padding: '4px 12px', height: 32,
             fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
             borderRadius: 6, cursor: 'pointer',
             border: hasActiveFilters ? '1px solid var(--ds-background-information)' : ('1px solid var(--cp-border-default)'),
@@ -240,7 +240,7 @@ export default function ProjectBoardPage() {
             onClick={() => setConfigOpen(true)}
             className="flex items-center gap-1.5 transition-colors"
             style={{
-              padding: '6px 12px', height: 32,
+              padding: '4px 12px', height: 32,
               fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
               border: '1px solid var(--cp-border-default)',
@@ -351,7 +351,7 @@ export default function ProjectBoardPage() {
       {activeView === 'timeline' && (
         <div
           className="flex flex-col items-center justify-center rounded-xl border"
-          style={{ padding: '80px 40px', background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)' }}
+          style={{ padding: '48px 40px', background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)' }}
         >
           <GanttChart size={36} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" strokeWidth={1.5} />
           <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>

@@ -80,7 +80,7 @@ export function WidgetShell({
       {/* Header */}
       <div
         style={{
-          padding: '14px 18px',
+          padding: '12px 18px',
           minHeight: 60,
           display: 'flex',
           alignItems: 'center',
@@ -110,7 +110,7 @@ export function WidgetShell({
                 fontSize: 'var(--ds-font-size-300)',
                 lineHeight: '18px',
                 color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
-                marginTop: 2,
+                marginTop: 0,
                 fontStyle: 'italic',
               }}
             >
@@ -141,7 +141,7 @@ export function WidgetShell({
           {(footerLeft || footerRight) && (
             <div
               style={{
-                padding: '10px 24px',
+                padding: '8px 24px',
                 borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
                 fontSize: 'var(--ds-font-size-100)',
                 lineHeight: '16px',

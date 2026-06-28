@@ -112,7 +112,7 @@ export function AvailabilityPanel({ onDone, onScheduleLeave, currentState }: Pro
           Set availability
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 8 }}>
           {QUICK_SET.map(({ label, state, color }) => {
             const isActive = currentState === state;
             return (

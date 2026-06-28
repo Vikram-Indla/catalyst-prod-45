@@ -239,8 +239,8 @@ function KpiHeadline({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
-        padding: '10px 12px',
+        gap: 0,
+        padding: '8px 12px',
         borderRight: `1px solid ${token('color.border', 'var(--ds-border)')}`,
       }}
     >
@@ -282,8 +282,8 @@ function KpiHeadline({
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          gap: 2,
-          padding: '10px 12px',
+          gap: 0,
+          padding: '8px 12px',
         }}
       >
         <span
@@ -435,7 +435,7 @@ function BlockedBreakdown({
         background: token('elevation.surface.sunken', 'var(--ds-surface-sunken)'),
         borderInlineStart: `3px solid var(--ds-border-accent-red)`,
         borderRadius: token('border.radius', '4px'),
-        padding: '10px 12px',
+        padding: '8px 12px',
       }}
     >
       <div
@@ -443,7 +443,7 @@ function BlockedBreakdown({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: 6,
+          marginBottom: 4,
         }}
       >
         <span

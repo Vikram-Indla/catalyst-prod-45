@@ -90,7 +90,7 @@ export function GenerationOverlay({ document, onComplete }: GenerationOverlayPro
     <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ backgroundColor: 'var(--ds-shadow-raised, rgba(0,0,0,0.2))' }}>
       <div
         className="bg-white rounded-2xl w-[600px] max-h-[90vh] overflow-y-auto animate-scale-in"
-        style={{ boxShadow: '0 25px 50px var(--ds-shadow-raised, rgba(0,0,0,0.15))', padding: '36px' }}
+        style={{ boxShadow: '0 25px 50px var(--ds-shadow-raised, rgba(0,0,0,0.15))', padding: '32px' }}
       >
         {/* Title */}
         <h2 className="text-xl font-extrabold text-foreground">

@@ -16,7 +16,7 @@ type Pos = { top: number; left?: number; right?: number };
 
 function loadPos(): Pos {
   try { const raw = localStorage.getItem(POS_KEY); if (raw) return JSON.parse(raw) as Pos; } catch { /* ignore */ }
-  return { top: 84, right: 24 };
+  return { top: 48, right: 24 };
 }
 
 export function HuddleIncoming() {
@@ -125,11 +125,11 @@ export function HuddleIncoming() {
             <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--ds-text)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {incoming.callerName}
             </span>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: green }} /> Incoming huddle…
             </span>
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <button type="button" data-huddle-btn onClick={decline} title="Decline"
               style={roundBtn('var(--ds-background-danger-bold)')}>
               <PhoneDownIcon />

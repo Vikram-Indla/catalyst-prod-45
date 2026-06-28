@@ -288,7 +288,7 @@ function CardKebab({ onAddDependency, onLocate, onFilterByItem, relatedItems = [
                     aria-label="Related work items"
                     style={{
                       position: 'absolute',
-                      left: '100%',
+                      left: '48%',
                       top: 0,
                       minWidth: 280,
                       maxWidth: 380,
@@ -382,8 +382,8 @@ function WorkItemNode({ data }: { data: any }) {
       }}
     >
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
           {m.issue_type ? <JiraIssueTypeIcon type={m.issue_type} size={16} /> : null}
           {/* Key opens the issue in a NEW tab; current canvas/selection untouched.
               stopPropagation + nodrag so it never triggers node select/drag.
@@ -607,7 +607,7 @@ function RelationshipPopup({
       {/* Link row (white) — vertical connector line runs through the chain circle,
           aligned under the band type icons (Jira parity, 2026-06-25). */}
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px 8px 8px' }}>
-        <span aria-hidden style={{ position: 'absolute', left: 21, top: 0, bottom: 0, width: 2, background: 'var(--ds-text-subtle)' }} />
+        <span aria-hidden style={{ position: 'absolute', left: 24, top: 0, bottom: 0, width: 2, background: 'var(--ds-text-subtle)' }} />
         <span style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
           <span
             style={{
@@ -701,7 +701,7 @@ function ZoomBar({
         boxShadow: 'var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.16))',
       }}
     >
-      <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', cursor: 'pointer' }}>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', cursor: 'pointer' }}>
         <input type="checkbox" checked={zoomOnScroll} onChange={onToggleScroll} />
         Zoom on scroll
       </label>

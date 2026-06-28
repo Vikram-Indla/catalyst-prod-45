@@ -385,7 +385,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                         <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)' }}>
                           {new Date(r.message.createdAt).toLocaleDateString()}
                         </span>
-                        <div style={{ marginTop: 2, color: 'var(--ds-text-subtle)' }}>
+                        <div style={{ marginTop: 0, color: 'var(--ds-text-subtle)' }}>
                           {r.snippetBefore}
                           <strong style={{ color: 'var(--ds-text)' }}>{r.matchedText}</strong>
                           {r.snippetAfter || r.message.bodyText.slice(0, 80)}
@@ -486,7 +486,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
                         </div>
                         <button
                           type="button"
-                          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)', padding: '2px 4px' }}
+                          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-200)', padding: '0px 4px' }}
                           title="Unpin"
                           onClick={() => resolvedActiveId && togglePin.mutate({ conversationId: resolvedActiveId, messageId: pin.message_id, currentlyPinned: true })}
                         >
@@ -615,7 +615,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             background: 'var(--ds-surface)',
             border: '1px solid var(--ds-border)',
             borderRadius: 4,
-            padding: '3px 6px',
+            padding: '4px 6px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -662,7 +662,7 @@ export function ChatMainView({ activeConversationId, onSelectConversation }: Cha
             onClick={(e) => e.stopPropagation()}
           >
             {/* Rainbow AI header */}
-            <div style={{ padding: '2px', background: 'conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder), var(--ds-background-discovery-bold), var(--ds-link), var(--ds-background-information-bold), var(--ds-background-success), var(--ds-background-warning-bold), var(--ds-background-accent-magenta-bolder))', borderRadius: '8px 8px 0 0', flexShrink: 0 }}>
+            <div style={{ padding: '0px', background: 'conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder), var(--ds-background-discovery-bold), var(--ds-link), var(--ds-background-information-bold), var(--ds-background-success), var(--ds-background-warning-bold), var(--ds-background-accent-magenta-bolder))', borderRadius: '8px 8px 0 0', flexShrink: 0 }}>
               <div style={{ background: 'var(--ds-surface-overlay)', padding: '12px 16px', borderRadius: '6px 6px 0 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text)' }}>✦ Ask Caty — Channel Summary</span>
                 <button type="button" onClick={() => setCatySummary({ open: false, loading: false, text: '' })} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest)', fontSize: 'var(--ds-font-size-500)', lineHeight: 1 }} aria-label="Close">✕</button>

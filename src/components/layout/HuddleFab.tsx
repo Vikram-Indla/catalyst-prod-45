@@ -23,7 +23,7 @@ function loadPos(): Pos {
     const raw = localStorage.getItem(POS_KEY);
     if (raw) return JSON.parse(raw) as Pos;
   } catch { /* ignore */ }
-  return { top: 84, right: 24 }; // default: top-right, just below the header
+  return { top: 48, right: 24 }; // default: top-right, just below the header
 }
 
 export function HuddleFab() {
@@ -248,7 +248,7 @@ export function HuddleFab() {
       )}
 
       {/* compact strip quick actions — screen share + decline */}
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
         {screenShareBtn}
         {declineBtn}
       </span>

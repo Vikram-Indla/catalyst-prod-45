@@ -244,7 +244,7 @@ export default function TimeInStatusFullscreenModal({
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 6,
+                        gap: 4,
                         height: 28,
                         padding: '0 10px',
                         ...(active ? SMALL_STRONG : SMALL),
@@ -397,7 +397,7 @@ export default function TimeInStatusFullscreenModal({
                               14/400 blue link + 16px type icon. Avatar
                               size kept small but `marginLeft: 'auto'`
                               prevents bleed into sticky Total column. */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                             <PriorityIcon level={r.priority} size={16} />
                             <span
                               style={{

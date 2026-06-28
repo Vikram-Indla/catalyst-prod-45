@@ -61,7 +61,7 @@ const RAIL_BORDER_CSS = `
     box-shadow: inset 0 0 0 2px var(--ds-border-focused);
   }
   .cv-rail-value:focus-within > div[style] {
-    outline: none !important;
+    outline: 2px solid var(--ds-border-focused) !important;
     border-color: transparent !important;
   }
   .cv-rail-value [class*="-select__control--is-focused"],
@@ -515,7 +515,7 @@ export function CatalystSidebarDetails({
       {(statusPill || improveDropdown || healthBadge) && (
         <div
           data-cv-sidebar-status-header="true"
-          style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}
+          style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}
         >
           {statusPill}
           {healthBadge}

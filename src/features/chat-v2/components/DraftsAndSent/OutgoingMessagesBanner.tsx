@@ -10,7 +10,7 @@ export function OutgoingMessagesBanner({ onDismiss }: OutgoingMessagesBannerProp
     <div
       style={{
         margin: '0 16px 12px',
-        padding: '14px 16px',
+        padding: '12px 16px',
         borderRadius: 8,
         background: 'var(--cv2-bg-row-hover)',
         position: 'relative',
@@ -31,7 +31,7 @@ export function OutgoingMessagesBanner({ onDismiss }: OutgoingMessagesBannerProp
         style={{
           fontSize: 'var(--ds-font-size-300)',
           color: 'var(--cv2-text-subtle)',
-          paddingRight: 28,
+          paddingRight: 24,
           lineHeight: 1.45,
         }}
       >
@@ -43,8 +43,8 @@ export function OutgoingMessagesBanner({ onDismiss }: OutgoingMessagesBannerProp
         aria-label="Dismiss"
         style={{
           position: 'absolute',
-          top: 10,
-          right: 10,
+          top: 8,
+          right: 8,
           width: 24,
           height: 24,
           padding: 0,

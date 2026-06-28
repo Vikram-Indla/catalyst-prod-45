@@ -126,7 +126,7 @@
 
 .task-modal__header {
   padding: var(--tm-space-4) var(--tm-space-5);
-  border-bottom: 1px solid var(--tm-border-default);
+  border-bottom: 0px solid var(--tm-border-default);
 }
 
 .task-modal__header-top {
@@ -218,7 +218,7 @@
 }
 
 .task-modal__title:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   background: var(--tm-surface-card);
   border-color: var(--tm-accent);
   box-shadow: 0 0 0 3px var(--tm-accent-light);
@@ -249,13 +249,13 @@
   grid-template-columns: repeat(4, 1fr);
   gap: var(--tm-space-3);
   padding: var(--tm-space-3) 0;
-  border-top: 1px solid var(--tm-border-subtle);
+  border-top: 0px solid var(--tm-border-subtle);
 }
 
 .task-modal__status-field {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
 }
 
 .task-modal__status-label {
@@ -327,7 +327,7 @@
   gap: 0;
   padding: 0 var(--tm-space-5);
   background: var(--tm-surface-muted);
-  border-bottom: 1px solid var(--tm-border-default);
+  border-bottom: 0px solid var(--tm-border-default);
   overflow-x: auto;
 }
 
@@ -377,7 +377,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  margin-left: 6px;
+  margin-left: 4px;
   background: var(--tm-surface-hover);
   border-radius: 8px;
   font-size: 11px;
@@ -442,7 +442,7 @@
 }
 
 .task-modal__description:focus {
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
   border-color: var(--tm-accent);
   box-shadow: 0 0 0 3px var(--tm-accent-light);
 }
@@ -482,7 +482,7 @@
   gap: var(--tm-space-2);
   font-size: 13px;
   color: var(--tm-text-primary);
-  padding: 6px 10px;
+  padding: 4px 10px;
   background: var(--tm-surface-muted);
   border: 1px solid var(--tm-border-default);
   border-radius: var(--tm-radius-sm);
@@ -555,7 +555,7 @@
   color: var(--tm-text-light);
   cursor: pointer;
   border-radius: 50%;
-  margin-left: 2px;
+  margin-left: 0px;
   transition: all 0.15s ease;
 }
 
@@ -740,7 +740,7 @@
   justify-content: space-between;
   padding: var(--tm-space-3) var(--tm-space-5);
   background: var(--tm-surface-muted);
-  border-top: 1px solid var(--tm-border-default);
+  border-top: 0px solid var(--tm-border-default);
 }
 
 .task-modal__footer-meta {
@@ -797,7 +797,7 @@
   background: var(--tm-surface-muted) !important;
   border: 1px solid var(--tm-border-default) !important;
   border-radius: var(--tm-radius-sm) !important;
-  padding: 6px 10px !important;
+  padding: 4px 10px !important;
   box-shadow: none !important;
 }
 
@@ -838,7 +838,7 @@
 .task-modal-v3__main {
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  border-right: 0px solid var(--ds-border, var(--cp-bg-sunken));
   min-height: 0;
 }
 
@@ -847,13 +847,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken));
 }
 
 .task-modal-v3__breadcrumb {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   font-size: 13px;
   color: var(--ds-text-subtlest);
 }
@@ -871,7 +871,7 @@
 }
 
 .task-modal-v3__breadcrumb-key {
-  padding: 2px 8px;
+  padding: 0px 8px;
   background: var(--ds-surface-sunken);
   border-radius: 4px;
   font-weight: 500;
@@ -925,7 +925,7 @@
   border: 1px solid transparent;
   cursor: text;
   transition: all 0.15s ease;
-  outline: none;
+  outline: 2px solid var(--ds-border-focused);
 }
 
 .task-modal-v3__title:hover {
@@ -944,7 +944,7 @@
   display: flex;
   gap: 0;
   padding: 0 20px;
-  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken));
 }
 
 .task-modal-v3__tab {
@@ -989,7 +989,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  margin-left: 6px;
+  margin-left: 4px;
   background: var(--ds-border, var(--cp-bg-sunken));
   border-radius: 8px;
   font-size: 11px;
@@ -1009,7 +1009,7 @@
 }
 
 .task-modal-v3__content {
-  padding: 20px;
+  padding: 16px;
 }
 
 /* ===== RIGHT COLUMN: Sidebar ===== */
@@ -1017,7 +1017,7 @@
   display: flex;
   flex-direction: column;
   background: var(--ds-surface-sunken);
-  padding: 20px;
+  padding: 16px;
   overflow-y: auto;
 }
 
@@ -1025,13 +1025,13 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .task-modal-v3__field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .task-modal-v3__field-header {
@@ -1094,8 +1094,8 @@
 /* Sidebar Footer */
 .task-modal-v3__sidebar-footer {
   margin-top: auto;
-  padding-top: 20px;
-  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken));
+  padding-top: 16px;
+  border-top: 0px solid var(--ds-border, var(--cp-bg-sunken));
 }
 
 .task-modal-v3__timestamps {
@@ -1128,7 +1128,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 12px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))));
   border: 1px solid var(--ds-border, var(--cp-bg-sunken));
@@ -1191,7 +1191,7 @@
   
   .task-modal-v3__main {
     border-right: none;
-    border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken));
+    border-bottom: 0px solid var(--ds-border, var(--cp-bg-sunken));
   }
   
   .task-modal-v3__sidebar {

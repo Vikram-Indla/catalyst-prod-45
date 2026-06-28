@@ -104,7 +104,7 @@ export default function TestCaseStatusesPage() {
           >
             <div>
               <Lozenge appearance={s.appearance}>{s.label}</Lozenge>
-              <div style={{ marginTop: 6, fontSize: 11, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtlest)' }}>
+              <div style={{ marginTop: 4, fontSize: 11, fontFamily: 'var(--ds-font-family-code, monospace)', color: 'var(--ds-text-subtlest)' }}>
                 {s.value}
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function TestCaseStatusesPage() {
               </p>
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest)', marginBottom: 4 }}>
                 CAN MOVE TO
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

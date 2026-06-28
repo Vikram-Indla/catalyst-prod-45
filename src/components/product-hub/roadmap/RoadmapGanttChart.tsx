@@ -88,7 +88,7 @@ function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePerio
 function calcBarPosition(startDate: string, endDate: string, tlStart: Date, tlEnd: Date) {
   const s = new Date(startDate);
   const e = new Date(endDate);
-  if (isNaN(s.getTime()) || isNaN(e.getTime())) return { left: 5, width: 8 };
+  if (isNaN(s.getTime()) || isNaN(e.getTime())) return { left: 4, width: 8 };
   const totalDays = differenceInDays(tlEnd, tlStart) || 1;
   const left = Math.max(0, (differenceInDays(s, tlStart) / totalDays) * 100);
   const width = Math.max(2, (differenceInDays(e, s) / totalDays) * 100);
@@ -183,15 +183,15 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
             {todayPct !== null && (
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
-                  position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
+                  position: 'absolute', top: -2, left: '48%', transform: 'translateX(-50%)',
                   fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', background: 'var(--ds-text-danger)',
-                  padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
+                  padding: '0px 8px', borderRadius: 4, whiteSpace: 'nowrap',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>
                   Today
                 </div>
                 <div style={{
-                  width: 2, height: '100%', margin: '0 auto', marginTop: 18,
+                  width: 2, height: '100%', margin: '0 auto', marginTop: 16,
                   background: 'linear-gradient(180deg, var(--ds-text-danger) 0%, var(--ds-background-danger, rgba(239,68,68,0.15)) 100%)',
                 }} />
               </div>

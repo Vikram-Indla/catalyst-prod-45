@@ -69,13 +69,13 @@ const HEALTH_DESCRIPTIONS: Record<string, string> = {
 function DeliveryTooltipBody({ health }: { health: BusinessRequestHealth }) {
   const description = HEALTH_DESCRIPTIONS[health.health_status] ?? '';
   return (
-    <div style={{ maxWidth: 260, padding: '2px 0' }}>
+    <div style={{ maxWidth: 260, padding: '0px 0' }}>
       <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 'var(--ds-font-size-200)' }}>
         Delivery · {FRIENDLY_LABELS[health.health_status] ?? health.health_status}
       </div>
       <div style={{ fontSize: 'var(--ds-font-size-200)', lineHeight: '16px' }}>{description}</div>
       {health.br_target_date && (
-        <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-100)', opacity: 0.8 }}>
+        <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)', opacity: 0.8 }}>
           Target:{' '}
           {new Date(health.br_target_date).toLocaleDateString('en-GB', {
             day: 'numeric',
@@ -112,9 +112,9 @@ export function HealthStatusBadge({ health }: HealthStatusBadgeProps) {
         tabIndex={0}
         aria-label={`Delivery: ${label}`}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') e.preventDefault(); }}
-        style={{ display: 'flex', flexDirection: 'column', gap: 2, cursor: 'default', border: 'none', background: 'transparent', padding: 0 }}
+        style={{ display: 'flex', flexDirection: 'column', gap: 0, cursor: 'default', border: 'none', background: 'transparent', padding: 0 }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div
             aria-hidden="true"
             style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }}
@@ -128,7 +128,7 @@ export function HealthStatusBadge({ health }: HealthStatusBadgeProps) {
             fontSize: 'var(--ds-font-size-100)',
             color: token('color.text.subtlest', 'var(--ds-icon-subtle)'),
             lineHeight: '14px',
-            paddingLeft: 15,
+            paddingLeft: 16,
           }}
         >
           {subtitle}

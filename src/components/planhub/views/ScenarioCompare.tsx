@@ -127,7 +127,7 @@ export default function ScenarioCompare() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
-                      marginTop: '2px'
+                      marginTop: '0px'
                     }}
                   >
                     {selectedVersions.includes(version.id) && (
@@ -151,7 +151,7 @@ export default function ScenarioCompare() {
                     <div style={{ 
                       fontSize: 'var(--ds-font-size-200)', 
                       color: 'var(--ph-text-muted)',
-                      marginTop: '2px'
+                      marginTop: '0px'
                     }}>
                       {version.plan?.name || 'Unknown Plan'}
                     </div>

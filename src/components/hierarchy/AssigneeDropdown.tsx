@@ -6,7 +6,7 @@
  * availableAssignees, onSelect, onClose) — all 4 callers (WorkItemTable,
  * DetailPanel, BulkActionBar, HierarchyContextMenu) need no changes.
  *
- * The wrapper div is positioned `top:100% left:0` exactly like the legacy
+ * The wrapper div is positioned `top:48% left:0` exactly like the legacy
  * popover, but is now 0×0 (invisible). ProfilePicker reads its rect and
  * places the actual popover body at that anchor — visually identical
  * placement (±2px from the original `marginTop: 4`).
@@ -61,7 +61,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
     <div
       ref={anchorRef}
       aria-hidden="true"
-      style={{ position: 'absolute', top: '100%', left: 0, width: 0, height: 0, pointerEvents: 'none' }}
+      style={{ position: 'absolute', top: '48%', left: 0, width: 0, height: 0, pointerEvents: 'none' }}
     >
       <ProfilePicker
         value={value}

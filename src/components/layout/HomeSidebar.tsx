@@ -187,7 +187,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
       >
         <PageIcon style={{ width: 20, height: 20 }} />
       </span>
-      <span style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, flex: 1 }}>
+      <span style={{ display: 'flex', flexDirection: 'column', gap: '0px', minWidth: 0, flex: 1 }}>
         <span
           style={{
             color: token('color.text', 'var(--ds-text)'),

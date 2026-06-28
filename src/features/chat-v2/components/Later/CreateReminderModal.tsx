@@ -98,7 +98,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        paddingTop: '14vh',
+        paddingTop: '12vh',
         zIndex: 'var(--cv2-modal-z, 1000)' as any,
       }}
       onMouseDown={e => { if (e.target === e.currentTarget) onCancel(); }}
@@ -116,7 +116,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Reminder
           </div>
           <button type="button" onClick={onCancel} aria-label="Close" style={closeBtnStyle()}>
@@ -124,7 +124,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: 14, marginTop: 20 }}>
+        <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
           <Field label="When">
             <PickerButton
               icon={<CalendarIcon size={15} />}
@@ -158,13 +158,13 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
           </Field>
         </div>
 
-        <div style={{ marginTop: 20 }}>
+        <div style={{ marginTop: 16 }}>
           <div
             style={{
               fontSize: 'var(--ds-font-size-300)',
               fontWeight: 700,
               color: 'var(--cv2-text-strong)',
-              marginBottom: 6,
+              marginBottom: 4,
             }}
           >
             Description
@@ -182,8 +182,8 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 2,
-                padding: '6px 8px',
+                gap: 0,
+                padding: '4px 8px',
                 borderBottom: '1px solid var(--cv2-border)',
               }}
             >
@@ -212,7 +212,7 @@ export function CreateReminderModal({ onCancel, onSave }: CreateReminderModalPro
               onInput={e => setText((e.currentTarget as HTMLDivElement).innerText)}
               style={{
                 minHeight: 80,
-                padding: '10px 12px',
+                padding: '8px 12px',
                 fontFamily: 'inherit',
                 fontSize: 'var(--ds-font-size-400)',
                 color: 'var(--cv2-text)',
@@ -273,7 +273,7 @@ function Divider() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ flex: 1, position: 'relative' }}>
-      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--cv2-text-strong)', marginBottom: 6 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--cv2-text-strong)', marginBottom: 4 }}>
         {label}
       </div>
       {children}
@@ -344,7 +344,7 @@ function CalendarPopover({
       aria-label="Pick a date"
       style={{
         position: 'absolute',
-        top: 78,
+        top: 48,
         left: 0,
         width: 280,
         background: 'var(--cv2-bg-modal)',
@@ -355,7 +355,7 @@ function CalendarPopover({
         zIndex: 'var(--cv2-popover-z, 1100)' as any,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <div style={{ display: 'inline-flex', gap: 4 }}>
           <NavBtn label="Previous year" onClick={() => setViewYear(y => y - 1)}>
             <ChevronLeftDoubleIcon size={14} />
@@ -420,15 +420,15 @@ function CalendarPopover({
                 aria-pressed={isSel}
                 style={{
                   position: 'absolute',
-                  inset: 3,
+                  inset: 4,
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background: isSel ? 'var(--ds-link)' : 'transparent',
+                  background: isSel ? 'var(--ds-link, #0065FF)' : 'transparent',
                   color: !allowed
                     ? 'var(--cv2-text-muted)'
                     : isSel
-                      ? 'var(--ds-surface)'
+                      ? 'var(--ds-surface, #FFFFFF)'
                       : isToday
                         ? 'var(--cv2-accent)'
                         : 'var(--cv2-text)',
@@ -511,7 +511,7 @@ function TimeDropdown({ value, onSelect, onClose }: { value: string; onSelect: (
       aria-label="Pick a time"
       style={{
         position: 'absolute',
-        top: 78,
+        top: 48,
         left: 0,
         right: 0,
         maxHeight: 260,
@@ -540,9 +540,9 @@ function TimeDropdown({ value, onSelect, onClose }: { value: string; onSelect: (
               display: 'block',
               width: '100%',
               textAlign: 'left',
-              padding: '6px 16px',
+              padding: '4px 16px',
               background: sel ? 'var(--cv2-accent)' : 'transparent',
-              color: sel ? 'var(--ds-text-inverse)' : 'var(--cv2-text)',
+              color: sel ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cv2-text)',
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
@@ -567,7 +567,7 @@ function PrimaryBtn({ onClick, disabled, children }: { onClick: () => void; disa
         height: 36,
         padding: '0 18px',
         background: disabled ? 'var(--cv2-bg-row-hover)' : 'var(--cv2-success)',
-        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse)',
+        color: disabled ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',

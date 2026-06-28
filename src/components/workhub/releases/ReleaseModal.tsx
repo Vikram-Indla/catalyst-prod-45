@@ -107,7 +107,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
         {/* Header */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '20px 24px 0', marginBottom: 20,
+          padding: '16px 24px 0', marginBottom: 16,
         }}>
           <h2 style={{
             fontSize: 'var(--ds-font-size-600)', fontWeight: 700, margin: 0,
@@ -215,7 +215,7 @@ function Field({ label, required, error, children }: {
         {label}{required && <span style={{ color: 'var(--sem-danger)' }}> *</span>}
       </label>
       {children}
-      {error && <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>{error}</span>}
+      {error && <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--sem-danger)', marginTop: 0, display: 'block' }}>{error}</span>}
     </div>
   );
 }

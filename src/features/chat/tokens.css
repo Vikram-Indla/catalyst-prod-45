@@ -27,7 +27,7 @@
   /* ads-scanner:ignore-next-line — V3 prototype token, intentional value */
   --c-chat-group-gap-y: 12px;
   /* ads-scanner:ignore-next-line — V3 prototype token, intentional value */
-  --c-chat-intra-group-gap-y: 2px;
+  --c-chat-intra-group-gap-y: 0px;
   --c-chat-focus-ring-w: 2px;
 
   /* ── Surface & text (ADS-mapped, no fallback hex needed — ADS CDN provides them) ── */

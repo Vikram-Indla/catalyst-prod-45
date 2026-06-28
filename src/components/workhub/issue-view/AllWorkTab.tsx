@@ -100,7 +100,7 @@ export function AllWorkTab({
           <div className="awCardBody">
             {item?.parent_key ? (
               <div>
-                <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>Parent</div>
+                <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>Parent</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   {parentItem && <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />}
                   <span style={{ fontWeight: 700, fontSize: 'var(--ds-font-size-200)', color: 'var(--aw-text-subtle)' }}>{item.parent_key}</span>
@@ -114,12 +114,12 @@ export function AllWorkTab({
               <div className="awEmpty">No hierarchy items</div>
             )}
             {childItems.length > 0 && (
-              <div style={{ marginTop: 10 }}>
-                <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+              <div style={{ marginTop: 8 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>
                   Children ({childItems.length})
                 </div>
                 {childItems.map(ch => (
-                  <div key={ch.issue_key} className="awRow" style={{ padding: '6px 4px', borderLeft: 'none' }}>
+                  <div key={ch.issue_key} className="awRow" style={{ padding: '4px 4px', borderLeft: 'none' }}>
                     <JiraIssueTypeIcon type={ch.issue_type} size={14} />
                     <div className="awRowMain">
                       <div className="awRowTop">
@@ -153,7 +153,7 @@ export function AllWorkTab({
               </>
             ) : (
               links.map((link: any, i: number) => (
-                <div key={link.id ?? i} className="awRow" style={{ padding: '6px 4px', borderLeft: 'none' }}>
+                <div key={link.id ?? i} className="awRow" style={{ padding: '4px 4px', borderLeft: 'none' }}>
                   <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--aw-text-subtle)' }}>
                     {link.link_type_name ?? 'Link'}
                   </span>
@@ -209,10 +209,10 @@ export function AllWorkTab({
             {activityCount === 0 ? (
               <div className="awEmpty" style={{ marginTop: 12 }}>No activity yet</div>
             ) : (
-              <div style={{ marginTop: 10 }}>
+              <div style={{ marginTop: 8 }}>
                 {(activityFilter === 'all' || activityFilter === 'comments') && comments.map((c: any, i: number) => (
                   <div key={c.id ?? `c-${i}`} style={{ padding: '8px 0', borderBottom: '1px solid var(--aw-border)', fontSize: 'var(--ds-font-size-300)' }}>
-                    <div style={{ display: 'flex', gap: 6, alignItems: 'baseline' }}>
+                    <div style={{ display: 'flex', gap: 4, alignItems: 'baseline' }}>
                       <strong style={{ fontSize: 'var(--ds-font-size-200)' }}>{c._author_name ?? c.author_name ?? 'Unknown'}</strong>
                       <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--aw-text-subtle)' }}>{formatRel(c.created_at)}</span>
                     </div>

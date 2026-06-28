@@ -173,25 +173,26 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
   if (source === 'catalyst') {
     return (
       <span style={{
-        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em',
-        padding: '1px 4px', borderRadius: 4,
-        background: 'var(--ds-background-success)', color: 'var(--ds-chart-teal-bolder)',
+        fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
+        padding: '0px 4px', borderRadius: 4,
+        background: 'var(--ds-background-success, #DCFFF1)', color: 'var(--ds-chart-teal-bolder, #0f766e)',
         textTransform: 'uppercase', flexShrink: 0,
       }}>CATALYST</span>
     );
   }
   return (
     <span style={{
-      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em',
-      padding: '1px 4px', borderRadius: 4,
-      background: 'var(--ds-link)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))',
+      fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
+      padding: '0px 4px', borderRadius: 4,
+      background: 'var(--ds-link, #0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
   );
 }
 
+// ads-scanner:ignore-next-line — avatar color palette with CSS variable fallbacks for avatar selection [CAT-ADS-AVATAR-PALETTE-001]
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['var(--cp-teal-60)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary))','var(--ds-text-danger, var(--cp-danger))','var(--ds-text-success, var(--cp-success))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))','var(--ds-link)','var(--quality-high)','var(--ds-text-danger)','var(--ds-background-brand-bold-hovered)','var(--ds-chart-teal-bolder)'];
+const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','var(--ds-link, #0C66E4)','var(--quality-high, #059669)','var(--ds-text-danger, #BE123C)','var(--ds-background-brand-bold-hovered, #1D4ED8)','var(--ds-chart-teal-bolder, #0f766e)'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -202,9 +203,9 @@ function getAvatarColor(name: string): string {
 function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; onClick?: (e: React.MouseEvent) => void }) {
   if (!assignee) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
         <UnassignedAvatar size={24} />
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
+        <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
       </div>
     );
   }
@@ -212,15 +213,15 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
   const initials = assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const bgColor = getAvatarColor(assignee.displayName);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
       {avatarUrl ? (
         <img src={avatarUrl} alt={assignee.displayName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
       ) : (
         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' }}>{initials}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
         </div>
       )}
-      <span className="hi-assignee-name" style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
+      <span className="hi-assignee-name" style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
     </div>
   );
 }
@@ -238,7 +239,7 @@ function priorityToLevel(name?: string): number {
 /* ── Priority bars ── */
 function PriorityBarsCell({ level }: { level: number }) {
   return (
-    <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
       {[1, 2, 3, 4].map(i => (
         <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
@@ -248,34 +249,34 @@ function PriorityBarsCell({ level }: { level: number }) {
 
 /* ── Labels pills (F9) ── */
 function LabelsPills({ labels }: { labels: string[] }) {
-  if (!labels || labels.length === 0) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</span>;
+  if (!labels || labels.length === 0) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
   const show = labels.slice(0, 2);
   const rest = labels.length - 2;
   return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', overflow: 'hidden' }}>
       {show.map(l => (
         <span key={l} style={{
-          fontSize: 'var(--ds-font-size-50)', padding: '2px 8px', borderRadius: 9999,
+          fontSize: 10, padding: '0px 8px', borderRadius: 9999,
           background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', whiteSpace: 'nowrap',
         }}>{l}</span>
       ))}
-      {rest > 0 && <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)' }}>+{rest}</span>}
+      {rest > 0 && <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>+{rest}</span>}
     </div>
   );
 }
 
 /* ── Due date with color coding (F11) ── */
 function DueDateCell({ date }: { date?: string }) {
-  if (!date) return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</span>;
+  if (!date) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
   const d = new Date(date);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let color = 'var(--fg-1)';
-  if (dDate < today) color = 'var(--ds-text-danger, var(--cp-danger))';
-  else if (dDate.getTime() === today.getTime()) color = 'var(--ds-link, var(--ds-link))';
+  if (dDate < today) color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
+  else if (dDate.getTime() === today.getTime()) color = 'var(--ds-link, var(--ds-link, #0284c7))';
   return (
-    <span style={{ fontSize: 'var(--ds-font-size-200)', color }}>
+    <span style={{ fontSize: 12, color }}>
       {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
     </span>
   );
@@ -283,8 +284,8 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', 'Feature': 'var(--cp-teal-60)', 'Story': 'var(--ds-text-success, var(--cp-success))', 'Sub-task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
-  'Task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', 'Bug': 'var(--ds-text-danger, var(--cp-danger))',
+  'Epic': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'Feature': 'var(--cp-teal-60, #0D9488)', 'Story': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Sub-task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+  'Task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'Bug': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 
 /* ── Parent cell (chip style matching ParentEpicChip) ── */
@@ -292,7 +293,7 @@ function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Ma
   const parentKey = item.parentKey || item.parentId;
 
   if (!parentKey) {
-    return <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</span>;
+    return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
   }
 
   // Look up parent by id (which is issue_key) OR by key field
@@ -316,7 +317,7 @@ function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Ma
           height: 20,
           padding: '0 6px',
           borderRadius: 4,
-          fontSize: 'var(--ds-font-size-100)',
+          fontSize: 11,
           fontWeight: 500,
           maxWidth: 212,
           overflow: 'hidden',
@@ -351,7 +352,7 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
       onClick={() => onSort(sortKey)}
       style={{
         width, flex, height: 36, display: 'flex', alignItems: 'center', padding: '0 8px',
-        fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
+        fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
         letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', minWidth: 0,
       }}
     >
@@ -576,7 +577,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
             <span className="hi-type-icon-wrapper">{item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}</span>
 
-            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
               {item.key}
             </span>
 
@@ -598,14 +599,14 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 }}
                 style={{
                   flexShrink: 0,
-                  fontSize: 'var(--ds-font-size-100)',
+                  fontSize: 9,
                   fontWeight: 700,
                   letterSpacing: '0.06em',
-                  padding: '1px 6px',
+                  padding: '0px 6px',
                   borderRadius: 4,
-                  background: 'var(--ds-background-success)',
-                  color: 'var(--quality-high)',
-                  border: '1px solid var(--ds-background-success)',
+                  background: 'var(--ds-background-success, #DFFCF0)',
+                  color: 'var(--quality-high, #059669)',
+                  border: '1px solid var(--ds-background-success, #DFFCF0)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   textTransform: 'uppercase',
@@ -641,7 +642,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'created':
         return (
           <div style={{ padding: '0 16px 0 8px', textAlign: 'right' }}>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
               {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
           </div>
@@ -650,10 +651,10 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         return (
           <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 'var(--ds-font-size-100)', padding: '2px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 11, padding: '0px 8px', borderRadius: 4, background: 'var(--cp-bg-sunken)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
-            ) : <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)' }}>—</span>}
+            ) : <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>}
           </div>
         );
       case 'labels':
@@ -665,7 +666,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'storyPoints':
         return (
           <div style={{ padding: '0 8px', textAlign: 'right' }}>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: item.storyPoints != null ? 'var(--fg-1)' : 'var(--fg-4)' }}>
+            <span style={{ fontSize: 12, color: item.storyPoints != null ? 'var(--fg-1)' : 'var(--fg-4)' }}>
               {item.storyPoints != null ? item.storyPoints : '—'}
             </span>
           </div>
@@ -679,7 +680,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'reporter':
         return (
           <div style={{ padding: '0 8px', overflow: 'hidden' }}>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: item.reporter ? 'var(--fg-1)' : 'var(--fg-4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 12, color: item.reporter ? 'var(--fg-1)' : 'var(--fg-4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {item.reporter || '—'}
             </span>
           </div>
@@ -687,7 +688,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'updated':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
               {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
           </div>
@@ -698,7 +699,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
               onClick={(e) => { e.stopPropagation(); openDropdown('priority', item.id); }}>
               <PriorityBarsCell level={priorityToLevel(item.priority?.name)} />
-              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{item.priority?.name || '—'}</span>
+              <span style={{ fontSize: 11, color: 'var(--fg-3)' }}>{item.priority?.name || '—'}</span>
             </div>
             {activeDropdown?.type === 'priority' && activeDropdown.itemId === item.id && (
               <PriorityDropdown currentPriority={item.priority?.name}
@@ -709,7 +710,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'type':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
               {item.issueType || '—'}
             </span>
           </div>
@@ -744,8 +745,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             alignItems: 'center',
             height: 36,
             minWidth: 1100,
-                background: 'var(--cp-bg-page)',
-                borderBottom: isDark ? '2px solid var(--ds-background-neutral)' : '2px solid var(--cp-border, var(--cp-bg-sunken))',
+                background: 'var(--cp-bg-page, #F8FAFC)',
+                borderBottom: isDark ? '2px solid var(--ds-background-neutral, #F1F2F4)' : '2px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
           }}
         >
           <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -791,7 +792,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 display: 'grid',
                 gridTemplateColumns,
                 alignItems: 'center',
-                borderBottom: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--cp-border, var(--cp-bg-sunken))',
+                borderBottom: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                 cursor: 'pointer',
                 background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'var(--ds-background-information, rgba(37, 99, 235, 0.08))' : 'transparent',
               }}
@@ -828,13 +829,13 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       {/* Footer */}
       <div style={{ height: 40, background: 'var(--bg-1)', borderTop: '1px solid var(--divider)', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)' }}>
+        <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
           Showing {Math.min(perPage, totalFlat)} of {totalFlat} items
         </span>
         {perPage < totalFlat && (
           <button
             onClick={() => setPerPage(p => p + 50)}
-            style={{ marginLeft: 8, background: 'none', border: 'none', padding: 0, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-blue)', cursor: 'pointer' }}
+            style={{ marginLeft: 8, background: 'none', border: 'none', padding: 0, fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', cursor: 'pointer' }}
           >
             Show more
           </button>
@@ -876,9 +877,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       )}
 
       <style>{`
-        .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: ${'var(--cp-bg-page)'} !important; border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary)); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
-        .hi-table-row.checked { background: ${'var(--cp-primary-light)'} !important; }
+        .hi-table-row { border-left: 4px solid transparent; transition: all 80ms ease; }
+        .hi-table-row:hover { background: var(--ds-background-neutral-hovered) !important; border-left-color: var(--ds-border-focused); box-shadow: ${isDark ? 'none' : '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.06))'}; }
+        .hi-table-row.checked { background: var(--ds-background-selected) !important; border-left-color: var(--ds-border-focused); }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }
@@ -887,7 +888,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         .hi-work-column { overflow: hidden; min-width: 0; }
         /* Rule 3 paired .dark — surfaces already branched via isDark above;
            this selector adds ADS-token border-left for left-bar visibility on dark. */
-        .dark .hi-table-row:hover { border-left-color: var(--ds-background-information-bold); }
+        .dark .hi-table-row:hover { border-left-color: var(--ds-background-information-bold, #0C66E4); }
       `}</style>
     </div>
   );

@@ -33,7 +33,7 @@ export const CommentComposer: React.FC<CommentComposerProps> = ({
   };
 
   return (
-    <div style={{ display: 'flex', gap: '14px', marginTop: '24px' }}>
+    <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
       {/* AVATAR — 40px */}
       <Avatar initials={userInitials} color={userColor} size="lg" />
 

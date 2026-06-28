@@ -185,7 +185,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginTop: 6,
+              marginTop: 4,
               fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary))'),
             }}
@@ -235,7 +235,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                 data-testid={`stage-card-${step.value}`}
                 onClick={() => { onStageClick(step.value); setOpenStage({ value: step.value, label: step.label }); }}
                 style={{
-                  padding: '10px 8px',
+                  padding: '8px 8px',
                   border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}`,
                   borderTop: `3px solid ${color}`,
                   borderRadius: 6,
@@ -278,7 +278,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                     fontSize: 'var(--ds-font-size-700)',
                     fontWeight: 700,
                     color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse))'),
-                    marginTop: 6,
+                    marginTop: 4,
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >
@@ -288,7 +288,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                 {/* Alert badge */}
                 <div
                   data-testid={`stage-sparkline-${step.value}`}
-                  style={{ marginTop: 6 }}
+                  style={{ marginTop: 4 }}
                 >
                   {stalled > 0 ? (
                     <span
@@ -296,7 +296,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                         display: 'inline-block',
                         fontSize: 'var(--ds-font-size-50)',
                         lineHeight: '14px',
-                        padding: '1px 6px',
+                        padding: '0px 6px',
                         borderRadius: 8,
                         fontWeight: 600,
                         background: token('color.background.danger', 'var(--ds-background-danger)'),
@@ -311,7 +311,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                         display: 'inline-block',
                         fontSize: 'var(--ds-font-size-50)',
                         lineHeight: '14px',
-                        padding: '1px 6px',
+                        padding: '0px 6px',
                         borderRadius: 8,
                         fontWeight: 600,
                         background: token('color.background.success', 'var(--ds-background-success)'),

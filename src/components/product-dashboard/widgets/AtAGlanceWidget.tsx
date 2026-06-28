@@ -88,11 +88,11 @@ function KpiCell({
     <div
       style={{
         flex: 1,
-        padding: '18px 22px',
+        padding: '16px 22px',
         borderRight: borderRight ? `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral))')}` : 'none',
         display: 'flex',
         flexDirection: 'column',
-        gap: 6,
+        gap: 4,
         minWidth: 0,
       }}
     >
@@ -123,7 +123,7 @@ function KpiCell({
         style={{
           display: 'flex',
           alignItems: 'baseline',
-          gap: 6,
+          gap: 4,
           fontVariantNumeric: 'tabular-nums',
         }}
       >

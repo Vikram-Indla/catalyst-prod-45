@@ -126,9 +126,6 @@ export type { TruncateCellProps } from './TruncateCell';
 export { ThemeToggle } from './ThemeToggle';
 
 // ─── New ADS wrapper components (2026-06-06) ──────────────────────────
-export { CatalystBreadcrumbs } from './CatalystBreadcrumbs';
-export type { CatalystBreadcrumbItem } from './CatalystBreadcrumbs';
-
 export { CatalystInlineEdit } from './CatalystInlineEdit';
 export { CatalystDrawer } from './CatalystDrawer';
 export { CatalystProfileCard } from './CatalystProfileCard';

@@ -453,7 +453,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
       {/* ── Header: Standup title + Settings icon (Jira parity) ────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '14px 16px 10px',
+        padding: '12px 16px 10px',
       }}>
         <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Standup
@@ -486,7 +486,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
       {/* ── Timer row (only when Enable timer is on) ─────────────────── */}
       {enableTimer && (
         <div style={{
-          display: 'flex', alignItems: 'flex-end', gap: 10,
+          display: 'flex', alignItems: 'flex-end', gap: 8,
           padding: '4px 16px 14px',
         }}>
           <span style={{
@@ -501,7 +501,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
           {/* Play / Pause / Stop cluster — buttons anchored to the bottom of
               the timer row so the 36px time text is the visual anchor and the
               small 22px circles sit at its baseline. */}
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, paddingBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, paddingBottom: 4 }}>
             {running ? (
               <>
                 <CircleCtrlBtn onClick={() => setRunning(false)} title="Pause" kind="pause" />
@@ -555,7 +555,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
         >
           <IcShuffle size={16} color="var(--ds-text-subtle)" />
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <NavStepBtn
             onClick={() => advance(-1)}
             disabled={step === 0}
@@ -617,14 +617,14 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
               onMouseLeave={() => setHoveredRow(null)}
               style={{
                 width: '100%', padding: rowPadding,
-                display: 'flex', alignItems: 'center', gap: 10,
+                display: 'flex', alignItems: 'center', gap: 8,
                 cursor: 'pointer',
                 background: isSelected
                   ? 'var(--ds-background-selected)'
                   : isHovered ? tk.surfaceHover : 'transparent',
                 border: `1px solid ${isSelected ? 'var(--ds-border-selected)' : 'transparent'}`,
                 borderRadius: 6,
-                marginBottom: 2,
+                marginBottom: 0,
                 fontFamily: 'var(--cp-font-body)',
               }}
             >
@@ -668,7 +668,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                 }}>
                   {b.name}
                 </div>
-                <div style={{ fontSize: metaSize, color: tk.textMuted, marginTop: 1 }}>
+                <div style={{ fontSize: metaSize, color: tk.textMuted, marginTop: 0 }}>
                   {b.total} issue{b.total !== 1 ? 's' : ''}
                   {b.inProgress > 0 ? ` · ${b.inProgress} in progress` : ''}
                 </div>
@@ -704,7 +704,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
       {/* ── Footer: "Give feedback" centered (Jira parity). ─────────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '10px 14px',
+        padding: '8px 14px',
       }}>
         <button
           type="button"
@@ -735,7 +735,7 @@ function PanelHeader({ tk, onEnd, speechStatus }: { tk: KanbanThemeTokens; onEnd
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '10px 14px 8px', borderBottom: `1px solid ${tk.border}`,
+      padding: '8px 14px 8px', borderBottom: `1px solid ${tk.border}`,
     }}>
       <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
         Daily Standup
@@ -778,7 +778,7 @@ function MicIndicator({ status }: { status: StandupSpeechStatus }) {
       aria-label={title}
       title={title}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
+        display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 32, padding: '0 4px',
       }}
     >
@@ -973,7 +973,7 @@ function SettingsDropdown({
         background: tk.surfaceBg,
         border: `1px solid ${tk.border}`,
         borderRadius: 6,
-        padding: '10px 0',
+        padding: '8px 0',
         zIndex: 10000,
         boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9,30,66,0.16))',
         fontFamily: 'var(--cp-font-body)',
@@ -984,7 +984,7 @@ function SettingsDropdown({
       <div style={{ padding: '0 14px 8px' }}>
         <div style={{
           fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted,
-          textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6,
+          textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4,
         }}>Density</div>
         <RadioOption
           checked={density === 'default'}
@@ -1000,7 +1000,7 @@ function SettingsDropdown({
         />
       </div>
 
-      <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 0' }} />
+      <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 0' }} />
 
       {/* Section 2 — Toggles */}
       <div style={{ padding: '0 14px 6px' }}>
@@ -1016,7 +1016,7 @@ function SettingsDropdown({
         />
       </div>
 
-      <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 0' }} />
+      <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 0' }} />
 
       {/* Section 3 — Timer Duration chips */}
       <div style={{ padding: '0 14px 4px' }}>
@@ -1107,7 +1107,7 @@ function RadioOption({
       onClick={onSelect}
       style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        width: '100%', padding: '6px 0',
+        width: '100%', padding: '4px 0',
         border: 'none', background: 'transparent', cursor: 'pointer',
         textAlign: 'left', fontFamily: 'var(--cp-font-body)',
       }}
@@ -1137,7 +1137,7 @@ function ToggleRow({
 }: { label: string; value: boolean; onChange: (next: boolean) => void }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: 10,
+      display: 'flex', alignItems: 'center', gap: 8,
       padding: '8px 0',
     }}>
       <span style={{
@@ -1159,7 +1159,7 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
       onClick={() => onChange(!value)}
       style={{
         width: 44, height: 24, borderRadius: 12,
-        border: 'none', padding: 2,
+        border: 'none', padding: 0,
         background: value ? '#4F7B26' : 'var(--ds-text)',
         display: 'inline-flex', alignItems: 'center',
         justifyContent: 'space-between',
@@ -1172,7 +1172,7 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
         <>
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 16, height: 16, color: 'var(--ds-surface)', marginLeft: 2,
+            width: 16, height: 16, color: 'var(--ds-surface)', marginLeft: 0,
           }}>
             <CheckIcon label="" size="small" primaryColor="var(--ds-surface)" />
           </span>
@@ -1187,7 +1187,7 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
           }} />
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 16, height: 16, color: 'var(--ds-surface)', marginRight: 2,
+            width: 16, height: 16, color: 'var(--ds-surface)', marginRight: 0,
           }}>
             <CrossIcon label="" size="small" primaryColor="var(--ds-surface)" />
           </span>

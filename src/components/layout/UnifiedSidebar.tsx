@@ -290,7 +290,7 @@ export function UnifiedSidebar({
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'background 0.12s ease, color 0.12s ease',
-                  marginBottom: '2px',
+                  marginBottom: '0px',
                   position: 'relative',
                   justifyContent: expanded ? 'flex-start' : 'center',
                   background: active ? 'var(--ds-background-information, rgba(37, 99, 235, 0.12))' : 'transparent',
@@ -318,8 +318,8 @@ export function UnifiedSidebar({
                     style={{
                       position: 'absolute',
                       left: 0,
-                      top: '7px',
-                      bottom: '7px',
+                      top: '8px',
+                      bottom: '8px',
                       width: '3px',
                       background: 'var(--cp-blue)',
                       borderRadius: '0 2px 2px 0',
@@ -368,7 +368,7 @@ export function UnifiedSidebar({
                     </button>
                     {item.badge && (
                       <span style={{ 
-                        padding: '2px 6px', 
+                        padding: '0px 6px', 
                         fontSize: 'var(--ds-font-size-100)', 
                         fontWeight: 600, 
                         background: 'hsl(var(--brand-primary))', 
@@ -411,7 +411,7 @@ export function UnifiedSidebar({
                 padding: '8px 12px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
+                gap: '8px',
                 borderRadius: '8px',
                 border: 'none',
                 background: 'transparent',

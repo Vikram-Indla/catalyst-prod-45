@@ -164,7 +164,7 @@ export const EditableAssignee = memo(function EditableAssignee({
           fontFamily: 'var(--cp-font-body)',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
         }}
       >
         {!currentAssignee && <UnassignedAvatar size={22} />}
@@ -263,7 +263,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     <div style={{
                       background: `conic-gradient(from 0deg, var(--ds-background-accent-magenta-bolder) 0deg, var(--ds-background-discovery-bold) 60deg, var(--ds-link) 120deg, var(--ds-background-information-bold) 180deg, var(--ds-background-success) 240deg, var(--ds-background-warning-bold) 300deg, var(--ds-background-accent-magenta-bolder) 360deg)`,
                       animation: 'none',
-                      padding: 1.8,
+                      padding: 0.8,
                       borderRadius: 20,
                     }}>
                       <button
@@ -387,7 +387,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                         state={person.presenceState ?? null}
                       />
                       <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400 }}>{person.name}</span>
                           {isOnLeave && person.backOn && (
                             <span style={{

@@ -42,7 +42,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 600,
   fontSize: 'var(--ds-font-size-200)',
   color: 'var(--ds-text)',
-  marginBottom: 6,
+  marginBottom: 4,
 };
 
 const radioRow: React.CSSProperties = {
@@ -233,9 +233,9 @@ export function ReleaseConfirmationModal({ isOpen, release, onClose, onSuccess, 
                 <div>
                   <div style={labelStyle}>
                     Unresolved work items
-                    <span style={{ color: 'var(--ds-text-danger)', marginLeft: 2 }}>*</span>
+                    <span style={{ color: 'var(--ds-text-danger)', marginLeft: 0 }}>*</span>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <label style={radioRow}>
                       <input
                         style={{ accentColor: 'var(--ds-border-selected)' }}

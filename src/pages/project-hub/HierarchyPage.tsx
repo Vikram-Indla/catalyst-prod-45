@@ -177,7 +177,7 @@ function PriorityIcon({ name }: { name: string }) {
   else if (n === 'low' || n === 'lowest') level = 1;
   const color = level >= 3 ? 'var(--ds-text-danger, var(--cp-danger))' : level === 2 ? 'var(--ds-text-warning, var(--cp-warning))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))';
   return (
-    <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
+    <div style={{ display: 'flex', gap: 0.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (
         <div key={i} style={{ width: 2.5, height: 3 + i * 2.5, borderRadius: 1, background: i <= level ? color : 'var(--cp-border-default)' }} />
       ))}

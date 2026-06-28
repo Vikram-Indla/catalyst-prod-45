@@ -192,7 +192,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
         }}
       >
         {/* Header */}
-        <div style={{ padding: '20px 24px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 24px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2
             id="create-product-title"
             style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, margin: 0, color: token('color.text') }}
@@ -213,7 +213,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
         <div style={{ padding: '8px 24px 16px', overflowY: 'auto', flex: 1 }}>
           {/* Name */}
           <div style={{ marginBottom: 16 }}>
-            <label htmlFor="product-name" style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label htmlFor="product-name" style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 4, color: token('color.text') }}>
               Name <span style={{ color: token('color.text.danger') }}>*</span>
             </label>
             <input
@@ -230,7 +230,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
 
           {/* Code */}
           <div style={{ marginBottom: 16 }}>
-            <label htmlFor="product-code" style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label htmlFor="product-code" style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 4, color: token('color.text') }}>
               Code <span style={{ color: token('color.text.danger') }}>*</span>
             </label>
             <input
@@ -254,7 +254,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
               local state; on submit we JSON.stringify(adf) and write
               that to products.description. */}
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 4, color: token('color.text') }}>
               Description <span style={{ fontWeight: 400, color: token('color.text.subtle') }}>(optional)</span>
             </label>
             <div
@@ -285,7 +285,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
 
           {/* Icon */}
           <div style={{ marginBottom: 4 }}>
-            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 6, color: token('color.text') }}>
+            <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, marginBottom: 4, color: token('color.text') }}>
               Icon
             </label>
             <IconPickerGrid
@@ -356,7 +356,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 const secondaryBtnStyle: React.CSSProperties = {
-  padding: '6px 14px',
+  padding: '4px 14px',
   fontSize: 'var(--ds-font-size-400)',
   fontWeight: 500,
   borderRadius: 3,
@@ -367,7 +367,7 @@ const secondaryBtnStyle: React.CSSProperties = {
 };
 
 const primaryBtnStyle: React.CSSProperties = {
-  padding: '6px 14px',
+  padding: '4px 14px',
   fontSize: 'var(--ds-font-size-400)',
   fontWeight: 500,
   borderRadius: 3,

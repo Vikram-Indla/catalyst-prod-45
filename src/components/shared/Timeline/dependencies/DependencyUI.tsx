@@ -39,7 +39,7 @@ const cellBorder = '1px solid var(--ds-border)';
 function DepChevron() {
   return (
     <span aria-hidden style={{
-      position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)',
+      position: 'absolute', right: 4, top: '48%', transform: 'translateY(-50%)',
       display: 'flex', color: 'var(--ds-text-subtle)', pointerEvents: 'none',
     }}>
       <ChevronDown size={16} />
@@ -54,7 +54,7 @@ function AddDepLink({ onOpen }: { onOpen: (rect: DOMRect) => void }) {
       type="button"
       onClick={(e) => onOpen((e.currentTarget as HTMLElement).getBoundingClientRect())}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 2, padding: 0, border: 'none', background: 'transparent',
+        display: 'inline-flex', alignItems: 'center', gap: 0, padding: 0, border: 'none', background: 'transparent',
         color: 'var(--ds-link)', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline',
         fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
       }}
@@ -112,7 +112,7 @@ function LeadTimeCell({ issue }: { issue?: TimelineIssue }) {
     ? `End date: ${fmtDate(resolved.endDate)}`
     : `${resolved.source === 'sprint' ? 'Sprint' : 'Release'}: ${resolved.sourceName ?? '(unnamed)'} · ends ${fmtDate(resolved.endDate)}`;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
       <span style={{ color: 'var(--ds-text)', fontSize: 'var(--ds-font-size-400)', whiteSpace: 'nowrap' }}>{text}</span>
       <Tooltip content={tip} position="top">
         <span><Lozenge appearance={SOURCE_APPEARANCE[resolved.source]}>{label}</Lozenge></span>
@@ -354,7 +354,7 @@ function DepItemRef({ issue, fallbackKey, onOpen }: { issue?: TimelineIssue; fal
   const type = issue?.issueType ?? null;
   const summary = issue?.summary ?? '';
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
       {type ? <JiraIssueTypeIcon type={type} size={16} /> : null}
       <button
         type="button"
@@ -510,7 +510,7 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
                 styles={{ menuPortal: (b: any) => ({ ...b, zIndex: 10000 }) }}
                 spacing="compact"
               />
-              <div style={{ display: 'flex', gap: 2 }}>
+              <div style={{ display: 'flex', gap: 0 }}>
                 <button
                   type="button"
                   aria-label="Save dependency"
@@ -543,7 +543,7 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
               type="button"
               onClick={() => { setAdding(true); setError(null); }}
               style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                 width: '100%', height: 36, padding: '0 8px',
                 border: '1px solid var(--ds-border)', borderRadius: 4,
                 background: 'transparent', color: 'var(--ds-text)',

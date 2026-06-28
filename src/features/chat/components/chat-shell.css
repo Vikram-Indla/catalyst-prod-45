@@ -96,7 +96,7 @@
 /* ── Thread pane ── */
 .c-chat-thread-pane {
   min-width: 0;
-  border-left: 1px solid var(--c-chat-border);
+  border-left: 0px solid var(--c-chat-border);
   background: var(--c-chat-surface-raised);
   display: none;
   flex-direction: column;

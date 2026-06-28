@@ -65,12 +65,12 @@ export function Swimlane({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{
-          padding: '14px 20px',
+          padding: '12px 20px',
           backgroundColor: isExpanded ? KANBAN_COLORS.bgHover : (isHovered ? KANBAN_COLORS.bgHover : KANBAN_COLORS.bgCard),
           borderBottom: isExpanded ? `1px solid ${KANBAN_COLORS.borderLight}` : 'none',
           display: 'flex',
           alignItems: 'center',
-          gap: '14px',
+          gap: '12px',
           cursor: 'pointer',
           transition: 'background-color 0.15s',
         }}

@@ -193,7 +193,7 @@ function TasksGroupByControl({
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
@@ -409,19 +409,19 @@ function TasksSavedFiltersControl({
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
-            padding: '6px 0', zIndex: 9999, fontFamily: 'var(--cp-font-body)',
+            padding: '4px 0', zIndex: 9999, fontFamily: 'var(--cp-font-body)',
             maxHeight: 400, overflowY: 'auto',
           }}
         >
           {showNameField ? (
-            <div style={{ display: 'flex', gap: 6, padding: '6px 12px' }}>
+            <div style={{ display: 'flex', gap: 4, padding: '4px 12px' }}>
               <input
                 autoFocus
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') submitName(); }}
                 placeholder="Filter name"
-                style={{ flex: 1, padding: '6px 8px', fontSize: 'var(--ds-font-size-300)', border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 3, outline: 'none' }}
+                style={{ flex: 1, padding: '4px 8px', fontSize: 'var(--ds-font-size-300)', border: `1px solid ${token('color.border', 'var(--ds-border)')}`, borderRadius: 3, outline: 'none' }}
               />
               <Button appearance="primary" onClick={submitName}>Save</Button>
             </div>
@@ -721,7 +721,7 @@ function TasksInlineCreateRow({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
         padding: '4px 10px',
         background: 'transparent',
       }}
@@ -780,7 +780,7 @@ function TasksInlineCreateRow({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             height: 26,
             padding: '0 8px',
             border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
@@ -823,7 +823,7 @@ function TasksInlineCreateRow({
               border: `1px solid ${token('color.border', 'var(--ds-border)')}`,
               borderRadius: 4,
               boxShadow: token('elevation.shadow.overlay', '0 8px 16px var(--ds-shadow-raised, rgba(9,30,66,0.15))'),
-              padding: '6px 0',
+              padding: '4px 0',
               zIndex: 9999,
               fontFamily: 'var(--cp-font-body)',
               fontSize: 'var(--ds-font-size-400)',
@@ -933,7 +933,7 @@ function TasksInlineCreateRow({
               fontFamily: 'var(--cp-font-body)',
             }}
           >
-            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 6 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text)'), marginBottom: 4 }}>
               Due date
             </div>
             <div style={{ position: 'relative', marginBottom: 12 }}>
@@ -970,8 +970,8 @@ function TasksInlineCreateRow({
                   aria-label="Clear due date"
                   style={{
                     position: 'absolute',
-                    right: 6,
-                    top: '50%',
+                    right: 4,
+                    top: '48%',
                     transform: 'translateY(-50%)',
                     width: 20,
                     height: 20,
@@ -1195,7 +1195,7 @@ function TasksInlineCreateRow({
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
           height: 28,
           padding: '0 12px',
           border: 'none',
@@ -1635,7 +1635,7 @@ export default function TasksTaskListView() {
           ? (avatarByName.get(sample.assigneeName) ?? resolveAvatarUrl(sample.assigneeName) ?? undefined)
           : undefined;
         labelNode = (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             <Avatar size="small" name={k} src={avatarUrl} appearance={isUnassigned ? 'square' : 'circle'} />
             <span>{k}</span>
           </span>
@@ -1644,8 +1644,8 @@ export default function TasksTaskListView() {
         const p = (sample.priority || '').toLowerCase();
         const rank = TASK_PRIORITY_RANK[p] || { level: 0, color: token('color.border', 'var(--ds-border)') };
         labelNode = (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={k}>
-            <span style={{ display: 'inline-flex', gap: 2 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }} title={k}>
+            <span style={{ display: 'inline-flex', gap: 0 }}>
               {[1, 2, 3, 4].map((i) => (
                 <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : token('color.border', 'var(--ds-border)') }} />
               ))}
@@ -1656,7 +1656,7 @@ export default function TasksTaskListView() {
       } else if (groupBy === 'workstream') {
         const color = sample.teamColor;
         labelNode = (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             {color && <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />}
             <span>{k}</span>
           </span>
@@ -1776,7 +1776,7 @@ export default function TasksTaskListView() {
                     aria-label="Clear search"
                     onClick={() => setSearch('')}
                     style={{
-                      paddingInlineEnd: 6,
+                      paddingInlineEnd: 4,
                       display: 'flex',
                       alignItems: 'center',
                       background: 'none',

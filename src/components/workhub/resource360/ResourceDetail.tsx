@@ -161,7 +161,7 @@ export function ResourceDetail() {
   }, [issues]);
 
   const pillStyle = (active: boolean): React.CSSProperties => ({
-    padding: '6px 16px',
+    padding: '4px 16px',
     borderRadius: 9999,
     border: 'none',
     fontSize: 'var(--ds-font-size-300)',
@@ -191,7 +191,7 @@ export function ResourceDetail() {
         <button
           onClick={() => navigate('/project-hub/resource360')}
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', gap: 4,
             background: 'none', border: 'none', cursor: 'pointer',
             fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-blue)',
             fontFamily: 'var(--cp-font-body)', marginBottom: 16,
@@ -207,7 +207,7 @@ export function ResourceDetail() {
         </div>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 4 }}>
           <AvatarChip name={r.name} color={r.color} size={48} avatarUrl={r.avatar_url} />
           <div>
             <h1 style={{
@@ -216,13 +216,13 @@ export function ResourceDetail() {
             }}>
               {r.name}
             </h1>
-            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-3)', marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-3)', marginTop: 0 }}>
               {r.role || 'Team Member'} · {r.department || 'Unassigned'} · {r.capacity_hours_per_week}h/wk
             </div>
             {r.email && (
               <a
                 href={`mailto:${r.email}`}
-                style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 2 }}
+                style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 0 }}
               >
                 <Mail style={{ width: 12, height: 12 }} />
                 {r.email}
@@ -233,7 +233,7 @@ export function ResourceDetail() {
 
         {/* Status Filter Pills */}
         <div style={{
-          display: 'flex', flexWrap: 'wrap', gap: 6,
+          display: 'flex', flexWrap: 'wrap', gap: 4,
           padding: '16px 0',
           borderBottom: '1px solid var(--divider)',
           marginBottom: 16,
@@ -267,7 +267,7 @@ export function ResourceDetail() {
               borderRadius: 'var(--wh-radius-lg, 8px)',
               padding: '12px 14px',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                 <kpi.icon style={{ width: 13, height: 13, color: 'var(--fg-4)' }} />
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>{kpi.label}</span>
               </div>
@@ -315,7 +315,7 @@ export function ResourceDetail() {
                   <tr style={{ borderBottom: '1px solid var(--divider)', background: 'var(--bg-1)' }}>
                     {['KEY', 'TYPE', 'SUMMARY', 'STATUS', 'PRIORITY', 'DUE DATE', 'PROJECT', 'SPRINT'].map(h => (
                       <th key={h} style={{
-                        padding: '10px 12px', textAlign: 'left',
+                        padding: '8px 12px', textAlign: 'left',
                         fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase',
                         color: 'var(--fg-4)', letterSpacing: '0.04em',
                       }}>
@@ -343,7 +343,7 @@ export function ResourceDetail() {
                         </td>
                         <td style={{ padding: '8px 12px' }}>
                           <span style={{
-                            display: 'inline-block', padding: '2px 8px', borderRadius: 4,
+                            display: 'inline-block', padding: '0px 8px', borderRadius: 4,
                             fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                             backgroundColor: (TYPE_COLORS[item.issue_type] || 'var(--fg-4)') + '18',
                             color: TYPE_COLORS[item.issue_type] || 'var(--fg-4)',
@@ -360,7 +360,7 @@ export function ResourceDetail() {
                         </td>
                         <td style={{ padding: '8px 12px' }}>
                           <span style={{
-                            display: 'inline-block', padding: '2px 8px', borderRadius: 4,
+                            display: 'inline-block', padding: '0px 8px', borderRadius: 4,
                             fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                             backgroundColor: (STATUS_COLORS[item.status] || 'var(--fg-4)') + '18',
                             color: STATUS_COLORS[item.status] || 'var(--fg-4)',

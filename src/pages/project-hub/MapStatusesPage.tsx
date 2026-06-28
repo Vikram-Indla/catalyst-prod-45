@@ -51,12 +51,12 @@ function StatusPill({
       className="flex items-center justify-between gap-2 cursor-grab active:cursor-grabbing"
       role="listitem"
     >
-      <div className="flex items-center gap-2 flex-1 min-w-0" style={{ padding: '5px 0' }}>
+      <div className="flex items-center gap-2 flex-1 min-w-0" style={{ padding: '4px 0' }}>
         <GripVertical size={14} color={tk.textDisabled} className="flex-shrink-0" />
         <span style={{
           fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.03em', color: catColor, background: catBg,
-          borderRadius: 3, padding: '2px 8px', lineHeight: '20px',
+          borderRadius: 3, padding: '0px 8px', lineHeight: '20px',
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           {mapping.statusName}
@@ -76,7 +76,7 @@ function StatusPill({
 function OverlayPill({ name, tk }: { name: string; tk: any }) {
   return (
     <div className="flex items-center gap-2" style={{
-      padding: '5px 10px', background: tk.surfaceBg,
+      padding: '4px 10px', background: tk.surfaceBg,
       border: `1px solid ${tk.selectedAccent}`,
       borderRadius: 4, boxShadow: tk.cardDragShadow,
     }}>
@@ -84,7 +84,7 @@ function OverlayPill({ name, tk }: { name: string; tk: any }) {
       <span style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
         letterSpacing: '0.03em', color: 'var(--cp-text-secondary)', background: 'var(--cp-border-default)',
-        borderRadius: 3, padding: '2px 8px', lineHeight: '20px',
+        borderRadius: 3, padding: '0px 8px', lineHeight: '20px',
       }}>
         {name}
       </span>
@@ -165,14 +165,14 @@ function ColumnCard({
                 flex: 1, fontSize: 'var(--ds-font-size-200)', fontWeight: 700, textTransform: 'uppercase',
                 letterSpacing: '0.04em', color: tk.textPrimary,
                 background: tk.inputBg, border: `1px solid ${tk.selectedAccent}`,
-                borderRadius: 3, padding: '2px 6px', outline: 'none',
+                borderRadius: 3, padding: '0px 6px', outline: 'none',
                 fontFamily: 'var(--cp-font-body)',
               }}
             />
-            <button onClick={commitRename} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
+            <button onClick={commitRename} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <Check size={14} color="var(--ds-background-success-bold)" />
             </button>
-            <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
+            <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <X size={14} color={tk.textMuted} />
             </button>
           </div>
@@ -189,7 +189,7 @@ function ColumnCard({
             <span style={{
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textSecondary,
               background: tk.badgeBg, borderRadius: 10,
-              padding: '1px 7px', lineHeight: '18px', flexShrink: 0,
+              padding: '0px 7px', lineHeight: '18px', flexShrink: 0,
             }}>
               {totalCount}
             </span>
@@ -269,7 +269,7 @@ function BucketPanel({
         <span style={{
           fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textSecondary,
           background: tk.badgeBg, borderRadius: 10,
-          padding: '1px 7px', lineHeight: '18px',
+          padding: '0px 7px', lineHeight: '18px',
         }}>
           {totalCount}
         </span>
@@ -589,7 +589,7 @@ export default function MapStatusesPage() {
           {hasChanges && (
             <span style={{
               fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-background-danger-bold)',
-              background: 'var(--ds-background-danger)', borderRadius: 3, padding: '2px 8px',
+              background: 'var(--ds-background-danger)', borderRadius: 3, padding: '0px 8px',
             }}>
               Unsaved changes
             </span>

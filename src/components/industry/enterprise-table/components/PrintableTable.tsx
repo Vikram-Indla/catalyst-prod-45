@@ -100,7 +100,7 @@ export function PrintableTable<T extends { id: string }>({
           <style>
             @page {
               size: ${pageSize} ${orientation};
-              margin: 1cm;
+              margin: 0cm;
             }
             
             * {
@@ -118,8 +118,8 @@ export function PrintableTable<T extends { id: string }>({
             
             .print-header {
               text-align: center;
-              margin-bottom: 20px;
-              border-bottom: 2px solid var(--ds-border);
+              margin-bottom: 16px;
+              border-bottom: 0px solid var(--ds-border);
               padding-bottom: 16px;
             }
             
@@ -151,7 +151,7 @@ export function PrintableTable<T extends { id: string }>({
             
             th, td {
               border: 1px solid var(--ds-background-neutral-hovered);
-              padding: 6px 8px;
+              padding: 4px 8px;
               text-align: left;
               vertical-align: top;
             }
@@ -177,9 +177,9 @@ export function PrintableTable<T extends { id: string }>({
             }
             
             .print-footer {
-              margin-top: 20px;
+              margin-top: 16px;
               padding-top: 12px;
-              border-top: 1px solid var(--ds-border);
+              border-top: 0px solid var(--ds-border);
               font-size: 9pt;
               color: var(--ds-text-subtlest);
               display: flex;

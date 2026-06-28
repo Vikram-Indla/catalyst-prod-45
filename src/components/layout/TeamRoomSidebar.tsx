@@ -239,7 +239,7 @@ export function TeamRoomSidebar({
                       border: 'none',
                       cursor: 'pointer',
                       transition: 'background 0.15s ease',
-                      marginBottom: '2px',
+                      marginBottom: '0px',
                       position: 'relative',
                       justifyContent: expanded ? 'flex-start' : 'center',
                       background: active ? 'var(--nav-active-bg)' : 'transparent',

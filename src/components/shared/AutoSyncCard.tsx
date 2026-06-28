@@ -158,7 +158,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
       background: 'var(--wh-bg)',
       borderRadius: 'var(--wh-rad2, 8px)',
       border: '1px solid var(--wh-bdr)',
-      padding: 20,
+      padding: 16,
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -178,8 +178,8 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
             onClick={handleSave}
             disabled={updateMutation.isPending}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 5,
-              padding: '5px 14px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '4px 14px', borderRadius: 6, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
               background: 'var(--wh-pri)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', border: 'none', cursor: 'pointer',
             }}
           >
@@ -192,7 +192,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
       {/* Last Sync Status */}
       {lastSyncTable && (
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
           borderRadius: 8, marginBottom: 16,
           background: statusBackground,
           border: `1px solid ${statusBorder}`,
@@ -229,7 +229,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
           {isStale && (
             <span style={{
               fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--wh-warn)',
-              background: 'var(--wh-bg)', padding: '2px 8px', borderRadius: 12,
+              background: 'var(--wh-bg)', padding: '0px 8px', borderRadius: 12,
               textTransform: 'uppercase', letterSpacing: '.4px',
             }}>
               ⚠️ May be stale
@@ -238,7 +238,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
           {isFresh && (
             <span style={{
               fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--wh-suc)',
-              background: 'var(--wh-bg)', padding: '2px 8px', borderRadius: 12,
+              background: 'var(--wh-bg)', padding: '0px 8px', borderRadius: 12,
               textTransform: 'uppercase', letterSpacing: '.4px',
             }}>
               Up to date
@@ -248,7 +248,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
       )}
 
       {/* Schedule rows */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {schedules.map(s => {
           const edit = localEdits[s.schedule_key];
           if (!edit) return null;
@@ -282,7 +282,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
                 }}>
                   {s.schedule_label}
                 </div>
-                <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', fontFamily: "var(--cp-font-body)", marginTop: 1 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)', fontFamily: "var(--cp-font-body)", marginTop: 0 }}>
                   {s.timezone_label}
                   {s.last_triggered_at && ` · Last run: ${formatTimeAgo(s.last_triggered_at)}`}
                 </div>
@@ -332,7 +332,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
 
       {/* Help text */}
       <div style={{
-        marginTop: 14, fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)',
+        marginTop: 12, fontSize: 'var(--ds-font-size-50)', color: 'var(--wh-tx4)',
         fontFamily: "var(--cp-font-body)", lineHeight: 1.5,
       }}>
         Enable a schedule and set the time (UTC). Saudi Arabia is UTC+3.

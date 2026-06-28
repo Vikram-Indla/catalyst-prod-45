@@ -3,7 +3,7 @@ import ShieldIcon from '@atlaskit/icon/core/shield';
 export function ReadOnlyBanner() {
   return (
     <div className="wh-readonly-banner">
-      <span style={{ color: 'var(--wh-warn)', flexShrink: 0, marginTop: 1, display: 'flex' }}>
+      <span style={{ color: 'var(--wh-warn)', flexShrink: 0, marginTop: 0, display: 'flex' }}>
         <ShieldIcon label="" size="small" />
       </span>
       <div>

@@ -119,7 +119,7 @@ export function EditorView({
           className="catalyst-description-editor-footer"
           style={{
             flexShrink: 0,
-            padding: "6px 16px 8px 28px",
+            padding: "4px 16px 8px 28px",
             background: "var(--ds-surface)",
           }}
         >

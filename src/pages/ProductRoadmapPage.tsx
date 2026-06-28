@@ -311,7 +311,7 @@ export const ProductRoadmapPage: React.FC = () => {
         <button
           onClick={() => setColorByHealth(v => !v)}
           style={{
-            display: 'flex', alignItems: 'center', gap: 6,
+            display: 'flex', alignItems: 'center', gap: 4,
             padding: '4px 10px', borderRadius: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer',
             border: `1px solid ${colorByHealth ? 'var(--ds-border-focused)' : 'var(--ds-border)'}`,
             background: colorByHealth ? 'var(--ds-background-selected)' : 'var(--ds-surface)',

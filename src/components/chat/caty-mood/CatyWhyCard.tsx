@@ -170,7 +170,7 @@ export function CatyWhyCard({
                 onClose();
               }}
               style={{
-                padding: '6px 12px',
+                padding: '4px 12px',
                 background: 'var(--ds-background-information-subtle)',
                 border: '1px solid var(--ds-border-information)',
                 borderRadius: 6,

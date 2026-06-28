@@ -50,19 +50,19 @@ export function ArchiveConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Prop
           </div>
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary }}>Archive work item?</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textMuted, marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textMuted, marginTop: 0 }}>
               {issueKey} will be removed from active boards and can be restored later.
             </div>
           </div>
         </div>
         <div className="flex justify-end gap-2">
           <button onClick={onCancel} style={{
-            padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
+            padding: '4px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
             border: `1px solid ${tk.border}`, background: 'transparent',
             color: tk.textPrimary, cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={onConfirm} style={{
-            padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
+            padding: '4px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
             border: 'none', background: 'var(--ds-background-warning-bold)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))', cursor: 'pointer',
           }}>Archive</button>
         </div>

@@ -53,7 +53,7 @@ function TasksLeftToolbarSlot({
   const btnStyle = (active: boolean): React.CSSProperties => ({
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     height: 32,
     padding: '0 10px',
     border: `1px solid ${active ? token('color.border.selected', 'var(--ds-link)') : borderSubtle}`,
@@ -67,7 +67,7 @@ function TasksLeftToolbarSlot({
   });
   const menuStyle: React.CSSProperties = {
     position: 'absolute',
-    top: 36,
+    top: 32,
     left: 0,
     minWidth: 200,
     background: token('elevation.surface.overlay', 'var(--ds-surface)'),
@@ -90,7 +90,7 @@ function TasksLeftToolbarSlot({
   };
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
       <div style={{ position: 'relative' }}>
         <button
           type="button"

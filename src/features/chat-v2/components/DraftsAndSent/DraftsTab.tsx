@@ -97,7 +97,7 @@ function DraftsEmptyState({ onNewMessage }: { onNewMessage: () => void }) {
         style={{
           width: 72,
           height: 72,
-          marginBottom: 18,
+          marginBottom: 16,
           borderRadius: '50%',
           background: 'var(--cv2-bg-row-hover)',
           display: 'inline-flex',
@@ -138,7 +138,7 @@ function DraftsEmptyState({ onNewMessage }: { onNewMessage: () => void }) {
           color: 'var(--cv2-text-subtle)',
           maxWidth: 340,
           lineHeight: 1.5,
-          marginBottom: 18,
+          marginBottom: 16,
         }}
       >
         Start typing a message anywhere, then find it here. Re-read, revise, and send whenever you&rsquo;d like.

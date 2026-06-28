@@ -86,7 +86,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
         {/* Search */}
         <div style={{ padding: '8px 20px' }}>
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
+            display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px',
             height: 32, background: 'var(--bg-1)', border: '1px solid var(--divider)', borderRadius: 6,
           }}>
             <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))" />
@@ -113,7 +113,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
               <div key={item.id}
                 onClick={() => !isDisabled && setSelected(item.key)}
                 style={{
-                  height: 50, display: 'flex', alignItems: 'center', gap: 6,
+                  height: 50, display: 'flex', alignItems: 'center', gap: 4,
                   paddingLeft: (search ? 0 : depth * 20) + 16, paddingRight: 16,
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
                   background: isSelected ? 'var(--cp-primary-5)' : undefined,

@@ -78,7 +78,7 @@ function Cell({
       style={{
         fontSize: 'var(--ds-font-size-400)',
         color: 'var(--ds-text)',
-        padding: '10px 0',
+        padding: '8px 0',
         borderBottom: '1px solid var(--ds-border-subtle)',
         fontFamily: mono ? 'var(--ds-font-family-code, monospace)' : undefined,
         display: 'flex',
@@ -349,7 +349,7 @@ export default function DefectsPage() {
           <div
             style={{
               textAlign: 'center',
-              padding: '64px 24px',
+              padding: '48px 24px',
               color: 'var(--ds-text-subtlest)',
             }}
           >

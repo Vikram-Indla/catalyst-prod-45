@@ -52,7 +52,7 @@ function StatusCard({
     >
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
           <span
             aria-hidden
             style={{
@@ -72,7 +72,7 @@ function StatusCard({
             <Lozenge appearance="inprogress" isBold>Default</Lozenge>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: 0, flexShrink: 0 }}>
           <Tooltip content="Edit status">
             {(p) => (
               <Button
@@ -98,7 +98,7 @@ function StatusCard({
       </div>
 
       {/* Category */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', minWidth: 70 }}>Category</span>
         <Lozenge appearance={categoryLozengeAppearance(status.category as StatusCategory)}>
           {STATUS_CATEGORY_LABELS[status.category as StatusCategory]}
@@ -106,8 +106,8 @@ function StatusCard({
       </div>
 
       {/* Types */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', minWidth: 70, paddingTop: 2 }}>For</span>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 4 }}>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest)', minWidth: 70, paddingTop: 0 }}>For</span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {status.work_item_types.length === 0 ? (
             <Lozenge appearance="default">All types</Lozenge>

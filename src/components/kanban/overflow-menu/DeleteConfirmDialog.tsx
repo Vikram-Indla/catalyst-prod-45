@@ -56,7 +56,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
           </div>
           <div>
             <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary }}>Delete work item?</div>
-            <div style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textMuted, marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: tk.textMuted, marginTop: 0 }}>
               This action is irreversible. All data for <strong>{issueKey}</strong> will be permanently removed.
             </div>
           </div>
@@ -71,7 +71,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             onChange={e => setTyped(e.target.value)}
             placeholder={issueKey}
             style={{
-              width: '100%', padding: '6px 10px', fontSize: 'var(--ds-font-size-300)', borderRadius: 4,
+              width: '100%', padding: '4px 10px', fontSize: 'var(--ds-font-size-300)', borderRadius: 4,
               border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
               color: tk.textPrimary, outline: 'none', fontFamily: 'var(--cp-font-mono)',
             }}
@@ -81,7 +81,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
         </div>
         <div className="flex justify-end gap-2">
           <button onClick={onCancel} style={{
-            padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
+            padding: '4px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
             border: `1px solid ${tk.border}`, background: 'transparent',
             color: tk.textPrimary, cursor: 'pointer',
           }}>Cancel</button>
@@ -89,7 +89,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             onClick={canDelete ? onConfirm : undefined}
             disabled={!canDelete}
             style={{
-              padding: '6px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
+              padding: '4px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
               border: 'none', background: canDelete ? '#D32F2F' : 'var(--ds-border)',
               color: canDelete ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated)))' : 'var(--ds-text-disabled)', cursor: canDelete ? 'pointer' : 'not-allowed',
               opacity: canDelete ? 1 : 0.6,

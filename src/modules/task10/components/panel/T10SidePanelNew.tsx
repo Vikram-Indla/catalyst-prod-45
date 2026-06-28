@@ -274,7 +274,7 @@ export function T10SidePanelNew({
         <div
           style={{
             background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
-            padding: '14px 20px',
+            padding: '12px 20px',
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
@@ -305,7 +305,7 @@ export function T10SidePanelNew({
             >
             ←
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span
                 style={{
                   fontSize: 'var(--ds-font-size-300)',
@@ -380,7 +380,7 @@ export function T10SidePanelNew({
         {/* Title Section */}
         <div
           style={{
-            padding: 20,
+            padding: 16,
             borderBottom: '1px solid var(--t10-border-subtle)',
           }}
         >
@@ -468,7 +468,7 @@ export function T10SidePanelNew({
           }}
         >
           {activeTab === 'details' && (
-            <div style={{ padding: 20 }}>
+            <div style={{ padding: 16 }}>
               {/* Status Field */}
               <div className="t10-field-group">
                 <div className="t10-field-header">
@@ -561,7 +561,7 @@ export function T10SidePanelNew({
           )}
 
           {activeTab === 'activity' && (
-            <div style={{ padding: 20 }}>
+            <div style={{ padding: 16 }}>
               <T10ActivityTimeline itemId={item.id} />
             </div>
           )}

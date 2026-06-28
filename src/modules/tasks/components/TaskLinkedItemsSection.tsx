@@ -97,7 +97,7 @@ export function TaskLinkedItemsSection({ taskId }: TaskLinkedItemsSectionProps) 
     removeMut.mutate(linkId, { onError: (e: Error) => flag.error(`Could not unlink ${key}`, e.message) });
 
   return (
-    <section style={{ marginTop: 8, marginBottom: 20 }}>
+    <section style={{ marginTop: 8, marginBottom: 16 }}>
       <h2 style={headerStyle}>Linked items</h2>
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: token('space.100') }}>
         {error ? (

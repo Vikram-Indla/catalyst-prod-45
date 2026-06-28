@@ -74,7 +74,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
                 cursor: 'pointer',
                 transition: 'all 150ms ease',
                 display: 'flex',
-                gap: 14,
+                gap: 12,
                 alignItems: 'center',
               }}
               className="hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/30"
@@ -103,21 +103,21 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
                 <div style={{
                   fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-3)',
-                  marginTop: 2,
+                  marginTop: 0,
                 }}>
                   {theme.status}
                 </div>
                 <div style={{
                   fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-4)',
-                  marginTop: 2,
+                  marginTop: 0,
                 }}>
                   E {theme.epic_count} · S {theme.story_count} · ST {theme.subtask_count}
                 </div>
                 <div style={{
                   fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-4)',
-                  marginTop: 2,
+                  marginTop: 0,
                 }}>
                   {theme.done_items}/{theme.total_items} done
                 </div>

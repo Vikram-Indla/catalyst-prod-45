@@ -44,7 +44,7 @@ function StatusLozenge({ status }: { status: string }) {
   const v = map[s] || d;
   return (
     <span style={{
-      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '2px 6px', borderRadius: 3, letterSpacing: '0.03em',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0px 6px', borderRadius: 3, letterSpacing: '0.03em',
       background: isDark ? v.bg[1] : v.bg[0], color: isDark ? v.color[1] : v.color[0], textTransform: 'uppercase',
     }}>{v.label}</span>
   );
@@ -91,7 +91,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
           <History size={16} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
           <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>Version History</span>
           <span style={{
-            fontSize: 'var(--ds-font-size-50)', fontWeight: 650, padding: '2px 6px', borderRadius: 9999,
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 650, padding: '0px 6px', borderRadius: 9999,
             background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
           }}>{versions.length}</span>
         </div>
@@ -117,12 +117,12 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
             onMouseEnter={e => e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay)' : 'var(--ds-surface-sunken)'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                   color: i === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))',
-                  padding: '2px 6px', borderRadius: 4,
+                  padding: '0px 6px', borderRadius: 4,
                   background: i === 0 ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))'),
                 }}>v{v.version_number}</span>
                 {i === 0 && (
@@ -169,7 +169,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
   };
   return (
     <div style={{
-      position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 50,
+      position: 'absolute', top: '48%', right: 0, marginTop: 4, zIndex: 50,
       background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', borderRadius: 6, border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
       boxShadow: isDark ? '0 4px 12px var(--ds-shadow-raised, rgba(0,0,0,0.3))' : '0 4px 12px var(--ds-shadow-overlay, rgba(15,23,42,0.08))', minWidth: 160, overflow: 'hidden',
     }}>
@@ -208,22 +208,22 @@ function CrossModuleLinks({ links }: { links: any[] }) {
     }}>
       <div style={{
         fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const,
-        color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 10, letterSpacing: '0.04em',
-        display: 'flex', alignItems: 'center', gap: 6,
+        color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 8, letterSpacing: '0.04em',
+        display: 'flex', alignItems: 'center', gap: 4,
       }}>
         <Link2 size={12} /> Related Items
       </div>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
         {links.map((link: any) => {
           const mod = MODULE_COLORS[link.target_module] || { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', label: link.target_module };
           return (
             <span key={link.id} style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px',
+              display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px',
               borderRadius: 4, background: mod.bg, fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: mod.color, cursor: 'default',
             }}>
               <span style={{
-                fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '1px 4px', borderRadius: 4,
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '0px 4px', borderRadius: 4,
                 background: `${mod.color}15`, color: mod.color,
               }}>{mod.label}</span>
               <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700 }}>
@@ -343,7 +343,7 @@ export default function WikiArticlePage() {
   /* ── Not found ── */
   if (error || !page) {
     return (
-      <div style={{ fontFamily: 'var(--cp-font-body)', padding: 80, textAlign: 'center', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : undefined, minHeight: '100%' }}>
+      <div style={{ fontFamily: 'var(--cp-font-body)', padding: 48, textAlign: 'center', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : undefined, minHeight: '100%' }}>
         <div style={{ fontSize: 48, marginBottom: 12 }}>📄</div>
         <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 8 }}>Article not found</div>
         <div style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
@@ -391,7 +391,7 @@ export default function WikiArticlePage() {
       <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontFamily: 'var(--cp-font-mono)' }}>{info.epicKey}</span>
     ) : null, show: !!info.epicKey },
     { label: 'Stories', value: info.totalStories ? (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)' }}>{info.doneStories ?? 0}/{info.totalStories} done</span>
         <div style={{ width: 40, height: 3, borderRadius: 4, background: isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken)))' }}>
           <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', width: `${info.donePercent ?? 0}%` }} />
@@ -429,9 +429,9 @@ export default function WikiArticlePage() {
         }} />
       </div>
 
-      <div style={{ padding: '20px 40px 48px' }}>
+      <div style={{ padding: '16px 40px 48px' }}>
         {/* ── Breadcrumb ── */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 24 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }} />
           <span onClick={() => navigate(`/wiki/category/${DOMAIN_SLUGS[page.domain_code || ''] || ''}`)} style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', cursor: 'pointer' }}>{domainName}</span>
@@ -447,25 +447,25 @@ export default function WikiArticlePage() {
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', margin: '0 0 12px' }}>{title}</h1>
 
             {/* Metadata row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
               <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>{page.updated_at ? timeAgo(page.updated_at) : '—'}</span>
               {conf > 0 && (
                 <span style={{
-                  fontSize: 'var(--ds-font-size-50)', fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
-                  background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.12))' : 'var(--ds-background-discovery)', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', display: 'inline-flex', alignItems: 'center', gap: 3,
+                  fontSize: 'var(--ds-font-size-50)', fontWeight: 650, padding: '0px 8px', borderRadius: 9999,
+                  background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.12))' : 'var(--ds-background-discovery)', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', display: 'inline-flex', alignItems: 'center', gap: 4,
                 }}><Sparkles size={9} /> AI {conf}%</span>
               )}
               {formatIcon}
-              <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'var(--cp-font-mono)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--cp-font-mono)' }}>
                 <GitBranch size={11} /> v{page.version ?? 1}
               </span>
               {readTime && (
-                <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   <Clock size={11} /> {readTime} min
                 </span>
               )}
               <button onClick={handleBookmark} style={{
-                fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                 border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: bookmarked ? (isDark ? 'var(--ds-background-warning, rgba(217,119,6,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning))') : 'transparent',
                 color: bookmarked ? 'var(--ds-text-warning, var(--cp-warning))' : (isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
@@ -474,7 +474,7 @@ export default function WikiArticlePage() {
 
               {/* ── History button ── */}
               <button onClick={() => setShowHistory(prev => !prev)} style={{
-                fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                 border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: showHistory ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected)') : 'transparent',
                 color: showHistory ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : (isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
@@ -484,7 +484,7 @@ export default function WikiArticlePage() {
               {/* ── Export dropdown ── */}
               <div style={{ position: 'relative' }}>
                 <button onClick={(e) => { e.stopPropagation(); setShowExport(prev => !prev); }} style={{
-                  fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                   border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: showExport ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected)') : 'transparent',
                   color: showExport ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' : (isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))'), display: 'flex', alignItems: 'center', gap: 4,
                 }}>
@@ -509,17 +509,17 @@ export default function WikiArticlePage() {
                 <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))' }}>No author</span>
               )}
               <span style={{
-                fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: 4,
-                background: verBadge.bg, color: verBadge.color, display: 'inline-flex', alignItems: 'center', gap: 3,
+                fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 6px', borderRadius: 4,
+                background: verBadge.bg, color: verBadge.color, display: 'inline-flex', alignItems: 'center', gap: 4,
               }}>{verBadge.icon} {verBadge.label}</span>
             </div>
 
             {/* Tags */}
             {tags.length > 0 && (
-              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 20 }}>
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 16 }}>
                 {tags.map(t => (
                   <span key={t} style={{
-                    fontSize: 'var(--ds-font-size-50)', padding: '2px 8px', borderRadius: 4,
+                    fontSize: 'var(--ds-font-size-50)', padding: '0px 8px', borderRadius: 4,
                     background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontWeight: 500,
                   }}>{t}</span>
                 ))}
@@ -532,8 +532,8 @@ export default function WikiArticlePage() {
               background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.06))' : '#FAFAFE', borderRadius: '0 6px 6px 0',
             }}>
               <span style={{
-                fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 8px', borderRadius: 4,
-                background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.12))' : 'var(--ds-background-discovery)', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', display: 'inline-flex', alignItems: 'center', gap: 3,
+                fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '0px 8px', borderRadius: 4,
+                background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.12))' : 'var(--ds-background-discovery)', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', display: 'inline-flex', alignItems: 'center', gap: 4,
                 marginBottom: 8,
               }}><Sparkles size={10} /> TL;DR</span>
               {tldr ? (
@@ -547,7 +547,7 @@ export default function WikiArticlePage() {
             {page.lead_content && (
               <div style={{
                 fontFamily: 'Georgia, serif', fontSize: 'var(--ds-font-size-400)', lineHeight: 1.85,
-                color: isDark ? 'var(--ds-text-subtlest)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', marginBottom: 24, paddingBottom: 20,
+                color: isDark ? 'var(--ds-text-subtlest)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))', marginBottom: 24, paddingBottom: 16,
                 borderBottom: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
               }}>
                 {page.lead_content}
@@ -558,7 +558,7 @@ export default function WikiArticlePage() {
             {sections.length > 0 && (
               <nav style={{
                 background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--ds-surface-sunken)', border: isDark ? '1px solid var(--ds-text)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
-                borderRadius: 6, padding: 16, marginBottom: 28,
+                borderRadius: 6, padding: 16, marginBottom: 24,
               }}>
                 <div style={{
                   fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const,
@@ -566,7 +566,7 @@ export default function WikiArticlePage() {
                 }}>Contents</div>
                 {sections.map((s: any, i: number) => (
                   <a key={s.id} href={`#section-${i}`} style={{
-                    display: 'block', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', padding: '3px 0',
+                    display: 'block', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', padding: '4px 0',
                     textDecoration: 'none',
                   }}>
                     <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light)))', marginRight: 8 }}>{i + 1}.</span>
@@ -587,7 +587,7 @@ export default function WikiArticlePage() {
                   {s.title}
                   {s.is_live_data && (
                     <span style={{
-                      fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '2px 6px', borderRadius: 4,
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '0px 6px', borderRadius: 4,
                       background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))',
                     }}>LIVE DATA</span>
                   )}
@@ -617,7 +617,7 @@ export default function WikiArticlePage() {
 
             {/* ── Feedback footer ── */}
             <div style={{
-              marginTop: 32, padding: 20, borderRadius: 6,
+              marginTop: 32, padding: 16, borderRadius: 6,
               border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
             }}>
@@ -629,19 +629,19 @@ export default function WikiArticlePage() {
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button onClick={() => handleFeedback(true)} style={{
-                  fontSize: 'var(--ds-font-size-200)', fontWeight: 650, padding: '6px 14px', borderRadius: 6,
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 650, padding: '4px 14px', borderRadius: 6,
                   border: '1px solid var(--ds-background-success-bold, rgba(22,163,74,0.3))', background: isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.12))' : 'var(--ds-background-success)', color: 'var(--ds-text-success, var(--cp-success))',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                 }}><ThumbsUp size={13} /> Yes</button>
                 <button onClick={() => handleFeedback(false)} style={{
-                  fontSize: 'var(--ds-font-size-200)', fontWeight: 650, padding: '6px 14px', borderRadius: 6,
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 650, padding: '4px 14px', borderRadius: 6,
                   border: '1px solid var(--ds-background-danger-bold, rgba(220,38,38,0.3))', background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.12))' : 'var(--ds-background-danger)', color: 'var(--ds-text-danger, var(--cp-danger))',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                 }}><ThumbsDown size={13} /> No</button>
-                <div style={{ marginLeft: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ marginLeft: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{
-                    fontSize: 'var(--ds-font-size-50)', fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
-                    background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.12))' : 'var(--ds-background-discovery)', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', display: 'inline-flex', alignItems: 'center', gap: 3,
+                    fontSize: 'var(--ds-font-size-50)', fontWeight: 650, padding: '0px 8px', borderRadius: 9999,
+                    background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.12))' : 'var(--ds-background-discovery)', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold))', display: 'inline-flex', alignItems: 'center', gap: 4,
                   }}><Sparkles size={9} /> AI {conf}%</span>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
                     {Math.round((page.source_coverage ?? 0) * 100)}% coverage
@@ -653,7 +653,7 @@ export default function WikiArticlePage() {
             {/* ── Related Articles ── */}
             {(related ?? []).length > 0 && (
               <div style={{ marginTop: 40 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
                   <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))' }} />
                   <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-500)', fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))' }}>Related Articles</span>
                 </div>
@@ -667,7 +667,7 @@ export default function WikiArticlePage() {
                       onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))'}
                       onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1))' : 'var(--ds-shadow-overlay, rgba(15,23,42,0.12))'}
                     >
-                      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 6 }}>{r.title}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', marginBottom: 4 }}>{r.title}</div>
                       <div style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))' }}>
                         {r.domain_code}
                         {r.read_time_minutes ? ` · ${r.read_time_minutes} min` : ''}
@@ -682,19 +682,19 @@ export default function WikiArticlePage() {
 
           {/* ── Infobox sidebar ── */}
           <aside style={{
-            position: 'sticky', top: 80, borderRadius: 6,
+            position: 'sticky', top: 48, borderRadius: 6,
             border: isDark ? '1px solid var(--ds-background-neutral)' : '1px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))',
             overflow: 'hidden', fontSize: 'var(--ds-font-size-200)',
           }}>
             <div style={{
-              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', padding: '10px 14px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface))))', padding: '8px 14px',
               fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.04em',
             }}>Article Info</div>
 
             {infoRows.map(row => (
               <div key={row.label} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '7px 14px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
+                padding: '8px 14px', borderBottom: isDark ? '0.75px solid var(--ds-text)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
               }}>
                 <span style={{ color: isDark ? 'var(--ds-text-subtlest)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary)))', fontSize: 'var(--ds-font-size-100)' }}>{row.label}</span>
                 <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1)))', fontWeight: 500 }}>{row.value}</span>
@@ -753,7 +753,7 @@ function ReferencesSection({ refs }: { refs: any[] }) {
           {r.source_type === 'jira' ? (
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary))', fontFamily: 'var(--cp-font-mono)' }}>{r.source_key}</span>
           ) : r.source_type === 'document' ? (
-            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '2px 6px', borderRadius: 4, background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.12))' : 'var(--ds-background-discovery)', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold))' }}>{r.source_key}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '0px 6px', borderRadius: 4, background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.12))' : 'var(--ds-background-discovery)', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold))' }}>{r.source_key}</span>
           ) : (
             <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle))))' }}>{r.source_key}</span>
           )}
@@ -768,12 +768,12 @@ function ReferencesSection({ refs }: { refs: any[] }) {
 function ArticleSkeleton() {
   const { isDark } = useTheme();
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--ds-surface-sunken)', minHeight: '100%', padding: '20px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', background: isDark ? 'var(--cp-bg-page, var(--ds-surface))' : 'var(--ds-surface-sunken)', minHeight: '100%', padding: '16px 40px 48px' }}>
       <Sk w={200} h={14} style={{ marginBottom: 24 }} isDark={isDark} />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 32 }}>
         <div>
           <Sk w="60%" h={28} style={{ marginBottom: 12 }} isDark={isDark} />
-          <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <Sk w={80} h={14} isDark={isDark} /><Sk w={60} h={14} isDark={isDark} /><Sk w={40} h={14} isDark={isDark} />
           </div>
           <Sk w="100%" h={60} style={{ marginBottom: 24 }} isDark={isDark} />

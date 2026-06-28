@@ -65,8 +65,8 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
 
       {/* Filter Tabs */}
       <div style={{
-        display: 'inline-flex', alignItems: 'center', gap: 2,
-        background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 8, padding: 3,
+        display: 'inline-flex', alignItems: 'center', gap: 0,
+        background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken)))', borderRadius: 8, padding: 4,
       }}>
         {TABS.map(t => {
           const active = tab === t.key;
@@ -107,7 +107,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           onClick={onSyncAll}
           disabled={syncingAll}
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', gap: 4,
             padding: '0 14px', height: 50, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
             border: 'none', borderRadius: 6,
             background: syncingAll

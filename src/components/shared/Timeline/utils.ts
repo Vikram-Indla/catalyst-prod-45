@@ -212,7 +212,7 @@ export function dateLabelStyle(x: number, barTop: number, side: 'start' | 'end')
     color: 'var(--ds-text-subtle)',
     background: 'var(--ds-surface-overlay)',
     border: '1px solid var(--ds-border)',
-    borderRadius: 3, padding: '2px 5px',
+    borderRadius: 3, padding: '0px 5px',
     whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 11,
     boxShadow: '0 1px 3px var(--ds-shadow-overflow, rgba(9,30,66,0.12))',
     fontFamily: 'var(--ds-font-family-body)',
