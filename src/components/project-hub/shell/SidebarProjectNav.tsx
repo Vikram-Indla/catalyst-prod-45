@@ -149,7 +149,7 @@ export function SidebarProjectNav({
             className="flex items-center justify-center flex-shrink-0"
             style={{
               width: 30, height: 30, backgroundColor: projectColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              fontSize: 11, fontWeight: 700, borderRadius: 6,
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, borderRadius: 6,
               fontFamily: 'var(--cp-font-heading)', boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.12))',
             }}
           >
@@ -165,7 +165,7 @@ export function SidebarProjectNav({
               >
                 <div className="min-w-0">
                   <div className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{projectKey}</div>
-                  <div className="truncate text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
+                  <div className="truncate text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
                     {projectName}
                   </div>
                 </div>
@@ -229,7 +229,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: 'var(--ds-border, #EBECF0)', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             Planning
           </div>
         )}
@@ -240,7 +240,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: 'var(--ds-border, #EBECF0)', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             Tracking
           </div>
         )}
@@ -251,7 +251,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: 'var(--ds-border, #EBECF0)', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+          <div className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             AI Intelligence
           </div>
         )}
@@ -274,10 +274,10 @@ export function SidebarProjectNav({
                 style={{ transform: recentsExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 150ms ease' }}
               />
               <Clock size={12} className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest, #626F86)]" />
-              <span className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+              <span className="dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
                 Recents
               </span>
-              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)' }}>
+              <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)' }}>
                 {recentItems.length}
               </span>
             </button>
@@ -305,10 +305,10 @@ export function SidebarProjectNav({
                       <JiraIssueTypeIcon type={item.entity_type} size={14} />
                     </span>
                     <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 400, color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {(item.display_summary ?? '').replace(/^\[.*?\]\s*/, '') || item.display_summary}
                       </span>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-text-secondary, #42526E)', fontFamily: 'var(--cp-font-mono)', letterSpacing: '-0.02em' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--cp-text-secondary, #42526E)', fontFamily: 'var(--cp-font-mono)', letterSpacing: '-0.02em' }}>
                         {item.entity_key}
                       </span>
                     </span>

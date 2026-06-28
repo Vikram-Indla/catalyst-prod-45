@@ -93,7 +93,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 flex-shrink-0" style={{ height: 52, borderBottom: '1px solid var(--divider)' }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>Board Configuration</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)' }}>Board Configuration</span>
           <button
             onClick={handleClose}
             className="p-1.5 rounded-md transition-colors"
@@ -113,7 +113,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               onClick={() => setActiveTab(t.key)}
               style={{
                 padding: '8px 14px',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: activeTab === t.key ? 600 : 500,
                 color: activeTab === t.key ? 'var(--cp-blue)' : 'var(--fg-3)',
                 background: 'transparent',
@@ -143,13 +143,13 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                   >
                     <GripVertical size={14} color="var(--ds-border, #DFE1E6)" className="cursor-grab flex-shrink-0" />
                     <span className="rounded-full flex-shrink-0" style={{ width: 8, height: 8, background: col.color }} />
-                    <span className="flex-1" style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{col.name}</span>
+                    <span className="flex-1" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)' }}>{col.name}</span>
                     <div className="flex gap-1 flex-wrap">
                       {statuses.map((s: string) => {
                         const cfg = STATUS_CONFIG[s as keyof typeof STATUS_CONFIG];
                         return (
                           <span key={s} className="rounded-full" style={{
-                            fontSize: 9, fontWeight: 600, padding: '1px 6px',
+                            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '1px 6px',
                             background: cfg?.bg ?? 'var(--cp-bd-zone)', color: cfg?.color ?? 'var(--fg-3)',
                           }}>
                             {cfg?.label ?? s}
@@ -157,7 +157,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                         );
                       })}
                     </div>
-                    <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-mono)' }}>
                       WIP {col.wip_limit || '∞'}
                     </span>
                     <button
@@ -176,7 +176,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
 
           {activeTab === 'cards' && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
                 Card Field Visibility
               </div>
               <div className="flex flex-col gap-1">
@@ -184,7 +184,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                   <label
                     key={f.key}
                     className="flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors"
-                    style={{ fontSize: 13, color: 'var(--fg-2)' }}
+                    style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)' }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
@@ -202,28 +202,28 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                       style={{ width: 14, height: 14 }}
                     />
                     {f.label}
-                    {f.locked && <span style={{ fontSize: 9, color: 'var(--fg-4)', marginLeft: 'auto' }}>Required</span>}
+                    {f.locked && <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', marginLeft: 'auto' }}>Required</span>}
                   </label>
                 ))}
               </div>
 
               {/* Live Preview Card */}
-              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 20, marginBottom: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 20, marginBottom: 8 }}>
                 Live Preview
               </div>
               <div className="rounded-xl border p-3 bg-[var(--bg-1)]" style={{ borderColor: 'var(--divider)' }}>
                 <div className="rounded-lg bg-white border p-3" style={{ borderColor: 'var(--divider)', borderLeft: '3px solid var(--cp-blue)' }}>
                   <div className="flex items-center gap-1 mb-1">
-                    {cardFields.type && <span className="rounded inline-flex items-center justify-center bg-[var(--cp-blue)]" style={{ width: 14, height: 14, fontSize: 8, color: 'var(--ds-surface, #fff)' }}>✓</span>}
-                    {cardFields.key && <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>PROJ-123</span>}
+                    {cardFields.type && <span className="rounded inline-flex items-center justify-center bg-[var(--cp-blue)]" style={{ width: 14, height: 14, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-surface, #fff)' }}>✓</span>}
+                    {cardFields.key && <span style={{ fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>PROJ-123</span>}
                     {cardFields.source && <span className="bg-[var(--cp-blue-wash)]" style={{ fontSize: 7, padding: '0 3px', borderRadius: 4, color: 'var(--cp-blue)', fontWeight: 700 }}>JIRA</span>}
                   </div>
-                  {cardFields.overdue && <div style={{ fontSize: 9, color: 'var(--sem-warning)' }}>⚠ 3d overdue</div>}
-                  {cardFields.title && <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', marginBottom: 4 }}>Sample issue title…</div>}
+                  {cardFields.overdue && <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-warning)' }}>⚠ 3d overdue</div>}
+                  {cardFields.title && <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)', marginBottom: 4 }}>Sample issue title…</div>}
                   <div className="flex items-center justify-between">
-                    {cardFields.priority && <span className="bg-[var(--sem-warning-bg)]" style={{ fontSize: 9, padding: '0 4px', borderRadius: 4, color: 'var(--sem-warning)' }}>high</span>}
+                    {cardFields.priority && <span className="bg-[var(--sem-warning-bg)]" style={{ fontSize: 'var(--ds-font-size-100)', padding: '0 4px', borderRadius: 4, color: 'var(--sem-warning)' }}>high</span>}
                     <div className="flex items-center gap-1">
-                      {cardFields.due && <span style={{ fontSize: 9, color: 'var(--fg-4)' }}>Mar 15</span>}
+                      {cardFields.due && <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>Mar 15</span>}
                       {cardFields.assignee && <span className="rounded-full inline-flex items-center justify-center bg-[var(--divider)]" style={{ width: 16, height: 16, fontSize: 7 }}>👤</span>}
                     </div>
                   </div>
@@ -234,14 +234,14 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
 
           {activeTab === 'filters' && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
                 Quick Filters
               </div>
               {['My Items', 'Bugs Only', 'Unassigned', 'Overdue', 'On Hold'].map(f => (
                 <label
                   key={f}
                   className="flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors"
-                  style={{ fontSize: 13, color: 'var(--fg-2)' }}
+                  style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
@@ -249,7 +249,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                   {f}
                 </label>
               ))}
-              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 16, marginBottom: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 16, marginBottom: 8 }}>
                 JQL Filter
               </div>
               <textarea
@@ -259,7 +259,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 className="w-full rounded-md p-3"
                 style={{
                   border: '1px solid var(--divider)',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontFamily: 'var(--cp-font-mono)',
                   resize: 'vertical',
                   minHeight: 80,
@@ -271,25 +271,25 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
 
           {activeTab === 'general' && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
                 Board Name
               </div>
               <input
                 value={boardName}
                 onChange={e => { setBoardName(e.target.value); setDirty(true); }}
                 className="w-full rounded-md px-3 py-2 mb-6"
-                style={{ border: '1px solid var(--divider)', fontSize: 13, color: 'var(--fg-1)' }}
+                style={{ border: '1px solid var(--divider)', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)' }}
               />
               <div className="flex gap-2">
                 <button
                   className="px-4 py-2 rounded-md transition-colors bg-[var(--cp-float)]"
-                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', color: 'var(--fg-2)', cursor: 'pointer' }}
+                  style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: '1px solid var(--divider)', color: 'var(--fg-2)', cursor: 'pointer' }}
                 >
                   Duplicate Board
                 </button>
                 <button
                   className="px-4 py-2 rounded-md transition-colors bg-[var(--sem-danger-bg)]"
-                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--sem-danger-accent)', color: 'var(--sem-danger)', cursor: 'pointer' }}
+                  style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: '1px solid var(--sem-danger-accent)', color: 'var(--sem-danger)', cursor: 'pointer' }}
                 >
                   Delete Board
                 </button>
@@ -306,7 +306,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
           <button
             onClick={() => { setDirty(false); onClose(); }}
             className="px-4 py-1.5 rounded-md transition-colors bg-[var(--cp-float)]"
-            style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', color: 'var(--fg-3)', cursor: 'pointer', borderRadius: 6 }}
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: '1px solid var(--divider)', color: 'var(--fg-3)', cursor: 'pointer', borderRadius: 6 }}
           >
             Cancel
           </button>
@@ -317,7 +317,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               onClose();
             }}
             className="px-4 py-1.5 rounded-md transition-colors bg-[var(--cp-blue)]"
-            style={{ fontSize: 12, fontWeight: 600, border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', borderRadius: 6 }}
+            style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', borderRadius: 6 }}
           >
             Save
           </button>

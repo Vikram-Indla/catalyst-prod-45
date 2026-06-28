@@ -264,7 +264,7 @@ export function AddParentPicker({
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 8,
-              borderRadius: 3, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+              borderRadius: 3, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               transition: 'background 150ms', width: '100%', textAlign: 'left',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
@@ -285,7 +285,7 @@ export function AddParentPicker({
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 8,
-              borderRadius: 3, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+              borderRadius: 3, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               transition: 'background 150ms',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
@@ -301,7 +301,7 @@ export function AddParentPicker({
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
             padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 4,
-            fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', borderRadius: 3,
+            fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', borderRadius: 3,
             transition: 'background 150ms',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
@@ -321,7 +321,7 @@ export function AddParentPicker({
           style={{
             background: 'transparent', border: 'none', borderRadius: 3, cursor: 'pointer',
             padding: '2px 4px', display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)',
+            fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtle, #505258)',
             fontFamily: 'var(--cp-font-body)', lineHeight: '20px',
             transition: 'background 150ms, color 150ms',
           }}
@@ -343,7 +343,7 @@ export function AddParentPicker({
         style={{
           background: 'transparent', border: 'none', borderRadius: 3, cursor: 'pointer',
           padding: '2px 4px', display: 'inline-flex', alignItems: 'center',
-          fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)',
+          fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtle, #505258)',
           fontFamily: 'var(--cp-font-body)', lineHeight: '20px',
           transition: 'background 150ms, color 150ms',
         }}
@@ -375,7 +375,7 @@ export function AddParentPicker({
         {!showAllPanel ? (
           <>
             {/* Recent items */}
-            <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+            <div style={{ padding: '10px 16px 6px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               Recent {plural}
             </div>
             <div style={{ maxHeight: 300, overflowY: 'auto' }}>
@@ -386,7 +386,7 @@ export function AddParentPicker({
                   style={{
                     width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
                     textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                    fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', transition: 'background 100ms',
+                    fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', transition: 'background 100ms',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -396,7 +396,7 @@ export function AddParentPicker({
                 </button>
               ))}
               {recentCandidates.length === 0 && (
-                <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No {plural} found</div>
+                <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No {plural} found</div>
               )}
             </div>
             <div style={{ borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
@@ -406,7 +406,7 @@ export function AddParentPicker({
                   onClick={() => handleSelect(null)}
                   style={{
                     width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                    textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400,
+                    textAlign: 'left', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400,
                     transition: 'background 100ms',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
@@ -419,7 +419,7 @@ export function AddParentPicker({
                 onClick={() => setShowAllPanel(true)}
                 style={{
                   width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                  textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500,
+                  textAlign: 'left', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500,
                   transition: 'background 100ms',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
@@ -432,16 +432,16 @@ export function AddParentPicker({
         ) : (
           /* "View all" panel with search */
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 8 }}>Change {noun}</div>
-            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 8 }}>Change {noun}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 4 }}>
               Select a parent work item. Work items can only belong to one parent at a time.
             </div>
             {parentKey && (
-              <div style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 16 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 16 }}>
                 <strong>{issueKey}</strong> is currently assigned to <strong>{parentKey}</strong>.
               </div>
             )}
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 6 }}>{Noun}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 6 }}>{Noun}</div>
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
@@ -451,7 +451,7 @@ export function AddParentPicker({
                 autoFocus
                 style={{
                   width: '100%', padding: '8px 12px', border: '2px solid var(--ds-background-information-bold, #0C66E4)', borderRadius: 4,
-                  fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', outline: 'none', background: 'var(--ds-surface, #FFF)',
+                  fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', outline: 'none', background: 'var(--ds-surface, #FFF)',
                   boxSizing: 'border-box',
                 }}
               />
@@ -462,7 +462,7 @@ export function AddParentPicker({
                     style={{
                       width: '100%', padding: '10px 14px', border: 'none', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                       textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                      fontSize: 14, color: 'var(--ds-background-danger-bold, #C9372C)', fontWeight: 500, transition: 'background 100ms',
+                      fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-background-danger-bold, #C9372C)', fontWeight: 500, transition: 'background 100ms',
                       borderBottom: '1px solid var(--ds-border, #DFE1E6)',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-danger, #FFECEB)')}
@@ -484,7 +484,7 @@ export function AddParentPicker({
                       style={{
                         width: '100%', padding: '10px 14px', border: 'none', background: 'transparent',
                         textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                        fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', transition: 'background 100ms',
+                        fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', transition: 'background 100ms',
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-information, #E9F2FF)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -494,7 +494,7 @@ export function AddParentPicker({
                     </button>
                   ))}
                 {allCandidates.length === 0 && (
-                  <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No {plural} found</div>
+                  <div style={{ padding: '12px 14px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No {plural} found</div>
                 )}
               </div>
             </div>

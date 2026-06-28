@@ -311,7 +311,7 @@ function PhIssuePanelBody({
 
       {/* Row 2 — breadcrumb + copy + more + expand */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', minHeight: 36, flexShrink: 0, borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, fontSize: 13, color: SUBTLE }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-300)', color: SUBTLE }}>
           {effectiveType && <JiraIssueTypeIcon type={effectiveType as any} size={14} />}
           <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--ds-link, var(--ds-link, #0C66E4))', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             {projectName}
@@ -373,7 +373,7 @@ function PhIssuePanelBody({
       {/* Scroll container */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '16px 20px 32px' }}>
         {isLoading || !issue ? (
-          <div style={{ color: SUBTLE, fontSize: 14 }}>Loading…</div>
+          <div style={{ color: SUBTLE, fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>
         ) : (
           <>
             <CatalystTitleEditor
@@ -439,12 +439,12 @@ function PhIssuePanelBody({
 
             <div style={{ marginTop: 24, paddingTop: 12 }}>
               {issue.jira_created_at && (
-                <div style={{ marginBottom: 4, fontSize: 12, color: SUBTLE }} title={issue.jira_created_at}>
+                <div style={{ marginBottom: 4, fontSize: 'var(--ds-font-size-200)', color: SUBTLE }} title={issue.jira_created_at}>
                   Created {fmtAbs(issue.jira_created_at)}
                 </div>
               )}
               {issue.jira_updated_at && (
-                <div style={{ fontSize: 12, color: SUBTLE }} title={issue.jira_updated_at}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', color: SUBTLE }} title={issue.jira_updated_at}>
                   Updated {fmtRel(issue.jira_updated_at)}
                 </div>
               )}
@@ -650,7 +650,7 @@ function ChromeRow({
             <JiraIssueTypeIcon type={type as any} size={16} />
           </span>
         )}
-        <span style={{ fontSize: 12, fontWeight: 500, color: SUBTLE, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: SUBTLE, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {labelText}
         </span>
       </div>
@@ -705,14 +705,14 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
   const [hovered, setHovered] = useState(false);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '6px 0' }}>
-      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '20px', color: SUBTLE, minWidth: 120, flexShrink: 0 }}>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, lineHeight: '20px', color: SUBTLE, minWidth: 120, flexShrink: 0 }}>
         {label}
       </span>
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          flex: 1, minWidth: 0, fontSize: 14, color: TEXT,
+          flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-400)', color: TEXT,
           padding: '4px 6px', margin: '-4px -6px', borderRadius: 3,
           background: hovered
             ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'
@@ -736,7 +736,7 @@ function MenuItem({
       onClick={onClick}
       style={{
         all: 'unset', cursor: 'pointer', display: 'block', width: '100%',
-        boxSizing: 'border-box', padding: '8px 14px', fontSize: 14,
+        boxSizing: 'border-box', padding: '8px 14px', fontSize: 'var(--ds-font-size-400)',
         color: danger ? 'var(--ds-text-danger, #C9372C)' : TEXT,
       }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}

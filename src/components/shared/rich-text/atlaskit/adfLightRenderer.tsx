@@ -484,7 +484,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
             margin: '8px 0',
           }}
         >
-          <span style={{ flexShrink: 0, fontSize: 14, lineHeight: '24px' }} aria-hidden="true">{style.icon}</span>
+          <span style={{ flexShrink: 0, fontSize: 'var(--ds-font-size-400)', lineHeight: '24px' }} aria-hidden="true">{style.icon}</span>
           <div style={{ flex: 1 }}>
             {(node.content ?? []).map((c, i) => renderBlock(c, i))}
           </div>
@@ -498,7 +498,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
         <div key={key} style={{ overflowX: 'auto', margin: '8px 0 12px' }}>
           <table style={{
             borderCollapse: 'collapse', width: '100%',
-            fontSize: 14, lineHeight: '20px',
+            fontSize: 'var(--ds-font-size-400)', lineHeight: '20px',
           }}>
             <tbody>
               {(node.content ?? []).map((row, i) => renderBlock(row, i))}
@@ -525,7 +525,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
             textAlign: 'start',
             background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
             fontWeight: 600,
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: token('color.text', 'rgb(41,42,46)'),
           }}
         >
@@ -578,7 +578,7 @@ export function AdfLightRenderer({ adf }: AdfLightRendererProps) {
     <div
       className="atlaskit-renderer-wrapper adf-light-renderer"
       style={{
-        fontSize: 14, fontWeight: 400,
+        fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
         color: token('color.text', 'rgb(41,42,46)'),
         lineHeight: '24px',
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
@@ -647,7 +647,7 @@ const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
         background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
         margin: '4px 0 8px',
         fontFamily: monoFamily,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         lineHeight: '20px',
         borderRadius: 0,
       }}
@@ -664,7 +664,7 @@ const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
           userSelect: 'none',
           WebkitUserSelect: 'none',
           fontFamily: monoFamily,
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           lineHeight: '20px',
           fontVariantNumeric: 'tabular-nums',
         }}
@@ -688,7 +688,7 @@ const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
           overflowX: 'auto',
           minWidth: 0,
           fontFamily: monoFamily,
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           lineHeight: '20px',
           border: 0,
           borderRadius: 0,
@@ -702,7 +702,7 @@ const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
             padding: 0,
             margin: 0,
             fontFamily: monoFamily,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             lineHeight: '20px',
             border: 0,
             borderRadius: 0,

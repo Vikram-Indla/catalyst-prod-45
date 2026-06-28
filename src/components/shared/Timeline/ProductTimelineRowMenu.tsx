@@ -87,7 +87,7 @@ const rowBaseStyle: React.CSSProperties = {
   alignItems: 'center',
   gap: 8,
   padding: '8px 12px',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   fontFamily: 'var(--ds-font-family-body)',
   color: 'var(--ds-text, #172B4D)',
   cursor: 'pointer',
@@ -452,7 +452,7 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
   const colorSubmenu = renderSubmenuPortal('color', colorRowRef, 168, (
     <div style={{ padding: '8px 12px' }}>
       <div style={{
-        fontSize: 11, fontWeight: 700,
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
         color: 'var(--ds-text-subtlest, #6B778C)',
         marginBottom: 8,
       }}>
@@ -500,7 +500,7 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
             marginTop: 8, padding: '4px 8px',
             background: 'transparent', border: 'none',
             color: 'var(--ds-text-subtle, #44546F)',
-            fontSize: 12, fontFamily: 'var(--ds-font-family-body)',
+            fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--ds-font-family-body)',
             cursor: 'pointer', borderRadius: 3,
           }}
         >
@@ -570,7 +570,7 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
             style={{
               flex: 1, border: 'none', outline: 'none',
               background: 'transparent',
-              fontSize: 14, fontFamily: 'var(--ds-font-family-body)',
+              fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--ds-font-family-body)',
               color: 'var(--ds-text, #172B4D)',
               padding: 0, minWidth: 0,
             }}
@@ -581,7 +581,7 @@ export function ProductTimelineRowMenu(props: ProductTimelineRowMenuProps) {
       <div role="listbox" style={{ maxHeight: 320, overflowY: 'auto', padding: '4px 0' }}>
         {filteredParents.length === 0 ? (
           <div style={{
-            padding: '16px 12px', textAlign: 'center', fontSize: 13,
+            padding: '16px 12px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic',
           }}>
             No matching work items
@@ -628,13 +628,13 @@ function ParentRow({ candidate, onPick }: { candidate: TimelineIssue; onPick: ()
         <JiraIssueTypeIcon type={candidate.issueType} size={16} />
       </span>
       <span style={{
-        fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)',
+        fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)',
         whiteSpace: 'nowrap', flexShrink: 0,
       }}>
         {candidate.issueKey}
       </span>
       <span style={{
-        fontSize: 14, color: 'var(--ds-text, #172B4D)',
+        fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0,
       }}>
         {candidate.summary}

@@ -318,20 +318,20 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                     width: 28, height: 28, borderRadius: 4, flexShrink: 0,
                     background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
                     color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
-                    fontSize: 14, fontWeight: 700,
+                    fontSize: 'var(--ds-font-size-400)', fontWeight: 700,
                   }}
                 >
                   ?
                 </span>
                 <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span style={{
-                    fontSize: 14, fontWeight: 600,
+                    fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
                     color: token('color.text', 'var(--ds-text, #172B4D)'),
                   }}>
                     {issueKey}
                   </span>
                   <span style={{
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                   }}>
                     Not synced to Catalyst{projectPrefix ? ` · ${projectPrefix} project` : ''}
@@ -348,7 +348,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
                   rel="noopener noreferrer"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6,
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     color: token('color.link', 'var(--ds-link, #0C66E4)'),
                     textDecoration: 'none',
                   }}
@@ -508,7 +508,7 @@ function HoverCardContent({ issueKey, rect, onMouseEnter, onMouseLeave, onClose,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
           }}>
             <svg width="16" height="16" viewBox="0 0 512 512" aria-hidden style={{ flexShrink: 0 }}>
@@ -723,14 +723,14 @@ export function IssueHoverCard({ issueKey, children, disabled }: IssueHoverCardP
                 </div>
                 <div>
                   <div style={{
-                    fontSize: 16, fontWeight: 600,
+                    fontSize: 'var(--ds-font-size-500)', fontWeight: 600,
                     color: token('color.text', 'var(--ds-text, #172B4D)'),
                     marginBottom: 8,
                   }}>
                     We couldn't find any related links
                   </div>
                   <div style={{
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'),
                     maxWidth: 360,
                   }}>

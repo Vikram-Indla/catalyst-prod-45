@@ -94,7 +94,7 @@ export default function WidgetGalleryModal({
         <span
           style={{
             margin: 0,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 600,
             color: token('color.text', 'var(--ds-text, #172B4D)'),
           }}
@@ -141,7 +141,7 @@ export default function WidgetGalleryModal({
                   borderRadius: 16,
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   background: isActive
                     ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)')
@@ -155,7 +155,7 @@ export default function WidgetGalleryModal({
                 {cat.label}
                 <span
                   style={{
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 653,
                     color: isActive
                       ? token('color.text.selected', 'var(--ds-link, #0C66E4)')
@@ -197,7 +197,7 @@ export default function WidgetGalleryModal({
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    fontSize: 20,
+                    fontSize: 'var(--ds-font-size-700)',
                     color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                   }}
                 >
@@ -208,7 +208,7 @@ export default function WidgetGalleryModal({
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 500,
                       color: token('color.text', 'var(--ds-text, #172B4D)'),
                       marginBottom: 2,
@@ -218,7 +218,7 @@ export default function WidgetGalleryModal({
                   </div>
                   <div
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                       marginBottom: 2,
                     }}
@@ -228,7 +228,7 @@ export default function WidgetGalleryModal({
                   {widget.subtitle && (
                     <div
                       style={{
-                        fontSize: 14,
+                        fontSize: 'var(--ds-font-size-400)',
                         color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
                         lineHeight: '20px',
                         display: '-webkit-box',
@@ -244,7 +244,7 @@ export default function WidgetGalleryModal({
                   <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
                     <span
                       style={{
-                        fontSize: 11,
+                        fontSize: 'var(--ds-font-size-100)',
                         fontWeight: 500,
                         padding: '2px 8px',
                         borderRadius: 3,
@@ -276,7 +276,7 @@ export default function WidgetGalleryModal({
                 padding: 32,
                 textAlign: 'center',
                 color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
               }}
             >
               No gadgets match your search

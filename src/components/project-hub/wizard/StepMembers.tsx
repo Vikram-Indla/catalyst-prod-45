@@ -65,7 +65,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
       {/* Info note */}
       <div
         className="flex items-center gap-2 rounded-lg bg-[var(--cp-blue-wash)]"
-        style={{ padding: '8px 12px', fontSize: 12, color: 'var(--cp-blue)' }}
+        style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)' }}
       >
         <span style={{ fontWeight: 500 }}>ℹ</span>
         You will be added as Admin automatically.
@@ -88,7 +88,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by name or email..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
+            style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
           />
         </div>
 
@@ -116,15 +116,15 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                     height: 28,
                     background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length],
                     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                   }}
                 >
                   {user.name[0]?.toUpperCase() || '?'}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{user.name}</div>
-                  <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{user.email}</div>
+                  <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>{user.name}</div>
+                  <div className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{user.email}</div>
                 </div>
               </button>
             ))}
@@ -148,15 +148,15 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                   height: 32,
                   background: AVATAR_COLORS[member.name.charCodeAt(0) % AVATAR_COLORS.length],
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                 }}
               >
                 {member.name[0]?.toUpperCase() || '?'}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{member.name}</div>
-                <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{member.email}</div>
+                <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)' }}>{member.name}</div>
+                <div className="truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)' }}>{member.email}</div>
               </div>
               <select
                 value={member.role}
@@ -164,7 +164,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                 style={{
                   height: 28,
                   padding: '0 6px',
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 500,
                   border: '1px solid var(--divider)',
                   borderRadius: 4,
@@ -190,7 +190,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
       )}
 
       {members.length === 0 && (
-        <div style={{ fontSize: 12, color: 'var(--fg-4)', textAlign: 'center', padding: '20px 0' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', textAlign: 'center', padding: '20px 0' }}>
           No additional members added. You can add them later from project settings.
         </div>
       )}

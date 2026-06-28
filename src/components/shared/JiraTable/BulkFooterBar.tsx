@@ -53,7 +53,7 @@ export function BulkFooterBar({
       {/* Count and Select All */}
       <span
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         }}
@@ -78,7 +78,7 @@ export function BulkFooterBar({
               border: 'none',
               color: token('color.link', 'var(--ds-link, #0C66E4)'),
               cursor: 'pointer',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               padding: 0,
               textDecoration: 'underline',
             }}
@@ -103,7 +103,7 @@ export function BulkFooterBar({
             background: token('color.background.neutral', 'var(--ds-surface, #FFFFFF)'),
             color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
             cursor: 'pointer',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
           }}
         >
@@ -122,7 +122,7 @@ export function BulkFooterBar({
             background: token('color.background.neutral', 'var(--ds-surface, #FFFFFF)'),
             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             cursor: 'pointer',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
           }}
         >
@@ -141,7 +141,7 @@ export function BulkFooterBar({
             background: token('color.background.neutral', 'var(--ds-surface, #FFFFFF)'),
             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             cursor: 'pointer',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
           }}
         >
@@ -159,7 +159,7 @@ export function BulkFooterBar({
           border: 'none',
           color: token('color.text.subtlest', '#738496'),
           cursor: 'pointer',
-          fontSize: 16,
+          fontSize: 'var(--ds-font-size-500)',
           padding: 0,
           width: 24,
           height: 24,

@@ -188,7 +188,7 @@ function MenuItemBtn({
         border: 'none',
         background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
         color: 'var(--ds-text, #172B4D)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily: 'inherit',
@@ -207,7 +207,7 @@ function MenuLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       padding: '8px 10px 4px',
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 700,
       letterSpacing: '0.08em',
       textTransform: 'uppercase',
@@ -325,7 +325,7 @@ export function makeStatusEditCell<T>({
             }}
           >
             {lozenge ?? (
-              <span data-jira-cell-ghost style={{ fontSize: 13 }}>
+              <span data-jira-cell-ghost style={{ fontSize: 'var(--ds-font-size-300)' }}>
                 Set status
               </span>
             )}
@@ -444,7 +444,7 @@ function StatusPopupCell<T>({
           }}
         >
           {lozenge ?? (
-            <span data-jira-cell-ghost style={{ fontSize: 13 }}>
+            <span data-jira-cell-ghost style={{ fontSize: 'var(--ds-font-size-300)' }}>
               Set status
             </span>
           )}
@@ -959,13 +959,13 @@ function PriorityBars({ priority }: { priority: string | null }) {
   const cfg = PRIORITY_CONFIG[p];
   if (!cfg) {
     return (
-      <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 14 }}>—</span>
+      <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>—</span>
     );
   }
   return (
     <span
       title={cfg.label}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 14, whiteSpace: 'nowrap' }}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 'var(--ds-font-size-400)', whiteSpace: 'nowrap' }}
     >
       {cfg.icon}
       <span style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{cfg.label}</span>
@@ -1086,7 +1086,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         padding: '2px 8px',
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 3,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         fontWeight: 400,
         color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -1170,7 +1170,7 @@ export function makeParentEditCell<T>({
           >
             {/* Jira renders "None" when there's no parent — plain muted text. */}
             {filledDisplay ?? (
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 14 }}>None</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>None</span>
             )}
           </button>
         )}
@@ -1204,7 +1204,7 @@ export function makeParentEditCell<T>({
               </MenuItemBtn>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
             )}
           </>
         )}
@@ -1246,7 +1246,7 @@ function WorkstreamChip({ choice }: { choice: WorkstreamChoice }) {
         padding: '2px 8px',
         border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderRadius: 3,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         fontWeight: 400,
         color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -1332,7 +1332,7 @@ export function makeWorkstreamEditCell<T>({
             }}
           >
             {filledDisplay ?? (
-              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 14 }}>None</span>
+              <span style={{ color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>None</span>
             )}
           </button>
         )}
@@ -1366,7 +1366,7 @@ export function makeWorkstreamEditCell<T>({
               </MenuItemBtn>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #626F86)') }}>No matches</div>
             )}
           </>
         )}
@@ -1472,7 +1472,7 @@ export function makeRowActionsCell<T>({
                       border: 'none',
                       background: 'transparent',
                       color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       textAlign: 'left',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
@@ -1520,7 +1520,7 @@ export function makeDateEditCell<T>({
       : null;
 
     const display = formatted
-      ? <span style={{ fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{formatted}</span>
+      ? <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{formatted}</span>
       : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />;
 
     if (!editable) {
@@ -1586,7 +1586,7 @@ export function makeDateEditCell<T>({
                   border: 'none',
                   background: 'transparent',
                   color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   cursor: 'pointer',
                   textAlign: 'left',
                   borderRadius: 3,
@@ -1632,7 +1632,7 @@ export function makeLabelsEditCell<T>({
                   borderRadius: 3,
                   background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
                   color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   whiteSpace: 'nowrap',
                 }}
               >{l}</span>
@@ -1732,7 +1732,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
               borderRadius: 3,
               background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
               color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
             }}
           >
             {l}
@@ -1762,7 +1762,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
         <button
           type="button"
           onClick={close}
-          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}
+          style={{ fontSize: 'var(--ds-font-size-200)', padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}
         >
           Done
         </button>

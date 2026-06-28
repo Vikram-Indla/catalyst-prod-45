@@ -218,7 +218,7 @@ export function GroupByPopover<K extends string>({
             : 'none',
           borderRadius: 3,
           cursor: 'pointer',
-          fontSize: 14, fontWeight: 500, lineHeight: '20px',
+          fontSize: 'var(--ds-font-size-400)', fontWeight: 500, lineHeight: '20px',
           color: isActive ? selText : text,
           fontFamily: 'var(--cp-font-body)',
           outline: 'none',
@@ -233,7 +233,7 @@ export function GroupByPopover<K extends string>({
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             minWidth: 18, height: 18,
             background: 'var(--ds-link, var(--cp-primary-60, #0052CC))', color: 'var(--ds-text-inverse, #FFFFFF)',
-            fontSize: 10, fontWeight: 700, borderRadius: 9,
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 700, borderRadius: 9,
           }}>1</span>
         )}
       </button>
@@ -267,7 +267,7 @@ export function GroupByPopover<K extends string>({
                   width: '100%', height: 30,
                   paddingLeft: 24, paddingRight: search ? 24 : 8,
                   border: `1px solid ${border}`, borderRadius: 3,
-                  fontSize: 13, color: text, background: bg,
+                  fontSize: 'var(--ds-font-size-300)', color: text, background: bg,
                   fontFamily: 'var(--cp-font-body)',
                   outline: 'none',
                   transition: 'border-color 100ms',
@@ -294,7 +294,7 @@ export function GroupByPopover<K extends string>({
           {/* Options */}
           <div ref={listRef} style={{ padding: '4px 0', maxHeight: 240, overflowY: 'auto' }}>
             <div style={{
-              padding: '8px 12px 4px', fontSize: 11, fontWeight: 600,
+              padding: '8px 12px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
               color: muted,
             }}>
               All fields
@@ -319,7 +319,7 @@ export function GroupByPopover<K extends string>({
                     borderLeft: `3px solid ${isSelected ? selText : 'transparent'}`,
                     background: isSelected ? selBg : isFocused ? hover : 'transparent',
                     color: rowColor,
-                    fontSize: 14, fontWeight: isSelected ? 500 : 400,
+                    fontSize: 'var(--ds-font-size-400)', fontWeight: isSelected ? 500 : 400,
                     cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                     transition: 'background 80ms',
                     outline: 'none',
@@ -335,7 +335,7 @@ export function GroupByPopover<K extends string>({
             })}
 
             {filtered.length === 0 && (
-              <div style={{ padding: '16px 12px', textAlign: 'center', fontSize: 13, color: muted }}>
+              <div style={{ padding: '16px 12px', textAlign: 'center', fontSize: 'var(--ds-font-size-300)', color: muted }}>
                 No matching fields
               </div>
             )}
@@ -348,7 +348,7 @@ export function GroupByPopover<K extends string>({
                 onClick={() => { onChange(noneKey); setOpen(false); setSearch(''); }}
                 style={{
                   border: 'none', background: 'transparent',
-                  color: muted, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                  color: muted, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)', padding: '4px 0',
                   transition: 'color 100ms',
                 }}

@@ -128,7 +128,7 @@ export function TimeInStatusHoverCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           <div
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: '20px',
               fontWeight: 653,
               color: token('color.link', 'var(--ds-link, #0C66E4)'),
@@ -169,7 +169,7 @@ export function TimeInStatusHoverCard({
             borderRadius: 3,
             background: pillBg,
             color: pillFg,
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 653,
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
@@ -183,7 +183,7 @@ export function TimeInStatusHoverCard({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 500,
               color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             }}
@@ -198,7 +198,7 @@ export function TimeInStatusHoverCard({
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 }}>
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 653,
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
@@ -210,7 +210,7 @@ export function TimeInStatusHoverCard({
         <span
           style={{
             fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-            fontSize: 16,
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 653,
             color: token('color.text', 'var(--ds-text, #172B4D)'),
           }}
@@ -223,7 +223,7 @@ export function TimeInStatusHoverCard({
       {visits > 1 && (
         <div
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             marginBottom: 8,
@@ -238,7 +238,7 @@ export function TimeInStatusHoverCard({
         <div style={{ marginBottom: 8 }}>
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 653,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -255,7 +255,7 @@ export function TimeInStatusHoverCard({
           />
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               marginTop: 2,
               fontVariantNumeric: 'tabular-nums',
@@ -271,7 +271,7 @@ export function TimeInStatusHoverCard({
         <div>
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 653,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -289,7 +289,7 @@ export function TimeInStatusHoverCard({
           {patternDescription && (
             <div
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 lineHeight: '16px',
                 color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                 marginTop: 4,
@@ -305,7 +305,7 @@ export function TimeInStatusHoverCard({
       {p50Hours == null && pattern === 'none' && (
         <div
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             lineHeight: '16px',
           }}

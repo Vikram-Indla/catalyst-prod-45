@@ -209,7 +209,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                             style={{
                               width: 22, height: 22,
                               border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
-                              fontSize: 9, fontWeight: 700, color: 'var(--fg-3)',
+                              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--fg-3)',
                             }}
                           >
                             {issue.assignee_id ? '👤' : ''}
