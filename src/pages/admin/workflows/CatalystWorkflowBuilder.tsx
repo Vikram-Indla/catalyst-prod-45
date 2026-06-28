@@ -60,7 +60,7 @@ const DARK = {
   textTodo: 'var(--ds-border, #DFE1E6)',
   textInProgress: 'var(--ds-text-brand, #85B8FF)',
   textDone: 'var(--ds-background-success, #DCFFF1)',
-  edge: 'var(--ds-border-bold, #4A5568)',
+  edge: 'var(--ds-border-bold, #8590A2)',
   edgeHover: 'var(--ds-background-information-bold, #0C66E4)',
 };
 

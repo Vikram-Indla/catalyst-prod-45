@@ -21,7 +21,7 @@ interface TimelineViewProps {
 const HEALTH_BAR_COLORS: Record<HealthLevel, string> = {
   critical: 'var(--ds-text-danger, #ef4444)',
   at_risk: 'var(--ds-background-warning-bold, #f97316)',
-  attention: 'var(--ds-background-warning-bold, #E2B203)',
+  attention: 'var(--ds-background-neutral-subtle, #F7F8F9)',
   healthy: 'var(--ds-text-success, #22c55e)',
 };
 

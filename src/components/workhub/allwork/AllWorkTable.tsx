@@ -60,7 +60,7 @@ const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> =
   task: { border: 'var(--ds-border, #DFE1E6)', text: 'var(--fg-3)', bg: 'var(--ds-surface-sunken, #F7F8F9)' },
   incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #FA8C16)', 'var(--ds-chart-green-bold, #52C41A)', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-teal-bold, #13C2C2)', 'var(--ds-text-danger, #F5222D)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-teal-bold, #206B74)', 'var(--ds-chart-red-bold, #AE2A19)'];
 
 function getHubType(issueType: string): string {
   const t = issueType.toLowerCase();

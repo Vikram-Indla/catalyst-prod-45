@@ -126,7 +126,7 @@ function priorityIcon(id: string): React.ReactNode {
 /** Map a severity id → its Atlaskit core icon (color tinted). */
 function severityIcon(id: string): React.ReactNode {
   switch (id) {
-    case 'Blocker': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #CD1316)' }}><PriorityBlockerIcon label="" size="small" /></span>;
+    case 'Blocker': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #AE2A19)' }}><PriorityBlockerIcon label="" size="small" /></span>;
     case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-background-danger-bold, #E15D31)' }}><PriorityHighIcon    label="" size="small" /></span>;
     case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-background-warning-bold, #E4A11B)' }}><PriorityMediumIcon  label="" size="small" /></span>;
     case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link, #2898BD)' }}><PriorityLowIcon     label="" size="small" /></span>;
