@@ -17,6 +17,49 @@ import {
 } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
 
+/**
+ * Resolve a canonical project (from the shared `projects` list shown in every
+ * create modal) to a `tm_projects.id`, which is what `tm_defects.project_id`
+ * FKs to. tm_projects is a TestHub-local mirror; match an existing row by name
+ * (authoritative — keys diverge, e.g. canonical 'BAU' vs tm 'SENAEI-BAU') or
+ * key, and lazily provision one if the canonical project has no mirror yet so
+ * any canonical project is selectable for a defect.
+ */
+export async function resolveTmProjectId(
+  canonical: { key: string | null; name: string | null },
+): Promise<string> {
+  const name = canonical.name?.trim() || null;
+  const key = canonical.key?.trim() || null;
+
+  if (name) {
+    const { data: byName } = await supabase
+      .from('tm_projects')
+      .select('id')
+      .ilike('name', name)
+      .limit(1)
+      .maybeSingle();
+    if (byName?.id) return byName.id;
+  }
+  if (key) {
+    const { data: byKey } = await supabase
+      .from('tm_projects')
+      .select('id')
+      .eq('key', key)
+      .limit(1)
+      .maybeSingle();
+    if (byKey?.id) return byKey.id;
+  }
+
+  // No mirror yet — provision one from the canonical project.
+  const { data: created, error } = await supabase
+    .from('tm_projects')
+    .insert({ key: key ?? name ?? 'PROJECT', name: name ?? key ?? 'Project' })
+    .select('id')
+    .single();
+  if (error) throw error;
+  return created.id;
+}
+
 // DB uses lowercase enums - match the actual DB enum values
 type DbDefectSeverity = 'critical' | 'major' | 'minor' | 'trivial';
 type DbDefectStatus = 'open' | 'in_progress' | 'resolved' | 'closed' | 'reopened';

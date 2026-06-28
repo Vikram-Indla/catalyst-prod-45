@@ -102,8 +102,7 @@ import { adfToPlainText } from '@/utils/adf';
 import type { TaskPriority } from '@/modules/tasks/types';
 // ── Defect (QA Bug) work type → tm_defects (TestHub) ──────────────────────────
 import { DatePicker } from '@atlaskit/datetime-picker';
-import { useProjects as useTmProjects } from '@/hooks/test-management/useProjects';
-import { useCreateDefect } from '@/hooks/test-management/useDefects';
+import { useCreateDefect, resolveTmProjectId } from '@/hooks/test-management/useDefects';
 import type { DefectSeverity } from '@/types/test-management';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -522,8 +521,11 @@ export function CreateStoryModal({
   );
 
   // ── Defect (QA Bug) work type — writes to tm_defects (TestHub) ────────────
+  // The Project field always uses the canonical project list (projectOptions,
+  // same as Story/Task). tm_defects.project_id FKs tm_projects, so the chosen
+  // canonical project is resolved to (or provisioned as) a tm_projects row at
+  // submit time via resolveTmProjectId — see handleSubmit's isDefect branch.
   const isDefect = workType === 'QA Bug';
-  const { data: tmProjects = [] } = useTmProjects();
   const createDefect = useCreateDefect();
   const [defectSeverity, setDefectSeverity] =
     useState<'critical' | 'high' | 'medium' | 'low'>('medium');
@@ -532,10 +534,6 @@ export function CreateStoryModal({
   const [defectDueDate, setDefectDueDate] = useState('');
   const [defectExpectedAdf, setDefectExpectedAdf] = useState<unknown>(null);
   const [defectActualAdf, setDefectActualAdf] = useState<unknown>(null);
-  const tmProjectOptions: IconOption[] = useMemo(
-    () => (tmProjects as any[]).map((p) => ({ value: p.id, label: p.name })),
-    [tmProjects],
-  );
   const resetDefectState = useCallback(() => {
     setDefectSeverity('medium');
     setDefectComponent('');
@@ -785,8 +783,15 @@ export function CreateStoryModal({
         const sprintName = (form.sprintReleases ?? [])
           .map((id) => sprintOptions.find((o) => o.value === id)?.label)
           .filter(Boolean)[0] as string | undefined;
+        // The dropdown holds a canonical projects.id; tm_defects.project_id FKs
+        // tm_projects. Resolve (or provision) the matching tm_projects row.
+        const canonicalProject = projects.find((p) => p.id === form.projectId);
+        const tmProjectId = await resolveTmProjectId({
+          key: (canonicalProject as any)?.key ?? null,
+          name: (canonicalProject as any)?.name ?? null,
+        });
         await createDefect.mutateAsync({
-          project_id: form.projectId,
+          project_id: tmProjectId,
           title: form.summary.trim(),
           description: descAdf ? adfToPlainText(descAdf as any) : undefined,
           description_adf: descAdf ?? undefined,
@@ -1047,9 +1052,9 @@ export function CreateStoryModal({
                         isRequired={isRequired}
                         isDisabled={isDisabled}
                         inputId="cs-space"
-                        options={isDefect ? tmProjectOptions : projectOptions}
+                        options={projectOptions}
                         value={
-                          (isDefect ? tmProjectOptions : projectOptions).find(
+                          projectOptions.find(
                             (o) => o.value === form.projectId,
                           ) ?? null
                         }
