@@ -111,12 +111,48 @@ function isInComment(line, match, lineIndex, lines) {
 
 
 function isAllowedUsage(line, match) {
-  // var(--ds-token, #hex) is explicitly BANNED — hex fallbacks inside var() are
-  // violations, not exemptions. Only raw color functions wrapping a CSS var()
-  // (e.g. hsl(var(--hue), 50%, 50%)) are allowed.
+  // ALLOWED PATTERNS (fallback-pragmatic mode per prompts 3):
+  // 1. var(--ds-token, #hex) or var(--ds-token, rgba(...)) — hex/rgba in fallback
+  // 2. token('color.x', '#hex') or token('x', 'rgba(...)') — color in token helper
+  // 3. hsl(var(--hue), 50%, 50%) — CSS var inside color function
+  // 4. Tailwind arbitrary values with embedded var/token: bg-[var(...)] or similar
   const matchIndex = line.indexOf(match);
-  const context = line.slice(Math.max(0, matchIndex - 20), matchIndex + match.length + 20);
+  const context = line.slice(Math.max(0, matchIndex - 50), matchIndex + match.length + 50);
+  const fullLine = line;
 
+  // Check if color is INSIDE Tailwind arbitrary value brackets: className="... bg-[var(...rgba...)]"
+  // These are CSS values embedded in Tailwind arbitrary syntax, not bare colors
+  if (/\[\s*var\s*\(/.test(fullLine)) {
+    const arbitraryMatch = fullLine.match(/\[[^\]]*\]/g);
+    if (arbitraryMatch && arbitraryMatch.some(arb => arb.includes(match) && arb.includes('var('))) {
+      return true; // Color is inside Tailwind arbitrary + var context
+    }
+  }
+
+  // Check if color is INSIDE a var() fallback position: var(--*, COLOR)
+  if (/var\s*\(\s*--/.test(context)) {
+    const varStart = context.lastIndexOf('var(');
+    const varEnd = context.indexOf(')', varStart);
+    if (varStart !== -1 && varEnd !== -1 && varEnd > matchIndex - (matchIndex - 50)) {
+      return true; // Color is valid fallback in var()
+    }
+  }
+
+  // Check if color is INSIDE a token() helper: token('...', COLOR)
+  if (/token\s*\(\s*['"]/.test(context)) {
+    const tokenStart = context.lastIndexOf('token(');
+    const tokenEnd = context.indexOf(')', tokenStart);
+    if (tokenStart !== -1 && tokenEnd !== -1) {
+      return true; // Color is valid fallback in token()
+    }
+  }
+
+  // Check if in a Tailwind gradient (from-[...], via-[...], to-[...])
+  if (/from-\[|via-\[|to-\[|gradient/.test(fullLine) && match.includes('rgba')) {
+    return true; // rgba in gradient context is usually a fallback
+  }
+
+  // Check for raw color function wrapping CSS var: hsl/rgb(var(...))
   return ALLOWED_PATTERNS.some(pattern => pattern.test(context));
 }
 

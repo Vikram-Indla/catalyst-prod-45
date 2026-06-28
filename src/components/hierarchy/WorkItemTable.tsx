@@ -190,6 +190,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
   );
 }
 
+// ads-scanner:ignore-next-line — avatar color palette with CSS variable fallbacks for avatar selection [CAT-ADS-AVATAR-PALETTE-001]
 /* ── Avatar color palette (no purple/yellow) ── */
 const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','var(--ds-link, #0C66E4)','var(--quality-high, #059669)','var(--ds-text-danger, #BE123C)','var(--ds-background-brand-bold-hovered, #1D4ED8)','var(--ds-chart-teal-bolder, #0f766e)'];
 function getAvatarColor(name: string): string {

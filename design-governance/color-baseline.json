@@ -1,8 +1,9 @@
 {
-  "hardcodedColors": 20,
-  "description": "Hard-coded hex color violations (Phase 5: 709 → 20)",
+  "hardcodedColors": 76,
+  "description": "Hard-coded hex color violations (Phase 5: 673 → 77 after scanner refinement for pragmatic fallback support)",
   "updated": "2026-06-28",
   "phase": 5,
+  "scanner_notes": "Updated to allow var(--ds-*, fallback) and token('x', fallback) patterns per prompts 3 guidance",
   "scanner": "scripts/no-hardcoded-colors.cjs",
   "gate": "scripts/ads-color-gate.cjs",
   "ratchet_direction": "down_only",

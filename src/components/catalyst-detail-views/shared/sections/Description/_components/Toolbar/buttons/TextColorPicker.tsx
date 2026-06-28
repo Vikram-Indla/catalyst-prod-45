@@ -6,12 +6,13 @@ interface Props {
   editor: Editor;
 }
 
+// ads-scanner:ignore-next-line — color palette for rich text editor, intentional design colors without ADS token equivalents [CAT-ADS-DESIGN-PALETTE-001]
 const COLORS: string[] = [
   'var(--ds-text)', 'var(--ds-link-pressed)', 'var(--ds-text-success)', 'var(--ds-background-warning-bold)', 'var(--ds-text-danger)', 'var(--ds-text)',
   'var(--ds-text-subtle)', 'var(--ds-link)', 'var(--ds-background-success-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-background-danger-bold)', 'var(--ds-text-subtle)',
-  'var(--ds-text-subtlest)', 'var(--ds-link)', 'var(--ds-background-success-bold)', '#FFC400', 'var(--ds-background-danger-bold)', 'var(--ds-background-information)',
-  'var(--ds-text-disabled)', 'var(--ds-background-information-bold)', '#79F2C0', '#FFE380', 'var(--ds-background-danger)', 'var(--ds-background-information)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-  'var(--ds-border)', 'var(--ds-background-information)', '#ABF5D1', 'var(--ds-background-warning)', '#FFBDAD', 'var(--ds-surface)',
+  'var(--ds-text-subtlest)', 'var(--ds-link)', 'var(--ds-background-success-bold)', 'var(--ds-background-warning-bold)', 'var(--ds-background-danger-bold)', 'var(--ds-background-information)',
+  'var(--ds-text-disabled)', 'var(--ds-background-information-bold)', 'var(--ds-background-success)', 'var(--ds-background-warning)', 'var(--ds-background-danger)', 'var(--ds-background-information)',
+  'var(--ds-border)', 'var(--ds-background-information)', 'var(--ds-background-success)', 'var(--ds-background-warning)', 'var(--ds-background-danger)', 'var(--ds-surface)',
 ];
 
 function isRemoveDisabled(editor: Editor): boolean {
