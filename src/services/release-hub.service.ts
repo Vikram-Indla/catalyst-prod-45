@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { resolveBridgedKey, recordAdvisoryStatusChange } from '@/lib/workflow/canonical/runtime';
 import type { ChangeStatus, DeploymentResult, SignOffDecision } from '@/types/release-hub';
 
 // ── RELEASES ──────────────────────────────────────────────────────
@@ -56,8 +57,24 @@ export const releaseService = {
   },
 
   updateStatus: async (id: string, status: string) => {
-    const { error } = await supabase.from('rh_releases').update({ status }).eq('id', id);
+    // Bridged canonical (Option A): write workflow_status_key as the source of
+    // truth; rh_releases.status (free text) is preserved as the compat mirror.
+    // Never widens anything. Advisory audit recorded.
+    const { data: cur } = await supabase
+      .from('rh_releases').select('status, workflow_status_key').eq('id', id).maybeSingle();
+    const prev = (cur as any)?.workflow_status_key ?? (cur as any)?.status ?? null;
+    const wfKey = await resolveBridgedKey('release', null, status);
+    const updates: Record<string, unknown> = { status };
+    if (wfKey) updates.workflow_status_key = wfKey;
+    const { error } = await supabase.from('rh_releases').update(updates).eq('id', id);
     if (error) throw error;
+    const to = wfKey ?? status;
+    if (prev !== to) {
+      await recordAdvisoryStatusChange({
+        entityKey: 'release', entityId: id, projectKey: null,
+        fromStatusRaw: prev, toStatusRaw: to, sourceSurface: 'release_board',
+      });
+    }
   },
 
   getTestCycles: async (releaseId: string) => {

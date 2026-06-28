@@ -21,6 +21,8 @@ const ISSUE_TYPE_TO_ENTITY: Record<string, EntityKey> = {
   subtask: 'subtask', 'sub-task': 'subtask', 'Sub-task': 'subtask',
   defect: 'defect', Defect: 'defect', 'qa bug': 'defect',
   release: 'release', Release: 'release',
+  business_request: 'business_request', 'Business Request': 'business_request',
+  product_milestone: 'product_milestone', 'Product Milestone': 'product_milestone',
 };
 
 export interface CanonicalWorkflowExtras {

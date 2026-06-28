@@ -127,7 +127,7 @@ function TransitionsList({ versionId }: { versionId: string }) {
   return <DynamicTable head={head} rows={rows} isFixedSize rowsPerPage={20} defaultPage={1} />;
 }
 
-const PREVIEW_ENTITIES = ['story', 'epic', 'feature', 'subtask', 'defect', 'incident', 'release'] as const;
+const PREVIEW_ENTITIES = ['story', 'epic', 'feature', 'subtask', 'defect', 'incident', 'release', 'business_request', 'product_milestone'] as const;
 function MigrationPreviewTab() {
   const [entity, setEntity] = useState<string>('story');
   const { data, isLoading } = useMigrationPreview(entity);
