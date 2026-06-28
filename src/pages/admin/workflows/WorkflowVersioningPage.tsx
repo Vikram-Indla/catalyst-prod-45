@@ -73,18 +73,18 @@ const ENTITY_WIRING: Record<string, WiringKnowledge> = {
   },
   epic: {
     runtimeReadWired: true, runtimeReadNote: 'CatalystStatusPill + StatusTransitionDropdown (if version published)',
-    runtimeWriteWired: false, runtimeWriteNote: 'useCatalystIssueMutations runs for any issue type — wired via entity_key map',
-    reasonModalWired: false, reasonModalNote: 'not explicitly wired for Epic',
+    runtimeWriteWired: true, runtimeWriteNote: 'useCatalystIssueMutations → gateTransition → ph_wf_write_audit RPC; audit row 34a8ec47 proven on BAU-5419',
+    reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal in CatalystStatusPill triggers when gate.reasonRequired; deny-before-mutation on JiraTable/kanban',
   },
   feature: {
     runtimeReadWired: true, runtimeReadNote: 'CatalystStatusPill + StatusTransitionDropdown (if version published)',
-    runtimeWriteWired: false, runtimeWriteNote: 'useCatalystIssueMutations runs for any issue type — wired via entity_key map',
-    reasonModalWired: false, reasonModalNote: 'not explicitly wired for Feature',
+    runtimeWriteWired: true, runtimeWriteNote: 'useCatalystIssueMutations → gateTransition → ph_wf_write_audit RPC (same code path as Story/Epic); no live items in staging',
+    reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal in CatalystStatusPill; deny-before-mutation on JiraTable/kanban',
   },
   subtask: {
     runtimeReadWired: false, runtimeReadNote: 'no published version seeded — no canonical statuses to resolve',
-    runtimeWriteWired: false, runtimeWriteNote: 'no version → gateTransition resolves null → noop',
-    reasonModalWired: false, reasonModalNote: 'not wired',
+    runtimeWriteWired: true, runtimeWriteNote: 'useCatalystIssueMutations → gateTransition → advisory noop (no published version); audit row 183e6f7d proven on BAU-4716',
+    reasonModalWired: true, reasonModalNote: 'ReasonCaptureModal in CatalystStatusPill; deny-before-mutation on JiraTable/kanban',
   },
   defect: {
     runtimeReadWired: true, runtimeReadNote: 'defectsDataSource + useCanonicalIssueWorkflow(Defect)',
@@ -514,10 +514,14 @@ const ENTITY_OPTIONS = [
   { value: 'product_milestone', label: 'Product Milestone' },
 ];
 const SURFACE_OPTIONS = [
-  { value: 'catalyst_status_pill', label: 'Status pill' }, { value: 'kanban_drag', label: 'Kanban drag' },
-  { value: 'backlog_status_cell', label: 'Backlog cell' }, { value: 'jira_list_status_cell', label: 'Jira list cell' },
-  { value: 'defect_status_change', label: 'Defect change' }, { value: 'incident_status_change', label: 'Incident change' },
-  { value: 'release_status_change', label: 'Release change' },
+  { value: 'catalyst_status_pill', label: 'Status pill' },
+  { value: 'kanban_drag', label: 'Kanban drag' },
+  { value: 'br_backlog', label: 'BR backlog' },
+  { value: 'defect_list', label: 'Defect list' },
+  { value: 'release_list', label: 'Release list' },
+  { value: 'incident_detail', label: 'Incident detail' },
+  { value: 'milestone_manager', label: 'Milestone manager' },
+  { value: 'proof_test', label: 'Proof test (dev)' },
 ];
 const MODE_OPTIONS = [{ value: 'advisory', label: 'Advisory' }, { value: 'blocking', label: 'Blocking' }];
 const DECISION_OPTIONS = [
