@@ -25,3 +25,9 @@
 | D-005 | Defect/Incident source | Hybrid | ph_issues (QA Bug 788 / Production Incident 152) for volume+trend + tm_defects for test-linked detail | No |
 | D-006 | Coverage denominator | Stories | Coverage% = stories with ≥1 linked test case ÷ in-scope stories (ph_issues issue_type='Story'). Execution-coverage may be added later. | No |
 | D-007 | Seed execution | Approve — Senaei BAU | Seed tm_* in cyij anchored to Senaei BAU (84f91caf-7511-470a-9a26-3e52e66258bf), linked to its real ph_issues stories. G-001 → APPROVED. | YES (dev write) |
+
+## Round 4 (2026-06-28)
+| ID | Title | Answer | Final | Schema? |
+|----|-------|--------|-------|---------|
+| D-008 | Blueprint B1-B8 | approved | Taxonomy (11 groups) + scope/coverage/traceability/governance/AI models APPROVED. Proceed to wire. | No |
+| D-009 | First wired surface | Coverage + Governance, Senaei BAU | New real route under /testhub/reports; project-scoped (default Senaei BAU); reuse canonical components + JiraTable; ADS tokens. | No (read-only views OK, G-002) |

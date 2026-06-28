@@ -536,7 +536,8 @@ export function makeSummaryInlineEditCell<T>({
       const readOnlyTooltip = getReadOnlyTooltip?.(row) ?? null;
       const display = (
         <span
-          dir="auto"
+          // Jira parity (2026-06-28): LTR/left-aligned, no dir="auto" — see
+          // JiraTable/cells.tsx makeSummaryCell for the verified rationale.
           style={{
             ...wrapStyle,
             flex: 1,
@@ -614,7 +615,8 @@ export function makeSummaryInlineEditCell<T>({
             readView={() => (
               <span
                 title={summary || undefined}
-                dir="auto"
+                // Jira parity (2026-06-28): LTR/left-aligned, no dir="auto" —
+                // see JiraTable/cells.tsx makeSummaryCell for the rationale.
                 style={{
                   display: 'block',
                   padding: '0 2px',

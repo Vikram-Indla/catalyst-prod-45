@@ -434,6 +434,14 @@ export function CreateStoryModal({
   const createMutation = useCreateStoryMutation();
 
   const [workType, setWorkType] = useState<string>(defaultWorkType);
+  // The modal is mounted persistently in the header (CreateDropdown), so its
+  // work-type state would otherwise keep whatever value it had at first mount
+  // and ignore the route-derived defaultWorkType. Re-sync on every open (and
+  // when the prop changes, e.g. the Business Request hand-off) so the Tasks
+  // module gets 'Task', product-hub backlog gets 'Business Request', etc.
+  useEffect(() => {
+    if (open) setWorkType(defaultWorkType);
+  }, [open, defaultWorkType]);
   const [createAnother, setCreateAnother] = useState(false);
   // Incremented each time the form is reset — forces EpicDescriptionEditor to remount with empty content.
   const [editorKey, setEditorKey] = useState(0);
@@ -450,6 +458,13 @@ export function CreateStoryModal({
       setWorkstreamId(defaultWorkstreamId);
     }
   }, [open, defaultWorkstreamId, workstreamId]);
+  // Task mode requires a workstream. When opened without an explicit one,
+  // default to the first available workstream so the field isn't blank.
+  useEffect(() => {
+    if (open && isTask && !workstreamId && workstreams.length > 0) {
+      setWorkstreamId(workstreams[0].id);
+    }
+  }, [open, isTask, workstreamId, workstreams]);
   const { data: taskStatuses = [] } = useQuery({
     queryKey: ['create-modal-task-statuses'],
     queryFn: async () => {
@@ -754,6 +769,11 @@ export function CreateStoryModal({
         onClose();
         reset();
         setEditorKey(k => k + 1);
+        // Land on the created item's detail view in its hub. Linked-create
+        // (from within another item) must NOT navigate away.
+        if (!isCreateLinkedMode && result.issue_key && resolvedKey) {
+          navigate(`/project-hub/${resolvedKey}/backlog/${result.issue_key}`);
+        }
       }
     } catch (err: any) {
       setFormError(err?.message ?? 'Failed to create work item');

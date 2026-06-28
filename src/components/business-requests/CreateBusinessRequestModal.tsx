@@ -47,6 +47,7 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
   ModalDialog,
@@ -88,6 +89,8 @@ import {
 } from '@/types/business-request';
 // Canonical Catalyst icon — backed by useIconOverrides (admin overrides via /admin/icons).
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+// Canonical product icon — user-picked icon_key, else Saudi-landmark default by code.
+import { ProductAvatar } from '@/components/icons/ProductAvatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons/PriorityIcon';
 import { CATALYST_PRIORITIES } from '@/lib/catalyst-priority';
@@ -198,6 +201,7 @@ export interface CreateBusinessRequestModalProps {
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface FormState {
+  product_id: string;
   title: string;
   descriptionAdf: object | null;
   description: string;
@@ -217,6 +221,7 @@ interface FormState {
 }
 
 const INITIAL: FormState = {
+  product_id: '',
   title: '', descriptionAdf: null, description: '',
   process_step: '', request_type: '', urgency: '', category: '',
   theme: '', project_manager_user_id: '', po_user_id: '', stakeholders: [],
@@ -236,6 +241,29 @@ function useProfiles() {
       icon: <MiniAvatar name={p.name} avatarUrl={p.avatarUrl} />,
     } as IconOption)),
   };
+}
+
+// Products for the container selector — a BR resides in a product
+// (business_requests.product_id). Canonical query mirrors BrMoveProductDialog.
+function useProductOptions() {
+  return useQuery({
+    queryKey: ['br-modal-products'],
+    queryFn: async (): Promise<IconOption[]> => {
+      const { data, error } = await (supabase as any)
+        .from('products')
+        .select('id, name, code, icon_key')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return (data ?? []).map((p: { id: string; name: string; code: string; icon_key?: string | null }) => ({
+        value: p.id,
+        label: p.name,
+        sublabel: p.code,
+        icon: <ProductAvatar code={p.code} iconKey={p.icon_key ?? null} size={16} />,
+      } as IconOption));
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 }
 
 function useReleases() {
@@ -560,15 +588,25 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkTypeChange }: CreateBusinessRequestModalProps) {
+  const navigate = useNavigate();
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
   const { data: releaseOptions = [] } = useReleases();
+  const { data: productOptions = [], isLoading: productsLoading } = useProductOptions();
   const [form, setForm] = useState<FormState>(INITIAL);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [titleBlurred, setTitleBlurred] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  // Seed the container from the caller's product context (when opened from a
+  // product surface). When absent, the user picks the product in-modal.
+  useEffect(() => {
+    if (productId && !form.product_id) {
+      setForm(prev => ({ ...prev, product_id: productId }));
+    }
+  }, [productId, form.product_id]);
 
   // Seed initial process_step from ph_workflow_* config
   const { initialStatus: brInitialStatus } = useIssueTypeWorkflow('Business Request');
@@ -593,6 +631,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
   // ── Validation ─────────────────────────────────────────────────────────────
   // 2026-06-01: arabic_title deprecated. Single English title required.
   const validate = () => {
+    if (!form.product_id) return false;
     if (!form.title.trim()) return false;
     if (!form.request_type) return false;
     if (!form.urgency) return false;
@@ -622,7 +661,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
         impl_target_end_date: form.end_date || null,
         targeted_feature: form.targeted_feature,
         import_source: 'manual',
-        product_id: productId || null,
+        product_id: form.product_id || productId || null,
       };
       const created = await createMutation.mutateAsync(payload as any);
       if (form.attachments.length && (created as any)?.id) {
@@ -633,11 +672,17 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
       }
       const key = (created as any)?.request_key || 'BR';
       flag.success(`${key} created`, `"${form.title.slice(0, 60)}"`);
+      // Resolve the product code (option sublabel) for the product-hub URL.
+      const productCode = productOptions.find(o => o.value === form.product_id)?.sublabel;
       setForm(INITIAL);
       setSubmitAttempted(false);
       setTitleBlurred(false);
       setTouchedFields(new Set());
       onClose();
+      // Land on the created BR's detail view in product hub.
+      if (productCode && (created as any)?.request_key) {
+        navigate(`/product-hub/${productCode}/backlog/${(created as any).request_key}`);
+      }
     } catch (err: any) {
       setUploading(false);
       setFormError(err?.message ?? 'Failed to create Business Request');
@@ -723,6 +768,30 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                   )}
                 </Field>
               )}
+
+              {/* ── Product — the container a BR resides in
+                  (business_requests.product_id). Locked when the caller
+                  supplied product context; otherwise user-selectable. ── */}
+              <Field name="product_id" label="Product" isRequired>
+                {({ fieldProps }) => (
+                  <>
+                    <Select<IconOption>
+                      {...(fieldProps as any)}
+                      inputId="br-product"
+                      options={productOptions}
+                      value={productOptions.find(o => o.value === form.product_id) ?? null}
+                      onChange={(opt: any) => set('product_id', opt?.value ?? '')}
+                      onBlur={() => markTouched('product_id')}
+                      isLoading={productsLoading}
+                      isDisabled={!!productId}
+                      formatOptionLabel={formatIconOption}
+                      placeholder="Select product"
+                      isSearchable
+                    />
+                    {isTouched('product_id') && !form.product_id && <ErrorMessage>Product is required</ErrorMessage>}
+                  </>
+                )}
+              </Field>
 
               {/* ── 2026-06-01: Single English title field — Arabic title
                   deprecated. The bilingual TitleTranslateWrapper pattern

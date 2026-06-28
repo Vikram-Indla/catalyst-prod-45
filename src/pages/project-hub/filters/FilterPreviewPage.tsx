@@ -30,7 +30,6 @@ import {
 } from '@/components/shared/JiraTable';
 import type { Column, SortOrder, LozengeAppearance } from '@/components/shared/JiraTable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { firstStrongDir } from '@/lib/detectArabic';
 import { jiraIconType } from '@/components/universal-work-view/uwv.utils';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
@@ -999,10 +998,8 @@ export function FilterPreviewPage({ mode = 'project' }: FilterPreviewPageProps =
         defaultVisible: true,
         accessor: (r) => r.key,
         cell: function WorkCell(props: any) {
-          // RTL parity: mirror the Work cell per-row from the title (not the
-          // latin key) so it matches the summary span's own dir="auto".
           return (
-            <span dir={firstStrongDir(props.row?.summary)} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', minWidth: 0 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', minWidth: 0 }}>
               {keyCellRenderer(props)}
               <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
             </span>

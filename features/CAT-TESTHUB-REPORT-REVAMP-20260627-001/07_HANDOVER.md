@@ -24,10 +24,14 @@
 - Q-004 settled (stories). Remaining: STATUS_MAPPING, DATE_SOURCES, QA-team (D13), D4 technical ERD, D6 data flow, D12 traceability deep.
 - ph_issues.sprint_name near-dead (2/2381) — use sprint_release JSONB everywhere (see D5).
 
+### Blueprint DONE (DRAFT, awaiting review)
+B1 taxonomy (11 groups) · B2 scope model (sprint_release resolution) · B3 coverage · B4 traceability ·
+B5 governance (G-M1 proven) · B6 AI insight · B7 upstream impact (views first, consent-gated) · B8 approval checklist.
+
 ### Next action options (pick one)
-1. **Blueprint** — write B1 report taxonomy (11 groups) + B2 scope model on the proven model.
-2. **Wire lab** — point `/testhub/reports-lab` (or a new route) at real tm_* + ph_issues for Senaei BAU (Phase 6/8; needs approval, src changes).
-3. **Finish discovery** — D4 ERD, D6, D12, D13 + remaining discovery agents.
+1. **Wire** — first real-data route: Coverage + Governance for Senaei BAU. Needs B1/B2 approval + src + ADS/screenshot gates. Recommend a read-only sprint_release VIEW (B7 non-invasive) first.
+2. **Finish discovery** — D4 ERD, D6 data flow, D12/D13.
+3. **Confirm contracts** — STATUS_MAPPING + DATE_SOURCES + QA-team (unblocks G-M2/4/5, burndown, team report).
 
 ### RED FLAG
 None. Writes were data-only to existing cyij tables, tagged + rollback-ready. No prod, no DDL, no src changes.

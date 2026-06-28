@@ -109,14 +109,14 @@ CAT-TESTHUB-REPORT-REVAMP-20260627-001/
 | Phase | Name | Status |
 |---|---|---|
 | 1 | Discovery (D1–D16) | 🟢 SUBSTANTIAL (D1,D2,D3,D5,D7,D8,D9,D10,D11,D14,D15,D16 done+proven; D4/D6/D12/D13 remain) |
-| 2 | Functional blueprint | 🔴 NOT STARTED |
-| 3 | Report taxonomy redesign | 🔴 NOT STARTED |
+| 2 | Functional blueprint | 🟢 DRAFT (B2-B7) — awaiting review |
+| 3 | Report taxonomy redesign | 🟢 DRAFT (B1, 11 groups) — awaiting review |
 | 4 | Upstream impact proposal | 🔴 NOT STARTED |
 | 5 | Data model approval pack | 🔴 NOT STARTED |
 | 5.5 | Demo seed (real-linked) | 🟢 DONE (cyij, tagged, rollback-ready) |
 | 6 | UI lab / prototype | 🟡 PARTIAL (lab seeded; not yet wired to real tm_* + ph_issues) |
 | 7 | User review + design approval | 🔴 NOT STARTED |
-| 8 | Real wiring | ⛔ BLOCKED (gated on 1–7 approval) |
+| 8 | Real wiring | 🟢 STARTED — Project Testing Status live at /testhub/reports/project-status (real cyij data, gates green) |
 
 ---
 

@@ -13,6 +13,7 @@
  * actual_result and due_date. All now persist to tm_defects.
  */
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Bug } from '@/lib/atlaskit-icons';
@@ -144,6 +145,7 @@ export function CreateDefectModalG25({
   linkedExecutionId,
 }: Props) {
   const create = useCreateDefect();
+  const navigate = useNavigate();
   const [createAnother, setCreateAnother] = useState(false);
   const { data: approvedProfiles = [] } = useApprovedProfiles();
   const assigneeOptions: AssigneeOption[] = approvedProfiles.map((p) => ({
@@ -190,7 +192,11 @@ export function CreateDefectModalG25({
       run_id: linkedExecutionId || undefined,
     });
     form.reset();
-    if (!keepOpen) onClose();
+    if (!keepOpen) {
+      onClose();
+      // No per-defect detail route in testhub — land on the defects list.
+      navigate('/testhub/defects');
+    }
   };
 
   const submit = (keepOpen: boolean) =>

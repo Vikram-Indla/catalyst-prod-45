@@ -4,18 +4,29 @@ import Button from "@atlaskit/button/new";
 import AddIcon from "@atlaskit/icon/core/add";
 import { CreateStoryModal } from "@/components/workhub/create-story";
 import { CreateBusinessRequestModal } from "@/components/business-requests/CreateBusinessRequestModal";
+import { NewIncidentModal } from "@/pages/incidenthub/components/NewIncidentModal";
+import { CreateDefectModalG25 } from "@/components/defects/g25/CreateDefectModal";
 
 /**
- * "+ Create" button — opens the Jira-style CreateStoryModal directly.
- * No dropdown. One click → full create dialog.
+ * "+ Create" button — opens the canonical create surface for the current
+ * module's primary entity. One click → the right create dialog.
  *
- * When the user selects "Business Request" in the work type picker,
- * CreateStoryModal hands off to CreateBusinessRequestModal.
+ * Per-module default (CAT-TASKS-20260627-001 + follow-up): the global Create
+ * button routes by the active module so each opens its own entity create flow.
+ * Each module's primary entity lives in a different table, so this routes to
+ * the canonical create modal for that entity rather than forcing everything
+ * through the unified work-item modal:
  *
- * Route-scoped behaviour: on /product-hub/:key/backlog the Work-type
- * dropdown is restricted to 'Business Request' and pre-selected, so the
- * modal auto-hands off to CreateBusinessRequestModal on open (BRs live
- * in business_requests, not ph_issues).
+ *   /project-hub/*   → CreateStoryModal, default work type 'Story'
+ *   /product-hub/*   → CreateBusinessRequestModal (BRs live in business_requests)
+ *   /tasks/*         → CreateStoryModal, default work type 'Task' (workstream + tasks table)
+ *   /incident-hub/*  → NewIncidentModal (incidents table)
+ *   /testhub/*       → CreateDefectModalG25 (defects table)
+ *   everywhere else  → CreateStoryModal, default work type 'Story'
+ *
+ * The user can still switch work type inside the unified modal; selecting
+ * 'Business Request' there hands off to CreateBusinessRequestModal, and that
+ * modal's type picker can route back via onWorkTypeChange → pendingWorkType.
  */
 
 interface CreateDropdownProps {
@@ -25,15 +36,18 @@ interface CreateDropdownProps {
 export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const [storyOpen, setStoryOpen] = useState(false);
   const [brOpen, setBrOpen] = useState(false);
+  const [incidentOpen, setIncidentOpen] = useState(false);
+  const [defectOpen, setDefectOpen] = useState(false);
   const [pendingWorkType, setPendingWorkType] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
   const params = useParams<{ key?: string }>();
-  const isProductHubBacklog = /^\/product-hub\/[^/]+\/backlog/.test(pathname);
-  // CAT-TASKS-20260627-001 (Slice 9B): inside the Tasks module the "+ Create"
-  // button opens the canonical create modal defaulted to 'Task' (workstream +
-  // tasks table). The user can still switch to other work types. Scoped strictly
-  // to /tasks/* so Story / Business Request defaults are untouched elsewhere.
+
+  // Module detection from the URL prefix. Each module's "+ Create" opens its
+  // own primary-entity create flow.
+  const isProductHub = /^\/product-hub(\/|$)/.test(pathname);
   const isTasksModule = /^\/tasks(\/|$)/.test(pathname);
+  const isIncidentHub = /^\/incident-hub(\/|$)/.test(pathname);
+  const isTestHub = /^\/testhub(\/|$)/.test(pathname);
 
   // 2026-06-26: derive project context from the URL so the modal auto-selects
   // the current project. Without this, opening Create from
@@ -45,12 +59,19 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
     return m ? m[1] : undefined;
   }, [params.key, pathname]);
 
+  const handleCreate = () => {
+    if (isIncidentHub) { setIncidentOpen(true); return; }
+    if (isTestHub) { setDefectOpen(true); return; }
+    if (isProductHub) { setBrOpen(true); return; }
+    setStoryOpen(true);
+  };
+
   return (
     <>
       <Button
         appearance="primary"
         iconBefore={() => <AddIcon label="" />}
-        onClick={() => setStoryOpen(true)}
+        onClick={handleCreate}
       >
         {iconOnly ? "" : "Create"}
       </Button>
@@ -60,10 +81,9 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         onClose={() => { setStoryOpen(false); setPendingWorkType(undefined); }}
         onOpenBusinessRequest={() => { setStoryOpen(false); setBrOpen(true); }}
         projectKey={projectKeyFromUrl}
-        workTypes={isProductHubBacklog ? ['Business Request'] : undefined}
         defaultWorkType={
           pendingWorkType ??
-          (isProductHubBacklog ? 'Business Request' : isTasksModule ? 'Task' : 'Story')
+          (isTasksModule ? 'Task' : 'Story')
         }
       />
 
@@ -72,6 +92,10 @@ export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
         onClose={() => setBrOpen(false)}
         onWorkTypeChange={(type) => { setBrOpen(false); setPendingWorkType(type); setStoryOpen(true); }}
       />
+
+      <NewIncidentModal open={incidentOpen} onClose={() => setIncidentOpen(false)} />
+
+      <CreateDefectModalG25 open={defectOpen} onClose={() => setDefectOpen(false)} />
     </>
   );
 }

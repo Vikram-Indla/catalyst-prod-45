@@ -24,7 +24,6 @@
 import React from 'react';
 import type { Column, CellProps } from '@/components/shared/JiraTable/types';
 import { makeKeyCell } from '@/components/shared/JiraTable/cells';
-import { firstStrongDir } from '@/lib/detectArabic';
 import {
   makeSummaryInlineEditCell,
   // 2026-06-17: switched from makeStatusEditCellAkPopup → makeStatusEditCell.
@@ -168,13 +167,9 @@ export function buildTasksListColumns(args: TasksListColumnArgs): Column<Planner
           onOpenWorkItem: (row) => onOpen(row),
         });
         return function WorkCell(props: CellProps<PlannerTask>) {
-          // RTL parity: mirror the Work cell per-row from the title (not the
-          // latin key, which would force ltr) so it matches the summary span's
-          // own dir="auto". See firstStrongDir in @/lib/detectArabic.
           return React.createElement(
             'span',
             {
-              dir: firstStrongDir(props.row.title),
               style: {
                 display: 'flex',
                 alignItems: 'center',

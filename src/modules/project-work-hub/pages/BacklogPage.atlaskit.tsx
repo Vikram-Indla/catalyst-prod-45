@@ -23,7 +23,7 @@ import { BUSINESS_REQUEST_SUBTASK_TYPES } from '@/components/catalyst-detail-vie
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import InlineEdit from '@atlaskit/inline-edit';
 import { BizArabicTranslateLink } from '@/components/shared/title-translate/BizArabicTranslateLink';
-import { containsArabic as containsArabicHelper, firstStrongDir } from '@/lib/detectArabic';
+import { containsArabic as containsArabicHelper } from '@/lib/detectArabic';
 import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
@@ -2765,16 +2765,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           const cellProps = displayedTitle != null
             ? { ...props, row: { ...row, title: displayedTitle }, value: displayedTitle }
             : props;
-          // RTL parity: mirror the whole Work cell per-row so an Arabic title
-          // gets icon+key on the right and text flowing right→left. dir is
-          // derived from the TITLE (not container content) — the latin key
-          // would otherwise force dir="auto" to ltr on every row. Matches the
-          // inner summary span's own dir="auto" resolution. Recomputed from
-          // displayedTitle so a translate→English flips the row back to ltr.
-          const rowDir = firstStrongDir(displayedTitle ?? row.title);
           return (
             <span
-              dir={rowDir}
               style={{
                 display: 'flex',
                 alignItems: 'center',
