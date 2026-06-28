@@ -132,7 +132,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
           <span
             style={{
               fontFamily: 'ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               color: COLORS.textMuted
             }}
@@ -142,7 +142,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
           <span style={{ color: COLORS.textLight }}>·</span>
           <span
             style={{
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: COLORS.textMuted,
               cursor: 'pointer',
               transition: 'color 0.15s ease'
@@ -200,7 +200,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               onKeyDown={handleTitleKeyDown}
               style={{
                 flex: 1,
-                fontSize: '24px',
+                fontSize: 'var(--ds-font-size-800)',
                 fontWeight: 600,
                 color: COLORS.textPrimary,
                 lineHeight: 1.3,
@@ -239,7 +239,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
             <h1
               style={{
                 flex: 1,
-                fontSize: '24px',
+                fontSize: 'var(--ds-font-size-800)',
                 fontWeight: 600,
                 color: COLORS.textPrimary,
                 lineHeight: 1.3,
@@ -314,10 +314,10 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               zIndex: 100001
             }}
           >
-            <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--fg-1)', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--fg-1)', marginBottom: '8px' }}>
               Delete Task
             </h3>
-            <p style={{ fontSize: '14px', color: 'var(--fg-3)', marginBottom: '24px' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-3)', marginBottom: '24px' }}>
               Are you sure you want to delete "{task.title}"? This action cannot be undone.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
@@ -328,7 +328,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                   backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
                   border: 'none',
                   borderRadius: '12px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   cursor: 'pointer'
@@ -344,7 +344,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                   backgroundColor: 'var(--ds-text-danger, #dc2626)',
                   border: 'none',
                   borderRadius: '12px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
@@ -396,7 +396,7 @@ const KebabMenu: React.FC<{
           cursor: disabled ? 'not-allowed' : 'pointer',
           backgroundColor: isHovered && !disabled ? (danger ? 'var(--ds-background-danger, #fef2f2)' : COLORS.surfaceHover) : 'transparent',
           color: danger ? 'var(--ds-text-danger, #dc2626)' : COLORS.textPrimary,
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           transition: 'background-color 0.1s ease',
           opacity: disabled ? 0.5 : 1
         }}

@@ -59,6 +59,30 @@ describe('huddleStore', () => {
     expect(useHuddleStore.getState().active).toBeNull();
     expect(closeMock).toHaveBeenCalledOnce();
   });
+
+  it('enter sets windowState open and chat panel closed', async () => {
+    await useHuddleStore.getState().enter({
+      conversationId: 'c1', huddleId: 'h1', conversationName: 'Zulqarnain', selfId: 'me',
+    });
+    expect(useHuddleStore.getState().windowState).toBe('open');
+    expect(useHuddleStore.getState().chatPanelOpen).toBe(false);
+  });
+
+  it('leave inserts a huddle_summary event message', async () => {
+    await useHuddleStore.getState().enter({
+      conversationId: 'c1', huddleId: 'h1', conversationName: 'Zulqarnain', selfId: 'me',
+    });
+    dbCalls.length = 0;
+    useHuddleStore.getState().leave();
+    await Promise.resolve(); // let the async insert flush
+    const summary = dbCalls.find(
+      (c) => c.op === 'insert' && c.vals?.event_type === 'huddle_summary',
+    );
+    expect(summary).toBeTruthy();
+    expect(summary.vals.event_meta.huddle_id).toBe('h1');
+    expect(summary.vals.event_meta.with_name).toBe('Zulqarnain');
+    expect(summary.vals.body_text).toBe('A huddle happened');
+  });
 });
 
 describe('huddleStore leave persistence', () => {

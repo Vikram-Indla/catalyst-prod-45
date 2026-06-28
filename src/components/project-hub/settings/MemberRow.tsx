@@ -50,20 +50,20 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
       {/* Avatar */}
       <div
         className="flex items-center justify-center rounded-full flex-shrink-0"
-        style={{ width: 32, height: 32, background: avatarColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 12, fontWeight: 600 }}
+        style={{ width: 32, height: 32, background: avatarColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}
       >
         {initials || '?'}
       </div>
 
       {/* Name + Email */}
       <div className="flex-1 min-w-0">
-        <div className="truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>
+        <div className="truncate" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--fg-1)' }}>
           {name}
           {isCurrentUser && (
-            <span style={{ fontSize: 11, color: 'var(--fg-3)', fontWeight: 400, marginLeft: 6 }}>(you)</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontWeight: 400, marginLeft: 6 }}>(you)</span>
           )}
         </div>
-        <div className="truncate" style={{ fontSize: 13, color: 'var(--fg-3)' }}>{email}</div>
+        <div className="truncate" style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)' }}>{email}</div>
       </div>
 
       {/* Role pill */}
@@ -72,7 +72,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
           onClick={() => !isCurrentUser && setDropdownOpen(!dropdownOpen)}
           className="rounded-full transition-colors"
           style={{
-            fontSize: 11, fontWeight: 600, padding: '3px 10px',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '3px 10px',
             background: rs.bg, color: rs.text,
             border: 'none', cursor: isCurrentUser ? 'default' : 'pointer',
           }}
@@ -95,7 +95,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
                 onClick={() => { onRoleChange(id, r); setDropdownOpen(false); }}
                 className="w-full text-left px-3 py-2 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
                 style={{
-                  fontSize: 12, fontWeight: r === role ? 600 : 400,
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: r === role ? 600 : 400,
                   color: r === role ? 'var(--cp-blue)' : 'var(--fg-2)',
                   border: 'none', background: 'transparent', cursor: 'pointer',
                   display: 'block',

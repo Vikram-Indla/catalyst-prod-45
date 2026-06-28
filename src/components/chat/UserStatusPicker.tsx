@@ -115,7 +115,7 @@ export function UserStatusPicker({
                 style={{
                   display: 'block',
                   marginBottom: '8px',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--ds-text-subtle, #42526E)',
                   textTransform: 'uppercase',
@@ -138,7 +138,7 @@ export function UserStatusPicker({
                     title={label}
                     style={{
                       padding: '12px',
-                      fontSize: '24px',
+                      fontSize: 'var(--ds-font-size-800)',
                       border: emoji === e ? '2px solid var(--ds-link, #0052CC)' : '1px solid var(--ds-border, #DFE1E6)',
                       borderRadius: '6px',
                       background: emoji === e ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',
@@ -158,7 +158,7 @@ export function UserStatusPicker({
                 style={{
                   display: 'block',
                   marginBottom: '8px',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--ds-text-subtle, #42526E)',
                   textTransform: 'uppercase',
@@ -175,7 +175,7 @@ export function UserStatusPicker({
               />
               <div
                 style={{
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--ds-text-subtlest, #6B778C)',
                   marginTop: '4px',
                 }}
@@ -190,7 +190,7 @@ export function UserStatusPicker({
                 style={{
                   display: 'block',
                   marginBottom: '8px',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--ds-text-subtle, #42526E)',
                   textTransform: 'uppercase',
@@ -212,7 +212,7 @@ export function UserStatusPicker({
                     onClick={() => setExpireAfterMinutes(opt.minutes)}
                     style={{
                       padding: '8px 12px',
-                      fontSize: '13px',
+                      fontSize: 'var(--ds-font-size-300)',
                       border: expireAfterMinutes === opt.minutes ? '2px solid var(--ds-link, #0052CC)' : '1px solid var(--ds-border, #DFE1E6)',
                       borderRadius: '4px',
                       background: expireAfterMinutes === opt.minutes ? 'var(--ds-background-selected, #E9F2FE)' : 'transparent',

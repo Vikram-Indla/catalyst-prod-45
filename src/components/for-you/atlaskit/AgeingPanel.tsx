@@ -166,13 +166,13 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket
     >
       <span style={{
         transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-        transition: 'transform 150ms', display: 'inline-flex', fontSize: 12,
+        transition: 'transform 150ms', display: 'inline-flex', fontSize: 'var(--ds-font-size-200)',
         color: token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)'),
       }}>
         ▾
       </span>
       <span style={{
-        fontSize: 14, fontWeight: 653, lineHeight: '20px',
+        fontSize: 'var(--ds-font-size-400)', fontWeight: 653, lineHeight: '20px',
         color: token('color.text', 'var(--ds-text, #172B4D)'),
       }}>
         {label}
@@ -181,7 +181,7 @@ function SectionHeading({ label, count, collapsed, onToggle, isArchived, bracket
         <Lozenge appearance="default">archived</Lozenge>
       )}
       <span style={{
-        fontSize: 12, fontWeight: 400, lineHeight: '16px',
+        fontSize: 'var(--ds-font-size-200)', fontWeight: 400, lineHeight: '16px',
         color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
         background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
         padding: `0 ${token('space.100', '8px')}`, borderRadius: 999,
@@ -212,14 +212,14 @@ function ArchivedRow({ item }: {
       >
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <span style={{
-          fontFamily: 'var(--ds-font-family-monospace, "Charlie Code", ui-monospace, monospace)', fontSize: 12, fontWeight: 500,
+          fontFamily: 'var(--ds-font-family-monospace, "Charlie Code", ui-monospace, monospace)', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
           color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
           flexShrink: 0, minWidth: 72,
         }}>
           {item.issue_key}
         </span>
         <span dir="auto" style={{
-          fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'),
+          fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text, #172B4D)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           flex: 1, minWidth: 0,
         }}>
@@ -227,14 +227,14 @@ function ArchivedRow({ item }: {
         </span>
         <JiraForYouLozenge status={item.status} statusCategory={item.status_category} />
         <span style={{
-          fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+          fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
           flexShrink: 0, minWidth: 40, textAlign: 'right',
         }}>
           {item.days_open}d
         </span>
         {item.archived_at && (
           <span style={{
-            fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
+            fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             flexShrink: 0,
           }}>
             {formatDate(item.archived_at)}
@@ -262,21 +262,21 @@ function ArchivedRow({ item }: {
             }}
           >
             <h2 style={{
-              margin: 0, fontSize: 16, fontWeight: 653,
+              margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 653,
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               marginBottom: token('space.200', '16px'),
             }}>
               This item is archived
             </h2>
             <p style={{
-              margin: 0, fontSize: 14, fontWeight: 500,
+              margin: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               marginBottom: token('space.050', '4px'),
             }}>
               {item.issue_key} — {item.summary}
             </p>
             <p style={{
-              margin: 0, fontSize: 13,
+              margin: 0, fontSize: 'var(--ds-font-size-300)',
               color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
               marginBottom: token('space.200', '16px'),
             }}>
@@ -317,14 +317,14 @@ function ActiveAgeingRow({ item, onSelect, isArchivingSoon, actions }: {
         display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
       }}>
         <span style={{
-          fontSize: 11, fontWeight: 500,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
           color: item.daysOpen >= 53
             ? token('color.text.warning', '#FF991F')
             : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
         }}>
           {countdownText(item.daysOpen, item.jiraCreatedAt)}
         </span>
-        <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
           · Open {item.daysOpen}d
         </span>
       </div>
@@ -423,7 +423,7 @@ export function AgeingPanelView({
     return (
       <div style={{ padding: token('space.400', '32px'), display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
         <Spinner size="small" />
-        <span style={{ color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 14 }}>
+        <span style={{ color: token('color.text.subtle', 'var(--ds-icon-subtle, #626F86)'), fontSize: 'var(--ds-font-size-400)' }}>
           Loading ageing items…
         </span>
       </div>
@@ -551,7 +551,7 @@ export function AgeingPanelView({
       {grouped.length === 0 && search && (
         <div style={{
           padding: token('space.400', '32px'), textAlign: 'center',
-          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 14,
+          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), fontSize: 'var(--ds-font-size-400)',
         }}>
           No items match "{search}".
         </div>
@@ -582,7 +582,7 @@ export function AgeingPanelView({
               borderRadius: 8,
               boxShadow: token('elevation.shadow.overlay', '0 8px 32px var(--ds-shadow-raised, rgba(0,0,0,0.28)), 0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,0.12))'),
               overflow: 'hidden',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             <button
@@ -600,7 +600,7 @@ export function AgeingPanelView({
               <AkCloseIcon label="" size="small" />
             </button>
             <div style={{ width: 1, height: 20, background: 'var(--ds-surface, rgba(255,255,255,0.20))' }} />
-            <span style={{ padding: '0 16px', fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap', userSelect: 'none' }}>
+            <span style={{ padding: '0 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, whiteSpace: 'nowrap', userSelect: 'none' }}>
               {selectedIds.size} {selectedIds.size === 1 ? 'item' : 'items'} selected
             </span>
             <div style={{ width: 1, height: 20, background: 'var(--ds-surface, rgba(255,255,255,0.20))' }} />
@@ -620,7 +620,7 @@ export function AgeingPanelView({
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 height: 44, padding: '0 16px', background: 'transparent', border: 'none',
                 color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'), cursor: archiving ? 'wait' : 'pointer',
-                fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
+                fontSize: 'var(--ds-font-size-400)', fontWeight: 500, fontFamily: 'inherit',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface, rgba(255,255,255,0.10))')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}

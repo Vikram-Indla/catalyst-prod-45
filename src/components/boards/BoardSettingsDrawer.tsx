@@ -182,7 +182,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
             <h2 style={{
-              fontSize: 14, fontFamily: 'var(--cp-font-heading)', fontWeight: 700,
+              fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--cp-font-heading)', fontWeight: 700,
               color: 'var(--fg-1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>Settings</h2>
             {isDirty && (
@@ -243,7 +243,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
               </Section>
 
               <Section label="Linked filter">
-                <p style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', margin: '0 0 8px', lineHeight: 1.5 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', margin: '0 0 8px', lineHeight: 1.5 }}>
                   The board shows issues matching this saved filter. The filter owner is displayed as the board lead.
                 </p>
                 <select
@@ -252,7 +252,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   style={{
                     width: '100%', height: 32, padding: '0 8px', boxSizing: 'border-box',
                     border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-                    fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                    fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)',
                     background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
                     outline: 'none', appearance: 'auto',
                   }}
@@ -276,10 +276,10 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                       <RadioCircle selected={visibility === opt.value} />
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>{opt.label}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>{opt.label}</span>
                           {opt.warning && <AlertTriangle size={12} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />}
                         </div>
-                        <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 0 }}>{opt.desc}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 0 }}>{opt.desc}</div>
                       </div>
                     </button>
                   ))}
@@ -320,7 +320,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
           {tab === 'query' && (
             <>
               <Section label="Board Query">
-                <p style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', margin: '0 0 8px', lineHeight: 1.5 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', margin: '0 0 8px', lineHeight: 1.5 }}>
                   Issues matching this query will appear on the board.
                 </p>
                 <textarea
@@ -329,14 +329,14 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   rows={3}
                   style={{
                     ...inputStyle, height: 'auto', padding: '8px 12px', resize: 'vertical',
-                    fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 12,
+                    fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 'var(--ds-font-size-200)',
                     background: 'var(--ds-surface-sunken, #F7F8F9)',
                   }}
                 />
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
                   {QUERY_PRESETS.map(p => (
                     <button key={p.label} onClick={() => setBoardQuery(p.jql(null))} style={{
-                      fontSize: 11, padding: '4px 8px', borderRadius: 10,
+                      fontSize: 'var(--ds-font-size-100)', padding: '4px 8px', borderRadius: 10,
                       border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))',
                       background: 'var(--bg-app)', color: 'var(--cp-blue)',
                       cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -348,7 +348,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
               </Section>
 
               <Section label="Quick Filters">
-                <p style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', margin: '0 0 8px' }}>
+                <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', margin: '0 0 8px' }}>
                   Filter chips shown in the board toolbar.
                 </p>
 
@@ -360,14 +360,14 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     background: 'var(--bg-app)',
                   }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                         {f.name}
                         {f.isSystem && (
-                          <span style={{ marginLeft: 8, fontSize: 10, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>system</span>
+                          <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>system</span>
                         )}
                       </div>
                       {f.filterType === 'jql' && (
-                        <div style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: 'ui-monospace, SFMono-Regular, monospace', marginTop: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)', fontFamily: 'ui-monospace, SFMono-Regular, monospace', marginTop: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {String((f.filterValue as any).jql ?? '')}
                         </div>
                       )}
@@ -393,9 +393,9 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     <input value={newFilterJql} onChange={e => setNewFilterJql(e.target.value)}
                       placeholder="assignee = currentUser()"
                       onKeyDown={e => e.key === 'Enter' && handleAddFilter()}
-                      style={{ ...inputStyle, height: 34, fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 12, marginBottom: 4 }} />
+                      style={{ ...inputStyle, height: 34, fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 'var(--ds-font-size-200)', marginBottom: 4 }} />
                     {newFilterJql.trim() && (
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>
                         {qfJqlPreview.isLoading ? 'Checking…' : `${qfJqlPreview.data?.totalCount ?? 0} issues match`}
                       </div>
                     )}
@@ -441,7 +441,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   }}>
                     <GripVertical size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" style={{ cursor: 'grab', flexShrink: 0 }} />
                     <span style={{
-                      fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)',
                       fontFamily: 'var(--cp-font-body)', flex: 1, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{col.name}</span>
@@ -473,7 +473,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
               </div>
               {projectKey && (
                 <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
-                  <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
+                  <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', lineHeight: 1.5 }}>
                     Map workflow statuses to columns to control which issues appear in each column.
                   </p>
                   <button
@@ -481,7 +481,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
                       background: 'var(--ds-background-neutral, #F1F2F4)', border: '2px solid transparent',
-                      borderRadius: 3, cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                      borderRadius: 3, cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
                       color: 'var(--ds-text, #172B4D)',
                     }}
                   >
@@ -505,8 +505,8 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   }}>
                     <RadioCircle selected={swimlane === opt.value} />
                     <div>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>{opt.label}</div>
-                      <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 0 }}>{opt.desc}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>{opt.label}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 0 }}>{opt.desc}</div>
                     </div>
                   </button>
                 ))}
@@ -520,20 +520,20 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                       flex: 1, padding: '8px', borderRadius: 6, cursor: 'pointer', textAlign: 'center',
                       border: `0.75px solid ${cardLayout === layout ? 'var(--cp-blue)' : 'var(--ds-border, rgba(15,23,42,0.12))'}`,
                       background: cardLayout === layout ? 'var(--ds-background-selected, rgba(37,99,235,0.04))' : 'var(--ds-surface, #FFFFFF)',
-                      fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text, #172B4D)',
                     }}>
                       {layout === 'default' ? 'Default' : 'Compact'}
                     </button>
                   ))}
                 </div>
-                <p style={{ margin: '8px 0 0', fontSize: 11, color: 'var(--ds-text-subtle, #42526E)' }}>
+                <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)' }}>
                   {cardLayout === 'compact' ? 'Show only the issue key and summary.' : 'Show assignee, priority, and labels on each card.'}
                 </p>
               </div>
 
               <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
                 <FieldLabel>Card colors</FieldLabel>
-                <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+                <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
                   Highlight cards matching a JQL clause with a left-border color.
                 </p>
                 {cardColors.map(rule => (
@@ -543,8 +543,8 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     borderLeft: `4px solid ${rule.color}`,
                   }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.label}</div>
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.jql}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.label}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rule.jql}</div>
                     </div>
                     <button onClick={() => setCardColors(prev => prev.filter(r => r.id !== rule.id))} style={{
                       width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer',
@@ -559,21 +559,21 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                     <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                       <input value={newCardColorLabel} onChange={e => setNewCardColorLabel(e.target.value)}
                         placeholder="Label (e.g. Blocked)"
-                        style={{ flex: 1, height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 13, color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const }} />
+                        style={{ flex: 1, height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const }} />
                       <input type="color" value={newCardColorHex} onChange={e => setNewCardColorHex(e.target.value)}
                         style={{ width: 32, height: 32, padding: 0, border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, cursor: 'pointer' }} />
                     </div>
                     <input value={newCardColorJql} onChange={e => setNewCardColorJql(e.target.value)}
                       placeholder="JQL: priority = Critical"
-                      style={{ width: '100%', height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 4 }} />
+                      style={{ width: '100%', height: 32, padding: '0 8px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, fontSize: 'var(--ds-font-size-200)', fontFamily: 'monospace', color: 'var(--ds-text, #172B4D)', background: 'var(--ds-background-neutral-subtle, #F7F8F9)', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 4 }} />
                     {newCardColorJql.trim() && (
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)', marginBottom: 8 }}>
                         {ccJqlPreview.isLoading ? 'Checking…' : `${ccJqlPreview.data?.totalCount ?? 0} issues match`}
                       </div>
                     )}
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => { setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR); }} style={{
-                        height: 28, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'transparent', cursor: 'pointer', fontSize: 12, color: 'var(--ds-text, #172B4D)',
+                        height: 28, padding: '0 12px', border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)',
                       }}>Cancel</button>
                       <button
                         disabled={!newCardColorLabel.trim() || !newCardColorJql.trim()}
@@ -583,7 +583,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                           setAddingCardColor(false); setNewCardColorLabel(''); setNewCardColorJql(''); setNewCardColorHex(DEFAULT_CARD_COLOR);
                         }}
                         style={{
-                          height: 28, padding: '0 12px', border: '2px solid transparent', borderRadius: 3, cursor: 'pointer', fontSize: 12, fontWeight: 500,
+                          height: 28, padding: '0 12px', border: '2px solid transparent', borderRadius: 3, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                           background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-text-inverse, #FFFFFF)',
                         }}
                       >Add</button>
@@ -593,7 +593,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
                   <button onClick={() => setAddingCardColor(true)} style={{
                     display: 'flex', alignItems: 'center', gap: 4, height: 28, padding: '0 8px',
                     border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 4, background: 'transparent',
-                    cursor: 'pointer', fontSize: 12, color: 'var(--ds-text-subtle, #42526E)',
+                    cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)',
                   }}>
                     <Plus size={13} /> Add color rule
                   </button>
@@ -604,7 +604,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
 
           {tab === 'access' && (
             <>
-              <div style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginBottom: 12 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginBottom: 12 }}>
                 Manage who has access to this board and their roles.
               </div>
               <button style={{
@@ -647,7 +647,7 @@ export default function BoardSettingsDrawer({ board, onClose, projectKey }: Prop
 const inputStyle: React.CSSProperties = {
   width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
   border: '0.75px solid var(--ds-border, rgba(15,23,42,0.12))', borderRadius: 6,
-  fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
+  fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
   outline: 'none', background: 'var(--bg-app)',
 };
 
@@ -655,7 +655,7 @@ function Section({ label, children }: { label: string; children: React.ReactNode
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{
-        fontSize: 11, fontWeight: 600,
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
         color: 'var(--ds-text-subtlest, var(--fg-4, #6B778C))',
         fontFamily: 'var(--cp-font-body)', marginBottom: 8,
       }}>{label}</div>
@@ -692,7 +692,7 @@ function Badge({ children, bg, color }: { children: React.ReactNode; bg: string;
   return (
     <span style={{
       display: 'inline-flex', height: 16, padding: '0 4px', borderRadius: 4,
-      fontSize: 10, fontWeight: 600, background: bg, color,
+      fontSize: 'var(--ds-font-size-50)', fontWeight: 600, background: bg, color,
       fontFamily: 'var(--cp-font-body)', alignItems: 'center', flexShrink: 0,
     }}>{children}</span>
   );

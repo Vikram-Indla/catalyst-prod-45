@@ -50,7 +50,7 @@ function GeneratingOverlay({ label }: { label: string }) {
       <Spinner size="large" />
       <div style={{
         marginTop: 16,
-        fontSize: 16,
+        fontSize: 'var(--ds-font-size-500)',
         fontWeight: 500,
         color: token('color.text', 'var(--ds-text, #172B4D)'),
       }}>

@@ -67,13 +67,13 @@ export function MultiSelectDropdown({
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)' }}>
+        <label style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)' }}>
           {label}
         </label>
         {selected.length > 0 && (
           <button
             onClick={() => onChange([])}
-            style={{ fontSize: '10px', color: accentColor, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
+            style={{ fontSize: 'var(--ds-font-size-50)', color: accentColor, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
           >
             Clear all
           </button>
@@ -92,7 +92,7 @@ export function MultiSelectDropdown({
         >
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
             {selected.length === 0 ? (
-              <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-body)' }}>{placeholder}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-body)' }}>{placeholder}</span>
             ) : selected.length <= 3 ? (
               selected.map(v => {
                 const opt = options.find(o => o.value === v)
@@ -101,7 +101,7 @@ export function MultiSelectDropdown({
                     key={v}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '4px',
-                      padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
+                      padding: '2px 8px', borderRadius: '4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
                       background: accentBg, color: accentColor, fontFamily: 'var(--cp-font-body)',
                     }}
                   >
@@ -116,7 +116,7 @@ export function MultiSelectDropdown({
                 )
               })
             ) : (
-              <span style={{ fontSize: '12px', color: accentColor, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: accentColor, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                 {selected.length} selected
               </span>
             )}
@@ -143,7 +143,7 @@ export function MultiSelectDropdown({
                 placeholder="Search…"
                 style={{
                   border: 'none', outline: 'none', width: '100%',
-                  fontSize: '12px', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+                  fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   background: 'transparent',
                 }}
               />
@@ -153,13 +153,13 @@ export function MultiSelectDropdown({
             <div style={{ padding: '6px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', display: 'flex', gap: '12px' }}>
               <button
                 onClick={() => onChange(filtered.map(o => o.value))}
-                style={{ fontSize: '10px', color: accentColor, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
+                style={{ fontSize: 'var(--ds-font-size-50)', color: accentColor, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
               >
                 Select all{search ? ' visible' : ''}
               </button>
               <button
                 onClick={() => onChange([])}
-                style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
+                style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
               >
                 Deselect all
               </button>
@@ -168,11 +168,11 @@ export function MultiSelectDropdown({
             {/* Options */}
             <div style={{ maxHeight: '220px', overflowY: 'auto' }}>
               {options.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontStyle: 'italic' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontStyle: 'italic' }}>
                   {emptyMessage}
                 </div>
               ) : filtered.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                   No matches for "{search}"
                 </div>
               ) : (
@@ -204,17 +204,17 @@ export function MultiSelectDropdown({
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontFamily: 'var(--cp-font-body)', fontWeight: isSelected ? 600 : 400 }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontFamily: 'var(--cp-font-body)', fontWeight: isSelected ? 600 : 400 }}>
                           {opt.label}
                         </span>
                         {opt.sublabel && (
-                          <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginLeft: '6px', fontFamily: 'var(--cp-font-body)' }}>
+                          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginLeft: '6px', fontFamily: 'var(--cp-font-body)' }}>
                             {opt.sublabel}
                           </span>
                         )}
                       </div>
                       {opt.badge && (
-                        <span style={{ fontSize: '9px', color: 'var(--ds-background-success-bold, #1F845A)', fontWeight: 600 }}>{opt.badge}</span>
+                        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-background-success-bold, #1F845A)', fontWeight: 600 }}>{opt.badge}</span>
                       )}
                     </div>
                   )

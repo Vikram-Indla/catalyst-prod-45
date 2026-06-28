@@ -26,7 +26,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.06em',
@@ -36,7 +36,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
 
   const valueStyle: React.CSSProperties = {
     fontFamily: FONT.heading,
-    fontSize: 28,
+    fontSize: 'var(--ds-font-size-800)',
     fontWeight: 700,
     color: ink[1],
     letterSpacing: '-0.03em',
@@ -53,17 +53,17 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>On Roadmap</div>
         <div style={valueStyle}>{stats.totalOnRoadmap}</div>
-        <div style={{ fontSize: 11, fontWeight: 500, color: ink[4], marginTop: 2 }}>of {stats.totalInitiatives} total business requests</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[4], marginTop: 2 }}>of {stats.totalInitiatives} total business requests</div>
       </div>
 
       {/* By Status */}
       <div style={cardStyle}>
         <div style={labelStyle}>By Status</div>
         <div className="flex items-baseline gap-2" style={{ marginTop: 4 }}>
-          <span style={{ fontFamily: FONT.heading, fontSize: 26, fontWeight: 700, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: ink[3] }}>Active</span>
-          <span style={{ fontFamily: FONT.heading, fontSize: 26, fontWeight: 700, color: ink[4], marginLeft: 8, letterSpacing: '-0.03em' }}>{stats.validationCount}</span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: ink[3] }}>Validation</span>
+          <span style={{ fontFamily: FONT.heading, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[3] }}>Active</span>
+          <span style={{ fontFamily: FONT.heading, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: ink[4], marginLeft: 8, letterSpacing: '-0.03em' }}>{stats.validationCount}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[3] }}>Validation</span>
         </div>
       </div>
 
@@ -71,7 +71,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>This Quarter</div>
         <div style={valueStyle}>{stats.currentQuarter}</div>
-        <div style={{ fontSize: 11, fontWeight: 500, color: ink[4], marginTop: 2 }}>Active business requests</div>
+        <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[4], marginTop: 2 }}>Active business requests</div>
       </div>
     </div>
   );

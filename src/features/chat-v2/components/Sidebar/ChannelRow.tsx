@@ -34,7 +34,7 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
           ? 'var(--cv2-text-strong)'
           : 'var(--cv2-text)',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: hasUnread || isActive ? 700 : 400,
         lineHeight: '24px',
         ...(hasHuddle ? { boxShadow: 'inset 3px 0 0 0 var(--ds-icon-success, #22A06B)' } : null),
@@ -82,7 +82,7 @@ export function ChannelRow({ conversation, isActive, onClick, hasHuddle = false 
             borderRadius: 9,
             background: 'var(--cv2-unread)',
             color: 'var(--ds-text-inverse, #FFFFFF)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',

@@ -21,7 +21,7 @@ function PropTypeChip({ type }: { type: string }) {
   return (
     <code
       style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontFamily: 'var(--ds-font-family-code)',
         background: token('color.background.neutral', '#091E420F'),
         color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -47,7 +47,7 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
         <span
           style={{
             fontFamily: 'var(--ds-font-family-code)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
             color: token('color.text', 'var(--ds-text, #172B4D)'),
           }}
@@ -68,7 +68,7 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
       <td
         style={{
           padding: token('space.100', '8px'),
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
           fontFamily: 'var(--ds-font-family-code)',
         }}
@@ -78,7 +78,7 @@ function PropRow({ prop }: { prop: ComponentPropSpec }) {
       <td
         style={{
           padding: token('space.100', '8px'),
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           lineHeight: '18px',
         }}
@@ -96,7 +96,7 @@ function PropsTable({ props }: { props: ComponentPropSpec[] }) {
   const headerStyle: React.CSSProperties = {
     textAlign: 'left',
     padding: token('space.100', '8px'),
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 600,
     color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
     textTransform: 'uppercase',
@@ -107,7 +107,7 @@ function PropsTable({ props }: { props: ComponentPropSpec[] }) {
 
   const sectionLabelStyle: React.CSSProperties = {
     padding: '4px 8px',
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 600,
     color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
     background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
@@ -123,7 +123,7 @@ function PropsTable({ props }: { props: ComponentPropSpec[] }) {
         overflow: 'hidden',
       }}
     >
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--ds-font-size-300)' }}>
         <thead>
           <tr>
             <th style={headerStyle}>Prop</th>
@@ -184,7 +184,7 @@ function CodeBlock({ code }: { code: string }) {
           background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
           border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
           borderRadius: 6,
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontFamily: 'var(--ds-font-family-code)',
           color: token('color.text', 'var(--ds-text, #172B4D)'),
           overflowX: 'auto',
@@ -231,7 +231,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
           {spec.atlaskit_package && (
             <code
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 padding: '2px 8px',
                 borderRadius: 3,
                 background: token('color.background.neutral', '#091E420F'),
@@ -249,7 +249,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
               rel="noreferrer"
               style={{
                 color: token('color.link', 'var(--ds-link, #0C66E4)'),
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 textDecoration: 'none',
               }}
             >
@@ -261,7 +261,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
               href={`vscode://file/${REPO_ROOT}/${filePath}`}
               style={{
                 color: token('color.link', 'var(--ds-link, #0C66E4)'),
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 textDecoration: 'none',
                 fontFamily: 'var(--ds-font-family-code)',
               }}
@@ -292,7 +292,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
               borderLeft: `3px solid ${token('color.border.information', '#1D9BF0')}`,
               background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
               borderRadius: '0 4px 4px 0',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               lineHeight: '20px',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
             }}
@@ -314,7 +314,7 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
               background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
               border: `1px solid ${token('color.border', 'var(--ds-border-disabled, #DCDFE4)')}`,
               borderRadius: 6,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               lineHeight: '20px',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
             }}
@@ -349,8 +349,8 @@ export function EditorSpecPanel({ spec, componentName, filePath }: EditorSpecPan
                   background: token('color.background.warning', 'var(--ds-background-warning, #FFF7D6)'),
                 }}
               >
-                <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>⚠</span>
-                <span style={{ fontSize: 13, lineHeight: '20px', color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>
+                <span style={{ fontSize: 'var(--ds-font-size-400)', flexShrink: 0, marginTop: 1 }}>⚠</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', lineHeight: '20px', color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>
                   {c}
                 </span>
               </div>

@@ -1322,7 +1322,7 @@ function DemandRowItem({
             color: row.assignee_name && row.assignee_name !== '—'
               ? token('color.text', 'var(--ds-text, #172B4D)')
               : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -1458,7 +1458,7 @@ function DemandRowItem({
                       alignItems: 'center',
                       gap: 8,
                       fontFamily: ATLAS_SANS,
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 400,
                       color: hasAssignee
                         ? token('color.text', 'var(--ds-text, #172B4D)')
@@ -1660,7 +1660,7 @@ function DemandRowItem({
                               alignItems: 'center',
                               gap: 8,
                               fontFamily: ATLAS_SANS,
-                              fontSize: 14,
+                              fontSize: 'var(--ds-font-size-400)',
                               fontWeight: 400,
                               color: hasAssignee
                                 ? token('color.text', 'var(--ds-text, #172B4D)')

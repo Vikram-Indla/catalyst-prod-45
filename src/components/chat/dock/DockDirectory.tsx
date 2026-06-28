@@ -208,7 +208,7 @@ function DmStackAvatar({ c, onCall = false }: { c: ChatConversation; onCall?: bo
           boxShadow: '0 0 0 2px var(--ds-surface-overlay, #FFFFFF)',
         }}
       >
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-inverse, #FFFFFF)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14h3v6H6a2 2 0 0 1-2-2zM20 14h-3v6h1a2 2 0 0 0 2-2z" />
         </svg>
       </span>

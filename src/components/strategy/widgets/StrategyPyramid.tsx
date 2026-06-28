@@ -127,10 +127,10 @@ export function StrategyPyramid() {
       case 'mission':
         return (
           <div>
-            <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 12 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 12 }}>
               {mission?.title || 'No mission defined'}
             </p>
-            <p style={{ fontSize: 13, color: 'var(--catalyst-text-secondary)', lineHeight: 1.7 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--catalyst-text-secondary)', lineHeight: 1.7 }}>
               {mission?.description || 'Set a mission statement to define your organization\'s purpose.'}
             </p>
           </div>
@@ -138,7 +138,7 @@ export function StrategyPyramid() {
       case 'vision':
         return (
           <div>
-            <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 16 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 16 }}>
               {vision?.title || 'No vision defined'}
             </p>
             {goals && goals.length > 0 && (
@@ -171,10 +171,10 @@ export function StrategyPyramid() {
                 <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))' }}>
                   <div className="flex items-center gap-2 mb-1">
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-link-pressed, #1e40af)', flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{t.title}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: avgProgress >= 70 ? 'var(--ds-link-pressed, #1e40af)' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{avgProgress}%</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--exec-text-primary)' }}>{t.title}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: avgProgress >= 70 ? 'var(--ds-link-pressed, #1e40af)' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{avgProgress}%</span>
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--exec-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
                     {themeGoals.length} Goals · {themeKrs.length} KRs
                   </div>
                   <div style={{ paddingLeft: 16 }}>
@@ -307,20 +307,20 @@ export function StrategyPyramid() {
             >
               <div style={{ width: 3, height: 28, borderRadius: 4, background: layer.color, flexShrink: 0 }} />
               <div className="flex-1 min-w-0">
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{layer.label}</div>
-                <div style={{ fontSize: 10, color: 'var(--exec-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--exec-text-primary)' }}>{layer.label}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                   {layer.description}
                 </div>
               </div>
               {layer.count !== undefined && layer.count > 0 && (
                 <span style={{
-                  fontSize: 10, fontWeight: 600, background: 'var(--exec-blue-50, #EFF6FF)', color: 'var(--exec-blue-700, #1E40AF)',
+                  fontSize: 'var(--ds-font-size-50)', fontWeight: 600, background: 'var(--exec-blue-50, #EFF6FF)', color: 'var(--exec-blue-700, #1E40AF)',
                   padding: '1px 8px', borderRadius: 9999, flexShrink: 0,
                 }}>
                   {layer.count}
                 </span>
               )}
-              <span style={{ color: 'var(--exec-text-tertiary)', fontSize: 14 }}>›</span>
+              <span style={{ color: 'var(--exec-text-tertiary)', fontSize: 'var(--ds-font-size-400)' }}>›</span>
             </div>
           ))}
         </div>

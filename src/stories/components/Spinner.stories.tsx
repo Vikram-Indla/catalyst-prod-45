@@ -20,7 +20,7 @@ export const AllSizes: Story = {
       {(['small', 'medium', 'large', 'xlarge'] as const).map((s) => (
         <div key={s} style={{ textAlign: 'center' }}>
           <Spinner size={s} />
-          <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginBlockStart: 8 }}>{s}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginBlockStart: 8 }}>{s}</div>
         </div>
       ))}
     </div>

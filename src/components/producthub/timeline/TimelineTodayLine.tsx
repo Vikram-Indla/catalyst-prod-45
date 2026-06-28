@@ -30,7 +30,7 @@ export const TimelineTodayLine: React.FC<TimelineTodayLineProps> = ({ granularit
       <div
         className="absolute -top-0.5 -translate-x-1/2 bg-destructive text-white px-1.5 py-0.5 rounded-sm"
         style={{
-          fontSize: 10,
+          fontSize: 'var(--ds-font-size-50)',
           fontWeight: 600,
           lineHeight: 1.2,
           fontVariantNumeric: 'tabular-nums',

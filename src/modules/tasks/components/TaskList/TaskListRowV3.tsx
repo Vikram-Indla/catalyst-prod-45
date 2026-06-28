@@ -239,7 +239,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
             }}
             style={{
               fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-              fontSize: '13px',
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 500,
               color: 'var(--ds-text-subtlest, #64748b)',
               whiteSpace: 'nowrap',

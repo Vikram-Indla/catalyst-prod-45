@@ -38,7 +38,7 @@ function AkBtn({
         background: primary
           ? hover ? 'var(--cp-primary-60, #0052CC)' : token('color.link', 'var(--ds-link, #0C66E4)')
           : hover ? token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
         color: primary ? 'var(--ds-text-inverse, #FFFFFF)' : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         cursor: 'pointer',

@@ -90,14 +90,14 @@ export function Swimlane({
             backgroundColor: color,
           }} />
         )}
-        {icon && <span style={{ fontSize: '16px' }}>{icon}</span>}
-        <span style={{ fontSize: '14px', fontWeight: 700, color: KANBAN_COLORS.textPrimary }}>{label}</span>
+        {icon && <span style={{ fontSize: 'var(--ds-font-size-500)' }}>{icon}</span>}
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: KANBAN_COLORS.textPrimary }}>{label}</span>
         <span style={{
           padding: '4px 12px',
           borderRadius: '12px',
           backgroundColor: KANBAN_COLORS.champagneLight,
           color: KANBAN_COLORS.bronzeDark,
-          fontSize: '12px',
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 700,
         }}>
           {count}

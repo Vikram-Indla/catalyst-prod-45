@@ -135,10 +135,10 @@ export function AddPeopleModal({
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
               Add people to <span style={{ color: 'var(--cv2-text-subtle)' }}>#</span>{channelTitle}
             </div>
-            <div style={{ marginTop: 4, fontSize: 13, color: 'var(--cv2-text-subtle)' }}>
+            <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-subtle)' }}>
               You can also add email addresses of people who aren't members of{' '}
               <strong style={{ color: 'var(--cv2-text-strong)' }}>{workspaceName}</strong>
             </div>
@@ -185,7 +185,7 @@ export function AddPeopleModal({
               border: 'none',
               outline: 'none',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               padding: '6px 4px',
             }}
           />
@@ -231,7 +231,7 @@ function Chip({ person, onRemove }: { person: PeopleHit; onRemove: () => void })
         padding: '4px 6px 4px 4px',
         background: 'var(--cv2-bg-row-selected)',
         borderRadius: 6,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 700,
         color: 'var(--cv2-text-strong)',
       }}
@@ -280,7 +280,7 @@ function PersonRow({ hit, onPick }: { hit: PeopleHit; onPick: () => void }) {
         cursor: 'pointer',
         textAlign: 'left',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
       }}
     >
       <Avatar name={hit.name} size={28} />
@@ -329,7 +329,7 @@ function PrimaryBtn({ onClick, disabled, children }: { onClick: () => void; disa
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}

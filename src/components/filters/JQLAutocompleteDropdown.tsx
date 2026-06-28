@@ -86,7 +86,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
       {/* Header */}
       <div style={{
         padding: '4px 10px',
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: token('font.weight.semibold'),
         color:      accent,
         borderBottom: `1px solid ${token('color.border')}`,
@@ -119,7 +119,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
                 border:        'none',
                 borderLeft:    isSel ? `3px solid ${accent}` : '3px solid transparent',
                 cursor:        'pointer',
-                fontSize:      13,
+                fontSize: 'var(--ds-font-size-300)',
                 color:         token('color.text'),
                 transition:    'background 0.1s',
               }}
@@ -135,7 +135,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
                 {item.label ?? item.value}
               </span>
               {item.description && (
-                <span style={{ marginLeft: 8, fontSize: 12, color: token('color.text.subtlest') }}>
+                <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
                   {item.description}
                 </span>
               )}
@@ -148,7 +148,7 @@ export function JQLAutocompleteDropdown({ result, anchorRect, selectedIndex = 0,
       <div style={{
         padding:      '4px 10px',
         borderTop:    `1px solid ${token('color.border')}`,
-        fontSize:     11,
+        fontSize: 'var(--ds-font-size-100)',
         color:        token('color.text.subtlest'),
         background:   `var(--ds-background-neutral-subtle, #F7F8F9)`,
         display:      'flex',

@@ -69,7 +69,7 @@ export function MessageComposerWithNotifications({
           borderRadius: '4px',
           border: '1px solid var(--ds-border, #DFE1E6)',
           fontFamily: 'inherit',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           minHeight: '80px',
         }}
       />
@@ -134,7 +134,7 @@ export function ChatMainViewWithNotifications({
             onChange={(e) => setSoundEnabled(e.target.checked)}
             defaultChecked={false}
           />
-          <span style={{ fontSize: '12px' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)' }}>
             Play sound on @mention
           </span>
         </label>
@@ -162,10 +162,10 @@ export function ChatMainViewWithNotifications({
               backgroundColor: 'var(--ds-surface-sunken, #F7F8F9)',
             }}
           >
-            <div style={{ fontWeight: 500, fontSize: '12px' }}>
+            <div style={{ fontWeight: 500, fontSize: 'var(--ds-font-size-200)' }}>
               {msg.authorName}
             </div>
-            <div style={{ fontSize: '14px', marginTop: '4px' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', marginTop: '4px' }}>
               {msg.bodyText}
             </div>
 
@@ -182,7 +182,7 @@ export function ChatMainViewWithNotifications({
                       border: `1px solid ${r.reactedByMe ? 'blue' : 'var(--ds-border, #ccc)'}`,
                       backgroundColor: r.reactedByMe ? '#e8f4ff' : 'var(--ds-surface-sunken, #F7F8F9)',
                       cursor: 'pointer',
-                      fontSize: '12px',
+                      fontSize: 'var(--ds-font-size-200)',
                     }}
                   >
                     {r.emoji} {r.count}

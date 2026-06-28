@@ -34,7 +34,7 @@ export default function SwimlaneRow({ id, name, count, children }: Props) {
           <ChevronDown size={14} color="var(--cp-text-muted)" />
         </span>
         <span style={{
-          fontSize: 12, fontWeight: 600, color: 'var(--cp-text-primary)',
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-text-primary)',
           fontFamily: 'var(--cp-font-mono)',
         }}>{name}</span>
         <span style={{

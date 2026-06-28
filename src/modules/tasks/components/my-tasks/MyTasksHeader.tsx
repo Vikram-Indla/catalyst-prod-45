@@ -214,7 +214,7 @@ function WorkstreamDropdown({
         <Layers size={14} style={{ color: selectedId ? displayColor : 'var(--ds-text-subtlest, #64748b)' }} />
         <span style={{ 
           flex: 1, 
-          fontSize: '13px', 
+          fontSize: 'var(--ds-font-size-300)', 
           fontWeight: 500, 
           color: selectedId ? COLORS.textPrimary : 'var(--ds-text-subtlest, #64748b)',
         }}>
@@ -330,7 +330,7 @@ function StatusDropdown({
         )}
         <span style={{ 
           flex: 1, 
-          fontSize: '13px', 
+          fontSize: 'var(--ds-font-size-300)', 
           fontWeight: 500, 
           color: selectedStatus ? COLORS.textPrimary : 'var(--ds-text-subtlest, #64748b)',
         }}>
@@ -426,7 +426,7 @@ function DropdownItem({
           flexShrink: 0,
         }}
       />
-      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>{value}</span>
       {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
     </div>
   );

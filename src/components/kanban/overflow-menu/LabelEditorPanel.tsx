@@ -115,7 +115,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
             style={{
               width: '100%', height: 28, paddingLeft: 26, paddingRight: 8,
               border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
-              fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
+              fontSize: 'var(--ds-font-size-200)', color: tk.textPrimary, background: tk.inputBg,
               outline: 'none', fontFamily: 'var(--cp-font-body)',
               boxSizing: 'border-box',
             }}
@@ -133,7 +133,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
               display: 'flex', alignItems: 'center', gap: 8,
               width: '100%', padding: '7px 12px', border: 'none',
               background: 'transparent', cursor: 'pointer',
-              fontSize: 12, color: tk.selectedAccent, fontWeight: 500,
+              fontSize: 'var(--ds-font-size-200)', color: tk.selectedAccent, fontWeight: 500,
               fontFamily: 'var(--cp-font-body)', textAlign: 'left',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
@@ -155,7 +155,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
                 display: 'flex', alignItems: 'center', gap: 8,
                 width: '100%', padding: '6px 12px', border: 'none',
                 background: isAssigned ? tk.dropHighlight : 'transparent',
-                cursor: 'pointer', fontSize: 12,
+                cursor: 'pointer', fontSize: 'var(--ds-font-size-200)',
                 color: tk.textPrimary, fontFamily: 'var(--cp-font-body)',
                 textAlign: 'left',
               }}
@@ -173,7 +173,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
         })}
 
         {filtered.length === 0 && !canCreate && (
-          <div style={{ padding: '12px 12px', fontSize: 12, color: tk.textDisabled }}>No labels found</div>
+          <div style={{ padding: '12px 12px', fontSize: 'var(--ds-font-size-200)', color: tk.textDisabled }}>No labels found</div>
         )}
       </div>
 
@@ -187,7 +187,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
                 display: 'inline-flex', alignItems: 'center', gap: 3,
                 height: 20, padding: '0 6px', background: tk.chipBg,
                 border: `1px solid ${color}40`, borderRadius: 3,
-                fontSize: 10, fontWeight: 500, color: tk.textPrimary,
+                fontSize: 'var(--ds-font-size-50)', fontWeight: 500, color: tk.textPrimary,
               }}>
                 {label}
                 <button

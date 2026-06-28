@@ -43,7 +43,7 @@ export function ThemesPage() {
         height: '100%', color: 'var(--fg-3)',
       }}>
         <Loader2 className="animate-spin" size={24} />
-        <span style={{ marginLeft: 8, fontSize: 14 }}>Loading themes...</span>
+        <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-400)' }}>Loading themes...</span>
       </div>
     );
   }
@@ -54,10 +54,10 @@ export function ThemesPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         height: '100%', gap: 12,
       }}>
-        <p style={{ color: 'var(--sem-danger)', fontSize: 14 }}>Failed to load themes</p>
+        <p style={{ color: 'var(--sem-danger)', fontSize: 'var(--ds-font-size-400)' }}>Failed to load themes</p>
         <button onClick={() => refetch()} style={{
           padding: '8px 16px', borderRadius: 6, border: '1px solid var(--divider)',
-          background: 'var(--cp-float)', fontSize: 13, cursor: 'pointer',
+          background: 'var(--cp-float)', fontSize: 'var(--ds-font-size-300)', cursor: 'pointer',
         }}>
           Retry
         </button>
@@ -79,7 +79,7 @@ export function ThemesPage() {
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '8px 16px', borderRadius: 8, border: 'none',
               background: 'var(--cp-blue)', color: 'var(--bg-app)',
-              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: 'pointer',
             }}
           >
             <Plus size={16} />
@@ -98,7 +98,7 @@ export function ThemesPage() {
           return (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: '6px 16px', borderRadius: 9999, border: 'none',
-              fontSize: 13, fontWeight: 500, cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
               background: isActive ? 'var(--cp-blue)' : 'var(--bg-1)',
               color: isActive ? 'var(--bg-app)' : 'var(--fg-3)',
               transition: 'background 150ms, color 150ms',
@@ -113,7 +113,7 @@ export function ThemesPage() {
       {filtered.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '48px 0',
-          color: 'var(--fg-4)', fontSize: 14,
+          color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-400)',
         }}>
           No {activeTab === 'All' ? '' : activeTab.toLowerCase() + ' '}themes found
         </div>

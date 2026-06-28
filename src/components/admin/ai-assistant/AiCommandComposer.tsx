@@ -26,7 +26,7 @@ function Palette({ groups, empty, query, entitySuggestions, onPickEntity }: {
     <div style={{ marginTop: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised, maxHeight: 360, overflowY: 'auto', padding: 6 }}>
       {hasEntities && (
         <div>
-          <div style={{ padding: '6px 8px 2px', fontSize: 10, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>People, roles &amp; departments</div>
+          <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>People, roles &amp; departments</div>
           {entitySuggestions.map((s, i) => {
             const badge = ENTITY_BADGE[s.type] ?? ENTITY_BADGE.department;
             return (
@@ -34,14 +34,14 @@ function Palette({ groups, empty, query, entitySuggestions, onPickEntity }: {
                 style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 5, padding: '8px 10px', cursor: 'pointer', font: 'inherit' }}
                 onMouseEnter={e => (e.currentTarget.style.background = T.selected)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <span style={{ width: 22, height: 22, borderRadius: '50%', background: badge.color, color: 'var(--ds-text-inverse)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flex: '0 0 auto' }}>
+                <span style={{ width: 22, height: 22, borderRadius: '50%', background: badge.color, color: 'var(--ds-text-inverse)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, flex: '0 0 auto' }}>
                   {badge.label}
                 </span>
                 <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: 'block', fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.label}</span>
-                  <span style={{ display: 'block', fontSize: 12, color: T.subtlest }}>{s.subtitle}</span>
+                  <span style={{ display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.label}</span>
+                  <span style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{s.subtitle}</span>
                 </span>
-                <span style={{ fontSize: 11, color: T.disabled, textTransform: 'capitalize', flex: '0 0 auto' }}>{s.type}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.disabled, textTransform: 'capitalize', flex: '0 0 auto' }}>{s.type}</span>
               </button>
             );
           })}
@@ -52,23 +52,23 @@ function Palette({ groups, empty, query, entitySuggestions, onPickEntity }: {
         <div style={{ padding: 14, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
           <span style={{ color: T.textDiscovery, flex: '0 0 auto', marginTop: 1 }}><Icon path={ICONS.spark} size={16} fill={T.textDiscovery} /></span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Not a saved request — run it anyway</div>
-            <div style={{ fontSize: 12, color: T.subtlest, marginTop: 2 }}>The assistant will prepare "{query}", run it step by step, and remember it so it's quicker next time.</div>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>Not a saved request — run it anyway</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 2 }}>The assistant will prepare "{query}", run it step by step, and remember it so it's quicker next time.</div>
           </div>
         </div>
       )}
       {groups.map(g => (
         <div key={g.cat}>
-          <div style={{ padding: '6px 8px 2px', fontSize: 10, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>{g.cat}</div>
+          <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: T.subtlest }}>{g.cat}</div>
           {g.items.map((it, i) => (
             <button key={i} onMouseDown={it.onPick} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', border: 'none', background: 'transparent', borderRadius: 5, padding: '8px 10px', cursor: 'pointer', font: 'inherit' }}
               onMouseEnter={e => (e.currentTarget.style.background = T.selected)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <span style={{ color: T.iconSubtle, flex: '0 0 auto' }}><Icon path={catIcon(it.cat)} size={15} w={1.8} /></span>
               <span style={{ minWidth: 0, flex: 1 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{it.title}</span>{it.bulk && <BulkTag />}
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>{it.title}</span>{it.bulk && <BulkTag />}
                 </span>
-                <span style={{ display: 'block', fontSize: 12, color: T.subtlest, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.desc}</span>
+                <span style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', color: T.subtlest, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.desc}</span>
               </span>
               <RiskLozenge risk={it.risk} />
             </button>
@@ -92,12 +92,12 @@ function InlineConfirm({ confirm, onCancel, onConfirm }: { confirm: ConfirmState
           <Icon path={iconPath} size={16} w={2} fill={high ? undefined : accent} />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{confirm.title}</div>
-          <div style={{ fontSize: 12, color: T.subtle, marginTop: 2, lineHeight: 1.4 }}>{confirm.body}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>{confirm.title}</div>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtle, marginTop: 2, lineHeight: 1.4 }}>{confirm.body}</div>
           {confirm.steps && confirm.steps.length > 0 && (
             <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
               {confirm.steps.map((s, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: T.text }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 'var(--ds-font-size-200)', color: T.text }}>
                   <span style={{ width: 5, height: 5, borderRadius: '50%', background: accent, flex: '0 0 auto' }} />
                   {s}
                 </div>
@@ -139,7 +139,7 @@ function ChipInput({ chips, onRemove, onRemoveLast, composer, onChange, onFocus,
           background: 'var(--ds-background-selected)',
           border: '1px solid var(--ds-border-focused)',
           borderRadius: 13,
-          fontSize: 12, fontWeight: 500,
+          fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
           color: 'var(--ds-text-selected)',
           flexShrink: 0,
           maxWidth: 200,
@@ -154,7 +154,7 @@ function ChipInput({ chips, onRemove, onRemoveLast, composer, onChange, onFocus,
               width: 16, height: 16, borderRadius: '50%',
               border: 'none', background: 'transparent',
               color: 'var(--ds-text-subtle)', cursor: 'pointer',
-              fontSize: 14, lineHeight: 1, padding: 0, flexShrink: 0,
+              fontSize: 'var(--ds-font-size-400)', lineHeight: 1, padding: 0, flexShrink: 0,
             }}
             aria-label={`Remove ${chip.label}`}
           >×</button>
@@ -179,7 +179,7 @@ function ChipInput({ chips, onRemove, onRemoveLast, composer, onChange, onFocus,
         style={{
           flex: 1, minWidth: 120, height: 28,
           border: 'none', outline: 'none', background: 'transparent',
-          font: 'inherit', fontSize: 14, color: 'var(--ds-text)',
+          font: 'inherit', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text)',
         }}
       />
     </div>
@@ -203,8 +203,8 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
   return (
     <div style={{ background: 'var(--ds-surface-raised)', border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: T.shadowRaised }}>
       <div style={{ padding: '14px 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: T.subtle }}>Your request</span>
-        <span style={{ fontSize: 11, color: T.subtlest }}>Type <Kbd>/</Kbd> to browse · <Kbd>Enter</Kbd> to run</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.subtle }}>Your request</span>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>Type <Kbd>/</Kbd> to browse · <Kbd>Enter</Kbd> to run</span>
         <span style={{ marginLeft: 'auto' }}>{statusLoz}</span>
       </div>
 
@@ -242,14 +242,14 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
               onKeyDown={inputKeyDown}
               placeholder="e.g. Make Vikram Indla a Product Owner   ·   Reset password for Sikander Ahmad"
               aria-label="Admin request"
-              style={{ flex: 1, alignSelf: 'stretch', border: 'none', outline: 'none', background: 'transparent', font: 'inherit', fontSize: 15, color: T.text, minWidth: 0 }}
+              style={{ flex: 1, alignSelf: 'stretch', border: 'none', outline: 'none', background: 'transparent', font: 'inherit', fontSize: 'var(--ds-font-size-400)', color: T.text, minWidth: 0 }}
             />
           )}
 
           {hasContent && (
             <button
               onClick={c.clearAll}
-              style={{ border: 'none', background: 'transparent', color: T.subtlest, cursor: 'pointer', fontSize: 12, padding: '4px 6px', font: 'inherit', flexShrink: 0, alignSelf: 'center' }}
+              style={{ border: 'none', background: 'transparent', color: T.subtlest, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', padding: '4px 6px', font: 'inherit', flexShrink: 0, alignSelf: 'center' }}
               onMouseEnter={e => (e.currentTarget.style.color = T.text)}
               onMouseLeave={e => (e.currentTarget.style.color = T.subtlest)}
             >Clear</button>
@@ -270,10 +270,10 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
 
         {!hasContent && !c.focused && !c.running && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
-            <span style={{ fontSize: 11, color: T.subtlest, alignSelf: 'center', marginRight: 2 }}>Try:</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.subtlest, alignSelf: 'center', marginRight: 2 }}>Try:</span>
             {c.quickChips.map((chip, i) => (
               <button key={i} onClick={chip.onPick}
-                style={{ display: 'inline-flex', alignItems: 'center', height: 28, padding: '0 12px', border: `1px solid ${T.border}`, background: T.surface, color: T.subtle, borderRadius: 14, font: 'inherit', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
+                style={{ display: 'inline-flex', alignItems: 'center', height: 28, padding: '0 12px', border: `1px solid ${T.border}`, background: T.surface, color: T.subtle, borderRadius: 14, font: 'inherit', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, cursor: 'pointer' }}
                 onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSunken)} onMouseLeave={e => (e.currentTarget.style.background = T.surface)}>
                 {chip.label}
               </button>
@@ -281,12 +281,12 @@ export function AiCommandComposer({ c }: { c: ReturnType<typeof import('./useAiC
           </div>
         )}
 
-        <div style={{ fontSize: 12, color: T.subtlest, marginTop: 8 }}>The assistant prepares a plan first. No change is made without your confirmation.</div>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 8 }}>The assistant prepares a plan first. No change is made without your confirmation.</div>
       </div>
     </div>
   );
 }
 
 function Kbd({ children }: { children: React.ReactNode }) {
-  return <kbd style={{ fontFamily: 'var(--ds-font-family-monospace, monospace)', fontSize: 10, border: `1px solid ${T.border}`, borderRadius: 3, padding: '0 4px' }}>{children}</kbd>;
+  return <kbd style={{ fontFamily: 'var(--ds-font-family-monospace, monospace)', fontSize: 'var(--ds-font-size-50)', border: `1px solid ${T.border}`, borderRadius: 3, padding: '0 4px' }}>{children}</kbd>;
 }

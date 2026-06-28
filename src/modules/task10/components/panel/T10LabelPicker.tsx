@@ -194,7 +194,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               border: 'none',
               outline: 'none',
               background: 'transparent',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text, #374151)',
             }}
           />
@@ -233,7 +233,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               border: '1px solid var(--ds-border, #bbf7d0)',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-success, #16a34a)',
               fontWeight: 500,
             }}
@@ -265,7 +265,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                   border: `1px solid ${isSelected ? labelColors.border : 'transparent'}`,
                   borderRadius: '6px',
                   cursor: 'pointer',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   color: labelColors.color,
                   fontWeight: isSelected ? 600 : 500,
                   transition: 'all 0.15s ease',
@@ -303,7 +303,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
             padding: '20px', 
             textAlign: 'center', 
             color: 'var(--ds-text-subtlest, #9ca3af)',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
           }}>
             No labels found
           </div>
@@ -337,7 +337,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                 color: colors?.color,
                 border: `1px solid ${colors?.border}`,
                 borderRadius: '4px',
-                fontSize: '13px',
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
               }}
             >
@@ -372,7 +372,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   color: 'var(--ds-text-subtle, #6b7280)',
                   fontWeight: 500,
                 }}
@@ -395,7 +395,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               border: '1px dashed var(--ds-border, #d1d5db)',
               borderRadius: '6px',
               cursor: isReadOnly ? 'default' : 'pointer',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-subtlest, #9ca3af)',
               width: '100%',
             }}

@@ -119,7 +119,7 @@ function ReactionChip({
             : '1px solid var(--ds-border, #DFE1E6)',
           borderRadius: 12,
           cursor: 'pointer',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           color: 'var(--ds-text, #172B4D)',
           transition: 'all 100ms',
@@ -138,7 +138,7 @@ function ReactionChip({
             : 'var(--ds-background-neutral-subtle, #F7F8F9)';
         }}
       >
-        <span style={{ fontSize: 16 }}>{emoji}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-500)' }}>{emoji}</span>
         <span>{count}</span>
       </button>
 
@@ -158,7 +158,7 @@ function ReactionChip({
             border: `1px solid var(--ds-border, #DFE1E6)`,
             borderRadius: 6,
             padding: '8px 12px',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: 'var(--ds-text, #172B4D)',
             whiteSpace: 'nowrap',
             boxShadow: '0 2px 8px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.13))',

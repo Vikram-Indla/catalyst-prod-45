@@ -70,7 +70,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
           backgroundColor: selectedCount > 0 ? COLORS.accentLight : COLORS.surfaceCard,
           border: `1px solid ${selectedCount > 0 ? COLORS.accent : COLORS.borderDefault}`,
           borderRadius: '8px',
-          fontSize: '13px',
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 500,
           color: selectedCount > 0 ? COLORS.accent : COLORS.textMuted,
           cursor: 'pointer',
@@ -91,7 +91,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
               backgroundColor: COLORS.accent,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderRadius: '9px',
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600
             }}
           >
@@ -133,14 +133,14 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
               borderBottom: `1px solid ${COLORS.borderLight}`
             }}
           >
-            <span style={{ fontSize: '13px', fontWeight: 600, color: COLORS.textPrimary }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: COLORS.textPrimary }}>
               Filter by Labels
             </span>
             {selectedCount > 0 && (
               <button
                 onClick={clearAll}
                 style={{
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   color: COLORS.accent,
                   background: 'none',
                   border: 'none',
@@ -188,12 +188,12 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
                       flexShrink: 0
                     }}
                   />
-                  <span style={{ flex: 1, fontSize: '14px', color: COLORS.textPrimary }}>
+                  <span style={{ flex: 1, fontSize: 'var(--ds-font-size-400)', color: COLORS.textPrimary }}>
                     {label.name}
                   </span>
                   <span
                     style={{
-                      fontSize: '12px',
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
                       color: COLORS.textMuted,
                       backgroundColor: COLORS.surfaceHover,

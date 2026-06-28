@@ -80,7 +80,7 @@ export function ParentPickerPanel({
         }}
         onClick={e => e.stopPropagation()}
       >
-        <div style={{ fontSize: 13, color: tk.textMuted }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: tk.textMuted }}>
           Epics are top-level items and cannot have parents.
         </div>
       </div>
@@ -101,13 +101,13 @@ export function ParentPickerPanel({
     >
       {/* Header */}
       <div style={{
-        padding: '10px 12px 6px', fontSize: 12, fontWeight: 700,
+        padding: '10px 12px 6px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700,
         color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.03em',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <span>Change parent</span>
         {currentParentKey && (
-          <span style={{ fontSize: 10, fontWeight: 500, color: tk.textSecondary, textTransform: 'none' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, color: tk.textSecondary, textTransform: 'none' }}>
             Current: {currentParentKey}
           </span>
         )}
@@ -125,7 +125,7 @@ export function ParentPickerPanel({
             style={{
               width: '100%', height: 28, paddingLeft: 26, paddingRight: 8,
               border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
-              fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
+              fontSize: 'var(--ds-font-size-200)', color: tk.textPrimary, background: tk.inputBg,
               outline: 'none', fontFamily: 'var(--cp-font-body)',
               boxSizing: 'border-box',
             }}
@@ -141,7 +141,7 @@ export function ParentPickerPanel({
             display: 'flex', alignItems: 'center', gap: 8,
             width: '100%', padding: '8px 12px', border: 'none',
             background: 'transparent', cursor: 'pointer',
-            fontSize: 12, color: 'var(--ds-background-danger-bold, #C9372C)', fontWeight: 500,
+            fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-danger-bold, #C9372C)', fontWeight: 500,
             fontFamily: 'var(--cp-font-body)', textAlign: 'left',
             borderBottom: `1px solid ${tk.borderSubtle}`,
           }}
@@ -169,7 +169,7 @@ export function ParentPickerPanel({
                 width: '100%', padding: '7px 12px', border: 'none',
                 background: isCurrent ? tk.dropHighlight : 'transparent',
                 cursor: isCurrent ? 'default' : 'pointer',
-                fontSize: 12, color: tk.textPrimary,
+                fontSize: 'var(--ds-font-size-200)', color: tk.textPrimary,
                 fontFamily: 'var(--cp-font-body)', textAlign: 'left',
               }}
               onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = tk.surfaceHover; }}
@@ -177,7 +177,7 @@ export function ParentPickerPanel({
             >
               <JiraIssueTypeIcon type={epic.issue_type ?? 'epic'} size={14} />
               <span style={{
-                fontFamily: 'var(--cp-font-mono)', fontSize: 11,
+                fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)',
                 color: tk.textMuted, flexShrink: 0,
               }}>{epic.issue_key}</span>
               <span style={{
@@ -187,7 +187,7 @@ export function ParentPickerPanel({
           );
         })}
         {filtered.length === 0 && (
-          <div style={{ padding: '12px', fontSize: 12, color: tk.textDisabled }}>No epics found</div>
+          <div style={{ padding: '12px', fontSize: 'var(--ds-font-size-200)', color: tk.textDisabled }}>No epics found</div>
         )}
       </div>
     </div>

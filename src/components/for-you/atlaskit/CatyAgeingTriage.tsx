@@ -111,7 +111,7 @@ export function CatyAgeingTriage({ items, onOpenDetail }: CatyAgeingTriageProps)
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => toggleExpand(r.issueKey)}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
-                  fontSize: 12, fontWeight: 600, flexShrink: 0, minWidth: 56,
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 600, flexShrink: 0, minWidth: 56,
                   color: r.daysOpen > 90
                     ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
                     : r.daysOpen > 60

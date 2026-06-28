@@ -106,13 +106,13 @@ export function OkrHeatmap() {
   if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--exec-text-tertiary)' }}>
-        <span style={{ fontSize: 12 }}>No OKR data available</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)' }}>No OKR data available</span>
       </div>
     );
   }
 
   const thCss: React.CSSProperties = {
-    fontSize: 10, fontWeight: 600, color: 'var(--exec-text-tertiary)',
+    fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--exec-text-tertiary)',
     textTransform: 'uppercase', letterSpacing: '0.05em', padding: '6px 8px', textAlign: 'center',
   };
 
@@ -130,7 +130,7 @@ export function OkrHeatmap() {
           <tbody>
             {rows.map(row => (
               <tr key={row.themeId}>
-                <td style={{ fontSize: 11, fontWeight: 600, color: 'var(--exec-text-primary)', padding: '6px 8px' }}>
+                <td style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--exec-text-primary)', padding: '6px 8px' }}>
                   <div className="flex items-center gap-2">
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: getThemeDotColor(row.overall.pct), flexShrink: 0 }} />
                     {formatThemeName(row.themeName)}
@@ -148,7 +148,7 @@ export function OkrHeatmap() {
                       style={{
                         textAlign: 'center', padding: '8px 6px', borderRadius: 6,
                         background: style.bg, color: style.text,
-                        fontSize: 13, fontWeight: style.weight,
+                        fontSize: 'var(--ds-font-size-300)', fontWeight: style.weight,
                         cursor: cell.pct !== null ? 'pointer' : 'default',
                         transition: 'transform 120ms, background 120ms',
                         borderLeft: style.borderLeft,
@@ -164,7 +164,7 @@ export function OkrHeatmap() {
                   textAlign: 'center', padding: '8px 6px', borderRadius: 6,
                   background: getCellStyle(row.overall.status, true).bg,
                   color: getCellStyle(row.overall.status, true).text,
-                  fontSize: 13, fontWeight: getCellStyle(row.overall.status, true).weight,
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: getCellStyle(row.overall.status, true).weight,
                   borderLeft: getCellStyle(row.overall.status, true).borderLeft || '2px solid var(--exec-border-strong, #CBD5E1)',
                 }}>
                   {row.overall.pct ?? '—'}
@@ -176,7 +176,7 @@ export function OkrHeatmap() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-3" style={{ fontSize: 11, color: 'var(--exec-text-secondary)' }}>
+      <div className="flex items-center gap-4 mt-3" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--exec-text-secondary)' }}>
         <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-link-pressed, #1e40af)' }} /> On Track (≥70%)</span>
         <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} /> At Risk (40–69%)</span>
         <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} /> Off Track (&lt;40%)</span>
@@ -185,10 +185,10 @@ export function OkrHeatmap() {
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} title={drawerInfo ? `${drawerInfo.theme} — ${drawerInfo.quarter}` : ''}>
         {drawerInfo && (
           <div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--exec-text-primary)', marginBottom: 8 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--exec-text-primary)', marginBottom: 8 }}>
               {drawerInfo.quarter} Performance: {drawerInfo.pct}%
             </div>
-            <p style={{ fontSize: 13, color: 'var(--exec-text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--exec-text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
               Progress tracked across key results for this theme during {drawerInfo.quarter}. Below are the individual contributing KRs.
             </p>
             {rawData?.filter(r =>

@@ -148,7 +148,7 @@ export function WebLinksSection({ workItemId }: WebLinksSectionProps) {
         <h2
           style={{
             margin: 0,
-            fontSize: 16,
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 653,
             lineHeight: '20px',
             color: 'var(--ds-text, #292A2E)',

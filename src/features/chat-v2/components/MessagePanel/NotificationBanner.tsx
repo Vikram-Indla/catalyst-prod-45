@@ -17,7 +17,7 @@ export function NotificationBanner({ message }: NotificationBannerProps) {
         background: 'var(--cv2-bg-banner)',
         color: 'var(--cv2-text-muted)',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
       }}
     >
       <span

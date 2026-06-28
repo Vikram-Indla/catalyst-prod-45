@@ -173,14 +173,14 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         <div className="min-w-0">
           <div
             className="truncate"
-            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}
+            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}
             title={flag.module_name}
           >
             {flag.module_name}
           </div>
           <div
             className="truncate"
-            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))', maxWidth: 280 }}
+            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))', maxWidth: 280 }}
             title={description}
           >
             {description}
@@ -199,7 +199,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             color: catStyle.text,
             border: `1px solid ${catStyle.border}`,
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             letterSpacing: '0.03em',
             /* sentence-case per CLAUDE.md */
@@ -221,7 +221,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             background: statusStyle.bg,
             color: statusStyle.text,
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             letterSpacing: '0.03em',
             /* sentence-case per CLAUDE.md */
@@ -245,12 +245,12 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
 
       {/* Updated */}
       <div className="px-3 min-w-0">
-        <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', fontVariantNumeric: 'tabular-nums' }}>
           {new Date(flag.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
         </div>
         <div
           className="truncate"
-          style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2))))', maxWidth: 120 }}
+          style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2))))', maxWidth: 120 }}
           title={updatedByName}
         >
           {updatedByName}
@@ -310,7 +310,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
       )}
       <span style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
         letterSpacing: '0.06em',
         /* sentence-case per CLAUDE.md */
@@ -321,7 +321,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
       <span
         style={{
           fontFamily: 'var(--cp-font-body)',
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 500,
           color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86))))',
           background: 'var(--cp-border, var(--ds-border, #DFE1E6))',
@@ -484,10 +484,10 @@ export default function FeatureFlagsPage() {
     return (
       <div className={`flex-1 flex flex-col items-center justify-center py-20 gap-3 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}>
         <span style={{ display: 'flex', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}><CrossCircleIcon label="" size="large" /></span>
-        <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>
+        <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>
           Failed to load feature flags
         </p>
-        <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))' }}>
+        <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))' }}>
           {(error as Error).message}
         </p>
         <AtlasButton
@@ -512,11 +512,11 @@ export default function FeatureFlagsPage() {
         <div>
           <div className="flex items-center gap-2">
             <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}><FlagIcon label="" size="medium" /></span>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))', letterSpacing: '-0.025em', margin: 0 }}>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))', letterSpacing: '-0.025em', margin: 0 }}>
               Feature Flags
             </h1>
           </div>
-          <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))', marginTop: 4 }}>
+          <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-300)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))', marginTop: 4 }}>
             Control module visibility and incremental rollout across the platform
           </p>
         </div>
@@ -544,14 +544,14 @@ export default function FeatureFlagsPage() {
         >
           {/* Left: count */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))', fontVariantNumeric: 'tabular-nums' }}>
               {stats.enabled}
             </span>
-            <span style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2))))' }}>/</span>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2))))', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2))))' }}>/</span>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, var(--ds-text-disabled, #8590A2))))', fontVariantNumeric: 'tabular-nums' }}>
               {stats.total}
             </span>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))', marginLeft: 2 }}>modules enabled</span>
+            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))', marginLeft: 2 }}>modules enabled</span>
           </div>
 
           {/* Divider */}
@@ -569,7 +569,7 @@ export default function FeatureFlagsPage() {
                 }}
               />
             </div>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
               {stats.total > 0 ? ((stats.enabled / stats.total) * 100).toFixed(1) : '0.0'}%
             </span>
           </div>
@@ -589,7 +589,7 @@ export default function FeatureFlagsPage() {
                 borderRadius: 6,
                 background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                 fontFamily: 'var(--cp-font-body)',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 600,
                 cursor: allEnabled ? 'not-allowed' : 'pointer',
                 transition: 'background 120ms ease',
@@ -612,7 +612,7 @@ export default function FeatureFlagsPage() {
                 border: '0.75px solid var(--cp-danger, var(--ds-background-danger-bold, #dc2626))',
                 color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                 fontFamily: 'var(--cp-font-body)',
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 cursor: noneEnabled ? 'not-allowed' : 'pointer',
                 transition: 'background 120ms ease',
@@ -650,7 +650,7 @@ export default function FeatureFlagsPage() {
                 padding: '8px 12px',
                 height: 50,
                 fontFamily: 'var(--cp-font-body)',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: filterMode === mode ? 650 : 500,
                 background: filterMode === mode ? 'var(--ds-background-selected-hovered, rgba(37,99,235,0.08))' : 'transparent',
                 color: filterMode === mode ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, #626F86)',
@@ -672,7 +672,7 @@ export default function FeatureFlagsPage() {
             height: 50,
             padding: '8px 12px',
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`,
             borderRadius: 4,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
@@ -686,7 +686,7 @@ export default function FeatureFlagsPage() {
         {/* Bulk actions for selected */}
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-2 ml-auto animate-fade-in">
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))' }}>
+            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))' }}>
               {selectedIds.size} selected
             </span>
             <AtlasButton
@@ -726,7 +726,7 @@ export default function FeatureFlagsPage() {
             background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9))))',
             borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
             fontFamily: 'var(--cp-font-body)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             letterSpacing: '0.06em',
             /* sentence-case per CLAUDE.md */
@@ -771,17 +771,17 @@ export default function FeatureFlagsPage() {
             {flags?.length === 0 ? (
               <>
                 <span style={{ display: 'inline-flex', color: 'var(--ds-shadow-overlay, rgba(15,23,42,0.15))' }}><SettingsIcon label="" size="large" /></span>
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>
                   No modules configured
                 </p>
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))' }}>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))' }}>
                   Contact your administrator to set up feature flags.
                 </p>
               </>
             ) : (
               <>
                 <span style={{ display: 'inline-flex', color: 'var(--ds-shadow-overlay, rgba(15,23,42,0.15))' }}><FlagIcon label="" size="large" /></span>
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))' }}>
                   No modules match your filters
                 </p>
                 {hasActiveFilters && (
@@ -823,7 +823,7 @@ export default function FeatureFlagsPage() {
       </div>
 
       {/* ── Footer ─────────────────────────────────────── */}
-      <div className="mt-4 flex items-center gap-4" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))' }}>
+      <div className="mt-4 flex items-center gap-4" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-tertiary, var(--ds-text-subtlest, #626F86))' }}>
         <span>
           Showing{' '}
           <span style={{ fontFamily: 'var(--cp-font-mono)', fontVariantNumeric: 'tabular-nums' }}>

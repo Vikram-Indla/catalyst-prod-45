@@ -142,7 +142,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                 >
                   {p.sublabel && (
                     <span style={{
-                      fontSize: 9, fontWeight: 700,
+                      fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                       color: isCurrentQ ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))') : ink[2],
                       textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
@@ -150,7 +150,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                     </span>
                   )}
                   <span style={{
-                    fontSize: 12, fontWeight: p.isCurrent ? 700 : 600,
+                    fontSize: 'var(--ds-font-size-200)', fontWeight: p.isCurrent ? 700 : 600,
                     color: p.isCurrent ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))') : ink[1],
                     letterSpacing: '0.02em',
                   }}>
@@ -184,7 +184,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
                   position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
-                  fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-danger, #EF4444)',
+                  fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-danger, #EF4444)',
                   padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>
@@ -220,13 +220,13 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                     </div>
                     <div style={{ width: 10, height: 10, borderRadius: 4, flexShrink: 0, background: typeColor }} />
                     <span style={{
-                      fontSize: 12, fontWeight: 600, color: ink[2],
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: ink[2],
                       textTransform: 'uppercase', letterSpacing: '0.04em',
                     }}>
                       {group.label}
                     </span>
                     <span style={{
-                      fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
+                      fontFamily: FONT.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ink[4],
                       background: surface.card, border: `1px solid ${surface.border}`,
                       borderRadius: 9999, padding: '0 6px', height: 20,
                       display: 'inline-flex', alignItems: 'center', marginLeft: 'auto',

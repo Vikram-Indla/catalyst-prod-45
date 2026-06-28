@@ -92,14 +92,14 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
               padding: '10px 12px 6px',
             }}>
               <span style={{
-                fontSize: 12, fontWeight: 700, color: dk.t2,
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: dk.t2,
                 fontFamily: 'var(--cp-font-body)', textTransform: 'uppercase',
                 letterSpacing: '0.04em',
               }}>
                 {col.label}
               </span>
               <span style={{
-                fontSize: 11, fontWeight: 600, color: dk.t3,
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: dk.t3,
                 fontFamily: 'var(--cp-font-body)',
                 background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                 padding: '1px 7px', borderRadius: 100,
@@ -116,7 +116,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
                 <div style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   textAlign: 'center', padding: 16,
-                  fontSize: 12, color: dk.t3, fontFamily: 'var(--cp-font-body)',
+                  fontSize: 'var(--ds-font-size-200)', color: dk.t3, fontFamily: 'var(--cp-font-body)',
                   lineHeight: 1.4,
                 }}>
                   {isUncommitted

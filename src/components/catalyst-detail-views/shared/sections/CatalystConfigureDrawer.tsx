@@ -100,7 +100,7 @@ export function CatalystConfigureDrawer({
         }}>
           <h2 style={{
             margin: 0,
-            fontSize: 20,
+            fontSize: 'var(--ds-font-size-700)',
             fontWeight: 600,
             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             lineHeight: '24px',
@@ -109,7 +109,7 @@ export function CatalystConfigureDrawer({
           </h2>
           <p style={{
             margin: '8px 0 0',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
             lineHeight: '20px',
           }}>
@@ -120,7 +120,7 @@ export function CatalystConfigureDrawer({
         {/* Pinned fields section */}
         <div style={{ marginBottom: 24 }}>
           <div style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             textTransform: 'uppercase',
@@ -135,7 +135,7 @@ export function CatalystConfigureDrawer({
               padding: '12px 16px',
               background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
               borderRadius: 4,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
               textAlign: 'center',
             }}>
@@ -162,7 +162,7 @@ export function CatalystConfigureDrawer({
         {/* Available to pin */}
         <div>
           <div style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
             textTransform: 'uppercase',
@@ -185,7 +185,7 @@ export function CatalystConfigureDrawer({
                 padding: '12px 16px',
                 background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
                 borderRadius: 4,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                 textAlign: 'center',
               }}>
@@ -224,7 +224,7 @@ function FieldConfigRow({
       onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'); }}
     >
       <span style={{
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         fontWeight: 400,
       }}>
@@ -243,7 +243,7 @@ function FieldConfigRow({
           borderRadius: 3,
           background: isPinned ? token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)') : 'transparent',
           color: isPinned ? 'var(--ds-text-inverse, #FFFFFF)' : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 500,
           cursor: 'pointer',
           fontFamily: 'inherit',

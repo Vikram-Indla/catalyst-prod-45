@@ -91,7 +91,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
         <h2
           style={{
             margin: 0,
-            fontSize: 16,
+            fontSize: 'var(--ds-font-size-500)',
             fontWeight: 600,
             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           }}
@@ -107,7 +107,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
             border: 'none',
             cursor: 'pointer',
             color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
-            fontSize: 18,
+            fontSize: 'var(--ds-font-size-600)',
             lineHeight: 1,
             padding: 4,
             borderRadius: 4,
@@ -133,7 +133,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           <h3
             style={{
               margin: '0 0 8px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               textTransform: 'uppercase',
@@ -147,7 +147,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
               padding: token('space.150', '12px'),
               background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
               borderRadius: 6,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               lineHeight: 1.5,
             }}
@@ -163,7 +163,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           <h3
             style={{
               margin: '0 0 8px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               textTransform: 'uppercase',
@@ -174,7 +174,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {brs.length === 0 ? (
-              <span style={{ fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>
                 No items
               </span>
             ) : (
@@ -205,7 +205,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                     <span
                       style={{
                         flex: 1,
-                        fontSize: 13,
+                        fontSize: 'var(--ds-font-size-300)',
                         color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -216,7 +216,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                     </span>
                     <span
                       style={{
-                        fontSize: 11,
+                        fontSize: 'var(--ds-font-size-100)',
                         color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                         flexShrink: 0,
                       }}
@@ -231,7 +231,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                         borderRadius: 4,
                         cursor: 'pointer',
-                        fontSize: 11,
+                        fontSize: 'var(--ds-font-size-100)',
                         color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                         padding: '2px 6px',
                         flexShrink: 0,
@@ -252,7 +252,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           <h3
             style={{
               margin: '0 0 8px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               textTransform: 'uppercase',
@@ -269,10 +269,10 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
             ].map(band => (
               <div key={band.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 10, height: 10, borderRadius: 2, background: band.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), flex: 1 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), flex: 1 }}>
                   {band.label}
                 </span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
                   {band.count}
                 </span>
               </div>
@@ -298,7 +298,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
       >
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             textTransform: 'uppercase',
@@ -311,7 +311,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
         </span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {ownerMap.size === 0 ? (
-            <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>—</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)') }}>—</span>
           ) : (
             Array.from(ownerMap.entries()).map(([name, count]) => (
               <div
@@ -323,7 +323,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                   padding: '3px 8px',
                   background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'),
                   borderRadius: 12,
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                 }}
               >

@@ -32,7 +32,7 @@ export function DepartmentBadge({ department }: DepartmentBadgeProps) {
         color: config.text,
         borderRadius: 9999,
         padding: '2px 10px',
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 500,
         textTransform: 'uppercase',
         fontFamily: 'var(--cp-font-body)',

@@ -262,12 +262,12 @@ export function BrAttachmentsSection({ request }: Props) {
         </Tooltip>
         <h2
           onClick={() => setCollapsed(c => !c)}
-          style={{ margin: 0, padding: '0 4px', fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', cursor: 'pointer' }}
+          style={{ margin: 0, padding: '0 4px', fontSize: 'var(--ds-font-size-500)', fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', cursor: 'pointer' }}
         >
           Attachments
         </h2>
         {files.length > 0 && (
-          <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, #626F86)', marginLeft: 4 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text-subtlest, #626F86)', marginLeft: 4 }}>
             {files.length}
           </span>
         )}
@@ -311,7 +311,7 @@ export function BrAttachmentsSection({ request }: Props) {
         <UploadIcon label="" size="medium" />
         <div
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontFamily: 'var(--cp-font-body)',
             marginTop: 4,
@@ -322,7 +322,7 @@ export function BrAttachmentsSection({ request }: Props) {
         </div>
         <div
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -349,7 +349,7 @@ export function BrAttachmentsSection({ request }: Props) {
           display: 'flex',
           alignItems: 'center',
           gap: 8,
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'),
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -397,7 +397,7 @@ export function BrAttachmentsSection({ request }: Props) {
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               textAlign: 'center',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
               fontFamily: 'var(--cp-font-body)',
               display: 'flex',
@@ -434,7 +434,7 @@ export function BrAttachmentsSection({ request }: Props) {
                     borderRadius: 6,
                     background: ft.bg,
                     color: ft.color,
-                    fontSize: 10,
+                    fontSize: 'var(--ds-font-size-50)',
                     fontWeight: 800,
                     display: 'flex',
                     alignItems: 'center',
@@ -447,7 +447,7 @@ export function BrAttachmentsSection({ request }: Props) {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       fontWeight: 600,
                       color: token('color.text', 'var(--ds-text, #172B4D)'),
                       overflow: 'hidden',
@@ -459,7 +459,7 @@ export function BrAttachmentsSection({ request }: Props) {
                   </div>
                   <div
                     style={{
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)'),
                       marginTop: 2,
                     }}

@@ -444,7 +444,7 @@ function MoreActionsButton() {
               background: 'none',
               cursor: 'pointer',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               transition: 'background 120ms',
             }}
             onMouseEnter={(e) => {
@@ -472,7 +472,7 @@ function MoreActionsButton() {
               background: 'none',
               cursor: 'pointer',
               color: token('color.text', 'var(--ds-text, #172B4D)'),
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               transition: 'background 120ms',
             }}
             onMouseEnter={(e) => {
@@ -534,13 +534,13 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 8px', display: 'block', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>
           <path d="M12 4v12m-4-4l4-4 4 4M4 20h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <p style={{ fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
-        <p style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: '0 0 4px' }}>Drop BRD files here or click to browse</p>
+        <p style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), margin: 0 }}>PDF, DOCX, XLSX — max 25 MB per file</p>
       </div>
       {files.length > 0 && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {files.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'), borderRadius: 3, fontSize: 12 }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: token('color.background.neutral', 'var(--ds-background-neutral-subtle, #F4F5F7)'), borderRadius: 3, fontSize: 'var(--ds-font-size-200)' }}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', 'var(--ds-link, #1868DB)')} strokeWidth="1.2" fill="none"/>
                 <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', 'var(--ds-link, #1868DB)')} strokeWidth="1.2" fill="none"/>
@@ -821,7 +821,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose, productId, onWorkT
                     </TitleTranslateWrapper>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                       {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
-                      <span style={{ fontSize: 11, color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'), marginLeft: 'auto' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.disabled', 'var(--ds-text-disabled, #8590A2)'), marginLeft: 'auto' }}>
                         {form.title.length} / {TITLE_MAX}
                       </span>
                     </div>

@@ -71,7 +71,7 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '6px 8px',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontFamily: 'var(--cp-font-body)',
     color: 'var(--ds-text, #292A2E)',
     background: showUrlError
@@ -89,7 +89,7 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 'var(--ds-font-size-100)',
     fontWeight: 700,
     color: 'var(--ds-text, #292A2E)',
     textTransform: 'uppercase',
@@ -131,7 +131,7 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
       {showUrlError && (
         <span
           style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             color: 'var(--ds-text-danger, #C9372C)',
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -156,7 +156,7 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
           disabled={!canSubmit}
           style={{
             padding: '6px 14px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: canSubmit
               ? 'var(--ds-text-inverse, #FFFFFF)'
@@ -189,7 +189,7 @@ export const DesignForm = forwardRef<DesignFormHandle, DesignFormProps>(function
             background: 'transparent',
             border: 'none',
             padding: '6px 12px',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 500,
             color: 'var(--ds-text-subtle, #505258)',
             cursor: isSubmitting ? 'not-allowed' : 'pointer',

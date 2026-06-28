@@ -76,7 +76,7 @@ export function HierarchyContextMenu({
 
   const itemStyle: React.CSSProperties = {
     width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-    padding: '6px 12px', fontSize: 13, color: 'var(--fg-2)',
+    padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)',
     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
   };
 
@@ -112,7 +112,7 @@ export function HierarchyContextMenu({
                 onClick={() => { onChangeStatus(s); onClose(); }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
-                {s === currentStatus && <span style={{ fontSize: 10 }}>✓</span>}
+                {s === currentStatus && <span style={{ fontSize: 'var(--ds-font-size-50)' }}>✓</span>}
                 {s}
               </button>
             ))}
@@ -175,7 +175,7 @@ export function HierarchyContextMenu({
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
                 <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                     {a.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                   </span>
                 </div>
@@ -196,13 +196,13 @@ export function HierarchyContextMenu({
 
       {confirmDelete ? (
         <div style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 11, color: 'var(--sem-danger)' }}>Delete?</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--sem-danger)' }}>Delete?</span>
           <button onClick={() => { onDelete(); onClose(); }} style={{
-            fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 8px', borderRadius: 4,
             background: 'var(--sem-danger)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer',
           }}>Yes</button>
           <button onClick={() => setConfirmDelete(false)} style={{
-            fontSize: 11, padding: '2px 8px', color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: 'var(--ds-font-size-100)', padding: '2px 8px', color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer',
           }}>No</button>
         </div>
       ) : (
@@ -225,7 +225,7 @@ function MenuItem({ icon: Icon, label, onClick }: {
   return (
     <button onClick={onClick} style={{
       width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-      padding: '6px 12px', fontSize: 13, color: 'var(--fg-2)',
+      padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)',
       background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
     }}
       onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}

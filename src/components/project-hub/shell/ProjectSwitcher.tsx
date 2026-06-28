@@ -65,14 +65,14 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
           onChange={e => setSearch(e.target.value)}
           placeholder="Search projects..."
           className="flex-1 bg-transparent outline-none border-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
-          style={{ fontSize: 12 }}
+          style={{ fontSize: 'var(--ds-font-size-200)' }}
         />
       </div>
 
       <div className="max-h-[320px] overflow-y-auto py-1">
         {pinned.length > 0 && (
           <>
-            <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               <Star size={10} className="inline mr-1" /> Pinned
             </div>
             {pinned.map(p => (
@@ -81,11 +81,11 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
           </>
         )}
 
-        <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
           {pinned.length > 0 ? 'Recent' : 'All Projects'}
         </div>
         {recent.length === 0 ? (
-          <div className="px-3 py-3 text-center text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 12 }}>
+          <div className="px-3 py-3 text-center text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-200)' }}>
             No projects found
           </div>
         ) : (
@@ -124,15 +124,15 @@ function ProjectRow({
     >
       <div
         className="flex items-center justify-center rounded flex-shrink-0"
-        style={{ width: 24, height: 24, backgroundColor: project.color, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 10, fontWeight: 700, borderRadius: 4 }}
+        style={{ width: 24, height: 24, backgroundColor: project.color, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, borderRadius: 4 }}
       >
         {project.key}
       </div>
       <div className="flex flex-col items-start min-w-0">
-        <span className="truncate w-full text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 12, fontWeight: 500 }}>
+        <span className="truncate w-full text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500 }}>
           {project.name}
         </span>
-        <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 10 }}>{project.key}</span>
+        <span className="text-[var(--fg-4)] dark:text-[var(--ds-text-subtlest, #626F86)]" style={{ fontSize: 'var(--ds-font-size-50)' }}>{project.key}</span>
       </div>
     </button>
   );

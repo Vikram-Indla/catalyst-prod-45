@@ -261,7 +261,7 @@ export function SlashCommandPalette({
           }}
         >
           <span style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 400,
             color: 'var(--ds-text, #172B4D)',
             lineHeight: 1.3,
@@ -269,7 +269,7 @@ export function SlashCommandPalette({
             {cmd.label}
           </span>
           <span style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 400,
             color: 'var(--ds-text-subtle, #44546F)',
             lineHeight: 1.2,

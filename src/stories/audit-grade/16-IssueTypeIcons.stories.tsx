@@ -25,7 +25,7 @@ export const AllTypes: StoryObj = {
         {ALL_TYPES.map(t => (
           <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 8 }}>
             <JiraIssueTypeIcon type={t} size={20} />
-            <span style={{ fontSize: 14 }}>{t}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-400)' }}>{t}</span>
           </div>
         ))}
       </div>

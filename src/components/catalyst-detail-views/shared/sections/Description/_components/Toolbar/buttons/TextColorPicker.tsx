@@ -49,7 +49,7 @@ export function TextColorPicker({ editor }: Props) {
         <span
           style={{
             fontWeight: 400,
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             lineHeight: '14px',
             padding: '0 4px',
             border: '1px solid var(--ds-text-subtle, #44546F)',
@@ -125,7 +125,7 @@ export function TextColorPicker({ editor }: Props) {
               borderRadius: 3,
               background: 'var(--ds-surface, #FFFFFF)',
               color: 'var(--ds-text, #292A2E)',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 500,
               cursor: isRemoveDisabled(editor) ? 'not-allowed' : 'pointer',
               opacity: isRemoveDisabled(editor) ? 0.5 : 1,

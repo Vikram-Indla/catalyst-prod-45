@@ -233,7 +233,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
           style={{
             marginTop: token('space.075', '6px'),
             marginBottom: 0,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             maxWidth: 760,
           }}
@@ -268,7 +268,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
           <div>
             <label
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
@@ -292,7 +292,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
           <div>
             <label
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
@@ -318,7 +318,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                       color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : hub.color,
                       border: 'none',
                       cursor: submitting ? 'not-allowed' : 'pointer',
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
                     }}
                   >
@@ -330,7 +330,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
             <div
               style={{
                 marginTop: token('space.050', '4px'),
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 color: token('color.text.subtle', 'var(--ds-icon, #44546F)'),
               }}
             >
@@ -342,7 +342,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
           <div>
             <label
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
@@ -394,7 +394,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
             <div
               style={{
                 marginTop: token('space.050', '4px'),
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               }}
             >
@@ -415,7 +415,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px'), flexWrap: 'wrap' }}>
-              <span style={{ fontWeight: 600, fontSize: 16 }}>{entry.name}</span>
+              <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-500)' }}>{entry.name}</span>
               <Lozenge appearance={routeDraft === '' ? 'default' : 'inprogress'}>
                 {routeDraft === '' ? 'Global scope' : `Scope: ${routeDraft}`}
               </Lozenge>
@@ -426,7 +426,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
               ) : (
                 <Lozenge>Registry default</Lozenge>
               )}
-              <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                 {liveConfig?.applied_at
                   ? `Applied ${new Date(liveConfig.applied_at).toLocaleString()}`
                   : 'No runtime override at this scope'}
@@ -436,7 +436,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
             <div style={{ marginTop: token('space.200', '16px') }}>
               <label
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
@@ -453,7 +453,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                 placeholder={entry.version}
                 isDisabled={submitting || isLoading}
               />
-              <div style={{ marginTop: token('space.050', '4px'), fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+              <div style={{ marginTop: token('space.050', '4px'), fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                 Semver string. Registry default: v{entry.version}.
               </div>
             </div>
@@ -494,7 +494,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                         <span
                           style={{
                             fontFamily: 'var(--ds-font-family-code)',
-                            fontSize: 12,
+                            fontSize: 'var(--ds-font-size-200)',
                             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                           }}
                         >
@@ -518,7 +518,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                             isDisabled={submitting}
                           />
                         )}
-                        <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                           {flag.description} (default: <code>{String(flag.default)}</code>)
                         </span>
                       </div>
@@ -534,7 +534,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
                   borderRadius: 4,
                   background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
                   color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                 }}
               >
                 This component does not declare any feature flags. You can still publish a version pin.
@@ -544,7 +544,7 @@ export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTab
             <div style={{ marginTop: token('space.300', '24px') }}>
               <label
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',

@@ -126,7 +126,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
   return (
     <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm overflow-hidden">
         {/* Controls Row */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50/50 dark:bg-[var(--ds-text, #172B4D)]">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50/50 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]">
           <div className="flex border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md overflow-hidden">
             {(['week', 'month', 'quarter'] as ZoomLevel[]).map(level => (
               <button
@@ -170,7 +170,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
         </div>
 
         {/* Header Row */}
-        <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]">
+        <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]">
           <div className="w-[240px] shrink-0 px-4 py-2.5 border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex items-center">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Release ↕</span>
           </div>

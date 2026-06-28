@@ -472,7 +472,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                 display: 'flex', alignItems: 'center', gap: 8,
                 width: '100%', padding: '8px 8px', border: 'none',
                 background: 'transparent', color: token('color.text', 'var(--ds-text, #172B4D)'),
-                fontSize: 14, textAlign: 'left', cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-400)', textAlign: 'left', cursor: 'pointer',
                 fontFamily: 'inherit', borderRadius: 3, outline: 'none',
               }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, var(--ds-background-neutral-subtle, #F4F5F7))'))}
@@ -495,7 +495,7 @@ function RowActionsMenu({ actions, isRowHovered }: { actions: ForYouRowAction[];
                     display: 'flex', alignItems: 'center', gap: 8,
                     width: '100%', padding: '8px 8px', border: 'none',
                     background: 'transparent', color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
-                    fontSize: 14, textAlign: 'left', cursor: 'pointer',
+                    fontSize: 'var(--ds-font-size-400)', textAlign: 'left', cursor: 'pointer',
                     fontFamily: 'inherit', borderRadius: 3, outline: 'none',
                   }}
                   onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = token('color.background.danger', 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))'))}

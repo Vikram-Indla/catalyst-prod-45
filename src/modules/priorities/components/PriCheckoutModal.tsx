@@ -68,7 +68,7 @@ export function PriCheckoutModal({
                   <span className={styles['pri-checkout-item-title']}>
                     {item.title}
                   </span>
-                  <span style={{ fontSize: 12, color: 'var(--pri-success-dark)', fontWeight: 500 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--pri-success-dark)', fontWeight: 500 }}>
                     Resolved
                   </span>
                 </div>

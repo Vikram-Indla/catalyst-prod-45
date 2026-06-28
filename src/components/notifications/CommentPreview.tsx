@@ -21,7 +21,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
       padding: '8px 12px',
       marginTop: 8,
       fontFamily: 'var(--cp-font-body)',
-      fontSize: 13,
+      fontSize: 'var(--ds-font-size-300)',
       color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
       lineHeight: '18px',
       maxHeight: expanded ? 'none' : 80,
@@ -33,14 +33,14 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
           onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: 4,
-            color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: 500,
+            color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)', fontWeight: 500,
           }}
         >
           Show more
         </button>
       )}
       {attachmentFilename && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 8, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 8, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-200)' }}>
           {/* attachment glyph — mirrors @atlaskit/icon/glyph/attachment */}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>

@@ -73,7 +73,7 @@ function BoardMenuItem({
       className="flex items-center gap-3 w-full"
       style={{
         padding: '10px 16px', background: 'transparent', border: 'none',
-        cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500,
+        cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500,
         textAlign: 'left', fontFamily: 'var(--cp-font-body)',
         transition: 'background 80ms ease',
       }}
@@ -84,7 +84,7 @@ function BoardMenuItem({
       <span style={{ flex: 1 }}>{label}</span>
       {badge !== undefined && badge > 0 && (
         <span style={{
-          fontSize: 11, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           background: 'var(--cp-primary-60, #0052CC)', borderRadius: 10, padding: '1px 8px',
           lineHeight: '18px',
         }}>{badge}</span>
@@ -275,7 +275,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
           style={{
             width: '100%', height: 32, paddingLeft: 30, paddingRight: 8,
             border: `1px solid ${tk.border}`, borderRadius: 3,
-            fontSize: 14, fontWeight: 500,
+            fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
             color: tk.textPrimary, background: tk.surfaceBg,
             outline: 'none', fontFamily: 'var(--cp-font-body)',
             transition: 'border-color 150ms ease',
@@ -337,7 +337,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
             style={{
               height: 32, padding: '0 10px',
               border: 'none', borderRadius: 3,
-              fontSize: 14, fontWeight: 500,
+              fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               color: active ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
               background: active ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -357,7 +357,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
         <button
           onClick={onClearAllFilters}
           style={{
-            fontSize: 12, color: tk.selectedAccent, background: 'none',
+            fontSize: 'var(--ds-font-size-200)', color: tk.selectedAccent, background: 'none',
             border: 'none', cursor: 'pointer', fontWeight: 500,
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -439,7 +439,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 600, color: tk.textMuted, letterSpacing: '0.04em' }}>
+            <div style={{ padding: '6px 16px 4px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted, letterSpacing: '0.04em' }}>
               Board options
             </div>
             {onRenameBoard && (

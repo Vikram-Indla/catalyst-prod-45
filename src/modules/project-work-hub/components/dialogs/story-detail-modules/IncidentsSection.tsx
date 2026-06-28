@@ -183,7 +183,7 @@ export function IncidentsSection({
                     onClick={() => setCreating(true)}
                     style={{
                       background: 'none', border: 'none', padding: 0,
-                      fontSize: 14, color: 'var(--ds-text-brand, var(--cp-primary-60, #0052CC))',
+                      fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-brand, var(--cp-primary-60, #0052CC))',
                       cursor: 'pointer', fontFamily: 'inherit',
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
@@ -228,7 +228,7 @@ export function IncidentsSection({
                   maxLength={255}
                   style={{
                     flex: 1, height: 36, padding: '0 12px',
-                    border: 'none', outline: 'none', fontSize: 14,
+                    border: 'none', outline: 'none', fontSize: 'var(--ds-font-size-400)',
                     color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'inherit', background: 'transparent',
                   }}
                 />
@@ -255,7 +255,7 @@ export function IncidentsSection({
               <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
                 <button
                   onClick={() => { setCreating(false); setDraftSummary(''); }}
-                  style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', cursor: 'pointer', fontFamily: 'inherit' }}
+                  style={{ background: 'none', border: 'none', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', cursor: 'pointer', fontFamily: 'inherit' }}
                 >
                   Cancel
                 </button>

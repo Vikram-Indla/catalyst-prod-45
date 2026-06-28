@@ -374,7 +374,7 @@ export function EpicTableView({
         className={cn(
           "flex flex-col flex-1 rounded-[14px] border overflow-hidden",
           "bg-[var(--industry-bg-card)] border-[var(--industry-border-default)]",
-          "dark:bg-[var(--ds-text, #172B4D)] dark:border-[var(--ds-text-subtle, #44546F)]"
+          "dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] dark:border-[var(--ds-text-subtle, #44546F)]"
         )}
         style={{ boxShadow: '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,0.04))' }}
       >
@@ -382,7 +382,7 @@ export function EpicTableView({
         <div className={cn(
           "flex items-center justify-between px-4 py-2.5 border-b",
           "border-[var(--industry-border-default)] bg-[var(--industry-bg-subtle)]",
-          "dark:border-[var(--ds-text-subtle, #44546F)] dark:bg-[var(--ds-text, #172B4D)]"
+          "dark:border-[var(--ds-text-subtle, #44546F)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]"
         )}>
           <div className="flex items-center gap-3">
             <span className="text-sm text-[var(--industry-text-secondary)] dark:text-gray-300">
@@ -444,7 +444,7 @@ export function EpicTableView({
             <table className="w-full min-w-[900px] border-collapse text-[13px]">
               <thead className={cn(
                 "sticky top-0 z-10",
-                "bg-[var(--industry-bg-card)] dark:bg-[var(--ds-text, #172B4D)]"
+                "bg-[var(--industry-bg-card)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]"
               )}>
                 <tr>
                   <th className={cn(
@@ -474,7 +474,7 @@ export function EpicTableView({
                             onCheckedChange={() => toggleAll()}
                             className={cn(
                               "data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]",
-                              "border-border/50 dark:border-border/30 dark:bg-[var(--ds-text, #172B4D)]"
+                              "border-border/50 dark:border-border/30 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]"
                             )}
                           />
                         ) : (
@@ -531,7 +531,7 @@ export function EpicTableView({
                                 "transition-colors cursor-pointer",
                                 "hover:bg-[var(--industry-bg-hover)] dark:hover:bg-[var(--ds-text, #172B4D)]/50",
                                 selectedSet.has(row.id) && "bg-blue-500/[0.08] dark:bg-blue-500/[0.15]",
-                                snapshot.isDragging && "bg-muted dark:bg-[var(--ds-text, #172B4D)] shadow-lg"
+                                snapshot.isDragging && "bg-muted dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] shadow-lg"
                               )}
                               onClick={() => onRowClick(row.id)}
                               onMouseEnter={() => setHoveredRowId(row.id)}

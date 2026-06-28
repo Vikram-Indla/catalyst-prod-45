@@ -59,7 +59,7 @@ export const CreateForm = memo(function CreateForm({
           padding: '8px 12px',
           border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontFamily: 'inherit',
         }}
       />
@@ -71,7 +71,7 @@ export const CreateForm = memo(function CreateForm({
           padding: '8px 12px',
           border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           minHeight: '100px',
           fontFamily: 'inherit',
           resize: 'vertical',
@@ -86,7 +86,7 @@ export const CreateForm = memo(function CreateForm({
           color: 'var(--ds-text-inverse, #FFFFFF)',
           border: 'none',
           borderRadius: '3px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           cursor: 'pointer',
           transition: 'background-color 150ms',

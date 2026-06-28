@@ -45,7 +45,7 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
     border: '1px solid var(--ds-border, #DFE1E6)',
     borderRadius: 4,
     padding: '6px 8px',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     fontFamily: 'var(--ds-font-family-body)',
     color: 'var(--ds-text, #172B4D)',
     background: 'var(--ds-surface, #FFFFFF)',
@@ -58,7 +58,7 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
   return (
     <div>
       {steps.length === 0 ? (
-        <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, margin: '0 0 12px' }}>No steps yet.</p>
+        <p style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-300)', margin: '0 0 12px' }}>No steps yet.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 12 }}>
           {steps.map((step, i) => (
@@ -69,7 +69,7 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
               background: 'var(--ds-surface-raised, #FFFFFF)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>Step {i + 1}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>Step {i + 1}</span>
                 <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={() => moveUp(i)} disabled={i === 0} style={smallBtn} title="Move up">↑</button>
                   <button onClick={() => moveDown(i)} disabled={i === steps.length - 1} style={smallBtn} title="Move down">↓</button>
@@ -111,7 +111,7 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
         background: 'none',
         border: '1px dashed var(--ds-border, #DFE1E6)',
         borderRadius: 4,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--ds-text-subtle, #42526E)',
         cursor: 'pointer',
         width: '100%',
@@ -126,7 +126,7 @@ export function StepEditor({ steps, onChange }: StepEditorProps) {
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: 11,
+  fontSize: 'var(--ds-font-size-100)',
   fontWeight: 600,
   color: 'var(--ds-text-subtle, #42526E)',
   marginBottom: 4,
@@ -140,7 +140,7 @@ const smallBtn: React.CSSProperties = {
   cursor: 'pointer',
   color: 'var(--ds-text-subtlest, #6B778C)',
   padding: '2px 4px',
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   display: 'flex',
   alignItems: 'center',
 };

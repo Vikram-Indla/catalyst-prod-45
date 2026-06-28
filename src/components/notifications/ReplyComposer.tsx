@@ -74,7 +74,7 @@ export default function ReplyComposer({
               borderBottom: `2px solid ${inputBorderBottom}`,
               background: 'transparent',
               fontFamily: 'var(--cp-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: '20px',
               color: textColor,
               outline: 'none',

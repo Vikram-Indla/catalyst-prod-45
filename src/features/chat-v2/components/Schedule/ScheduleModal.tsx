@@ -88,10 +88,10 @@ export function ScheduleModal({ onCancel, onConfirm }: ScheduleModalProps) {
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+            <div style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
               Schedule message
             </div>
-            <div style={{ marginTop: 4, fontSize: 13, color: 'var(--cv2-text-muted)' }}>
+            <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-300)', color: 'var(--cv2-text-muted)' }}>
               Time zone: {tz}
             </div>
           </div>
@@ -191,7 +191,7 @@ function PickerButton({
         borderRadius: 'var(--cv2-radius-sm)',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
       }}
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -287,7 +287,7 @@ function CalendarHeader({
           <ChevronLeftIcon size={14} />
         </NavBtn>
       </div>
-      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
         {MONTH_LABELS[month]} {year}
       </div>
       <div style={{ display: 'inline-flex', gap: 4 }}>
@@ -349,7 +349,7 @@ function CalendarGrid({
             key={d}
             style={{
               textAlign: 'center',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               color: 'var(--cv2-text-muted)',
               fontWeight: 600,
               padding: '4px 0',
@@ -386,7 +386,7 @@ function CalendarGrid({
                     : 'var(--cv2-text)',
                 border: isToday && !isSel ? '1px solid var(--cv2-accent)' : 'none',
                 borderRadius: 6,
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: isSel ? 700 : 400,
                 cursor: allowed ? 'pointer' : 'not-allowed',
                 transition: 'background var(--cv2-transition-fast)',
@@ -471,7 +471,7 @@ function TimeDropdown({
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
             }}
             onMouseEnter={e => {
               if (!sel) (e.currentTarget as HTMLElement).style.background = 'var(--cv2-bg-row-hover)';
@@ -501,7 +501,7 @@ function PrimaryBtn({ onClick, children }: { onClick: () => void; children: Reac
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         cursor: 'pointer',
       }}
@@ -524,7 +524,7 @@ function SecondaryBtn({ onClick, children }: { onClick: () => void; children: Re
         border: '1px solid var(--cv2-border-strong)',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         cursor: 'pointer',
       }}

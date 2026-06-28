@@ -104,7 +104,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
         justifyContent: 'center',
         height: '100%',
         color: token('color.text.subtlest'),
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
       }}>
         Loading…
       </div>
@@ -122,7 +122,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
         gap: 16,
         color: token('color.text.subtle'),
       }}>
-        <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: token('font.weight.medium') }}>
           Filter not found
         </span>
         <Button appearance="subtle" onClick={() => navigate(backHref)}>
@@ -189,8 +189,8 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
         >
           Filters
         </Button>
-        <span style={{ color: token('color.text.subtlest'), fontSize: 13 }}>/</span>
-        <span style={{ fontSize: 13, color: token('color.text.subtle') }}>{filter.name}</span>
+        <span style={{ color: token('color.text.subtlest'), fontSize: 'var(--ds-font-size-300)' }}>/</span>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>{filter.name}</span>
       </div>
 
       {/* Page content — 24px horizontal padding matches the project backlog */}
@@ -201,7 +201,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
           <div>
             <h1 style={{
               margin: 0,
-              fontSize: 24,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 653,
               color: token('color.text'),
               lineHeight: '28px',
@@ -211,7 +211,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             {filter.description && (
               <p style={{
                 margin: '8px 0 0',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: token('color.text.subtle'),
                 maxWidth: 640,
               }}>
@@ -322,7 +322,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
               borderRadius: 3,
               background: token('color.background.neutral'),
               color: token('color.text.subtle'),
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: token('font.weight.medium'),
             }}>
               {viewersLabel}
@@ -337,34 +337,34 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                   name={filter.owner.full_name ?? 'Unknown'}
                   size="xsmall"
                 />
-                <span style={{ fontSize: 13 }}>{filter.owner.full_name ?? 'Unknown'}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-300)' }}>{filter.owner.full_name ?? 'Unknown'}</span>
               </div>
             ) : (
-              <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>—</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest') }}>—</span>
             )}
           </MetaField>
 
           <MetaField label="Editors">
-            <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
               {editorsLabel}
             </span>
           </MetaField>
 
           <MetaField label="Subscribers">
-            <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
               {subscriberCount === 0 ? '—' : `${subscriberCount} watching`}
             </span>
           </MetaField>
 
           <MetaField label="Starred by">
-            <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
               {filter.starred_by_user_ids.length}
             </span>
           </MetaField>
 
           <MetaField label="Boards">
             {filter.used_by_board_ids.length === 0 ? (
-              <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>—</span>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest') }}>—</span>
             ) : linkedBoards.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {linkedBoards.map(board => (
@@ -378,7 +378,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                       : '#'
                     }
                     style={{
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       color: token('color.link'),
                       textDecoration: 'none',
                       display: 'inline-flex',
@@ -392,7 +392,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                 ))}
               </div>
             ) : (
-              <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
                 {filter.used_by_board_ids.length}
               </span>
             )}
@@ -409,7 +409,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
           <div style={{ marginBottom: 24 }}>
             <h2 style={{
               margin: '0 0 8px',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: token('font.weight.semibold'),
               color: token('color.text.subtle'),
             }}>
@@ -427,7 +427,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
                     borderRadius: 3,
                     background: token('color.background.neutral'),
                     color: token('color.text.subtle'),
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: token('font.weight.medium'),
                   }}
                 >
@@ -443,7 +443,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
           <div style={{ marginBottom: 24 }}>
             <h2 style={{
               margin: '0 0 8px',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: token('font.weight.semibold'),
               color: token('color.text.subtle'),
             }}>
@@ -456,7 +456,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
               borderRadius: 4,
               border: `1px solid ${token('color.border')}`,
               fontFamily: 'var(--ds-font-family-monospace, monospace)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.text'),
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-all',
@@ -472,7 +472,7 @@ export default function FilterDetailPage({ mode = 'project' }: FilterDetailPageP
             border: `1px dashed ${token('color.border')}`,
             textAlign: 'center',
             color: token('color.text.subtlest'),
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             marginBottom: 24,
           }}>
             No JQL query saved — <Button
@@ -514,7 +514,7 @@ function MetaField({ label, children }: { label: string; children: React.ReactNo
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       <span style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: token('font.weight.semibold'),
         color: token('color.text.subtlest'),
       }}>

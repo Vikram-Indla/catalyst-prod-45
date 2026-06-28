@@ -87,7 +87,7 @@ export function PreviewRecoveryBanner() {
         background: "var(--ds-text-danger, #7C2D12)",
         color: "var(--ds-background-warning, #FFF7D6)",
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 600,
         boxShadow: "0 2px 12px var(--ds-shadow-raised, rgba(0,0,0,0.35))",
       }}
@@ -110,7 +110,7 @@ export function PreviewRecoveryBanner() {
           color: "var(--ds-text-danger, #7C2D12)",
           border: "none",
           borderRadius: 4,
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 700,
           cursor: "pointer",
         }}

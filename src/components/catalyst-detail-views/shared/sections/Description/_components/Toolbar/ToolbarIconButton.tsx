@@ -54,7 +54,7 @@ export function ToolbarIconButton({
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.4 : 1,
     transition: 'background 100ms ease, color 100ms ease',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontWeight: 500,
     fontFamily:
       '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, sans-serif',

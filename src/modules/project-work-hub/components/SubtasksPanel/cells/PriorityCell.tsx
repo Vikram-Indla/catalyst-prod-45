@@ -20,7 +20,7 @@ export const PriorityCell = React.memo(function PriorityCell({ priority, onChang
       aria-label={`Priority ${priority} — change`}
       disabled={readOnly}
     >
-      <PriorityIndicator priority={priority} showLabel fontSize={14} />
+      <PriorityIndicator priority={priority} showLabel fontSize={'var(--ds-font-size-400)'} />
     </button>
   );
 

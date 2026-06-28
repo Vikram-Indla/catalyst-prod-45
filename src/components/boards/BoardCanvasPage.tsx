@@ -53,7 +53,7 @@ function StatusLozenge({ status }: { status: string }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       padding: '0 6px', height: 20, borderRadius: 4,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: bg, color,
       fontFamily: 'var(--cp-font-body)',
@@ -239,7 +239,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
 
   if (!board) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--fg-3)', fontSize: 13, fontFamily: 'var(--cp-font-body)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)' }}>
         Board not found
       </div>
     );
@@ -249,10 +249,10 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-1)' }}>
       {/* Header */}
       <div style={{ background: 'var(--bg-app)', borderBottom: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))', flexShrink: 0, padding: '12px 24px 0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-3)', marginBottom: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-3)', marginBottom: 6 }}>
           <button onClick={() => navigate(boardBasePath)} style={{
             border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-            color: 'var(--cp-blue)', fontSize: 12, fontFamily: 'var(--cp-font-body)', padding: 0,
+            color: 'var(--cp-blue)', fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)', padding: 0,
           }}>
             <ArrowLeft size={13} /> All Boards
           </button>
@@ -291,7 +291,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, paddingBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <h1 style={{ fontSize: 15, fontFamily: 'var(--cp-font-heading)', fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
+            <h1 style={{ fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--cp-font-heading)', fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
               {board.name}
             </h1>
             <span style={{
@@ -306,7 +306,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               display: 'inline-flex', alignItems: 'center', gap: 4,
               height: 28, padding: '0 10px', borderRadius: 4,
               background: 'var(--cp-bd-zone)', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.06))',
-              fontSize: 12, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
               cursor: 'pointer',
             }}>
               Group by: <strong style={{ fontWeight: 600 }}>{board.swimlaneType === 'none' ? 'None' : board.swimlaneType.charAt(0).toUpperCase() + board.swimlaneType.slice(1)}</strong>
@@ -315,7 +315,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
             <button onClick={() => setSettingsOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '8px 12px',
               background: 'transparent', border: '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
-              borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 500,
+              borderRadius: 6, cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
               color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
             }}>
               <Settings size={13} /> Board Settings
@@ -350,7 +350,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                 }} />
               )}
               <span style={{
-                fontSize: 12, fontWeight: 650, textTransform: 'uppercase' as const,
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 650, textTransform: 'uppercase' as const,
                 color: col.isDone ? 'var(--sem-success)' : 'var(--fg-2)',
                 fontFamily: 'var(--cp-font-body)', letterSpacing: '0.05em',
               }}>{col.name}</span>
@@ -407,14 +407,14 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--sem-success)' }} />
                     <span style={{
-                      fontSize: 12, fontWeight: 600, color: 'var(--fg-1)',
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-1)',
                       fontFamily: 'var(--cp-font-mono)',
                     }}>{lane.name}</span>
                   </span>
                 )}
                 {lane.id === 'default' && (
                   <span style={{
-                    fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+                    fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
                     fontFamily: 'var(--cp-font-mono)',
                   }}>{lane.name}</span>
                 )}
@@ -436,7 +436,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                         transition: 'width 300ms ease',
                       }} />
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
                       {pct}%
                     </span>
                   </div>
@@ -457,12 +457,12 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                           display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8,
                         }}>
                           <span style={{
-                            fontSize: 11, fontWeight: 650, textTransform: 'uppercase' as const,
+                            fontSize: 'var(--ds-font-size-100)', fontWeight: 650, textTransform: 'uppercase' as const,
                             color: col.isDone ? 'var(--sem-success)' : 'var(--fg-3)',
                             fontFamily: 'var(--cp-font-body)', letterSpacing: '0.05em',
                           }}>{col.name}</span>
                           <span style={{
-                            fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 6,
+                            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '1px 5px', borderRadius: 6,
                             background: col.isDone ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-1)',
                             color: col.isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                             fontFamily: 'var(--cp-font-mono)',

@@ -362,7 +362,7 @@ export function WorkstreamsPage() {
               backgroundColor: COLORS.surfaceWhite,
               border: `1px solid ${COLORS.borderLight}`,
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color: COLORS.textSecondary,
               cursor: 'pointer',
@@ -382,7 +382,7 @@ export function WorkstreamsPage() {
                   padding: '0 6px',
                   backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
                   borderRadius: '12px',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--ds-text-subtlest, #64748b)',
                 }}
@@ -402,7 +402,7 @@ export function WorkstreamsPage() {
               backgroundColor: COLORS.accent,
               border: 'none',
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               cursor: 'pointer',
@@ -482,7 +482,7 @@ export function WorkstreamsPage() {
                 flex: 1,
                 border: 'none',
                 backgroundColor: 'transparent',
-                fontSize: '14px',
+                fontSize: 'var(--ds-font-size-400)',
                 color: COLORS.textPrimary,
                 outline: 'none',
                 fontFamily: 'inherit',
@@ -493,7 +493,7 @@ export function WorkstreamsPage() {
                 padding: '4px 8px',
                 backgroundColor: COLORS.borderLight,
                 borderRadius: '4px',
-                fontSize: '11px',
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 500,
                 color: COLORS.textMuted,
               }}
@@ -519,7 +519,7 @@ export function WorkstreamsPage() {
                   backgroundColor: healthFilter ? 'var(--ds-background-selected, #eff6ff)' : COLORS.surfaceWhite,
                   border: `1px solid ${healthFilter ? 'var(--ds-text-brand, #3b82f6)' : COLORS.borderLight}`,
                   borderRadius: '8px',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
                   color: healthFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : COLORS.textSecondary,
                   cursor: 'pointer',
@@ -575,7 +575,7 @@ export function WorkstreamsPage() {
                           backgroundColor: healthFilter === option.value ? COLORS.surfaceHover : 'transparent',
                           border: 'none',
                           borderRadius: '6px',
-                          fontSize: '13px',
+                          fontSize: 'var(--ds-font-size-300)',
                           fontWeight: 500,
                           color: COLORS.textPrimary,
                           cursor: 'pointer',
@@ -614,7 +614,7 @@ export function WorkstreamsPage() {
                   backgroundColor: leadFilter ? 'var(--ds-background-selected, #eff6ff)' : COLORS.surfaceWhite,
                   border: `1px solid ${leadFilter ? 'var(--ds-text-brand, #3b82f6)' : COLORS.borderLight}`,
                   borderRadius: '8px',
-                  fontSize: '13px',
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 500,
                   color: leadFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : COLORS.textSecondary,
                   cursor: 'pointer',
@@ -669,7 +669,7 @@ export function WorkstreamsPage() {
                           backgroundColor: leadFilter === option.value ? COLORS.surfaceHover : 'transparent',
                           border: 'none',
                           borderRadius: '6px',
-                          fontSize: '13px',
+                          fontSize: 'var(--ds-font-size-300)',
                           fontWeight: 500,
                           color: COLORS.textPrimary,
                           cursor: 'pointer',
@@ -838,7 +838,7 @@ export function WorkstreamsPage() {
               backgroundColor: COLORS.surfacePage,
             }}
           >
-            <span style={{ fontSize: '13px', color: COLORS.textMuted }}>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', color: COLORS.textMuted }}>
               Showing {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, filteredWorkstreams.length)} of {filteredWorkstreams.length}
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -875,7 +875,7 @@ export function WorkstreamsPage() {
                     backgroundColor: page === currentPage ? COLORS.accent : COLORS.surfaceWhite,
                     border: `1px solid ${page === currentPage ? COLORS.accent : COLORS.borderLight}`,
                     borderRadius: '6px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: page === currentPage ? 600 : 500,
                     color: page === currentPage ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : COLORS.textSecondary,
                     cursor: 'pointer',

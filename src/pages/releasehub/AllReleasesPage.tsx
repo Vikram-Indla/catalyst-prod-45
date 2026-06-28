@@ -51,7 +51,7 @@ function HealthPill({ health }: { health: string | null }) {
   };
   const m = map[health] ?? { label: health, fg: T.subtle, bg: T.sunken };
   return (
-    <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{m.label}</span>
+    <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap' }}>{m.label}</span>
   );
 }
 
@@ -136,31 +136,31 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       id: 'name', label: 'Release', flex: true, sortable: true,
       cell: ({ row }) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>
             {row.name}{row.version ? <span style={{ color: T.subtlest, fontWeight: 400 }}> · {row.version}</span> : null}
           </span>
           {row.jira_key && (
-            <span style={{ fontFamily: T.mono, fontSize: 11, color: T.subtlest }}>{row.jira_key}</span>
+            <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-100)', color: T.subtlest }}>{row.jira_key}</span>
           )}
         </div>
       ),
     },
     {
       id: 'productName', label: 'Product', width: 10,
-      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: row.productName ? T.text : T.subtlest }}>{row.productName ?? '—'}</span>,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: row.productName ? T.text : T.subtlest }}>{row.productName ?? '—'}</span>,
     },
     {
       id: 'items', label: 'Items', width: 6, align: 'end', sortable: true,
       accessor: (row) => row.workItemsCount,
-      cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: row.workItemsCount > 0 ? T.text : T.subtlest }}>{row.workItemsCount}</span>,
+      cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: row.workItemsCount > 0 ? T.text : T.subtlest }}>{row.workItemsCount}</span>,
     },
     {
       id: 'target_env', label: 'Env', width: 10,
-      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.target_env)}</span>,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.target_env)}</span>,
     },
     {
       id: 'release_type', label: 'Type', width: 10,
-      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.release_type)}</span>,
+      cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.release_type)}</span>,
     },
     {
       id: 'status', label: 'Status', width: 12, sortable: true,
@@ -182,7 +182,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
             <div style={{ flex: 1, height: 6, borderRadius: 4, background: 'var(--ds-background-neutral, #F1F2F4)', overflow: 'hidden', minWidth: 48 }}>
               <div style={{ width: `${pct}%`, height: '100%', background: barColor }} />
             </div>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtle, minWidth: 28, textAlign: 'right' }}>{pct}%</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtle, minWidth: 28, textAlign: 'right' }}>{pct}%</span>
           </div>
         );
       },
@@ -192,18 +192,18 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       accessor: (row) => row.planned_release_date ?? row.target_date,
       cell: ({ row }) => {
         const d = row.planned_release_date ?? row.target_date;
-        return <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{d ? format(new Date(d), 'MMM d, yyyy') : '—'}</span>;
+        return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{d ? format(new Date(d), 'MMM d, yyyy') : '—'}</span>;
       },
     },
     {
       id: 'changes', label: 'Chg', width: 8, align: 'end', sortable: true,
       accessor: (row) => row.changeCount,
-      cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.text }}>{row.changeCount}</span>,
+      cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>{row.changeCount}</span>,
     },
     {
       id: 'signoff', label: 'Sign-off', width: 9, align: 'end',
       cell: ({ row }) => row.signoffProgress
-        ? <span style={{ fontFamily: T.mono, fontSize: 13, color: row.signoffProgress.approved === row.signoffProgress.total ? 'var(--ds-text-success, #216E4E)' : T.subtle }}>{row.signoffProgress.approved}/{row.signoffProgress.total}</span>
+        ? <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', color: row.signoffProgress.approved === row.signoffProgress.total ? 'var(--ds-text-success, #216E4E)' : T.subtle }}>{row.signoffProgress.approved}/{row.signoffProgress.total}</span>
         : <span style={{ color: T.subtlest }}>—</span>,
     },
     {
@@ -213,7 +213,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
             <Avatar name={row.manager.name} src={row.manager.avatarUrl ?? undefined} size="small" />
-            <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.manager.name}</span>
           </div>
         );
       },
@@ -222,7 +222,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
       id: 'updated', label: 'Updated', width: 10, sortable: true,
       accessor: (row) => row.updated_at,
       cell: ({ row }) => (
-        <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>
+        <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>
           {row.updated_at ? `${formatDistanceToNowStrict(new Date(row.updated_at))} ago` : '—'}
         </span>
       ),
@@ -239,7 +239,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
           onClick={() => canManage && setShowCreate(true)}
           disabled={!canManage}
           title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
         >
           <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New release
         </button>
@@ -256,7 +256,7 @@ export default function AllReleasesPage({ variant = 'backlog' }: { variant?: 'ba
             placeholder="Search releases…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ height: 32, width: 240, padding: '0 8px 0 32px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 13, outline: 'none' }}
+            style={{ height: 32, width: 240, padding: '0 8px 0 32px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.card, color: T.text, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', outline: 'none' }}
           />
         </div>
       </div>

@@ -55,7 +55,7 @@ import { ResizeColumnDialog } from './ResizeColumnDialog';
 // Simple Atlaskit-tuned button style used by the pagination footer.
 const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
   padding: '4px 10px',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
   borderRadius: 3,
   background: disabled ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
@@ -1627,12 +1627,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   {(g as any).labelNode}
                 </span>
               ) : (
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {g.label}
                 </span>
               )}
               {g.meta && (
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
                   {g.meta}
                 </span>
               )}
@@ -2487,12 +2487,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     background: 'transparent',
                     cursor: 'pointer',
                     color: 'var(--ds-text, #292A2E)',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 600,
                     borderRadius: 3,
                   }}
                 >
-                  <span style={{ fontSize: 22, lineHeight: 1, marginTop: -2, fontWeight: 400 }}>+</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-700)', lineHeight: 1, marginTop: -2, fontWeight: 400 }}>+</span>
                   <span>{stickyCreateFooter.placeholder ?? 'Create'}</span>
                 </button>
                 <div
@@ -2501,7 +2501,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: 'var(--ds-text, #292A2E)',
                   }}
@@ -2569,7 +2569,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             gap: 8,
             padding: '8px 12px',
             borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtle, #42526E)',
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))',
           }}>
@@ -2668,7 +2668,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     // legacy var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))) → --ds-text fallback #292A2E to match
                     // the rest of the table's body-text token swap.
                     color: a.danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #292A2E)',
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     textAlign: 'left',
                     cursor: disabled ? 'default' : 'pointer',
                     opacity: disabled ? 0.5 : 1,
@@ -3020,7 +3020,7 @@ function ColumnManagerTrigger<TRow>({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 6px' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
               Columns
             </span>
             <button
@@ -3033,7 +3033,7 @@ function ColumnManagerTrigger<TRow>({
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--ds-link, #0C66E4)',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 padding: '2px 4px',
@@ -3075,7 +3075,7 @@ function ColumnManagerTrigger<TRow>({
                     padding: '6px 10px',
                     cursor: 'pointer',
                     fontFamily: 'inherit',
-                    fontSize: 12,
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: isActive ? 600 : 500,
                     color: isActive ? 'var(--ds-link, #0C66E4)' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                     marginBottom: -1,
@@ -3102,7 +3102,7 @@ function ColumnManagerTrigger<TRow>({
           </div>
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 10px', fontSize: 13, color: 'var(--ds-text-subtlest, #7A869A)' }}>No matches</div>
+              <div style={{ padding: '8px 10px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #7A869A)' }}>No matches</div>
             )}
             {filtered.map((c) => {
               const isVisible = visibility.has(c.id);
@@ -3119,7 +3119,7 @@ function ColumnManagerTrigger<TRow>({
                     padding: '6px 8px',
                     cursor: 'pointer',
                     borderRadius: 3,
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     color: 'var(--ds-text, #292A2E)',
                   }}
                   onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--ds-background-neutral-subtle, #F4F5F7)))')}
@@ -3138,14 +3138,14 @@ function ColumnManagerTrigger<TRow>({
           {/* 2026-05-12 Jira parity: "X of Y" count display at the bottom */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '6px 8px 2px', fontSize: 11, color: 'var(--ds-text-subtlest, #7A869A)',
+            padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)',
             borderTop: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, var(--ds-border, #DFE1E6)))', marginTop: 4,
           }}>
             <span>{matchCount} of {totalInTab}</span>
           </div>
           {/* Locked columns hint */}
           {columns.some((c) => c.alwaysVisible) && (
-            <div style={{ padding: '6px 8px 2px', fontSize: 11, color: 'var(--ds-text-subtlest, #7A869A)' }}>
+            <div style={{ padding: '6px 8px 2px', fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #7A869A)' }}>
               {columns.filter((c) => c.alwaysVisible && !c.id.startsWith('__')).map((c) => c.label || c.id).join(', ')} are required.
             </div>
           )}

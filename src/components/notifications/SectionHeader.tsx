@@ -15,7 +15,7 @@ export default function SectionHeader({ label }: SectionHeaderProps) {
       background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       padding: '12px 16px 4px',
       fontFamily: 'var(--cp-font-body)',
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 500,
       color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
       textTransform: 'uppercase',

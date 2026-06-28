@@ -29,7 +29,7 @@ export function ScheduledEditBanner({ scheduledFor, onSeeAll }: ScheduledEditBan
         background: 'var(--cv2-bg-row-hover)',
         borderRadius: '8px 8px 0 0',
         fontFamily: 'var(--cv2-font)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--cv2-text-subtle)',
       }}
     >

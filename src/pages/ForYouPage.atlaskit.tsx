@@ -463,7 +463,7 @@ export default function ForYouPageAtlaskit() {
               </span>
               <span
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtle, #505258)',
                   whiteSpace: 'nowrap',
@@ -537,7 +537,7 @@ export default function ForYouPageAtlaskit() {
 
           {/* Detail content — the router handles its own internal scroll. */}
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)', fontSize: 14 }}>Loading…</div>}>
+            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtle, #505258)', fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>}>
               <CatalystDetailRouter
                 isOpen={true}
                 onClose={clearDetail}

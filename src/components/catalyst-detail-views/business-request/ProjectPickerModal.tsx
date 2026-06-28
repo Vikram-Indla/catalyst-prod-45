@@ -65,7 +65,7 @@ export function ProjectPickerModal({ isOpen, onClose, brTitle, onConfirm }: Proj
         <ModalTitle>Select project for epic generation</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle, #44546F)' }}>
+        <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #44546F)' }}>
           Generating epics for{brTitle ? <> <strong>{brTitle.slice(0, 80)}{brTitle.length > 80 ? '…' : ''}</strong></> : ' this business request'}.
           Epics will be created in the selected project and follow its epic numbering.
         </p>
@@ -73,7 +73,7 @@ export function ProjectPickerModal({ isOpen, onClose, brTitle, onConfirm }: Proj
           htmlFor="epic-gen-project"
           style={{
             display: 'block',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
             color: 'var(--ds-text-subtle, #44546F)',
             marginBottom: 4,

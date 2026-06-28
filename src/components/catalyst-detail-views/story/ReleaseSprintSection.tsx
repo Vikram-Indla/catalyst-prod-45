@@ -199,7 +199,7 @@ export function ReleaseSprintSection({
   if (isEditing) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 4px' }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #505258)' }}>
           Release
         </div>
         <Select<ReleaseOption>
@@ -222,7 +222,7 @@ export function ReleaseSprintSection({
               color: 'white',
               border: 'none',
               borderRadius: 3,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               cursor: updateReleaseMutation.isPending ? 'not-allowed' : 'pointer',
             }}
           >
@@ -236,7 +236,7 @@ export function ReleaseSprintSection({
               color: 'var(--ds-text, #292A2E)',
               border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: 3,
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               cursor: 'pointer',
             }}
           >
@@ -251,7 +251,7 @@ export function ReleaseSprintSection({
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 4px' }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #505258)' }}>
           Release
         </div>
         <button
@@ -263,7 +263,7 @@ export function ReleaseSprintSection({
             color: currentReleaseId ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #6B778C)',
             cursor: 'pointer',
             textDecoration: currentReleaseId ? 'underline' : 'none',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             textAlign: 'left',
           }}
         >
@@ -276,7 +276,7 @@ export function ReleaseSprintSection({
       {/* Sprints section — only show if release is linked */}
       {currentReleaseId && linkedSprints.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '4px 4px' }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #505258)' }}>
             Sprints
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -289,7 +289,7 @@ export function ReleaseSprintSection({
                   padding: '4px 8px',
                   background: 'var(--ds-background-neutral, #F1F2F4)',
                   borderRadius: 3,
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--ds-text, #292A2E)',
                 }}

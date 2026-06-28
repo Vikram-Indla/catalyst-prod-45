@@ -28,7 +28,7 @@ function CatalystLozenge({ appearance, children }: { appearance: LozengeAppearan
     <span style={{
       background: s.bg, color: s.color,
       height: 20, padding: '0 6px', borderRadius: 3,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em',
+      fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em',
       display: 'inline-flex', alignItems: 'center', flexShrink: 0,
     }}>{children}</span>
   );
@@ -85,14 +85,14 @@ export function TestHubSection({ storyId }: { storyId: string }) {
       <div style={{ display: 'flex', borderBottom: '1px solid var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,.14))', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
         {([{ key: 'cases' as const, label: 'Test Cases', count: testCases.length }, { key: 'executions' as const, label: 'Test Executions', count: executions.length }]).map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
-            flex: 1, height: 33, fontSize: 12, fontWeight: 500, border: 'none', background: 'transparent', cursor: 'pointer',
+            flex: 1, height: 33, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, border: 'none', background: 'transparent', cursor: 'pointer',
             color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             borderBottom: `2px solid ${activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'color .12s, border-color .12s',
             fontFamily: 'var(--cp-font-body)',
           }}>
             {tab.label}
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? 'var(--ds-background-information, #DEEBFF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: activeTab === tab.key ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text-subtle, #42526E)' }}>{tab.count}</span>
+            <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? 'var(--ds-background-information, #DEEBFF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: activeTab === tab.key ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text-subtle, #42526E)' }}>{tab.count}</span>
           </button>
         ))}
       </div>
@@ -132,7 +132,7 @@ export function TestHubSection({ storyId }: { storyId: string }) {
                   <span style={{
                     ...TEST_RESULT_STYLES[ex.result as TestResult] ?? TEST_RESULT_STYLES.not_run,
                     display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 6px', borderRadius: 3,
-                    fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em', flexShrink: 0,
+                    fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em', flexShrink: 0,
                   }}>{ex.result?.replace('_', ' ') ?? 'N/A'}</span>
                   <span className="sdm-child-key" style={{ color: 'var(--ds-text-subtle, #42526E)' }}>{ex.case_key ?? '—'}</span>
                   <span className="sdm-child-summary">{ex.cycle_name ?? 'Manual execution'}</span>

@@ -57,7 +57,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           placeholder="Search by title, Jira ticket, domain..."
           style={{
             flex: 1, border: 'none', outline: 'none', background: 'transparent',
-            fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)',
+            fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)',
             appearance: 'none' as any,
           }}
         />
@@ -77,7 +77,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 height: 28, padding: '8px 12px', borderRadius: 6,
-                fontSize: 12, fontWeight: active ? 600 : 500,
+                fontSize: 'var(--ds-font-size-200)', fontWeight: active ? 600 : 500,
                 border: 'none', cursor: 'pointer',
                 background: active ? 'var(--bg-app)' : 'transparent',
                 color: active ? 'var(--fg-1)' : 'var(--fg-3)',
@@ -90,7 +90,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             >
               {t.label}
               {t.key === 'all' && totalCount != null && (
-                <span style={{ fontSize: 12, color: 'var(--fg-4)', fontWeight: 400 }}>({totalCount})</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', fontWeight: 400 }}>({totalCount})</span>
               )}
             </button>
           );
@@ -108,7 +108,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           disabled={syncingAll}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '0 14px', height: 50, fontSize: 13, fontWeight: 600,
+            padding: '0 14px', height: 50, fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
             border: 'none', borderRadius: 6,
             background: syncingAll
               ? 'var(--fg-4)'

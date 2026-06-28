@@ -156,7 +156,7 @@ function LinkAsSplitButton({
           borderRadius: 3,
           background: "var(--ds-surface, #fff)",
           cursor: "pointer",
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontFamily: "inherit",
           color:
             "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
@@ -226,7 +226,7 @@ function LinkAsSplitButton({
                 height: 36,
                 padding: "0 12px",
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color:
                   "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
                 background:
@@ -482,7 +482,7 @@ export function AiLinkSimilarPanel({
           <span />
           <span />
         </span>
-        <span style={{ fontSize: 13, color: "var(--ds-text-subtle, #42526E)" }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--ds-text-subtle, #42526E)" }}>
           {typedText}
           <span className="als-typewriter-caret" aria-hidden="true" />
         </span>
@@ -520,7 +520,7 @@ export function AiLinkSimilarPanel({
           </svg>
           <span
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color:
                 "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
@@ -540,7 +540,7 @@ export function AiLinkSimilarPanel({
               borderRadius: 3,
               background: "var(--ds-surface, #fff)",
               cursor: "pointer",
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color:
                 "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
               fontFamily: "inherit",
@@ -553,7 +553,7 @@ export function AiLinkSimilarPanel({
         ) : (
           <span
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color:
                 "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
               fontStyle: "italic",
@@ -595,7 +595,7 @@ export function AiLinkSimilarPanel({
           <SparkleIcon size={16} />
           <span
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color: "var(--ds-text, #172B4D)",
             }}
@@ -623,7 +623,7 @@ export function AiLinkSimilarPanel({
             }}
           >
             <span
-              style={{ fontSize: 13, color: "var(--ds-text-danger, #AE2A19)" }}
+              style={{ fontSize: 'var(--ds-font-size-300)', color: "var(--ds-text-danger, #AE2A19)" }}
             >
               Failed to load suggestions
             </span>
@@ -638,7 +638,7 @@ export function AiLinkSimilarPanel({
                 borderRadius: 3,
                 background: "var(--ds-surface, #fff)",
                 padding: "4px 10px",
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 cursor: "pointer",
                 color:
                   "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
@@ -654,7 +654,7 @@ export function AiLinkSimilarPanel({
           <div
             style={{
               padding: "12px 0",
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color:
                 "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
               fontStyle: "italic",
@@ -681,7 +681,7 @@ export function AiLinkSimilarPanel({
               <Checkbox checked={allSelected} onChange={toggleAll} />
               <span
                 style={{
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color:
                     "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
@@ -726,7 +726,7 @@ export function AiLinkSimilarPanel({
                   style={{
                     flex: 1,
                     minWidth: 0,
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color: "var(--ds-text, #172B4D)",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -769,7 +769,7 @@ export function AiLinkSimilarPanel({
                   />
                   <span
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       color:
                         "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                     }}
@@ -846,7 +846,7 @@ export function AiLinkSimilarPanel({
                     background:
                       "var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))",
                     color: "var(--ds-surface, #fff)",
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: 500,
                     cursor: linkMutation.isPending ? "not-allowed" : "pointer",
                     fontFamily: "inherit",

@@ -178,7 +178,7 @@ export function T10AssigneeFieldNew({
               border: '1px solid var(--ds-border-danger, #fecaca)',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-danger, #dc2626)',
             }}
           >
@@ -193,7 +193,7 @@ export function T10AssigneeFieldNew({
               padding: '20px',
               textAlign: 'center',
               color: 'var(--ds-text-subtlest, #9ca3af)',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             Loading...
@@ -206,7 +206,7 @@ export function T10AssigneeFieldNew({
               padding: '20px',
               textAlign: 'center',
               color: 'var(--ds-text-subtlest, #9ca3af)',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
             }}
           >
             No users found
@@ -233,7 +233,7 @@ export function T10AssigneeFieldNew({
                   border: isSelected ? '1px solid var(--ds-border-selected, #bfdbfe)' : '1px solid transparent',
                   borderRadius: '6px',
                   cursor: 'pointer',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   color: 'var(--ds-text, #111827)',
                 }}
               >
@@ -246,7 +246,7 @@ export function T10AssigneeFieldNew({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '12px',
+                    fontSize: 'var(--ds-font-size-200)',
                     fontWeight: 600,
                     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     flexShrink: 0,
@@ -273,7 +273,7 @@ export function T10AssigneeFieldNew({
                     {user.full_name || 'Unknown User'}
                   </div>
                   {user.email && (
-                    <div style={{ fontSize: '12px', color: 'var(--ds-text-subtle, #6b7280)' }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6b7280)' }}>
                       {user.email}
                     </div>
                   )}
@@ -318,7 +318,7 @@ export function T10AssigneeFieldNew({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '12px',
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 600,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   overflow: 'hidden',
@@ -339,10 +339,10 @@ export function T10AssigneeFieldNew({
                   getT10Initials(assigneeName)
                 )}
               </div>
-              <span style={{ fontSize: '14px', color: 'var(--ds-text, #111827)', fontWeight: 500 }}>{assigneeName}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #111827)', fontWeight: 500 }}>{assigneeName}</span>
             </>
           ) : (
-            <span style={{ color: 'var(--ds-text-subtlest, #9ca3af)', fontSize: '14px' }}>Select assignee</span>
+            <span style={{ color: 'var(--ds-text-subtlest, #9ca3af)', fontSize: 'var(--ds-font-size-400)' }}>Select assignee</span>
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>

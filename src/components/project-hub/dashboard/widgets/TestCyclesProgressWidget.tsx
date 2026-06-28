@@ -51,17 +51,17 @@ export default function TestCyclesProgressWidget({ collapsed, onToggleCollapse }
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <div>
-                    <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginRight: 8 }}>{c.key}</span>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{c.name}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginRight: 8 }}>{c.key}</span>
+                    <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>{c.name}</span>
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #42526E)' }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)' }}>
                     {passRate}% pass · {executed}/{total}
                   </div>
                 </div>
                 <div style={{ height: 6, background: 'var(--ds-background-neutral, #F1F2F4)', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${pct}%`, background: 'var(--ds-background-brand-bold, #0052CC)', borderRadius: 3 }} />
                 </div>
-                <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 12 }}>
+                <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 'var(--ds-font-size-200)' }}>
                   <span style={{ color: 'var(--ds-text-success, #216E4E)' }}>{passed} passed</span>
                   <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{failed} failed</span>
                   <span style={{ color: 'var(--ds-text-warning, #974F0C)' }}>{blocked} blocked</span>

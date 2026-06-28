@@ -72,7 +72,7 @@ export function OkrTree() {
   if (treeData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--exec-text-tertiary)' }}>
-        <span style={{ fontSize: 12 }}>No strategic themes defined</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)' }}>No strategic themes defined</span>
       </div>
     );
   }
@@ -87,7 +87,7 @@ export function OkrTree() {
       <div className="flex justify-end mb-2">
         <button
           onClick={toggleAll}
-          style={{ fontSize: 10, color: 'var(--exec-blue-700, #1E40AF)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+          style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--exec-blue-700, #1E40AF)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
         >
           {Object.values(expanded).every(Boolean) ? 'Collapse All' : 'Expand All'}
         </button>
@@ -112,10 +112,10 @@ export function OkrTree() {
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--exec-text-primary)', flex: 1, textAlign: 'left' }}>
+                <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--exec-text-primary)', flex: 1, textAlign: 'left' }}>
                   {theme.name}
                 </span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: getProgressColor(theme.progress), marginRight: 4 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: getProgressColor(theme.progress), marginRight: 4 }}>
                   {theme.progress}%
                 </span>
                 <Chevron size={14} style={{ color: 'var(--exec-text-tertiary)', transition: 'transform 150ms' }} />
@@ -137,7 +137,7 @@ export function OkrTree() {
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: getProgressColor(goal.progress), flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--exec-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--exec-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {goal.name}
                       </span>
                       <div style={{ width: 80 }}>

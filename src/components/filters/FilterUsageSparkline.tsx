@@ -24,7 +24,7 @@ export function FilterUsageSparkline({
 }: Props) {
   if (!data.length || data.every(d => d === 0)) {
     return (
-      <span style={{ fontSize: 12, color: token('color.text.subtlest') }}>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
         {totalCount !== undefined ? `${totalCount} uses` : '—'}
       </span>
     );
@@ -62,7 +62,7 @@ export function FilterUsageSparkline({
         })()}
       </svg>
       {totalCount !== undefined && (
-        <span style={{ fontSize: 12, color: token('color.text.subtle') }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle') }}>
           {totalCount}
         </span>
       )}

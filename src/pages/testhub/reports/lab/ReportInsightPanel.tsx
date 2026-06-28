@@ -101,7 +101,7 @@ export default function ReportInsightPanel({ reportSlug, data }: Props) {
       <div
         style={{
           padding: '14px 16px 10px',
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           color: 'var(--ds-text-subtlest)',
           letterSpacing: '0.06em',
@@ -115,7 +115,7 @@ export default function ReportInsightPanel({ reportSlug, data }: Props) {
         <span>AI Insights</span>
         <span
           style={{
-            fontSize: 9,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             padding: '1px 5px',
             borderRadius: 3,
@@ -144,11 +144,11 @@ export default function ReportInsightPanel({ reportSlug, data }: Props) {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: expanded === ins.label ? 8 : 0 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text)' }}>{ins.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text)' }}>{ins.label}</span>
               <Lozenge appearance={TONE_APPEARANCE[ins.tone]}>{ins.tone}</Lozenge>
             </div>
             {expanded === ins.label && (
-              <p style={{ margin: 0, fontSize: 12, color: 'var(--ds-text-subtle)', lineHeight: 1.55 }}>
+              <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle)', lineHeight: 1.55 }}>
                 {ins.body}
               </p>
             )}
@@ -157,7 +157,7 @@ export default function ReportInsightPanel({ reportSlug, data }: Props) {
       </div>
 
       <div style={{ padding: '8px 12px 16px', marginTop: 'auto' }}>
-        <p style={{ margin: 0, fontSize: 11, color: 'var(--ds-text-subtlest)', lineHeight: 1.5, fontStyle: 'italic' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest)', lineHeight: 1.5, fontStyle: 'italic' }}>
           AI insights will use Gemini Gateway with real report metrics after lab approval. Currently showing seeded deterministic analysis.
         </p>
       </div>

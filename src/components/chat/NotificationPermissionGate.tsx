@@ -116,7 +116,7 @@ export function NotificationPermissionGate({
           <p
             style={{
               margin: 0,
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color: 'var(--ds-text, #172B4D)',
             }}
@@ -126,7 +126,7 @@ export function NotificationPermissionGate({
           <p
             style={{
               margin: 0,
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--ds-text-subtle, #42526E)',
             }}
           >

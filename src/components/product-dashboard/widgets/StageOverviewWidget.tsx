@@ -164,7 +164,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: 'var(--ds-text-inverse, #FFFFFF)',
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     cursor: 'pointer',
                     minWidth: 24,
@@ -186,7 +186,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
               justifyContent: 'space-between',
               alignItems: 'center',
               marginTop: 6,
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
@@ -253,7 +253,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
               >
                 <div
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                   }}
@@ -262,7 +262,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                 </div>
                 <div
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 500,
                     color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                     marginTop: 4,
@@ -275,7 +275,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                 <div
                   data-testid={`stage-count-${step.value}`}
                   style={{
-                    fontSize: 20,
+                    fontSize: 'var(--ds-font-size-700)',
                     fontWeight: 700,
                     color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     marginTop: 6,
@@ -294,7 +294,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                     <span
                       style={{
                         display: 'inline-block',
-                        fontSize: 10,
+                        fontSize: 'var(--ds-font-size-50)',
                         lineHeight: '14px',
                         padding: '1px 6px',
                         borderRadius: 8,
@@ -309,7 +309,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                     <span
                       style={{
                         display: 'inline-block',
-                        fontSize: 10,
+                        fontSize: 'var(--ds-font-size-50)',
                         lineHeight: '14px',
                         padding: '1px 6px',
                         borderRadius: 8,

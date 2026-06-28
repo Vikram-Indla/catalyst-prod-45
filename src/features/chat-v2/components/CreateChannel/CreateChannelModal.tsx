@@ -159,14 +159,14 @@ function Header({
       }}
     >
       <div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
           Create a channel
         </div>
         {step === 2 && channelName && (
           <div
             style={{
               marginTop: 4,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--cv2-text-subtle)',
             }}
           >
@@ -221,7 +221,7 @@ function NameStep({
     <div>
       <label
         htmlFor="cv2-channel-name"
-        style={{ display: 'block', fontSize: 13, fontWeight: 700, marginBottom: 6 }}
+        style={{ display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 700, marginBottom: 6 }}
       >
         Name
       </label>
@@ -236,7 +236,7 @@ function NameStep({
           borderRadius: 'var(--cv2-radius-sm)',
         }}
       >
-        <span aria-hidden="true" style={{ color: 'var(--cv2-text-subtle)', fontSize: 15 }}>#</span>
+        <span aria-hidden="true" style={{ color: 'var(--cv2-text-subtle)', fontSize: 'var(--ds-font-size-400)' }}>#</span>
         <input
           ref={inputRef}
           id="cv2-channel-name"
@@ -259,10 +259,10 @@ function NameStep({
             border: 'none',
             outline: 'none',
             fontFamily: 'inherit',
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
           }}
         />
-        <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)' }}>{remaining}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>{remaining}</span>
       </div>
       {hintsOpen && (
       <div
@@ -291,7 +291,7 @@ function NameStep({
               padding: '4px 0',
               textAlign: 'left',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--cv2-text)',
               cursor: 'pointer',
             }}
@@ -317,7 +317,7 @@ function VisibilityStep({
 }) {
   return (
     <div>
-      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Visibility</div>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, marginBottom: 8 }}>Visibility</div>
       <RadioRow
         checked={!isPrivate}
         onSelect={() => onChange(false)}
@@ -393,11 +393,11 @@ function RadioRow({
         )}
       </span>
       <span style={{ display: 'flex', flexDirection: 'column' }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cv2-text-strong)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--cv2-text-strong)' }}>
           {title}
         </span>
         {subtitle && (
-          <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)', marginTop: 2 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)', marginTop: 2 }}>
             {subtitle}
           </span>
         )}
@@ -430,7 +430,7 @@ function Footer({
         justifyContent: 'space-between',
       }}
     >
-      <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)' }}>Step {step} of 2</span>
+      <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>Step {step} of 2</span>
       <div style={{ display: 'inline-flex', gap: 8 }}>
         {step === 2 && (
           <button
@@ -443,7 +443,7 @@ function Footer({
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               cursor: 'pointer',
             }}
@@ -486,7 +486,7 @@ function PrimaryButton({
         border: 'none',
         borderRadius: 'var(--cv2-radius-sm)',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 700,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}

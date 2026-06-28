@@ -25,7 +25,7 @@ export function SourceBadge({ source }: SourceBadgeProps) {
         border: `0.75px solid ${isJira ? 'var(--src-jira-border)' : 'var(--src-catalyst-border)'}`,
         backgroundColor: isJira ? 'var(--src-jira-bg)' : 'var(--src-catalyst-bg)',
         color: isJira ? 'var(--src-jira-text)' : 'var(--src-catalyst-text)',
-        fontSize: 10,
+        fontSize: 'var(--ds-font-size-50)',
         fontWeight: 700,
         fontFamily: 'var(--cp-font-body)',
         textTransform: 'uppercase',

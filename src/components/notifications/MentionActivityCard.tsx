@@ -88,7 +88,7 @@ function MetadataLine({
         marginTop: 0,
         paddingInlineStart: 44, // 32px avatar + 12px gap
         fontFamily: 'var(--cp-font-body, inherit)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         lineHeight: '16px',
         color,
       }}
@@ -147,7 +147,7 @@ function CommentBody({ text, isDark }: { text: string; isDark: boolean }) {
       style={{
         margin: 0,
         fontFamily: 'var(--cp-font-body, inherit)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         lineHeight: '20px',
         color,
       }}
@@ -258,7 +258,7 @@ export default function MentionActivityCard({
           <h3
             style={{
               margin: 0,
-              fontSize: 16,
+              fontSize: 'var(--ds-font-size-500)',
               fontWeight: 600,
               lineHeight: '20px',
               color: primaryText,
@@ -269,7 +269,7 @@ export default function MentionActivityCard({
           <p
             style={{
               margin: '4px 0 0',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               lineHeight: '20px',
               color: subtleText,
@@ -300,7 +300,7 @@ export default function MentionActivityCard({
               alignItems: 'center',
               flexWrap: 'wrap',
               gap: 6,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               lineHeight: '20px',
               color: primaryText,
             }}
@@ -318,7 +318,7 @@ export default function MentionActivityCard({
                 onClick={() => onEntityClick?.(target.key)}
                 style={{
                   fontFamily: 'inherit',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   lineHeight: '20px',
                   color: linkColor,

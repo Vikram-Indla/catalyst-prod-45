@@ -275,7 +275,7 @@ export const AnnotationEditor: React.FC<AnnotationEditorProps> = ({
         color: activeColor,
         strokeWidth,
         text,
-        fontSize: 16,
+        fontSize: 'var(--ds-font-size-500)',
         createdAt: new Date().toISOString()
       };
       addAnnotation(newAnnotation);

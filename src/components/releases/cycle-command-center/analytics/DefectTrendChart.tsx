@@ -64,11 +64,11 @@ export function DefectTrendChart({ cycleId, days = 14 }: DefectTrendChartProps) 
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e5e7eb)" />
                 <XAxis 
                   dataKey="dateLabel" 
-                  tick={{ fontSize: 11 }} 
+                  tick={{ fontSize: 'var(--ds-font-size-100)' }} 
                   stroke="var(--ds-text-disabled, #8590A2)"
                 />
                 <YAxis 
-                  tick={{ fontSize: 11 }} 
+                  tick={{ fontSize: 'var(--ds-font-size-100)' }} 
                   stroke="var(--ds-text-disabled, #8590A2)"
                   allowDecimals={false}
                 />
@@ -77,7 +77,7 @@ export function DefectTrendChart({ cycleId, days = 14 }: DefectTrendChartProps) 
                     backgroundColor: 'white', 
                     border: '1px solid var(--ds-border, #DFE1E6)',
                     borderRadius: '8px',
-                    fontSize: '12px'
+                    fontSize: 'var(--ds-font-size-200)'
                   }}
                 />
                 <Legend 

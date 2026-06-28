@@ -107,7 +107,7 @@ export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: 
   if (isLoading) {
     return (
       <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-subtle)' }}>
-        <Spinner size="small" /> <span style={{ fontSize: 13 }}>Loading {heading.toLowerCase()}…</span>
+        <Spinner size="small" /> <span style={{ fontSize: 'var(--ds-font-size-300)' }}>Loading {heading.toLowerCase()}…</span>
       </div>
     );
   }
@@ -140,7 +140,7 @@ export function TestCoveragePanel({ issueKey, statusCategory, mode = 'story' }: 
       )}
 
       {!data.covered ? (
-        <div style={{ color: 'var(--ds-text-subtle)', fontSize: 13 }}>
+        <div style={{ color: 'var(--ds-text-subtle)', fontSize: 'var(--ds-font-size-300)' }}>
           No test case is linked to {noun}.
         </div>
       ) : (

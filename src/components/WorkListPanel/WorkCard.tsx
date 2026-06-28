@@ -95,7 +95,7 @@ export const WorkCard = memo(function WorkCard({
         {/* Key */}
         <span
           style={{
-            fontSize: '12px',
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
             color: 'var(--ds-link, #0055CC)',
             fontFamily: 'var(--cp-font-mono)',
@@ -115,7 +115,7 @@ export const WorkCard = memo(function WorkCard({
             borderRadius: '3px',
             background: statusCategoryColor[item.statusCategory],
             color: statusCategoryTextColor[item.statusCategory],
-            fontSize: '11px',
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 600,
             textTransform: 'uppercase',
             letterSpacing: '0.165px',
@@ -130,7 +130,7 @@ export const WorkCard = memo(function WorkCard({
       {/* Second line: Summary */}
       <div
         style={{
-          fontSize: '13px',
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 400,
           color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           lineHeight: '16px',
@@ -147,7 +147,7 @@ export const WorkCard = memo(function WorkCard({
       {item.parentKey && (
         <div
           style={{
-            fontSize: '11px',
+            fontSize: 'var(--ds-font-size-100)',
             color: 'var(--ds-text-subtlest, #626F86)',
             lineHeight: '14px',
             overflow: 'hidden',

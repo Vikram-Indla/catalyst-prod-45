@@ -165,7 +165,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
               border: 'none',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text-subtle, #44546F)',
             }}
             onMouseEnter={(e) => {
@@ -196,7 +196,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
             padding: '10px 12px',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: '6px',
-            fontSize: '14px',
+            fontSize: 'var(--ds-font-size-400)',
             color: 'var(--ds-text-subtle, #44546F)',
             outline: 'none',
           }}
@@ -227,12 +227,12 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
           {value ? (
             <>
               <Calendar size={16} style={{ color: 'var(--ds-text-subtlest, #64748b)' }} />
-              <span style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>
                 {formatT10Date(value)}
               </span>
             </>
           ) : (
-            <span style={{ color: 'var(--ds-text-disabled, #8590A2)', fontSize: '14px' }}>Set due date</span>
+            <span style={{ color: 'var(--ds-text-disabled, #8590A2)', fontSize: 'var(--ds-font-size-400)' }}>Set due date</span>
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>

@@ -135,7 +135,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     <span style={{
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      fontSize: '12px',
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 600,
                       fontFamily: 'var(--cp-font-mono)',
                       backgroundColor: 'var(--ds-background-information-bold, rgba(59,130,246,0.1))',
@@ -146,7 +146,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     </span>
                   </div>
                   <h2 style={{
-                    fontSize: '17px',
+                    fontSize: 'var(--ds-font-size-500)',
                     fontWeight: 600,
                     color: 'var(--ds-text, #18181b)',
                     lineHeight: 1.3,
@@ -161,7 +161,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       alignItems: 'center',
                       gap: '6px',
                       padding: '3px 10px',
-                      fontSize: '12px',
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
                       borderRadius: '12px',
                       backgroundColor: barColor.bg,
@@ -197,7 +197,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   key={label}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '4px',
-                    padding: '4px 8px', fontSize: '12px', fontWeight: 500,
+                    padding: '4px 8px', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
                     color: 'var(--ds-text-subtle, #71717a)', backgroundColor: 'transparent',
                     border: 'none', borderRadius: 6, cursor: 'pointer',
                   }}
@@ -218,7 +218,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   onClick={() => setActiveTab(tab.key)}
                   style={{
                     padding: '10px 12px',
-                    fontSize: '13px',
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: activeTab === tab.key ? 600 : 400,
                     color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtle, #71717a)',
                     backgroundColor: 'transparent',
@@ -290,7 +290,7 @@ function DetailsTabContent({
             <div style={{ width: '80px', height: '6px', backgroundColor: 'var(--ds-background-neutral, #f4f4f5)', borderRadius: '9999px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${item.progress}%`, backgroundColor: barColor.border, borderRadius: '9999px' }} />
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{item.progress}%</span>
+            <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{item.progress}%</span>
           </div>
         } />
         <Field label="RANK" value={item.rank != null ? `#${item.rank}` : '—'} />
@@ -298,8 +298,8 @@ function DetailsTabContent({
 
       {/* Description */}
       <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--ds-border, #f4f4f5)' }}>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #3f3f46)', marginBottom: '8px' }}>Description</div>
-        <div style={{ fontSize: '13px', color: 'var(--ds-text-subtle, #52525b)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #3f3f46)', marginBottom: '8px' }}>Description</div>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #52525b)', lineHeight: 1.6 }}>
           {item.description || 'No description provided for this initiative.'}
         </div>
       </div>
@@ -312,7 +312,7 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
       <div style={{
-        fontSize: '11px',
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
         color: 'var(--ds-text-subtlest, #a1a1aa)',
         letterSpacing: '0.05em',
@@ -321,7 +321,7 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
       }}>
         {label}
       </div>
-      <div style={{ fontSize: '13px', color: 'var(--ds-text, #27272a)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #27272a)' }}>
         {value}
       </div>
     </div>
@@ -334,7 +334,7 @@ function PlaceholderTab({ name }: { name: string }) {
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
       <div style={{ fontSize: '32px', marginBottom: '12px' }}>{PLACEHOLDER_EMOJI[name] || '📄'}</div>
-      <div style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #a1a1aa)', fontWeight: 500 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, #a1a1aa)', fontWeight: 500 }}>
         {displayName} — Coming soon
       </div>
     </div>

@@ -166,14 +166,14 @@ export function ModuleAccessMatrix() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>Legend</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>Legend</span>
           {LEVELS.map((lv) => (
-            <span key={lv} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+            <span key={lv} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)' }}>
               <span style={{ width: 13, height: 13, borderRadius: 3, background: FILL[lv], boxShadow: lv === 'hidden' ? 'inset 0 0 0 1px var(--ds-border, #DFE1E6)' : 'none' }} />
               {LABEL[lv]}
             </span>
           ))}
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
             {allRoles.length} roles &times; {allModules.length} modules &middot; click cycles, right-click for menu, click a header to bulk-set
           </span>
         </div>
@@ -189,10 +189,10 @@ export function ModuleAccessMatrix() {
       </div>
 
       <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, overflow: 'auto', maxHeight: 'calc(100vh - 220px)' }}>
-        <table ref={gridRef} style={{ borderCollapse: 'separate', borderSpacing: 0, fontSize: 12, width: '100%' }}>
+        <table ref={gridRef} style={{ borderCollapse: 'separate', borderSpacing: 0, fontSize: 'var(--ds-font-size-200)', width: '100%' }}>
           <thead>
             <tr>
-              <th style={{ position: 'sticky', left: 0, top: 0, zIndex: 4, background: 'var(--ds-surface-sunken, #F7F8F9)', textAlign: 'left', padding: '8px 12px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', minWidth: 200, borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <th style={{ position: 'sticky', left: 0, top: 0, zIndex: 4, background: 'var(--ds-surface-sunken, #F7F8F9)', textAlign: 'left', padding: '8px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', minWidth: 200, borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)' }}>
                 Module \ Role
               </th>
               {allRoles.map((r, ci) => (
@@ -207,7 +207,7 @@ export function ModuleAccessMatrix() {
                     verticalAlign: 'bottom', cursor: r.bypass ? 'default' : 'pointer', minWidth: 44,
                   }}
                 >
-                  <div style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontSize: 11, fontWeight: r.tier === 'system' ? 600 : 400, color: r.tier === 'system' ? 'var(--ds-text, var(--ds-text, #172B4D))' : 'var(--ds-text-subtle, var(--ds-icon, #44546F))', whiteSpace: 'nowrap', height: 84, margin: '0 auto' }}>
+                  <div style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontSize: 'var(--ds-font-size-100)', fontWeight: r.tier === 'system' ? 600 : 400, color: r.tier === 'system' ? 'var(--ds-text, var(--ds-text, #172B4D))' : 'var(--ds-text-subtle, var(--ds-icon, #44546F))', whiteSpace: 'nowrap', height: 84, margin: '0 auto' }}>
                     {r.name}
                   </div>
                 </th>
@@ -222,7 +222,7 @@ export function ModuleAccessMatrix() {
                   <tr>
                     <td
                       onClick={() => setCollapsed((p) => ({ ...p, [g.label]: !p[g.label] }))}
-                      style={{ position: 'sticky', left: 0, zIndex: 2, background: 'var(--ds-surface-sunken, #F7F8F9)', padding: '8px 12px', fontWeight: 600, fontSize: 12, color: 'var(--ds-text, #172B4D)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      style={{ position: 'sticky', left: 0, zIndex: 2, background: 'var(--ds-surface-sunken, #F7F8F9)', padding: '8px 12px', fontWeight: 600, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)', cursor: 'pointer', whiteSpace: 'nowrap' }}
                     >
                       {isCollapsed ? '▸ ' : '▾ '}{g.label}
                     </td>
@@ -249,7 +249,7 @@ export function ModuleAccessMatrix() {
                     const ri = rowIndex;
                     return (
                       <tr key={c.module_key}>
-                        <td style={{ position: 'sticky', left: 0, zIndex: 1, background: 'var(--ds-surface, #FFFFFF)', padding: '8px 12px 8px 24px', fontSize: 12, color: 'var(--ds-text, #172B4D)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)', whiteSpace: 'nowrap' }}>
+                        <td style={{ position: 'sticky', left: 0, zIndex: 1, background: 'var(--ds-surface, #FFFFFF)', padding: '8px 12px 8px 24px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)', borderBottom: '1px solid var(--ds-border, #DFE1E6)', borderRight: '1px solid var(--ds-border, #DFE1E6)', whiteSpace: 'nowrap' }}>
                           {c.name}
                         </td>
                         {allRoles.map((r, ci) => (
@@ -277,11 +277,11 @@ export function ModuleAccessMatrix() {
         </table>
         {noMatches && (
           <div style={{ padding: '40px 16px', textAlign: 'center', color: 'var(--ds-text-subtle, #44546F)' }}>
-            <div style={{ fontSize: 14, marginBottom: 12 }}>No modules match &ldquo;{filter}&rdquo;.</div>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', marginBottom: 12 }}>No modules match &ldquo;{filter}&rdquo;.</div>
             <button
               type="button"
               onClick={() => setFilter('')}
-              style={{ fontSize: 13, color: 'var(--ds-text-information, #0055CC)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-information, #0055CC)', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear filter
             </button>
@@ -296,7 +296,7 @@ export function ModuleAccessMatrix() {
           style={{ position: 'fixed', top: menu.y, left: menu.x, zIndex: 9999, background: 'var(--ds-surface-overlay, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, boxShadow: 'var(--ds-shadow-overlay, 0 8px 28px rgba(9,30,66,0.25))', padding: '4px 0', minWidth: 180 }}
         >
           {!menu.module_key && (
-            <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+            <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
               Set ALL {allModules.length} modules for {roleName(menu.role_code)}
             </div>
           )}
@@ -306,7 +306,7 @@ export function ModuleAccessMatrix() {
               role="menuitem"
               type="button"
               onClick={() => { if (menu.module_key) setCell(menu.module_key, menu.role_code, lv); else bulkColumnTo(menu.role_code, lv); setMenu(null); }}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', textAlign: 'left' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)', textAlign: 'left' }}
             >
               <span style={{ width: 12, height: 12, borderRadius: 3, background: FILL[lv], boxShadow: lv === 'hidden' ? 'inset 0 0 0 1px var(--ds-border, #DFE1E6)' : 'none' }} />
               {menu.module_key ? LABEL[lv] : `All ${LABEL[lv]}`}

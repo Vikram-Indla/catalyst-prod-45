@@ -242,10 +242,10 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               }}>
                 <CheckCircle2 size={40} color="var(--sem-success)" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
+              <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
                 Epics Generated Successfully
               </h3>
-              <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: 0, textAlign: 'center' }}>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--fg-3)', margin: 0, textAlign: 'center' }}>
                 {epicCount} epic statement{epicCount !== 1 ? 's' : ''} created for {doc.title}
               </p>
             </div>
@@ -260,7 +260,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                   }}>
                     <Check size={14} color="var(--sem-success)" strokeWidth={2.5} />
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-2)' }}>{s}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-2)' }}>{s}</span>
                 </div>
               ))}
             </div>
@@ -275,7 +275,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               <button
                 onClick={onClose}
                 style={{
-                  padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
                   border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
@@ -291,7 +291,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                   }
                 }}
                 style={{
-                  padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
                   border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                 }}
               >
@@ -311,7 +311,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               }}>
                 <XCircle size={32} color="var(--sem-danger)" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
+              <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
                 Generation Failed
               </h3>
             </div>
@@ -321,14 +321,14 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
-                fontSize: 13, color: 'var(--ds-text-danger, #991B1B)', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
+                fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-danger, #991B1B)', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
                 fontFamily: 'monospace', display: 'block',
               }}>
                 {errorMsg || 'Unknown error — check browser console'}
               </code>
             </div>
 
-            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 20px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', margin: '0 0 20px', lineHeight: 1.5 }}>
               Generation failed. Please try again or contact your administrator.
             </p>
 
@@ -341,7 +341,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               <button
                 onClick={onClose}
                 style={{
-                  padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
                   border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
@@ -350,7 +350,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               <button
                 onClick={handleRetry}
                 style={{
-                  padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
                   border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                 }}
               >
@@ -372,23 +372,23 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 <div className="ra-epic-spinner-lg" />
               </div>
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
+                <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
                   Generating Epic Statements
                 </h3>
-                <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '2px 0 0' }}>
+                <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', margin: '2px 0 0' }}>
                   From: {doc.title}
                 </p>
               </div>
             </div>
 
-            <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '8px 0 16px', paddingLeft: 42 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--fg-4)', margin: '8px 0 16px', paddingLeft: 42 }}>
               This typically takes ~2 minutes. You can leave this screen.
             </p>
 
             {/* Progress bar */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: 'var(--cp-blue)', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
-              <span style={{ fontSize: 12, color: 'var(--cp-blue)', fontWeight: 600 }}>{progress}%</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-blue)', fontWeight: 600 }}>{progress}%</span>
             </div>
             <div style={{ width: '100%', height: 6, borderRadius: 999, background: 'var(--ds-background-neutral-subtle, #F7F8F9)', marginBottom: 20, overflow: 'hidden' }}>
               <div style={{
@@ -415,11 +415,11 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                         ) : state === 'active' ? (
                           <div className="ra-epic-spinner" />
                         ) : (
-                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-4)' }}>{i + 1}</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-4)' }}>{i + 1}</span>
                         )}
                       </div>
                       <span style={{
-                        fontSize: 13,
+                        fontSize: 'var(--ds-font-size-300)',
                         fontWeight: state === 'active' ? 600 : state === 'done' ? 500 : 400,
                         color: state === 'done' ? 'var(--fg-2)' : state === 'active' ? 'var(--cp-blue)' : 'var(--fg-4)',
                       }}>
@@ -441,7 +441,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             <div style={{
               background: 'var(--cp-primary-5)', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
             }}>
-              <span style={{ fontSize: 12, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }}>
                 ⏱ Estimated: ~2 minutes · You'll be notified when done
               </span>
             </div>
@@ -451,7 +451,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               <button
                 onClick={onClose}
                 style={{
-                  padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
                   border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
@@ -460,7 +460,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               <button
                 onClick={onClose}
                 style={{
-                  padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
                   border: '0.75px solid var(--ds-border, #DFE1E6)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >

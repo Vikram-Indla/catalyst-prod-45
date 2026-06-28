@@ -63,7 +63,7 @@ function StatusBadge({ status }: { status: string }) {
   const c = STATUS_CONFIG[status?.toLowerCase()] || STATUS_CONFIG.draft;
   return (
     <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md shrink-0"
-      style={{ background: c.bg, color: c.text, fontSize: 9, fontWeight: 600 }}>
+      style={{ background: c.bg, color: c.text, fontSize: 'var(--ds-font-size-100)', fontWeight: 600 }}>
       <div className="rounded-full shrink-0" style={{ width: 5, height: 5, background: c.dot }} />
       {c.label}
     </div>
@@ -76,11 +76,11 @@ function ChainStat({ label, value, total }: { label: string; value: number; tota
   return (
     <div className="text-center" style={{ minWidth: 100 }}>
       <div className="flex items-baseline justify-center gap-1">
-        <span className="text-foreground" style={{ fontSize: 15, fontWeight: 700 }}>{value}</span>
-        <span className="text-muted-foreground" style={{ fontSize: 12 }}>/{total}</span>
-        <span style={{ color: clr, fontSize: 12, fontWeight: 600 }}>({pct}%)</span>
+        <span className="text-foreground" style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700 }}>{value}</span>
+        <span className="text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>/{total}</span>
+        <span style={{ color: clr, fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>({pct}%)</span>
       </div>
-      <div className="text-muted-foreground" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+      <div className="text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
     </div>
   );
 }
@@ -90,7 +90,7 @@ function GhostNode({ label }: { label: string }) {
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
       style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled, #CBD5E1)', background: 'var(--ds-surface, rgba(248,250,252,0.5))' }}>
       <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No linked {label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No linked {label}</span>
     </div>
   );
 }
@@ -99,10 +99,10 @@ function ChainPill({ color, keyLabel, title }: { color: string; keyLabel: string
   return (
     <div className="flex items-center gap-1.5 max-w-[180px]">
       <span className="font-mono font-bold px-1.5 py-0.5 rounded shrink-0"
-        style={{ fontSize: 9, background: `${color}15`, color }}>
+        style={{ fontSize: 'var(--ds-font-size-100)', background: `${color}15`, color }}>
         {keyLabel}
       </span>
-      <span className="font-medium truncate" style={{ fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{title}</span>
+      <span className="font-medium truncate" style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>{title}</span>
     </div>
   );
 }
@@ -111,13 +111,13 @@ function MetricCard({ label, value, sub, color }: { label: string; value: string
   return (
     <Card className="border-border bg-card">
       <CardContent className="p-3">
-        <p className="uppercase tracking-wider font-semibold text-muted-foreground mb-1" style={{ fontSize: 10 }}>
+        <p className="uppercase tracking-wider font-semibold text-muted-foreground mb-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>
           {label}
         </p>
-        <p className="font-bold leading-none" style={{ fontSize: 20, color }}>
+        <p className="font-bold leading-none" style={{ fontSize: 'var(--ds-font-size-700)', color }}>
           {value}
         </p>
-        {sub && <p className="text-muted-foreground mt-1" style={{ fontSize: 10 }}>{sub}</p>}
+        {sub && <p className="text-muted-foreground mt-1" style={{ fontSize: 'var(--ds-font-size-50)' }}>{sub}</p>}
       </CardContent>
     </Card>
   );
@@ -738,8 +738,8 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                 <ChainStat label="Linked Epics" value={stats.linkedEpics} total={stats.totalEpics} />
                 <Separator orientation="vertical" className="h-5" />
                 <div className="text-center">
-                  <div className="text-foreground font-bold" style={{ fontSize: 15 }}>{stats.fullChains}</div>
-                  <div className="text-muted-foreground uppercase" style={{ fontSize: 10, letterSpacing: '0.05em' }}>Full Chains</div>
+                  <div className="text-foreground font-bold" style={{ fontSize: 'var(--ds-font-size-400)' }}>{stats.fullChains}</div>
+                  <div className="text-muted-foreground uppercase" style={{ fontSize: 'var(--ds-font-size-50)', letterSpacing: '0.05em' }}>Full Chains</div>
                 </div>
               </div>
             </>
@@ -767,7 +767,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                 <Minus size={12} />
               </button>
             </Tooltip>
-            <span className="font-mono text-center text-muted-foreground" style={{ fontSize: 10, width: 28 }}>
+            <span className="font-mono text-center text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)', width: 28 }}>
               {Math.round(zoom * 100)}%
             </span>
             <Tooltip content="Zoom in">
@@ -796,7 +796,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
       {/* ═══ CHAIN EXPLANATION BANNER ═══ */}
       <div className="flex items-center justify-center shrink-0 px-6 border-b border-border bg-muted/50 dark:bg-transparent" style={{ height: 40 }}>
-        <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 12 }}>
+        <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 'var(--ds-font-size-200)' }}>
           <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
           <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: 'var(--ds-link-pressed, #1e40af)', background: 'var(--ds-background-selected, #EFF6FF)', borderColor: 'var(--ds-background-information, #E9F2FF)' }}>● Theme</span>
@@ -839,10 +839,10 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                   borderLeft: `3px solid ${col.color}`,
                 }}>
                 <div className="rounded-full" style={{ width: 8, height: 8, background: col.color }} />
-                <span className="font-bold uppercase text-foreground" style={{ fontSize: 13, letterSpacing: '0.03em' }}>
+                <span className="font-bold uppercase text-foreground" style={{ fontSize: 'var(--ds-font-size-300)', letterSpacing: '0.03em' }}>
                   {col.label}
                 </span>
-                <span className="font-semibold text-muted-foreground" style={{ fontSize: 12 }}>
+                <span className="font-semibold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>
                   ({col.count})
                 </span>
               </div>
@@ -894,21 +894,21 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3.5">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.theme.badgeBg, color: LAYER.theme.badgeText, letterSpacing: '0.02em' }}>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.theme.badgeBg, color: LAYER.theme.badgeText, letterSpacing: '0.02em' }}>
                               {t.key}
                             </span>
                             <StatusBadge status={t.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 13 }}>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 'var(--ds-font-size-300)' }}>
                             {t.title}
                           </p>
                           <div className="flex items-center gap-2 mt-2.5">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 5 }}>
                               <div className="rounded-full transition-all" style={{ width: `${t.progress || 0}%`, height: 5, background: getProgressColor(t.progress || 0) }} />
                             </div>
-                            <span className="font-bold text-foreground" style={{ fontSize: 11 }}>{Math.round(t.progress || 0)}%</span>
+                            <span className="font-bold text-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{Math.round(t.progress || 0)}%</span>
                           </div>
-                          <div className="text-muted-foreground" style={{ fontSize: 10, marginTop: 8 }}>
+                          <div className="text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)', marginTop: 8 }}>
                             {t.goalCount || 0} goals · {t.krCount || 0} KRs
                           </div>
                         </div>
@@ -933,15 +933,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.goal.badgeBg, color: LAYER.goal.badgeText }}>{g.key}</span>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.goal.badgeBg, color: LAYER.goal.badgeText }}>{g.key}</span>
                             <StatusBadge status={g.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 12 }}>{g.title}</p>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>{g.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 4 }}>
                               <div className="rounded-full" style={{ width: `${g.progress || 0}%`, height: 4, background: getProgressColor(g.progress || 0) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(g.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(g.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -965,15 +965,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.kr.badgeBg, color: LAYER.kr.badgeText }}>{kr.key}</span>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.kr.badgeBg, color: LAYER.kr.badgeText }}>{kr.key}</span>
                             <StatusBadge status={kr.status} />
                           </div>
-                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 11 }}>{kr.title}</p>
+                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{kr.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 3 }}>
                               <div className="rounded-full" style={{ width: `${kr.progress || 0}%`, height: 3, background: getProgressColor(kr.progress || 0) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(kr.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(kr.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -1000,15 +1000,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.initiative.badgeBg, color: LAYER.initiative.badgeText }}>{ini.key}</span>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.initiative.badgeBg, color: LAYER.initiative.badgeText }}>{ini.key}</span>
                             <StatusBadge status={ini.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 12 }}>{ini.title}</p>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 'var(--ds-font-size-200)' }}>{ini.title}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 4 }}>
                               <div className="rounded-full" style={{ width: `${ini.progress || 0}%`, height: 4, background: getProgressColor(ini.progress || 0) }} />
                             </div>
-                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(ini.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-50)' }}>{Math.round(ini.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -1037,10 +1037,10 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                              style={{ fontSize: 10, background: LAYER.epic.badgeBg, color: LAYER.epic.badgeText }}>{epic.key}</span>
+                              style={{ fontSize: 'var(--ds-font-size-50)', background: LAYER.epic.badgeBg, color: LAYER.epic.badgeText }}>{epic.key}</span>
                             <StatusBadge status={epic.status} />
                           </div>
-                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 11 }}>{epic.title}</p>
+                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>{epic.title}</p>
                         </div>
                       </div>
                     </div>
@@ -1080,13 +1080,13 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           { label: 'Request', color: LAYER.initiative.color },
           { label: 'Epic', color: LAYER.epic.color },
         ].map(item => (
-          <div key={item.label} className="flex items-center gap-1.5 font-medium text-muted-foreground" style={{ fontSize: 11 }}>
+          <div key={item.label} className="flex items-center gap-1.5 font-medium text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>
             <div className="rounded-full" style={{ width: 10, height: 3, background: item.color }} />
             {item.label}
           </div>
         ))}
         <Separator orientation="vertical" className="h-3 mx-1" />
-        <div className="flex items-center gap-1.5 text-muted-foreground" style={{ fontSize: 11 }}>
+        <div className="flex items-center gap-1.5 text-muted-foreground" style={{ fontSize: 'var(--ds-font-size-100)' }}>
           <div style={{ width: 10, height: 0, borderTop: '1px dashed currentColor' }} />
           Unlinked
         </div>

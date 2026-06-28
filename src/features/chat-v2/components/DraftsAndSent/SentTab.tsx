@@ -72,7 +72,7 @@ export function SentTab({ conversationById, onSelectSent }: SentTabProps) {
           textAlign: 'center',
           color: 'var(--cv2-text-muted)',
           fontFamily: 'var(--cv2-font)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
         }}
       >
         You haven&rsquo;t sent any messages yet.
@@ -96,7 +96,7 @@ export function SentTab({ conversationById, onSelectSent }: SentTabProps) {
             style={{
               padding: '4px 4px 8px',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: 'var(--cv2-text-subtle)',
             }}

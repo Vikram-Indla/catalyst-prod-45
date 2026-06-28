@@ -81,7 +81,7 @@ export function TimeInStatusEtaStrip({
         alignItems: 'center',
         gap: 4,
         marginTop: 1,
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         lineHeight: '14px',
         fontWeight: 500,
         fontFamily: 'Atlassian Sans, -apple-system, system-ui, sans-serif',

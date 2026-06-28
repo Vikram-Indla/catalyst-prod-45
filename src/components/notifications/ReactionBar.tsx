@@ -40,14 +40,14 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
               borderRadius: 20,
               background: isHov ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
               cursor: 'pointer',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               transition: 'all 150ms ease',
               outline: 'none',
               transform: isPressed ? 'scale(0.95)' : 'scale(1)',
             }}
           >
             <span>{emoji}</span>
-            {count > 0 && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #42526E)', fontWeight: 500 }}>{count}</span>}
+            {count > 0 && <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #42526E)', fontWeight: 500 }}>{count}</span>}
           </button>
         );
       })}
@@ -80,7 +80,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onReply && (
         <button
           onClick={(e) => { e.stopPropagation(); onReply(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}
         >
           Reply
         </button>
@@ -89,7 +89,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onViewThread && (
         <button
           onClick={(e) => { e.stopPropagation(); onViewThread(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontFamily: 'var(--cp-font-body)', textDecoration: 'none' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontFamily: 'var(--cp-font-body)', textDecoration: 'none' }}
           onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
           onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
         >

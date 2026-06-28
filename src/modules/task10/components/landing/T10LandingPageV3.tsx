@@ -563,7 +563,7 @@ export function T10LandingPageV3() {
         </div>
 
         {/* TABS */}
-        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-[var(--ds-text, #172B4D)] rounded-xl w-fit mb-6 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] rounded-xl w-fit mb-6 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
           <button
             onClick={() => setActiveTab('this-week')}
             className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${

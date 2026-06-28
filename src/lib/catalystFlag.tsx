@@ -128,7 +128,7 @@ function FlagCard({ item, onClose }: { item: CatalystFlagItem; onClose: () => vo
         opacity: entered ? 1 : 0,
         transform: entered ? 'translateX(0)' : 'translateX(-16px)',
         transition: 'opacity 160ms ease, transform 160ms ease',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontFamily: 'inherit',
       }}
     >

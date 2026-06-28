@@ -2,7 +2,7 @@ import React from 'react';
 
 // ── Shared style constants ──────────────────────────────────
 export const sectionHeaderStyle: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 'var(--ds-font-size-100)',
   fontWeight: 800,
   fontFamily: 'var(--cp-font-body)',
   textTransform: 'uppercase',
@@ -79,7 +79,7 @@ export const StatusLozenge: React.FC<{ status: string }> = ({ status }) => {
       role="status"
       aria-label={ariaLabel}
       style={{
-        display: 'inline-block', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+        display: 'inline-block', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase',
         letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 4, lineHeight: '16px',
         height: 20, boxSizing: 'border-box',
         background: bg, color, whiteSpace: 'nowrap',
@@ -137,7 +137,7 @@ export const ConfidenceBadge: React.FC<{ value: number }> = ({ value }) => {
       dir="ltr"
       aria-label={`AI confidence: ${pct}%`}
       style={{
-        fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-mono)',
+        fontSize: 'var(--ds-font-size-100)', fontWeight: 700, fontFamily: 'var(--cp-font-mono)',
         padding: '2px 6px', borderRadius: 4, background: bg, color,
         letterSpacing: '0.03em', unicodeBidi: 'embed',
       }}
@@ -149,7 +149,7 @@ export const ConfidenceBadge: React.FC<{ value: number }> = ({ value }) => {
 export const LiveDataBadge: React.FC = () => (
   <span style={{
     display: 'inline-flex', alignItems: 'center', gap: 5,
-    fontSize: 10, fontWeight: 600, color: 'var(--cp-teal-60)',
+    fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--cp-teal-60)',
     textTransform: 'uppercase', letterSpacing: '0.04em',
   }}>
     <span style={{

@@ -65,7 +65,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Jump to a specific date
           </div>
           <button
@@ -94,7 +94,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
               <ChevronLeftIcon size={14} />
             </NavBtn>
           </div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
             {MONTH_LABELS[view.m]} {view.y}
           </div>
           <div style={{ display: 'inline-flex', gap: 4 }}>
@@ -111,7 +111,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0, marginBottom: 4 }}>
           {WEEKDAY_LABELS.map(d => (
-            <div key={d} style={{ textAlign: 'center', fontSize: 11, color: 'var(--cv2-text-muted)', fontWeight: 600, padding: '4px 0' }}>
+            <div key={d} style={{ textAlign: 'center', fontSize: 'var(--ds-font-size-100)', color: 'var(--cv2-text-muted)', fontWeight: 600, padding: '4px 0' }}>
               {d}
             </div>
           ))}
@@ -157,7 +157,7 @@ export function JumpToDateModal({ onCancel, onPick, earliestIso, latestIso }: Ju
                     color: !allowed ? 'var(--cv2-text-muted)' : 'var(--cv2-text)',
                     border: isToday ? '2px solid var(--cv2-accent)' : '2px solid transparent',
                     borderRadius: '50%',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: isToday ? 700 : 400,
                     cursor: allowed ? 'pointer' : 'not-allowed',
                     transition: 'background var(--cv2-transition-fast)',

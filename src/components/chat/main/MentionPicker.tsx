@@ -126,7 +126,7 @@ export function MentionPicker({ textareaRef, value, onChange }: MentionPickerPro
             border: 'none',
             cursor: 'pointer',
             textAlign: 'left',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           <Avatar name={p.name} seed={p.id} />

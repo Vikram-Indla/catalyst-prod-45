@@ -88,7 +88,7 @@ export function StatusLozenge({
       height: '20px',
     }}>
       <span style={{
-        fontSize: '11px',
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         lineHeight: '20px',
         color: statusFg(resolvedAppearance),

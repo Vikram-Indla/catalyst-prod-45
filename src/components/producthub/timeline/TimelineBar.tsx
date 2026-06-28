@@ -120,7 +120,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
           <span
             style={{
               zIndex: 1,
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               color: 'var(--ds-surface, #fff)',
               paddingLeft: '8px',

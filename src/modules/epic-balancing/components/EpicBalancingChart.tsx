@@ -52,7 +52,7 @@ function RankedDot(props: any) {
           textAnchor="middle"
           dominantBaseline="central"
           fill="white"
-          fontSize={10}
+          fontSize={'var(--ds-font-size-50)'}
           fontWeight="bold"
           style={{ pointerEvents: 'none' }}
         >
@@ -175,13 +175,13 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             name="Job Size" 
             domain={[0, maxX]}
             tickFormatter={(value) => Math.round(value).toString()}
-            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 'var(--ds-font-size-200)' }}
             axisLine={{ stroke: 'hsl(var(--border))' }}
             label={{ 
               value: 'Job Size (relative effort / duration)', 
               position: 'bottom', 
               offset: 5,
-              style: { fill: 'hsl(var(--muted-foreground))', fontSize: 12 }
+              style: { fill: 'hsl(var(--muted-foreground))', fontSize: 'var(--ds-font-size-200)' }
             }}
           />
           
@@ -191,14 +191,14 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             name="Cost of Delay" 
             domain={[0, maxY]}
             tickFormatter={(value) => Math.round(value).toString()}
-            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 'var(--ds-font-size-200)' }}
             axisLine={{ stroke: 'hsl(var(--border))' }}
             label={{ 
               value: 'Cost of Delay (BA + TC + IE)', 
               angle: -90, 
               position: 'left', 
               offset: 40,
-              style: { fill: 'hsl(var(--muted-foreground))', fontSize: 12 }
+              style: { fill: 'hsl(var(--muted-foreground))', fontSize: 'var(--ds-font-size-200)' }
             }}
           />
 
@@ -209,7 +209,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             y1={stats.medianCostOfDelay}
             y2={maxY}
             fill="transparent"
-            label={{ value: 'Urgent', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+            label={{ value: 'Urgent', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 'var(--ds-font-size-400)', fontWeight: 600 } }}
           />
           <ReferenceArea
             x1={stats.medianJobSize}
@@ -217,7 +217,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             y1={stats.medianCostOfDelay}
             y2={maxY}
             fill="transparent"
-            label={{ value: 'High', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+            label={{ value: 'High', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 'var(--ds-font-size-400)', fontWeight: 600 } }}
           />
           <ReferenceArea
             x1={0}
@@ -225,7 +225,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             y1={0}
             y2={stats.medianCostOfDelay}
             fill="transparent"
-            label={{ value: 'Medium', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+            label={{ value: 'Medium', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 'var(--ds-font-size-400)', fontWeight: 600 } }}
           />
           <ReferenceArea
             x1={stats.medianJobSize}
@@ -233,7 +233,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             y1={0}
             y2={stats.medianCostOfDelay}
             fill="transparent"
-            label={{ value: 'Low', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+            label={{ value: 'Low', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 'var(--ds-font-size-400)', fontWeight: 600 } }}
           />
 
           {/* Median reference lines */}

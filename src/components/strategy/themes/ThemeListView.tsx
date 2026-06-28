@@ -129,7 +129,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
 
             {/* Status pill */}
             <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5" style={{ fontSize: 11, fontWeight: 500, background: sc.bg, color: sc.text }}>
+              <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5" style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, background: sc.bg, color: sc.text }}>
                 <span className="rounded-full shrink-0" style={{ width: 6, height: 6, background: sc.dot }} />
                 {sc.label}
               </span>
@@ -140,17 +140,17 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: isDark ? DK.borderSubtle : 'var(--divider)' }}>
                 <div className="rounded-full h-full transition-all" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: progressColor }} />
               </div>
-              <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', minWidth: 28, textAlign: 'right' }}>{theme.progress_pct}%</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', minWidth: 28, textAlign: 'right' }}>{theme.progress_pct}%</span>
             </div>
 
             {/* Goals */}
-            <div style={{ fontSize: 12, color: isDark ? DK.t1 : 'var(--fg-2)', textAlign: 'center' }}>{theme.goal_count}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t1 : 'var(--fg-2)', textAlign: 'center' }}>{theme.goal_count}</div>
 
             {/* KRs */}
-            <div style={{ fontSize: 12, color: isDark ? DK.t1 : 'var(--fg-2)', textAlign: 'center' }}>{theme.kr_count}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t1 : 'var(--fg-2)', textAlign: 'center' }}>{theme.kr_count}</div>
 
             {/* Budget */}
-            <div style={{ fontSize: 12, fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-2)' }}>{formatBudget(theme.planned_budget)}</div>
+            <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-2)' }}>{formatBudget(theme.planned_budget)}</div>
 
             {/* Owner */}
             <div className="flex items-center gap-1.5">
@@ -158,14 +158,14 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
                 <>
                   <div className="shrink-0 rounded-full flex items-center justify-center" style={{
                     width: 22, height: 22, background: getAvatarColor(theme.owner_name),
-                    fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   }}>
                     {getInitials(theme.owner_name)}
                   </div>
-                  <span className="truncate" style={{ fontSize: 12, color: isDark ? DK.t1 : 'var(--fg-2)' }}>{theme.owner_name?.split(' ')[0]}</span>
+                  <span className="truncate" style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? DK.t1 : 'var(--fg-2)' }}>{theme.owner_name?.split(' ')[0]}</span>
                 </>
               ) : (
-                <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-4)' }}>Unassigned</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t3 : 'var(--fg-4)' }}>Unassigned</span>
               )}
             </div>
 
@@ -173,14 +173,14 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
             <div>
               {bsc ? (
                 <span className="inline-flex rounded-full px-2 py-0.5" style={{
-                  fontSize: 10, fontWeight: 500,
+                  fontSize: 'var(--ds-font-size-50)', fontWeight: 500,
                   background: bsc.bg, color: bsc.text,
                   border: `1px solid ${bsc.border}`,
                 }}>
                   {bsc.label}
                 </span>
               ) : (
-                <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-4)' }}>—</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? DK.t3 : 'var(--fg-4)' }}>—</span>
               )}
             </div>
           </div>
@@ -188,14 +188,14 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
       })}
 
       {themes.length === 0 && (
-        <div className="flex items-center justify-center" style={{ height: 120, color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
+        <div className="flex items-center justify-center" style={{ height: 120, color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 'var(--ds-font-size-300)' }}>
           No themes match the current filters.
         </div>
       )}
 
       {/* Pagination */}
       <div className="flex items-center justify-between px-4 py-3 border-t" style={{ borderColor }}>
-        <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-disabled, #8590A2)' : 'var(--fg-3)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-disabled, #8590A2)' : 'var(--fg-3)' }}>
           Showing {Math.min((page - 1) * perPage + 1, sorted.length)}–{Math.min(page * perPage, sorted.length)} of {sorted.length} themes
         </span>
         <div className="flex items-center gap-2">
@@ -203,19 +203,19 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
             style={{
-              fontSize: 12, padding: '2px 8px', borderRadius: 4,
+              fontSize: 'var(--ds-font-size-200)', padding: '2px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
               color: page === 1 ? (isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? DK.t2 : 'var(--fg-2)'),
               cursor: page === 1 ? 'default' : 'pointer',
             }}
           >←</button>
-          <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-disabled, #8590A2)' : 'var(--fg-3)' }}>Page {page} of {totalPages}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-disabled, #8590A2)' : 'var(--fg-3)' }}>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
             style={{
-              fontSize: 12, padding: '2px 8px', borderRadius: 4,
+              fontSize: 'var(--ds-font-size-200)', padding: '2px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
               color: page === totalPages ? (isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? DK.t2 : 'var(--fg-2)'),
@@ -233,10 +233,10 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
           boxShadow: '0 8px 30px var(--ds-shadow-raised, rgba(0,0,0,0.25))', zIndex: 50,
         }}>
-          <span style={{ fontSize: 13, fontWeight: 500 }}>{selected.size} selected</span>
-          <button style={{ fontSize: 11, background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Change Status</button>
-          <button style={{ fontSize: 11, background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Assign Owner</button>
-          <button style={{ fontSize: 11, background: 'var(--ds-background-danger, rgba(239,68,68,0.7))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Delete</button>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500 }}>{selected.size} selected</span>
+          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Change Status</button>
+          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Assign Owner</button>
+          <button style={{ fontSize: 'var(--ds-font-size-100)', background: 'var(--ds-background-danger, rgba(239,68,68,0.7))', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Delete</button>
         </div>
       )}
     </div>

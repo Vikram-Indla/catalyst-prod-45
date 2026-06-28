@@ -159,7 +159,7 @@ export function CatalystQuickActions({
 
   const itemStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', height: 40, padding: '8px 16px',
-    fontSize: 14, fontWeight: 400, color: textColor, background: 'transparent',
+    fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: textColor, background: 'transparent',
     border: 'none', borderRadius: 0, cursor: 'pointer', width: '100%',
     boxSizing: 'border-box', fontFamily: 'inherit', textAlign: 'left',
   };
@@ -210,7 +210,7 @@ export function CatalystQuickActions({
                   onChange={e => setSearch(e.target.value)} autoFocus
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  style={{ background: 'transparent', border: 'none', outline: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: textColor, width: '100%', height: 28, fontFamily: 'inherit' }}
+                  style={{ background: 'transparent', border: 'none', outline: 'none', padding: '4px 4px 4px 8px', fontSize: 'var(--ds-font-size-400)', color: textColor, width: '100%', height: 28, fontFamily: 'inherit' }}
                 />
                 {search && (
                   <button onClick={() => setSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: textColor, display: 'flex', padding: 0, marginRight: 6, alignItems: 'center' }}>
@@ -248,7 +248,7 @@ export function CatalystQuickActions({
             ))}
 
             {filtered.length === 0 && (
-              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No items match</div>
+              <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No items match</div>
             )}
           </div>
         )}

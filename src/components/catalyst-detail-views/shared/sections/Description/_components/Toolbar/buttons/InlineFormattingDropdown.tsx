@@ -41,13 +41,13 @@ const ROWS: Row[] = [
     isActive: (e) => e.isActive('code'),
     toggle: (e) => e.chain().focus().toggleCode().run() },
   {
-    glyph: <span style={{ fontWeight: 600, fontSize: 12 }}>X<sub style={{ fontSize: 9 }}>2</sub></span>,
+    glyph: <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>X<sub style={{ fontSize: 'var(--ds-font-size-100)' }}>2</sub></span>,
     label: 'Subscript', shortcut: 'Ctrl+,',
     isActive: (e) => e.isActive('subscript'),
     toggle: (e) => e.chain().focus().toggleSubscript().run(),
   },
   {
-    glyph: <span style={{ fontWeight: 600, fontSize: 12 }}>X<sup style={{ fontSize: 9 }}>2</sup></span>,
+    glyph: <span style={{ fontWeight: 600, fontSize: 'var(--ds-font-size-200)' }}>X<sup style={{ fontSize: 'var(--ds-font-size-100)' }}>2</sup></span>,
     label: 'Superscript', shortcut: 'Ctrl+.',
     isActive: (e) => e.isActive('superscript'),
     toggle: (e) => e.chain().focus().toggleSuperscript().run(),

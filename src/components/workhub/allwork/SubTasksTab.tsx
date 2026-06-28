@@ -68,7 +68,7 @@ function MiniAvatar({ name }: { name: string }) {
         width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
         backgroundColor: AVATAR_COLORS[hash % AVATAR_COLORS.length],
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 10, fontWeight: 700, color: 'var(--bg-app)',
+        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--bg-app)',
       }}
     >
       {name.charAt(0).toUpperCase()}
@@ -94,11 +94,11 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
       {/* Row 1: Icon + Key + Summary */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
-        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 650, color: 'var(--cp-blue)', flexShrink: 0 }}>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-blue)', flexShrink: 0 }}>
           {item.issue_key}
         </span>
         <span style={{
-          fontSize: 13, fontWeight: 500, color: 'var(--fg-1)',
+          fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
           fontFamily: 'var(--cp-font-body)',
         }}>
@@ -113,17 +113,17 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
         {item.assignee_display_name && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <MiniAvatar name={item.assignee_display_name} />
-            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}>
               {item.assignee_display_name}
             </span>
           </div>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <PriorityIndicator priority={item.priority} fontSize={12} />
+          <PriorityIndicator priority={item.priority} fontSize={'var(--ds-font-size-200)'} />
         </div>
 
-        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--fg-3)', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
           {formatRel(item.jira_updated_at)}
         </span>
       </div>
@@ -144,7 +144,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0', gap: 8 }}>
         <Loader2 size={16} color="var(--ds-text-subtlest, #626F86)" style={{ animation: 'spin 1s linear infinite' }} />
-        <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Loading sub-tasks…</span>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Loading sub-tasks…</span>
       </div>
     );
   }
@@ -156,7 +156,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         padding: '48px 24px', textAlign: 'center', gap: 8,
       }}>
         <ListTree size={28} color="var(--ds-icon-subtle, #A1A1AA)" strokeWidth={1.5} />
-        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
           No sub-tasks found for this item.
         </span>
       </div>
@@ -177,7 +177,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         padding: '10px 14px', backgroundColor: 'var(--ds-surface-sunken, #FAFAFA)', borderRadius: 8, border: '1px solid var(--ds-border, #DFE1E6)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
             {total} sub-task{total !== 1 ? 's' : ''}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -189,9 +189,9 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{
                   display: 'inline-block', padding: '1px 6px', borderRadius: 4,
-                  backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700,
+                  backgroundColor: s.bg, color: s.color, fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                 }}>{s.count}</span>
-                <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>{s.label}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>{s.label}</span>
               </span>
             ))}
           </div>

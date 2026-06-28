@@ -155,16 +155,16 @@ export default function BacklogDetailPage() {
   if (!issue) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--cp-font-body)', gap: 12 }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Issue not found</span> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)' }}>{issueKey} could not be found or has been deleted.</span>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: '#344054' }}>Issue not found</span> // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #5E6C84)' }}>{issueKey} could not be found or has been deleted.</span>
         {debugInfo && (
-          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, #DE350B)', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: 'var(--ds-background-danger, #FFF5F5)', border: '1px solid var(--ds-border-danger, #FFCDD2)', borderRadius: 4 }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, #DE350B)', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: 'var(--ds-background-danger, #FFF5F5)', border: '1px solid var(--ds-border-danger, #FFCDD2)', borderRadius: 4 }}>
             {debugInfo}
           </span>
         )}
         <button
           onClick={handleClose}
-          style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}
+          style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}
         >
           Back to backlog
         </button>

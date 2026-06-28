@@ -19,8 +19,8 @@ interface Props {
 const COLUMNS: { status: IdeaStatus; extra?: React.ReactNode }[] = [
   { status: 'submitted' },
   { status: 'under_review' },
-  { status: 'approved', extra: <span style={{ fontSize: '10px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600 }}>Ready to convert</span> },
-  { status: 'converted', extra: <span style={{ fontSize: '10px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600 }}>→ Requests</span> },
+  { status: 'approved', extra: <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600 }}>Ready to convert</span> },
+  { status: 'converted', extra: <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600 }}>→ Requests</span> },
   { status: 'draft' },
   { status: 'rejected' },
 ];
@@ -56,9 +56,9 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
               height: 50,
             }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '4px', background: sc.bg, flexShrink: 0 }} />
-              <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
-                fontSize: '10px', fontFamily: 'var(--cp-font-mono)', fontWeight: 700,
+                fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', fontWeight: 700,
                 background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: '100px',
                 padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center',
                 color: dk.t3,
@@ -132,13 +132,13 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* Top row: key + priority */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{
-          fontFamily: 'var(--cp-font-mono)', fontSize: '11px', fontWeight: 600,
+          fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
           color: dk.blueKey,
         }}>
           {idea.key}
         </span>
         <span style={{
-          fontFamily: 'var(--cp-font-mono)', fontSize: '9px', fontWeight: 800,
+          fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 800,
           background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : pc.bg, color: isDark ? dk.t2 : pc.text,
           padding: '1px 5px', borderRadius: '4px',
           border: `1px solid ${isDark ? dk.border : pc.border}`,
@@ -149,7 +149,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
 
       {/* Title */}
       <div style={{
-        fontSize: '13px', fontWeight: 650,
+        fontSize: 'var(--ds-font-size-300)', fontWeight: 650,
         color: dk.t1,
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         marginBottom: '6px', lineHeight: 1.35,
@@ -162,7 +162,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         <span style={{
           background: 'var(--cp-bg-sunken, #F4F4F5)', color: dk.t2,
           padding: '2px 6px', borderRadius: '4px',
-          fontSize: '10px', fontWeight: 600,
+          fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
           border: isDark ? `1px solid ${dk.border}` : 'none',
         }}>
           {idea.type.charAt(0).toUpperCase() + idea.type.slice(1)}
@@ -172,7 +172,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
             background: 'var(--cp-primary-light, #EFF6FF)',
             color: isDark ? 'var(--ds-background-information-bold, #0C66E4)' : 'var(--ds-link-pressed, #1e40af)',
             padding: '2px 6px', borderRadius: '4px',
-            fontSize: '10px', fontWeight: 600, maxWidth: '160px',
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, maxWidth: '160px',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>
             {idea.theme}
@@ -182,11 +182,11 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
 
       {/* Divider + stats */}
       <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, fontFamily: 'var(--cp-font-mono)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: dk.t2, fontFamily: 'var(--cp-font-mono)' }}>
           IMPACT {idea.impact.toFixed(2)}
         </span>
         <span style={{
-          fontSize: '11px', fontWeight: 600,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
           color: idea.votes > 0 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : idea.votes < 0 ? 'var(--ds-text-danger, #EF4444)' : dk.t3,
           fontFamily: 'var(--cp-font-mono)',
         }}>
@@ -198,7 +198,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {showFullAiStrip && (
         <div style={{
           marginTop: '8px', background: 'var(--cp-primary-light, #EFF6FF)', borderRadius: '6px',
-          padding: '5px 8px', fontSize: '10px', color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 600,
+          padding: '5px 8px', fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 600,
         }}>
           {aiInsight}
         </div>
@@ -209,7 +209,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         <div style={{
           marginTop: '8px', background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))',
           border: `1px solid ${isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : '#B7EBD1'}`,
-          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
+          borderRadius: '6px', padding: '5px 8px', fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
         }}>
           {initLink}
         </div>
@@ -221,7 +221,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
           onClick={e => { e.stopPropagation(); onConvert?.(idea.key); }}
           style={{
             width: '100%', marginTop: '8px', padding: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', fontSize: '11px',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700, cursor: 'pointer',
           }}
         >

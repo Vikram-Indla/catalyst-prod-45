@@ -63,8 +63,8 @@ const FALLBACK_APPROVAL_ROLES: Opt[] = [
   { label: 'Change manager', value: 'change_manager' },
 ];
 
-const labelStyle: React.CSSProperties = { display: 'block', fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4 };
-const errStyle: React.CSSProperties = { fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 };
+const labelStyle: React.CSSProperties = { display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4 };
+const errStyle: React.CSSProperties = { fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 };
 
 interface Approver { userId: string; role: string }
 
@@ -196,7 +196,7 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
         </ModalHeader>
         <ModalBody>
           {formError && (
-            <div style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: 8, borderRadius: 4, marginBottom: 16 }}>{formError}</div>
+            <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: 8, borderRadius: 4, marginBottom: 16 }}>{formError}</div>
           )}
 
           {/* Change source toggle (Catalyst-generated vs external system) */}
@@ -212,7 +212,7 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
                     role="radio"
                     aria-checked={active}
                     onClick={() => setSource(val)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, borderRadius: 6, cursor: 'pointer', textAlign: 'left', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`, background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, borderRadius: 6, cursor: 'pointer', textAlign: 'left', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`, background: active ? 'var(--ds-background-selected, #E9F2FE)' : 'var(--ds-surface, #FFFFFF)' }}
                   >
                     <span style={{ width: 16, height: 16, borderRadius: 8, flexShrink: 0, border: `2px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`, background: active ? 'var(--ds-background-selected-bold, #0C66E4)' : 'transparent' }} />
                     {lbl}
@@ -233,7 +233,7 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
               ) : (
                 <>
                   <Textfield id="chg-number" value="" isDisabled placeholder="Auto-generated (CAT-CHG-…)" />
-                  <div style={{ fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)', marginTop: 4 }}>Auto-generated</div>
+                  <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #626F86)', marginTop: 4 }}>Auto-generated</div>
                 </>
               )}
             </div>
@@ -297,7 +297,7 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
           </div>
 
           {/* Approvers */}
-          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '8px 0' }}>Approvers</h3>
+          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '8px 0' }}>Approvers</h3>
           {approvers.map((a, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <div style={{ flex: 1 }}>
@@ -311,12 +311,12 @@ export function CreateChgModal({ onClose, initialSource = 'catalyst' }: Props) {
               </button>
             </div>
           ))}
-          <button onClick={addApprover} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: 'var(--ds-link, #0C66E4)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 16 }}>
+          <button onClick={addApprover} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-link, #0C66E4)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 16 }}>
             <Plus size={14} style={{ color: 'var(--ds-link, #0C66E4)' }} /> Add approver
           </button>
 
           {/* Notify */}
-          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '8px 0' }}>Notify</h3>
+          <h3 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '8px 0' }}>Notify</h3>
           <Select inputId="chg-notify" isMulti options={userOpts} value={notifyIds} onChange={(v) => setNotifyIds((v as Opt[]) ?? [])} placeholder="Add users to notify" spacing="compact" menuPosition="fixed" />
         </ModalBody>
         <ModalFooter>

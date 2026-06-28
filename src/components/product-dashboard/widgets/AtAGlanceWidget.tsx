@@ -45,7 +45,7 @@ function TrendBadge({ text, dir }: { text: string; dir: TrendDir }) {
   return (
     <span
       style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 500,
         color,
         display: 'inline-flex',
@@ -98,7 +98,7 @@ function KpiCell({
     >
       <span
         style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 600,
           color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           display: 'block',
@@ -108,7 +108,7 @@ function KpiCell({
       </span>
       <span
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 500,
           color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           minHeight: 32,
@@ -129,7 +129,7 @@ function KpiCell({
       >
         <span
           style={{
-            fontSize: 28,
+            fontSize: 'var(--ds-font-size-800)',
             fontWeight: 700,
             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             lineHeight: 1,
@@ -140,7 +140,7 @@ function KpiCell({
         {unit && (
           <span
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
@@ -171,7 +171,7 @@ function SettingsPanel() {
         padding: '12px 18px',
         borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
       }}
     >

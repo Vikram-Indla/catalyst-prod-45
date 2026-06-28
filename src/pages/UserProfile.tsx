@@ -42,25 +42,25 @@ const cardStyle: React.CSSProperties = {
 };
 
 const sectionTitle: React.CSSProperties = {
-  fontSize: 12, fontWeight: 653,
+  fontSize: 'var(--ds-font-size-200)', fontWeight: 653,
   color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
   letterSpacing: 0,
   marginBottom: 16,
 };
 
 const fieldLabel: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600,
+  fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
   color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
   marginBottom: 4,
 };
 
 const fieldValue: React.CSSProperties = {
-  fontSize: 14, fontWeight: 400,
+  fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
   color: token('color.text', 'var(--ds-text, #172B4D)'),
 };
 
 const thStyle: React.CSSProperties = {
-  fontSize: 12, fontWeight: 653,
+  fontSize: 'var(--ds-font-size-200)', fontWeight: 653,
   color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
   textAlign: 'left' as const,
   padding: '4px 8px 4px 0',
@@ -69,7 +69,7 @@ const thStyle: React.CSSProperties = {
 
 const tdStyle: React.CSSProperties = {
   padding: '8px 8px 8px 0',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
 };
 
 function StatChip({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
@@ -81,11 +81,11 @@ function StatChip({ label, value, mono }: { label: string; value: string; mono?:
       borderRadius: 8,
       minWidth: 0,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginBottom: 4 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginBottom: 4 }}>
         {label}
       </div>
       <div style={{
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 500,
         color: token('color.text', 'var(--ds-text, #172B4D)'),
         fontFamily: mono ? 'monospace' : 'inherit',
@@ -102,8 +102,8 @@ function StatChip({ label, value, mono }: { label: string; value: string; mono?:
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` }}>
-      <span style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{label}</span>
-      <span style={{ fontSize: 14, color: token('color.text', 'var(--ds-text, #172B4D)'), textAlign: 'right' as const }}>{children}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text', 'var(--ds-text, #172B4D)'), textAlign: 'right' as const }}>{children}</span>
     </div>
   );
 }
@@ -303,10 +303,10 @@ export default function UserProfile() {
     <div style={{ padding: 32, maxWidth: 960, margin: '0 auto' }}>
       {/* Page header */}
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: 0 }}>
+        <h1 style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: 0 }}>
           User profile
         </h1>
-        <p style={{ fontSize: 14, fontWeight: 400, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 4 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 4 }}>
           Manage your account settings and preferences
         </p>
       </div>
@@ -358,7 +358,7 @@ export default function UserProfile() {
           {/* Name + designation + meta */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: 0 }}>
+              <h2 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: token('color.text', 'var(--ds-text, #172B4D)'), margin: 0 }}>
                 {profile?.full_name || '—'}
               </h2>
               {userAppRole && (
@@ -371,17 +371,17 @@ export default function UserProfile() {
             </div>
 
             {(designation || department) && (
-              <div style={{ fontSize: 14, fontWeight: 400, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 4 }}>
                 {[designation, department].filter(Boolean).join(' · ')}
               </div>
             )}
 
-            <div style={{ fontSize: 13, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginBottom: 12 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginBottom: 12 }}>
               {profile?.email || user?.email || '—'}
             </div>
 
             {/* Meta line */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
               {vendor && (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   <span>🏢</span> {vendor}
@@ -470,7 +470,7 @@ export default function UserProfile() {
                 {!showEmailEdit ? (
                   <button
                     onClick={() => setShowEmailEdit(true)}
-                    style={{ fontSize: 11, color: token('color.link', 'var(--ds-link, #0052CC)'), background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginTop: 2 }}
+                    style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.link', 'var(--ds-link, #0052CC)'), background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginTop: 2 }}
                   >
                     Change email
                   </button>
@@ -482,7 +482,7 @@ export default function UserProfile() {
                       <Button appearance="primary" isLoading={emailChanging} isDisabled={!newEmail || !emailPassword} onClick={() => void handleEmailChange()}>Confirm</Button>
                       <Button appearance="subtle" onClick={() => { setShowEmailEdit(false); setNewEmail(''); setEmailPassword(''); }}>Cancel</Button>
                     </div>
-                    <div style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                    <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                       A confirmation link will be sent to both addresses.
                     </div>
                   </div>
@@ -536,7 +536,7 @@ export default function UserProfile() {
               <FieldRow label="Resource type">{resourceType ?? '—'}</FieldRow>
               <FieldRow label="Contract start">{fmtDate(contractStart)}</FieldRow>
               <FieldRow label="Contract end">{fmtDate(contractEnd)}</FieldRow>
-              <div style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 12 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 12 }}>
                 Organization details are managed by your administrator.
               </div>
             </div>
@@ -554,18 +554,18 @@ export default function UserProfile() {
               </div>
               {userAppRole ? (
                 <div>
-                  <div style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginBottom: 8 }}>Current role</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginBottom: 8 }}>Current role</div>
                   <span data-cp-lozenge-jira-parity>
                     <Lozenge appearance={ROLE_COLORS[userAppRole] ?? 'default'}>
                       {ROLE_LABELS[userAppRole] ?? userAppRole.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                     </Lozenge>
                   </span>
-                  <div style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 8 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), marginTop: 8 }}>
                     This role determines your system-wide permissions and access levels.
                   </div>
                 </div>
               ) : (
-                <div style={{ fontSize: 14, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>No system role assigned</div>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>No system role assigned</div>
               )}
 
               {/* Role history inline */}
@@ -607,7 +607,7 @@ export default function UserProfile() {
                     </tbody>
                   </table>
                 ) : (
-                  <div style={{ fontSize: 14, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), textAlign: 'center', padding: 16 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), textAlign: 'center', padding: 16 }}>
                     No role history available
                   </div>
                 )}
@@ -618,7 +618,7 @@ export default function UserProfile() {
             <div style={cardStyle}>
               <div style={sectionTitle}>Account details</div>
               <FieldRow label="User ID">
-                <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{user?.id?.slice(0, 8)}…</span>
+                <span style={{ fontFamily: 'monospace', fontSize: 'var(--ds-font-size-200)' }}>{user?.id?.slice(0, 8)}…</span>
               </FieldRow>
               <FieldRow label="Account created">{memberSince}</FieldRow>
               <FieldRow label="Last updated">{profile?.updated_at ? fmtDate(profile.updated_at) : '—'}</FieldRow>
@@ -691,7 +691,7 @@ export default function UserProfile() {
                   </tbody>
                 </table>
               ) : (
-                <div style={{ fontSize: 14, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), textAlign: 'center', padding: 32 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'), textAlign: 'center', padding: 32 }}>
                   No leave history available
                 </div>
               )}

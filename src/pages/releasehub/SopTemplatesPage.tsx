@@ -39,15 +39,15 @@ export default function SopTemplatesPage() {
       id: 'name', label: 'Template', flex: true, sortable: true,
       cell: ({ row }) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{row.name}</span>
-          {row.description && <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.description}</span>}
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{row.name}</span>
+          {row.description && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.description}</span>}
         </div>
       ),
     },
-    { id: 'deployment_category', label: 'Category', width: 14, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.deployment_category)}</span> },
-    { id: 'target_env', label: 'Env', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle }}>{titleCase(row.target_env)}</span> },
-    { id: 'steps', label: 'Steps', width: 10, align: 'end', accessor: (r) => r.stepCount, cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.text }}>{row.stepCount}</span> },
-    { id: 'updated', label: 'Updated', width: 14, sortable: true, accessor: (r) => r.updated_at, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>{row.updated_at ? format(new Date(row.updated_at), 'MMM d, yyyy') : '—'}</span> },
+    { id: 'deployment_category', label: 'Category', width: 14, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.deployment_category)}</span> },
+    { id: 'target_env', label: 'Env', width: 12, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle }}>{titleCase(row.target_env)}</span> },
+    { id: 'steps', label: 'Steps', width: 10, align: 'end', accessor: (r) => r.stepCount, cell: ({ row }) => <span style={{ fontFamily: T.mono, fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: T.text }}>{row.stepCount}</span> },
+    { id: 'updated', label: 'Updated', width: 14, sortable: true, accessor: (r) => r.updated_at, cell: ({ row }) => <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{row.updated_at ? format(new Date(row.updated_at), 'MMM d, yyyy') : '—'}</span> },
   ], []);
 
   return (
@@ -58,7 +58,7 @@ export default function SopTemplatesPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
         <button
           onClick={() => setShowCreate(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: 'pointer', background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
         >
           <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New template
         </button>

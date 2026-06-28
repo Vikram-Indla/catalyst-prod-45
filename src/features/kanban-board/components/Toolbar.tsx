@@ -40,19 +40,19 @@ function InsightsBars({ issues }: { issues: BoardIssue[] }) {
   const topTypes = Object.entries(byType).sort((a, b) => b[1] - a[1]).slice(0, 5);
   return (
     <div style={{ padding: '8px 12px', width: 260 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 6 }}>Status</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), marginBottom: 6 }}>Status</div>
       {Object.entries(cat).map(([k, v]) => (
         <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-          <span style={{ width: 84, fontSize: 12, color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{k}</span>
+          <span style={{ width: 84, fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtle', 'var(--ds-icon, #44546F)') }}>{k}</span>
           <div style={{ flex: 1, height: 8, background: token('color.background.neutral', '#091E420F'), borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ width: `${(v / max) * 100}%`, height: '100%', background: colors[k] }} />
           </div>
-          <span style={{ width: 28, textAlign: 'right', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{v}</span>
+          <span style={{ width: 28, textAlign: 'right', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{v}</span>
         </div>
       ))}
-      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), margin: '10px 0 6px' }}>Top types</div>
+      <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'), margin: '10px 0 6px' }}>Top types</div>
       {topTypes.map(([k, v]) => (
-        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 2 }}>
+        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--ds-font-size-200)', color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 2 }}>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{k}</span><span style={{ fontWeight: 600 }}>{v}</span>
         </div>
       ))}
@@ -93,7 +93,7 @@ function AvatarFilter({ api, avatars }: { api: FilterApi; avatars: Map<string, s
           </span>
         );
       })}
-      {overflow > 0 && <span style={{ marginLeft: 4, fontSize: 12, fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>+{overflow}</span>}
+      {overflow > 0 && <span style={{ marginLeft: 4, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>+{overflow}</span>}
     </div>
   );
 }
@@ -101,7 +101,7 @@ function AvatarFilter({ api, avatars }: { api: FilterApi; avatars: Map<string, s
 function triggerStyle(active: boolean): React.CSSProperties {
   return {
     height: 32, padding: '0 8px', borderRadius: 3, border: 'none', cursor: 'pointer',
-    display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 14, fontWeight: 500,
+    display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
     fontFamily: 'inherit', flexShrink: 0,
     background: active ? token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)') : 'transparent',
     color: active ? token('color.text.selected', 'var(--ds-link, #0C66E4)') : token('color.text.subtle', 'var(--ds-icon, var(--ds-icon, #44546F))'),
@@ -210,7 +210,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
 
       {standupActive && (
         <button onClick={onEndStandup}
-          style={{ height: 32, padding: '0 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, fontFamily: 'inherit', flexShrink: 0,
+          style={{ height: 32, padding: '0 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, fontFamily: 'inherit', flexShrink: 0,
             background: token('color.background.selected', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.selected', 'var(--ds-link, var(--ds-link, #0C66E4))') }}>End standup</button>
       )}
 
@@ -229,7 +229,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ api, avatars, issues, visibleF
       )}>
         {() => (
           <>
-            <div style={{ padding: '6px 12px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>Card fields</div>
+            <div style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)') }}>Card fields</div>
             {FIELD_LABELS.map((f) => (
               <MenuItem key={f.key} selected={visibleFields[f.key]} onClick={() => onToggleField(f.key)}>{f.label}</MenuItem>
             ))}

@@ -373,7 +373,7 @@ export function ReleaseWorkNavigatorPage({
   // break JiraTable's internal-viewport scroll.
   const toolbar = (
     <div style={{ padding: '24px 32px 12px', display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0, background: 'var(--ds-surface, #FFFFFF)' }}>
-      <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: TEXT }}>All work</h1>
+      <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: TEXT }}>All work</h1>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <TabToggle value={state.mode} onChange={(m) => updateState({ mode: m })} />
         {state.mode === 'basic' ? (
@@ -459,7 +459,7 @@ export function ReleaseWorkNavigatorPage({
               placeholder='JQL — e.g. fixVersion = "Release 1.119"'
               style={{
                 flex: 1, minWidth: 280, height: 32, padding: '0 10px',
-                border: `1px solid ${BORDER}`, borderRadius: 3, fontSize: 14,
+                border: `1px solid ${BORDER}`, borderRadius: 3, fontSize: 'var(--ds-font-size-400)',
                 background: 'var(--ds-surface, #FFFFFF)', color: TEXT, fontFamily: 'inherit', outline: 'none',
               }}
             />
@@ -470,7 +470,7 @@ export function ReleaseWorkNavigatorPage({
           <button
             type="button"
             onClick={clearAll}
-            style={{ all: 'unset', cursor: 'pointer', fontSize: 14, color: BLUE_TEXT, fontWeight: 500, padding: '0 8px' }}
+            style={{ all: 'unset', cursor: 'pointer', fontSize: 'var(--ds-font-size-400)', color: BLUE_TEXT, fontWeight: 500, padding: '0 8px' }}
           >
             Clear filters
           </button>
@@ -514,7 +514,7 @@ export function ReleaseWorkNavigatorPage({
 function TabToggle({ value, onChange }: { value: 'basic' | 'jql'; onChange: (v: 'basic' | 'jql') => void }) {
   const itemStyle = (active: boolean): React.CSSProperties => ({
     all: 'unset', cursor: 'pointer', height: 22, padding: '0 10px',
-    fontSize: 14, fontWeight: 500,
+    fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
     color: active ? BLUE_TEXT : TEXT,
     background: active ? BLUE_BG : 'transparent',
     border: `1px solid ${active ? BLUE : 'transparent'}`,
@@ -550,7 +550,7 @@ function SearchPill({ value, onChange }: { value: string; onChange: (v: string) 
         value={value}
         onChange={(e) => onChange(e.currentTarget.value)}
         placeholder="Search work"
-        style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 14, color: TEXT, fontFamily: 'inherit' }}
+        style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--ds-font-size-400)', color: TEXT, fontFamily: 'inherit' }}
       />
     </div>
   );
@@ -629,7 +629,7 @@ function MultiChip({
           height: 32, padding: '0 10px', borderRadius: 3,
           border: `1px solid ${active ? BLUE : BORDER}`,
           background: active ? BLUE_BG : 'var(--ds-surface, #FFFFFF)',
-          color: active ? BLUE_TEXT : TEXT, fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap',
+          color: active ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, whiteSpace: 'nowrap',
         }}
       >
         <span>{label}</span>
@@ -638,7 +638,7 @@ function MultiChip({
             minWidth: 20, height: 20, padding: '0 6px', borderRadius: 3,
             background: 'var(--ds-background-brand-bold, #0C66E4)',
             color: 'var(--ds-text-inverse, #FFFFFF)',
-            fontSize: 11, fontWeight: 700, lineHeight: '20px',
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 700, lineHeight: '20px',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             textAlign: 'center', boxSizing: 'border-box',
           }}>
@@ -677,13 +677,13 @@ function MultiChip({
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
                 placeholder={`Search ${label.toLowerCase()}`}
-                style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 14, color: TEXT, fontFamily: 'inherit' }}
+                style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--ds-font-size-400)', color: TEXT, fontFamily: 'inherit' }}
               />
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 260 }}>
             {filtered.length === 0 ? (
-              <div style={{ padding: '8px 12px', fontSize: 13, color: SUBTLEST }}>No matches</div>
+              <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: SUBTLEST }}>No matches</div>
             ) : filtered.map((opt) => {
               const checked = value.includes(opt.id);
               return (
@@ -695,7 +695,7 @@ function MultiChip({
                     all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
                     width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
                     background: checked ? BLUE_BG : 'transparent',
-                    color: checked ? BLUE_TEXT : TEXT, fontSize: 14,
+                    color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                   }}
                 >
                   <input type="checkbox" checked={checked} onChange={() => {}} />
@@ -807,7 +807,7 @@ function FixVersionChip({
           display: 'inline-flex', alignItems: 'center', gap: 8,
           height: 32, padding: '0 6px 0 10px', borderRadius: 3,
           border: `1px solid ${chipBorder}`, background: chipBg, color: chipText,
-          fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap',
+          fontSize: 'var(--ds-font-size-400)', fontWeight: 500, whiteSpace: 'nowrap',
         }}
       >
         <span style={{ fontWeight: 600 }}>Fix versions</span>
@@ -821,7 +821,7 @@ function FixVersionChip({
             height: 22, padding: '0 6px',
             border: `1px solid ${BORDER}`, borderRadius: 3,
             background: 'var(--ds-surface, #FFFFFF)', color: TEXT,
-            fontSize: 13, fontWeight: 500,
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
           }}
         >
           {opSymbol}
@@ -871,7 +871,7 @@ function FixVersionChip({
                   all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
                   width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
                   background: checked ? BLUE_BG : 'transparent',
-                  color: checked ? BLUE_TEXT : TEXT, fontSize: 14,
+                  color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                 }}
               >
                 <span style={{ width: 28 }}>{o === 'eq' ? '=' : '!='}</span>
@@ -906,14 +906,14 @@ function FixVersionChip({
               style={{
                 width: '100%', boxSizing: 'border-box', height: 30, padding: '0 8px',
                 border: `1px solid ${searchFocused ? BLUE : BORDER}`, borderRadius: 3,
-                fontSize: 14, outline: 'none', fontFamily: 'inherit',
+                fontSize: 'var(--ds-font-size-400)', outline: 'none', fontFamily: 'inherit',
                 boxShadow: searchFocused ? '0 0 0 1px rgba(24,104,219,0.2)' : 'none', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                 transition: 'border-color 80ms ease, box-shadow 80ms ease',
               }}
             />
           </div>
           {filtered.length === 0 ? (
-            <div style={{ padding: '8px 12px', fontSize: 13, color: SUBTLEST }}>No versions</div>
+            <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: SUBTLEST }}>No versions</div>
           ) : filtered.map((opt) => {
             const checked = value === opt;
             return (
@@ -925,7 +925,7 @@ function FixVersionChip({
                   all: 'unset', display: 'flex', alignItems: 'center', gap: 8,
                   width: '100%', boxSizing: 'border-box', padding: '6px 12px', cursor: 'pointer',
                   background: checked ? BLUE_BG : 'transparent',
-                  color: checked ? BLUE_TEXT : TEXT, fontSize: 14,
+                  color: checked ? BLUE_TEXT : TEXT, fontSize: 'var(--ds-font-size-400)',
                 }}
               >
                 <span>{opt}</span>

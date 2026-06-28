@@ -137,7 +137,7 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
         style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
       >
         <PinIcon />
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--c-chat-text-subtle, var(--ds-text-subtle, #44546F))' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--c-chat-text-subtle, var(--ds-text-subtle, #44546F))' }}>
           {pinList.length}
         </span>
       </button>
@@ -165,7 +165,7 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
           <div
             style={{
               padding: '4px 8px 8px',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               textTransform: 'none',
               color: 'var(--c-chat-text-subtle, var(--ds-text-subtle, #44546F))',
@@ -202,14 +202,14 @@ export function PinnedMessagesPanel({ conversationId, onJump }: PinnedMessagesPa
                 }}
               >
                 {author && (
-                  <span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--c-chat-text, var(--ds-text, #172B4D))' }}>
+                  <span style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--c-chat-text, var(--ds-text, #172B4D))' }}>
                     {author}
                   </span>
                 )}
                 <span
                   style={{
                     display: 'block',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color: 'var(--c-chat-text-subtle, var(--ds-text-subtle, #44546F))',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

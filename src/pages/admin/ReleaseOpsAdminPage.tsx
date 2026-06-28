@@ -98,7 +98,7 @@ function CategoryLozenge({ label, category }: { label: string; category: ConfigC
   const appearance = category ? CATEGORY_TO_APPEARANCE[category] : 'default';
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: statusBg(appearance), borderRadius: 3, padding: '0 8px', height: 20 }}>
-      <span style={{ fontSize: 11, fontWeight: 700, lineHeight: '20px', color: statusFg(appearance), whiteSpace: 'nowrap' }}>{label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, lineHeight: '20px', color: statusFg(appearance), whiteSpace: 'nowrap' }}>{label}</span>
     </span>
   );
 }
@@ -131,15 +131,15 @@ export default function ReleaseOpsAdminPage() {
     <AdminGuard>
       <div style={{ padding: 24, background: T.surface, minHeight: '100%' }}>
         <div style={{ marginBottom: 16 }}>
-          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>Release Operations</h1>
-          <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, margin: '4px 0 0' }}>
+          <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: T.text, margin: 0 }}>Release Operations</h1>
+          <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest, margin: '4px 0 0' }}>
             Manage the fields, statuses, and workflow labels used across releases, changes, SOPs, sign-offs, freezes, and production events.
           </p>
         </div>
 
         {!canManage && (
           <div style={{ background: 'var(--ds-background-information, #E9F2FE)', border: '1px solid var(--ds-border-information, #8FB8F6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
-            <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: 'var(--ds-text-information, #0055CC)', margin: 0 }}>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-information, #0055CC)', margin: 0 }}>
               Read-only — you need a release/change manager role to edit this configuration.
             </p>
           </div>
@@ -148,7 +148,7 @@ export default function ReleaseOpsAdminPage() {
         {isLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner size="large" /></div>
         ) : isError ? (
-          <div style={{ color: 'var(--ds-text-danger, #AE2A19)', fontFamily: RH.fontBody, fontSize: 13 }}>
+          <div style={{ color: 'var(--ds-text-danger, #AE2A19)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)' }}>
             Could not load configuration: {(error as Error)?.message}
           </div>
         ) : (
@@ -240,21 +240,21 @@ function SortableOptionRow({
         <span
           {...attributes}
           {...listeners}
-          style={{ color: 'var(--ds-text-disabled, #8590A2)', cursor: 'grab', fontSize: 15, width: 20, textAlign: 'center', flexShrink: 0, lineHeight: '1', userSelect: 'none' }}
+          style={{ color: 'var(--ds-text-disabled, #8590A2)', cursor: 'grab', fontSize: 'var(--ds-font-size-400)', width: 20, textAlign: 'center', flexShrink: 0, lineHeight: '1', userSelect: 'none' }}
           aria-label="Drag to reorder"
         >
           ⠿
         </span>
       ) : <span style={{ width: 20, flexShrink: 0 }} />}
 
-      <span style={{ flex: 1, minWidth: 0, fontSize: 14, fontWeight: 500, color: T.text, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: T.text, display: 'flex', alignItems: 'center', gap: 8 }}>
         {option.label}
         {option.is_system && (
-          <span style={{ fontSize: 10, fontWeight: 600, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 10, padding: '0 6px', lineHeight: '18px' }}>System</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 10, padding: '0 6px', lineHeight: '18px' }}>System</span>
         )}
       </span>
 
-      <span style={{ width: 120, flexShrink: 0, fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, color: T.subtlest, background: T.sunken, padding: '2px 6px', borderRadius: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ width: 120, flexShrink: 0, fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-200)', color: T.subtlest, background: T.sunken, padding: '2px 6px', borderRadius: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {option.value}
       </span>
 
@@ -262,14 +262,14 @@ function SortableOptionRow({
         <div style={{ width: 110, flexShrink: 0 }}>
           {option.color_category
             ? <CategoryLozenge label={CATEGORY_LABELS[option.color_category]} category={option.color_category} />
-            : <span style={{ fontSize: 12, color: T.subtlest }}>—</span>}
+            : <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>—</span>}
         </div>
       )}
 
       <div style={{ width: 90, flexShrink: 0, display: 'flex', alignItems: 'center' }}>
         {canManage
           ? <Toggle isChecked={option.is_active} onChange={() => onToggleActive(option)} label="Active" />
-          : <span style={{ fontSize: 13, color: option.is_active ? 'var(--ds-text-success, #006644)' : T.subtlest }}>{option.is_active ? 'Active' : 'Inactive'}</span>
+          : <span style={{ fontSize: 'var(--ds-font-size-300)', color: option.is_active ? 'var(--ds-text-success, #006644)' : T.subtlest }}>{option.is_active ? 'Active' : 'Inactive'}</span>
         }
       </div>
 
@@ -279,7 +279,7 @@ function SortableOptionRow({
           aria-haspopup="menu"
           aria-expanded={isMenuOpen}
           onClick={(e) => { e.stopPropagation(); onOpenMenu((e.currentTarget as HTMLButtonElement).getBoundingClientRect()); }}
-          style={{ width: 28, height: 28, borderRadius: 3, border: 'none', background: 'none', color: T.subtle, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0, opacity: isHovered || isMenuOpen ? 1 : 0, transition: 'opacity 0.1s' }}
+          style={{ width: 28, height: 28, borderRadius: 3, border: 'none', background: 'none', color: T.subtle, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--ds-font-size-600)', flexShrink: 0, opacity: isHovered || isMenuOpen ? 1 : 0, transition: 'opacity 0.1s' }}
         >
           ···
         </button>
@@ -335,9 +335,9 @@ function GroupSection({
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: 0 }}>{meta.label}</h2>
+            <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>{meta.label}</h2>
             <Tooltip content={meta.description ? `${meta.key} — ${meta.description}` : meta.key} position="right">
-              <span tabIndex={0} aria-label="Field key" style={{ color: T.subtlest, cursor: 'default', fontSize: 13, lineHeight: '1', display: 'inline-flex', alignItems: 'center', userSelect: 'none' }}>ℹ</span>
+              <span tabIndex={0} aria-label="Field key" style={{ color: T.subtlest, cursor: 'default', fontSize: 'var(--ds-font-size-300)', lineHeight: '1', display: 'inline-flex', alignItems: 'center', userSelect: 'none' }}>ℹ</span>
             </Tooltip>
           </div>
         </div>
@@ -347,10 +347,10 @@ function GroupSection({
       {sorted.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 8px 6px', borderBottom: `1px solid ${T.border}`, marginBottom: 2 }}>
           <span style={{ width: 20, flexShrink: 0 }} />
-          <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: T.subtlest }}>Name</span>
-          <span style={{ width: 120, flexShrink: 0, fontSize: 11, fontWeight: 600, color: T.subtlest }}>Value</span>
-          {meta.isStatus && <span style={{ width: 110, flexShrink: 0, fontSize: 11, fontWeight: 600, color: T.subtlest }}>Category</span>}
-          <span style={{ width: 90, flexShrink: 0, fontSize: 11, fontWeight: 600, color: T.subtlest }}>Active</span>
+          <span style={{ flex: 1, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Name</span>
+          <span style={{ width: 120, flexShrink: 0, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Value</span>
+          {meta.isStatus && <span style={{ width: 110, flexShrink: 0, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Category</span>}
+          <span style={{ width: 90, flexShrink: 0, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest }}>Active</span>
           <span style={{ width: 28, flexShrink: 0 }} />
         </div>
       )}
@@ -375,7 +375,7 @@ function GroupSection({
       </DndContext>
 
       {sorted.length === 0 && (
-        <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest, padding: '8px 0' }}>No options yet.</p>
+        <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest, padding: '8px 0' }}>No options yet.</p>
       )}
 
       {menuState && menuOption && createPortal(
@@ -387,7 +387,7 @@ function GroupSection({
           <button
             role="menuitem"
             onClick={() => { onEdit(menuOption); setMenuState(null); }}
-            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 14, color: T.text, border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left' }}
+            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text, border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left' }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--ds-background-neutral, #F1F2F4))'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
           >
@@ -398,7 +398,7 @@ function GroupSection({
             role="menuitem"
             disabled={menuOption.is_system}
             onClick={() => { if (!menuOption.is_system) { onDelete(menuOption); setMenuState(null); } }}
-            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 14, color: menuOption.is_system ? T.subtlest : 'var(--ds-text-danger, #AE2A19)', border: 'none', background: 'none', cursor: menuOption.is_system ? 'not-allowed' : 'pointer', textAlign: 'left', opacity: menuOption.is_system ? 0.5 : 1 }}
+            style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '7px 12px', fontSize: 'var(--ds-font-size-400)', color: menuOption.is_system ? T.subtlest : 'var(--ds-text-danger, #AE2A19)', border: 'none', background: 'none', cursor: menuOption.is_system ? 'not-allowed' : 'pointer', textAlign: 'left', opacity: menuOption.is_system ? 0.5 : 1 }}
             onMouseEnter={(e) => { if (!menuOption.is_system) (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-danger-hovered, #FFEBE6)'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
           >
@@ -435,31 +435,31 @@ function EditOptionModal({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
-            <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Label</label>
+            <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Label</label>
             <Textfield value={label} onChange={(e) => setLabel((e.target as HTMLInputElement).value)} placeholder="e.g. Hotfix" autoFocus />
           </div>
           <div>
-            <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Value</label>
+            <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Value</label>
             <Textfield
               value={effectiveValue}
               isDisabled={!isCreate}
               onChange={(e) => { setTouchedValue(true); setValue(slugify((e.target as HTMLInputElement).value)); }}
               placeholder="machine_value"
             />
-            <p style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest, margin: '4px 0 0' }}>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: '4px 0 0' }}>
               {isCreate ? 'Stored value (lowercase, underscores). Cannot be changed later.' : 'The machine value is fixed once created.'}
             </p>
           </div>
           {state.isStatus && (
             <div>
-              <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Colour category</label>
+              <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Colour category</label>
               <Select
                 options={COLOR_OPTIONS}
                 value={COLOR_OPTIONS.find((o) => o.value === category) ?? null}
                 onChange={(opt: any) => setCategory(opt?.value ?? null)}
                 placeholder="Select a category"
               />
-              <p style={{ fontFamily: RH.fontBody, fontSize: 11, color: T.subtlest, margin: '4px 0 0' }}>
+              <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: T.subtlest, margin: '4px 0 0' }}>
                 Locked to grey / blue / green + terminal coral — no 4th status colour.
               </p>
             </div>
@@ -505,19 +505,19 @@ function SettingsSection({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
-        <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: '0 0 12px' }}>Change numbering</h2>
+        <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: '0 0 12px' }}>Change numbering</h2>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ minWidth: 180 }}>
-            <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Prefix</label>
+            <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Prefix</label>
             <Textfield value={prefix} isDisabled={!canManage} onChange={(e) => setPrefix((e.target as HTMLInputElement).value)} />
           </div>
           <div style={{ width: 120 }}>
-            <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Sequence padding</label>
+            <label style={{ display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.subtle, marginBottom: 4 }}>Sequence padding</label>
             <Textfield type="number" value={padding} isDisabled={!canManage} onChange={(e) => setPadding((e.target as HTMLInputElement).value)} min={1} max={8} />
           </div>
           <div style={{ flex: 1 }}>
-            <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: 0 }}>Preview</p>
-            <p style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 14, color: T.text, margin: '4px 0 0' }}>{sample}</p>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: 0 }}>Preview</p>
+            <p style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-400)', color: T.text, margin: '4px 0 0' }}>{sample}</p>
           </div>
           {canManage && (
             <Button appearance="primary" spacing="compact" onClick={() => { onSave('change_number_prefix', prefix); onSave('change_number_padding', pad); }}>Save</Button>
@@ -526,28 +526,28 @@ function SettingsSection({
       </div>
 
       <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
-        <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: '0 0 12px' }}>Notifications</h2>
+        <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: '0 0 12px' }}>Notifications</h2>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>Notify subscribers when a release or change is created</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>Notify subscribers when a release or change is created</span>
           <Toggle isChecked={notifyCreate} isDisabled={!canManage} onChange={() => onSave('notify_on_create', !notifyCreate)} label="Notify on create" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>Notify subscribers on every lifecycle status transition</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>Notify subscribers on every lifecycle status transition</span>
           <Toggle isChecked={notifyStatus} isDisabled={!canManage} onChange={() => onSave('notify_on_status_change', !notifyStatus)} label="Notify on status change" />
         </div>
       </div>
 
       <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16 }}>
-        <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: '0 0 4px' }}>Required sign-off roles by risk</h2>
-        <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '0 0 12px' }}>Default approval roles gated per change risk level.</p>
+        <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: '0 0 4px' }}>Required sign-off roles by risk</h2>
+        <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '0 0 12px' }}>Default approval roles gated per change risk level.</p>
         {['low', 'medium', 'high', 'critical'].map((risk) => (
           <div key={risk} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderTop: `1px solid ${T.border}` }}>
-            <span style={{ fontFamily: RH.fontBody, fontSize: 13, fontWeight: 500, color: T.text, width: 80, textTransform: 'capitalize' }}>{risk}</span>
+            <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: T.text, width: 80, textTransform: 'capitalize' }}>{risk}</span>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {(riskMap[risk] || []).map((role) => (
-                <span key={role} style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 500, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 12, padding: '0 8px', lineHeight: '22px' }}>{role.replace(/_/g, ' ')}</span>
+                <span key={role} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 12, padding: '0 8px', lineHeight: '22px' }}>{role.replace(/_/g, ' ')}</span>
               ))}
-              {(!riskMap[risk] || riskMap[risk].length === 0) && <span style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest }}>—</span>}
+              {(!riskMap[risk] || riskMap[risk].length === 0) && <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>—</span>}
             </div>
           </div>
         ))}

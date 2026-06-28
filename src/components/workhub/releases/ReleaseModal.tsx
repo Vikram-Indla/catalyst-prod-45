@@ -110,7 +110,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
           padding: '20px 24px 0', marginBottom: 20,
         }}>
           <h2 style={{
-            fontSize: 18, fontWeight: 700, margin: 0,
+            fontSize: 'var(--ds-font-size-600)', fontWeight: 700, margin: 0,
             fontFamily: 'var(--cp-font-heading)',
             color: 'var(--fg-1)',
           }}>
@@ -183,14 +183,14 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
             <button onClick={onClose} style={{
               height: 50, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
               border: '1px solid var(--divider)', background: 'var(--cp-float)',
-              fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', cursor: 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--fg-1)', cursor: 'pointer',
             }}>
               Cancel
             </button>
             <button onClick={handleSubmit} disabled={isSubmitting} style={{
               height: 50, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
               border: 'none', background: 'var(--cp-blue)', color: 'var(--bg-app)',
-              fontSize: 13, fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
               opacity: isSubmitting ? 0.7 : 1,
             }}>
               {isSubmitting ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Release'}
@@ -209,13 +209,13 @@ function Field({ label, required, error, children }: {
   return (
     <div>
       <label style={{
-        display: 'block', fontSize: 13, fontWeight: 500,
+        display: 'block', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
         color: 'var(--fg-1)', marginBottom: 4,
       }}>
         {label}{required && <span style={{ color: 'var(--sem-danger)' }}> *</span>}
       </label>
       {children}
-      {error && <span style={{ fontSize: 12, color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>{error}</span>}
+      {error && <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>{error}</span>}
     </div>
   );
 }
@@ -225,7 +225,7 @@ const inputStyle: React.CSSProperties = {
   padding: '8px 12px',
   borderRadius: 'var(--wh-radius-md, 6px)',
   border: '1px solid var(--divider)',
-  fontSize: 14, fontFamily: 'var(--cp-font-body)',
+  fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--cp-font-body)',
   color: 'var(--fg-1)',
   background: 'var(--cp-float)',
   outline: 'none',

@@ -59,12 +59,12 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
           </ModalHeader>
           <ModalBody>
             {isLoading && (
-              <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
+              <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>
                 Loading…
               </div>
             )}
             {!isLoading && members.length === 0 && (
-              <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
+              <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>
                 No members yet.
               </div>
             )}
@@ -90,7 +90,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                           display: 'flex',
                           alignItems: 'center',
                           gap: 8,
-                          fontSize: 14,
+                          fontSize: 'var(--ds-font-size-400)',
                           color: 'var(--ds-text, #172B4D)',
                         }}
                       >
@@ -100,7 +100,7 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                         {m.role === 'admin' && (
                           <span
                             style={{
-                              fontSize: 10,
+                              fontSize: 'var(--ds-font-size-50)',
                               fontWeight: 500,
                               textTransform: 'none',
                               padding: '1px 6px',
@@ -113,13 +113,13 @@ export function RosterPanel({ conversationId, isOpen, onClose, onInvite }: Roste
                           </span>
                         )}
                         {isSelf && (
-                          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)' }}>(you)</span>
+                          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)' }}>(you)</span>
                         )}
                       </div>
                       {m.email && (
-                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>{m.email}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>{m.email}</div>
                       )}
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #626F86)' }}>
+                      <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #626F86)' }}>
                         joined {timeAgo(m.joinedAt)}
                       </div>
                     </div>

@@ -122,7 +122,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
             placeholder="Search wiki pages, categories, documents..."
             aria-label="Search wiki"
             style={{
-              flex: 1, fontSize: 15, fontFamily: 'var(--cp-font-body)',
+              flex: 1, fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--cp-font-body)',
               background: 'transparent', border: 'none', outline: 'none',
               color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)',
             }}
@@ -131,7 +131,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
         {/* Results */}
         <div role="listbox" style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
           {items.length === 0 && (
-            <div style={{ padding: 24, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', fontSize: 13 }}>
+            <div style={{ padding: 24, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', fontSize: 'var(--ds-font-size-300)' }}>
               {query.length >= 2 ? (
                 <span>No results for &lsquo;{query}&rsquo;. <span onClick={() => { navigate(`/wiki/search?q=${encodeURIComponent(query)}`); onClose(); }} style={{ color: 'var(--cp-text-link)', cursor: 'pointer' }}>Search full wiki →</span></span>
               ) : 'Type to search...'}
@@ -152,8 +152,8 @@ export function WikiCommandPalette({ open, onClose }: Props) {
               }}
             >
               {item.type === 'category' ? <Folder size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }} /> : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }} />}
-              <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>{item.label}</span>
-              <span dir="ltr" style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}>{item.meta}</span>
+              <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>{item.label}</span>
+              <span dir="ltr" style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}>{item.meta}</span>
               {idx === selectedIdx && <ArrowRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }} />}
             </div>
           ))}
@@ -161,11 +161,11 @@ export function WikiCommandPalette({ open, onClose }: Props) {
         {/* Footer */}
         <div style={{
           padding: '8px 16px', borderTop: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)',
-          display: 'flex', gap: 16, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)',
+          display: 'flex', gap: 16, fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)',
         }}>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid var(--ds-background-neutral, #F1F2F4)' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
         </div>
       </div>
     </div>

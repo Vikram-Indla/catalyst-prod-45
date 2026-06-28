@@ -125,7 +125,7 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
         border: 'none',
         cursor: onClick ? 'pointer' : 'default',
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         letterSpacing: '0.03em',
         textTransform: 'uppercase' as const,
@@ -142,7 +142,7 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
       title={status}
     >
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</span>
-      {onClick && !mini && <span style={{ opacity: 0.6, fontSize: 8, color: style.color }}>▾</span>}
+      {onClick && !mini && <span style={{ opacity: 0.6, fontSize: 'var(--ds-font-size-100)', color: style.color }}>▾</span>}
     </button>
   );
 }

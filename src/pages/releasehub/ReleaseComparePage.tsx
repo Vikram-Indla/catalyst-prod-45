@@ -118,8 +118,8 @@ export default function ReleaseComparePage() {
                   <ResponsiveContainer width="100%" height={320}>
                     <RadarChart data={radarData}>
                       <PolarGrid stroke="var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))" />
-                      <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: 'var(--ds-text-subtle, #475569)' }} />
-                      <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
+                      <PolarAngleAxis dataKey="subject" tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtle, #475569)' }} />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 'var(--ds-font-size-50)' }} />
                       {selectedReleases.map((r: any, i: number) => (
                         <Radar key={r.id} name={r.name} dataKey={`r${i}`} stroke={RADAR_COLORS[i]} fill={RADAR_COLORS[i]} fillOpacity={0.15} />
                       ))}

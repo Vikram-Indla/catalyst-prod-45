@@ -383,7 +383,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
           className="w-full pl-9 pr-4 rounded-lg border outline-none transition-colors"
           style={{
             height: '50px',
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
             color: 'var(--wh-text-primary, #0f172a)',
           }}

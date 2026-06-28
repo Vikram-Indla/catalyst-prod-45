@@ -40,13 +40,13 @@ interface ReleaseCreateModalProps {
 const labelStyle: React.CSSProperties = {
   display: 'block',
   fontWeight: 600,
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   color: 'var(--ds-text, #172B4D)',
   marginBottom: 6,
 };
 
 const errStyle: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 'var(--ds-font-size-100)',
   color: 'var(--ds-text-danger, #AE2A19)',
   marginTop: 4,
 };
@@ -224,7 +224,7 @@ export function ReleaseCreateModal({
           </ModalHeader>
           <ModalBody>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #505258)' }}>
                 Required fields are marked with an asterisk
                 <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 2 }}>*</span>
               </div>

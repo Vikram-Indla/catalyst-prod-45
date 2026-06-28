@@ -38,7 +38,7 @@ function StatusPill({ status }: { status: string }) {
   const active = status === 'active';
   return (
     <span style={{
-      fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
+      fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.04em',
       padding: '0 8px', borderRadius: 3, whiteSpace: 'nowrap',
       color: active ? 'var(--ds-text-information, #0055CC)' : T.subtle,
       background: active ? 'var(--ds-background-information, #E9F2FE)' : 'var(--ds-background-neutral, #F1F2F4)',
@@ -60,19 +60,19 @@ function FreezeCard({ w, canManage, onDelete }: { w: FreezeWindowRow; canManage:
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: RH.fontBody, fontSize: 14, fontWeight: 600, color: T.text }}>{w.name}</span>
+          <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: T.text }}>{w.name}</span>
           <StatusPill status={w.status} />
           {conflict && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', color: T.danger, background: T.dangerBg, border: `1px solid var(--ds-border-danger, #E2483D)`, padding: '0 8px', borderRadius: 3 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, letterSpacing: '0.04em', color: T.danger, background: T.dangerBg, border: `1px solid var(--ds-border-danger, #E2483D)`, padding: '0 8px', borderRadius: 3 }}>
               <AlertTriangle size={12} style={{ color: T.danger }} /> CONFLICT{w.conflicts > 1 ? ` ×${w.conflicts}` : ''}
             </span>
           )}
         </div>
-        {w.reason && <div style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, marginTop: 4 }}>{w.reason}</div>}
+        {w.reason && <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 4 }}>{w.reason}</div>}
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <div style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text }}>{format(new Date(w.startDate), 'MMM d')} – {format(new Date(w.endDate), 'MMM d, yyyy')}</div>
-        <div style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, marginTop: 4 }}>{titleCase(w.targetEnv)}</div>
+        <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text }}>{format(new Date(w.startDate), 'MMM d')} – {format(new Date(w.endDate), 'MMM d, yyyy')}</div>
+        <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, marginTop: 4 }}>{titleCase(w.targetEnv)}</div>
       </div>
       {canManage && (
         <button onClick={onDelete} aria-label="Delete freeze window" style={{ display: 'flex', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', color: T.subtlest, padding: 4 }}>
@@ -107,7 +107,7 @@ export default function FreezeWindowsPage() {
           onClick={() => canManage && setShowCreate(true)}
           disabled={!canManage}
           title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 6, border: 'none', cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, background: 'var(--ds-background-brand-bold, #0C66E4)', color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500 }}
         >
           <Plus size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> New freeze window
         </button>

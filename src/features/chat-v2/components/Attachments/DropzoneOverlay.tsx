@@ -28,11 +28,11 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
     >
       <DropzoneArt />
       <div style={{ textAlign: 'center', padding: '0 24px' }}>
-        <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, color: 'var(--ds-surface, #FFFFFF)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-800)', fontWeight: 800, marginBottom: 8, color: 'var(--ds-surface, #FFFFFF)' }}>
           Upload to {workspaceTitle}
         </div>
         {recipientName && (
-          <div style={{ fontSize: 14, color: 'var(--ds-surface, rgba(255,255,255,0.7))' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-surface, rgba(255,255,255,0.7))' }}>
             Hold{' '}
             <kbd
               style={{
@@ -43,7 +43,7 @@ export function DropzoneOverlay({ workspaceTitle, recipientName }: DropzoneOverl
                 border: '1px solid var(--ds-surface, rgba(255,255,255,0.2))',
                 borderRadius: 3,
                 fontFamily: 'var(--cv2-font)',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
                 color: 'var(--ds-text-inverse, #FFFFFF)',
               }}

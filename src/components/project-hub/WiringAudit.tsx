@@ -152,12 +152,12 @@ export function WiringAudit() {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 650, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))", margin: 0 }}>
+        <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 650, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))", margin: 0 }}>
           P8 Wiring Audit — {checks.length} checks
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {results.length > 0 && (
-            <span style={{ fontSize: 12, color: "var(--ds-text-subtle, #475569)" }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: "var(--ds-text-subtle, #475569)" }}>
               <span style={{ color: "var(--ds-text-success, #006644)", fontWeight: 600 }}>{passCount} pass</span>
               {failCount > 0 && (
                 <span style={{ color: "var(--ds-text-danger, var(--cp-danger, #DC2626))", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
@@ -170,7 +170,7 @@ export function WiringAudit() {
             style={{
               height: 30,
               padding: "0 14px",
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               backgroundColor: "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))",
@@ -196,7 +196,7 @@ export function WiringAudit() {
             padding: "6px 0",
             borderTop: i === 0 ? "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))" : "none",
             borderBottom: "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))",
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--cp-font-body)',
           }}
         >
@@ -208,7 +208,7 @@ export function WiringAudit() {
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
               backgroundColor: r.status === "pass" ? "var(--ds-text-success, #006644)" : "var(--ds-text-danger, var(--cp-danger, #DC2626))",

@@ -123,7 +123,7 @@ function DraftsEmptyState({ onNewMessage }: { onNewMessage: () => void }) {
       <div
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 18,
+          fontSize: 'var(--ds-font-size-600)',
           fontWeight: 700,
           color: 'var(--cv2-text)',
           marginBottom: 8,
@@ -134,7 +134,7 @@ function DraftsEmptyState({ onNewMessage }: { onNewMessage: () => void }) {
       <div
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--cv2-text-subtle)',
           maxWidth: 340,
           lineHeight: 1.5,
@@ -153,7 +153,7 @@ function DraftsEmptyState({ onNewMessage }: { onNewMessage: () => void }) {
           background: 'transparent',
           color: 'var(--cv2-text)',
           fontFamily: 'var(--cv2-font)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 500,
           cursor: 'pointer',
         }}

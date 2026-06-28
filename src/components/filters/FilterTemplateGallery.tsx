@@ -100,7 +100,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
           padding: '32px 24px',
           textAlign: 'center',
           color: token('color.text.subtlest'),
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
         }}>
           No templates in this category.
         </div>
@@ -142,7 +142,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
                   {CATEGORY_ICON[t.category]}
                 </span>
                 <span style={{
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: token('font.weight.semibold'),
                   color: token('color.text'),
                   lineHeight: 1.3,
@@ -153,7 +153,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
 
               <p style={{
                 margin: 0,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: token('color.text.subtle'),
                 lineHeight: 1.4,
               }}>
@@ -162,7 +162,7 @@ export function FilterTemplateGallery({ hubScope, projectKey, onSelect }: Props)
 
               {/* JQL preview — monospace, sunken */}
               <div style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontFamily: 'var(--ds-font-family-monospace, monospace)',
                 color: token('color.text.subtlest'),
                 background: `var(--ds-surface-sunken, #F7F8F9)`,

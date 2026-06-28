@@ -152,7 +152,7 @@ export default function IssueFullPage() {
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <Loader2 size={32} className="animate-spin" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-          <span style={{ fontSize: 14 }}>Loading {issueKey}…</span>
+          <span style={{ fontSize: 'var(--ds-font-size-400)' }}>Loading {issueKey}…</span>
         </div>
       </div>
     );
@@ -164,17 +164,17 @@ export default function IssueFullPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         height: '100%', minHeight: 400, fontFamily: 'var(--cp-font-body)', gap: 12,
       }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #344054)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #344054)' }}>
           {notFound ? 'Issue not found' : 'Error loading issue'}
         </span>
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)' }}>
           {issueKey} could not be found or has been deleted.
         </span>
         <button
           onClick={handleClose}
           style={{
             marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            border: 'none', borderRadius: 6, fontSize: 'var(--ds-font-size-300)', fontWeight: 500, cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)',
           }}
         >

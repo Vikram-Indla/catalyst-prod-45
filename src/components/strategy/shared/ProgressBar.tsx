@@ -43,7 +43,7 @@ export function ProgressBar({ value, color, height = 6, showLabel = false, anima
         />
       </div>
       {showLabel && (
-        <span style={{ fontSize: 11, fontWeight: 600, color: fillColor, minWidth: 32, textAlign: 'right' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: fillColor, minWidth: 32, textAlign: 'right' }}>
           {Math.round(clampedValue)}%
         </span>
       )}

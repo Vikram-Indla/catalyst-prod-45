@@ -91,7 +91,7 @@ export function MenuItemRow({
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '8px 12px',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: danger
           ? 'var(--ds-text-danger, #AE2A19)'
           : disabled
@@ -152,7 +152,7 @@ export function ModalDateField({
           cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', textAlign: 'left',
         }}
       >
-        <span style={{ fontSize: 14, color: value ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #626F86)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: value ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #626F86)' }}>
           {value || placeholder}
         </span>
         <span style={{ lineHeight: 0, color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0 }}>
@@ -231,10 +231,10 @@ export function InlineEmptyOverlay({ projectKey, onDismiss }: { projectKey: stri
       </button>
       <GanttChart style={{ width: 40, height: 40, color: 'var(--ds-text-subtlest, #626F86)' }} />
       <div style={{ textAlign: 'center' }}>
-        <p style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <p style={{ margin: 0, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
           No issues with dates
         </p>
-        <p style={{ margin: '8px 0 0', fontSize: 14, color: 'var(--ds-text-subtle, #42526E)' }}>
+        <p style={{ margin: '8px 0 0', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #42526E)' }}>
           Add start or due dates to issues in {projectKey} to see them on the timeline.
         </p>
       </div>
@@ -268,10 +268,10 @@ export function TimelineEmptyState({ projectKey }: { projectKey: string }) {
       }}>
         <GanttChart style={{ width: 48, height: 48 }} />
       </div>
-      <h4 style={{ fontSize: 20, fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: '0 0 8px 0' }}>
+      <h4 style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 653, color: 'var(--ds-text, #292A2E)', margin: '0 0 8px 0' }}>
         Nothing scheduled yet
       </h4>
-      <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)', margin: 0, maxWidth: 400 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 400, color: 'var(--ds-text, #292A2E)', margin: 0, maxWidth: 400 }}>
         Work items in {projectKey} will appear here on the timeline. Add start or due dates to issues to plot them across the schedule.
       </p>
     </div>
@@ -310,7 +310,7 @@ export function ViewSettingsPanel({ showProgress, showReleases, onToggleProgress
       boxShadow: '0 8px 28px var(--ds-shadow-overlay, rgba(9,30,66,0.25))', padding: '12px 0',
       minWidth: 220, zIndex: 9999,
     }}>
-      <div style={{ padding: '0 12px 8px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.06em', fontFamily: 'var(--ds-font-family-body)' }}>
+      <div style={{ padding: '0 12px 8px', fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: '0.06em', fontFamily: 'var(--ds-font-family-body)' }}>
         View settings
       </div>
       <div style={{ height: 1, background: 'var(--ds-border, #DFE1E6)', margin: '0 0 8px' }} />
@@ -394,12 +394,12 @@ export function TimelineBarPopover({ issue, disabled, children }: {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
             <JiraIssueTypeIcon type={issue.issueType} size={14} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-code, monospace)', flexShrink: 0 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'var(--ds-font-family-code, monospace)', flexShrink: 0 }}>
               {issue.issueKey}
             </span>
           </div>
           <div style={{
-            fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: 1.4, marginBottom: 10,
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: 1.4, marginBottom: 10,
             overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
           }}>
             {issue.summary}
@@ -407,7 +407,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: issue.assigneeDisplayName ? 8 : 0 }}>
             {issue.status && <StatusPill value={issue.statusCategory} label={issue.status} />}
             {(issue.startDate || issue.dueDate) && (
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #626F86)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #626F86)' }}>
                 {[issue.startDate, issue.dueDate].filter(Boolean).map(d => formatDateCompact(d)).join(' → ')}
               </span>
             )}
@@ -415,7 +415,7 @@ export function TimelineBarPopover({ issue, disabled, children }: {
           {issue.assigneeDisplayName && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Avatar size="xsmall" src={resolveAvatarUrl(issue.assigneeDisplayName) ?? undefined} name={issue.assigneeDisplayName} />
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #626F86)' }}>{issue.assigneeDisplayName}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #626F86)' }}>{issue.assigneeDisplayName}</span>
             </div>
           )}
         </div>,

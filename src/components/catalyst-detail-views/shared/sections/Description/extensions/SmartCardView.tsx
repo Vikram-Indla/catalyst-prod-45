@@ -35,7 +35,7 @@ export function InlineCardView({ node }: NodeViewProps) {
             background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
             padding: '1px 6px',
             borderRadius: 3,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
           }}
         >
           {url || 'Link'}

@@ -219,7 +219,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
                 height: 28, padding: '0 8px 0 10px',
                 background: 'var(--ds-background-information, #E9F2FF)', color: 'var(--ds-link-pressed, #0747A6)',
                 border: '1px solid var(--ds-background-information, #E9F2FF)', borderRadius: 3,
-                fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
                 fontFamily: 'inherit',
               }}
             >
@@ -230,7 +230,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 14, height: 14, borderRadius: '50%',
                   background: 'rgba(7, 71, 166, 0.12)', color: 'var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))',
-                  fontSize: 11, lineHeight: 1,
+                  fontSize: 'var(--ds-font-size-100)', lineHeight: 1,
                 }}
               >×</span>
             </button>

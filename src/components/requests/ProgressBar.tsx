@@ -29,7 +29,7 @@ export function ProgressBar({ value, status, showLabel = true }: ProgressBarProp
         />
       </div>
       {showLabel && (
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)', minWidth: 28 }} className="tabular-nums">
+        <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #626F86)', minWidth: 28 }} className="tabular-nums">
           {clamped}%
         </span>
       )}

@@ -23,7 +23,7 @@ function Badge({ name }: { name: string }) {
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-full"
-      style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', background: `${cfg.color}15`, color: cfg.color }}
+      style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '3px 10px', background: `${cfg.color}15`, color: cfg.color }}
     >
       <span className="flex items-center justify-center rounded-full flex-shrink-0" style={{ width: 18, height: 18, background: cfg.color }}>
         <IconComp size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={2.5} />
@@ -36,7 +36,7 @@ function Badge({ name }: { name: string }) {
 export function TypeHierarchy({ featureLayerEnabled }: TypeHierarchyProps) {
   const connectorStyle: React.CSSProperties = {
     fontFamily: 'var(--cp-font-mono)',
-    fontSize: 13,
+    fontSize: 'var(--ds-font-size-300)',
     color: 'var(--divider)',
     userSelect: 'none',
   };

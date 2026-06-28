@@ -104,17 +104,17 @@ export function ArtefactPickerModal({
             textAlign: 'center',
             color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
           }}>
-            <p style={{ fontSize: 14, fontWeight: 500, margin: '0 0 8px' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, margin: '0 0 8px' }}>
               Not enough details
             </p>
-            <p style={{ fontSize: 14, margin: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', margin: 0 }}>
               Add a description or attach PDF documentation to this epic before generating stories.
             </p>
           </div>
         ) : (
           <>
             <p style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
               margin: '0 0 16px',
             }}>
@@ -131,13 +131,13 @@ export function ArtefactPickerModal({
                 isDisabled={!hasDescription}
                 onChange={() => setUseDescription(!useDescription)}
                 label={
-                  <span style={{ fontSize: 14 }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)' }}>
                     Epic description
                     {!hasDescription && (
                       <span style={{
                         color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                         marginLeft: 8,
-                        fontSize: 12,
+                        fontSize: 'var(--ds-font-size-200)',
                       }}>
                         (empty)
                       </span>
@@ -155,7 +155,7 @@ export function ArtefactPickerModal({
             ) : attachments.length > 0 ? (
               <div style={{ padding: '8px 0' }}>
                 <div style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 600,
                   color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                   textTransform: 'uppercase' as const,
@@ -173,13 +173,13 @@ export function ArtefactPickerModal({
                       isChecked={selectedAttachments.has(att.id)}
                       onChange={() => toggleAttachment(att.id)}
                       label={
-                        <span style={{ fontSize: 14 }}>
+                        <span style={{ fontSize: 'var(--ds-font-size-400)' }}>
                           {att.file_name}
                           {att.file_size != null && (
                             <span style={{
                               color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                               marginLeft: 8,
-                              fontSize: 12,
+                              fontSize: 'var(--ds-font-size-200)',
                             }}>
                               ({formatSize(att.file_size)})
                             </span>
@@ -194,7 +194,7 @@ export function ArtefactPickerModal({
               <div style={{
                 padding: '8px 0',
                 color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
               }}>
                 No PDF attachments on this epic.
               </div>

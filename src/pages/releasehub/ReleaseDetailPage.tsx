@@ -69,7 +69,7 @@ function HealthPill({ health }: { health: string | null }) {
     done: { label: 'Done', fg: 'var(--ds-text-success, #216E4E)', bg: 'var(--ds-background-success, #DCFFF1)' },
   };
   const m = map[health] ?? { label: health, fg: T.subtle, bg: T.sunken };
-  return <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3 }}>{m.label}</span>;
+  return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: m.fg, background: m.bg, padding: '0 8px', borderRadius: 3 }}>{m.label}</span>;
 }
 
 function Tracker({ status, stages }: { status: string; stages: { key: string; label: string }[] }) {
@@ -90,10 +90,10 @@ function Tracker({ status, stages }: { status: string; stages: { key: string; la
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, minWidth: 72 }}>
               <span style={{ width: 24, height: 24, borderRadius: '50%', background: circleBg, border: `2px solid ${circleBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {done ? <Check size={14} style={{ color: T.inverse }} /> : (
-                  <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: current ? T.inverse : T.subtlest }}>{i + 1}</span>
+                  <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: current ? T.inverse : T.subtlest }}>{i + 1}</span>
                 )}
               </span>
-              <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: current ? 600 : 400, color: labelColor, textAlign: 'center' }}>{s.label}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: current ? 600 : 400, color: labelColor, textAlign: 'center' }}>{s.label}</span>
             </div>
           </React.Fragment>
         );
@@ -105,8 +105,8 @@ function Tracker({ status, stages }: { status: string; stages: { key: string; la
 function MetaItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, margin: 0 }}>{label}</p>
-      <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.text, margin: '4px 0 0' }}>{value ?? '—'}</p>
+      <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, margin: 0 }}>{label}</p>
+      <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.text, margin: '4px 0 0' }}>{value ?? '—'}</p>
     </div>
   );
 }
@@ -127,7 +127,7 @@ function CatyRiskAdvisory({ r, changeCount }: { r: any; changeCount: number }) {
   const level = elevated ? 'Elevated risk' : moderate ? 'Moderate risk' : 'Low risk';
   const text = elevated ? `${level} — ${reasons.join('; ')}.` : moderate ? `${level} — readiness is ${r.readiness_pct}%.` : `${level} — no blocking signals detected.`;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 12, color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', border: '1px solid var(--ds-border-discovery, #B8ACF6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-discovery, #5E4DB2)', background: 'var(--ds-background-discovery, #F3F0FF)', border: '1px solid var(--ds-border-discovery, #B8ACF6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
       <Sparkles size={14} style={{ color: 'var(--ds-text-discovery, #5E4DB2)' }} />
       Caty: {text}
     </div>
@@ -185,8 +185,8 @@ export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { 
   if (error || !r) {
     return (
       <div style={{ padding: 48, textAlign: 'center', background: T.surface, minHeight: '100%' }}>
-        <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.subtle }}>Release not found.</p>
-        <button onClick={() => navigate('/release-hub/releases-management')} style={{ marginTop: 8, fontFamily: RH.fontBody, fontSize: 13, color: T.link, background: 'transparent', border: 'none', cursor: 'pointer' }}>← Back to releases</button>
+        <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.subtle }}>Release not found.</p>
+        <button onClick={() => navigate('/release-hub/releases-management')} style={{ marginTop: 8, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.link, background: 'transparent', border: 'none', cursor: 'pointer' }}>← Back to releases</button>
       </div>
     );
   }
@@ -212,17 +212,17 @@ export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 24, fontWeight: 600, color: T.text, margin: 0 }}>
+            <h1 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: T.text, margin: 0 }}>
               {r.name}{r.version ? <span style={{ color: T.subtlest, fontWeight: 400 }}> · {r.version}</span> : null}
             </h1>
             {statusLabel ? (
-              <span style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 700, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
+              <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 700, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: '0 8px', borderRadius: 3 }}>{statusLabel}</span>
             ) : (
               <StatusLozenge status={r.status} />
             )}
             <HealthPill health={r.health} />
           </div>
-          {r.jira_key && <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 12, color: T.subtlest }}>{r.jira_key}</span>}
+          {r.jira_key && <span style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-200)', color: T.subtlest }}>{r.jira_key}</span>}
         </div>
         {/* Action buttons (role-gated). Schedule / Request sign-off run real,
             lifecycle-guarded transitions; Link change routes to Change Records. */}
@@ -238,7 +238,7 @@ export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { 
               onClick={() => canManage && a.onClick()}
               disabled={!canManage || updateStatus.isPending}
               title={canManage ? undefined : PERMISSION_DENIED_TOOLTIP}
-              style={{ height: 32, padding: '0 12px', borderRadius: 6, fontFamily: RH.fontBody, fontSize: 14, fontWeight: 500, cursor: canManage && !updateStatus.isPending ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, border: a.primary ? 'none' : `1px solid ${T.border}`, background: a.primary ? T.brand : T.card, color: a.primary ? T.inverse : T.text }}
+              style={{ height: 32, padding: '0 12px', borderRadius: 6, fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', fontWeight: 500, cursor: canManage && !updateStatus.isPending ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.5, border: a.primary ? 'none' : `1px solid ${T.border}`, background: a.primary ? T.brand : T.card, color: a.primary ? T.inverse : T.text }}
             >
               {a.label}
             </button>
@@ -288,8 +288,8 @@ export function ReleaseDetailContent({ releaseId, hideChromeHeader = false }: { 
             </div>
             {r.description && (
               <div style={{ marginTop: 24 }}>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 11, fontWeight: 600, color: T.subtlest, margin: 0 }}>Description</p>
-                <p style={{ fontFamily: RH.fontBody, fontSize: 14, color: T.text, margin: '4px 0 0', whiteSpace: 'pre-wrap' }}>{r.description}</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: T.subtlest, margin: 0 }}>Description</p>
+                <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-400)', color: T.text, margin: '4px 0 0', whiteSpace: 'pre-wrap' }}>{r.description}</p>
               </div>
             )}
           </div>

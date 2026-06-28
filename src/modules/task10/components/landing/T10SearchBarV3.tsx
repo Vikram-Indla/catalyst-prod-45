@@ -62,7 +62,7 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
           width: '100%',
           height: '48px',
           padding: '0 16px 0 48px',
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--ds-text, #0f172a)',
           backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: '1px solid var(--ds-border, #DFE1E6)',

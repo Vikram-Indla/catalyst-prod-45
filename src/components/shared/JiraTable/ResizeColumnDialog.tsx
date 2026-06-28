@@ -224,7 +224,7 @@ export function ResizeColumnDialog({
     >
       <div
         style={{
-          fontSize: 12,
+          fontSize: 'var(--ds-font-size-200)',
           fontWeight: 653,
           color: 'var(--ds-text, #292A2E)',
           marginBottom: 8,
@@ -259,7 +259,7 @@ export function ResizeColumnDialog({
             color: 'var(--ds-text-subtle, #44546F)',
             padding: '4px 8px',
             cursor: 'pointer',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             borderRadius: 3,
           }}
         >
@@ -274,7 +274,7 @@ export function ResizeColumnDialog({
             color: 'var(--ds-text-inverse, #FFFFFF)',
             padding: '4px 12px',
             cursor: 'pointer',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 500,
             borderRadius: 3,
           }}

@@ -202,7 +202,7 @@ function SortableRow({
             { label: 'Completed', value: 'completed' },
           ]}
           onChange={(opt) => opt && onStatusChange(assignment, opt.value)}
-          styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 130, fontSize: 12 }) }}
+          styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 130, fontSize: 'var(--ds-font-size-200)' }) }}
         />
       </td>
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
@@ -294,7 +294,7 @@ function SortableRow({
               ...vendors.map(v => ({ label: v.name, value: v.id })),
             ]}
             onChange={(opt) => opt && onVendorChange(assignment, opt.value)}
-            styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 110, fontSize: 12 }) }}
+            styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 110, fontSize: 'var(--ds-font-size-200)' }) }}
           />
         ) : (
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>—</span>
@@ -315,7 +315,7 @@ function SortableRow({
               value={typeOpts.find(o => o.value === curType) || null}
               options={typeOpts}
               onChange={(opt) => opt && onAssignmentTypeChange(assignment, opt.value)}
-              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 120, fontSize: 12 }) }}
+              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 120, fontSize: 'var(--ds-font-size-200)' }) }}
             />
           );
         })()}
@@ -341,7 +341,7 @@ function SortableRow({
                 value={payOpts.find(o => o.value === curPay) || null}
                 options={payOpts}
                 onChange={(opt) => opt && onPaymentStatusChange(assignment, opt.value)}
-                styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 100, fontSize: 12 }) }}
+                styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 100, fontSize: 'var(--ds-font-size-200)' }) }}
               />
             );
           })()
@@ -775,7 +775,7 @@ export default function ResourceAssignmentsPage() {
         <div style={{ flex: 1 }}>
           <h1
             style={{
-              fontSize: 24,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 653,
               lineHeight: '28px',
               color: 'var(--ds-text, #292A2E)',
@@ -812,7 +812,7 @@ export default function ResourceAssignmentsPage() {
       </div>
       <p
         style={{
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 400,
           color: 'var(--ds-text-subtle, #505258)',
           margin: '0 0 24px 0',
@@ -884,7 +884,7 @@ export default function ResourceAssignmentsPage() {
                             scope="col"
                             style={{
                               textAlign: col.align || 'left',
-                              fontSize: 12,
+                              fontSize: 'var(--ds-font-size-200)',
                               fontWeight: 653,
                               color: 'var(--ds-text-subtle, #505258)',
                               padding: '8px 12px 8px 0',
@@ -955,7 +955,7 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -963,7 +963,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Description</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Description</label>
               <Textfield
                 value={formData.description}
                 onChange={(e) => setFormData(f => ({ ...f, description: (e.target as HTMLInputElement).value }))}
@@ -971,7 +971,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Type</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Type</label>
               {(() => {
                 const typeOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -1011,7 +1011,7 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -1019,7 +1019,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Project</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Project</label>
               {(() => {
                 const projectOpts = [
                   { label: 'No project', value: '__none__' },
@@ -1036,7 +1036,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Status</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Status</label>
               {(() => {
                 const statusOpts = [
                   { label: 'Yet to Start', value: 'yet_to_start' },
@@ -1055,7 +1055,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Budget</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Budget</label>
               <Textfield
                 type="number"
                 value={formData.budget}
@@ -1064,7 +1064,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Vendor</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Vendor</label>
               {(() => {
                 const vendorOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -1081,7 +1081,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Type</label>
+              <label style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Type</label>
               {(() => {
                 const typeOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -1187,7 +1187,7 @@ export default function ResourceAssignmentsPage() {
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
                 style={{
-                  padding: '8px 16px', borderRadius: '4px', fontSize: '14px', fontWeight: 500,
+                  padding: '8px 16px', borderRadius: '4px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
                   background: 'var(--ds-background-danger-bold, #CA3521)', color: 'var(--ds-text-inverse, #FFFFFF)',
                   border: 'none', cursor: isDeleting ? 'not-allowed' : 'pointer',
                   opacity: isDeleting ? 0.7 : 1,

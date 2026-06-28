@@ -90,7 +90,7 @@ function Header({ children }: { children: React.ReactNode }) {
     <div
       style={{
         padding: '6px 12px',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         color: 'var(--cv2-text-muted)',
         textTransform: 'none',
       }}
@@ -125,7 +125,7 @@ function MenuItem({
         border: 'none',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         transition: 'background var(--cv2-transition-fast)',
       }}
       onMouseEnter={e => {

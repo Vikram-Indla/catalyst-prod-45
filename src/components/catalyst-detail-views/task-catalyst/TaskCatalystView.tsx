@@ -544,7 +544,7 @@ export default function TaskCatalystView({
               style={{
                 margin: '0 0 8px',
                 padding: '0 16px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 lineHeight: '20px',
                 color: 'var(--ds-text-subtle, #505258)',
@@ -565,7 +565,7 @@ export default function TaskCatalystView({
               style={{
                 margin: '0 0 8px',
                 padding: '0 16px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 500,
                 lineHeight: '20px',
                 color: 'var(--ds-text-subtle, #505258)',

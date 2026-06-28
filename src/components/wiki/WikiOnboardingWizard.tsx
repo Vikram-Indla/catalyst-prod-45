@@ -66,15 +66,15 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
         <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--cp-blue)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           <Sparkles size={28} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
-        <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 700, marginBottom: 6, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Welcome to WikiHub</h2>
-        <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', lineHeight: 1.5 }}>Let's personalize your experience. What's your role?</p>
+        <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, marginBottom: 6, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Welcome to WikiHub</h2>
+        <p style={{ fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', lineHeight: 1.5 }}>Let's personalize your experience. What's your role?</p>
       </div>
       <div style={{ display: 'grid', gap: 6 }}>
         {ROLES.map(r => (
           <button key={r} onClick={() => setRole(r)} style={{
             padding: '12px 16px', borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
             border: `0.75px solid ${role === r ? 'var(--cp-blue)' : ('var(--cp-border-subtle, rgba(0,0,0,0.06))')}`,
-            cursor: 'pointer', textAlign: 'left', fontSize: 13, fontWeight: role === r ? 600 : 400,
+            cursor: 'pointer', textAlign: 'left', fontSize: 'var(--ds-font-size-300)', fontWeight: role === r ? 600 : 400,
             color: role === r ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'), transition: 'all 80ms',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
@@ -87,8 +87,8 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
 
     // Step 2: Domains
     <div key="step2">
-      <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Choose Your Domains</h2>
-      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Select domains you want to follow.</p>
+      <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Choose Your Domains</h2>
+      <p style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Select domains you want to follow.</p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
         {DOMAINS.map(d => {
           const active = selectedDomains.includes(d.code);
@@ -96,10 +96,10 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
             <button key={d.code} onClick={() => toggleDomain(d.code)} style={{
               padding: '10px 12px', borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
               border: `0.75px solid ${active ? 'var(--cp-blue)' : ('var(--cp-border-subtle, rgba(0,0,0,0.06))')}`,
-              cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
+              cursor: 'pointer', textAlign: 'left', fontSize: 'var(--ds-font-size-200)', transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bd-zone)'), color: active ? 'var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)') }}>{d.code}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bd-zone)'), color: active ? 'var(--ds-link-pressed, var(--ds-link-pressed, #0747A6))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)') }}>{d.code}</span>
               <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
               {active && <Check size={12} style={{ color: 'var(--cp-blue)' }} />}
             </button>
@@ -110,8 +110,8 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
 
     // Step 3: Learning Paths
     <div key="step3">
-      <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Start a Learning Path</h2>
-      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
+      <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-500)', fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Start a Learning Path</h2>
+      <p style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
       <div style={{ display: 'grid', gap: 8 }}>
         {(paths as any[]).slice(0, 3).map((p: any) => {
           const diffColor = DIFF_COLORS[p.difficulty] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
@@ -127,15 +127,15 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <GraduationCap size={16} style={{ color: 'var(--cp-blue)' }} />
                 <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12.5, fontWeight: 600, flex: 1, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>{p.title}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
               </div>
-              <p style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', lineHeight: 1.4 }}>{p.description}</p>
-              <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-4)', marginTop: 6 }}>{p.estimated_hours}h · {p.article_count} articles</div>
+              <p style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', lineHeight: 1.4 }}>{p.description}</p>
+              <div style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-4)', marginTop: 6 }}>{p.estimated_hours}h · {p.article_count} articles</div>
             </div>
           );
         })}
         {paths.length === 0 && (
-          <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-4)', textAlign: 'center', padding: 20 }}>No learning paths available yet.</p>
+          <p style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-4)', textAlign: 'center', padding: 20 }}>No learning paths available yet.</p>
         )}
       </div>
     </div>,
@@ -170,12 +170,12 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28 }}>
           {step > 0 ? (
-            <button onClick={() => setStep(s => s - 1)} style={{ background: 'none', border: 'none', fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--fg-3)', cursor: 'pointer', fontWeight: 500 }}>Back</button>
+            <button onClick={() => setStep(s => s - 1)} style={{ background: 'none', border: 'none', fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--fg-3)', cursor: 'pointer', fontWeight: 500 }}>Back</button>
           ) : <span />}
           {step < 2 ? (
             <button onClick={() => setStep(s => s + 1)} disabled={!canNext} style={{
               padding: '8px 20px', borderRadius: 8, background: canNext ? 'var(--cp-blue)' : 'var(--fg-4)',
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 12, fontWeight: 600,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
               cursor: canNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4,
             }}>
               Next <ChevronRight size={13} />
@@ -183,7 +183,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           ) : (
             <button onClick={() => completeOnboarding.mutate()} style={{
               padding: '8px 24px', borderRadius: 8, background: 'var(--cp-blue)',
-              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, cursor: 'pointer',
             }}>
               Get Started
             </button>

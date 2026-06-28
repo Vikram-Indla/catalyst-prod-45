@@ -224,14 +224,14 @@ export function AtlaskitAvatar({
         }}
       >
         {fullName && (
-          <div style={{ fontWeight: 500, fontSize: '14px', lineHeight: '20px' }}>
+          <div style={{ fontWeight: 500, fontSize: 'var(--ds-font-size-400)', lineHeight: '20px' }}>
             {fullName}
           </div>
         )}
         {status && (
           <div
             style={{
-              fontSize: '12px',
+              fontSize: 'var(--ds-font-size-200)',
               lineHeight: '16px',
               color: 'var(--ds-text-subtlest, #6B778C)',
             }}

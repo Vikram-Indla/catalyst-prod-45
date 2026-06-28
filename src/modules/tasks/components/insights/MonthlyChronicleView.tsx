@@ -29,7 +29,7 @@ function SectionHeader({ icon: Icon, title, color }: { icon: any; title: string;
 // Empty state component
 function EmptyState({ title }: { title: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-slate-50 dark:bg-[var(--ds-text, #172B4D)] rounded-lg">
+    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-slate-50 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] rounded-lg">
       <Inbox className="w-8 h-8 mb-2" />
       <p className="text-sm">No {title} this month</p>
     </div>
@@ -232,7 +232,7 @@ export function MonthlyChronicleView() {
           </div>
 
           {/* Chronicle Footer */}
-          <div className="flex items-center justify-between px-8 py-5 border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[var(--ds-text, #172B4D)]">
+          <div className="flex items-center justify-between px-8 py-5 border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]">
             <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
               Data as of {format(new Date(), 'MMMM d, yyyy h:mm a')}
             </span>

@@ -368,7 +368,7 @@ export function MessageStream({
             color: 'var(--ds-text-inverse, #FFFFFF)',
             border: 'none',
             cursor: 'pointer',
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
             boxShadow: '0 2px 8px var(--ds-shadow-raised, rgba(9,30,66,0.20))',
           }}
@@ -466,7 +466,7 @@ export function MessageStream({
         ),
       )}
       {typingUserName && (
-        <div style={{ padding: '8px 12px', fontSize: '12px', color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic' }}>
+        <div style={{ padding: '8px 12px', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic' }}>
           {typingUserName} is typing…
         </div>
       )}

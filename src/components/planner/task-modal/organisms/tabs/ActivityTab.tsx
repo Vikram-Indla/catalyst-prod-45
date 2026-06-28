@@ -55,7 +55,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({
               backgroundColor: activeFilter === id ? COLORS.surfaceCard : 'transparent',
               border: 'none',
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               color: activeFilter === id ? COLORS.textPrimary : COLORS.textMuted,
               cursor: 'pointer',

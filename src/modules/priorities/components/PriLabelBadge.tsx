@@ -22,7 +22,7 @@ export function PriLabelBadge({ label, onRemove }: PriLabelBadgeProps) {
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
-            color: 'inherit', padding: 0, fontSize: 11, lineHeight: 1,
+            color: 'inherit', padding: 0, fontSize: 'var(--ds-font-size-100)', lineHeight: 1,
           }}
           aria-label={`Remove ${label.name} label`}
         >

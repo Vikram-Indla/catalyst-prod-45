@@ -82,13 +82,13 @@ export function RoadmapSidePanel({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase',
+    fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase',
     letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)',
   };
 
   const fieldRowStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    height: 32, fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
+    height: 32, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
   };
 
   return (
@@ -123,11 +123,11 @@ export function RoadmapSidePanel({
             <X size={14} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-4)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-4)' }}>
               {idea.ideaKey}
             </span>
             <div style={{
-              fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)',
+              fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {idea.title}
@@ -135,7 +135,7 @@ export function RoadmapSidePanel({
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {idea.isCommitted && (
-              <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-success)' }}>Committed</span>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--sem-success)' }}>Committed</span>
             )}
             <button
               onClick={() => onToggleCommitted(idea)}
@@ -166,7 +166,7 @@ export function RoadmapSidePanel({
                   return (
                     <button key={q} onClick={() => onQuarterChange(idea, q)} style={{
                       flex: 1, height: 32, borderRadius: 6, cursor: 'pointer',
-                      fontSize: 12, fontWeight: 700, fontFamily: 'var(--cp-font-body)',
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 700, fontFamily: 'var(--cp-font-body)',
                       border: active ? 'none' : '1px solid var(--divider)',
                       background: active ? qs.bg : 'var(--bg-app)',
                       color: active ? qs.color : 'var(--fg-3)',
@@ -185,7 +185,7 @@ export function RoadmapSidePanel({
             isConverted(idea.status) ? (
               <div style={{
                 padding: '10px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)',
-                color: 'var(--bg-app)', fontSize: 13, fontWeight: 650, textAlign: 'center',
+                color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-300)', fontWeight: 650, textAlign: 'center',
                 border: '1px solid var(--ds-background-success, #B7EBD1)',
               }}>
                 ✓ Already converted to Request
@@ -197,7 +197,7 @@ export function RoadmapSidePanel({
                   width: '100%', height: 50, borderRadius: 6, border: 'none',
                   background: 'var(--sem-success)', color: 'var(--bg-app)', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  fontSize: 13, fontWeight: 650, fontFamily: 'var(--cp-font-body)',
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 650, fontFamily: 'var(--cp-font-body)',
                   transition: 'all 150ms',
                 }}
               >
@@ -219,7 +219,7 @@ export function RoadmapSidePanel({
                 return (
                 <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 8, height: 8, borderRadius: 4, background: DOT_COLORS[m.key] || m.color, flexShrink: 0 }} />
-                  <span style={{ width: 100, fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>
+                  <span style={{ width: 100, fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--fg-2)' }}>
                     {m.fullLabel}
                   </span>
                   <input
@@ -228,7 +228,7 @@ export function RoadmapSidePanel({
                     onChange={e => setMilestones(prev => ({ ...prev, [m.key]: e.target.value || null }))}
                     style={{
                       flex: 1, height: 50, border: '1px solid var(--divider)', borderRadius: 4,
-                      padding: '0 10px', fontSize: 12, fontFamily: 'var(--cp-font-body)',
+                      padding: '0 10px', fontSize: 'var(--ds-font-size-200)', fontFamily: 'var(--cp-font-body)',
                       color: milestones[m.key] ? 'var(--fg-2)' : 'var(--fg-4)', outline: 'none',
                       transition: 'border-color 150ms',
                     }}
@@ -242,7 +242,7 @@ export function RoadmapSidePanel({
                         width: 24, height: 24, borderRadius: 4, border: '1px solid var(--divider)',
                         background: 'var(--bg-app)', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'var(--fg-4)', fontSize: 12, transition: 'all 150ms',
+                        color: 'var(--fg-4)', fontSize: 'var(--ds-font-size-200)', transition: 'all 150ms',
                       }}
                     >✕</button>
                   )}
@@ -257,15 +257,15 @@ export function RoadmapSidePanel({
             <div style={{ ...labelStyle, marginBottom: 10 }}>DETAILS</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <div style={fieldRowStyle}>
-                <span style={{ color: 'var(--fg-3)', fontSize: 12 }}>Theme</span>
+                <span style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-200)' }}>Theme</span>
                 <span>{idea.theme ?? '—'}</span>
               </div>
               <div style={fieldRowStyle}>
-                <span style={{ color: 'var(--fg-3)', fontSize: 12 }}>Priority</span>
+                <span style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-200)' }}>Priority</span>
                 <span>{idea.priority ?? '—'}</span>
               </div>
               <div style={fieldRowStyle}>
-                <span style={{ color: 'var(--fg-3)', fontSize: 12 }}>Status</span>
+                <span style={{ color: 'var(--fg-3)', fontSize: 'var(--ds-font-size-200)' }}>Status</span>
                 <span>{idea.status}</span>
               </div>
             </div>
@@ -280,7 +280,7 @@ export function RoadmapSidePanel({
               <div>
                 <div style={{ ...labelStyle, marginBottom: 6 }}>DESCRIPTION</div>
                 <div style={{
-                  fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5,
+                  fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-2)', lineHeight: 1.5,
                   background: 'var(--bg-1)', borderRadius: 6, padding: 12,
                   whiteSpace: 'pre-wrap',
                 }}>
@@ -303,13 +303,13 @@ export function RoadmapSidePanel({
               flex: 1, height: 50, borderRadius: 6, border: 'none',
               background: isSaving ? 'var(--fg-4)' : 'var(--cp-blue)', color: 'var(--bg-app)',
               cursor: isSaving ? 'default' : 'pointer',
-              fontSize: 13, fontWeight: 650, fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 650, fontFamily: 'var(--cp-font-body)',
               transition: 'background 150ms',
             }}
           >
             {isSaving ? 'Saving…' : 'Save Changes'}
           </button>
-          <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>⌘S to save</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)' }}>⌘S to save</span>
         </div>
       </div>
     </div>

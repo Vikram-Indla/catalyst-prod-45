@@ -112,17 +112,17 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   if (!open) return null;
 
   const labelStyle: React.CSSProperties = {
-    fontSize: '11px', fontWeight: 600, color: 'var(--cp-text-secondary, #475569)',
+    fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: 'var(--cp-text-secondary, #475569)',
     textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block',
     fontFamily: 'var(--cp-font-body)',
   };
   const inputStyle: React.CSSProperties = {
     width: '100%', border: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRadius: '8px',
-    padding: '10px 12px', fontSize: '14px', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
+    padding: '10px 12px', fontSize: 'var(--ds-font-size-400)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
     fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   };
   const errorStyle: React.CSSProperties = {
-    fontSize: '12px', color: 'var(--ds-text-danger, #EF4444)', marginTop: '4px',
+    fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-danger, #EF4444)', marginTop: '4px',
   };
 
   return (
@@ -142,7 +142,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
             Create Innovation Drive
           </h3>
           <button
@@ -235,7 +235,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '6px 16px', borderRadius: '20px', cursor: 'pointer',
-                      fontSize: '13px', fontWeight: isSelected ? 600 : 500,
+                      fontSize: 'var(--ds-font-size-300)', fontWeight: isSelected ? 600 : 500,
                       border: isSelected
                         ? (isActive ? '1.5px solid var(--cp-success, #16A34A)' : `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`)
                         : `1.5px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
@@ -309,7 +309,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   border: 'none', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   cursor: targetCount <= 1 ? 'not-allowed' : 'pointer',
                   color: targetCount <= 1 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
-                  fontSize: '18px', fontWeight: 500,
+                  fontSize: 'var(--ds-font-size-600)', fontWeight: 500,
                 }}
                 disabled={targetCount <= 1}
               >
@@ -329,7 +329,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '48px', height: '50px',
                   borderLeft: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRight: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`,
                   borderTop: 'none', borderBottom: 'none',
-                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
+                  textAlign: 'center', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
                   fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 }}
               />
@@ -341,7 +341,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   border: 'none', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   cursor: targetCount >= 50 ? 'not-allowed' : 'pointer',
                   color: targetCount >= 50 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
-                  fontSize: '18px', fontWeight: 500,
+                  fontSize: 'var(--ds-font-size-600)', fontWeight: 500,
                 }}
                 disabled={targetCount >= 50}
               >
@@ -361,7 +361,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             type="button"
             onClick={onClose}
             style={{
-              padding: '10px 20px', fontSize: '14px', fontWeight: 500,
+              padding: '10px 20px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               color: 'var(--cp-text-secondary, #475569)', background: 'transparent', border: 'none',
               borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
@@ -375,7 +375,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             onClick={handleSubmit}
             disabled={!isValid || createMutation.isPending}
             style={{
-              padding: '10px 24px', fontSize: '14px', fontWeight: 600,
+              padding: '10px 24px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               background: (!isValid || createMutation.isPending) ? 'var(--ds-background-information-bold, var(--ds-link, #0C66E4))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
               border: 'none', borderRadius: '8px',

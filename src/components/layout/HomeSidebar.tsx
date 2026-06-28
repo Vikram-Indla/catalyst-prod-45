@@ -192,7 +192,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
           style={{
             color: token('color.text', 'var(--ds-text, #172B4D)'),
             fontWeight: 400,
-            fontSize: '13px',
+            fontSize: 'var(--ds-font-size-300)',
             lineHeight: '18px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -556,7 +556,7 @@ export default function HomeSidebar({
             {
               id: 'recent-loading-label',
               title: (
-                <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
+                <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 'var(--ds-font-size-100)' }}>
                   Loading recent pages...
                 </span>
               ),
@@ -582,7 +582,7 @@ export default function HomeSidebar({
           items: [{
             id: 'recent-placeholder',
             title: (
-              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '12px' }}>
+              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 'var(--ds-font-size-200)' }}>
                 No recent pages
               </span>
             ),

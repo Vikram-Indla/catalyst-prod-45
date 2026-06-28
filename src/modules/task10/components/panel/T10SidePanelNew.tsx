@@ -299,7 +299,7 @@ export function T10SidePanelNew({
                 borderRadius: 8,
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 cursor: 'pointer',
-                fontSize: 18,
+                fontSize: 'var(--ds-font-size-600)',
                 fontFamily: 'system-ui, sans-serif',
               }}
             >
@@ -308,7 +308,7 @@ export function T10SidePanelNew({
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
@@ -327,7 +327,7 @@ export function T10SidePanelNew({
                   height: 24,
                   background: 'var(--ds-surface, rgba(255, 255, 255, 0.2))',
                   borderRadius: 6,
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 700,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 }}
@@ -345,7 +345,7 @@ export function T10SidePanelNew({
                   height: 24,
                   background: 'var(--ds-surface, rgba(255, 255, 255, 0.2))',
                   borderRadius: 6,
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 700,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 }}
@@ -424,7 +424,7 @@ export function T10SidePanelNew({
             style={{
               flex: 1,
               padding: '12px 14px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 600,
               background: 'transparent',
               border: 'none',
@@ -444,7 +444,7 @@ export function T10SidePanelNew({
             style={{
               flex: 1,
               padding: '12px 14px',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               fontWeight: 600,
               background: 'transparent',
               border: 'none',
@@ -578,7 +578,7 @@ export function T10SidePanelNew({
             flexShrink: 0,
           }}
         >
-          <span style={{ fontSize: 13, color: 'var(--t10-text-secondary)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--t10-text-secondary)' }}>
             Created {formatT10RelativeTime(item.created_at)}
           </span>
           <button

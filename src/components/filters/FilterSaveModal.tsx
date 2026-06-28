@@ -57,7 +57,7 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
     <label style={{
       display: 'block',
       marginBottom: 4,
-      fontSize: 12,
+      fontSize: 'var(--ds-font-size-200)',
       fontWeight: token('font.weight.semibold'),
       color: token('color.text.subtle'),
     }}>
@@ -216,7 +216,7 @@ export function FilterSaveModal({
               padding: '8px 12px',
               background: token('color.background.information', 'var(--ds-background-selected, #E9F2FF)'),
               borderRadius: 3,
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: token('color.text'),
             }}>
               <span style={{ fontWeight: token('font.weight.semibold') }}>
@@ -238,7 +238,7 @@ export function FilterSaveModal({
               minimumRows={3}
               maxHeight="120px"
               spellCheck={false}
-              style={{ fontFamily: 'var(--ds-font-family-monospace, monospace)', fontSize: 12 }}
+              style={{ fontFamily: 'var(--ds-font-family-monospace, monospace)', fontSize: 'var(--ds-font-size-200)' }}
             />
           </div>
 
@@ -292,7 +292,7 @@ export function FilterSaveModal({
           {scope !== 'private' && (
             <div>
               <FieldLabel>Hub visibility</FieldLabel>
-              <p style={{ margin: '0 0 8px', fontSize: 12, color: token('color.text.subtlest') }}>
+              <p style={{ margin: '0 0 8px', fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>
                 "This hub only" keeps the filter within the current project or product hub.
                 "Both hubs" makes it available as a shared filter across Project Hub and Product Hub.
               </p>

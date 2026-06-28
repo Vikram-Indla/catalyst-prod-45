@@ -88,7 +88,7 @@ export function PriorityIndicator({
   priority: raw,
   showLabel = true,
   isDark = false,
-  fontSize = 13,
+  fontSize={'var(--ds-font-size-300)'},
   barWidth,
   barHeight,
 }: PriorityIndicatorProps) {

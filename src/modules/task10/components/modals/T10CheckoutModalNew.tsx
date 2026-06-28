@@ -163,10 +163,10 @@ export function T10CheckoutModalNew({
             >
               <CheckCircle size={32} />
             </div>
-            <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '0 0 8px' }}>
+            <h3 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: '0 0 8px' }}>
               Checkout Complete!
             </h3>
-            <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: 0 }}>
+            <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, #626F86)', margin: 0 }}>
               {selectedIds.length} items have been checked out.
               {startNextWeek && ' A new week has been started.'}
             </p>
@@ -198,10 +198,10 @@ export function T10CheckoutModalNew({
                 <Zap size={20} />
               </div>
               <div style={{ flex: 1 }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, margin: '0 0 4px' }}>
+                <h2 style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 600, margin: '0 0 4px' }}>
                   Checkout
                 </h2>
-                <p style={{ fontSize: '14px', opacity: 0.9, margin: 0 }}>
+                <p style={{ fontSize: 'var(--ds-font-size-400)', opacity: 0.9, margin: 0 }}>
                   Select items to carry over from this week
                 </p>
               </div>
@@ -227,7 +227,7 @@ export function T10CheckoutModalNew({
 
             {/* Body */}
             <div style={{ padding: '24px' }}>
-              <p style={{ fontSize: '15px', color: 'var(--ds-text-subtle, #44546F)', marginBottom: '16px' }}>
+              <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #44546F)', marginBottom: '16px' }}>
                 <strong style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>{completedItems.length}</strong> items completed this week
               </p>
 
@@ -280,7 +280,7 @@ export function T10CheckoutModalNew({
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '12px',
+                          fontSize: 'var(--ds-font-size-200)',
                           fontWeight: 600,
                           color: 'var(--ds-text-subtlest, #626F86)',
                           backgroundColor: 'var(--ds-border, #e5e7eb)',
@@ -292,7 +292,7 @@ export function T10CheckoutModalNew({
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div
                           style={{
-                            fontSize: '14px',
+                            fontSize: 'var(--ds-font-size-400)',
                             fontWeight: 500,
                             color: 'var(--ds-text, #172B4D)',
                             overflow: 'hidden',
@@ -306,7 +306,7 @@ export function T10CheckoutModalNew({
                           <div
                             style={{
                               fontFamily: "'SF Mono', Monaco, monospace",
-                              fontSize: '11px',
+                              fontSize: 'var(--ds-font-size-100)',
                               color: 'var(--ds-text-subtlest, #626F86)',
                             }}
                           >
@@ -353,7 +353,7 @@ export function T10CheckoutModalNew({
                     >
                       {carryOver && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                     </div>
-                    <span style={{ fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
+                    <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #44546F)' }}>
                       Carry over incomplete items to next week{' '}
                       <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>({incompleteCount} items)</span>
                     </span>
@@ -383,7 +383,7 @@ export function T10CheckoutModalNew({
                   >
                     {startNextWeek && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                   </div>
-                  <span style={{ fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #44546F)' }}>
                     Start next week after checkout
                   </span>
                 </label>
@@ -406,7 +406,7 @@ export function T10CheckoutModalNew({
                 onClick={handleClose}
                 style={{
                   padding: '10px 20px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--ds-text-subtle, #44546F)',
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
@@ -426,7 +426,7 @@ export function T10CheckoutModalNew({
                   alignItems: 'center',
                   gap: '8px',
                   padding: '10px 20px',
-                  fontSize: '14px',
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 500,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',

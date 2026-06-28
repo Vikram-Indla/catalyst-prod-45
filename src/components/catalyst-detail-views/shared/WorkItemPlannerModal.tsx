@@ -589,7 +589,7 @@ export function WorkItemPlannerModal({
               <span
                 key={n}
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: stepIndex === n ? 600 : 400,
                   color: stepIndex > n
                     ? token('color.text.success', 'var(--ds-text-success, #006644)')
@@ -601,7 +601,7 @@ export function WorkItemPlannerModal({
               >
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  width: 18, height: 18, borderRadius: '50%', fontSize: 10, fontWeight: 600,
+                  width: 18, height: 18, borderRadius: '50%', fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                   background: stepIndex > n
                     ? token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)')
                     : stepIndex === n
@@ -626,7 +626,7 @@ export function WorkItemPlannerModal({
         {isLoading && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '32px 0' }}>
             <Spinner size="medium" />
-            <span style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
               {state.step === 'generating_epics' && `Generating epics for ${brTitle}…`}
               {state.step === 'creating_epics' && 'Creating epics…'}
               {state.step === 'generating_stories' && `Generating stories for ${currentEpic?.key ?? ''}…`}
@@ -648,10 +648,10 @@ export function WorkItemPlannerModal({
         {state.step === 'done' && (
           <div style={{ padding: '24px 0', textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
-            <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
               Planning complete
             </div>
-            <div style={{ fontSize: 13, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)') }}>
               {state.createdEpics.length > 0 && `${state.createdEpics.length} epic${state.createdEpics.length === 1 ? '' : 's'}`}
               {state.createdStories.length > 0 && `, ${state.createdStories.length} stor${state.createdStories.length === 1 ? 'y' : 'ies'}`}
               {state.createdSubtaskKeys.length > 0 && `, ${state.createdSubtaskKeys.length} subtask${state.createdSubtaskKeys.length === 1 ? '' : 's'}`}
@@ -700,7 +700,7 @@ export function WorkItemPlannerModal({
       <ModalFooter>
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
           {/* Left: level label */}
-          <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
             {levelLabel}
           </span>
 

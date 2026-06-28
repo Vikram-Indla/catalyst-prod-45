@@ -1096,7 +1096,7 @@ export function CreateStoryModal({
                       )}
                     </div>
                     <Box xcss={statusHelperStyles}>
-                      <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                         Starting status — you can change it before creating
                       </span>
                     </Box>

@@ -320,7 +320,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
             aria-label="Breadcrumb"
             className="flex items-center gap-1.5 px-5 py-2"
             style={{
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               lineHeight: '16px',
               fontFamily: 'var(--cp-font-body)',
               borderBottom: isDark ? '1px solid var(--ds-text, #172B4D)' : '1px solid var(--bd-subtle, var(--cp-ink-1, var(--ds-text, #172B4D)))',
@@ -349,7 +349,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                           cursor: 'pointer',
                           color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                           fontFamily: 'var(--cp-font-mono)',
-                          fontSize: 11,
+                          fontSize: 'var(--ds-font-size-100)',
                           fontWeight: 650,
                         }}
                       >
@@ -363,7 +363,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                   aria-current="page"
                   style={{
                     fontFamily: 'var(--cp-font-mono)',
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 650,
                     color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                   }}
@@ -376,7 +376,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 aria-current="page"
                 style={{
                   fontFamily: 'var(--cp-font-mono)',
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 650,
                   color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                 }}
@@ -394,7 +394,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 <button
                   onClick={handleBack}
                   className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-80 hover:bg-[var(--hover,var(--ds-text, #172B4D))] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
-                  style={{ color: 'var(--fg-2)', fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)', border: 'none', background: 'none', cursor: 'pointer' }}
+                  style={{ color: 'var(--fg-2)', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontFamily: 'var(--cp-font-body)', border: 'none', background: 'none', cursor: 'pointer' }}
                   aria-label="Go back"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
@@ -441,7 +441,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                   onClick={() => setActiveTab(tab.key)}
                   className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-80 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                   style={{
-                    fontSize: 12, fontWeight: isActive ? 600 : 400,
+                    fontSize: 'var(--ds-font-size-200)', fontWeight: isActive ? 600 : 400,
                     color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-tertiary, var(--ds-text-subtlest, #6B6E76))',
                     borderBottom: isActive ? '2px solid var(--ds-link, #2563eb)' : '2px solid transparent',
                     marginBottom: -1, fontFamily: 'var(--cp-font-body)',
@@ -457,7 +457,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                   {tab.count !== undefined && (
                     <span
                       style={{
-                        fontSize: 10, fontWeight: 700, minWidth: 18, textAlign: 'center',
+                        fontSize: 'var(--ds-font-size-50)', fontWeight: 700, minWidth: 18, textAlign: 'center',
                         padding: '1px 5px', borderRadius: 12,
                         backgroundColor: isActive ? 'var(--ds-background-information, rgba(37,99,235,0.10))' : isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bd-subtle, var(--cp-ink-1, #292929))',
                         color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-3)',

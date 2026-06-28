@@ -157,15 +157,15 @@ export function useHuddleActions() {
       .select('id').eq('conversation_id', conversationId).eq('status', 'active').maybeSingle();
     if (existing) {
       huddleId = (existing as HuddleRow).id;
-      // cap-2 check on live participants (fresh heartbeat only — a stale row
-      // from a dropped peer must not block a rejoin)
-      const { data: parts } = await db.from('chat_huddle_participants')
-        .select('user_id, left_at').eq('huddle_id', huddleId).is('left_at', null)
-        .gt('last_seen_at', liveCutoff());
-      const live = (parts ?? []) as ParticipantRow[];
-      const alreadyIn = live.some((p) => p.user_id === user.id);
-      if (alreadyIn) {
-        // Already a live participant — re-enter without inserting a duplicate row.
+      // Do I already have a live (left_at IS NULL) row in THIS huddle? Check
+      // regardless of heartbeat freshness — a stale-but-not-left row of mine
+      // still trips the unique (huddle_id,user_id) WHERE left_at IS NULL index
+      // on insert (23505). If so: revive it (bump heartbeat) + re-enter.
+      const { data: mineRows } = await db.from('chat_huddle_participants')
+        .select('id').eq('huddle_id', huddleId).eq('user_id', user.id).is('left_at', null).limit(1);
+      const myRow = (mineRows ?? [])[0] as { id: string } | undefined;
+      if (myRow) {
+        await db.from('chat_huddle_participants').update({ is_connected: true }).eq('id', myRow.id);
         await enter({
           conversationId,
           huddleId: huddleId as string,
@@ -174,6 +174,12 @@ export function useHuddleActions() {
         });
         return;
       }
+      // cap-2 check on live participants (fresh heartbeat only — a stale row
+      // from a dropped peer must not block a rejoin)
+      const { data: parts } = await db.from('chat_huddle_participants')
+        .select('user_id, left_at').eq('huddle_id', huddleId).is('left_at', null)
+        .gt('last_seen_at', liveCutoff());
+      const live = (parts ?? []) as ParticipantRow[];
       if (live.length >= HUDDLE_CAP) {
         throw new Error('HUDDLE_FULL');
       }

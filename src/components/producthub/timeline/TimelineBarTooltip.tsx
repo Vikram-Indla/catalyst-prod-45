@@ -49,7 +49,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
               flexShrink: 0,
               padding: '2px 6px',
               borderRadius: '4px',
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               fontFamily: 'var(--cp-font-mono)',
               backgroundColor: 'var(--ds-background-information-bold, rgba(59,130,246,0.1))',
@@ -61,7 +61,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
           <SourceBadge source={request.source} />
           <span
             style={{
-              fontSize: '14px',
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 600,
               color: 'var(--ds-text, #172B4D)',
               lineHeight: '1.3',
@@ -84,7 +84,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
               alignItems: 'center',
               gap: '6px',
               padding: '2px 8px',
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 500,
               borderRadius: '12px',
               backgroundColor: statusCfg.bg,
@@ -99,7 +99,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
             }} />
             {statusCfg.label}
           </span>
-          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)', textTransform: 'capitalize' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text-subtlest, #626F86)', textTransform: 'capitalize' }}>
             {priority} Priority
           </span>
         </div>
@@ -108,7 +108,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
         {(startStr || endStr) && (
           <div
             style={{
-              fontSize: '11px',
+              fontSize: 'var(--ds-font-size-100)',
               color: 'var(--ds-text-subtlest, #626F86)',
               fontFamily: 'var(--cp-font-mono)',
               fontVariantNumeric: 'tabular-nums',
@@ -123,8 +123,8 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
         {/* Progress bar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #626F86)' }}>Progress</span>
-            <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #626F86)' }}>Progress</span>
+            <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: 'var(--ds-text, #172B4D)', fontVariantNumeric: 'tabular-nums' }}>
               {request.progress}%
             </span>
           </div>
@@ -159,7 +159,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '8px',
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     color: 'var(--bg-app)',
                     flexShrink: 0,
@@ -168,14 +168,14 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
                 >
                   {getInitialsFromName(request.assignee_name)}
                 </span>
-                <span style={{ fontSize: '12px', color: 'var(--ds-text, #172B4D)' }}>{request.assignee_name}</span>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text, #172B4D)' }}>{request.assignee_name}</span>
               </>
             )}
             {request.assignee_name && request.department_name && (
               <span style={{ color: 'var(--ds-icon-subtle, #a1a1aa)' }}>·</span>
             )}
             {request.department_name && (
-              <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #626F86)' }}>{request.department_name}</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #626F86)' }}>{request.department_name}</span>
             )}
           </div>
         )}

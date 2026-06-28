@@ -70,12 +70,12 @@ function DeliveryTooltipBody({ health }: { health: BusinessRequestHealth }) {
   const description = HEALTH_DESCRIPTIONS[health.health_status] ?? '';
   return (
     <div style={{ maxWidth: 260, padding: '2px 0' }}>
-      <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 12 }}>
+      <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 'var(--ds-font-size-200)' }}>
         Delivery · {FRIENDLY_LABELS[health.health_status] ?? health.health_status}
       </div>
-      <div style={{ fontSize: 12, lineHeight: '16px' }}>{description}</div>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', lineHeight: '16px' }}>{description}</div>
       {health.br_target_date && (
-        <div style={{ marginTop: 6, fontSize: 11, opacity: 0.8 }}>
+        <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-100)', opacity: 0.8 }}>
           Target:{' '}
           {new Date(health.br_target_date).toLocaleDateString('en-GB', {
             day: 'numeric',
@@ -85,7 +85,7 @@ function DeliveryTooltipBody({ health }: { health: BusinessRequestHealth }) {
         </div>
       )}
       {health.violation_count > 0 && (
-        <div style={{ marginTop: 4, fontSize: 11 }}>
+        <div style={{ marginTop: 4, fontSize: 'var(--ds-font-size-100)' }}>
           {health.violation_count} violation{health.violation_count !== 1 ? 's' : ''}
           {health.critical_violation_count > 0 && (
             <span style={{ marginLeft: 4, color: 'var(--ds-background-danger-bold, #C9372C)' }}>
@@ -119,13 +119,13 @@ export function HealthStatusBadge({ health }: HealthStatusBadgeProps) {
             aria-hidden="true"
             style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }}
           />
-          <span style={{ fontSize: 14, fontWeight: 500, color: labelColor, lineHeight: '20px' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: labelColor, lineHeight: '20px' }}>
             {label}
           </span>
         </div>
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             color: token('color.text.subtlest', 'var(--ds-icon-subtle, #626F86)'),
             lineHeight: '14px',
             paddingLeft: 15,

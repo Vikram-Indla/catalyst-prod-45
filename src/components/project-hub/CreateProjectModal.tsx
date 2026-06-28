@@ -135,7 +135,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
-          <h2 className="text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>
+          <h2 className="text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 'var(--ds-font-size-600)', fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>
             Create New Project
           </h2>
           <button
@@ -161,7 +161,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
             className="rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,#F8FAFC)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
             style={{
-              height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500,
+              height: 50, padding: '0 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
             }}
           >
@@ -173,7 +173,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             disabled={!canNext || submitting}
             className="rounded-md transition-opacity hover:opacity-90 disabled:opacity-40 bg-[var(--cp-blue)]"
             style={{
-              height: 50, padding: '0 20px', fontSize: 13, fontWeight: 600,
+              height: 50, padding: '0 20px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
               borderRadius: 6, cursor: canNext && !submitting ? 'pointer' : 'default',
             }}

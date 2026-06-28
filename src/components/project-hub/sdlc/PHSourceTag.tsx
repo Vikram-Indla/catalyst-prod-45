@@ -14,7 +14,7 @@ export function PHSourceTag({ source }: Props) {
     <span
       className="inline-flex items-center font-bold uppercase flex-shrink-0"
       style={{
-        fontSize: 8,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 700,
         padding: '1px 5px',
         borderRadius: 4,

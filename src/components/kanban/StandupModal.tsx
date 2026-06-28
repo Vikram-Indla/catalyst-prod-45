@@ -438,10 +438,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   if (buckets.length === 0) {
     return (
       <div style={panelWrapStyle(tk, docked)}>
-        <div style={{ padding: '12px 14px 8px', fontSize: 14, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
+        <div style={{ padding: '12px 14px 8px', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Standup
         </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: tk.textMuted, fontSize: 13, padding: 24, fontFamily: 'var(--cp-font-body)', textAlign: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: tk.textMuted, fontSize: 'var(--ds-font-size-300)', padding: 24, fontFamily: 'var(--cp-font-body)', textAlign: 'center' }}>
           No team members with issues on the board.
         </div>
       </div>
@@ -455,7 +455,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '14px 16px 10px',
       }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Standup
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -714,7 +714,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
             height: 30, padding: '0 12px',
             border: 'none', background: 'transparent',
             borderRadius: 4, cursor: 'pointer',
-            fontSize: 13, fontWeight: 500,
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
             color: tk.textSecondary,
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -737,7 +737,7 @@ function PanelHeader({ tk, onEnd, speechStatus }: { tk: KanbanThemeTokens; onEnd
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '10px 14px 8px', borderBottom: `1px solid ${tk.border}`,
     }}>
-      <span style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
         Daily Standup
       </span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -745,7 +745,7 @@ function PanelHeader({ tk, onEnd, speechStatus }: { tk: KanbanThemeTokens; onEnd
         <button
           onClick={onEnd}
           style={{
-            fontSize: 12, fontWeight: 500, height: 26, padding: '0 10px',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 500, height: 26, padding: '0 10px',
             borderRadius: 3, border: 'none',
             background: 'transparent', cursor: 'pointer',
             color: 'var(--ds-text-danger,#AE2A19)', fontFamily: 'var(--cp-font-body)',
@@ -868,7 +868,7 @@ function navBtnStyle(tk: KanbanThemeTokens, primary: boolean, disabled: boolean)
     display: 'inline-flex', alignItems: 'center', gap: 4,
     height: 30, padding: '0 12px', borderRadius: 3, border: 'none',
     cursor: disabled ? 'default' : 'pointer',
-    fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
+    fontSize: 'var(--ds-font-size-300)', fontWeight: 500, fontFamily: 'var(--cp-font-body)',
     color: disabled ? tk.textDisabled : primary ? 'var(--ds-text-inverse, #FFFFFF)' : tk.textPrimary,
     background: disabled ? tk.chipBg : primary ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : tk.surfaceHover,
     opacity: disabled ? 0.4 : 1,
@@ -983,7 +983,7 @@ function SettingsDropdown({
       {/* Section 1 — Density */}
       <div style={{ padding: '0 14px 8px' }}>
         <div style={{
-          fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted,
           textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6,
         }}>Density</div>
         <RadioOption
@@ -1021,7 +1021,7 @@ function SettingsDropdown({
       {/* Section 3 — Timer Duration chips */}
       <div style={{ padding: '0 14px 4px' }}>
         <div style={{
-          fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: tk.textMuted,
           textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8,
         }}>Timer duration (min)</div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -1040,7 +1040,7 @@ function SettingsDropdown({
                     ? 'var(--ds-background-information, #E9F2FE)'
                     : 'var(--ds-surface, #FFFFFF)',
                   color: selected ? 'var(--ds-link, #0C66E4)' : tk.textPrimary,
-                  fontSize: 13, fontWeight: 600,
+                  fontSize: 'var(--ds-font-size-300)', fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}
                 onMouseEnter={(e) => {
@@ -1125,7 +1125,7 @@ function RadioOption({
           }} />
         )}
       </span>
-      <span style={{ flex: 1, fontSize: 13, color: 'var(--ds-text, #292A2E)' }}>{label}</span>
+      <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)' }}>{label}</span>
       {rightHint}
     </button>
   );
@@ -1141,7 +1141,7 @@ function ToggleRow({
       padding: '8px 0',
     }}>
       <span style={{
-        flex: 1, fontSize: 13, color: 'var(--ds-text, #292A2E)',
+        flex: 1, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #292A2E)',
         lineHeight: '18px',
       }}>{label}</span>
       <PillToggle value={value} onChange={onChange} />
@@ -1212,7 +1212,7 @@ function NavStepBtn({
         border: '1px solid var(--ds-border, #DFE1E6)',
         background: 'var(--ds-surface, #FFFFFF)',
         borderRadius: 4,
-        fontSize: 13, fontWeight: 500,
+        fontSize: 'var(--ds-font-size-300)', fontWeight: 500,
         color: disabled
           ? 'var(--ds-text-disabled, #B3B9C4)'
           : 'var(--ds-text, #292A2E)',

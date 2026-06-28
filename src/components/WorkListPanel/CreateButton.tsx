@@ -21,7 +21,7 @@ export const CreateButton = memo(function CreateButton({
         color: 'var(--ds-text-inverse, #FFFFFF)',
         border: 'none',
         borderRadius: '3px',
-        fontSize: '14px',
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
         cursor: 'pointer',
         transition: 'background-color 150ms',

@@ -112,7 +112,7 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
       <ModalBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="name" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="name" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Name <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
             </label>
             <Textfield
@@ -125,7 +125,7 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="epic" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="epic" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Epic <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
             </label>
             <Select
@@ -140,7 +140,7 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="description" style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <label htmlFor="description" style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Description
             </label>
             <TextArea

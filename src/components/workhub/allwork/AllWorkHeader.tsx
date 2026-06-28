@@ -37,7 +37,7 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
         <div className="flex items-center gap-3">
           <div
             className="flex items-center justify-center rounded"
-            style={{ width: 24, height: 24, backgroundColor: 'var(--sem-success)', color: 'var(--bg-app)', fontSize: 12, fontWeight: 700 }}
+            style={{ width: 24, height: 24, backgroundColor: 'var(--sem-success)', color: 'var(--bg-app)', fontSize: 'var(--ds-font-size-200)', fontWeight: 700 }}
             aria-hidden="true"
           >
             B

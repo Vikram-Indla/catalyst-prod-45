@@ -94,13 +94,13 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
         }}>
           <div>
             <h2 style={{
-              fontSize: 20, fontWeight: 600, margin: 0,
+              fontSize: 'var(--ds-font-size-700)', fontWeight: 600, margin: 0,
               color: 'var(--ds-text, #172B4D)',
             }}>
               Name this board
             </h2>
             <p style={{
-              fontSize: 13, margin: '4px 0 0',
+              fontSize: 'var(--ds-font-size-300)', margin: '4px 0 0',
               color: 'var(--ds-text-subtle, #42526E)',
             }}>
               Required fields are marked with an asterisk *
@@ -128,7 +128,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
             {/* Board name */}
             <div style={{ marginBottom: 16 }}>
               <label style={{
-                display: 'block', fontSize: 12, fontWeight: 600,
+                display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                 color: 'var(--ds-text, #172B4D)', marginBottom: 4,
               }}>
                 Board name <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
@@ -145,7 +145,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
                   border: '2px solid var(--ds-border-focused, #4C9AFF)',
-                  borderRadius: 4, fontSize: 14,
+                  borderRadius: 4, fontSize: 'var(--ds-font-size-400)',
                   color: 'var(--ds-text, #172B4D)',
                   background: 'var(--ds-surface, #FFFFFF)',
                   outline: 'none', boxSizing: 'border-box',
@@ -156,7 +156,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
             {/* Saved filter */}
             <div style={{ marginBottom: 16 }}>
               <label style={{
-                display: 'block', fontSize: 12, fontWeight: 600,
+                display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                 color: 'var(--ds-text, #172B4D)', marginBottom: 4,
               }}>
                 Saved filter <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
@@ -167,7 +167,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
                   border: '1px solid var(--ds-border, #DFE1E6)',
-                  borderRadius: 4, fontSize: 14,
+                  borderRadius: 4, fontSize: 'var(--ds-font-size-400)',
                   color: filterId ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)',
                   background: 'var(--ds-surface, #FFFFFF)',
                   outline: 'none', cursor: 'pointer', boxSizing: 'border-box',
@@ -180,7 +180,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
               </select>
               {filters.length === 0 && projectKey && (
                 <p style={{
-                  fontSize: 11, marginTop: 4,
+                  fontSize: 'var(--ds-font-size-100)', marginTop: 4,
                   color: 'var(--ds-text-subtlest, #6B778C)',
                 }}>
                   No saved filters found for this project.
@@ -191,7 +191,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
             {/* Location — read-only */}
             <div style={{ marginBottom: 0 }}>
               <label style={{
-                display: 'block', fontSize: 12, fontWeight: 600,
+                display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
                 color: 'var(--ds-text, #172B4D)', marginBottom: 4,
               }}>
                 Location
@@ -199,7 +199,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
               <div style={{
                 height: 40, padding: '0 12px',
                 border: '1px solid var(--ds-border, #DFE1E6)',
-                borderRadius: 4, fontSize: 14,
+                borderRadius: 4, fontSize: 'var(--ds-font-size-400)',
                 color: 'var(--ds-text-subtle, #42526E)',
                 background: 'var(--ds-surface-sunken, #F7F8F9)',
                 display: 'flex', alignItems: 'center',
@@ -208,7 +208,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
                 {locationLabel}
               </div>
               <p style={{
-                fontSize: 11, marginTop: 4,
+                fontSize: 'var(--ds-font-size-100)', marginTop: 4,
                 color: 'var(--ds-text-subtlest, #6B778C)',
               }}>
                 This board will be added to the current project.
@@ -222,20 +222,20 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
             paddingLeft: 24,
           }}>
             <h3 style={{
-              fontSize: 13, fontWeight: 600, margin: '0 0 8px',
+              fontSize: 'var(--ds-font-size-300)', fontWeight: 600, margin: '0 0 8px',
               color: 'var(--ds-text, #172B4D)',
             }}>
               Saved filters
             </h3>
             <p style={{
-              fontSize: 13, margin: '0 0 12px',
+              fontSize: 'var(--ds-font-size-300)', margin: '0 0 12px',
               color: 'var(--ds-text-subtle, #42526E)',
               lineHeight: 1.5,
             }}>
               Choose from a list of saved filters that define which issues appear on the board.
             </p>
             <p style={{
-              fontSize: 13, margin: 0,
+              fontSize: 'var(--ds-font-size-300)', margin: 0,
               color: 'var(--ds-text-subtle, #42526E)',
               lineHeight: 1.5,
             }}>
@@ -256,7 +256,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
               height: 32, padding: '0 16px', borderRadius: 3,
               border: '1px solid var(--ds-border, #DFE1E6)',
               background: 'var(--ds-surface, #FFFFFF)',
-              fontSize: 14, fontWeight: 500,
+              fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               color: 'var(--ds-text-subtle, #42526E)',
               cursor: 'pointer',
             }}
@@ -271,7 +271,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose, onCreat
               background: canCreate
                 ? 'var(--ds-background-brand-bold, #0052CC)'
                 : 'var(--ds-background-neutral, #F1F2F4)',
-              fontSize: 14, fontWeight: 500,
+              fontSize: 'var(--ds-font-size-400)', fontWeight: 500,
               color: canCreate
                 ? 'var(--ds-text-inverse, #FFFFFF)'
                 : 'var(--ds-text-disabled, #97A0AF)',

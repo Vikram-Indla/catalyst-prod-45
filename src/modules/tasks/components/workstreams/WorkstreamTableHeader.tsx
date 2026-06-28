@@ -15,7 +15,7 @@ export const TableHeader: React.FC<{
     style={{
       padding: '14px 20px',
       textAlign: center ? 'center' : 'left',
-      fontSize: '11px',
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
       color: COLORS.textMuted,
       textTransform: 'uppercase',

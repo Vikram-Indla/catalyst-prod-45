@@ -10,7 +10,7 @@
  */
 import { chatRealtime } from '../ChatRealtimeManager';
 import type { HuddleSignal } from './signaling';
-import { getIceServers } from './iceConfig';
+import { getIceServers, fetchIceServers } from './iceConfig';
 
 interface HuddleConnectionOpts {
   conversationId: string;
@@ -42,11 +42,16 @@ export class HuddleConnection {
   private joinAttempts = 0;
   /** P2P data channel for screen-share markers/annotations. */
   private markerChannel: RTCDataChannel | null = null;
+  /** ICE servers (STUN + ephemeral TURN). Fetched in start(); sync fallback until then. */
+  private iceServers: RTCIceServer[] = getIceServers();
 
   constructor(private opts: HuddleConnectionOpts) {}
 
   async start(): Promise<void> {
     this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Fetch ephemeral TURN creds before any peer connection is built, so the
+    // relay candidate is available from the first offer/answer.
+    this.iceServers = await fetchIceServers();
     this.unsub = chatRealtime.subscribeHuddleSignal(this.opts.conversationId, (sig) =>
       this.onSignal(sig),
     );
@@ -134,7 +139,13 @@ export class HuddleConnection {
 
   private ensurePc(): RTCPeerConnection {
     if (this.pc) return this.pc;
-    const pc = new RTCPeerConnection({ iceServers: getIceServers() });
+    // Debug: localStorage.setItem('huddle-force-relay','1') forces ALL media
+    // through TURN (drops direct P2P) to verify the relay works. Off by default.
+    const forceRelay = typeof localStorage !== 'undefined' && localStorage.getItem('huddle-force-relay') === '1';
+    const pc = new RTCPeerConnection({
+      iceServers: this.iceServers,
+      ...(forceRelay ? { iceTransportPolicy: 'relay' as RTCIceTransportPolicy } : {}),
+    });
     this.localStream?.getTracks().forEach((t) => pc.addTrack(t, this.localStream as MediaStream));
     pc.ontrack = (e) => {
       if (e.track.kind === 'video') {

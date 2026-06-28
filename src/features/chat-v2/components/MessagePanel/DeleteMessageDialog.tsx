@@ -52,7 +52,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
+          <div style={{ fontSize: 'var(--ds-font-size-700)', fontWeight: 800, color: 'var(--cv2-text-strong)' }}>
             Delete message
           </div>
           <button
@@ -72,7 +72,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
         <p
           style={{
             margin: '12px 0 16px',
-            fontSize: 15,
+            fontSize: 'var(--ds-font-size-400)',
             lineHeight: 1.45,
             color: 'var(--cv2-text)',
           }}
@@ -92,17 +92,17 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
           <PresenceAvatar name={message.authorName} size={32} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--cv2-text-strong)' }}>
                 {message.authorName}
               </span>
-              <span style={{ fontSize: 12, color: 'var(--cv2-text-muted)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--cv2-text-muted)' }}>
                 {formatMessageTime(message.createdAt)}
               </span>
             </div>
             <div
               style={{
                 marginTop: 4,
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: 'var(--cv2-text)',
                 wordBreak: 'break-word',
                 whiteSpace: 'pre-wrap',
@@ -123,7 +123,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
               border: '1px solid var(--cv2-border-strong)',
               borderRadius: 'var(--cv2-radius-sm)',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
               cursor: 'pointer',
             }}
@@ -143,7 +143,7 @@ export function DeleteMessageDialog({ message, onCancel, onConfirm }: DeleteMess
               borderRadius: 'var(--cv2-radius-sm)',
               boxShadow: '0 0 0 3px rgba(224,30,90,0.30)', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 700,
               cursor: 'pointer',
             }}

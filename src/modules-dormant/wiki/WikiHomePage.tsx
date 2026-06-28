@@ -46,12 +46,12 @@ const SectionHeader = React.memo(({ title, count, rightLabel, rightAction, isDar
 }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
     <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-    <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{title}</span>
+    <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{title}</span>
     {count !== undefined && (
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{count}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{count}</span>
     )}
     {rightLabel && (
-      <span onClick={rightAction} style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+      <span onClick={rightAction} style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
         {rightLabel} <ChevronRight size={12} />
       </span>
     )}
@@ -120,7 +120,7 @@ export default function WikiHomePage() {
 
       {/* Pending Acknowledgments Banner */}
       {pendingAcks.length > 0 && (
-        <div style={{ margin: '0 28px', padding: '10px 16px', background: isDark ? 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', border: isDark ? '0.75px solid var(--ds-background-warning-bold, rgba(251,191,36,0.2))' : '0.75px solid var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: isDark ? 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))' : 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', fontWeight: 500 }}>
+        <div style={{ margin: '0 28px', padding: '10px 16px', background: isDark ? 'var(--ds-background-warning-bold, rgba(251,191,36,0.12))' : 'var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', border: isDark ? '0.75px solid var(--ds-background-warning-bold, rgba(251,191,36,0.2))' : '0.75px solid var(--ds-background-warning, var(--ds-background-warning, #FFF7D6))', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-background-warning-bold, var(--ds-background-warning-bold, #E2B203))' : 'var(--ds-text-warning, var(--ds-text-warning, #974F0C))', fontWeight: 500 }}>
           <ShieldCheck size={14} />
           <span>{pendingAcks.length} article{pendingAcks.length !== 1 ? 's' : ''} require your acknowledgment</span>
         </div>
@@ -132,8 +132,8 @@ export default function WikiHomePage() {
 
         <div style={{ padding: '48px 40px 40px', display: 'flex', gap: 40, alignItems: 'flex-start', position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: 320, maxWidth: 640 }}>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, margin: '0 0 4px', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>WikiHub</h1>
-            <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 20px' }}>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-600)', fontWeight: 700, margin: '0 0 4px', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>WikiHub</h1>
+            <p style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 20px' }}>
               Ministry of Industry Knowledge Platform — 9 Domains · {stats?.totalArticles ?? 0} Articles · {stats?.totalDocuments ?? 0} Documents
             </p>
 
@@ -146,9 +146,9 @@ export default function WikiHomePage() {
               onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))'; e.currentTarget.style.boxShadow = 'none'; }}
             >
               <Search size={15} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-              <span style={{ flex: 1, fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Search articles, regulations, permits...</span>
-              <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'var(--ds-background-discovery-bold, rgba(124,58,237,0.06))', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' }}>AI-powered</span>
-              <button style={{ fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', cursor: 'pointer' }}>Search</button>
+              <span style={{ flex: 1, fontSize: 'var(--ds-font-size-300)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Search articles, regulations, permits...</span>
+              <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'var(--ds-background-discovery-bold, rgba(124,58,237,0.06))', color: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' }}>AI-powered</span>
+              <button style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', cursor: 'pointer' }}>Search</button>
             </div>
 
             {/* Filter chips */}
@@ -157,7 +157,7 @@ export default function WikiHomePage() {
                 const active = activeChip === c.label;
                 return (
                   <button key={c.label} onClick={() => setActiveChip(c.label)} style={{
-                    fontSize: 11, fontWeight: active ? 650 : 500, padding: '5px 12px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                    fontSize: 'var(--ds-font-size-100)', fontWeight: active ? 650 : 500, padding: '5px 12px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                     border: active ? '1.5px solid var(--ds-link, #2563EB)' : isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))'), color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, var(--ds-text-subtlest, #626F86)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), transition: 'all 120ms',
                   }}>{c.icon} {c.label}</button>
                 );
@@ -165,7 +165,7 @@ export default function WikiHomePage() {
             </div>
 
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Upload size={14} /> Upload Document
               </button>
             </div>
@@ -201,7 +201,7 @@ export default function WikiHomePage() {
           )) : (quickRefs ?? []).length > 0 ? (quickRefs ?? []).map((qr: any) => (
             <QuickRefCard key={qr.id} qr={qr} onClick={() => setSelectedQR(qr)} isDark={isDark} />
           )) : (
-            <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 12, width: '100%' }}>No quick reference cards yet.</div>
+            <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 'var(--ds-font-size-200)', width: '100%' }}>No quick reference cards yet.</div>
           )}
         </div>
 
@@ -216,11 +216,11 @@ export default function WikiHomePage() {
         >
           <HelpCircle size={16} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           <div style={{ flex: 1, minWidth: 200 }}>
-            <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>Can't find what you need? </span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }} onClick={() => setKrFormOpen(true)}>Submit a Knowledge Request</span>
-            <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}> — route to domain experts</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}>Can't find what you need? </span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }} onClick={() => setKrFormOpen(true)}>Submit a Knowledge Request</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))' }}> — route to domain experts</span>
           </div>
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
             {requests?.length ?? 0} open
           </span>
         </div>
@@ -246,7 +246,7 @@ export default function WikiHomePage() {
               <Skeleton w={140} h={16} style={{ marginBottom: 12 }} isDark={isDark} /><Skeleton w="100%" h={4} style={{ marginBottom: 8 }} isDark={isDark} /><Skeleton w="60%" h={12} isDark={isDark} />
             </div>
           )) : (paths ?? []).length > 0 ? (paths ?? []).map((p: any) => <LearningPathCard key={p.id} p={p} navigate={navigate} isDark={isDark} />) : (
-            <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 12, gridColumn: '1 / -1' }}>No learning paths configured yet.</div>
+            <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 'var(--ds-font-size-200)', gridColumn: '1 / -1' }}>No learning paths configured yet.</div>
           )}
         </div>
 
@@ -256,7 +256,7 @@ export default function WikiHomePage() {
           <div style={{
             display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%',
             background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '8px 12px', height: 50, alignItems: 'center', borderBottom: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))',
-            fontFamily: 'var(--cp-font-heading)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em',
+            fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, textTransform: 'uppercase' as const, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em',
           }}>
             <span></span><span>Article</span><span>Domain</span><span>Status</span><span>Confidence</span><span>Helpful</span><span>Tags</span><span>Ver.</span><span></span>
           </div>
@@ -267,7 +267,7 @@ export default function WikiHomePage() {
           )) : (articles ?? []).length > 0 ? (articles ?? []).map((a: any) => (
             <ArticleRow key={a.id} a={a} navigate={navigate} bookmarked={bookmarkSet.has(a.id)} onToggleBookmark={() => toggleBookmark.mutate({ pageId: a.id })} isDark={isDark} />
           )) : (
-            <div style={{ padding: 40, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 12 }}>No articles yet — upload a document or run a sync to get started.</div>
+            <div style={{ padding: 40, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 'var(--ds-font-size-200)' }}>No articles yet — upload a document or run a sync to get started.</div>
           )}
         </div>
       </div>
@@ -305,8 +305,8 @@ const StatCard = React.memo(({ label, value, valueColor, isDark }: { label: stri
     onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.background = isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected, #EFF6FF)'; }}
     onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-surface-sunken, #F8FAFC)'; }}
   >
-    <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 700, color: valueColor || (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))') }}>{value}</div>
-    <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', letterSpacing: '0.05em', marginTop: 4 }}>{label}</div>
+    <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-800)', fontWeight: 700, color: valueColor || (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))') }}>{value}</div>
+    <div style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', letterSpacing: '0.05em', marginTop: 4 }}>{label}</div>
   </div>
 ));
 StatCard.displayName = 'StatCard';
@@ -339,8 +339,8 @@ const QuickRefCard = React.memo(({ qr, onClick, isDark }: { qr: any; onClick: ()
       <div style={{ width: 30, height: 30, borderRadius: 6, background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
         <Icon size={15} style={{ color: dc.fg }} />
       </div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
-      <div style={{ display: 'flex', gap: 12, fontSize: 10 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
+      <div style={{ display: 'flex', gap: 12, fontSize: 'var(--ds-font-size-50)' }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500 }}>{qr.steps} steps</span>
         <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 500 }}>{formatK(qr.view_count ?? qr.views ?? 0)} views</span>
       </div>
@@ -366,30 +366,30 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
           <div style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, background: isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 150ms' }}>
             <Icon size={16} style={{ color: dc.fg }} />
           </div>
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12.5, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{d.name}</div>
           </div>
-          <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(55,48,163,0.15)' : tagStyle.bg, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : tagStyle.color, letterSpacing: '0.04em' }}>{d.tag}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(55,48,163,0.15)' : tagStyle.bg, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : tagStyle.color, letterSpacing: '0.04em' }}>{d.tag}</span>
         </div>
 
         {/* Stats row */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 10 }}>
           {[{ v: d.article_count, l: 'Articles' }, { v: formatK(d.view_count), l: 'Views' }, { v: d.knowledge_gaps, l: 'Gaps' }].map(s => (
             <div key={s.l} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{s.v}</div>
-              <div style={{ fontSize: 9, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{s.l}</div>
+              <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{s.v}</div>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{s.l}</div>
             </div>
           ))}
         </div>
 
         {/* Coverage bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Coverage</span>
+          <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Coverage</span>
           <div style={{ flex: 1, height: 3, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}>
             <div style={{ height: '100%', borderRadius: 4, background: coverageColor, width: `${d.coverage_percent}%`, transition: 'width 600ms' }} />
           </div>
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{d.coverage_percent}%</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{d.coverage_percent}%</span>
         </div>
       </div>
     </div>
@@ -413,13 +413,13 @@ const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12.5, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{p.title}</div>
         </div>
-        <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
+        <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
       </div>
       <div style={{ fontSize: 11.5, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 12, lineHeight: 1.4 }}>{p.description}</div>
       <div style={{ height: 4, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 8 }}>
         <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', width: `${pct}%`, transition: 'width 600ms' }} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
         <span>{p.estimated_hours}h · {p.article_count} articles</span>
         <span>{pct}% complete</span>
       </div>
@@ -431,7 +431,7 @@ LearningPathCard.displayName = 'LearningPathCard';
 /* ── Article Row ── */
 const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDark }: { a: any; navigate: any; bookmarked: boolean; onToggleBookmark: () => void; isDark?: boolean }) => {
   const formatIcon = a.format === 'pdf'
-    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.15))' : 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span>
+    ? <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'var(--ds-background-danger-bold, rgba(220,38,38,0.15))' : 'var(--ds-background-danger, var(--ds-background-danger, #FFECEB))', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span>
     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />;
 
   const verStatus = a.verification_status || 'unverified';
@@ -449,7 +449,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
     <div onClick={() => navigate(`/wiki/${a.slug}`)} style={{
       display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%',
       padding: '8px 12px', height: 42, alignItems: 'center', cursor: 'pointer',
-      borderBottom: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', fontSize: 12, transition: 'background 80ms',
+      borderBottom: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', fontSize: 'var(--ds-font-size-200)', transition: 'background 80ms',
     }}
       onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-background-information, rgba(37,99,235,0.04))'}
       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
@@ -461,21 +461,21 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, paddingRight: 8 }}>
         <span style={{ fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12.5 }}>{a.title}</span>
         {a.tldr && (
-          <span title={a.tldr} style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textDecoration: 'underline', textDecorationStyle: 'dashed', textUnderlineOffset: 2, cursor: 'help', flexShrink: 0 }}>TL;DR</span>
+          <span title={a.tldr} style={{ fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textDecoration: 'underline', textDecorationStyle: 'dashed', textUnderlineOffset: 2, cursor: 'help', flexShrink: 0 }}>TL;DR</span>
         )}
       </div>
 
       {/* Domain */}
-      <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 'fit-content' }}>{a.domain_code}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 'fit-content' }}>{a.domain_code}</span>
 
       {/* Verification Status */}
-      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
+      <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
 
       {/* Confidence — colored number only */}
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 500, color: confColor }}>{conf}%</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: confColor }}>{conf}%</span>
 
       {/* Helpful */}
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
 
       {/* Tags — grey pills */}
       <div style={{ display: 'flex', gap: 3, overflow: 'hidden' }}>
@@ -485,7 +485,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
       </div>
 
       {/* Version */}
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>v{a.version ?? 1}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>v{a.version ?? 1}</span>
 
       {/* Bookmark */}
       <span onClick={e => { e.stopPropagation(); onToggleBookmark(); }} style={{ cursor: 'pointer' }}>

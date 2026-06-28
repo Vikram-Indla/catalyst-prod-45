@@ -452,7 +452,7 @@ export function RichTextEditor({
                 animation: 'catalyst-voice-pulse 1s ease-in-out infinite',
               }}
             />
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-information, #0C66E4)', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-information, #0C66E4)', whiteSpace: 'nowrap' }}>
               Caty is listening
               <span aria-hidden style={{ display: 'inline-flex', gap: 2, marginLeft: 3, verticalAlign: 'middle' }}>
                 {[0,1,2].map((i) => (
@@ -461,7 +461,7 @@ export function RichTextEditor({
               </span>
             </span>
             {voice.interimText && (
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }} title={voice.interimText}>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtle, #44546F)', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }} title={voice.interimText}>
                 {voice.interimText}
               </span>
             )}
@@ -490,7 +490,7 @@ export function RichTextEditor({
             }
             style={{
               padding: '6px 12px',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               border: 'none',
               borderRadius: 3,
@@ -507,7 +507,7 @@ export function RichTextEditor({
             onClick={onCancel}
             style={{
               padding: '6px 12px',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 500,
               border: 'none',
               borderRadius: 3,

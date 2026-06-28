@@ -277,7 +277,7 @@ function StoryCard({
             color: 'var(--ds-text-inverse, #FFFFFF)',
             border: 'none',
             borderRadius: 4,
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontWeight: 600,
             cursor: 'pointer',
           }}
@@ -293,7 +293,7 @@ function StoryCard({
             color: 'var(--ds-text-subtle, #44546F)',
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             cursor: 'pointer',
           }}
           onClick={() => onDismiss(index)}
@@ -622,7 +622,7 @@ export function CatyPanel({ onNewConversation, viewMode = 'floating', onViewMode
             color: 'var(--ds-text-inverse, #FFFFFF)',
             border: 'none',
             borderRadius: 4,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
             cursor: 'pointer',
             marginTop: 8,

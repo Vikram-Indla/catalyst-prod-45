@@ -61,7 +61,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       {/* Row 1: Key + Move + Toggle */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
         <span style={{
-          fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: dk.t3,
+          fontSize: 'var(--ds-font-size-50)', fontFamily: 'var(--cp-font-mono)', color: dk.t3,
           textTransform: 'uppercase', letterSpacing: '0.04em',
         }}>
           {idea.ideaKey}
@@ -99,7 +99,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
                     }}
                     style={{
                       display: 'block', width: '100%', padding: '6px 10px',
-                      fontSize: 12, fontWeight: 500, color: dk.t2,
+                      fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: dk.t2,
                       fontFamily: 'var(--cp-font-body)', background: 'transparent',
                       border: 'none', cursor: 'pointer', borderRadius: 4,
                       textAlign: 'left', transition: 'background 100ms',
@@ -133,7 +133,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
 
       {/* Row 2: Title */}
       <div style={{
-        fontSize: 13, fontWeight: 650, color: dk.t1, fontFamily: 'var(--cp-font-body)',
+        fontSize: 'var(--ds-font-size-300)', fontWeight: 650, color: dk.t1, fontFamily: 'var(--cp-font-body)',
         lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         overflow: 'hidden', marginBottom: 6,
       }}>
@@ -144,7 +144,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
         {idea.theme && (
           <span style={{
-            fontSize: 10, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
             background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             color: dk.t2, padding: '2px 6px', borderRadius: 4,
             border: isDark ? `1px solid ${dk.border}` : 'none',
@@ -152,7 +152,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         )}
         {idea.team && (
           <span style={{
-            fontSize: 10, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
+            fontSize: 'var(--ds-font-size-50)', fontWeight: 600, fontFamily: 'var(--cp-font-body)',
             background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             color: dk.t2, padding: '2px 6px', borderRadius: 4,
             border: isDark ? `1px solid ${dk.border}` : 'none',
@@ -178,7 +178,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             <span key={m.key} style={{
               height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               padding: '0 6px', borderRadius: 4,
-              fontSize: 9, fontWeight: 700, fontFamily: 'var(--cp-font-body)',
+              fontSize: 'var(--ds-font-size-100)', fontWeight: 700, fontFamily: 'var(--cp-font-body)',
               textTransform: 'uppercase', letterSpacing: '0.06em',
               background: style.bg, color: style.text, border: `1px solid ${style.border}`,
             }}>
@@ -196,7 +196,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))',
           color: isDark ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-app)',
           border: `1px solid ${isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : '#B7EBD1'}`,
-          fontSize: 10, fontWeight: 700,
+          fontSize: 'var(--ds-font-size-50)', fontWeight: 700,
           fontFamily: 'var(--cp-font-body)',
         }}>
           ✓ Converted
@@ -208,7 +208,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             height: 24, padding: '0 8px', borderRadius: 4,
             border: `1px solid ${dk.border}`,
             background: isDark ? 'transparent' : 'var(--bg-app)',
-            color: dk.t3, fontSize: 10, fontWeight: 600,
+            color: dk.t3, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
             fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
             transition: 'all 120ms',
           }}

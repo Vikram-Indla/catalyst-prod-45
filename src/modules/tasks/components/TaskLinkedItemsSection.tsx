@@ -46,7 +46,7 @@ function statusAppearance(category: string | null, status: string | null): Lozen
 const headerStyle: React.CSSProperties = {
   margin: '0 0 8px',
   padding: '0 16px',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   fontWeight: 500,
   lineHeight: '20px',
   color: token('color.text.subtle', 'var(--ds-text-subtle, #505258)'),
@@ -101,13 +101,13 @@ export function TaskLinkedItemsSection({ taskId }: TaskLinkedItemsSectionProps) 
       <h2 style={headerStyle}>Linked items</h2>
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: token('space.100') }}>
         {error ? (
-          <p style={{ margin: 0, fontSize: 13, color: token('color.text.subtle') }}>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
             Linking is unavailable until the task link table is provisioned.
           </p>
         ) : isLoading ? (
-          <p style={{ margin: 0, fontSize: 13, color: token('color.text.subtlest') }}>Loading…</p>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest') }}>Loading…</p>
         ) : links.length === 0 ? (
-          <p style={{ margin: 0, fontSize: 13, color: token('color.text.subtlest') }}>No linked items yet.</p>
+          <p style={{ margin: 0, fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtlest') }}>No linked items yet.</p>
         ) : (
           links.map((l) => (
             <div

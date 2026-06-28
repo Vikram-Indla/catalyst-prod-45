@@ -174,7 +174,7 @@ export function ActivityRow({
             <span
               style={{
                 fontFamily: 'var(--cv2-font)',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 fontWeight: 700,
                 color: 'var(--cv2-text-strong)',
                 whiteSpace: 'nowrap',
@@ -201,7 +201,7 @@ export function ActivityRow({
               gap: 4,
               marginTop: 2,
               fontFamily: 'var(--cv2-font)',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               color: 'var(--cv2-text-subtle)',
               cursor: isThread ? 'pointer' : 'default',
             }}
@@ -213,7 +213,7 @@ export function ActivityRow({
             style={{
               margin: '6px 0 0',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--cv2-text)',
               lineHeight: 1.4,
               display: '-webkit-box',
@@ -350,14 +350,14 @@ function DenseRow({
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--cv2-text-subtle)' }}
               >
                 <ThreadInIcon size={12} />
-                <span style={{ fontSize: 12, fontWeight: 600 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
                   Thread in {item.conversationTitle}
                 </span>
               </span>
             ) : (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--cv2-text-subtle)' }}>
                 <DmsIcon size={12} />
-                <span style={{ fontSize: 12, fontWeight: 600 }}>
+                <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600 }}>
                   {item.conversationKind === 'dm' || item.conversationKind === 'group_dm' ? 'DM' : item.conversationTitle}
                 </span>
               </span>
@@ -374,7 +374,7 @@ function DenseRow({
             style={{
               margin: '4px 0 0',
               fontFamily: 'var(--cv2-font)',
-              fontSize: 13,
+              fontSize: 'var(--ds-font-size-300)',
               color: 'var(--cv2-text)',
               lineHeight: 1.35,
               display: '-webkit-box',
@@ -444,7 +444,7 @@ function SingleLineRow({
       <span
         style={{
           fontFamily: 'var(--cv2-font)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 700,
           color: 'var(--cv2-text-strong)',
           whiteSpace: 'nowrap',
@@ -463,7 +463,7 @@ function SingleLineRow({
           alignItems: 'center',
           gap: 4,
           fontFamily: 'var(--cv2-font)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           color: 'var(--cv2-text-subtle)',
           fontWeight: 600,
           flex: '0 0 auto',
@@ -487,7 +487,7 @@ function SingleLineRow({
           flex: 1,
           minWidth: 0,
           fontFamily: 'var(--cv2-font)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           color: 'var(--cv2-text)',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -524,7 +524,7 @@ function RightInfo({
       className="cv2-right-info"
       style={{
         fontFamily: 'var(--cv2-font)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         color: 'var(--cv2-text-muted)',
         whiteSpace: 'nowrap',
       }}
@@ -557,7 +557,7 @@ function RightInfo({
             borderRadius: 9,
             background: 'var(--cv2-unread)',
             color: 'var(--cv2-unread-text, #FFFFFF)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
           }}
         >

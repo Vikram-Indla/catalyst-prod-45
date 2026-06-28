@@ -22,7 +22,7 @@ export const AllLevels: Story = {
       {['Highest', 'High', 'Medium', 'Low', 'Lowest'].map((level) => (
         <div key={level} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <PriorityIcon level={level} size={16} />
-          <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>{level}</span>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>{level}</span>
         </div>
       ))}
     </div>

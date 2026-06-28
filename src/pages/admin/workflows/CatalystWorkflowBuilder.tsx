@@ -156,7 +156,7 @@ function StatusNode({ data, selected }: NodeProps) {
           top: -16,
           left: '50%',
           transform: 'translateX(-50%)',
-          fontSize: 9,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           letterSpacing: '0.08em',
           color: DARK.textBrand,
@@ -174,7 +174,7 @@ function StatusNode({ data, selected }: NodeProps) {
           bottom: -16,
           left: '50%',
           transform: 'translateX(-50%)',
-          fontSize: 9,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           letterSpacing: '0.08em',
           color: 'var(--ds-link, #0C66E4)',
@@ -188,7 +188,7 @@ function StatusNode({ data, selected }: NodeProps) {
       )}
 
       <div style={{
-        fontSize: 11,
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 600,
         letterSpacing: '0.06em',
         color: colors.text,
@@ -214,7 +214,7 @@ function StartNode(_: NodeProps) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: 9,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 700,
       letterSpacing: '0.06em',
       color: 'var(--ds-border, #DFE1E6)',
@@ -303,7 +303,7 @@ function DeletableEdge({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 color: 'var(--ds-text-inverse, #FFFFFF)',
                 lineHeight: 1,
@@ -563,7 +563,7 @@ export function CatalystWorkflowBuilder({
               value={newStatusCat}
               onChange={(e) => setNewStatusCat(e.target.value as StatusCategory)}
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 height: 28,
                 padding: '0 6px',
                 borderRadius: 3,
@@ -590,7 +590,7 @@ export function CatalystWorkflowBuilder({
               disabled={addStatusLoading}
               style={{
                 height: 28,
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 border: `1px solid ${DARK.border}`,
                 borderRadius: 3,
                 padding: '0 8px',
@@ -606,7 +606,7 @@ export function CatalystWorkflowBuilder({
               style={{
                 height: 28,
                 padding: '0 10px',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 500,
                 border: 'none',
                 borderRadius: 3,
@@ -623,7 +623,7 @@ export function CatalystWorkflowBuilder({
               style={{
                 height: 28,
                 padding: '0 8px',
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 border: `1px solid ${DARK.border}`,
                 borderRadius: 3,
                 cursor: 'pointer',
@@ -641,7 +641,7 @@ export function CatalystWorkflowBuilder({
             style={{
               height: 28,
               padding: '0 12px',
-              fontSize: 12,
+              fontSize: 'var(--ds-font-size-200)',
               fontWeight: 500,
               border: `1px solid ${DARK.border}`,
               borderRadius: 3,
@@ -669,13 +669,13 @@ export function CatalystWorkflowBuilder({
           display: 'flex',
           alignItems: 'center',
         }}>
-          <span style={{ fontSize: 11, color: DARK.textSubtle }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: DARK.textSubtle }}>
             Drag handles to connect • Click edge × to delete
           </span>
         </div>
 
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 11, color: DARK.textSubtle }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: DARK.textSubtle }}>
             {statuses.length} statuses • {workflow?.transitions.length ?? 0} transitions
           </span>
         </div>

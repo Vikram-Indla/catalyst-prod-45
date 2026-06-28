@@ -632,7 +632,7 @@ export default function CommandCenterPage() {
         title="Command Center"
         actions={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--text-3, hsl(var(--muted-foreground)))' }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--text-3, hsl(var(--muted-foreground)))' }}>
               Last updated: {getTimeAgo()}
             </span>
             <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh data">
@@ -745,16 +745,16 @@ export default function CommandCenterPage() {
                         dataKey="sprint" 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 11, fill: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #94a3b8)' }}
                       />
                       <YAxis 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 11, fill: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #94a3b8)' }}
                         tickFormatter={(v) => `${v}%`}
                       />
                       <Tooltip 
-                        contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                        contentStyle={{ fontSize: 'var(--ds-font-size-200)', borderRadius: 8 }}
                         formatter={(value: number, name: string) => [`${value}%`, name.charAt(0).toUpperCase() + name.slice(1)]}
                       />
                       <Bar dataKey="passed" stackId="a" fill={CATALYST_V5.teal} radius={[0, 0, 0, 0]} />
@@ -811,14 +811,14 @@ export default function CommandCenterPage() {
                         dataKey="date" 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 11, fill: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #94a3b8)' }}
                       />
                       <YAxis 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 11, fill: 'var(--ds-text-subtlest, #94a3b8)' }}
+                        tick={{ fontSize: 'var(--ds-font-size-100)', fill: 'var(--ds-text-subtlest, #94a3b8)' }}
                       />
-                      <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                      <Tooltip contentStyle={{ fontSize: 'var(--ds-font-size-200)', borderRadius: 8 }} />
                       <Area 
                         type="monotone" 
                         dataKey="opened" 

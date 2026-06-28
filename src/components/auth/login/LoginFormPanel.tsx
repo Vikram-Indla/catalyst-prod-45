@@ -201,7 +201,7 @@ export function LoginFormPanel({
             background: 'var(--ds-background-danger, #FFECEB)',
             border: '1.5px solid var(--ds-border-danger, #FF8F73)',
             color: 'var(--ds-text-danger, #AE2A19)',
-            fontSize: 13, fontWeight: 500, lineHeight: '1.45',
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, lineHeight: '1.45',
           }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0, marginTop: 1 }}>

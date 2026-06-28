@@ -68,7 +68,7 @@ export function MockBusinessRequestView({
                 <Heading as="h3" level="h500" style={{ marginBottom: 12 }}>
                   Business Objective
                 </Heading>
-                <p style={{ margin: '0 0 16px 0', color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
+                <p style={{ margin: '0 0 16px 0', color: 'var(--ds-text, #172B4D)', fontSize: 'var(--ds-font-size-400)' }}>
                   Enable citizens to renew their industrial licenses online in both Arabic and
                   English, reducing the burden on back-office staff and improving citizen
                   experience.
@@ -77,7 +77,7 @@ export function MockBusinessRequestView({
                 <Heading as="h3" level="h500" style={{ marginBottom: 12 }}>
                   Scope
                 </Heading>
-                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
+                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: 'var(--ds-font-size-400)' }}>
                   <li>Applicant submission portal (Arabic + English)</li>
                   <li>Back-office review dashboard</li>
                   <li>Decision notification system</li>
@@ -88,7 +88,7 @@ export function MockBusinessRequestView({
                 <Heading as="h3" level="h500" style={{ marginBottom: 12 }}>
                   Acceptance Criteria
                 </Heading>
-                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: '14px' }}>
+                <ul style={{ margin: '0 0 16px 0', paddingLeft: 20, color: 'var(--ds-text, #172B4D)', fontSize: 'var(--ds-font-size-400)' }}>
                   <li>✓ Support for Arabic and English throughout the application</li>
                   <li>✓ Mobile-responsive design for citizen portal</li>
                   <li>✓ Real-time submission status tracking</li>
@@ -213,7 +213,7 @@ export function MockBusinessRequestView({
               <Heading as="h4" level="h700" style={{ marginBottom: 8 }}>
                 Product
               </Heading>
-              <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
                 Licensing Platform
               </div>
             </div>
@@ -229,7 +229,7 @@ export function MockBusinessRequestView({
               <Heading as="h4" level="h700" style={{ marginBottom: 8 }}>
                 Created
               </Heading>
-              <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
                 15 June 2026
               </div>
             </div>
@@ -238,7 +238,7 @@ export function MockBusinessRequestView({
               <Heading as="h4" level="h700" style={{ marginBottom: 8 }}>
                 Stakeholders
               </Heading>
-              <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>
+              <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
                 Vikram Indla<br />
                 Abdullah Almetwally
               </div>
@@ -273,12 +273,12 @@ function AttachmentItem({
         gap: 12,
       }}
     >
-      <span style={{ fontSize: '18px' }}>📄</span>
+      <span style={{ fontSize: 'var(--ds-font-size-600)' }}>📄</span>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
           {name}
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>
           {type} • {size}
         </div>
       </div>
@@ -317,10 +317,10 @@ function CommentItem({
         borderRadius: '4px',
       }}
     >
-      <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: 4 }}>
+      <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)', marginBottom: 4 }}>
         <strong>{author}</strong> — {role}
       </div>
-      <div style={{ fontSize: '13px', color: 'var(--ds-text, #172B4D)' }}>
+      <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
         {text}
       </div>
     </div>
@@ -356,10 +356,10 @@ function LinkedItemRow({
     >
       <span>{icons[type]}</span>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
           {id}
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--ds-icon-subtle, #626F86)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-icon-subtle, #626F86)' }}>
           {name}
         </div>
       </div>

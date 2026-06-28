@@ -22,8 +22,8 @@ export const LabelBadge: React.FC<LabelBadgeProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const sizes = {
-    sm: { padding: '2px 8px', fontSize: '11px', gap: '4px', iconSize: 10 },
-    md: { padding: '4px 10px', fontSize: '12px', gap: '6px', iconSize: 12 }
+    sm: { padding: '2px 8px', fontSize: 'var(--ds-font-size-100)', gap: '4px', iconSize: 10 },
+    md: { padding: '4px 10px', fontSize: 'var(--ds-font-size-200)', gap: '6px', iconSize: 12 }
   };
 
   const s = sizes[size];

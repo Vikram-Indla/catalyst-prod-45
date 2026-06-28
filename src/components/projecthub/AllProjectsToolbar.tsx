@@ -143,7 +143,7 @@ export function AllProjectsToolbar({
                   style={{
                     gridArea: '1 / 1 / 2 / 3',
                     color: token('color.text'),
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     marginLeft: 2,
                     marginRight: 2,
                     maxWidth: '100%',

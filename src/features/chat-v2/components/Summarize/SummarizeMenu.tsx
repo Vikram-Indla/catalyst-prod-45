@@ -103,7 +103,7 @@ function MenuItem({
         background: 'transparent',
         border: 'none',
         color: strong ? 'var(--cv2-text-strong)' : 'var(--cv2-text)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: strong ? 700 : 500,
         cursor: 'pointer',
       }}

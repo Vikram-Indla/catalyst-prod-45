@@ -415,7 +415,7 @@ export default function NotificationPanel({
             <span
               style={{
                 fontFamily: "var(--cp-font-heading)",
-                fontSize: 24,
+                fontSize: 'var(--ds-font-size-800)',
                 fontWeight: 600,
                 color: T.text1,
                 margin: 0,
@@ -431,7 +431,7 @@ export default function NotificationPanel({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: T.text2,
               }}
             >
@@ -584,7 +584,7 @@ export default function NotificationPanel({
                           border: "none",
                           cursor: "pointer",
                           fontFamily: "var(--cp-font-body)",
-                          fontSize: 13,
+                          fontSize: 'var(--ds-font-size-300)',
                           color: T.text1,
                           transition: "background 150ms ease",
                         }}
@@ -667,7 +667,7 @@ export default function NotificationPanel({
                     : "2px solid transparent",
                   cursor: "pointer",
                   fontFamily: "var(--cp-font-body)",
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: isActive ? 600 : 500,
                   color: isActive
                     ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
@@ -709,7 +709,7 @@ export default function NotificationPanel({
             <span
               style={{
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: T.text3,
               }}
             >
@@ -730,7 +730,7 @@ export default function NotificationPanel({
                 background: "transparent",
                 cursor: "pointer",
                 fontFamily: "var(--cp-font-body)",
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 fontWeight: 500,
                 color: T.text2,
               }}

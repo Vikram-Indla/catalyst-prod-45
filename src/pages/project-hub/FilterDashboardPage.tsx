@@ -102,7 +102,7 @@ function KpiCard({ value, label, subtitle }: { value: number; label: string; sub
       </div>
       <div style={{
         marginTop: 8,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
         color: 'var(--ds-text, #172B4D)',
         fontFamily: 'var(--ds-font-family-body)',
@@ -111,7 +111,7 @@ function KpiCard({ value, label, subtitle }: { value: number; label: string; sub
       </div>
       <div style={{
         marginTop: 4,
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         color: 'var(--ds-text-subtle, #42526E)',
         fontFamily: 'var(--ds-font-family-body)',
       }}>
@@ -130,7 +130,7 @@ function ProportionBar({ label, count, max }: { label: string; count: number; ma
       <span style={{
         minWidth: 140,
         maxWidth: 140,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: 'var(--ds-text-subtle, #42526E)',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -154,7 +154,7 @@ function ProportionBar({ label, count, max }: { label: string; count: number; ma
       </div>
       <span style={{
         minWidth: 32,
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         textAlign: 'right',
         color: 'var(--ds-text, #172B4D)',
         fontWeight: 500,
@@ -234,7 +234,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
         <Spinner size="medium" />
-        <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 14 }}>Loading dashboard…</span>
+        <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-400)' }}>Loading dashboard…</span>
       </div>
     );
   }
@@ -304,7 +304,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
         {dashboard.isLoading && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 0' }}>
             <Spinner size="small" />
-            <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 13 }}>Fetching metrics…</span>
+            <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 'var(--ds-font-size-300)' }}>Fetching metrics…</span>
           </div>
         )}
 
@@ -325,8 +325,8 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                 justifyContent: 'center', padding: '48px 0', gap: 8,
                 color: 'var(--ds-text-subtle, #42526E)',
               }}>
-                <span style={{ fontSize: 16, fontWeight: 500 }}>No issues to display</span>
-                <span style={{ fontSize: 14 }}>The filter returned no results.</span>
+                <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 500 }}>No issues to display</span>
+                <span style={{ fontSize: 'var(--ds-font-size-400)' }}>The filter returned no results.</span>
               </div>
             )}
 
@@ -380,7 +380,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                           <div key={label}>
                             {/* Date group header */}
                             <div style={{
-                              fontSize: 12,
+                              fontSize: 'var(--ds-font-size-200)',
                               fontWeight: 600,
                               color: 'var(--ds-text-subtlest, #6B778C)',
                               padding: '8px 0 4px',
@@ -411,7 +411,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                 {/* KEY */}
                                 <span style={{
                                   flexShrink: 0,
-                                  fontSize: 12,
+                                  fontSize: 'var(--ds-font-size-200)',
                                   fontWeight: 500,
                                   color: 'var(--ds-text-subtlest, #6B778C)',
                                   fontFamily: 'var(--ds-font-family-body)',
@@ -424,7 +424,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                 <span style={{
                                   flex: 1,
                                   minWidth: 0,
-                                  fontSize: 13,
+                                  fontSize: 'var(--ds-font-size-300)',
                                   color: 'var(--ds-text, #172B4D)',
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
@@ -437,7 +437,7 @@ function FilterDashboardPageInner({ projectKey, viewId, navigate }: InnerProps) 
                                 {/* Status — plain text badge */}
                                 <span style={{
                                   flexShrink: 0,
-                                  fontSize: 11,
+                                  fontSize: 'var(--ds-font-size-100)',
                                   fontWeight: 500,
                                   color: 'var(--ds-text-subtle, #42526E)',
                                   background: 'var(--ds-background-neutral, #F1F2F4)',

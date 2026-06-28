@@ -220,7 +220,7 @@ export function AtlaskitPageShell({
             <h1
               style={{
                 margin: 0,
-                fontSize: 20,
+                fontSize: 'var(--ds-font-size-700)',
                 // 653 = Atlaskit Heading semibold resolved weight in
                 // Jira's Atlassian Sans theme (probed 2026-04-27 vs Jira
                 // BAU list view). Was 600; bumped to match parity exactly.

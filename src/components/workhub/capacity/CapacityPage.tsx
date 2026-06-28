@@ -70,13 +70,13 @@ export function CapacityPage() {
               </div>
               <div>
                 <div style={{
-                  fontFamily: 'var(--cp-font-heading)', fontSize: 22, fontWeight: 700,
+                  fontFamily: 'var(--cp-font-heading)', fontSize: 'var(--ds-font-size-700)', fontWeight: 700,
                   color: kpi.color, lineHeight: 1.1,
                 }}>
                   {kpi.value}{kpi.suffix}
                 </div>
                 <div style={{
-                  fontFamily: 'var(--cp-font-body)', fontSize: 12,
+                  fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)',
                   color: 'var(--fg-4)', marginTop: 2,
                 }}>
                   {kpi.label}

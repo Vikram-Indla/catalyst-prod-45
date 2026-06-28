@@ -99,7 +99,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                 <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span
                     style={{
-                      fontSize: 14,
+                      fontSize: 'var(--ds-font-size-400)',
                       fontWeight: 600,
                       lineHeight: '18px',
                       overflow: 'hidden',
@@ -111,7 +111,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                   </span>
                   <span
                     style={{
-                      fontSize: 11,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 500,
                       lineHeight: '14px',
                       color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
@@ -126,7 +126,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <span
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 600,
                     color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                   }}
@@ -147,7 +147,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                       <span
                         aria-label={`${extra} more members`}
                         style={{
-                          fontSize: 12,
+                          fontSize: 'var(--ds-font-size-200)',
                           fontWeight: 500,
                           color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
                           padding: '0 4px',
@@ -158,7 +158,7 @@ export function ChatProjectRow({ projectKey, fallbackTitle }: ChatProjectRowProp
                     ) : null}
                   </div>
                 ) : (
-                  <span style={{ fontSize: 12, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                     No members yet.
                   </span>
                 )}

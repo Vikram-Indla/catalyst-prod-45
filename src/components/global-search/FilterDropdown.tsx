@@ -41,7 +41,7 @@ const chipBase: React.CSSProperties = {
   border: '1px solid var(--ds-border)',
   background: 'var(--ds-surface)',
   color: 'var(--ds-text)',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   fontWeight: 500,
   fontFamily: 'var(--cp-font-body)',
   cursor: 'pointer',
@@ -155,7 +155,7 @@ export function FilterDropdown({
 
           {/* List */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
-            <div style={{ padding: '6px 16px', fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtle)' }}>
+            <div style={{ padding: '6px 16px', fontSize: 'var(--ds-font-size-200)', fontWeight: 700, color: 'var(--ds-text-subtle)' }}>
               Suggested
             </div>
             {filtered.map((opt) => {
@@ -182,7 +182,7 @@ export function FilterDropdown({
                 >
                   <Checkbox isChecked={checked} onChange={() => toggle(opt.id)} />
                   {opt.icon ?? <Avatar appearance="circle" size="small" name={opt.name} src={opt.avatarSrc} />}
-                  <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
                     {opt.name}
                     {opt.tag ? <span style={{ color: 'var(--ds-text-subtle, #626F86)' }}> ({opt.tag})</span> : null}
                   </span>
@@ -190,7 +190,7 @@ export function FilterDropdown({
               );
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--cp-font-body)' }}>
+              <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest)', fontFamily: 'var(--cp-font-body)' }}>
                 No matches
               </div>
             )}
@@ -205,7 +205,7 @@ export function FilterDropdown({
               cursor: 'pointer',
               padding: '12px 16px',
               borderTop: '1px solid var(--ds-border)',
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               fontFamily: 'var(--cp-font-body)',
             }}
@@ -237,7 +237,7 @@ export function FilterDropdown({
               borderRadius: 8,
               background: 'var(--ds-background-brand-bold)',
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               lineHeight: '16px',
             }}

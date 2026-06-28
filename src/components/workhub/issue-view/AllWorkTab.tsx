@@ -100,14 +100,14 @@ export function AllWorkTab({
           <div className="awCardBody">
             {item?.parent_key ? (
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>Parent</div>
+                <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>Parent</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   {parentItem && <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />}
-                  <span style={{ fontWeight: 700, fontSize: 12, color: 'var(--aw-text-subtle)' }}>{item.parent_key}</span>
-                  <span style={{ fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontWeight: 700, fontSize: 'var(--ds-font-size-200)', color: 'var(--aw-text-subtle)' }}>{item.parent_key}</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item.parent_summary ?? parentItem?.summary ?? ''}
                   </span>
-                  <span style={{ fontSize: 11, color: 'var(--aw-text-subtle)', marginLeft: 'auto', flexShrink: 0 }}>parent</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--aw-text-subtle)', marginLeft: 'auto', flexShrink: 0 }}>parent</span>
                 </div>
               </div>
             ) : (
@@ -115,7 +115,7 @@ export function AllWorkTab({
             )}
             {childItems.length > 0 && (
               <div style={{ marginTop: 10 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+                <div style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--aw-text-subtle)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
                   Children ({childItems.length})
                 </div>
                 {childItems.map(ch => (
@@ -154,7 +154,7 @@ export function AllWorkTab({
             ) : (
               links.map((link: any, i: number) => (
                 <div key={link.id ?? i} className="awRow" style={{ padding: '6px 4px', borderLeft: 'none' }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--aw-text-subtle)' }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--aw-text-subtle)' }}>
                     {link.link_type_name ?? 'Link'}
                   </span>
                   <span className="awKey">{link.target_key ?? link.source_key ?? ''}</span>
@@ -211,20 +211,20 @@ export function AllWorkTab({
             ) : (
               <div style={{ marginTop: 10 }}>
                 {(activityFilter === 'all' || activityFilter === 'comments') && comments.map((c: any, i: number) => (
-                  <div key={c.id ?? `c-${i}`} style={{ padding: '8px 0', borderBottom: '1px solid var(--aw-border)', fontSize: 13 }}>
+                  <div key={c.id ?? `c-${i}`} style={{ padding: '8px 0', borderBottom: '1px solid var(--aw-border)', fontSize: 'var(--ds-font-size-300)' }}>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'baseline' }}>
-                      <strong style={{ fontSize: 12 }}>{c._author_name ?? c.author_name ?? 'Unknown'}</strong>
-                      <span style={{ fontSize: 11, color: 'var(--aw-text-subtle)' }}>{formatRel(c.created_at)}</span>
+                      <strong style={{ fontSize: 'var(--ds-font-size-200)' }}>{c._author_name ?? c.author_name ?? 'Unknown'}</strong>
+                      <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--aw-text-subtle)' }}>{formatRel(c.created_at)}</span>
                     </div>
                     <div style={{ marginTop: 4 }}>{c.body ?? ''}</div>
                   </div>
                 ))}
                 {(activityFilter === 'all' || activityFilter === 'history') && history.map((h: any, i: number) => (
-                  <div key={h.id ?? `h-${i}`} style={{ padding: '8px 0', borderBottom: '1px solid var(--aw-border)', fontSize: 12, color: 'var(--aw-text-subtle)' }}>
+                  <div key={h.id ?? `h-${i}`} style={{ padding: '8px 0', borderBottom: '1px solid var(--aw-border)', fontSize: 'var(--ds-font-size-200)', color: 'var(--aw-text-subtle)' }}>
                     <strong>{h._author_name ?? 'System'}</strong> changed <strong>{h.field_name ?? ''}</strong>
                     {h.old_display ?? h.old_value ? <> from <s>{h.old_display ?? h.old_value}</s></> : null}
                     {h.new_display ?? h.new_value ? <> to <strong style={{ color: 'var(--aw-text)' }}>{h.new_display ?? h.new_value}</strong></> : null}
-                    <span style={{ marginLeft: 8, fontSize: 11 }}>{formatRel(h.created_at)}</span>
+                    <span style={{ marginLeft: 8, fontSize: 'var(--ds-font-size-100)' }}>{formatRel(h.created_at)}</span>
                   </div>
                 ))}
               </div>

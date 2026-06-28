@@ -141,7 +141,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
     <Box xcss={sectionHeaderXcss}>
       <span style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 12,
+        fontSize: 'var(--ds-font-size-200)',
         fontWeight: 600,
         color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
       }}>
@@ -162,7 +162,7 @@ function EmptyState({ isDark }: { isDark: boolean }) {
       </svg>
       <span style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 600,
         color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E'),
       }}>
@@ -170,7 +170,7 @@ function EmptyState({ isDark }: { isDark: boolean }) {
       </span>
       <span style={{
         fontFamily: 'var(--cp-font-body)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
         textAlign: 'center',
       }}>

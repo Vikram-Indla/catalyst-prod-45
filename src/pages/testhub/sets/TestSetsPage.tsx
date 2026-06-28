@@ -58,7 +58,7 @@ function SetTypePill({ type }: { type: SetType }) {
       display: 'inline-block',
       padding: '2px 8px',
       borderRadius: 3,
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 600,
       background: SET_TYPE_COLORS[type] ?? 'var(--ds-background-neutral, #F1F2F4)',
       color: 'var(--ds-text, #172B4D)',
@@ -73,7 +73,7 @@ function SetTypePill({ type }: { type: SetType }) {
 function MembershipBadge({ type }: { type: MembershipType }) {
   return (
     <span style={{
-      fontSize: 11,
+      fontSize: 'var(--ds-font-size-100)',
       fontWeight: 500,
       color: type === 'dynamic'
         ? 'var(--ds-text-accent-blue, #0052CC)'
@@ -174,7 +174,7 @@ function SetRowMenu({ set, projectId, onClose, onDeleted }: {
 
   const item: React.CSSProperties = {
     display: 'block', width: '100%', padding: '8px 16px', textAlign: 'left',
-    border: 'none', background: 'none', cursor: 'pointer', fontSize: 13,
+    border: 'none', background: 'none', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
     color: 'var(--ds-text, #172B4D)',
   };
 
@@ -310,12 +310,12 @@ export default function TestSetsPage() {
     <div style={{ padding: 24, maxWidth: 1100, fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>Test Sets</h2>
+        <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 600, color: 'var(--ds-text, #292A2E)' }}>Test Sets</h2>
         <Button appearance="primary" onClick={() => setShowCreate(true)}>
           + New Test Set
         </Button>
       </div>
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #42526E)', margin: '4px 0' }}>
           {sets.length} set{sets.length !== 1 ? 's' : ''}
         </p>
 
@@ -329,12 +329,12 @@ export default function TestSetsPage() {
           background: 'var(--ds-surface-overlay, #FFFFFF)',
           boxShadow: '0 4px 12px var(--ds-background-neutral-subtle-pressed, rgba(9,30,66,0.12))',
         }}>
-          <h3 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          <h3 style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
             New Test Set
           </h3>
           <div style={{ display: 'grid', gap: 12 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                 Name *
               </label>
               <Textfield
@@ -345,7 +345,7 @@ export default function TestSetsPage() {
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+              <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                 Description
               </label>
               <TextArea
@@ -356,7 +356,7 @@ export default function TestSetsPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+                <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                   Type
                 </label>
                 <Select
@@ -366,7 +366,7 @@ export default function TestSetsPage() {
                 />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
+                <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)', marginBottom: 4 }}>
                   Membership
                 </label>
                 <Select
@@ -399,11 +399,11 @@ export default function TestSetsPage() {
       {sets.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '64px 32px',
-          color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14,
+          color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 'var(--ds-font-size-400)',
           border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 8,
         }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
-          <p style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)' }}>
+          <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: 'var(--ds-text-subtle, #42526E)' }}>
             No test sets yet
           </p>
           <p style={{ margin: '0 0 20px' }}>
@@ -425,7 +425,7 @@ export default function TestSetsPage() {
             border: '1px solid var(--ds-border, #DFE1E6)',
           }}>
             {['Key', 'Name', 'Type', 'Membership', 'Cases', 'Active', ''].map((h, i) => (
-              <span key={i} style={{ fontSize: 12, fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)' }}>
+              <span key={i} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: 'var(--ds-text-subtle, #42526E)' }}>
                 {h}
               </span>
             ))}
@@ -449,22 +449,22 @@ export default function TestSetsPage() {
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))')}
               onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)')}
             >
-              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--ds-font-family-code, monospace)' }}>
                 {set.set_key ?? '—'}
               </span>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: 'var(--ds-link, #0052CC)', cursor: 'pointer' }}>
                   {set.name}
                 </div>
                 {set.description && (
-                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
                     {set.description}
                   </div>
                 )}
               </div>
               <div><SetTypePill type={set.set_type} /></div>
               <div><MembershipBadge type={set.membership_type} /></div>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #42526E)' }}>
                 {set.test_count ?? 0}
               </span>
               <div onClick={e => e.stopPropagation()}>

@@ -131,7 +131,7 @@ export function MentionPicker({ query, coords, onSelect, onDismiss }: Props) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--ds-text-subtle, #44546F)',
               }}
@@ -140,13 +140,13 @@ export function MentionPicker({ query, coords, onSelect, onDismiss }: Props) {
             </span>
           )}
           <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
               {u.full_name}
             </span>
             {u.email && (
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   color: 'var(--ds-text-subtlest, #6B778C)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',

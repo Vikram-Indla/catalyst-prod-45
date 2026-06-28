@@ -231,7 +231,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
       </PopoverTrigger>
 
       <PopoverContent 
-        className="w-[360px] p-0 bg-white dark:bg-[var(--ds-text, #172B4D)] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50"
+        className="w-[360px] p-0 bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50"
         align="end"
         sideOffset={8}
       >

@@ -71,7 +71,7 @@ export function UWVColumnPicker({ columns, prefs, onSave }: Props) {
         >
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 700,
               color: 'var(--ds-text-subtle, #44546F)',
               textTransform: 'uppercase',
@@ -96,7 +96,7 @@ export function UWVColumnPicker({ columns, prefs, onSave }: Props) {
             <>
               <div
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   fontWeight: 700,
                   color: 'var(--ds-text-subtle, #44546F)',
                   textTransform: 'uppercase',

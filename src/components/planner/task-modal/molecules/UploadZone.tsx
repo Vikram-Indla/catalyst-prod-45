@@ -57,7 +57,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onUpload }) => {
       {/* TITLE */}
       <h3
         style={{
-          fontSize: '16px',
+          fontSize: 'var(--ds-font-size-500)',
           fontWeight: 600,
           color: COLORS.textSecondary,
           margin: '0 0 6px 0'
@@ -67,7 +67,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onUpload }) => {
       </h3>
 
       {/* SUBTITLE */}
-      <p style={{ fontSize: '14px', color: COLORS.textMuted, margin: 0 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', color: COLORS.textMuted, margin: 0 }}>
         or <span style={{ color: COLORS.accent, fontWeight: 500 }}>browse</span> to choose files
       </p>
 

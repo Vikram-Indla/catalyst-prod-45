@@ -38,7 +38,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                 className={`transition-all ${isActive ? 'bg-[var(--cp-blue-wash)]' : 'bg-transparent'}`}
                 style={{
                   padding: '5px 14px',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: isActive ? 600 : 500,
                   fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6,
@@ -89,7 +89,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                 <span
                   className="uppercase"
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--ds-font-size-100)',
                     fontWeight: 700,
                     color: isOnHold ? 'var(--sem-warning)' : 'var(--fg-3)',
                     fontFamily: 'var(--cp-font-body)',
@@ -102,7 +102,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   className="ml-auto flex items-center justify-center rounded-full bg-[var(--bg-app)]"
                   style={{
                     width: 20, height: 20,
-                    fontSize: 10,
+                    fontSize: 'var(--ds-font-size-50)',
                     fontWeight: 700,
                     fontFamily: 'var(--cp-font-mono)',
                     color: wipExceeded ? 'var(--sem-danger)' : 'var(--fg-3)',
@@ -114,7 +114,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                 {col.wip_limit > 0 && (
                   <span
                     style={{
-                      fontSize: 9,
+                      fontSize: 'var(--ds-font-size-100)',
                       fontWeight: 600,
                       color: wipExceeded ? 'var(--sem-danger)' : 'var(--fg-4)',
                     }}
@@ -138,7 +138,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                       padding: '32px 16px',
                       border: '2px dashed var(--divider)',
                       color: 'var(--fg-4)',
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       fontWeight: 500,
                     }}
                   >
@@ -162,7 +162,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                 className="flex items-center gap-1.5 mt-2 w-full rounded-lg transition-colors"
                 style={{
                   padding: '6px 10px',
-                  fontSize: 12,
+                  fontSize: 'var(--ds-font-size-200)',
                   fontWeight: 500,
                   color: 'var(--fg-4)',
                   background: 'transparent',
@@ -263,7 +263,7 @@ function BoardCard({
           <PHIssueTypeIcon type={issue.type} size={16} />
           <span
             style={{
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               color: 'var(--fg-3)',
               fontFamily: 'var(--cp-font-mono)',
@@ -278,7 +278,7 @@ function BoardCard({
         {(issue.overdue_days ?? 0) > 0 && (
           <div
             className="flex items-center gap-1 mb-1"
-            style={{ fontSize: 10, fontWeight: 600, color: 'var(--sem-warning)' }}
+            style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 600, color: 'var(--sem-warning)' }}
           >
             <AlertTriangle size={10} />
             <span>{issue.overdue_days}d overdue</span>
@@ -288,7 +288,7 @@ function BoardCard({
         {/* Title — 2-line clamp */}
         <div
           style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             color: 'var(--fg-1)',
             lineHeight: 1.35,
@@ -308,7 +308,7 @@ function BoardCard({
           <PHPriorityIcon priority={issue.priority} />
           <div className="flex items-center gap-2">
             {issue.due_date ? (
-              <span className="flex items-center gap-1" style={{ fontSize: 10, color: 'var(--fg-4)' }}>
+              <span className="flex items-center gap-1" style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--fg-4)' }}>
                 <Calendar size={10} />
                 {new Date(issue.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
@@ -319,7 +319,7 @@ function BoardCard({
               style={{
                 width: 20, height: 20,
                 border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
-                fontSize: 8,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 color: 'var(--fg-3)',
               }}

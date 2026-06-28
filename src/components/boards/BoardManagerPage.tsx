@@ -124,7 +124,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
       cell: ({ row }) => (
         <span style={{
           color: 'var(--ds-link, #0052CC)',
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 400,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -143,7 +143,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
       cell: ({ row }) => row.leadName ? (
         <span style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          fontSize: 14, color: 'var(--ds-text, #172B4D)',
+          fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)',
         }}>
           <AkAvatar name={row.leadName} size="xsmall" />
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -151,7 +151,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
           </span>
         </span>
       ) : (
-        <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
+        <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, #6B778C)' }}>—</span>
       ),
     },
     {
@@ -162,7 +162,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
       cell: () => (
         <span style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          fontSize: 14, color: 'var(--ds-text-subtle, #505258)',
+          fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle, #505258)',
           overflow: 'hidden',
         }}>
           {/* Board icon — matches Jira's board list location column */}
@@ -257,7 +257,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
     >
       {error && (
         <div style={{ padding: '8px 0' }}>
-          <span style={{ fontSize: 12, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
             Board query error: {(error as Error).message}
           </span>
         </div>
@@ -275,7 +275,7 @@ const columns: Column<BoardListItem>[] = useMemo(() => [
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             padding: '48px 32px', gap: 12, color: token('color.text.subtle'),
           }}>
-            <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: token('font.weight.medium') }}>
               {search || spaceFilter || userFilter ? 'No boards match your search' : 'No boards yet'}
             </span>
             {!search && !spaceFilter && !userFilter && (
@@ -426,7 +426,7 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
               style={{
                 display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
                 border: 'none', background: 'transparent', cursor: 'pointer',
-                textAlign: 'left', fontSize: 14,
+                textAlign: 'left', fontSize: 'var(--ds-font-size-400)',
                 color: token('color.text', 'var(--ds-text, #172B4D)'),
               }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
@@ -445,7 +445,7 @@ function BoardRowMenu({ board, onEditSettings, onDelete, onMove, onCopy, onDupli
             style={{
               display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px',
               border: 'none', background: 'transparent', cursor: 'pointer',
-              textAlign: 'left', fontSize: 14,
+              textAlign: 'left', fontSize: 'var(--ds-font-size-400)',
               color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)'),
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-surface-sunken, var(--ds-background-neutral-subtle, #F7F8F9))'); }}
@@ -480,7 +480,7 @@ function MoveBoardDialog({ board, projects, currentProjectId, onConfirm, onClose
         <ModalTitle>Move board</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 12 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 12 }}>
           Move <strong>{board.name}</strong> to a different project.
         </p>
         <Select<ProjectOption>
@@ -526,16 +526,16 @@ function CopyBoardDialog({ board, projects, currentProjectId, onConfirm, onClose
         <ModalTitle>Copy board</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 16 }}>
+        <p style={{ fontSize: 'var(--ds-font-size-400)', color: token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'), marginBottom: 16 }}>
           Creates a new board with the same configuration. Issues are not copied.
         </p>
-        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
+        <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
           Board name
         </label>
         <div style={{ marginBottom: 16 }}>
           <Textfield value={name} onChange={e => setName((e.target as HTMLInputElement).value)} />
         </div>
-        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
+        <label style={{ display: 'block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: token('color.text', 'var(--ds-text, #172B4D)'), marginBottom: 4 }}>
           Destination project
         </label>
         <Select<ProjectOption>

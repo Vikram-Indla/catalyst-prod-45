@@ -45,7 +45,7 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
   return (
     <div
       className="flex-shrink-0 flex items-center justify-center rounded-full"
-      style={{ width: 22, height: 22, background: AVATAR_BG, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 9, fontWeight: 700 }}
+      style={{ width: 22, height: 22, background: AVATAR_BG, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 'var(--ds-font-size-100)', fontWeight: 700 }}
       title={name}
     >
       {initials}
@@ -72,11 +72,11 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
         style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${surface.border}`, background: headerBg }}
       >
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[2] }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[2] }}>
             Business Requests
           </span>
           <span style={{
-            fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
+            fontFamily: FONT.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ink[4],
             background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : SURFACE.page, border: `1px solid ${surface.border}`,
             borderRadius: 9999, padding: '0 6px', height: 20, display: 'inline-flex', alignItems: 'center',
           }}>
@@ -111,13 +111,13 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
                 </div>
                 <div style={{ width: 10, height: 10, borderRadius: 4, flexShrink: 0, background: typeColor }} />
                 <span style={{
-                  fontSize: 12, fontWeight: 600, color: ink[2],
+                  fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: ink[2],
                   textTransform: 'uppercase', letterSpacing: '0.04em',
                 }}>
                   {group.label}
                 </span>
                 <span style={{
-                  fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
+                  fontFamily: FONT.mono, fontSize: 'var(--ds-font-size-100)', fontWeight: 600, color: ink[4],
                   background: surface.card, border: `1px solid ${surface.border}`,
                   borderRadius: 9999, padding: '0 6px', height: 20,
                   display: 'inline-flex', alignItems: 'center', marginLeft: 'auto',
@@ -225,14 +225,14 @@ function RequestRow({
         <div className="flex items-center gap-1.5">
           <span style={{
             fontFamily: FONT.mono,
-            fontSize: 11, fontWeight: 500, color: ink[4],
+            fontSize: 'var(--ds-font-size-100)', fontWeight: 500, color: ink[4],
             fontVariantNumeric: 'tabular-nums',
             flexShrink: 0,
           }}>
             {item.initiativeKey}
           </span>
           <span className="truncate" style={{
-            fontSize: 13, fontWeight: 500, color: ink[1],
+            fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: ink[1],
             lineHeight: 1.3,
           }}>
             {item.titleEn}

@@ -128,7 +128,7 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
             <ModalTitle>New group message</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)', marginBottom: 8 }}>
+            <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)', marginBottom: 8 }}>
               Pick 2–{MAX_OTHERS} teammates. You're added automatically.
             </div>
             <input
@@ -139,7 +139,7 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 borderRadius: 4,
                 marginBottom: 12,
@@ -147,14 +147,14 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
             />
             {error && (
               <div style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: 'var(--ds-text-danger, #AE2A19)',
                 marginBottom: 8,
               }}>{error}</div>
             )}
             <div style={{ maxHeight: 320, overflowY: 'auto' }}>
               {candidates.length === 0 && (
-                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 13 }}>
+                <div style={{ padding: 16, color: 'var(--ds-text-subtle, #44546F)', fontSize: 'var(--ds-font-size-300)' }}>
                   No matches.
                 </div>
               )}
@@ -188,9 +188,9 @@ export function NewGroupDmModal({ isOpen, onClose, onCreated }: NewGroupDmModalP
                     />
                     <Avatar name={c.name} seed={c.profileId} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{c.name}</div>
+                      <div style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>{c.name}</div>
                       {c.sub && (
-                        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #44546F)' }}>{c.sub}</div>
+                        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #44546F)' }}>{c.sub}</div>
                       )}
                     </div>
                   </button>

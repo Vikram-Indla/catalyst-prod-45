@@ -84,7 +84,7 @@ export function EditableSectionName({
                 maxWidth: 320,
                 height: 32,
                 padding: '0 8px',
-                fontSize: 16,
+                fontSize: 'var(--ds-font-size-500)',
                 fontWeight: 700,
                 color: TEXT,
                 border: `1px solid ${BLUE}`,
@@ -118,7 +118,7 @@ export function EditableSectionName({
           </>
         ) : (
           <>
-            <span style={{ fontSize: 16, fontWeight: 700, color: TEXT }}>
+            <span style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 700, color: TEXT }}>
               {name || 'Give this section a name'}
             </span>
             <button

@@ -107,7 +107,7 @@ export function MobileNavigationMenu() {
                       ? ('var(--cp-interact-selected, rgba(37,99,235,0.06))')
                       : 'transparent',
                     cursor: 'pointer',
-                    fontSize: '14px',
+                    fontSize: 'var(--ds-font-size-400)',
                     fontWeight: isActive ? 600 : 500,
                     color: isActive
                       ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))')

@@ -50,7 +50,7 @@ export function CalendarGrid({ year, month, events, renderCell, onDateClick }: C
               padding: '8px 4px',
               textAlign: 'center',
               fontFamily: 'var(--wh-font-sans)',
-              fontSize: 11,
+              fontSize: 'var(--ds-font-size-100)',
               fontWeight: 600,
               textTransform: 'uppercase' as const,
               color: 'var(--fg-4)',
@@ -113,7 +113,7 @@ export function CalendarGrid({ year, month, events, renderCell, onDateClick }: C
                         ? 'var(--fg-1)'
                         : 'var(--fg-4)',
                     fontFamily: 'var(--wh-font-sans)',
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     fontWeight: 500,
                   }}
                 >
@@ -143,7 +143,7 @@ export function CalendarGridSkeleton() {
     >
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid var(--divider)', backgroundColor: 'var(--cp-float)' }}>
         {DAY_HEADERS.map((d) => (
-          <div key={d} style={{ padding: '8px 4px', textAlign: 'center', fontFamily: 'var(--wh-font-sans)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-4)', letterSpacing: '0.05em' }}>
+          <div key={d} style={{ padding: '8px 4px', textAlign: 'center', fontFamily: 'var(--wh-font-sans)', fontSize: 'var(--ds-font-size-100)', fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-4)', letterSpacing: '0.05em' }}>
             {d}
           </div>
         ))}

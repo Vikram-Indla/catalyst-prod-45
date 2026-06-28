@@ -153,7 +153,7 @@ function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 
                   <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                     <span className="di-res-name">{res.name}</span>
                     {roleMap.get(res.name.toLowerCase()) && (
-                      <span style={{ fontSize: 10, color: 'var(--di-ink-muted)', fontWeight: 500, lineHeight: 1.2 }}>
+                      <span style={{ fontSize: 'var(--ds-font-size-50)', color: 'var(--di-ink-muted)', fontWeight: 500, lineHeight: 1.2 }}>
                         {roleMap.get(res.name.toLowerCase())}
                       </span>
                     )}
@@ -536,14 +536,14 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
               <button className="di-wk-nav" onClick={prevWeek}><ChevronLeft size={14} /></button>
               {weekOffset === 0 ? (
                 <>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--di-ink)', letterSpacing: '0.3px' }}>THIS WEEK</span>
-                  <span style={{ fontSize: 11, color: 'var(--di-ink-muted)', fontWeight: 500, margin: '0 2px' }}>·</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 700, color: 'var(--di-ink)', letterSpacing: '0.3px' }}>THIS WEEK</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--di-ink-muted)', fontWeight: 500, margin: '0 2px' }}>·</span>
                   <span className="di-wk-rng">{weekRange}</span>
                 </>
               ) : weekOffset === -1 ? (
                 <>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--di-ink-tertiary)' }}>LAST WEEK</span>
-                  <span style={{ fontSize: 11, color: 'var(--di-ink-muted)', fontWeight: 500, margin: '0 2px' }}>·</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--di-ink-tertiary)' }}>LAST WEEK</span>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--di-ink-muted)', fontWeight: 500, margin: '0 2px' }}>·</span>
                   <span className="di-wk-rng">{weekRange}</span>
                 </>
               ) : (

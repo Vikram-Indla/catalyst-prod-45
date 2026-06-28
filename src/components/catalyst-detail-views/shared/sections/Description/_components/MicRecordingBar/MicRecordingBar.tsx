@@ -121,7 +121,7 @@ export function MicRecordingBar({
           >
             <span
               style={{
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 fontWeight: 600,
                 color: isPaused
                   ? 'var(--ds-text-subtlest, #97A0AF)'
@@ -154,7 +154,7 @@ export function MicRecordingBar({
             {preview && (
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--ds-font-size-100)',
                   color: 'var(--ds-text-subtle, #44546F)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',

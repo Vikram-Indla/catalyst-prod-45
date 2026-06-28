@@ -421,7 +421,7 @@ export function ImproveIssueDropdown({
     padding: '8px 14px',
     background: 'transparent',
     border: 'none',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     color: token('color.text', 'var(--ds-text, #172B4D)'),
     cursor: 'pointer',
     fontFamily: 'inherit',
@@ -441,7 +441,7 @@ export function ImproveIssueDropdown({
             actual Jira button — testid issue-improve-issue-dropdown.
             improve-issue-dropdown--trigger. Measured:
               bg=var(--ds-shadow-raised, rgba(0,0,0,0))  color=var(--ds-text, rgb(41,42,46))  border=0px
-              h=32px  pad=0 10px  br=3px  fontSize=14  fontWeight=500
+              h=32px  pad=0 10px  br=3px  fontSize={'var(--ds-font-size-400)'}  fontWeight=500
               icon: 16×16  fill=black  color=var(--ds-text, rgb(41,42,46))
             No purple anywhere — appearance="subtle" with dark text +
             dark icon. The earlier "subtle discovery" was fabricated. */}
@@ -461,7 +461,7 @@ export function ImproveIssueDropdown({
             background: 'transparent',
             color: 'var(--ds-text, #172B4D)',
             cursor: 'pointer',
-            fontSize: 12, fontWeight: 600,
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
             fontFamily: 'var(--ds-font-family-body, "Atlassian Sans"), ui-sans-serif, sans-serif',
             whiteSpace: 'nowrap',
             lineHeight: 1,
@@ -499,7 +499,7 @@ export function ImproveIssueDropdown({
             <div
               style={{
                 padding: '4px 14px 6px',
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B6E76)'),
                 textTransform: 'uppercase',
@@ -625,7 +625,7 @@ export function ImproveIssueDropdown({
                 <PageIcon size="small" primaryColor={token('color.icon.subtle', 'var(--ds-text-subtlest, #6B6E76)')} />
                 <span style={{ flex: 1 }}>Generate stories from docs</span>
                 {storyGen.generationCount > 0 && (
-                  <span style={{ fontSize: 11, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
+                  <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
                     {storyGen.generationCount}/2
                   </span>
                 )}
@@ -652,7 +652,7 @@ export function ImproveIssueDropdown({
             boxShadow: '0 4px 16px var(--ds-background-neutral-subtle-pressed, rgba(9, 30, 66, 0.14))',
             padding: '12px 16px',
             maxWidth: 260,
-            fontSize: 14,
+            fontSize: 'var(--ds-font-size-400)',
             fontWeight: 400,
             color: token('color.text', 'var(--ds-text, #172B4D)'),
             fontFamily: 'inherit',
@@ -724,7 +724,7 @@ export function ImproveIssueDropdown({
               aria-label={isSubtaskGenerating ? 'Generating subtasks…' : 'Creating subtasks…'}
             >
               <Spinner size="large" />
-              <div style={{ marginTop: 16, fontSize: 16, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+              <div style={{ marginTop: 16, fontSize: 'var(--ds-font-size-500)', fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
                 {isSubtaskGenerating ? 'Generating subtasks…' : 'Creating subtasks…'}
               </div>
             </div>

@@ -122,10 +122,10 @@ export function HuddleIncoming() {
       {hovered && (
         <>
           <span style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', whiteSpace: 'nowrap', maxWidth: 170, overflow: 'hidden' }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {incoming.callerName}
             </span>
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: green }} /> Incoming huddle…
             </span>
           </span>

@@ -115,7 +115,7 @@ function RowMenu({ items }: { items: MenuItem[] }) {
         style={{
           border: 'none', background: 'transparent', cursor: 'pointer',
           padding: '4px 8px', borderRadius: 3, color: T.textSubtle,
-          fontSize: 18, lineHeight: 1,
+          fontSize: 'var(--ds-font-size-600)', lineHeight: 1,
         }}
       >
         ⋯
@@ -129,7 +129,7 @@ function RowMenu({ items }: { items: MenuItem[] }) {
             style={{
               display: 'block', width: '100%', textAlign: 'left',
               padding: '8px 16px', border: 'none', background: 'transparent',
-              cursor: 'pointer', fontSize: 14,
+              cursor: 'pointer', fontSize: 'var(--ds-font-size-400)',
               color: item.danger ? T.danger : T.text,
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = T.bgNeutral; }}
@@ -269,34 +269,34 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: T.text }}>
+            <h2 style={{ margin: 0, fontSize: 'var(--ds-font-size-700)', fontWeight: 600, color: T.text }}>
               {initial ? 'Edit field' : 'Create field'}
             </h2>
-            <p style={{ margin: '4px 0 0', fontSize: 14, color: T.textSubtle }}>
+            <p style={{ margin: '4px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
               {initial
                 ? 'Update the field definition.'
                 : 'Custom fields can be added to any work item layout.'}
             </p>
           </div>
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textSubtle, padding: 4 }} aria-label="Close">✕</button>
+          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-700)', color: T.textSubtle, padding: 4 }} aria-label="Close">✕</button>
         </div>
         {/* Body */}
         <form onSubmit={handleSubmit} style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
           {error && (
-            <div style={{ padding: '10px 14px', background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 4, color: T.danger, fontSize: 14 }}>
+            <div style={{ padding: '10px 14px', background: 'var(--ds-background-danger, #FFECEB)', borderRadius: 4, color: T.danger, fontSize: 'var(--ds-font-size-400)' }}>
               {error}
             </div>
           )}
 
           {/* Name */}
           <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: T.textSubtle }}>Name <span style={{ color: T.danger }}>*</span></span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Name <span style={{ color: T.danger }}>*</span></span>
             <input
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               placeholder="e.g. Customer priority"
               style={{
-                padding: '8px 12px', fontSize: 14, color: T.text,
+                padding: '8px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text,
                 border: `1px solid ${T.border}`, borderRadius: 4,
                 background: T.surface, outline: 'none',
               }}
@@ -306,13 +306,13 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
 
           {/* Field type — only editable on create */}
           <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: T.textSubtle }}>Field type</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Field type</span>
             <select
               value={form.field_type}
               disabled={!!initial}
               onChange={e => setForm(f => ({ ...f, field_type: e.target.value }))}
               style={{
-                padding: '8px 12px', fontSize: 14, color: T.text,
+                padding: '8px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text,
                 border: `1px solid ${T.border}`, borderRadius: 4,
                 background: initial ? T.bgNeutral : T.surface,
                 cursor: initial ? 'not-allowed' : 'default',
@@ -323,21 +323,21 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
               ))}
             </select>
             {initial && (
-              <span style={{ fontSize: 11, color: T.textSubtlest }}>Field type cannot be changed after creation.</span>
+              <span style={{ fontSize: 'var(--ds-font-size-100)', color: T.textSubtlest }}>Field type cannot be changed after creation.</span>
             )}
           </label>
 
           {/* Options (for select-type fields) */}
           {needsOptions && (
             <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: T.textSubtle }}>Options (JSON array)</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Options (JSON array)</span>
               <textarea
                 value={form.options_raw}
                 onChange={e => setForm(f => ({ ...f, options_raw: e.target.value }))}
                 rows={4}
                 placeholder={'["Option A", "Option B", "Option C"]'}
                 style={{
-                  padding: '8px 12px', fontSize: 13, color: T.text,
+                  padding: '8px 12px', fontSize: 'var(--ds-font-size-300)', color: T.text,
                   border: `1px solid ${T.border}`, borderRadius: 4,
                   background: T.surface, resize: 'vertical', fontFamily: 'var(--ds-font-family-code, monospace)',
                 }}
@@ -347,14 +347,14 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
 
           {/* Description */}
           <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: T.textSubtle }}>Description</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Description</span>
             <textarea
               value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               rows={3}
               placeholder="What this field is used for"
               style={{
-                padding: '8px 12px', fontSize: 14, color: T.text,
+                padding: '8px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text,
                 border: `1px solid ${T.border}`, borderRadius: 4,
                 background: T.surface, resize: 'vertical',
               }}
@@ -363,13 +363,13 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
 
           {/* Help text */}
           <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: T.textSubtle }}>Help text</span>
+            <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Help text</span>
             <input
               value={form.help_text}
               onChange={e => setForm(f => ({ ...f, help_text: e.target.value }))}
               placeholder="Shown as a tooltip on the field"
               style={{
-                padding: '8px 12px', fontSize: 14, color: T.text,
+                padding: '8px 12px', fontSize: 'var(--ds-font-size-400)', color: T.text,
                 border: `1px solid ${T.border}`, borderRadius: 4,
                 background: T.surface,
               }}
@@ -384,15 +384,15 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
               onChange={e => setForm(f => ({ ...f, is_global: e.target.checked, applicable_issue_types: e.target.checked ? [] : f.applicable_issue_types }))}
             />
             <div>
-              <span style={{ fontSize: 14, fontWeight: 500, color: T.text }}>Apply to all work item types</span>
-              <p style={{ margin: '2px 0 0', fontSize: 12, color: T.textSubtle }}>When checked, this field can be added to any layout.</p>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: T.text }}>Apply to all work item types</span>
+              <p style={{ margin: '2px 0 0', fontSize: 'var(--ds-font-size-200)', color: T.textSubtle }}>When checked, this field can be added to any layout.</p>
             </div>
           </label>
 
           {/* Applicable issue types */}
           {!form.is_global && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: T.textSubtle }}>Applicable work item types</span>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: T.textSubtle }}>Applicable work item types</span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {ISSUE_TYPES.map(t => {
                   const checked = form.applicable_issue_types.includes(t);
@@ -402,7 +402,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
                       type="button"
                       onClick={() => toggleType(t)}
                       style={{
-                        padding: '4px 10px', fontSize: 12, borderRadius: 12,
+                        padding: '4px 10px', fontSize: 'var(--ds-font-size-200)', borderRadius: 12,
                         border: `1px solid ${checked ? T.brand : T.border}`,
                         background: checked ? 'var(--ds-background-selected, #E9F2FE)' : T.surface,
                         color: checked ? T.brand : T.textSubtle,
@@ -427,7 +427,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
             type="button"
             onClick={onClose}
             style={{
-              padding: '8px 16px', fontSize: 14, borderRadius: 4,
+              padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
               border: `1px solid ${T.border}`, background: T.surface,
               color: T.text, cursor: 'pointer',
             }}
@@ -438,7 +438,7 @@ function FieldDrawer({ open, onClose, initial }: FieldDrawerProps) {
             onClick={handleSubmit}
             disabled={saving}
             style={{
-              padding: '8px 16px', fontSize: 14, borderRadius: 4,
+              padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', borderRadius: 4,
               border: 'none', background: T.brand,
               color: 'var(--ds-text-inverse, #FFFFFF)', cursor: saving ? 'not-allowed' : 'pointer',
               opacity: saving ? 0.7 : 1,
@@ -476,15 +476,15 @@ export default function FieldRegistryPage() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 653, color: T.text, lineHeight: '28px' }}>Fields</h1>
-            <p style={{ margin: '6px 0 0', fontSize: 14, color: T.textSubtle }}>
+            <h1 style={{ margin: 0, fontSize: 'var(--ds-font-size-800)', fontWeight: 653, color: T.text, lineHeight: '28px' }}>Fields</h1>
+            <p style={{ margin: '6px 0 0', fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
               Custom fields extend work items beyond Jira system fields. Add them to layouts per work item type.
             </p>
           </div>
           <button
             onClick={() => { setEditTarget(null); setDrawerOpen(true); }}
             style={{
-              padding: '8px 16px', fontSize: 14, fontWeight: 500, borderRadius: 4,
+              padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, borderRadius: 4,
               border: 'none', background: T.brand, color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
               whiteSpace: 'nowrap',
             }}
@@ -500,7 +500,7 @@ export default function FieldRegistryPage() {
             onChange={e => setSearchQ(e.target.value)}
             placeholder="Search fields…"
             style={{
-              width: '100%', maxWidth: 320, padding: '8px 12px', fontSize: 14,
+              width: '100%', maxWidth: 320, padding: '8px 12px', fontSize: 'var(--ds-font-size-400)',
               border: `1px solid ${T.border}`, borderRadius: 4,
               background: T.surface, color: T.text, boxSizing: 'border-box',
             }}
@@ -521,15 +521,15 @@ export default function FieldRegistryPage() {
             background: T.surfaceSunken,
           }}>
             {['Name', 'Field type', 'Applies to', 'Status', ''].map(h => (
-              <span key={h} style={{ fontSize: 12, fontWeight: 653, color: T.textSubtle }}>{h}</span>
+              <span key={h} style={{ fontSize: 'var(--ds-font-size-200)', fontWeight: 653, color: T.textSubtle }}>{h}</span>
             ))}
           </div>
 
           {isLoading && (
-            <div style={{ padding: 32, textAlign: 'center', color: T.textSubtle, fontSize: 14 }}>Loading…</div>
+            <div style={{ padding: 32, textAlign: 'center', color: T.textSubtle, fontSize: 'var(--ds-font-size-400)' }}>Loading…</div>
           )}
           {!isLoading && filtered.length === 0 && (
-            <div style={{ padding: 32, textAlign: 'center', color: T.textSubtle, fontSize: 14 }}>
+            <div style={{ padding: 32, textAlign: 'center', color: T.textSubtle, fontSize: 'var(--ds-font-size-400)' }}>
               {searchQ ? 'No fields match your search.' : 'No custom fields yet. Create one to get started.'}
             </div>
           )}
@@ -548,15 +548,15 @@ export default function FieldRegistryPage() {
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
             >
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: T.text }}>{field.name}</div>
+                <div style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 500, color: T.text }}>{field.name}</div>
                 {field.description && (
-                  <div style={{ fontSize: 12, color: T.textSubtlest, marginTop: 2 }}>{field.description}</div>
+                  <div style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest, marginTop: 2 }}>{field.description}</div>
                 )}
               </div>
-              <span style={{ fontSize: 14, color: T.textSubtle }}>
+              <span style={{ fontSize: 'var(--ds-font-size-400)', color: T.textSubtle }}>
                 {FIELD_TYPE_LABEL[field.field_type] ?? field.field_type}
               </span>
-              <span style={{ fontSize: 12, color: T.textSubtle }}>
+              <span style={{ fontSize: 'var(--ds-font-size-200)', color: T.textSubtle }}>
                 {field.is_global
                   ? 'All work item types'
                   : field.applicable_issue_types.length > 0
@@ -565,7 +565,7 @@ export default function FieldRegistryPage() {
               </span>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                fontSize: 11, fontWeight: 600,
+                fontSize: 'var(--ds-font-size-100)', fontWeight: 600,
                 color: field.is_active ? 'var(--ds-text-success, #216E4E)' : T.textSubtlest,
               }}>
                 <span style={{
@@ -593,7 +593,7 @@ export default function FieldRegistryPage() {
           ))}
         </div>
 
-        <p style={{ marginTop: 16, fontSize: 12, color: T.textSubtlest }}>
+        <p style={{ marginTop: 16, fontSize: 'var(--ds-font-size-200)', color: T.textSubtlest }}>
           {filtered.length} field{filtered.length !== 1 ? 's' : ''} shown.
           {' '}To add a field to a work item's layout, go to{' '}
           <a href="/admin/fields/layout" style={{ color: T.brand }}>Field layouts</a>.

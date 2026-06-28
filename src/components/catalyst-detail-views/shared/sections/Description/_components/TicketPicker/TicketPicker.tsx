@@ -111,11 +111,11 @@ export function TicketPicker({ query, coords, onSelect, onDismiss }: Props) {
           }}
         >
           <JiraIssueTypeIcon type={issue.issue_type} size={14} />
-          <span style={{ fontWeight: 500, color: 'var(--ds-link, #0052CC)', fontSize: 13, minWidth: 64 }}>
+          <span style={{ fontWeight: 500, color: 'var(--ds-link, #0052CC)', fontSize: 'var(--ds-font-size-300)', minWidth: 64 }}>
             {issue.issue_key}
           </span>
           <span style={{
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             color: 'var(--ds-text-subtle, #42526E)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

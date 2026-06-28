@@ -46,11 +46,11 @@ const FALLBACK_TARGET_ENVS: Opt[] = [
 ];
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontFamily: RH.fontBody, fontSize: 12, fontWeight: 600,
+  display: 'block', fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 600,
   color: 'var(--ds-text-subtle, #44546F)', marginBottom: 4,
 };
 const errStyle: React.CSSProperties = {
-  fontFamily: RH.fontBody, fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4,
+  fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4,
 };
 
 export function CreateReleaseModal({ onClose, release }: Props) {
@@ -174,7 +174,7 @@ export function CreateReleaseModal({ onClose, release }: Props) {
         </ModalHeader>
         <ModalBody>
           {formError && (
-            <div style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: 8, borderRadius: 4, marginBottom: 16 }}>
+            <div style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: 'var(--ds-text-danger, #AE2A19)', background: 'var(--ds-background-danger, #FFECEB)', padding: 8, borderRadius: 4, marginBottom: 16 }}>
               {formError}
             </div>
           )}

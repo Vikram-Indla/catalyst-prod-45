@@ -132,7 +132,7 @@ export function MenuItem({
         color: disabled
           ? 'var(--ds-text-disabled, #B3B9C4)'
           : 'var(--ds-text, #292A2E)',
-        fontSize: 13,
+        fontSize: 'var(--ds-font-size-300)',
         fontWeight: 400,
         cursor: disabled ? 'not-allowed' : 'pointer',
         textAlign: 'start',
@@ -181,7 +181,7 @@ export function ShortcutHint({ keys }: { keys: string[] }) {
         color: 'var(--ds-text-subtle, #44546F)',
         fontFamily:
           'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif',
-        fontSize: 10,
+        fontSize: 'var(--ds-font-size-50)',
         fontWeight: 500,
         padding: '0 6px',
         borderRadius: 3,
@@ -307,7 +307,7 @@ export function MenuToggle({ on }: { on: boolean }) {
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 8,
+          fontSize: 'var(--ds-font-size-100)',
           color: on
             ? 'var(--ds-background-success-bold, #22A06B)'
             : 'var(--ds-text-subtle, #44546F)',

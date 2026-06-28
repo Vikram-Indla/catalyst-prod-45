@@ -255,7 +255,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                       background: 'var(--ds-background-neutral, #F1F2F4)',
                       border: `1px solid ${BORDER}`,
                       borderRadius: 3,
-                      fontSize: 12,
+                      fontSize: 'var(--ds-font-size-200)',
                       color: TEXT,
                     }}
                   >
@@ -274,7 +274,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                   </span>
                 ))}
                 {picked.length === 0 && (
-                  <span style={{ color: SUBTLE, fontSize: 14, padding: '0 4px' }}>
+                  <span style={{ color: SUBTLE, fontSize: 'var(--ds-font-size-400)', padding: '0 4px' }}>
                     Search by work item key or summary
                   </span>
                 )}
@@ -337,15 +337,15 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
               value={query}
               onChange={(e) => setQuery(e.currentTarget.value)}
               placeholder="Search by work item key or summary"
-              style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 14, color: TEXT }}
+              style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--ds-font-size-400)', color: TEXT }}
             />
           </div>
           <div style={{ padding: '6px 0', overflowY: 'auto' }}>
-            <div style={{ padding: '6px 12px', fontSize: 12, fontWeight: 600, color: SUBTLE }}>
+            <div style={{ padding: '6px 12px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: SUBTLE }}>
               Recent work items
             </div>
             {available.length === 0 && (
-              <div style={{ padding: '12px 16px', fontSize: 13, color: SUBTLE }}>No matches</div>
+              <div style={{ padding: '12px 16px', fontSize: 'var(--ds-font-size-300)', color: SUBTLE }}>No matches</div>
             )}
             {available.map((it) => (
               <button
@@ -371,7 +371,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                 </span>
                 <span style={{
                   flex: '0 0 80px',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   color: 'var(--ds-link, #0C66E4)',
                   textDecoration: 'underline',
@@ -384,7 +384,7 @@ export function AddWorkItemsModal({ isOpen, release, onClose, onSuccess }: Props
                 <span style={{
                   flex: 1,
                   minWidth: 0,
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   fontWeight: 400,
                   color: 'var(--ds-text, #292A2E)',
                   overflow: 'hidden',

@@ -138,7 +138,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontSize: 12,
+    fontSize: 'var(--ds-font-size-200)',
     fontWeight: 600,
     color: 'var(--ds-text-subtle, #42526E)',
     marginBottom: 6,
@@ -154,7 +154,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
     border: '1px solid var(--ds-border, #DFE1E6)',
     borderRadius: 4,
     padding: '6px 10px',
-    fontSize: 14,
+    fontSize: 'var(--ds-font-size-400)',
     fontFamily: 'var(--ds-font-family-body)',
     color: 'var(--ds-text, #172B4D)',
     background: 'var(--ds-surface, #FFFFFF)',
@@ -200,7 +200,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
         <h2
           style={{
             margin: 0,
-            fontSize: 18,
+            fontSize: 'var(--ds-font-size-600)',
             fontWeight: 600,
             color: 'var(--ds-text, #172B4D)',
             fontFamily: 'var(--ds-font-family-body)',
@@ -324,7 +324,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
             <button
               onClick={() => setVersionModalOpen(true)}
               style={{
-                padding: '6px 12px', fontSize: 13, fontWeight: 500, borderRadius: 4,
+                padding: '6px 12px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 4,
                 border: '1px solid var(--ds-border, #DFE1E6)',
                 background: 'var(--ds-surface, #FFFFFF)',
                 color: 'var(--ds-text-subtle, #42526E)', cursor: 'pointer',
@@ -333,7 +333,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
               New version
             </button>
             <span style={{
-              fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)',
+              fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)',
               marginRight: 'auto',
             }}>
               v{existingCase.current_version ?? existingCase.version ?? 1}
@@ -361,7 +361,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
             <ModalTitle>Create new version</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <p style={{ margin: '0 0 16px', fontSize: 14, color: 'var(--ds-text-subtle)', fontFamily: 'var(--ds-font-family-body)' }}>
+            <p style={{ margin: '0 0 16px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', fontFamily: 'var(--ds-font-family-body)' }}>
               A copy of this case will be created as version {(existingCase.current_version ?? existingCase.version ?? 1) + 1}.
               The current version will be marked as superseded.
             </p>
@@ -372,7 +372,7 @@ export function CaseDrawer({ projectId, folderId, existingCase, onClose }: CaseD
                 onChange={e => setReplaceInSets(e.target.checked)}
                 style={{ width: 16, height: 16 }}
               />
-              <span style={{ fontSize: 13, color: 'var(--ds-text)', fontFamily: 'var(--ds-font-family-body)' }}>
+              <span style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text)', fontFamily: 'var(--ds-font-family-body)' }}>
                 Replace in all test sets
               </span>
             </label>

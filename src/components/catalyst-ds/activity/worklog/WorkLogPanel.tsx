@@ -84,7 +84,7 @@ function LogWorkForm({
             style={inputStyle}
           />
           {state.timeError ? (
-            <div style={{ color: 'var(--ds-text-danger, #AE2A19)', fontSize: 12, marginTop: 4 }}>{state.timeError}</div>
+            <div style={{ color: 'var(--ds-text-danger, #AE2A19)', fontSize: 'var(--ds-font-size-200)', marginTop: 4 }}>{state.timeError}</div>
           ) : (
             <div style={hintStyle}>Use w, d, h, m — e.g. <code>1d 4h</code></div>
           )}
@@ -165,14 +165,14 @@ function WorkLogEntry({
         <Avatar src={entry.author?.avatar_url ?? undefined} name={authorName} size="small" />
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
           <strong style={{ fontWeight: 600 }}>{authorName}</strong>{' '}
           <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             logged{' '}
             <strong style={{ fontWeight: 600 }}>{formatJiraTime(entry.time_spent_minutes)}</strong>
           </span>
         </div>
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', marginTop: 2 }}>
+        <div style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #6B778C)', marginTop: 2 }}>
           {formatAbsoluteDate(entry.work_date)}
         </div>
         {showPill && (
@@ -181,7 +181,7 @@ function WorkLogEntry({
           </div>
         )}
         {entry.description && (
-          <div style={{ marginTop: 8, fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
+          <div style={{ marginTop: 8, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text, #172B4D)' }}>
             {renderContent(entry.description, { roster, currentUserId })}
           </div>
         )}
@@ -254,7 +254,7 @@ export function WorkLogPanel({ workItemId }: WorkLogPanelProps) {
           marginBottom: 12,
         }}
       >
-        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>
+        <div style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #44546F)' }}>
           {entries.length > 0 ? (
             <>
               Total logged: <strong>{formatJiraTime(totalMinutes)}</strong> across {entries.length} entr
@@ -282,7 +282,7 @@ export function WorkLogPanel({ workItemId }: WorkLogPanelProps) {
       )}
 
       {isLoading ? (
-        <div style={{ padding: '12px 0', fontSize: 13, color: 'var(--ds-text-subtle, #6B778C)' }}>
+        <div style={{ padding: '12px 0', fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtle, #6B778C)' }}>
           Loading work logs…
         </div>
       ) : (
@@ -317,7 +317,7 @@ export function WorkLogPanel({ workItemId }: WorkLogPanelProps) {
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
   color: 'var(--ds-text-subtle, #44546F)',
   marginBottom: 4,
@@ -328,21 +328,21 @@ const inputStyle: React.CSSProperties = {
   padding: '6px 8px',
   border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: 3,
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   color: 'var(--ds-text, #172B4D)',
   background: 'var(--ds-surface, #FFFFFF)',
   outline: 'none',
 };
 
 const hintStyle: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 'var(--ds-font-size-100)',
   color: 'var(--ds-text-subtle, #6B778C)',
   marginTop: 4,
 };
 
 const btnPrimary: React.CSSProperties = {
   padding: '6px 12px',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   background: 'var(--ds-link, #0C66E4)',
   color: 'var(--ds-text-inverse, #FFFFFF)',
@@ -353,7 +353,7 @@ const btnPrimary: React.CSSProperties = {
 
 const btnSubtle: React.CSSProperties = {
   padding: '6px 12px',
-  fontSize: 13,
+  fontSize: 'var(--ds-font-size-300)',
   fontWeight: 500,
   background: 'transparent',
   color: 'var(--ds-text-subtle, #44546F)',
@@ -366,7 +366,7 @@ const linkBtn: React.CSSProperties = {
   background: 'transparent',
   border: 'none',
   padding: 0,
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 500,
   color: 'var(--ds-link, #0C66E4)',
   cursor: 'pointer',

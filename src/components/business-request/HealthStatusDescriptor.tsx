@@ -27,22 +27,22 @@ export function HealthStatusDescriptor({ health }: HealthStatusDescriptorProps) 
   return (
     <div style={{ marginBottom: health.violation_count > 0 ? '12px' : 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
           {health.health_status}
         </span>
         {health.br_target_date && (
-          <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
             Target: {new Date(health.br_target_date).toLocaleDateString('en-GB', {
               day: 'numeric', month: 'short', year: 'numeric',
             })}
           </span>
         )}
       </div>
-      <p style={{ margin: 0, fontSize: '12px', color: 'var(--ds-text-subtle, #42526E)', lineHeight: '16px' }}>
+      <p style={{ margin: 0, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtle, #42526E)', lineHeight: '16px' }}>
         {description}
       </p>
       {health.violation_count > 0 && (
-        <div style={{ marginTop: 6, fontSize: '11px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <div style={{ marginTop: 6, fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
           {health.violation_count} violation{health.violation_count !== 1 ? 's' : ''} detected
           {health.critical_violation_count > 0 && (
             <span style={{ color: 'var(--ds-text-danger, #AE2A19)', marginLeft: 4 }}>

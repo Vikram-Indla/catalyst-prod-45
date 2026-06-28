@@ -84,7 +84,7 @@ export function makeProgressCell(
       // No linked work items — match Jira's "No work items" empty state (no fabricated %).
       if (!progress || !progress.total) {
         return (
-          <span style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
             No work items
           </span>
         );
@@ -124,7 +124,7 @@ export function makeProgressCell(
               />
             )}
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
             {donePercent}%
           </span>
         </div>

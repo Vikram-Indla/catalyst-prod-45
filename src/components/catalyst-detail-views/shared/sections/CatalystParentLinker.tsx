@@ -59,7 +59,7 @@ function SidebarAddTrigger({
         border: "2px solid transparent",
         borderRadius: 4,
         cursor: "pointer",
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         color: "var(--ds-text-subtle, #5E6C84)",
         whiteSpace: "nowrap",
         fontFamily: "inherit",
@@ -208,7 +208,7 @@ function ParentLozenge({
           borderRadius: 4,
           background: tok.bg,
           color: tok.text,
-          fontSize: 14,
+          fontSize: 'var(--ds-font-size-400)',
           fontWeight: 400,
           cursor: "pointer",
           maxWidth: "100%",
@@ -451,7 +451,7 @@ function BusinessRequestParentPicker({
           <span
             style={{
               fontFamily: "var(--cp-font-mono)",
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: "var(--ds-link, var(--cp-primary-60, #0052CC))",
               flexShrink: 0,
             }}
@@ -460,7 +460,7 @@ function BusinessRequestParentPicker({
           </span>
           <span
             style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: "var(--ds-text, #292A2E)",
               flex: 1,
               overflow: "hidden",
@@ -533,7 +533,7 @@ function BusinessRequestParentPicker({
                   style={{
                     border: "none",
                     outline: "none",
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color: "var(--ds-text, #292A2E)",
                     width: "100%",
                     fontFamily: "inherit",
@@ -571,7 +571,7 @@ function BusinessRequestParentPicker({
                 <div
                   style={{
                     padding: "16px",
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color:
                       "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                     textAlign: "center",
@@ -603,7 +603,7 @@ function BusinessRequestParentPicker({
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color: "var(--ds-text-danger, #AE2E24)",
                     fontFamily: "inherit",
                   }}
@@ -639,7 +639,7 @@ function renderBrGroup(
     <>
       <div
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
           textTransform: "uppercase",
@@ -688,7 +688,7 @@ function renderBrGroup(
             <span
               style={{
                 fontFamily: "var(--cp-font-mono)",
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: "var(--ds-text-subtle, #5E6C84)",
                 flexShrink: 0,
               }}
@@ -697,7 +697,7 @@ function renderBrGroup(
             </span>
             <span
               style={{
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: "var(--ds-text, #292A2E)",
                 flex: 1,
                 overflow: "hidden",
@@ -856,7 +856,7 @@ function SingleParentPicker({
           <span
             style={{
               flex: 1,
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               color: "var(--ds-text, #292A2E)",
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -968,7 +968,7 @@ function SingleParentPicker({
                 padding: "10px 12px",
                 borderBottom: "1px solid var(--ds-border, #DFE1E6)",
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: "var(--ds-text, #292A2E)",
               }}
             >
@@ -992,7 +992,7 @@ function SingleParentPicker({
                 <div
                   style={{
                     padding: "16px",
-                    fontSize: 13,
+                    fontSize: 'var(--ds-font-size-300)',
                     color:
                       "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                     textAlign: "center",
@@ -1157,7 +1157,7 @@ function MultiLinkPicker({
                 <span
                   style={{
                     fontFamily: "var(--cp-font-mono)",
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     color: "var(--ds-link, var(--cp-primary-60, #0052CC))",
                     cursor: "pointer",
                     flexShrink: 0,
@@ -1168,7 +1168,7 @@ function MultiLinkPicker({
                 </span>
                 <span
                   style={{
-                    fontSize: 14,
+                    fontSize: 'var(--ds-font-size-400)',
                     color: "var(--ds-text, #292A2E)",
                     flex: 1,
                     overflow: "hidden",
@@ -1266,7 +1266,7 @@ function MultiLinkPicker({
                     style={{
                       border: "none",
                       outline: "none",
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       color: "var(--ds-text, #292A2E)",
                       width: "100%",
                       fontFamily: "inherit",
@@ -1300,7 +1300,7 @@ function MultiLinkPicker({
                   <div
                     style={{
                       padding: "16px",
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       color:
                         "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                       textAlign: "center",
@@ -1335,7 +1335,7 @@ function renderGroup(
       {label !== "ACTIVE" && (
         <div
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
             textTransform: "uppercase",
@@ -1392,7 +1392,7 @@ function renderGroup(
               <span
                 style={{
                   fontFamily: "var(--cp-font-mono)",
-                  fontSize: 13,
+                  fontSize: 'var(--ds-font-size-300)',
                   color: "var(--ds-text-subtle, #5E6C84)",
                 }}
               >
@@ -1407,7 +1407,7 @@ function renderGroup(
             </div>
             <div
               style={{
-                fontSize: 14,
+                fontSize: 'var(--ds-font-size-400)',
                 color: "var(--ds-text, #292A2E)",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -1435,7 +1435,7 @@ function renderGroupMulti(
     <>
       <div
         style={{
-          fontSize: 11,
+          fontSize: 'var(--ds-font-size-100)',
           fontWeight: 700,
           color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
           textTransform: "uppercase",
@@ -1501,7 +1501,7 @@ function renderGroupMulti(
             <span
               style={{
                 fontFamily: "var(--cp-font-mono)",
-                fontSize: 12,
+                fontSize: 'var(--ds-font-size-200)',
                 color: "var(--ds-text-subtle, #5E6C84)",
                 flexShrink: 0,
               }}
@@ -1510,7 +1510,7 @@ function renderGroupMulti(
             </span>
             <span
               style={{
-                fontSize: 13,
+                fontSize: 'var(--ds-font-size-300)',
                 color: "var(--ds-text, #292A2E)",
                 flex: 1,
                 overflow: "hidden",

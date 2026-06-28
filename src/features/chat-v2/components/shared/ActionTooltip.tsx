@@ -56,7 +56,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
           color: 'var(--ds-text-inverse, #FFFFFF)',
           borderRadius: 6,
           fontFamily: 'var(--cv2-font)',
-          fontSize: 13,
+          fontSize: 'var(--ds-font-size-300)',
           fontWeight: 600,
           whiteSpace: 'nowrap',
           boxShadow: '0 6px 16px var(--ds-shadow-raised, rgba(0,0,0,0.35))',
@@ -72,7 +72,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
             color: 'var(--ds-text-inverse, #FFFFFF)',
             borderRadius: 4,
             fontFamily: 'var(--cv2-font)',
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             fontWeight: 700,
             letterSpacing: '0.04em',
           }}

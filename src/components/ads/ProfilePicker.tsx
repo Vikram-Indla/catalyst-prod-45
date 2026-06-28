@@ -286,7 +286,7 @@ export function ProfilePicker({
         padding: triggerVariant === 'cell' ? '2px 4px' : '4px 8px',
         cursor: effectivelyDisabled ? 'default' : 'pointer',
         borderRadius: 3,
-        fontSize: 14,
+        fontSize: 'var(--ds-font-size-400)',
         fontWeight: 500,
         color: 'var(--ds-text, #172B4D)',
         textAlign: 'left',
@@ -365,7 +365,7 @@ export function ProfilePicker({
                   outline: 'none',
                   background: 'transparent',
                   fontFamily: 'var(--ds-font-family-body, var(--cp-font-body))',
-                  fontSize: 14,
+                  fontSize: 'var(--ds-font-size-400)',
                   color: 'var(--ds-text, #172B4D)',
                 }}
               />
@@ -389,7 +389,7 @@ export function ProfilePicker({
               )}
 
               {filtered.length === 0 && (
-                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
+                <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
                   {/* 2026-06-21: distinguish "no source" from "search filtered them all out".
                      "No people match" was confusing when the picker was empty BEFORE the user typed
                      anything — usually means the project has no project_members rows yet. */}
@@ -465,7 +465,7 @@ function UnassignedRow({ isSelected, onClick }: { isSelected: boolean; onClick: 
         />
       )}
       <UnassignedAvatar size={24} />
-      <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Unassigned</span>
+      <span style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)' }}>Unassigned</span>
     </button>
   );
 }
@@ -527,11 +527,11 @@ function PickerRow({
         />
       )}
       <AkAvatar appearance="circle" size="small" name={member.name} src={member.avatarUrl ?? undefined} label={member.name} />
-      <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: 'var(--ds-text, #172B4D)', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #172B4D)', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {member.name}
       </span>
       {member.presenceState === 'on_leave' && (
-        <span style={{ fontSize: 11, color: 'var(--ds-text-warning, #B65C02)', flexShrink: 0 }}>
+        <span style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--ds-text-warning, #B65C02)', flexShrink: 0 }}>
           On leave
         </span>
       )}
@@ -543,7 +543,7 @@ function PickerRow({
       {badge && (
         <span
           style={{
-            fontSize: 11,
+            fontSize: 'var(--ds-font-size-100)',
             color: 'var(--ds-text-information, #0055CC)',
             background: 'var(--ds-background-information, #E9F2FE)',
             padding: '2px 6px',

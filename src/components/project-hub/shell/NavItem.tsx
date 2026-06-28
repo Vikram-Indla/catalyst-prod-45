@@ -54,7 +54,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
             <span
               className="ml-auto flex-shrink-0"
               style={{
-                fontSize: 9,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 700,
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 backgroundColor: 'var(--cp-purple-60, #7C3AED)',
@@ -71,7 +71,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
             <span
               className="ml-auto flex-shrink-0"
               style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 fontWeight: 600,
                 color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
                 fontFamily: 'var(--cp-font-mono)',

@@ -77,7 +77,7 @@ export function ProposalTable({
             overflow: 'hidden',
           }}>
             <span style={{
-              fontSize: 14,
+              fontSize: 'var(--ds-font-size-400)',
               fontWeight: 400,
               color: token('color.text', 'var(--ds-text, #172B4D)'),
               overflow: 'hidden',
@@ -88,7 +88,7 @@ export function ProposalTable({
             </span>
             {row.meta && (
               <span style={{
-                fontSize: 11,
+                fontSize: 'var(--ds-font-size-100)',
                 color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)'),
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -129,7 +129,7 @@ export function ProposalTable({
           border: `1px solid ${token('color.border.selected', 'var(--ds-background-information-bold, #0C66E4)')}`,
           position: 'relative',
         }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
             {selection.size} selected
           </span>
           <div style={{ position: 'relative' }}>
@@ -169,7 +169,7 @@ export function ProposalTable({
                       border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                       borderRadius: 3,
                       padding: '4px 6px',
-                      fontSize: 13,
+                      fontSize: 'var(--ds-font-size-300)',
                       outline: 'none',
                       boxSizing: 'border-box',
                       color: token('color.text', 'var(--ds-text, #172B4D)'),
@@ -183,7 +183,7 @@ export function ProposalTable({
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     width: '100%', padding: '6px 12px', border: 'none',
-                    background: 'transparent', cursor: 'pointer', fontSize: 13,
+                    background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
                     color: token('color.text', 'var(--ds-text, #172B4D)'),
                   }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}
@@ -200,7 +200,7 @@ export function ProposalTable({
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8,
                       width: '100%', padding: '6px 12px', border: 'none',
-                      background: 'transparent', cursor: 'pointer', fontSize: 13,
+                      background: 'transparent', cursor: 'pointer', fontSize: 'var(--ds-font-size-300)',
                       color: token('color.text', 'var(--ds-text, #172B4D)'),
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'); }}

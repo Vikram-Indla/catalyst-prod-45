@@ -45,7 +45,7 @@ const DATE_RANGE_LABELS: Record<DateRange, string> = {
 
 const TH: React.CSSProperties = {
   padding: '8px 16px',
-  fontSize: 12,
+  fontSize: 'var(--ds-font-size-200)',
   fontWeight: 600,
   color: 'var(--ds-text-subtle)',
   textAlign: 'left',
@@ -55,7 +55,7 @@ const TH: React.CSSProperties = {
 
 const TD: React.CSSProperties = {
   padding: '10px 16px',
-  fontSize: 14,
+  fontSize: 'var(--ds-font-size-400)',
   color: 'var(--ds-text)',
   borderBottom: '1px solid var(--ds-border-subtle)',
   verticalAlign: 'middle',
@@ -121,10 +121,10 @@ function useActiveProject(): string | undefined {
 function EmptyState() {
   return (
     <div style={{ padding: '48px 24px', textAlign: 'center' }}>
-      <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 8px' }}>
+      <p style={{ fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: 'var(--ds-text)', margin: '0 0 8px' }}>
         No data available for this report.
       </p>
-      <p style={{ fontSize: 14, color: 'var(--ds-text-subtle)', margin: 0 }}>
+      <p style={{ fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text-subtle)', margin: 0 }}>
         Run some test cycles and executions to generate report data.
       </p>
     </div>
@@ -151,7 +151,7 @@ function DateRangePicker({ value, onChange }: { value: DateRange; onChange: (v: 
           onClick={() => onChange(opt)}
           style={{
             padding: '6px 12px',
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: value === opt ? 600 : 400,
             color: value === opt ? 'var(--ds-text-selected)' : 'var(--ds-text-subtle)',
             background: value === opt ? 'var(--ds-background-selected)' : 'var(--ds-surface)',
@@ -771,7 +771,7 @@ function StatusBadge({ status }: { status: string }) {
   const color = colorMap[status] ?? 'var(--ds-text-subtle)';
   const bg = bgMap[status] ?? 'var(--ds-background-neutral)';
   return (
-    <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, padding: '2px 8px', borderRadius: 3, background: bg, color }}>
+    <span style={{ display: 'inline-block', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, padding: '2px 8px', borderRadius: 3, background: bg, color }}>
       {label}
     </span>
   );

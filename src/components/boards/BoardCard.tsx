@@ -102,7 +102,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               width: 34, height: 34, borderRadius: 8,
               background: board.color + '18',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 16, flexShrink: 0,
+              fontSize: 'var(--ds-font-size-500)', flexShrink: 0,
             }}>{board.icon}</div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{
@@ -110,9 +110,9 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 fontFamily: 'var(--cp-font-body)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{board.name}</div>
-              <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={{ fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{
-                  padding: '1px 6px', borderRadius: 3, fontSize: 10, fontWeight: 600,
+                  padding: '1px 6px', borderRadius: 3, fontSize: 'var(--ds-font-size-50)', fontWeight: 600,
                   background: board.boardType === 'scrum'
                     ? 'rgba(0,135,90,0.08)' : 'rgba(0,82,204,0.08)', // ads-scanner:ignore-line — semi-transparent overlay, no ADS token for alpha variant
                   color: board.boardType === 'scrum'
@@ -194,7 +194,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
           {board.boardQuery && (
             <div style={{
-              fontSize: 11, color: 'var(--fg-4)', fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+              fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)', fontFamily: 'ui-monospace, SFMono-Regular, monospace',
               marginBottom: 8, padding: '4px 6px', borderRadius: 3,
               background: isDark ? 'var(--ds-surface, rgba(255,255,255,0.04))' : 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -214,7 +214,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <PeopleGroupIcon label="" size="small" primaryColor="var(--fg-3)" /> {board.columnCount} cols
             </span>
-            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--fg-4)' }}>{timeAgo}</span>
+            <span style={{ marginLeft: 'auto', fontSize: 'var(--ds-font-size-100)', color: 'var(--fg-4)' }}>{timeAgo}</span>
           </div>
         </div>
 
@@ -251,10 +251,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             width: 420, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
             padding: 24, border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.12))',
           }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
+            <h3 style={{ fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
               Delete Board
             </h3>
-            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 16px', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>
+            <p style={{ fontSize: 'var(--ds-font-size-300)', color: 'var(--fg-3)', margin: '0 0 16px', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>
               Type the board name '<strong style={{ color: 'var(--fg-1)' }}>{board.name}</strong>' to confirm deletion.
               This action cannot be undone.
             </p>
@@ -265,20 +265,20 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               style={{
                 width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
                 border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', borderRadius: 6,
-                fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
+                fontSize: 'var(--ds-font-size-300)', fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
                 outline: 'none', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)', marginBottom: 16,
               }}
             />
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setDeleteModal(false); setDeleteConfirm(''); }} style={{
-                padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, borderRadius: 6,
                 border: isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.15))', background: isDark ? 'var(--cp-bg-page, var(--ds-surface, #FFFFFF))' : 'var(--bg-app)',
                 color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Cancel</button>
               <button onClick={handleDelete}
                 disabled={deleteConfirm !== board.name || deleteBoard.isPending}
                 style={{
-                  padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+                  padding: '8px 16px', fontSize: 'var(--ds-font-size-300)', fontWeight: 600, borderRadius: 6,
                   border: 'none',
                   background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
                   color: deleteConfirm === board.name ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
@@ -300,7 +300,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
     <button onClick={onClick} style={{
       display: 'flex', alignItems: 'center', gap: 8, width: '100%',
       padding: '7px 12px', border: 'none', background: 'transparent',
-      cursor: 'pointer', fontSize: 12, fontWeight: 500,
+      cursor: 'pointer', fontSize: 'var(--ds-font-size-200)', fontWeight: 500,
       color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
       fontFamily: 'var(--cp-font-body)', textAlign: 'left',
     }}
@@ -316,7 +316,7 @@ function Chip({ children, bg, color }: { children: React.ReactNode; bg: string; 
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
-      borderRadius: 12, fontSize: 11, fontWeight: 500,
+      borderRadius: 12, fontSize: 'var(--ds-font-size-100)', fontWeight: 500,
       background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid var(--ds-background-neutral, var(--ds-background-neutral, #F1F2F4))' : '0.75px solid var(--ds-shadow-overlay, rgba(15,23,42,0.08))',
       fontFamily: 'var(--cp-font-body)',
     }}>{children}</span>

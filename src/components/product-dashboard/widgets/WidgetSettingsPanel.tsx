@@ -32,7 +32,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
         <h3
           style={{
             margin: 0,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 600,
             color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           }}
@@ -50,7 +50,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
             color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
             padding: 4,
             borderRadius: 4,
-            fontSize: 16,
+            fontSize: 'var(--ds-font-size-500)',
             lineHeight: 1,
           }}
         >
@@ -73,7 +73,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
             color: token('color.text.inverse', 'var(--ds-text-inverse, #FFFFFF)'),
             border: 'none',
             borderRadius: 4,
-            fontSize: 13,
+            fontSize: 'var(--ds-font-size-300)',
             fontWeight: 500,
             cursor: 'pointer',
           }}

@@ -52,7 +52,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
       <span
         style={{
           flex: 1,
-          fontSize: '14px',
+          fontSize: 'var(--ds-font-size-400)',
           color: completed ? COLORS.textMuted : COLORS.textPrimary,
           textDecoration: completed ? 'line-through' : 'none'
         }}

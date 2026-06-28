@@ -51,17 +51,17 @@ function VersionRow({ v }: { v: FilterVersion }) {
           gap: 8,
           marginBottom: 4,
         }}>
-          <span style={{ fontSize: 13, fontWeight: token('font.weight.medium'), color: token('color.text') }}>
+          <span style={{ fontSize: 'var(--ds-font-size-300)', fontWeight: token('font.weight.medium'), color: token('color.text') }}>
             {name}
           </span>
-          <span style={{ fontSize: 11, color: token('color.text.subtlest'), whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest'), whiteSpace: 'nowrap' }}>
             {relativeTime(v.changed_at)}
           </span>
         </div>
 
         {v.jql_query ? (
           <div style={{
-            fontSize: 12,
+            fontSize: 'var(--ds-font-size-200)',
             fontFamily: 'var(--ds-font-family-monospace, monospace)',
             color: token('color.text.subtle'),
             background: `var(--ds-surface-sunken, #F7F8F9)`,
@@ -74,11 +74,11 @@ function VersionRow({ v }: { v: FilterVersion }) {
             {v.jql_query}
           </div>
         ) : (
-          <span style={{ fontSize: 12, color: token('color.text.subtlest') }}>No JQL recorded</span>
+          <span style={{ fontSize: 'var(--ds-font-size-200)', color: token('color.text.subtlest') }}>No JQL recorded</span>
         )}
 
         {v.result_count !== null && (
-          <span style={{ marginTop: 4, display: 'block', fontSize: 11, color: token('color.text.subtlest') }}>
+          <span style={{ marginTop: 4, display: 'block', fontSize: 'var(--ds-font-size-100)', color: token('color.text.subtlest') }}>
             {v.result_count} result{v.result_count !== 1 ? 's' : ''} at time of save
           </span>
         )}
@@ -98,9 +98,9 @@ export function FilterVersionHistory({ filterId, filterName, onClose }: Props) {
 
       <ModalBody>
         {isLoading ? (
-          <p style={{ fontSize: 13, color: token('color.text.subtle') }}>Loading history…</p>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>Loading history…</p>
         ) : versions.length === 0 ? (
-          <p style={{ fontSize: 13, color: token('color.text.subtle') }}>
+          <p style={{ fontSize: 'var(--ds-font-size-300)', color: token('color.text.subtle') }}>
             No version history yet. History is recorded each time the filter is saved.
           </p>
         ) : (

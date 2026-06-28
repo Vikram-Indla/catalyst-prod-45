@@ -42,7 +42,7 @@ export default function CommitteeQueuePage() {
           }}>
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
-                fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 700,
+                fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-100)', fontWeight: 700,
                 textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
               }}>{h}</div>
             ))}
@@ -51,7 +51,7 @@ export default function CommitteeQueuePage() {
           {/* Empty */}
           {(!queue || queue.length === 0) && (
             <div className="flex items-center justify-center py-12">
-              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No committee members assigned.</p>
+              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No committee members assigned.</p>
             </div>
           )}
 
@@ -77,16 +77,16 @@ export default function CommitteeQueuePage() {
                 onClick={() => navigate(`/incident-hub/view/${item.incident_id}`)}
               >
                 <div className="px-3">
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '0 4px', borderRadius: 3 }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '0 4px', borderRadius: 3 }}>
                     {item.incident_key}
                   </span>
                 </div>
-                <div className="px-3 truncate" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
+                <div className="px-3 truncate" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 'var(--ds-font-size-200)', fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                   {item.title}
                 </div>
                 <div className="px-3"><SeverityChip severity={item.severity || 'SEV4'} /></div>
                 <div className="px-3"><StatusLozenge status={item.committee_status || 'pending'} /></div>
-                <div className="px-3" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
+                <div className="px-3" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-100)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                   {item.age_hours ? `${Math.round(item.age_hours)}h` : '\u2014'}
                 </div>
                 <div className="px-3 flex items-center gap-2">
@@ -99,20 +99,20 @@ export default function CommitteeQueuePage() {
                       transition: 'width 400ms ease',
                     }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 'var(--ds-font-size-50)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', whiteSpace: 'nowrap' }}>
                     {approved}/{total}
                   </span>
                 </div>
                 <div className="px-3">
                   {isMajor && (
-                    <span className="inline-flex items-center gap-1" style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>
+                    <span className="inline-flex items-center gap-1" style={{ fontSize: 'var(--ds-font-size-50)', fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>
                       <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', display: 'inline-block' }} />
                       MAJ
                     </span>
                   )}
                 </div>
                 <div className="px-3">
-                  <Button variant="ghost" size="sm" style={{ fontSize: 11, borderRadius: 4, height: 24 }}>Review</Button>
+                  <Button variant="ghost" size="sm" style={{ fontSize: 'var(--ds-font-size-100)', borderRadius: 4, height: 24 }}>Review</Button>
                 </div>
               </div>
             );

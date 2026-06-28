@@ -31,7 +31,7 @@ export function StatusPill({ value, label }: StatusPillProps) {
       height: '20px',
     }}>
       <span style={{
-        fontSize: '11px',
+        fontSize: 'var(--ds-font-size-100)',
         fontWeight: 653,
         lineHeight: '20px',
         color: statusFg(appearance),

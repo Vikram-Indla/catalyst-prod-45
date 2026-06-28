@@ -324,7 +324,7 @@ export function CreateFeatureModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className={cn(
         "sm:max-w-[700px] max-h-[90vh] p-0 flex flex-col overflow-hidden",
-        "bg-white dark:bg-[var(--ds-text, #172B4D)]",
+        "bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]",
         "rounded-lg",
         "shadow-xl",
         "border-0",
@@ -334,7 +334,7 @@ export function CreateFeatureModal({
         <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[var(--ds-icon-information, #1D7AFC)] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         {/* Header with Progress Ring */}
-        <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-[var(--ds-text, #172B4D)]">
+        <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <ProgressRing percent={completionPercent} />
@@ -430,7 +430,7 @@ export function CreateFeatureModal({
                   )}>
                     <SelectValue placeholder={epicsLoading ? "Loading..." : "Select an epic"} />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-[var(--ds-text, #172B4D)] border-border z-[500] max-h-60">
+                  <SelectContent className="bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] border-border z-[500] max-h-60">
                     {epics.map(epic => (
                       <SelectItem 
                         key={epic.id} 
@@ -498,7 +498,7 @@ export function CreateFeatureModal({
                     )}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-[var(--ds-text, #172B4D)] border-border z-[500] max-h-60">
+                <SelectContent className="bg-white dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))] border-border z-[500] max-h-60">
                   {users.map(user => (
                     <SelectItem 
                       key={user.id} 
@@ -521,7 +521,7 @@ export function CreateFeatureModal({
         <div className={cn(
           "flex items-center justify-between",
           "px-5 py-3",
-          "bg-[var(--ds-surface-sunken, #F7F8F9)] dark:bg-[var(--ds-text, #172B4D)]",
+          "bg-[var(--ds-surface-sunken, #F7F8F9)] dark:bg-[var(--ds-surface-overlay,var(--cp-ink-1, #1F1F1F))]",
           "border-t border-gray-200 dark:border-gray-700",
           "flex-shrink-0"
         )}>

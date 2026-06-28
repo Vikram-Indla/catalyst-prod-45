@@ -55,7 +55,7 @@ function AddDepLink({ onOpen }: { onOpen: (rect: DOMRect) => void }) {
       onClick={(e) => onOpen((e.currentTarget as HTMLElement).getBoundingClientRect())}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 2, padding: 0, border: 'none', background: 'transparent',
-        color: 'var(--ds-link, #0C66E4)', fontSize: 14, fontWeight: 500, cursor: 'pointer', textDecoration: 'underline',
+        color: 'var(--ds-link, #0C66E4)', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline',
         fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
       }}
     >
@@ -103,7 +103,7 @@ function LeadTimeCell({ issue }: { issue?: TimelineIssue }) {
     releaseName: issue?.releaseName ?? null,
   });
   if (!resolved.source) {
-    return <span style={{ color: 'var(--ds-text-subtlest, #8590A2)', fontSize: 14 }}>—</span>;
+    return <span style={{ color: 'var(--ds-text-subtlest, #8590A2)', fontSize: 'var(--ds-font-size-400)' }}>—</span>;
   }
   const todayIso = new Date().toISOString().slice(0, 10);
   const text = formatLeadTime(computeLeadTimeDays(resolved.endDate, todayIso));
@@ -113,7 +113,7 @@ function LeadTimeCell({ issue }: { issue?: TimelineIssue }) {
     : `${resolved.source === 'sprint' ? 'Sprint' : 'Release'}: ${resolved.sourceName ?? '(unnamed)'} · ends ${fmtDate(resolved.endDate)}`;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-      <span style={{ color: 'var(--ds-text, #292A2E)', fontSize: 14, whiteSpace: 'nowrap' }}>{text}</span>
+      <span style={{ color: 'var(--ds-text, #292A2E)', fontSize: 'var(--ds-font-size-400)', whiteSpace: 'nowrap' }}>{text}</span>
       <Tooltip content={tip} position="top">
         <span><Lozenge appearance={SOURCE_APPEARANCE[resolved.source]}>{label}</Lozenge></span>
       </Tooltip>
@@ -128,7 +128,7 @@ export function DependencyColumnHeaders({ height }: { height: number }) {
   // aligns with the gantt's two-row (month/week) header.
   const base: React.CSSProperties = {
     height, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-    fontSize: 14, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)',
+    fontSize: 'var(--ds-font-size-400)', fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)',
     background: 'var(--ds-surface-sunken, #F7F8F9)',
     borderBottom: '2px solid var(--ds-border, #DFE1E6)',
     borderLeft: cellBorder, userSelect: 'none',
@@ -259,7 +259,7 @@ function ItemAggCount({ count, aria, onOpen }: { count: number; aria: string; on
       style={{
         display: 'inline-flex', alignItems: 'center', height: ROW_H, padding: 0,
         border: 'none', background: 'transparent', whiteSpace: 'nowrap',
-        color: 'var(--ds-text, #292A2E)', fontSize: 14, fontWeight: 400,
+        color: 'var(--ds-text, #292A2E)', fontSize: 'var(--ds-font-size-400)', fontWeight: 400,
         cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
       }}
     >
@@ -281,8 +281,8 @@ function GroupAggCount({ count, dir, onOpen }: { count: number; dir: 'blockedBy'
         cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
       }}
     >
-      <span style={{ color: 'var(--ds-text, #292A2E)', fontSize: 14, fontWeight: 400 }}>{count}</span>
-      <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 14, fontWeight: 400 }}>Work items</span>
+      <span style={{ color: 'var(--ds-text, #292A2E)', fontSize: 'var(--ds-font-size-400)', fontWeight: 400 }}>{count}</span>
+      <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 'var(--ds-font-size-400)', fontWeight: 400 }}>Work items</span>
     </button>
   );
 }
@@ -319,12 +319,12 @@ export function DependencyAggregatePopover({ title, dir, relations, keyToIssue, 
           fontFamily: 'var(--ds-font-family-body)',
         }}
       >
-        <div style={{ padding: '12px 16px 8px', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B6E76)' }}>
+        <div style={{ padding: '12px 16px 8px', fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B6E76)' }}>
           {title}
         </div>
         <div style={{ overflowY: 'auto', paddingBottom: 8 }}>
           {relations.length === 0 && (
-            <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>No dependencies</div>
+            <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #626F86)' }}>No dependencies</div>
           )}
           {relations.map((rel) => {
             const member = keyToIssue.get(rel.memberKey);
@@ -334,7 +334,7 @@ export function DependencyAggregatePopover({ title, dir, relations, keyToIssue, 
                 key={`${rel.edgeId}`}
                 style={{
                   display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 130px minmax(0,1fr)',
-                  alignItems: 'center', gap: 8, padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #292A2E)',
+                  alignItems: 'center', gap: 8, padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)',
                 }}
               >
                 <DepItemRef issue={member} fallbackKey={rel.memberKey} onOpen={onOpenItem} />
@@ -359,7 +359,7 @@ function DepItemRef({ issue, fallbackKey, onOpen }: { issue?: TimelineIssue; fal
       <button
         type="button"
         onClick={() => onOpen(fallbackKey)}
-        style={{ color: 'var(--ds-link, #1868DB)', fontWeight: 500, textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0, fontSize: 14, fontFamily: 'var(--ds-font-family-body)' }}
+        style={{ color: 'var(--ds-link, #1868DB)', fontWeight: 500, textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0, fontSize: 'var(--ds-font-size-400)', fontFamily: 'var(--ds-font-family-body)' }}
       >
         {fallbackKey}
       </button>
@@ -426,7 +426,7 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
   // Jira column layout: Type 150 · Work item flex · Status 94 · Assignee 94 · Lead time 132 · delete 32.
   const GRID = '150px minmax(0,1fr) 94px 94px 200px 32px';
   const HEADERS = ['Type', 'Work item', 'Status', 'Assignee', 'Lead time', ''];
-  const colStyle: React.CSSProperties = { fontSize: 14, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B6E76)', textTransform: 'none' };
+  const colStyle: React.CSSProperties = { fontSize: 'var(--ds-font-size-400)', fontWeight: 700, color: 'var(--ds-text-subtlest, #6B6E76)', textTransform: 'none' };
 
   return createPortal(
     <>
@@ -450,12 +450,12 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
 
         <div style={{ overflowY: 'auto', flex: 1 }}>
           {relRows.length === 0 && !adding && (
-            <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #626F86)' }}>No dependencies yet</div>
+            <div style={{ padding: 16, fontSize: 'var(--ds-font-size-300)', color: 'var(--ds-text-subtlest, #626F86)' }}>No dependencies yet</div>
           )}
           {relRows.map((r) => {
             const issue = keyToIssue.get(r.key);
             return (
-              <div key={`${r.edgeId}`} style={{ position: 'relative', display: 'grid', gridTemplateColumns: GRID, gap: 8, alignItems: 'flex-start', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>
+              <div key={`${r.edgeId}`} style={{ position: 'relative', display: 'grid', gridTemplateColumns: GRID, gap: 8, alignItems: 'flex-start', padding: '8px 16px', fontSize: 'var(--ds-font-size-400)', color: 'var(--ds-text, #292A2E)' }}>
                 {/* Jira dependency marker bar (warning-bold orange) hugging the row's left edge */}
                 <span aria-hidden style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, background: 'var(--ds-background-warning-bold, #FF991F)' }} />
                 <span style={{ color: 'var(--ds-text, #292A2E)' }}>{r.kind}</span>
@@ -532,7 +532,7 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
             </div>
           )}
           {error && (
-            <div style={{ padding: '8px 16px', color: 'var(--ds-text-danger, #AE2A19)', fontSize: 12 }}>{error}</div>
+            <div style={{ padding: '8px 16px', color: 'var(--ds-text-danger, #AE2A19)', fontSize: 'var(--ds-font-size-200)' }}>{error}</div>
           )}
         </div>
 
@@ -547,7 +547,7 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
                 width: '100%', height: 36, padding: '0 8px',
                 border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4,
                 background: 'transparent', color: 'var(--ds-text, #292A2E)',
-                fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
+                fontSize: 'var(--ds-font-size-400)', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
               }}
             >
               <Plus size={16} /> Add dependency
@@ -577,5 +577,5 @@ export function RowDependencyCard(props: RowDependencyCardProps) {
 
 const footerLinkStyle: React.CSSProperties = {
   background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-  color: 'var(--ds-link, #1868DB)', fontSize: 14, fontWeight: 500, fontFamily: 'var(--ds-font-family-body)',
+  color: 'var(--ds-link, #1868DB)', fontSize: 'var(--ds-font-size-400)', fontWeight: 500, fontFamily: 'var(--ds-font-family-body)',
 };

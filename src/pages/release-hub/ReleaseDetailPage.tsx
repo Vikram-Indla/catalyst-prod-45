@@ -280,7 +280,7 @@ export function ReleaseDetailPage({
               }}
               style={{
                 flex: 1,
-                fontSize: 24,
+                fontSize: 'var(--ds-font-size-800)',
                 fontWeight: 700,
                 color: TEXT,
                 fontFamily: 'inherit',
@@ -350,7 +350,7 @@ export function ReleaseDetailPage({
             style={{
               margin: 0,
               padding: 0,
-              fontSize: 24,
+              fontSize: 'var(--ds-font-size-800)',
               fontWeight: 700,
               color: TEXT,
               flex: 1,

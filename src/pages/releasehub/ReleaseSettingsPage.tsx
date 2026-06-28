@@ -25,11 +25,11 @@ const T = {
 };
 
 function ChipList({ labels }: { labels: string[] }) {
-  if (labels.length === 0) return <span style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtlest }}>—</span>;
+  if (labels.length === 0) return <span style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtlest }}>—</span>;
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
       {labels.map((l) => (
-        <span key={l} style={{ fontFamily: RH.fontBody, fontSize: 12, fontWeight: 500, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 12, padding: '0 8px', lineHeight: '24px' }}>{l}</span>
+        <span key={l} style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', fontWeight: 500, color: T.subtle, background: T.sunken, border: `1px solid ${T.border}`, borderRadius: 12, padding: '0 8px', lineHeight: '24px' }}>{l}</span>
       ))}
     </div>
   );
@@ -38,8 +38,8 @@ function ChipList({ labels }: { labels: string[] }) {
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
     <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
-      <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 16, fontWeight: 600, color: T.text, margin: 0 }}>{title}</h2>
-      {description && <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: T.subtlest, margin: '4px 0 12px' }}>{description}</p>}
+      <h2 style={{ fontFamily: RH.fontDisplay, fontSize: 'var(--ds-font-size-500)', fontWeight: 600, color: T.text, margin: 0 }}>{title}</h2>
+      {description && <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: T.subtlest, margin: '4px 0 12px' }}>{description}</p>}
       {!description && <div style={{ height: 12 }} />}
       {children}
     </div>
@@ -65,7 +65,7 @@ export default function ReleaseSettingsPage() {
       </div>
 
       <div style={{ background: 'var(--ds-background-information, #E9F2FE)', border: '1px solid var(--ds-border-information, #8FB8F6)', borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
-        <p style={{ fontFamily: RH.fontBody, fontSize: 12, color: 'var(--ds-text-information, #0055CC)', margin: 0 }}>
+        <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-200)', color: 'var(--ds-text-information, #0055CC)', margin: 0 }}>
           These values are live from the module configuration. Edit them in the{' '}
           <Link to="/admin/release-ops" style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 600 }}>Release Operations admin panel</Link>.
         </p>
@@ -86,11 +86,11 @@ export default function ReleaseSettingsPage() {
           <Section title="Change lifecycle" description="Change stages, in order."><ChipList labels={labelsFor('change_status')} /></Section>
 
           <Section title="Change numbering" description="Catalyst-created change records are numbered sequentially.">
-            <p style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 14, color: T.text, margin: 0 }}>{sample}, {prefix}{'2'.padStart(pad, '0')}, …</p>
+            <p style={{ fontFamily: 'var(--ds-font-family-code, monospace)', fontSize: 'var(--ds-font-size-400)', color: T.text, margin: 0 }}>{sample}, {prefix}{'2'.padStart(pad, '0')}, …</p>
           </Section>
 
           <Section title="Notification policy" description="How subscribers are notified.">
-            <p style={{ fontFamily: RH.fontBody, fontSize: 13, color: T.subtle, margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontFamily: RH.fontBody, fontSize: 'var(--ds-font-size-300)', color: T.subtle, margin: 0, lineHeight: 1.5 }}>
               Notify on create: <strong>{notifyCreate ? 'On' : 'Off'}</strong>. Notify on status change: <strong>{notifyStatus ? 'On' : 'Off'}</strong>. Subscribers are reached through the Notifications module and Caty chat.
             </p>
           </Section>
