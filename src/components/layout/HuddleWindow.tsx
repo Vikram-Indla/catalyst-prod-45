@@ -51,6 +51,41 @@ export function HuddleWindow() {
   const showRemote = remoteSharing;
   const screenVisible = remoteSharing || localSharing;
 
+  // Participant tiles — square (rounded-rect), Slack-style. 'stage' = centered in
+  // the left area when nobody shares; 'rail' = docked at the top of the right rail
+  // when a screen share takes the full left.
+  const renderParticipantTiles = (variant: 'stage' | 'rail') => {
+    const list = participants.length > 0
+      ? participants
+      : [{ userId: 'self', name: active!.conversationName, avatarUrl: '' }];
+    const tileSize: React.CSSProperties = variant === 'stage'
+      ? { flex: '1 1 0', minWidth: 0, maxWidth: 340, height: 240 }
+      : { flex: 1, minWidth: 0, height: 150 };
+    return (
+      <div style={{
+        display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap',
+        ...(variant === 'stage' ? { flex: 1, minWidth: 0, padding: 12 } : { padding: 12 }),
+      }}>
+        {list.map((p) => (
+          <div key={p.userId} style={{
+            ...tileSize, position: 'relative', overflow: 'hidden', borderRadius: 12,
+            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DFE1E6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {p.avatarUrl
+              ? <img src={p.avatarUrl} alt={p.name || ''}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              : <Avatar size="xxlarge" name={p.name || active!.conversationName} />}
+            <span style={{ position: 'absolute', left: 12, bottom: 12, padding: '4px 10px', borderRadius: 8,
+              background: 'rgba(9,30,66,.55)', color: '#FFFFFF', fontSize: 12, fontWeight: 600 }}>
+              {p.name || active!.conversationName}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const toggleMute = useHuddleStore((s) => s.toggleMute);
   const startScreen = useHuddleStore((s) => s.startScreen);
   const stopScreen = useHuddleStore((s) => s.stopScreen);
@@ -245,9 +280,9 @@ export function HuddleWindow() {
       <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
         <div data-huddle-stage style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
           <div style={{ flex: 1, minHeight: 0, display: 'flex', gap: 12, padding: 12 }}>
-            {/* screen-share tile (only when someone shares) */}
-            {screenVisible && (
-              <div style={{ flex: 2, minWidth: 0, position: 'relative', background: '#000', borderRadius: 12, overflow: 'hidden', display: 'flex' }}>
+            {/* sharing → screen takes the full left; nobody sharing → participant tiles centered */}
+            {screenVisible ? (
+              <div style={{ flex: 1, minWidth: 0, position: 'relative', background: '#000', borderRadius: 12, overflow: 'hidden', display: 'flex' }}>
                 <video ref={videoRef} autoPlay playsInline muted
                   style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }} />
                 <canvas ref={canvasRef}
@@ -259,24 +294,22 @@ export function HuddleWindow() {
                   {showRemote ? `${active.conversationName} — screen` : 'You are sharing'}
                 </span>
               </div>
+            ) : (
+              renderParticipantTiles('stage')
             )}
-            {/* participant tile(s) */}
-            <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'var(--ds-surface, #FFFFFF)', borderRadius: 12, border: '1px solid var(--ds-border, #DFE1E6)' }}>
-              <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                {participants.length > 0
-                  ? <Avatar size="xxlarge" name={participants[participants.length - 1].name || active.conversationName} src={participants[participants.length - 1].avatarUrl || undefined} />
-                  : <Avatar size="xxlarge" name={active.conversationName} />}
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
-                  {participants[participants.length - 1]?.name || active.conversationName}
-                </span>
-              </span>
-            </div>
           </div>
         </div>
-        {chatPanelOpen && (
+        {(screenVisible || chatPanelOpen) && (
           <div style={{ flex: '0 0 360px', minWidth: 0, display: 'flex', flexDirection: 'column',
             borderLeft: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)' }}>
+            {/* while sharing, participant tiles dock at the top of the rail */}
+            {screenVisible && (
+              <div style={{ flex: '0 0 auto', borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+                {renderParticipantTiles('rail')}
+              </div>
+            )}
+            {chatPanelOpen && (
+            <>
             <div style={{ flex: '0 0 auto', padding: '8px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
               fontWeight: 700, fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Thread</div>
             <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -301,6 +334,8 @@ export function HuddleWindow() {
                 onSend={(md) => { void sendMessage(md); }}
               />
             </div>
+            </>
+            )}
           </div>
         )}
       </div>

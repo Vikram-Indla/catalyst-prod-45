@@ -22,13 +22,22 @@ const PAGE_SIZE = 50;
 
 const db = supabase as unknown as { from: (table: string) => any };
 
-const MESSAGE_FIELDS_BASE =
-  'id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at, reply_count, last_reply_at, is_also_in_channel, event_type, event_meta';
-const MESSAGE_FIELDS_WITH_SCHEDULE = `${MESSAGE_FIELDS_BASE}, scheduled_for, delivered_at`;
-// Session-level flag — when the schedule_send migration hasn't been applied
-// yet, the columns 'scheduled_for' / 'delivered_at' don't exist. We probe on
-// first call and fall back so the chat keeps loading.
-let scheduleColumnsAvailable: boolean | null = null;
+const MESSAGE_FIELDS_CORE =
+  'id, conversation_id, parent_id, author_id, body_text, body_adf, created_at, edited_at, deleted_at, reply_count, last_reply_at, is_also_in_channel';
+// Optional column groups, each gated by its own migration. When a migration
+// hasn't been applied yet the column is undefined (Postgres 42703). We probe on
+// first call and drop the offending group so the chat keeps loading instead of
+// blanking the whole feed.
+let scheduleColumnsAvailable: boolean | null = null; // scheduled_for / delivered_at
+let eventColumnsAvailable: boolean | null = null;    // event_type / event_meta
+
+/** Build the select list including whichever optional groups are known-present. */
+function buildMessageFields(): string {
+  let f = MESSAGE_FIELDS_CORE;
+  if (eventColumnsAvailable !== false) f += ', event_type, event_meta';
+  if (scheduleColumnsAvailable !== false) f += ', scheduled_for, delivered_at';
+  return f;
+}
 
 interface MessageRow {
   id: string;
@@ -102,41 +111,46 @@ async function fetchPage(
     const from = pageParam * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
 
-    const fieldList =
-      scheduleColumnsAvailable === false
-        ? MESSAGE_FIELDS_BASE
-        : MESSAGE_FIELDS_WITH_SCHEDULE;
-
     // Exclude thread replies from main feed unless explicitly "Also send to channel".
     const mainFeedFilter = 'parent_id.is.null,is_also_in_channel.eq.true';
 
-    let queryRes = await db
+    const runQuery = (fields: string) => db
       .from('chat_messages')
-      .select(fieldList)
+      .select(fields)
       .eq('conversation_id', conversationId)
       .is('deleted_at', null)
       .or(mainFeedFilter)
       .order('created_at', { ascending: false })
       .range(from, to);
 
-    // First-call fallback: schedule columns missing (migration not applied).
-    if (
-      queryRes.error &&
-      scheduleColumnsAvailable !== false &&
-      (queryRes.error.code === '42703' ||
-        /scheduled_for|delivered_at/i.test(queryRes.error.message ?? ''))
-    ) {
-      scheduleColumnsAvailable = false;
-      queryRes = await db
-        .from('chat_messages')
-        .select(MESSAGE_FIELDS_BASE)
-        .eq('conversation_id', conversationId)
-        .is('deleted_at', null)
-        .or(mainFeedFilter)
-        .order('created_at', { ascending: false })
-        .range(from, to);
-    } else if (!queryRes.error && scheduleColumnsAvailable === null) {
-      scheduleColumnsAvailable = true;
+    let queryRes = await runQuery(buildMessageFields());
+
+    // Undefined-column fallback: schedule and/or event columns may not be
+    // migrated yet. On a 42703, drop the named (or, if generic, any remaining)
+    // optional group and retry so the feed still loads. Loop in case BOTH groups
+    // are missing — each retry surfaces the next missing column.
+    let guard = 0;
+    while (queryRes.error && queryRes.error.code === '42703' && guard < 3) {
+      guard++;
+      const msg = queryRes.error.message ?? '';
+      let dropped = false;
+      if (/scheduled_for|delivered_at/i.test(msg) && scheduleColumnsAvailable !== false) {
+        scheduleColumnsAvailable = false; dropped = true;
+      }
+      if (/event_type|event_meta/i.test(msg) && eventColumnsAvailable !== false) {
+        eventColumnsAvailable = false; dropped = true;
+      }
+      if (!dropped) {
+        // Generic 42703 (column not named) — drop one still-enabled group and retry.
+        if (eventColumnsAvailable !== false) { eventColumnsAvailable = false; dropped = true; }
+        else if (scheduleColumnsAvailable !== false) { scheduleColumnsAvailable = false; dropped = true; }
+      }
+      if (!dropped) break;
+      queryRes = await runQuery(buildMessageFields());
+    }
+    if (!queryRes.error) {
+      if (scheduleColumnsAvailable === null) scheduleColumnsAvailable = true;
+      if (eventColumnsAvailable === null) eventColumnsAvailable = true;
     }
 
     const { data: rows, error } = queryRes;
