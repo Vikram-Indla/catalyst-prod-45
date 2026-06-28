@@ -49,7 +49,7 @@ function coverageHealth(pct: number): { label: string; appearance: ThemeAppearan
   return { label: 'Healthy', appearance: 'success' };
 }
 
-export { metricLabel };
+export { metricLabel, cardStyle, metricValue, sectionH, subtle };
 
 export function ReportStatusView({ data, insight, onRowOpen, uncoveredEmpty }: ReportStatusViewProps) {
   const health = coverageHealth(data.coveragePct);
