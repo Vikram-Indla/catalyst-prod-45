@@ -269,9 +269,9 @@ export function HuddleWindow() {
         {chatPanelOpen && (
           <div style={{ flex: '0 0 360px', minWidth: 0, display: 'flex', flexDirection: 'column',
             borderLeft: '1px solid var(--ds-border, #DFE1E6)', background: 'var(--ds-surface, #FFFFFF)' }}>
-            <div style={{ flex: '0 0 auto', padding: '10px 14px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+            <div style={{ flex: '0 0 auto', padding: '8px 16px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
               fontWeight: 700, fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Thread</div>
-            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {sessionMessages.length === 0 ? (
                 <div style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 13, lineHeight: 1.5 }}>
                   <strong style={{ color: 'var(--ds-text, #172B4D)' }}>Every huddle has a thread.</strong>
@@ -280,7 +280,7 @@ export function HuddleWindow() {
               ) : (
                 sessionMessages.map((m) => (
                   <div key={m.id} style={{ fontSize: 13 }}>
-                    <span style={{ fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>{m.authorName || 'You'}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>{m.authorName ?? ''}</span>
                     <span style={{ marginLeft: 8, color: 'var(--ds-text, #172B4D)', whiteSpace: 'pre-wrap' }}>{m.bodyText}</span>
                   </div>
                 ))
