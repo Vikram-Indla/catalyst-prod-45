@@ -137,6 +137,7 @@ import { useParentIssueTypes } from '@/hooks/workhub/useParentIssueTypes';
 import { useStarredItems } from '@/hooks/useStarredItems';
 import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import { CatalystDetailPanel } from '@/components/shared/CatalystDetailPanel';
+import { CatalystSideDrawer } from '@/components/catalyst-detail-views';
 import type { RequestRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { STORY_STATUS_LOZENGE, getPriorityLabel, shouldSynthesizeEpicRow, keyCellIconType, flattenTree } from '../utils/backlog.utils';
@@ -2246,6 +2247,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const [panelItem, setPanelItem] = useState<{ id: string; itemType: string; key: string | null } | null>(null);
   const closePanel = useCallback(() => setPanelItem(null), []);
 
+  // Key-cell click target: floating modal (CatalystSideDrawer without panelMode).
+  // Sidebar-icon click target stays on openDetail (right-side panel).
+  const [modalItem, setModalItem] = useState<{ id: string; itemType: string; key: string | null } | null>(null);
+  const closeModal = useCallback(() => setModalItem(null), []);
+
   // Detail panel width (Jira-parity: panel is drag-resizable, value persisted per project).
   // Drag handle + chrome lives in <CatalystDetailPanel>; this surface only owns the width
   // so it can set the table's paddingRight to keep columns from being covered.
@@ -2328,6 +2334,37 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       key: it.key ?? null,
     });
   }, [projectKey, dataSource, resolvedBaseUrl, navigate]);
+
+  // Key-cell click: open floating modal via CatalystSideDrawer (no panelMode).
+  // Mirrors openDetail's entityKind short-circuits (release/test_case/defect
+  // navigate to dedicated detail pages — no modal surface for those kinds).
+  const openModal = useCallback((it: BacklogItem) => {
+    if (dataSource?.entityKind === 'release') {
+      navigate(`/release-hub/${it.id}`);
+      return;
+    }
+    if (dataSource?.entityKind === 'test_case') {
+      navigate(`/testhub/repository?case=${it.id}`);
+      return;
+    }
+    if (dataSource?.entityKind === 'defect') {
+      navigate(`/testhub/defects/${it.id}`);
+      return;
+    }
+    const sourceIsBiz = dataSource && (it as any).source === BIZ_SOURCE;
+    const rawType = (it.type as string) || 'story';
+    let itemType = rawType;
+    if (sourceIsBiz) {
+      const override = dataSource?.resolveItemType?.(it as any);
+      itemType = override || 'business_request';
+    } else if (rawType === 'bug') itemType = 'defect';
+    else if (rawType === 'initiative') itemType = 'business_request';
+    setModalItem({
+      id: (it as any).issue_key || it.id,
+      itemType,
+      key: it.key ?? null,
+    });
+  }, [dataSource, navigate]);
 
   /* 2026-06-17: open the panel on first render when the caller asks for
      it (e.g. /tasks/list?openTask=<id> landing from the "Open in full
@@ -2673,7 +2710,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       cell: (() => {
         const keyCellRenderer = makeKeyCell(
           (r: BacklogItem) => r.key,
-          (r: BacklogItem) => openDetail(r),
+          (r: BacklogItem) => openModal(r),
           /* 2026-06-16: key-cell href (used by middle-click "open in new
              tab"). For biz-source rows (adapter-owned routing, e.g.
              incident hub), return undefined so middle-click is a no-op
@@ -4349,7 +4386,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               if (!showHierarchy) return 0;
               return depthById.get(r.id) ?? 0;
             }}
-            onRowClick={openDetail}
+            /* Row body click: no-op. Only the Summary cell's hover-sidebar
+               icon opens the right-side panel; the Key cell opens the modal.
+               Other column body click → nothing per Vikram 2026-06-28 spec. */
             selectable
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
@@ -4536,6 +4575,18 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             />
           );
         })()}
+        {/* Key-click → floating modal. Same router, no panelMode → modal chrome. */}
+        {modalItem && (
+          <CatalystSideDrawer
+            isOpen
+            onClose={closeModal}
+            itemId={modalItem.id}
+            itemType={modalItem.itemType}
+            entityKind={dataSource?.entityKind}
+            projectKey={projectKey ?? ''}
+            projectId={projectId}
+          />
+        )}
       </div>
 
       {/* Atlaskit-native Edit modal (replaces shadcn Dialog wrapper).
