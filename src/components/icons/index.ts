@@ -15,6 +15,9 @@ export type { ProjectAvatarProps, ProjectAvatarSize } from './ProjectAvatar';
 export { ProductAvatar } from './ProductAvatar';
 export type { ProductAvatarProps } from './ProductAvatar';
 
+export { CatalystIconWrapper } from './CatalystIconWrapper';
+export type { CatalystIconWrapperProps, IconSize, IconColor } from './CatalystIconWrapper';
+
 export { useIconOverrides } from './useIconOverrides';
 export type { IconOverride, IconCategory } from './useIconOverrides';
 
