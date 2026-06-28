@@ -366,6 +366,29 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     [rawNotifications, actorMaps]
   );
 
+  // Filter + group:
+  // 1. Drop old bulk-sync "Jira Sync assigned" rows (no real actor, system-generated)
+  // 2. Group all notifications for the same entity_id → primary row + "+N updates" badge
+  const groupedNotifications = useMemo<DirectNotification[]>(() => {
+    const filtered = notifications.filter(
+      n => !(n.verb === 'assigned' && n.actor?.actorType === 'system')
+    );
+    // notifications already sorted DESC by created_at; first occurrence per entity wins
+    const seen = new Map<string, { primary: DirectNotification; count: number }>();
+    for (const n of filtered) {
+      const key = n.target.id;
+      if (!seen.has(key)) {
+        seen.set(key, { primary: n, count: 0 });
+      } else {
+        seen.get(key)!.count++;
+      }
+    }
+    return Array.from(seen.values()).map(({ primary, count }) => {
+      if (count === 0 || !primary.actor) return primary;
+      return { ...primary, aggregation: { count, actor: primary.actor } };
+    });
+  }, [notifications]);
+
   // Read-state: merge DB read_at, local optimistic state, and external state
   const resolvedReadIds = useMemo<Set<string>>(() => {
     const ids = new Set<string>(localReadIds);
@@ -396,8 +419,8 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   if (isLoading) return <LoadingState isDark={isDark} />;
 
   const visible = unreadOnly
-    ? notifications.filter(n => !resolvedReadIds.has(n.id))
-    : notifications;
+    ? groupedNotifications.filter(n => !resolvedReadIds.has(n.id))
+    : groupedNotifications;
 
   if (visible.length === 0) {
     return <EmptyState isDark={isDark} />;
@@ -419,8 +442,8 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
           )}
           <SectionLabel label={group.label} isDark={isDark} />
           {group.items.map(n =>
-            n.verb === 'mentioned' ? (
-              // Mention notifications render as full activity cards per spec
+            (n.verb === 'mentioned' || n.verb === 'commented') ? (
+              // Mention and comment notifications render as full activity cards
               <div key={n.id} style={{ padding: '8px 16px' }}>
                 <MentionActivityCard
                   notification={n}
