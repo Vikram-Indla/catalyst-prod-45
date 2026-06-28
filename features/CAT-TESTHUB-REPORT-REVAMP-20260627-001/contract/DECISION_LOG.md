@@ -31,3 +31,9 @@
 |----|-------|--------|-------|---------|
 | D-008 | Blueprint B1-B8 | approved | Taxonomy (11 groups) + scope/coverage/traceability/governance/AI models APPROVED. Proceed to wire. | No |
 | D-009 | First wired surface | Coverage + Governance, Senaei BAU | New real route under /testhub/reports; project-scoped (default Senaei BAU); reuse canonical components + JiraTable; ADS tokens. | No (read-only views OK, G-002) |
+
+## Round 5 (2026-06-28)
+| ID | Title | Answer | Final | Schema? |
+|----|-------|--------|-------|---------|
+| D-010 | QA team derivation (U-009) | by test assignment | Team = distinct testers assigned to a project's test cases (tm_test_cases.assigned_to). No role-model dependency. | No |
+| D-011 | Team report scope | Project | Team Performance scoped to a selected project (tm_projects). | No |
