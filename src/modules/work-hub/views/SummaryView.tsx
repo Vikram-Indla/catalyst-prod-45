@@ -46,8 +46,9 @@ function StatusOverview() {
     { status: 'In Production', count: 2, color: 'var(--ds-background-warning-bold, #E2B203)' },
     { status: 'Hold', count: 6, color: 'var(--ds-background-success-bold, #1F845A)' },
     { status: 'Production Ready', count: 1, color: 'var(--ds-background-discovery-bold, #6554C0)' },
+// TODO: ads-unmapped — #8777D9 context unclear
     { status: 'On Hold', count: 7, color: '#8777D9' },
-    { status: 'Backlog', count: 44, color: '#FF7452' },
+    { status: 'Backlog', count: 44, color: 'var(--ds-background-danger-bold, #FF7452)' },
     { status: 'In Development', count: 4, color: 'var(--ds-link, #0C66E4)' },
   ];
   const total = statusData.reduce((sum, s) => sum + s.count, 0);
@@ -195,7 +196,7 @@ function RecentActivity() {
 function PriorityBreakdown() {
   const priorities = [
     { label: 'Highest', count: 2, color: 'var(--ds-background-danger-bold, #C9372C)' },
-    { label: 'High', count: 5, color: '#FF7452' },
+    { label: 'High', count: 5, color: 'var(--ds-background-danger-bold, #FF7452)' },
     { label: 'Medium', count: 42, color: 'var(--ds-background-warning-bold, #E2B203)' },
     { label: 'Low', count: 8, color: 'var(--ds-background-success-bold, #1F845A)' },
     { label: 'Lowest', count: 3, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' },

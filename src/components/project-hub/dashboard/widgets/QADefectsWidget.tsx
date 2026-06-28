@@ -80,7 +80,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         border: 0,
         cursor: 'pointer',
         ...SMALL,
-        color: token('color.link', '#0C66E4'),
+        color: token('color.link', 'var(--ds-link, #0C66E4)'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -110,6 +110,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         fontWeight: 500,
         textTransform: 'none',
         letterSpacing: '0.04em',
+// TODO: ads-unmapped — #292A2E context unclear
         color: token('color.text', '#292A2E'),
       }}
     >
@@ -171,7 +172,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 gap: 8,
                 /* 2026-06-09 Vikram parity — Jira Key 14/400 sans, not 14/600 mono. */
                 ...BODY,
-                color: token('color.link', '#0C66E4'),
+                color: token('color.link', 'var(--ds-link, #0C66E4)'),
                 whiteSpace: 'nowrap',
               }}
             >
@@ -198,7 +199,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                     whiteSpace: 'nowrap',
                     /* 2026-06-09 Vikram parity — match Epic Progress: 14/400 link */
                     ...BODY,
-                    color: token('color.link', '#0C66E4'),
+                    color: token('color.link', 'var(--ds-link, #0C66E4)'),
                   }}
                 >
                   {d.title ?? ''}
@@ -241,7 +242,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               </span>
             </div>
           ) : (
-            <span style={{ ...BODY, color: token('color.text.subtlest', '#6B6E76') }}>—</span>
+            <span style={{ ...BODY, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>—</span>
           ),
         },
         {
@@ -253,16 +254,16 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
             const isDone = ['closed', 'resolved', 'done', 'fixed', 'verified'].includes((d.status || '').toLowerCase());
             if (isDone) return <span />;
             const raw = d.created_at ?? d.jira_created_at ?? null;
-            if (!raw) return <span style={{ ...BODY, color: token('color.text.subtle', '#44546F') }}>—</span>;
+            if (!raw) return <span style={{ ...BODY, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>—</span>;
             const dt = new Date(raw);
-            if (Number.isNaN(dt.getTime())) return <span style={{ ...BODY, color: token('color.text.subtle', '#44546F') }}>—</span>;
+            if (Number.isNaN(dt.getTime())) return <span style={{ ...BODY, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>—</span>;
             const days = Math.max(0, Math.floor((Date.now() - dt.getTime()) / (1000 * 60 * 60 * 24)));
             const label = days === 0 ? 'today' : `${days}d`;
             return (
               <span
                 style={{
                   ...BODY,
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--ds-text, #172B4D)'),
                   whiteSpace: 'nowrap',
                   fontVariantNumeric: 'tabular-nums',
                 }}
@@ -310,7 +311,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         <div className="p-4 animate-pulse">
           <div
             className="h-20 rounded"
-            style={{ background: token('color.background.neutral.subtle', '#F1F2F4') }}
+            style={{ background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)') }}
           />
         </div>
       ) : !defects?.length ? (
@@ -323,7 +324,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               display: 'flex',
               gap: 12,
               alignItems: 'center',
-              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             }}
           >
             <span

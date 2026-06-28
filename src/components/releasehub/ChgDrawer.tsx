@@ -53,7 +53,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
   return (
     <>
       <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
-        <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-[var(--ds-surface, #080E1D)]/38 backdrop-blur-[1px]" />
         <div className="relative w-[700px] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
           onClick={e => e.stopPropagation()}>
           {/* Header */}
@@ -280,7 +280,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
               <div className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate({ signoffId: signoff.id }, { onSuccess: () => catalystToast.success('Approved') })}
                   disabled={approveSignoff.isPending}
-                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
+                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[var(--ds-background-success-bold, #004D33)] disabled:opacity-50">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => catalystToast.success('Rejected') })}
                   disabled={rejectSignoff.isPending}
                   className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)] disabled:opacity-50">Reject</button>

@@ -3,6 +3,7 @@ import { toStatusCategory } from "@/components/ads";
 import { statusBg, statusFg, type StatusAppearance } from "@/components/catalyst-detail-views/shared/sections/statusPalette";
 
 // Canonical palette (statusPalette.ts). Local pale done-green drifted from
+// TODO: ads-unmapped — #94C748 context unclear
 // canonical #94C748 — unified 2026-06-17.
 const CATEGORY_TO_APPEARANCE: Record<string, string> = {
   todo:       'default',

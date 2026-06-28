@@ -158,7 +158,7 @@ export default function WikiHomePage() {
                 return (
                   <button key={c.label} onClick={() => setActiveChip(c.label)} style={{
                     fontSize: 11, fontWeight: active ? 650 : 500, padding: '5px 12px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                    border: active ? '1.5px solid #2563EB' : isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))'), color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), transition: 'all 120ms',
+                    border: active ? '1.5px solid var(--ds-link, #2563EB)' : isDark ? '0.75px solid var(--ds-background-neutral, #F1F2F4)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', background: active ? (isDark ? 'var(--ds-background-information, rgba(37,99,235,0.12))' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))'), color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), transition: 'all 120ms',
                   }}>{c.icon} {c.label}</button>
                 );
               })}
@@ -211,6 +211,7 @@ export default function WikiHomePage() {
           background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: '0.75px solid var(--ds-background-information, rgba(37,99,235,0.2))', marginBottom: 40, flexWrap: 'wrap',
           cursor: 'pointer', transition: 'border-color 150ms, background 150ms',
         }}
+// TODO: ads-unmapped — #F0F5FF context unclear
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : '#F0F5FF'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ds-background-information, rgba(37,99,235,0.2))'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))'; }}
         >
@@ -314,6 +315,7 @@ StatCard.displayName = 'StatCard';
 /* ── Domain color map for quick ref icons ── */
 const DOMAIN_COLORS: Record<string, { bg: string; fg: string }> = {
   D1: { bg: 'var(--ds-background-information, #E9F2FF)', fg: 'var(--ds-link-pressed, #1e40af)' },   // blue
+// TODO: ads-unmapped — #0E7490 context unclear
   D2: { bg: '#CFFAFE', fg: '#0E7490' },   // cyan
   D3: { bg: 'var(--ds-background-warning, #FFF7D6)', fg: 'var(--ds-text-warning, #974F0C)' },   // amber
   D4: { bg: 'var(--ds-background-success, #DCFCE7)', fg: 'var(--ds-text-success, #216E4E)' },   // green
@@ -358,7 +360,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
 
   return (
     <div onClick={() => navigate(`/wiki/domains/${d.domain_code}`)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ display: 'flex', borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', overflow: 'hidden', transition: 'border-color 120ms, box-shadow 120ms', borderColor: hovered ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))'), boxShadow: hovered ? '0 2px 8px var(--ds-background-information, rgba(37,99,235,0.08))' : 'none' }}
+      style={{ display: 'flex', borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', cursor: 'pointer', border: isDark ? '0.75px solid var(--ds-background-neutral, #2E2E2E)' : '0.75px solid var(--ds-shadow-raised, rgba(0,0,0,0.06))', overflow: 'hidden', transition: 'border-color 120ms, box-shadow 120ms', borderColor: hovered ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-shadow-raised, rgba(0,0,0,0.06))'), boxShadow: hovered ? '0 2px 8px var(--ds-background-information, rgba(37,99,235,0.08))' : 'none' }}
     >
       <div style={{ width: 3, background: hovered ? dc.fg : 'transparent', transition: 'background 200ms' }} />
       <div style={{ flex: 1, padding: '16px 16px 14px' }}>

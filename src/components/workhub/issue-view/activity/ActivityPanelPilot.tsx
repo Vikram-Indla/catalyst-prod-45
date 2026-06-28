@@ -38,6 +38,7 @@ interface ActivityPanelPilotProps {
 // Helpers
 // ════════════════════════════════════════
 
+// TODO: ads-unmapped — #52C41A context unclear
 const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 function avatarBg(name: string) {
   return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length];

@@ -7,7 +7,7 @@ import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
 
 // ── Avatar colours — cycling through 6 brand colours ─────────────────────────
 
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', '#00A3BF', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-danger-bold, #C9372C)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-chart-teal-bold, #00A3BF)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-background-danger-bold, #C9372C)'];
 
 function avatarColor(name: string): string {
   let h = 0;
@@ -44,6 +44,7 @@ function WorkloadRow({
   const barColor = isHeavy
     ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)')
     : isMedium
+// TODO: ads-unmapped — #F5A623 context unclear
     ? '#F5A623'
     : 'var(--ds-chart-purple-bold, #8A7CFF)';
 

@@ -96,7 +96,7 @@ export function groupByRecency(items: WorkItem[], order: Recency[]): Array<{ buc
 
 export function GroupHeading({ bucket }: { bucket: Recency }) {
   // Jira parity (DOM probe 2026-04-24): the group heading on For You is a
-  // 14px / weight 500 / Title Case span in `color.text.subtlest` (#6B6E76,
+  // 14px / weight 500 / Title Case span in `color.text.subtlest` (var(--ds-text-subtlest, #6B6E76),
   // rgb(107,110,118)). It is NOT uppercase and has no letter-spacing —
   // earlier iterations mistook a per-row status lozenge for the group heading.
   return (

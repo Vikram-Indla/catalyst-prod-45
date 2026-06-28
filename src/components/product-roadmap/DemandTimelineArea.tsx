@@ -271,8 +271,8 @@ const HEALTH_COLORS: Record<string, string> = {
 
 // Status-based color mapping for progress bars - CATALYST BRAND COLORS ONLY
 // Blue: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1d4ed8)
-// Teal: #0d9488, #0f766e
-// Gray: #6b7280, #9ca3af
+// Teal: var(--ds-chart-teal-bold, #0d9488), var(--ds-chart-teal-bolder, #0f766e)
+// Gray: var(--ds-text-subtlest, #6b7280), var(--ds-text-disabled, #9ca3af)
 // Amber: var(--ds-text-warning, #f59e0b)
 const STATUS_COLORS: Record<string, string> = {
   new: 'var(--process-new-demand)',

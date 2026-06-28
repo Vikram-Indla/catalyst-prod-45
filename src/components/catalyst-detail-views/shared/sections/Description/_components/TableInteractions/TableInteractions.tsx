@@ -76,7 +76,7 @@ const ROD_COLOR = 'var(--ds-border, #DFE1E6)';
    so mouse-enter/leave can't oscillate as the visual pill changes size. */
 const GRIP_LONG = 28;
 const GRIP_SHORT = 18;
-const GRIP_BG = '#85B8FF';
+const GRIP_BG = 'var(--ds-border-focused, #85B8FF)';
 const GRIP_RADIUS = 4;
 /* 3px white halo around the pill — hides the table border line
    passing behind the rod / grip, gives clean separation. */

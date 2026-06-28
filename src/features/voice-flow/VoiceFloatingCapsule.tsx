@@ -75,6 +75,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     .vf-bar {
       width: 2px;
       border-radius: 2px;
+// TODO: ads-unmapped — #E040FB context unclear
       background: #E040FB;
       height: 5px;
       transition: height 80ms ease;
@@ -143,9 +144,11 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       font-style: italic;
     }
     .vf-label--error {
+// TODO: ads-unmapped — #F87168 context unclear
       color: #F87168;
     }
     .vf-label--review {
+// TODO: ads-unmapped — #F79009 context unclear
       color: #F79009;
       font-weight: 500;
     }
@@ -171,6 +174,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
       padding: 2px 10px;
       font-size: 11px;
       font-weight: 500;
+// TODO: ads-unmapped — #CE93D8 context unclear
       color: #CE93D8;
       animation: vf-fade-in 250ms ease forwards;
       align-self: flex-start;
@@ -218,6 +222,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CAPSULE_STYLE_ID
     }
     .vf-btn--commit:hover { background: var(--ds-link, #0C66E4); }
     .vf-btn--commit-review {
+// TODO: ads-unmapped — #F79009 context unclear
       background: #F79009;
       color: var(--ds-text-inverse, #FFFFFF);
     }

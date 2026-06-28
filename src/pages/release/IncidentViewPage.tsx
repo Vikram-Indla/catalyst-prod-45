@@ -189,7 +189,7 @@ export default function IncidentViewPage() {
   })) || [];
 
   return (
-    <div className="h-full flex flex-col bg-[#f5f7fa]">
+    <div className="h-full flex flex-col bg-[var(--ds-surface-sunken, #f5f7fa)]">
       {/* Page Header */}
       <div className="bg-card border-b border-border px-6 py-4 flex-shrink-0">
         {/* Breadcrumbs */}

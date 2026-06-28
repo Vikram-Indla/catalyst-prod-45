@@ -55,6 +55,7 @@ export const SUBTASK_TYPE_CONFIG = {
   figma: {
     label: 'Figma',
     icon: 'Figma',
+// TODO: ads-unmapped — #A259FF context unclear
     color: '#a259ff',
     bgColor: 'rgba(162, 89, 255, 0.12)',
   },

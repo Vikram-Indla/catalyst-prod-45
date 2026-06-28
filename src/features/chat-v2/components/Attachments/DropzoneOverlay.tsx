@@ -69,6 +69,7 @@ function DropzoneArt() {
           top: 24,
           width: 96,
           height: 76,
+// TODO: ads-unmapped — #7E57C2 context unclear
           background: '#7E57C2',
           borderRadius: 10,
           transform: 'rotate(-10deg)',
@@ -91,6 +92,7 @@ function DropzoneArt() {
           top: 18,
           width: 92,
           height: 72,
+// TODO: ads-unmapped — #4FC3F7 context unclear
           background: '#4FC3F7',
           borderRadius: 10,
           transform: 'rotate(8deg)',
@@ -119,6 +121,7 @@ function DropzoneArt() {
           style={{
             width: '100%',
             height: '70%',
+// TODO: ads-unmapped — #66BB6A context unclear
             background: 'linear-gradient(180deg, #AED581 0%, #66BB6A 100%)',
             position: 'relative',
           }}
@@ -131,6 +134,7 @@ function DropzoneArt() {
               width: 14,
               height: 14,
               borderRadius: '50%',
+// TODO: ads-unmapped — #FFD54F context unclear
               background: '#FFD54F',
               boxShadow: '0 0 0 1px var(--ds-shadow-raised, rgba(0,0,0,0.05))',
             }}

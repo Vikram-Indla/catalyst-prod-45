@@ -378,7 +378,7 @@ export function CreateEditRiskDialog({
               <button
                 type="button"
                 onClick={() => handleClose()}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[#57606A] dark:text-[var(--ds-text-disabled, #8590A2)] hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)]"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[var(--ds-text-subtlest, #57606A)] dark:text-[var(--ds-text-disabled, #8590A2)] hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)]"
               >
                 Cancel
               </button>
@@ -399,14 +399,14 @@ export function CreateEditRiskDialog({
         <AlertDialogContent className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-[var(--ds-surface, #FFFFFF)] dark:text-[var(--ds-border, #DFE1E6)]">Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#57606A] dark:text-[var(--ds-text-disabled, #8590A2)]">
+            <AlertDialogDescription className="text-[var(--ds-text-subtlest, #57606A)] dark:text-[var(--ds-text-disabled, #8590A2)]">
               You have unsaved changes. Are you sure you want to close without saving?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel 
               onClick={handleCancelDiscard}
-              className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[#57606A] dark:text-[var(--ds-text-disabled, #8590A2)] hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)]"
+              className="bg-white dark:bg-[var(--ds-surface-sunken, #F7F8F9)] border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-background-neutral, #F1F2F4)] text-[var(--ds-text-subtlest, #57606A)] dark:text-[var(--ds-text-disabled, #8590A2)] hover:bg-[var(--ds-surface-sunken, #F7F8F9)] dark:hover:bg-[var(--ds-surface-sunken, #F7F8F9)]"
             >
               Keep Editing
             </AlertDialogCancel>

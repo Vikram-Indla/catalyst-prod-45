@@ -8,7 +8,7 @@ interface WorkItemTypeIconProps {
 }
 
 const ICON_COLORS: Record<WorkItemType, string> = {
-  epic: '#904EE2', // Purple - represents large scope
+  epic: 'var(--ds-background-discovery-bold, #904EE2)', // Purple - represents large scope
   story: 'var(--ds-background-success-bold, #1F845A)', // Green
   feature: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', // Amber (was purple - per design system governance)
   task: 'var(--ds-link, #0065FF)', // Blue

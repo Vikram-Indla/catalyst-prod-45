@@ -36,7 +36,7 @@ function AkBtn({
           ? `1px solid ${token('color.link', 'var(--ds-link, #0C66E4)')}`
           : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: primary
-          ? hover ? 'var(--cp-primary-60, #0052CC)' : token('color.link', '#0C66E4')
+          ? hover ? 'var(--cp-primary-60, #0052CC)' : token('color.link', 'var(--ds-link, #0C66E4)')
           : hover ? token('color.background.neutral.hovered', 'var(--ds-background-neutral, #F1F2F4)') : token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         fontSize: 14,
         fontWeight: 500,

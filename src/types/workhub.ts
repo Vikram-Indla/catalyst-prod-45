@@ -323,12 +323,19 @@ export interface WhFilterConfig {
 }
 
 export const WH_STATUS_COLORS: Record<WhStatusColorKey, { bg: string; text: string; dot: string }> = {
+// TODO: ads-unmapped — #8C8F96 context unclear
   gray:   { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-icon, #44546F)', dot: '#8c8f96' },
+// TODO: ads-unmapped — #0C3578 context unclear
   blue:   { bg: 'var(--ds-background-information, #E9F2FF)', text: '#0c3578', dot: 'var(--ds-link, #1868DB)' },
+// TODO: ads-unmapped — #22863A context unclear
   green:  { bg: 'var(--ds-background-success-bold, #6A9A23)', text: '#1b4d1b', dot: '#22863a' },
+// TODO: ads-unmapped — #F87168 context unclear
   red:    { bg: '#f87168', text: '#601e16', dot: 'var(--ds-background-danger-bold, #ef4444)' },
+// TODO: ads-unmapped — #5C4813 context unclear
   yellow: { bg: 'var(--ds-background-warning-bold, #E2B203)', text: '#5c4813', dot: 'var(--ds-background-warning-bold, #d97706)' },
+// TODO: ads-unmapped — #82C7C2 context unclear
   teal:   { bg: '#82c7c2', text: '#0d4e48', dot: 'var(--ds-chart-teal-bold, #0d9488)' },
+// TODO: ads-unmapped — #C597F4 context unclear
   purple: { bg: '#c597f4', text: '#3b1761', dot: 'var(--ds-background-discovery-bold, #7C3AED)' },
 };
 
@@ -337,6 +344,7 @@ export const WH_PRIORITY_CONFIG: Record<WhPriority, { bars: number; color: strin
   High:    { bars: 3, color: 'var(--ds-background-warning-bold, #f97316)', label: 'High' },
   Medium:  { bars: 2, color: 'var(--ds-background-information-bold, #3b82f6)', label: 'Medium' },
   Low:     { bars: 1, color: 'var(--ds-background-success-bold, #1F845A)', label: 'Low' },
+// TODO: ads-unmapped — #8C8F96 context unclear
   Lowest:  { bars: 0, color: '#8c8f96', label: 'Lowest' },
 };
 

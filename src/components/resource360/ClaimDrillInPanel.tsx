@@ -38,7 +38,8 @@ function getStatusStyle(cat: string) {
   return STATUS_COLORS[cat] || STATUS_COLORS['To Do'];
 }
 
-const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
+// TODO: ads-unmapped — #8B6B7A context unclear
+const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "var(--ds-background-discovery, #6b8b7a)"];
 function hashColor(name: string): string {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);

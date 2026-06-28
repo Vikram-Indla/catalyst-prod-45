@@ -145,6 +145,7 @@ export default function StoryDetailPage() {
         <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text, #344054)' }}>Work item not found</span>
         <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>itemId {itemId} could not be found or has been deleted.</span>
         {debugInfo && (
+// TODO: ads-unmapped — #FFCDD2 context unclear
           <span style={{ fontSize: 11, color: 'var(--ds-background-danger-bold, #C9372C)', fontFamily: 'var(--cp-font-mono)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: '#FFF5F5', border: '1px solid #FFCDD2', borderRadius: 4 }}>
             {debugInfo}
           </span>

@@ -24,6 +24,7 @@ export const WorkListLoadingState = memo(function WorkListLoadingState() {
         style={{
           width: '32px',
           height: '32px',
+// TODO: ads-unmapped — #E6EDFA context unclear
           border: '3px solid #E6EDFA',
           borderTop: '3px solid var(--ds-link, #0C66E4)',
           borderRadius: '50%',
@@ -89,7 +90,7 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
           transition: 'background-color 150ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#0044A3';
+          e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold, #0044A3)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = 'var(--ds-link, #0C66E4)';

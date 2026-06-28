@@ -18,7 +18,7 @@
  *   Outer wrapper
  *     - background: --cp-bg-hub-page (var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) light / var(--ds-surface, #0A0A0A) dark).
  *                   V3 white — flattened Apr 19, 2026 (see token docstring).
- *                   Pre-V3 was Jira-blue #E9F2FE.
+ *                   Pre-V3 was Jira-blue var(--ds-background-selected, #E9F2FE).
  *     - padding:    8px (preserved from pre-V3 even though it's now
  *                   invisible white-on-white — keeps the inner rounded
  *                   card's corners off the page edges and makes it cheap
@@ -114,7 +114,7 @@ export interface AtlaskitPageShellProps {
   /**
    * Apr 27, 2026 (jira-compare iter 3): override the outer wrapper
    * background. Opt-in, single-surface scope. Used by BAU backlog list
-   * view to paint the Jira-parity blue chrome (`#E9F2FE`) WITHOUT
+   * view to paint the Jira-parity blue chrome (`var(--ds-background-selected, #E9F2FE)`) WITHOUT
    * affecting other migrated hub surfaces (Dashboard, Releases, etc.)
    * which keep the V3 flat white. When undefined, falls back to the
    * canonical `--cp-bg-hub-page` token.
@@ -147,7 +147,7 @@ export interface AtlaskitPageShellProps {
   /**
    * Apr 27, 2026 (jira-compare regression D-001/002/003): when provided,
    * renders a chrome-band region BETWEEN the outer chrome bg and the
-   * inner white card. The band sits in the tinted chrome (e.g., #E9F2FE
+   * inner white card. The band sits in the tinted chrome (e.g., var(--ds-background-selected, #E9F2FE)
    * for BAU backlog) and contains the breadcrumb row + project header
    * row (Spaces > Senaei BAU + project icon + H1 + actions). When absent,
    * the chrome and the card sit flush as before — opt-in, scoped to the
@@ -190,7 +190,7 @@ export function AtlaskitPageShell({
     : (hasSideRail || flush ? 0 : 8);
 
   // Resolve outer wrapper bg. Defaults to the V3 flat white (hubPage
-  // token). BAU backlog passes `#E9F2FE` to paint Jira's blue chrome.
+  // token). BAU backlog passes `var(--ds-background-selected, #E9F2FE)` to paint Jira's blue chrome.
   const outerBg = chromeBg ?? cp(adsTokens.bg.hubPage);
 
   // Header + children block. When sideRail is present this becomes the

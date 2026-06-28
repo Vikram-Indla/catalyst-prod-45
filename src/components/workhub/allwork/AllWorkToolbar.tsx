@@ -104,6 +104,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
   );
 }
 
+// TODO: ads-unmapped — #52C41A context unclear
 const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 
 export function AllWorkToolbar({

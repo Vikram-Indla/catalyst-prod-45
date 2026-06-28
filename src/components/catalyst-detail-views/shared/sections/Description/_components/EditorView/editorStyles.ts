@@ -235,6 +235,7 @@ export function injectEditorStyles(): void {
     .adf-light-renderer .catalyst-code-block .token.regex,
     .adf-light-renderer .catalyst-code-block .token.important,
     .adf-light-renderer .catalyst-code-block .token.variable {
+// TODO: ads-unmapped — #B65C02 context unclear
       color: #B65C02;
     }
     .catalyst-tiptap-editor .catalyst-code-block .token.important,
@@ -412,6 +413,7 @@ export function injectEditorStyles(): void {
       }
       66% {
         box-shadow:
+// TODO: ads-unmapped — #E56910 context unclear
           0 0 0 2px #E56910,
           0 0 14px 3px rgba(229,105,16,0.30);
       }
@@ -506,7 +508,7 @@ export function injectEditorStyles(): void {
        collapse resolution. */
     .catalyst-tiptap-editor table .catalyst-cell-selected {
       background: rgba(135, 184, 255, 0.18) !important;
-      outline: 1px solid #85B8FF !important;
+      outline: 1px solid var(--ds-border-focused, #85B8FF) !important;
       outline-offset: -1px !important;
     }
     /* Danger / delete-preview highlight — paints cells red. Declared
@@ -590,7 +592,7 @@ export function injectEditorStyles(): void {
        grip-selection / chevron-hover blue exactly. */
     .catalyst-tiptap-editor table .selectedCell {
       background: rgba(135, 184, 255, 0.18) !important;
-      outline: 1px solid #85B8FF !important;
+      outline: 1px solid var(--ds-border-focused, #85B8FF) !important;
       outline-offset: -1px !important;
     }
     .catalyst-tiptap-editor table .column-resize-handle {

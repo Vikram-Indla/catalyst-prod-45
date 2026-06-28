@@ -174,7 +174,7 @@ const gap = DS_SPACING.sm;     // 8px`,
           'Use semantic token names (primary, danger, success)',
         ],
         donts: [
-          'Use hardcoded hex colors (#FF0000)',
+          'Use hardcoded hex colors (var(--ds-text-danger, #FF0000))',
           'Use arbitrary spacing values (13px, 18px)',
           'Import tokens from @atlaskit/*',
           'Create custom color palettes outside token system',

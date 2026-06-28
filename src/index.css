@@ -935,15 +935,15 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     --chart-passed: var(
       --ds-chart-teal-bold,
-      #0d9488
+      var(--ds-chart-teal-bold, #0d9488)
     ); /* Teal for success/passed */
     --chart-failed: var(
       --ds-background-danger-bold,
-      #ef4444
+      var(--ds-background-danger-bold, #ef4444)
     ); /* Red for danger/failed */
     --chart-blocked: var(
       --ds-background-warning-bold,
-      #d97706
+      var(--ds-background-warning-bold, #d97706)
     ); /* Orange for warning/blocked */
     --chart-active: var(
       --cp-workstream-catalyst-primary,
@@ -1133,7 +1133,7 @@ html:has(body[data-scroll-locked]) {
     --nav-text-tertiary: var(--ds-text-subtle, #44546f); /* 6.04:1 contrast */
     --nav-module-badge: var(
       --ds-text-subtle,
-      #44546f
+      var(--ds-text-subtle, #44546f)
     ); /* Neutral badge (not colored) */
     --nav-section-label: var(--ds-text-subtle, #44546f); /* Section headers */
     --nav-accent-bar: var(
@@ -1221,7 +1221,7 @@ html:has(body[data-scroll-locked]) {
     ); /* V11: Item hover bg */
     --sidebar-item-active-bg: var(
       --ds-background-information,
-      #e9f2ff
+      var(--ds-background-information, #e9f2ff)
     ); /* V11: Active item bg */
     --sidebar-item-active-text: var(
       --cp-workstream-catalyst-primary,
@@ -1284,7 +1284,7 @@ html:has(body[data-scroll-locked]) {
     ); /* surface-0 */
     --table-row-alt-bg: var(
       --ds-surface-sunken,
-      #fafafa
+      var(--ds-surface-sunken, #fafafa)
     ); /* surface-1 - alternating */
     --table-row-hover: var(--ds-surface-sunken, #f7f8f9); /* surface-hover */
     --table-row-selected: var(
@@ -1310,7 +1310,7 @@ html:has(body[data-scroll-locked]) {
     --table-toolbar-bg: var(--ds-surface-sunken, #fafafa); /* surface-1 */
     --table-toolbar-input-bg: var(
       --ds-background-neutral-subtle,
-      #f7f8f9
+      var(--ds-surface-sunken, #f7f8f9)
     ); /* surface-3 */
     --table-toolbar-input-border: var(--ds-border, #e8e8e8); /* border-subtle */
 
@@ -1614,7 +1614,7 @@ html:has(body[data-scroll-locked]) {
     );
     --nav-accent-bar: var(
       --ds-background-information-bold,
-      #3b82f6
+      var(--ds-background-information-bold, #3b82f6)
     ); /* Left accent bar */
 
     /* === C) DIVIDER + BORDER GRAMMAR (ADS neutral borders) === */
@@ -1808,15 +1808,15 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     --chart-passed: var(
       --ds-chart-teal-bold,
-      #0d9488
+      var(--ds-chart-teal-bold, #0d9488)
     ); /* Teal for success/passed */
     --chart-failed: var(
       --ds-background-danger-bold,
-      #ef4444
+      var(--ds-background-danger-bold, #ef4444)
     ); /* Red for danger/failed */
     --chart-blocked: var(
       --ds-background-warning-bold,
-      #d97706
+      var(--ds-background-warning-bold, #d97706)
     ); /* Orange for warning/blocked */
     --chart-active: var(
       --cp-workstream-catalyst-primary,
@@ -1915,7 +1915,7 @@ html:has(body[data-scroll-locked]) {
     --nav-bg: var(--bg-2);
     --nav-text: var(
       --ds-text-disabled,
-      #8590a2
+      var(--ds-text-disabled, #8590a2)
     ); /* V10: Inactive nav items (dark) */
     --nav-text-hover: var(
       --cp-bg-sunken,
@@ -1923,13 +1923,13 @@ html:has(body[data-scroll-locked]) {
     ); /* V10: Nav hover state (dark) */
     --nav-active: var(
       --ds-background-information-bold,
-      #0c66e4
+      var(--ds-link, #0c66e4)
     ); /* V10: Active nav text (lighter blue in dark) */
     --nav-hover-bg: transparent; /* V10: NO background on hover */
     --nav-active-bg: transparent; /* V10: NO background on active */
     --nav-underline: var(
       --ds-background-information-bold,
-      #0c66e4
+      var(--ds-link, #0c66e4)
     ); /* V10: 2px active underline (dark) */
 
     --brand-active-hex: var(--ds-background-information-bold, #3b82f6);
@@ -3107,7 +3107,7 @@ html:has(body[data-scroll-locked]) {
  * - Tailwind: border-*, divide-*, ring-*, outline-*
  * - shadcn/ui: Separator, Table, Card, Dialog, Popover, DropdownMenu, Tabs
  * - Global: hr, table, tr, thead, tbody, .container, .panel, .section
- * - Hardcoded: #fff, rgba(255,255,255,0.1+), border-white/*
+ * - Hardcoded: var(--ds-surface, #fff), rgba(255,255,255,0.1+), border-white/*
  */
 
 /* All border classes: force ultra-subtle */
@@ -6072,7 +6072,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* DARK SURFACE COHERENCE (2026-06-16, revised 2026-06-18; ramp 2026-06-24; ADS-13 cleanup 2026-06-27) —
    Dark-mode surface ramp for the whole viewport, mapped to ADS Jira-parity tones
-   (#1D2125 canvas, #22272B raised, #282E33 elevated/overlay, #161A1D sunken). Elevation
+   (var(--ds-surface-sunken, #1D2125) canvas, var(--ds-surface, #22272B) raised, var(--ds-surface-overlay, #282E33) elevated/overlay, #161A1D sunken). Elevation
    reads from the tonal step PLUS shadow + 1px separators. This is the highest-specificity
    dark selector in the app (html + class), so it is the single source of truth — it beats
    the lower-specificity .dark / [data-theme="dark"] token blocks. Light untouched.
@@ -6082,21 +6082,21 @@ html.dark,
 html[data-color-mode="dark"],
 [data-theme="dark"] {
   /* ── ADS dark elevation ramp — single source of truth.
-     page #1D2125 → raised #22272B → overlay #282E33 → sunken #161A1D.
+     page var(--ds-surface-sunken, #1D2125) → raised var(--ds-surface, #22272B) → overlay var(--ds-surface-overlay, #282E33) → sunken #161A1D.
      Do NOT reintroduce a second !important --ds-surface* block after this. */
-  --ds-surface:          #1D2125 !important;
-  --ds-surface-raised:   #22272B !important;
-  --ds-surface-overlay:  #282E33 !important;
+  --ds-surface:          var(--ds-surface-sunken, #1D2125) !important;
+  --ds-surface-raised:   var(--ds-surface, #22272B) !important;
+  --ds-surface-overlay:  var(--ds-surface-overlay, #282E33) !important;
   --ds-surface-sunken:   #161A1D !important;
-  --ds-surface-pressed:  #2C333A !important;
-  --ds-surface-hovered:  #22272B !important;
+  --ds-surface-pressed:  var(--ds-background-neutral, #2C333A) !important;
+  --ds-surface-hovered:  var(--ds-surface, #22272B) !important;
 
   /* Text — DarkNeutral ramp (legible inactive labels = buried-text fix) */
   --ds-text:           #C7D1DB !important;
   --ds-text-subtle:    #9FADBC !important;
   --ds-text-subtlest:  #8C9BAB !important;
   --ds-text-disabled:  #738496 !important;
-  --ds-text-inverse:   #1D2125 !important;
+  --ds-text-inverse:   var(--ds-surface-sunken, #1D2125) !important;
   --ds-text-brand:     #579DFF !important;
   --ds-link:           #579DFF !important;
 
@@ -6109,61 +6109,61 @@ html[data-color-mode="dark"],
   --ds-border:         rgba(166,189,219,0.16) !important;
   --ds-border-subtle:  rgba(166,189,219,0.08) !important;
   --ds-border-bold:    #738496 !important;
-  --ds-border-focused: #388BFF !important;
+  --ds-border-focused: var(--ds-border-focused, #388BFF) !important;
 
   /* Elevation shadows (deep; the alpha border does the separating) */
   --ds-shadow-raised:  0 1px 1px rgba(3,4,5,0.50), 0 0 1px rgba(3,4,5,0.60) !important;
   --ds-shadow-overlay: 0 8px 12px rgba(3,4,5,0.36), 0 0 1px rgba(3,4,5,0.50) !important;
 
   /* Catalyst legacy --cp / --bg surface aliases → ADS ramp */
-  --cp-bg:            #1D2125 !important;
-  --cp-bg-page:       #1D2125 !important;
-  --cp-bg-hub-page:   #1D2125 !important;
-  --cp-bg-canvas:     #1D2125 !important;
+  --cp-bg:            var(--ds-surface-sunken, #1D2125) !important;
+  --cp-bg-page:       var(--ds-surface-sunken, #1D2125) !important;
+  --cp-bg-hub-page:   var(--ds-surface-sunken, #1D2125) !important;
+  --cp-bg-canvas:     var(--ds-surface-sunken, #1D2125) !important;
   --cp-bg-sunken:     #161A1D !important;
-  --cp-bg-elevated:   #22272B !important;   /* raised: sidebar/header/cards */
-  --cp-bg-overlay:    #282E33 !important;   /* overlay: popovers/flyouts/menus */
-  --cp-float:         #282E33 !important;
-  --surface-page:     #1D2125 !important;
-  --surface-bg:       #1D2125 !important;
+  --cp-bg-elevated:   var(--ds-surface, #22272B) !important;   /* raised: sidebar/header/cards */
+  --cp-bg-overlay:    var(--ds-surface-overlay, #282E33) !important;   /* overlay: popovers/flyouts/menus */
+  --cp-float:         var(--ds-surface-overlay, #282E33) !important;
+  --surface-page:     var(--ds-surface-sunken, #1D2125) !important;
+  --surface-bg:       var(--ds-surface-sunken, #1D2125) !important;
   --surface-subtle:   #161A1D !important;
-  --bg:               #1D2125 !important;
-  --bg-0:             #1D2125 !important;
-  --bg-1:             #22272B !important;
-  --bg-app:           #1D2125 !important;
-  --bg-workspace:     #1D2125 !important;
-  --bg-sidebar:       #22272B !important;
-  --bg-cream:         #22272B !important;
-  --industry-bg-page: #1D2125 !important;
-  --table-section-bg: #1D2125 !important;
-  --table-toolbar-bg: #22272B !important;
+  --bg:               var(--ds-surface-sunken, #1D2125) !important;
+  --bg-0:             var(--ds-surface-sunken, #1D2125) !important;
+  --bg-1:             var(--ds-surface, #22272B) !important;
+  --bg-app:           var(--ds-surface-sunken, #1D2125) !important;
+  --bg-workspace:     var(--ds-surface-sunken, #1D2125) !important;
+  --bg-sidebar:       var(--ds-surface, #22272B) !important;
+  --bg-cream:         var(--ds-surface, #22272B) !important;
+  --industry-bg-page: var(--ds-surface-sunken, #1D2125) !important;
+  --table-section-bg: var(--ds-surface-sunken, #1D2125) !important;
+  --table-toolbar-bg: var(--ds-surface, #22272B) !important;
 
   /* Catalyst legacy text aliases → DarkNeutral */
   --cp-text-primary:    #C7D1DB !important;
   --cp-text-secondary:  #9FADBC !important;
-  --cp-text-inverse:    #1D2125 !important;
+  --cp-text-inverse:    var(--ds-surface-sunken, #1D2125) !important;
   --nav-text-secondary: #9FADBC !important;
   --nav-text-tertiary:  #8C9BAB !important;
   --nav-section-label:  #8C9BAB !important;
 
   /* shadcn HSL tier → ADS ramp (themes every Radix menu: profile, notifications…) */
-  --background:         210 12% 13% !important;   /* #1D2125 */
+  --background:         210 12% 13% !important;   /* var(--ds-surface-sunken, #1D2125) */
   --foreground:         210 22% 81% !important;   /* #C7D1DB */
-  --card:               213 13% 15% !important;   /* #22272B */
+  --card:               213 13% 15% !important;   /* var(--ds-surface, #22272B) */
   --card-foreground:    210 22% 81% !important;
-  --popover:            210 12% 18% !important;   /* #282E33 overlay */
+  --popover:            210 12% 18% !important;   /* var(--ds-surface-overlay, #282E33) overlay */
   --popover-foreground: 210 22% 81% !important;   /* #C7D1DB */
   --secondary:          213 13% 15% !important;
   --muted:              213 13% 15% !important;
   --muted-foreground:   210 14% 68% !important;   /* #9FADBC */
-  --accent:             213 13% 21% !important;   /* #2C333A hover */
+  --accent:             213 13% 21% !important;   /* var(--ds-background-neutral, #2C333A) hover */
   --accent-foreground:  210 22% 81% !important;
   --border:             213 14% 24% !important;
   --input:              213 14% 24% !important;
 }
 .dark body,
 [data-theme="dark"] body {
-  /* ADS page tone (#1D2125) so raised chrome (sidebar/header/cards #22272B) lifts.
+  /* ADS page tone (var(--ds-surface-sunken, #1D2125)) so raised chrome (sidebar/header/cards var(--ds-surface, #22272B)) lifts.
      (2026-06-27 ADS parity Task 02 — was --cp-bg-elevated/uniform shell.) */
   background: var(--cp-bg, var(--ds-surface, #ffffff)) !important;
 }
@@ -6651,7 +6651,7 @@ html.dark .cp-feed-type-tile,
 .dark [role="dialog"][aria-label="Notifications"],
 [data-theme="dark"] [role="dialog"][aria-label="Notifications"] {
   /* 2026-06-27 ADS parity (Task 04): the notifications flyout is a floating panel
-     → ADS overlay surface (#282E33 dark) + readable text + ADS border. Was raised
+     → ADS overlay surface (var(--ds-surface-overlay, #282E33) dark) + readable text + ADS border. Was raised
      tone (--cp-bg-elevated) with a bg token wrongly used as text color. */
   background: var(--ds-surface-overlay, var(--cp-bg-overlay, #ffffff)) !important;
   color: var(--ds-text, #CECFD2) !important;
@@ -6701,8 +6701,8 @@ html.dark .cp-feed-type-tile,
 .dark [role="dialog"],
 [data-theme="dark"] [role="dialog"] {
   /* 2026-06-27 ADS parity (Task 03): popovers / menus / dialogs are floating
-     surfaces → ADS overlay tone (#282E33 dark / #FFFFFF light), one step above
-     the raised chrome (#22272B). Was --cp-bg-elevated (raised) which sat flat. */
+     surfaces → ADS overlay tone (var(--ds-surface-overlay, #282E33) dark / var(--ds-surface, #FFFFFF) light), one step above
+     the raised chrome (var(--ds-surface, #22272B)). Was --cp-bg-elevated (raised) which sat flat. */
   background: var(--ds-surface-overlay, var(--cp-bg-overlay, #ffffff)) !important;
   /* readable text token so all dark popovers/dropdowns/dialogs inherit legible text */
   color: var(--ds-text, #CECFD2) !important;

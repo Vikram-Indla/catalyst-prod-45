@@ -15,7 +15,9 @@ export const TYPE_COLORS: Record<string, {
 }> = {
   business_request: {
     solid: 'var(--ds-icon-accent-yellow, #B38600)', light: 'var(--ds-background-warning, #FFF7D6)', label: 'Business Request',
+// TODO: ads-unmapped — #8A6700 context unclear
     gradient: 'linear-gradient(135deg, var(--ds-icon-accent-yellow, #B38600), #8A6700)',
+// TODO: ads-unmapped — #8A6700 context unclear
     hover: '#8A6700',
   },
 };

@@ -147,7 +147,7 @@ export default function RoutingTaxonomyPage() {
                 <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11 }}>
                   {v.path || v.text}
                 </td>
-                <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: token('color.text.success', '#216E4E') }}>
+                <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-code)', fontSize: 11, color: token('color.text.success', 'var(--ds-text-success, #216E4E)') }}>
                   {v.fix || '—'}
                 </td>
               </tr>

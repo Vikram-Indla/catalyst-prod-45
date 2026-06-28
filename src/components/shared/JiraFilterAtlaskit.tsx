@@ -145,7 +145,9 @@ export function countActiveFilters(v: JiraFilterValue): number {
 // ─── Priority fixed vocabulary (Jira canonical) ───────────────────────────
 
 const PRIORITY_LEVELS: Array<{ level: PriorityLevel; label: string; icon: React.ReactNode; color: string }> = [
+// TODO: ads-unmapped — #E5484D context unclear
   { level: 'highest', label: 'Highest', icon: <HighestPriIcon label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
+// TODO: ads-unmapped — #E5484D context unclear
   { level: 'high',    label: 'High',    icon: <HighPriIcon    label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
   { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', 'var(--ds-background-warning-bold, #f59e0b)') },
   { level: 'low',     label: 'Low',     icon: <LowPriIcon     label="" size="small" />, color: token('color.icon.information', 'var(--ds-link, #0065FF)') },

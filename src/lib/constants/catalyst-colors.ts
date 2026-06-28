@@ -6,10 +6,10 @@
  * ⚠️ DO NOT IMPORT COLORS FROM TAILWIND DEFAULTS
  * 
  * APPROVED COLORS:
- * - Primary Blue: var(--cp-workstream-catalyst-primary, #2563eb) (main), #3b82f6, #1d4ed8
- * - Teal: #0d9488 (success/available/healthy)
- * - Warning: #d97706 (30-60 days contract)
- * - Danger: #ef4444 (critical/<30 days)
+ * - Primary Blue: var(--cp-workstream-catalyst-primary, #2563eb) (main), var(--ds-background-information-bold, #3b82f6), var(--ds-link-pressed, #1d4ed8)
+ * - Teal: var(--ds-chart-teal-bold, #0d9488) (success/available/healthy)
+ * - Warning: var(--ds-background-warning-bold, #d97706) (30-60 days contract)
+ * - Danger: var(--ds-background-danger-bold, #ef4444) (critical/<30 days)
  * - Neutral Gray scale
  */
 

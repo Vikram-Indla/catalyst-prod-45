@@ -103,7 +103,7 @@ export function TimeInStatusEtaStrip({
           <span
             style={{
               fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--ds-text, #172B4D)'),
               fontWeight: isOver ? 653 : 500,
             }}
           >

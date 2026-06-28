@@ -171,6 +171,7 @@ export function useProjectBriefing(userCtx: UserContext | undefined) {
           return {
             projectKey,
             projectName: projName,
+// TODO: ads-unmapped — #8B8FA3 context unclear
             projectColor: PROJECT_COLORS[projectKey] || '#8B8FA3',
             individualItems: individualItems.slice(0, 5),
             collapsedGroups,

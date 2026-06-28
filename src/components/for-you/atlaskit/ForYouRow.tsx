@@ -177,7 +177,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         color: token('color.text', 'var(--ds-text, #172B4D)'),
         transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 120ms ease',
         outline: 'none',
-        // WCAG 2.4.7 — keyboard focus indicator. ADS border.focused (#388BFF)
+        // WCAG 2.4.7 — keyboard focus indicator. ADS border.focused (var(--ds-border-focused, #388BFF))
         // routed via inset ring so it sits on top of the row's hover bg without
         // shifting layout. Only renders on actual keyboard focus, not hover.
         boxShadow: isFocused
@@ -284,6 +284,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               (right-edge, marginLeft:auto) per /jira/for-you DOM. */}
           {!isJiraAssigned && item.status && (
             // Canonical status pill (statusPalette.ts) — was @atlaskit/lozenge
+// TODO: ads-unmapped — #94C748 context unclear
             // which rendered a pale ADS green diverging from #94C748. Unified
             // 2026-06-17 so both For You variants share one canonical pill.
             <JiraForYouLozenge status={item.status} statusCategory={item.statusCategory} />
@@ -520,11 +521,13 @@ export default memo(ForYouRowImpl);
 // ─── Jira For You Lozenge ────────────────────────────────────────────────────
 // Canonical inline status pill for For You rows. Backgrounds come from the
 // shared canonical palette (statusPalette.ts) so the done-green matches the
+// TODO: ads-unmapped — #94C748 context unclear
 // #94C748 used by Recommended/detail/table surfaces. Inner text is Jira's
 // `653 11px/16px Atlassian Sans` UPPERCASE, ls 0.165px two-span structure.
 export function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
   const ap = statusToAppearance(status, statusCategory);
   // Canonical palette — single source of truth (statusPalette.ts). The local
+// TODO: ads-unmapped — #94C748 context unclear
   // pale done-green drifted from the canonical #94C748 that Recommended/detail/
   // table surfaces use; unified 2026-06-17.
   return (

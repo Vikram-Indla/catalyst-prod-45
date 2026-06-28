@@ -4,8 +4,11 @@ import { HUB_COLORS, HUB_SHORT } from '@/constants/resource360';
 import { getStatusCategory } from '@/utils/statusCategory';
 
 const T = {
+// TODO: ads-unmapped — #1A1A2E context unclear
   bg: '#F5F0EB', surface: 'var(--bg-app)', text1: 'var(--fg-1)', text2: '#1A1A2E',
+// TODO: ads-unmapped — #3D3D56 context unclear
   text3: '#3D3D56', text4: 'var(--fg-3)', border: 'var(--divider)', borderStrong: 'var(--divider)',
+// TODO: ads-unmapped — #0E8A5F context unclear
   todo: '#E23636', progress: 'var(--cp-blue)', done: '#0E8A5F',
   pendingHighlight: 'var(--ds-background-warning, #FFF7D6)',
   shadow: '0 2px 8px var(--ds-shadow-raised, rgba(0,0,0,.12))',
@@ -194,6 +197,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                 const statusColor = cat === 'todo' ? T.todo : cat === 'progress' ? T.progress : T.done;
                 const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
                 const hub = item.hub || item.source_hub || 'ProjectHub';
+// TODO: ads-unmapped — #FAF8F5 context unclear
                 const baseBg = idx % 2 === 0 ? T.surface : '#FAF8F5';
                 const highlightBg = showPendingOnly && isPending ? T.pendingHighlight : baseBg;
                 const key = item.item_key || item.key || '—';
@@ -215,6 +219,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                       cursor: 'pointer', transition: 'background .1s',
                       borderRadius: 0,
                     }}
+// TODO: ads-unmapped — #EDE7E0 context unclear
                     onMouseEnter={e => { e.currentTarget.style.background = '#EDE7E0'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = highlightBg; }}>
 

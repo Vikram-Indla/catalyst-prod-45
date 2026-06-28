@@ -47,7 +47,8 @@ export function StatusLozengeByType({
   const appearance = categoryToAppearance(statusCategory);
 
   // Canonical status pill (statusPalette.ts). Was @atlaskit/lozenge whose bold
-  // success rendered the dark #1F845A/white that diverged from the canonical
+  // success rendered the dark var(--ds-background-success-bold, #1F845A)/white that diverged from the canonical
+// TODO: ads-unmapped — #94C748 context unclear
   // #94C748 pastel; unified 2026-06-17 with all other work-item status pills.
   return (
     <span style={{

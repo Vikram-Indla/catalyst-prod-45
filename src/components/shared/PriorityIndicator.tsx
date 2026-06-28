@@ -6,7 +6,8 @@
  *
  * Values:  Critical | High | Medium | Low
  * Visual:  4 colored bars (filled count = level) + optional text label
- * Colors:  Critical=var(--cp-danger, #DC2626)  High=#F97316  Medium=#EAB308  Low=var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))
+// TODO: ads-unmapped — #EAB308 context unclear
+ * Colors:  Critical=var(--cp-danger, #DC2626)  High=var(--ds-background-warning-bold, #F97316)  Medium=#EAB308  Low=var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))
  */
 
 import React from 'react';

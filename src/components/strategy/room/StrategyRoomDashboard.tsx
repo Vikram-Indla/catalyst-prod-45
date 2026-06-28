@@ -68,8 +68,11 @@ const TOKENS = `
   --srd-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --srd-bg-2:var(--ds-surface-sunken, #FAFAFA); --srd-bg-3:var(--ds-surface-sunken, #F7F8F9);
   --srd-bdr:var(--ds-border, #DFE1E6); --srd-bdr-s:var(--ds-border, #DFE1E6);
   --srd-blue:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-blue-h:var(--ds-background-brand-bold-hovered, #1D4ED8); --srd-blue-bg:var(--ds-background-selected, #EFF6FF); --srd-blue-bdr:var(--ds-background-information, #E9F2FF);
+// TODO: ads-unmapped — #0A8277 context unclear
   --srd-teal:var(--cp-teal-60, #0D9488); --srd-teal-t:#0A8277; --srd-teal-bg:var(--ds-background-success, #DFFCF0);
+// TODO: ads-unmapped — #11853D context unclear
   --srd-green:var(--ds-text-success, var(--cp-success, #16A34A)); --srd-green-t:#11853D; --srd-green-bg:var(--ds-background-success, #DFFCF0);
+// TODO: ads-unmapped — #D92525 context unclear
   --srd-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --srd-red-t:#D92525; --srd-red-bg:var(--ds-background-danger, #FEF2F2);
   --srd-purple:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --srd-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-ai-d:var(--ds-link-pressed, #0747A6); --srd-ai-bg:var(--ds-background-selected, #EFF6FF); --srd-ai-bdr:var(--ds-background-information, #E9F2FF);

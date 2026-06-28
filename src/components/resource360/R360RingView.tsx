@@ -20,7 +20,9 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string; a
   'Ready for QA':         { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Ready QA',    accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
   'Retest':               { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Retest',      accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
   'Code Review':          { dot: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'In Review',   accent: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))' },
+// TODO: ads-unmapped — #4C1D95 context unclear
   'In UAT':               { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-background-discovery, #F3F0FF)', tx: '#4C1D95', label: 'In UAT',     accent: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' },
+// TODO: ads-unmapped — #4C1D95 context unclear
   'UAT Ready':            { dot: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', bg: 'var(--ds-background-discovery, #F3F0FF)', tx: '#4C1D95', label: 'UAT Ready',  accent: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))' },
   'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', tx: 'var(--ds-text-success, #216E4E)', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
@@ -54,7 +56,7 @@ const StoryIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-success-bold, #1F845A)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
 );
 const EpicIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#904EE2"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="var(--ds-background-discovery-bold, #904EE2)"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
 );
 function JiraIcon({ type }: { type: string }) {
   const t = (type || '').toLowerCase();

@@ -172,6 +172,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request,
               </>
             )}
             {request.assignee_name && request.department_name && (
+// TODO: ads-unmapped — #A1A1AA context unclear
               <span style={{ color: '#a1a1aa' }}>·</span>
             )}
             {request.department_name && (

@@ -89,7 +89,7 @@ const JIRA_TABLE_COLUMNS: Column<MockRow>[] = [
     cell: ({ row }) => (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <JiraIssueTypeIcon type={row.type} size={14} />
-        <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: token('color.link', '#0C66E4') }}>
+        <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: token('color.link', 'var(--ds-link, #0C66E4)') }}>
           {row.key}
         </span>
       </div>
@@ -302,7 +302,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <JiraIssueTypeIcon type="Story" size={16} />
-              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: token('color.link', '#0C66E4') }}>BAU-1234</span>
+              <span style={{ fontFamily: 'var(--ds-font-family-code)', fontSize: 12, color: token('color.link', 'var(--ds-link, #0C66E4)') }}>BAU-1234</span>
               <CatalystStatusPill status="In Progress" statusCategory="indeterminate" />
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

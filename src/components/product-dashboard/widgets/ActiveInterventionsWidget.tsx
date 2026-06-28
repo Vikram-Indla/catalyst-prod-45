@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
 
+// TODO: ads-unmapped — #F5A623 context unclear
 const PHASE_APPROVAL = '#F5A623';
 const PHASE_PAUSED   = 'var(--ds-text-subtlest, #6B778C)';
 

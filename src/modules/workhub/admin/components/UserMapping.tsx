@@ -412,6 +412,7 @@ export function UserMapping() {
                 return (
                   <tr key={profile.id} style={{
                     borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, var(--ds-surface-sunken, #F7F8F9)))',
+// TODO: ads-unmapped — #FEFCE8 context unclear
                     background: isMapped ? 'var(--ds-surface, #fff)' : '#FEFCE8',
                   }}>
                     {/* # */}
@@ -458,7 +459,7 @@ export function UserMapping() {
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: 8,
                           background: 'var(--ds-background-success, #DFFCF0)', padding: '6px 10px', borderRadius: 6,
-                          border: '1px solid #A7F3D0',
+                          border: '1px solid var(--ds-background-success, #A7F3D0)',
                         }}>
                           <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ds-background-success-bold, #059669)', flexShrink: 0 }} />
                           <Avatar name={existingJiraMapping.jira_display_name} url={existingJiraMapping.jira_avatar_url} size={22} />

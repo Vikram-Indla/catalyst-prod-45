@@ -1,5 +1,6 @@
 /**
  * KanbanColumn — Fixed-width column with header + droppable area (memoized)
+// TODO: ads-unmapped — #F8F8F8 context unclear
  * Jira parity: 267px width, #F8F8F8 surface, 48px header with 6px top radius,
  * column name 12px / weight 500 / no letter-spacing, count as plain text.
  */
@@ -27,7 +28,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
     c === 'in_progress' || c === 'inprogress' ? 'var(--ds-link-pressed, #0747A6)' :  // Atlaskit "inprogress"
     c === 'removed'                           ? 'var(--ds-text-danger, #AE2A19)' :  // Atlaskit "removed"
     c === 'new'                               ? 'var(--ds-background-discovery-bold, #6E5DC6)' :  // Atlaskit "new"
-    c === 'moved'                             ? '#A54800' :  // Atlaskit "moved"
+    c === 'moved'                             ? 'var(--ds-chart-orange-bold, #A54800)' :  // Atlaskit "moved"
     'var(--ds-text-subtle, #44546F)';                                                // Atlaskit "default" / todo
   return (
     <div className="flex items-center gap-2 sticky top-0 z-10" style={{
@@ -93,6 +94,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
     <div
       className="flex flex-col flex-shrink-0"
       style={{
+// TODO: ads-unmapped — #F8F8F8 context unclear
         /* Jira parity: 267px fixed column, #F8F8F8 surface, no dividing border */
         width: 267,
         minWidth: 267,

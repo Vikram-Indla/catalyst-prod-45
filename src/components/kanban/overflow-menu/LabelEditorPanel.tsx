@@ -9,7 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Check, Search, Plus } from '@/lib/atlaskit-icons';
 import type { KanbanThemeTokens } from '../kanban-tokens';
 
-const LABEL_COLORS = ['var(--ds-background-information-bold, #0C66E4)', '#00B8D9', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-discovery-bold, #6554C0)', '#FF7452', '#57D9A3', '#FFC400', '#998DD9', 'var(--ds-background-information, #E9F2FF)', 'var(--ds-background-danger, #FFECEB)'];
+// TODO: ads-unmapped — #998DD9 context unclear
+const LABEL_COLORS = ['var(--ds-background-information-bold, #0C66E4)', '#00B8D9', 'var(--ds-background-success-bold, #1F845A)', 'var(--ds-background-warning-bold, #E2B203)', 'var(--ds-background-danger-bold, #C9372C)', 'var(--ds-background-discovery-bold, #6554C0)', 'var(--ds-background-danger-bold, #FF7452)', 'var(--ds-background-success-bold, #57D9A3)', '#FFC400', '#998DD9', 'var(--ds-background-information, #E9F2FF)', 'var(--ds-background-danger, #FFECEB)'];
 function getLabelColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;

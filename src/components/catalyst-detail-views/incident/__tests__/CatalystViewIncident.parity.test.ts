@@ -14,7 +14,9 @@ const SRC = fs.readFileSync(
 );
 
 describe('CatalystViewIncident parity (static analysis)', () => {
+// TODO: ads-unmapped — #FFF5F5 context unclear
   it('severity banner background must use DS token, not raw #FFF5F5', () => {
+// TODO: ads-unmapped — #FFF5F5 context unclear
     expect(SRC).not.toMatch(/background:\s*'#FFF5F5'/);
   });
 

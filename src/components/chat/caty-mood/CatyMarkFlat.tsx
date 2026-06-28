@@ -6,6 +6,7 @@
  *   theme tokens, so the mark auto-inverts: dark cat on light surfaces, light cat on
  *   dark — one asset, both modes.
  * tone="gradient": body + ears + tail filled with the Caty brand gradient
+// TODO: ads-unmapped — #F79357 context unclear
  *   (#F79357→#CC1E9A), matching the FAB / AI avatar / header accent. Gradient reads on
  *   both light and dark backgrounds, so the dock-header mark belongs to the CATY brand
  *   instead of reading as a foreign black blob.
@@ -42,12 +43,15 @@ export function CatyMarkFlat({
         {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
         <linearGradient id="cmf-grad" x1="256" y1="40" x2="256" y2="470" gradientUnits="userSpaceOnUse">
           {/* ads-scanner:ignore-next-line */}
+// TODO: ads-unmapped — #F79357 context unclear
           <stop stopColor="#F79357" />
           {/* ads-scanner:ignore-next-line */}
           <stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
           {/* ads-scanner:ignore-next-line */}
+// TODO: ads-unmapped — #B41572 context unclear
           <stop offset=".75" stopColor="#B41572" />
           {/* ads-scanner:ignore-next-line */}
+// TODO: ads-unmapped — #CC1E9A context unclear
           <stop offset="1" stopColor="#CC1E9A" />
         </linearGradient>
       </defs>

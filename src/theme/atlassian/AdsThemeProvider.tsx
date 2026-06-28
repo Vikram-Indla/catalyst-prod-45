@@ -70,7 +70,7 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
     // selectors match. Atlaskit reads the attribute internally during the
     // setGlobalTheme call — by the time the promise resolves, its lookups
     // are done and we can take the attribute back. Verified live: --cp-bg
-    // flips to #0A0A0A, sidebar/header/main all turn dark, Atlaskit
+    // flips to var(--ds-text, #0A0A0A), sidebar/header/main all turn dark, Atlaskit
     // components keep their --ds-* tokens.
     // Phase 11 (2026-04-29) — TRUE RCA. Earlier "fixes" were wrong.
     //
@@ -92,6 +92,7 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
     //   selector `[data-theme~="dark:dark"]` stopped matching. Result: 460
     //   --ds-* CSS rules existed in stylesheets but applied to no element.
     //   --ds-text resolved to "unset" everywhere, every Atlaskit @compiled
+// TODO: ads-unmapped — #292A2E context unclear
     //   class painted its static fallback hex (#292A2E light) onto every
     //   <Heading>, regardless of the colorMode attribute.
     //

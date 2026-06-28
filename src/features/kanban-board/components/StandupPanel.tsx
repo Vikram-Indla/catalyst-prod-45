@@ -402,6 +402,7 @@ function Divider() { return <div style={{ height: 1, background: token('color.bo
 function RadioOption({ checked, onSelect, label }: { checked: boolean; onSelect: () => void; label: string }) {
   return (
     <button type="button" role="radio" aria-checked={checked} onClick={onSelect} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 0', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}>
+// TODO: ads-unmapped — #C1C7D0 context unclear
       <span style={{ width: 16, height: 16, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${checked ? token('color.border.selected', 'var(--ds-link, #0C66E4)') : token('color.border', '#C1C7D0')}`, flexShrink: 0 }}>
         {checked && <span style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.border.selected', 'var(--ds-link, #0C66E4)') }} />}
       </span>

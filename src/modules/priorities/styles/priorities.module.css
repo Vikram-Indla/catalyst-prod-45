@@ -11,7 +11,7 @@
    ✅ Teal: var(--ds-chart-teal-bold, #0d9488)
    ✅ Warning: var(--ds-text-warning, #d97706) / var(--ds-text-warning, #f59e0b)
    ✅ Danger: var(--ds-text-danger, #ef4444)
-   ❌ BANNED: Golden Hour (var(--ds-text-subtle, #C69C6D), var(--ds-text-subtle, #5C7C5C), var(--ds-text-subtle, #8B7355), #D4B896)
+   ❌ BANNED: Golden Hour (var(--ds-text-subtle, #C69C6D), var(--ds-text-subtle, #5C7C5C), var(--ds-text-subtle, #8B7355), var(--ds-background-neutral-subtle, #D4B896))
    ============================================================ */
 
 /* ======================== TOKENS ======================== */

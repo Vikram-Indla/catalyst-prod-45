@@ -96,6 +96,7 @@ function PhaseIndicator({ phase, errorMessage }: { phase: string; errorMessage: 
   }
   if (phase === 'error') {
     return (
+// TODO: ads-unmapped — #E34935 context unclear
       <div style={{ background: token('color.background.danger', 'var(--ds-background-danger, #FFECEB)'), border: `1px solid ${token('color.border.danger', '#E34935')}`, borderRadius: 3, padding: '8px 12px', marginBottom: 8 }}>
         <div style={{ fontSize: 13, fontWeight: 500, color: token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') }}>
           {errorMessage ?? 'Something went wrong'}

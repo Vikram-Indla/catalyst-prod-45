@@ -90,6 +90,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             disabled={!canDelete}
             style={{
               padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+// TODO: ads-unmapped — #D32F2F context unclear
               border: 'none', background: canDelete ? '#D32F2F' : 'var(--ds-border, #DFE1E6)',
               color: canDelete ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-disabled, #9E9E9E)', cursor: canDelete ? 'pointer' : 'not-allowed',
               opacity: canDelete ? 1 : 0.6,

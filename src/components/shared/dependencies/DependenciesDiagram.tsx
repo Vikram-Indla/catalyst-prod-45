@@ -59,6 +59,7 @@ const PAD_Y = 32;
 const LANE_GAP = 24;
 const LINK = 'var(--ds-link, #0C66E4)';
 // Edge colours (Vikram 2026-06-25):
+// TODO: ads-unmapped — #505258 context unclear
 //  • IDLE  = neutral grey #505258 (ADS --ds-text-subtle).
 //  • ACTIVE = Atlassian link blue — applied on edge hover, on a clicked/selected
 //    edge (persists), and on every edge connected to a clicked card.

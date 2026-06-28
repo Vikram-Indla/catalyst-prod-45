@@ -58,7 +58,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
     const ringStyles: Record<string, string> = {
       healthy: 'ring-[var(--ds-chart-teal-bold, #0d9488)]',
       warning: 'ring-[var(--ds-text-warning, #974F0C)]',
-      critical: 'ring-[#be123c]',
+      critical: 'ring-[var(--ds-text-danger, #be123c)]',
       expired: 'ring-muted-foreground/40',
       permanent: 'ring-muted-foreground/30'
     };
@@ -294,6 +294,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         const deptStyles: Record<string, { bg: string; text: string }> = {
           'OPERATIONS': { bg: 'var(--ds-background-success, rgba(13,148,136,0.15))', text: 'var(--ds-text-success, #216E4E)' },
           'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: 'var(--ds-background-discovery-bold, #6d28d9)' },
+// TODO: ads-unmapped — #0E7490 context unclear
           'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
           'SUPPORT': { bg: 'var(--ds-background-success-bold, rgba(16,185,129,0.12))', text: 'var(--quality-high, #059669)' },
         };
@@ -341,6 +342,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             : `Expired ${Math.abs(daysRemaining)} days ago`;
 
         // Calculate status based on days remaining - Catalyst V1 style guide
+// TODO: ads-unmapped — #B91C1C context unclear
         // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))))
         const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
         const textColors: Record<string, string> = {

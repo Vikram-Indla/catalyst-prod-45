@@ -357,7 +357,7 @@ function ActivityPanel({
               className={cn(
                 'px-3 py-1.5 rounded text-[14px] font-normal transition-colors duration-150',
                 activeTab === tab.key
-                  ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[#1C3A5C] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
+                  ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[var(--ds-background-information, #1C3A5C)] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
                   : 'text-[var(--ds-text-subtle,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
               )}
             >
@@ -391,7 +391,7 @@ function ActivityPanel({
                     className={cn(
                       'w-full text-left px-3 py-1.5 text-[14px] transition-colors',
                       order === sortOrder
-                        ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[#1C3A5C] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
+                        ? 'bg-[var(--ds-background-selected, #E9F2FF)] text-[var(--ds-link, #1868DB)] dark:bg-[var(--ds-background-information, #1C3A5C)] dark:text-[var(--ds-background-information-bold, #0C66E4)]'
                         : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
                     )}
                   >

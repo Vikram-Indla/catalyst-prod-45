@@ -11,7 +11,7 @@ export interface WorkflowStatus {
 // the canonical STATUS_CONFIG mapping rationale.
 export const WORKFLOW_STATUSES: WorkflowStatus[] = [
   { id: 'backlog', name: 'Backlog', color: 'var(--ds-text-subtle, #42526E)', bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', description: 'Awaiting prioritization' },
-  { id: 'design', name: 'Design', color: '#5243AA', bgColor: 'var(--ds-background-discovery, #F3F0FF)', description: 'In design phase' },
+  { id: 'design', name: 'Design', color: 'var(--ds-background-discovery-bold, #5243AA)', bgColor: 'var(--ds-background-discovery, #F3F0FF)', description: 'In design phase' },
   { id: 'ready_dev', name: 'Ready for Development', color: 'var(--cp-primary-60, #0052CC)', bgColor: 'var(--ds-background-information, #E9F2FF)', description: 'Ready to be picked up' },
   { id: 'in_dev', name: 'In Development', color: 'var(--ds-background-warning-bold, #E2B203)', bgColor: 'var(--ds-background-warning, #FFF7D6)', description: 'Actively being developed' },
   { id: 'qa', name: 'QA Testing', color: 'var(--ds-background-warning-bold, #E2B203)', bgColor: 'var(--ds-background-warning, #FFF7D6)', description: 'Ready for quality assurance' },

@@ -20,7 +20,8 @@
  *   - customfield_10109  Actual start (Arabic-labeled)(date,      Epic)
  *
  * Rendering shape mirrors the read-only branches of CatalystMdtRefField
- * (same colour token #292A2E for filled, #6B6E76 for empty placeholder).
+// TODO: ads-unmapped — #292A2E context unclear
+ * (same colour token #292A2E for filled, var(--ds-text-subtlest, #6B6E76) for empty placeholder).
  */
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
@@ -32,7 +33,8 @@ interface DisplayProps {
 
 /* ------------------------------------------------------------------ */
 /* Shared style helpers — keep parity with CatalystMdtRefField read   */
-/* state (#292A2E filled, #6B6E76 empty). The font sizing matches     */
+// TODO: ads-unmapped — #292A2E context unclear
+/* state (#292A2E filled, var(--ds-text-subtlest, #6B6E76) empty). The font sizing matches     */
 /* FieldRow's value cell measured against Jira on 2026-04-28.         */
 /* ------------------------------------------------------------------ */
 

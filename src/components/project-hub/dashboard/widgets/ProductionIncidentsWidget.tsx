@@ -81,7 +81,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         border: 0,
         cursor: 'pointer',
         ...SMALL,
-        color: token('color.link', '#0C66E4'),
+        color: token('color.link', 'var(--ds-link, #0C66E4)'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -108,6 +108,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         fontWeight: 500,
         textTransform: 'none',
         letterSpacing: '0.04em',
+// TODO: ads-unmapped — #292A2E context unclear
         color: token('color.text', '#292A2E'),
       }}
     >
@@ -172,7 +173,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 gap: 8,
                 /* 2026-06-09 Vikram parity — Jira Key 14/400 sans, not 14/600 mono. */
                 ...BODY,
-                color: token('color.link', '#0C66E4'),
+                color: token('color.link', 'var(--ds-link, #0C66E4)'),
                 whiteSpace: 'nowrap',
               }}
             >
@@ -202,7 +203,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                     whiteSpace: 'nowrap',
                     /* 2026-06-09 Vikram parity — match Epic Progress: 14/400 link */
                     ...BODY,
-                    color: token('color.link', '#0C66E4'),
+                    color: token('color.link', 'var(--ds-link, #0C66E4)'),
                   }}
                 >
                   {inc.summary ?? ''}
@@ -247,7 +248,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               </span>
             </div>
           ) : (
-            <span style={{ ...BODY, color: token('color.text.subtlest', '#6B6E76') }}>—</span>
+            <span style={{ ...BODY, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B6E76)') }}>—</span>
           ),
         },
         {
@@ -272,7 +273,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               <span
                 style={{
                   ...STRONG,
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                   /* 2026-06-09 Vikram parity — Jira Key uses Atlassian Sans 14/400, NOT mono */
                   whiteSpace: 'nowrap',
                 }}
@@ -319,7 +320,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         <div className="p-4 animate-pulse">
           <div
             className="h-24 rounded"
-            style={{ background: token('color.background.neutral.subtle', '#F1F2F4') }}
+            style={{ background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)') }}
           />
         </div>
       ) : !incidents?.length ? (
@@ -337,7 +338,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               display: 'flex',
               gap: 12,
               alignItems: 'center',
-              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
             }}
           >
             <span

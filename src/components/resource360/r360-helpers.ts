@@ -64,6 +64,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (lower === 'in review' || lower === 'in qa' || lower === 'ready for qa' || lower === 'retest')
     return { dot: 'var(--cp-teal-60, #0D9488)', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'started' };
   if (lower === 'in uat' || lower === 'uat ready')
+// TODO: ads-unmapped — #4C1D95 context unclear
     return { dot: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--ds-background-discovery, #F3F0FF)', text: '#4C1D95', category: 'started' };
   if (lower === 'done' || lower === 'closed' || lower === 'resolved' || lower === 'ready for production' || lower === 'beta ready')
     return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #216E4E)', category: 'completed' };
@@ -97,10 +98,11 @@ export const getStatusStyle = getStatusStyleFallback;
 /** Priority config */
 export function getPriorityColor(priority: string): string {
   switch (priority?.toLowerCase()) {
-    case 'critical': return '#BE123C';
+    case 'critical': return 'var(--ds-text-danger, #BE123C)';
     case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     case 'high': return 'var(--ds-background-warning-bold, #E2B203)';
     case 'medium': return 'var(--ds-text-warning, #974F0C)';
+// TODO: ads-unmapped — #57534E context unclear
     case 'low': return '#57534E';
     default: return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
   }

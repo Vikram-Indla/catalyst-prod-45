@@ -37,7 +37,8 @@ export interface KanbanThemeTokens {
 
 export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens } = {
   light: {
-    /* Jira parity: page transparent, column surface #F8F8F8, card #ffffff */
+// TODO: ads-unmapped — #F8F8F8 context unclear
+    /* Jira parity: page transparent, column surface #F8F8F8, card var(--ds-surface, #ffffff) */
     pageBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     surfaceHover: 'var(--ds-background-neutral, #F1F2F4)',

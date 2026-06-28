@@ -217,8 +217,10 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           {PRIORITY_OPTIONS.map(opt => {
             const selected = data.priority === opt.value;
             const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-              critical: { bg: 'var(--ds-background-danger, #FFECEB)', text: '#BE123C', border: '#FECDD3' },
+// TODO: ads-unmapped — #FECDD3 context unclear
+              critical: { bg: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #BE123C)', border: '#FECDD3' },
               high:     { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-danger, #AE2A19)', border: 'var(--ds-background-warning, #FFF7D6)' },
+// TODO: ads-unmapped — #FEFCE8 context unclear
               medium:   { bg: '#FEFCE8', text: 'var(--ds-text-warning, #974F0C)', border: '#FEF08A' },
               low:      { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-background-success-bold, #1F845A)', border: 'var(--ds-background-success, #DFFCF0)' },
             };

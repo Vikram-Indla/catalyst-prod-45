@@ -82,6 +82,7 @@ export function ClearCompletedDialog({ count, onCancel, onConfirm }: Props) {
             style={{
               height: 34,
               padding: '0 16px',
+// TODO: ads-unmapped — #C7242E context unclear
               background: count === 0 ? 'var(--cv2-bg-row-hover)' : '#C7242E',
               color: count === 0 ? 'var(--cv2-text-muted)' : 'var(--ds-text-inverse, #FFFFFF)',
               border: 'none',

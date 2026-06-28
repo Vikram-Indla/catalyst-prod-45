@@ -1,8 +1,9 @@
 /**
  * StatusBadge — V12 Pale Lozenge 3-colour guardrail (ABSOLUTE)
  * GREY  (var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) bg, var(--ds-text, #253858) text) = not started / waiting
- * BLUE  (#DEEBFF bg, #0747A6 text) = in progress / active
- * GREEN (#E3FCEF bg, #006644 text) = done / resolved
+// TODO: ads-unmapped — #DEEBFF context unclear
+ * BLUE  (#DEEBFF bg, var(--ds-link-pressed, #0747A6) text) = in progress / active
+ * GREEN (var(--ds-background-success, #E3FCEF) bg, var(--ds-text-success, #006644) text) = done / resolved
  */
 
 import React from 'react';

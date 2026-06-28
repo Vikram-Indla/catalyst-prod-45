@@ -209,7 +209,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
             cursor: 'pointer',
             padding: 0,
             ...SMALL,
-            color: token('color.link', '#0C66E4'),
+            color: token('color.link', 'var(--ds-link, #0C66E4)'),
             display: 'flex',
             alignItems: 'center',
             gap: 4,
@@ -227,7 +227,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
               style={{
                 height: 56,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
               className="animate-pulse"
             />
@@ -319,15 +319,15 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', '#F7F8F9'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         overflow: 'hidden',
       }}
     >
-      <KpiCell label="To do" value={todo} accent={token('color.background.neutral.bold', '#44546F')} />
-      <KpiCell label="In progress" value={inprogress} accent={token('color.background.brand.bold', '#0C66E4')} />
-      <KpiCell label="Done" value={done} accent={token('color.background.success.bold', '#1F845A')} last />
+      <KpiCell label="To do" value={todo} accent={token('color.background.neutral.bold', 'var(--ds-text-subtle, #44546F)')} />
+      <KpiCell label="In progress" value={inprogress} accent={token('color.background.brand.bold', 'var(--ds-link, #0C66E4)')} />
+      <KpiCell label="Done" value={done} accent={token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)')} last />
     </div>
   );
 }
@@ -351,7 +351,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 4,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
       }}
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -452,7 +452,7 @@ function WorkloadRow({
           }
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
           scheduleOpen(e.clientX, e.clientY);
         }}
         onMouseMove={(e) => {
@@ -504,7 +504,7 @@ function WorkloadRow({
                   style={{
                     ...BODY,
                     fontWeight: 400,
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                     marginLeft: 8,
                   }}
                 >
@@ -529,8 +529,8 @@ function WorkloadRow({
                   ...SMALL,
                   fontWeight: 500,
                   color: inprogress > 0
-                    ? token('color.text.brand', '#0C66E4')
-                    : token('color.text.subtle', '#44546F'),
+                    ? token('color.text.brand', 'var(--ds-link, #0C66E4)')
+                    : token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                 }}
               >
                 {inprogress > 0 ? `${inprogress} in progress` : 'idle'}
@@ -542,7 +542,7 @@ function WorkloadRow({
           <div
             style={{
               ...SMALL,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
               fontVariantNumeric: 'tabular-nums',
             }}
           >
@@ -554,7 +554,7 @@ function WorkloadRow({
             style={{
               height: 10,
               borderRadius: 5,
-              background: token('color.background.neutral', '#F1F2F4'),
+              background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
               overflow: 'hidden',
               position: 'relative',
             }}

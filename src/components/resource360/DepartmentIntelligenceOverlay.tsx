@@ -14,7 +14,8 @@ import ClaimDrillInPanel from './ClaimDrillInPanel';
 import '@/styles/dept-intelligence.css';
 
 /* ═══ Resource Avatar ═══ */
-const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
+// TODO: ads-unmapped — #8B6B7A context unclear
+const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "var(--ds-background-discovery, #6b8b7a)"];
 function hashColor(name: string): string {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
@@ -398,7 +399,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
   );
 }
 
-/** Parse inline CSS string like "background:#EDE9FE;color:#5B21B6" to React style */
+/** Parse inline CSS string like "background:var(--ds-background-discovery, #EDE9FE);color:var(--ds-background-discovery-bold, #5B21B6)" to React style */
 function parseCssStyle(css: string): React.CSSProperties {
   const style: Record<string, string> = {};
   css.split(';').forEach(pair => {

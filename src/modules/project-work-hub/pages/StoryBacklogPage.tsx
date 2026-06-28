@@ -534,6 +534,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
               {[1, 2, 3, 4].map(i => {
                 const level = PRIORITY_ORDER.indexOf(story.priority || '') >= 0 ? PRIORITY_ORDER.length - PRIORITY_ORDER.indexOf(story.priority || '') : 0;
                 const filled = i <= level;
+// TODO: ads-unmapped — #E5484D context unclear
                 const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-success, #22C55E)';
                 return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} />;
               })}
@@ -736,6 +737,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <div style={{ display: 'flex', gap: 2 }} title={getPriorityLabel(s.priority)}>
             {[1, 2, 3, 4].map((i) => {
               const filled = i <= level;
+// TODO: ads-unmapped — #E5484D context unclear
               const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-success, #22C55E)';
               return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} />;
             })}

@@ -1051,7 +1051,7 @@
 }
 .sp-empty-sub {
   font-size: 13px;
-  /* jira-compare 2026-05-04: subtlest token — var(--cp-text-secondary, #6B778C) (legacy) → #626F86 (ADS current). */
+  /* jira-compare 2026-05-04: subtlest token — var(--cp-text-secondary, #6B778C) (legacy) → var(--ds-text-subtlest, #626F86) (ADS current). */
   color: var(--ds-text-subtlest, #626F86);
 }
 /* jira-compare 2026-05-04 (D2): ADS Button defaults — 32px height, 14px/500,

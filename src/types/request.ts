@@ -131,7 +131,7 @@ export const STATUS_DISPLAY: Record<RequestStatus, { label: string; lozenge: Loz
 };
 
 export const PRIORITY_THRESHOLDS: { min: number; max: number; level: PriorityLevel; bg: string; border: string; text: string }[] = [
-  { min: 4.0, max: 5.0, level: 'High',     bg: 'var(--ds-background-success, #DFFCF0)', border: '#A7F3D0', text: 'var(--ds-text-success, #216E4E)' },
+  { min: 4.0, max: 5.0, level: 'High',     bg: 'var(--ds-background-success, #DFFCF0)', border: 'var(--ds-background-success, #A7F3D0)', text: 'var(--ds-text-success, #216E4E)' },
   { min: 3.0, max: 3.99, level: 'Medium',  bg: 'var(--ds-background-information, #E9F2FF)', border: 'var(--ds-background-information, #E9F2FF)', text: 'var(--ds-link-pressed, #1e40af)' },
   { min: 2.0, max: 2.99, level: 'Low',     bg: 'var(--ds-background-warning, #FFF7D6)', border: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-text-warning, #974F0C)' },
   { min: 1.0, max: 1.99, level: 'Rejected', bg: 'var(--ds-background-danger, #FFECEB)', border: 'var(--ds-background-danger, #FFECEB)', text: 'var(--ds-text-danger, #AE2A19)' },

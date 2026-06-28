@@ -78,6 +78,7 @@ tr:hover { background: var(--ds-surface-sunken, #FAFAFA) }
   </tr></thead>
   <tbody>${rows}</tbody>
 </table>
+// TODO: ads-unmapped — #A1A1AA context unclear
 <div style="margin-top:32px;padding-top:16px;border-top:1px solid var(--ds-border, #DFE1E6);display:flex;justify-content:space-between;font-size:10px;color:#A1A1AA">
   <span>Catalyst V11 · Product Roadmap V9</span>
   <span>${now}</span>

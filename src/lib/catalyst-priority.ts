@@ -33,10 +33,13 @@ export const CATALYST_PRIORITY_OPTIONS = CATALYST_PRIORITIES.map((p) => ({
  * All values are ADS tokens.
  */
 export const PRIORITY_COLORS: Record<CatalystPriority, string> = {
+// TODO: ads-unmapped — #E5484D context unclear
   Highest: token('color.icon.danger', '#E5484D'),
   High:    token('color.icon.warning', 'var(--ds-background-warning-bold, #f59e0b)'),
   Medium:  token('color.icon.information', 'var(--ds-background-information-bold, #3b82f6)'),
+// TODO: ads-unmapped — #22C55E context unclear
   Low:     token('color.icon.success', '#22C55E'),
+// TODO: ads-unmapped — #8C8F96 context unclear
   Lowest:  token('color.icon.subtle', '#8C8F96'),
 };
 

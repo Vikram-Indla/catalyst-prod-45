@@ -30,6 +30,7 @@ export const STATUS_CONFIG: Record<HealthStatus, StatusStyle> = {
 
 export const STATUS_CONFIG_DARK: Record<HealthStatus, StatusStyle> = {
   on_track:  { label: 'On Track',  bg: 'var(--ds-text, #172B4D)', text: 'var(--ds-background-success, #DFFCF0)', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+// TODO: ads-unmapped — #2A2418 context unclear
   at_risk:   { label: 'At Risk',   bg: '#2A2418', text: 'var(--ds-background-warning-bold, #E2B203)', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   off_track: { label: 'Off Track', bg: 'var(--ds-text, #172B4D)', text: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: 'var(--ds-text-disabled, #8590A2)', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },

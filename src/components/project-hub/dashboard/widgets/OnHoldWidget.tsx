@@ -159,7 +159,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
         border: 0,
         cursor: 'pointer',
         ...SMALL,
-        color: token('color.link', '#0C66E4'),
+        color: token('color.link', 'var(--ds-link, #0C66E4)'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -190,7 +190,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
               style={{
                 height: 36,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -241,9 +241,9 @@ function KpiHeadline({
     <div
       style={{
         display: 'flex',
-        background: token('elevation.surface.sunken', '#F7F8F9'),
+        background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         overflow: 'hidden',
       }}
     >
@@ -282,7 +282,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
       }}
     >
       <span
@@ -298,6 +298,7 @@ function KpiCell({
         style={{
           ...H_NUM,
           lineHeight: 1.1,
+// TODO: ads-unmapped — #292A2E context unclear
           color: accent ?? token('color.text', '#292A2E'),
         }}
       >
@@ -338,10 +339,10 @@ function OnHoldHeader({ activeColumns }: { activeColumns: string[] }) {
         gap: 12,
         padding: '8px',
         marginInline: -8,
-        borderBottom: `2px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `2px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         ...SMALL,
         fontWeight: 600,
-        color: token('color.text.subtle', '#6B778C'),
+        color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
       }}
     >
       <span />
@@ -405,7 +406,7 @@ function OnHoldRow({
       <span style={{ display: 'inline-flex', justifyContent: 'center' }}>
         {has('type') && <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />}
       </span>
-      <span style={{ ...BODY, color: token('color.link', '#0C66E4'), whiteSpace: 'nowrap' }}>
+      <span style={{ ...BODY, color: token('color.link', 'var(--ds-link, #0C66E4)'), whiteSpace: 'nowrap' }}>
         {has('key') ? item.issue_key : ''}
       </span>
       <a
@@ -417,7 +418,7 @@ function OnHoldRow({
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
           ...BODY,
-          color: token('color.link', '#0C66E4'),
+          color: token('color.link', 'var(--ds-link, #0C66E4)'),
           textDecoration: 'none',
         }}
       >

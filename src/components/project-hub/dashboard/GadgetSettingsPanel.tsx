@@ -544,6 +544,7 @@ export default function GadgetSettingsPanel({
             </div>
             <div
               style={{
+// TODO: ads-unmapped — #97A0AF context unclear
                 fontSize: 11, color: token('color.text.subtlest', '#97A0AF'),
                 fontStyle: 'italic',
               }}

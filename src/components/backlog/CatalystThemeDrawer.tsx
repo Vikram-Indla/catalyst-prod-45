@@ -178,11 +178,13 @@ function PremiumProgressBar({ progress }: { progress: number }) {
       text: 'var(--fg-3)'
     };
     if (progress === 100) return {
+// TODO: ads-unmapped — #2EB8A6 context unclear
       fill: 'linear-gradient(90deg, var(--sem-success) 0%, #2EB8A6 100%)',
       glow: '0 0 20px color-mix(in srgb, var(--sem-success) 40%, transparent), 0 0 40px color-mix(in srgb, var(--sem-success) 20%, transparent)',
       text: 'var(--sem-success)'
     };
     return {
+// TODO: ads-unmapped — #5B9BF7 context unclear
       fill: 'linear-gradient(90deg, var(--cp-blue) 0%, #5B9BF7 100%)',
       glow: '0 0 16px color-mix(in srgb, var(--cp-blue) 30%, transparent)',
       text: 'var(--cp-blue)'

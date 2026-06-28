@@ -88,6 +88,7 @@ export function PresenceAvatar({ name, size = 36, presence = null, displayLabel 
               presence === 'online'
                 ? 'var(--cv2-presence-online)'
                 : presence === 'away'
+// TODO: ads-unmapped — #E8A87C context unclear
                 ? '#E8A87C'
                 : 'transparent',
             border:

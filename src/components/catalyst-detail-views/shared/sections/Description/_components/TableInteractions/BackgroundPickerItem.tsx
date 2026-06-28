@@ -30,19 +30,26 @@ const PALETTE: ColorSwatch[] = [
   { name: 'No fill', value: null },
   { name: 'Subtle gray', value: 'var(--ds-background-neutral, #F1F2F4)' },
   { name: 'Subtle red', value: 'var(--ds-background-danger, #FFECEB)' },
+// TODO: ads-unmapped — #FFEFD6 context unclear
   { name: 'Subtle orange', value: '#FFEFD6' },
   { name: 'Subtle yellow', value: 'var(--ds-background-warning, #FFF7D6)' },
   // Row 2 — light
   { name: 'Light green', value: 'var(--ds-background-success, #DFFCF0)' },
+// TODO: ads-unmapped — #E6FCFF context unclear
   { name: 'Light teal', value: '#E6FCFF' },
   { name: 'Light blue', value: 'var(--ds-background-information, #E9F2FF)' },
   { name: 'Light purple', value: 'var(--ds-background-discovery, #F3F0FF)' },
+// TODO: ads-unmapped — #FFE5F2 context unclear
   { name: 'Light pink', value: '#FFE5F2' },
   // Row 3 — medium
   { name: 'Medium gray', value: 'var(--ds-text-disabled, #8590A2)' },
+// TODO: ads-unmapped — #B8DAFF context unclear
   { name: 'Medium blue', value: '#B8DAFF' },
+// TODO: ads-unmapped — #C0B6F2 context unclear
   { name: 'Medium violet', value: '#C0B6F2' },
+// TODO: ads-unmapped — #FFB8E6 context unclear
   { name: 'Medium magenta', value: '#FFB8E6' },
+// TODO: ads-unmapped — #B8E8C9 context unclear
   { name: 'Medium mint', value: '#B8E8C9' },
   // Row 4 — bold / dark
   { name: 'Bold gray', value: 'var(--ds-text-subtlest, #626F86)' },

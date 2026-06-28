@@ -65,6 +65,7 @@ export function BulkFooterBar({
         <>
           <span
             style={{
+// TODO: ads-unmapped — #738496 context unclear
               color: token('color.text.subtlest', '#738496'),
             }}
           >
@@ -157,6 +158,7 @@ export function BulkFooterBar({
         style={{
           background: 'none',
           border: 'none',
+// TODO: ads-unmapped — #738496 context unclear
           color: token('color.text.subtlest', '#738496'),
           cursor: 'pointer',
           fontSize: 16,

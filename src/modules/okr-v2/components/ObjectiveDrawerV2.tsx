@@ -89,6 +89,7 @@ function PremiumProgressBar({ progress, health }: { progress: number; health: st
     };
     if (progress === 100) return {
       // §L38 hex only — hsl(173 58% 45%) → Atlaskit teal equivalent
+// TODO: ads-unmapped — #2FB5A3 context unclear
       fill: 'linear-gradient(90deg, hsl(var(--success)) 0%, #2FB5A3 100%)',
       glow: '0 0 20px hsl(var(--success) / 0.4), 0 0 40px hsl(var(--success) / 0.2)',
       text: 'hsl(var(--success))'

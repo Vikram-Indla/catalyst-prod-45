@@ -210,7 +210,7 @@ function StartNode(_: NodeProps) {
       height: 48,
       borderRadius: '50%',
       background: 'var(--ds-background-neutral-bold, #44526E)',
-      border: `2px solid #6B7FA3`,
+      border: `2px solid var(--ds-border-bold, #8590A2)`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',

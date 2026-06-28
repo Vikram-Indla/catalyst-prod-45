@@ -241,6 +241,7 @@ export const FIELD_MANIFESTS: Record<string, FieldManifest> = {
     label: 'Parent',
     modes: ['table-cell'],
     editable: true,
+// TODO: ads-unmapped — #B3DF72 context unclear
     // Parent chip uses DOM-probed '#B3DF72' bg — intentional Jira-parity bypass.
     // Measurement: 2026-04-26 digital-transformation.atlassian.net
     adsCompliance: 'bypass',

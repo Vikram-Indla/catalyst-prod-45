@@ -179,6 +179,7 @@ function BrRow({ br, rangeStart, totalMs, todayPct }: {
   const right = pct(e, rangeStart, totalMs);
   const hasBar = s && e && totalMs > 0;
 
+// TODO: ads-unmapped — #CCE0FF context unclear
   const barBg     = token('color.background.accent.blue.subtle', '#CCE0FF');
   const barBorder = token('color.border.accent.blue', 'var(--ds-link, #0C66E4)');
 

@@ -115,11 +115,11 @@ export const CANONICAL_PRIORITY_OPTIONS: CanonicalPriorityOption[] = [
 /** Map a priority id → its Atlaskit core icon (color tinted). */
 function priorityIcon(id: string): React.ReactNode {
   switch (id) {
-    case 'Highest': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #CD1316)' }}><PriorityHighestIcon label="" size="small" /></span>;
-    case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-background-danger-bold, #E15D31)' }}><PriorityHighIcon    label="" size="small" /></span>;
-    case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-background-warning-bold, #E4A11B)' }}><PriorityMediumIcon  label="" size="small" /></span>;
-    case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link, #2898BD)' }}><PriorityLowIcon     label="" size="small" /></span>;
-    case 'Lowest':  return <span style={{ display: 'inline-flex', color: 'var(--ds-border-focused, #388BFF)' }}><PriorityLowestIcon  label="" size="small" /></span>;
+    case 'Highest': return <span style={{ display: 'inline-flex', color: 'var(--ds-text-inverse, #FFFFFF)', background: 'var(--ds-background-danger-bold, #C9372C)', borderRadius: 2, padding: '0 2px' }}><PriorityHighestIcon label="" size="small" /></span>;
+    case 'High':    return <span style={{ display: 'inline-flex', color: 'var(--ds-text-danger, #AE2A19)' }}><PriorityHighIcon    label="" size="small" /></span>;
+    case 'Medium':  return <span style={{ display: 'inline-flex', color: 'var(--ds-text-warning, #974F0C)' }}><PriorityMediumIcon  label="" size="small" /></span>;
+    case 'Low':     return <span style={{ display: 'inline-flex', color: 'var(--ds-link, #0C66E4)' }}><PriorityLowIcon     label="" size="small" /></span>;
+    case 'Lowest':  return <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest, #626F86)' }}><PriorityLowestIcon  label="" size="small" /></span>;
     default:        return null;
   }
 }

@@ -14,6 +14,7 @@ interface SkillColumn {
 
 const PROFICIENCY_COLORS: Record<number, string> = {
   1: 'rgba(115,115,115,0.3)',
+// TODO: ads-unmapped — #7B2FCC context unclear
   2: '#7B2FCC',
   3: 'var(--sem-warning)',
   4: 'var(--sem-info)',
@@ -135,16 +136,16 @@ export const SkillsMatrixHeatmap: React.FC = () => {
       {/* Matrix Table - Catalyst Table Style */}
       <div className="overflow-x-auto">
         <table className="w-full border-separate border-spacing-0">
-          <thead className="sticky top-0 z-10" style={{ background: '#F8F6F3' }}>
-            <tr style={{ background: '#F8F6F3' }}>
-              <th className="w-[200px] text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: '#F8F6F3' }}>
+          <thead className="sticky top-0 z-10" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
+            <tr style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
+              <th className="w-[200px] text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}>
                 Team Member
               </th>
               {skills.map((skill) => (
                 <th
                   key={skill.id}
                   className="text-center py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200"
-                  style={{ background: '#F8F6F3' }}
+                  style={{ background: 'var(--ds-surface-sunken, #F8F6F3)' }}
                 >
                   {skill.name}
                 </th>

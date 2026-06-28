@@ -105,7 +105,7 @@ export function IncidentAttachments({
           className="border-2 border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] rounded-lg p-6 text-center cursor-pointer hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/5 transition-colors"
         >
           <Upload className="w-8 h-8 text-[var(--ds-text-subtlest, #626F86)] mx-auto mb-2" />
-          <p className="text-sm text-[#5C5C5C]">
+          <p className="text-sm text-[var(--ds-text-subtlest, #5C5C5C)]">
             Drop files here or <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] font-medium">click to upload</span>
           </p>
           <p className="text-xs text-[var(--ds-text-subtlest, #626F86)] mt-1">Max 10MB per file</p>

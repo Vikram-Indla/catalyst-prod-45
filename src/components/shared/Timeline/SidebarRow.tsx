@@ -83,6 +83,7 @@ export interface SidebarRowProps {
    *  chevron renders magenta. */
   isLocatedAncestor?: boolean;
   /** List-mode (dependency) tint — this row is dependency-involved (or an
+// TODO: ads-unmapped — #F0F1F2 context unclear
    *  ancestor of one). Renders the #F0F1F2 band. */
   tinted?: boolean;
   /** Shared hovered row key (synced with the dependency columns panel).
@@ -93,6 +94,7 @@ export interface SidebarRowProps {
   /** Drop the row's bottom border (List/dependency view — Jira shows no row rules). */
   hideRowBorder?: boolean;
   /** Fired when this row's inline-create opens/closes, so the gantt can insert a
+// TODO: ads-unmapped — #DDDEE1 context unclear
    *  matching #dddee1 row and keep both panels aligned. */
   onInlineCreateChange?: (key: string, open: boolean) => void;
   /** The timeline-wide open inline-create key — this row auto-closes its own
@@ -2015,6 +2017,7 @@ export function SidebarRow({
           );
           return (
             <>
+// TODO: ads-unmapped — #DDDEE1 context unclear
               {/* #dddee1 placeholder strip — keeps the inline-create row in the sidebar flow */}
               <div
                 ref={inlineWrapRef}

@@ -5421,6 +5421,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         >
           {/* Header — warning appearance (icon + title in warning color). */}
           <div style={{ padding: '24px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+// TODO: ads-unmapped — #946F00 context unclear
             <span style={{ color: token('color.icon.warning', '#946F00'), display: 'inline-flex' }}>
               <AkWarningIcon label="" size="medium" />
             </span>
@@ -7723,6 +7724,7 @@ function DetailNavIconButton({
         justifyContent: 'center',
         border: 'none',
         background: 'transparent',
+// TODO: ads-unmapped — #C1C7D0 context unclear
         color: isDisabled ? token('color.text.disabled', '#C1C7D0') : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)'),
         cursor: isDisabled ? 'default' : 'pointer',
         borderRadius: 3,

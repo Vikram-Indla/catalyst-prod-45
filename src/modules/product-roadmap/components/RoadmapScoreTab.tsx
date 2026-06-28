@@ -173,6 +173,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
     <div>
       {/* Computed score header */}
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+// TODO: ads-unmapped — #A1A1AA context unclear
         <div style={{ fontSize: '11px', fontWeight: 600, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
           Computed Score
         </div>

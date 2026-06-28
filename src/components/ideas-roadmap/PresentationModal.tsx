@@ -37,6 +37,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
         flexShrink: 0,
       }}>
         <div style={{
+// TODO: ads-unmapped — #0D2242 context unclear
           width: 36, height: 24, borderRadius: 4, background: '#0D2242',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'var(--bg-app)', fontSize: 9, fontWeight: 800,

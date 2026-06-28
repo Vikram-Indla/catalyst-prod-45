@@ -4,6 +4,7 @@ export const R360 = {
   warning: 'var(--ds-text-warning, var(--cp-warning, #D97706))', warningLight: 'var(--ds-background-warning, #FFF7D6)', warningText: 'var(--ds-text-warning, #974F0C)',
   danger: 'var(--ds-text-danger, #EF4444)', dangerLight: 'var(--ds-background-danger, #FEF2F2)', dangerText: 'var(--ds-text-danger, #AE2A19)',
   teal: 'var(--cp-teal-60, var(--ds-chart-teal-bold, #0d9488))', tealLight: 'var(--ds-background-success, #DFFCF0)', tealText: 'var(--ds-text-success, #216E4E)',
+// TODO: ads-unmapped — #4C1D95 context unclear
   purple: 'var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', purpleLight: 'var(--ds-background-discovery, #F3F0FF)', purpleText: '#4C1D95',
   ink1: 'var(--ds-text, #172B4D)', ink2: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, var(--ds-text, #172B4D))))', ink3: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, var(--ds-text-subtle, #44546F))))', ink4: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   surface: 'var(--bg-1, var(--ds-surface-sunken, #F8FAFC))', card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, var(--ds-border, #DFE1E6))))', borderLt: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',

@@ -70,12 +70,14 @@ export const Card: React.FC<CardProps> = ({
   };
   if (issue.isFlagged) {
     base.borderLeft = `${SIZES.CARD_FLAG_BORDER}px solid ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}`;
+// TODO: ads-unmapped — #FFFBF0 context unclear
     base.background = token('color.background.warning', '#FFFBF0');
     base.paddingLeft = SIZES.CARD_PADDING - SIZES.CARD_FLAG_BORDER;
     base.boxShadow = `inset 0 0 0 1px ${token('color.border.warning', 'var(--ds-background-warning-bold, #E2B203)')}, 0 1px 1px #091E4240, 0 0 1px #091E424F`;
   }
   if (hover && !isDragging) {
     base.background = issue.isFlagged
+// TODO: ads-unmapped — #F8E6A0 context unclear
       ? token('color.background.warning.hovered', '#F8E6A0')
       : token('elevation.surface.raised.hovered', 'var(--ds-background-neutral, #F1F2F4)');
   }
@@ -166,6 +168,7 @@ export const Card: React.FC<CardProps> = ({
         <div>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, height: 18, padding: '0 6px', borderRadius: 3,
+// TODO: ads-unmapped — #E2483D context unclear
             border: `1px solid ${due.overdue ? token('color.border.danger', '#E2483D') : token('color.border', '#091E4224')}`,
             color: due.overdue ? token('color.text.danger', 'var(--ds-text-danger, #AE2A19)') : token('color.text.subtle', 'var(--ds-icon, #44546F)'),
             fontSize: 11, fontWeight: 500,

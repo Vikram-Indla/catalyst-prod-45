@@ -18,6 +18,7 @@ const TEXT_COLORS = [
   { label: 'Orange', value: 'var(--ds-background-warning-bold, #E2B203)' },
   { label: 'Yellow', value: 'var(--ds-background-warning-bold, #E2B203)' },
   { label: 'Green', value: 'var(--ds-background-success-bold, #1F845A)' },
+// TODO: ads-unmapped — #00B8D9 context unclear
   { label: 'Teal', value: '#00B8D9' },
   { label: 'Blue', value: 'var(--cp-primary-60, #0052CC)' },
   { label: 'Purple', value: 'var(--ds-background-discovery-bold, #6554C0)' },

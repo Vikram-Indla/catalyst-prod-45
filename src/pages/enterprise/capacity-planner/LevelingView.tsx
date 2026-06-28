@@ -252,7 +252,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                         />
 
                         {/* Icon */}
-                        <div className="w-10 h-10 rounded-lg bg-[#d4b896]/20 flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-lg bg-[var(--ds-background-neutral-subtle, #d4b896)]/20 flex items-center justify-center shrink-0">
                           <FileStack className="h-5 w-5 text-[var(--ds-text-subtle, #8B7355)]" />
                         </div>
 

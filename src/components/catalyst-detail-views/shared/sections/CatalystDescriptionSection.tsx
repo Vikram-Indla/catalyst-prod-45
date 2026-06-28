@@ -219,6 +219,7 @@ function AtlaskitRendererPlaceholder({ plain }: { plain: string }) {
   return (
     <div
       className="cv-desc-body"
+// TODO: ads-unmapped — #292A2E context unclear
       // Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans
       style={{
         fontSize: 14,

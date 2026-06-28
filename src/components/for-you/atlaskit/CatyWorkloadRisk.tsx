@@ -68,7 +68,7 @@ export function CatyWorkloadRisk({ teamMembers }: CatyWorkloadRiskProps) {
             <CatalystAvatar name={m.name} src={m.avatarUrl ?? undefined} size="small" />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBlockEnd: 4 }}>
-                <span style={{ font: `500 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>{m.name}</span>
+                <span style={{ font: `500 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{m.name}</span>
                 <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>{m.openItems} open (avg: {m.roleAvg})</span>
                 {trendArrow(m.closureTrend, m.closureRate)}
                 {m.staleCount > 0 && <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.warning', 'var(--ds-text-warning, #974F0C)') }}>{m.staleCount} stale</span>}

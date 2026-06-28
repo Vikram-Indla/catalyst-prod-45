@@ -387,6 +387,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
             {/* ── Profile Header ── */}
             <div className="r3-profile">
               <div className="r3-profile-top">
+// TODO: ads-unmapped — #1D9AAA context unclear
                 <div className="r3-profile-avatar" style={{ background: `linear-gradient(135deg, ${deptColor}, ${token('color.icon.accent.teal', '#1D9AAA')})` }}>
                   {overview.avatar_url ? (
                     <img src={overview.avatar_url} alt={overview.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
@@ -660,6 +661,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       border: 'none', background: token('color.background.brand.subtlest', 'var(--ds-background-selected, #E9F2FF)'), color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'),
                       cursor: 'pointer', transition: 'all 80ms ease',
                     }}
+// TODO: ads-unmapped — #CCE0FF context unclear
                     onMouseOver={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest.hovered', '#CCE0FF'); }}
                     onMouseOut={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest', 'var(--ds-background-selected, #E9F2FF)'); }}
                   >

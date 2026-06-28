@@ -14,10 +14,14 @@ interface Props {
   item?: AllWorkItem | null;
 }
 
-const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, #EF4444)', High: 'var(--ds-background-warning-bold, #E2B203)', Medium: 'var(--ds-text-brand, #3B82F6)', Low: 'var(--ds-text-success, #22C55E)', Lowest: 'var(--ds-text-subtlest, #8C8F96)',
+const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
+  Highest: { bg: 'var(--ds-background-danger-bold, #C9372C)',    text: 'var(--ds-text-inverse, #FFFFFF)' },
+  High:    { bg: 'var(--ds-background-danger, #FFECEB)',         text: 'var(--ds-text-danger, #AE2A19)' },
+  Medium:  { bg: 'var(--ds-background-warning, #FFF7D6)',        text: 'var(--ds-text-warning, #974F0C)' },
+  Low:     { bg: 'var(--ds-background-information, #E9F2FF)',    text: 'var(--ds-link, #0C66E4)' },
+  Lowest:  { bg: 'var(--ds-background-neutral, #F1F2F4)',        text: 'var(--ds-text-subtlest, #626F86)' },
 };
-const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', '#FA8C16', '#52C41A', '#EB2F96', 'var(--ds-background-discovery-bold, #6E5DC6)'];
+const AVATAR_COLORS = ['var(--ds-background-discovery-bold, #6E5DC6)', 'var(--ds-chart-orange-bold, #A54800)', 'var(--ds-chart-green-bold, #216E4E)', 'var(--ds-chart-magenta-bold, #943D73)', 'var(--ds-background-discovery-bold, #6E5DC6)'];
 
 function formatDate(d: string | null): string {
   if (!d) return 'None';

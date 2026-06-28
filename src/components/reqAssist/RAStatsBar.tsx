@@ -154,6 +154,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         {/* Card 4: Published to Projects */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+// TODO: ads-unmapped — #F0F9FF context unclear
             <div style={{ ...iconContainerStyle, background: '#F0F9FF' }}>
               <Send size={16} color="var(--ds-link, #0284c7)" />
             </div>

@@ -33,7 +33,9 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
  *       fell through to a green bookmark for everything else — so
  *       "Business Request" rendered as a STORY icon instead of the
  *       canonical amber lightbulb.
+// TODO: ads-unmapped — #4BADE8 context unclear
  *   (b) drifted from the canonical palette (Task was #4BADE8 here vs
+// TODO: ads-unmapped — #2684FF context unclear
  *       #2684FF in the canonical — two different blues shipping side by
  *       side).
  *

@@ -10,6 +10,7 @@
  *   • Letter-spacing 0 on body; headings get a tiny negative (-0.003em).
  *
  * This is how Jira achieves its dense, scannable feel — saturated primary
+// TODO: ads-unmapped — #292A2E context unclear
  * (#292A2E) next to saturated subtle (#505258) at the SAME weight, rather
  * than bolding author names or cramming weights 500/600/700 on top of each
  * other. Catalyst's previous "dense = bold" strategy read as faded because
@@ -32,9 +33,11 @@
  *
  * Jira-measured reference values (hex fallbacks only — token() is the
  * source of truth when Atlaskit provides one):
+// TODO: ads-unmapped — #292A2E context unclear
  *   color.text                rgb(41,42,46)   #292A2E
+// TODO: ads-unmapped — #505258 context unclear
  *   color.text.subtle         rgb(80,82,88)   #505258
- *   color.text.subtlest       rgb(107,110,118) #6B6E76
+ *   color.text.subtlest       rgb(107,110,118) var(--ds-text-subtlest, #6B6E76)
  */
 import { token } from '@atlaskit/tokens';
 
@@ -112,7 +115,7 @@ export const text = {
   success: token('color.text.success', 'var(--ds-text-success, #216E4E)'),
 
   /** Warning — caution labels. */
-  warning: token('color.text.warning', '#A54800'),
+  warning: token('color.text.warning', 'var(--ds-chart-orange-bold, #A54800)'),
 
   /** Discovery — AI / purple category accents. */
   discovery: token('color.text.discovery', 'var(--ds-background-discovery-bold, #6E5DC6)'),

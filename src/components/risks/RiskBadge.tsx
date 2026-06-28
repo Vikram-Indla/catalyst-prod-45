@@ -64,6 +64,7 @@ function NoRisksBadge({ size = 'md' }: { size?: 'sm' | 'md' }) {
       )}
       style={{
         backgroundColor: 'var(--ds-background-success, #DFFCF0)',
+// TODO: ads-unmapped — #C8E6C9 context unclear
         border: '1px solid #c8e6c9',
         color: 'var(--ds-text-success, #216E4E)',
       }}

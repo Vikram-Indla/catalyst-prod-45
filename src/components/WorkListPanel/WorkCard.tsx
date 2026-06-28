@@ -28,7 +28,7 @@ const statusCategoryColor: Record<
   string
 > = {
   todo: 'var(--ds-shadow-overlay, rgba(5,21,36,0.06))', // Light grey
-  inprogress: '#669DF1', // Blue
+  inprogress: 'var(--ds-chart-blue-bold, #669DF1)', // Blue
   done: 'var(--ds-background-success-bold, #6A9A23)', // Green
   default: 'var(--ds-shadow-overlay, rgba(5,21,36,0.06))',
 };

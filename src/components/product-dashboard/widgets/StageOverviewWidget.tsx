@@ -10,8 +10,8 @@ import { StageDrillDownDrawer } from './StageDrillDownDrawer';
 // ── Phase colour system ───────────────────────────────────────────────────────
 
 const PHASE_DEMAND   = 'var(--ds-background-information-bold, #0C66E4)';
-const PHASE_APPROVAL = '#F5A623';
-const PHASE_DELIVERY = '#8A7CFF';
+const PHASE_APPROVAL = 'var(--ds-background-warning-bold, #E2B203)';
+const PHASE_DELIVERY = 'var(--ds-background-discovery-bold, #5E4DB2)';
 const PHASE_CLOSURE  = 'var(--ds-background-success-bold, #1F845A)';
 
 function phaseColor(sortOrder: number): string {

@@ -1,6 +1,7 @@
 /**
  * SummarizeMenu — small dropdown anchored under the SummarizeIcon trigger in
  * the chat header. Three options: Unreads, Last 7 days, Custom date range.
+// TODO: ads-unmapped — #220066 context unclear
  * Mirrors Slack AI's compact preset menu (image #206).
  */
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';

@@ -424,7 +424,7 @@ button.caty-department-pill,
 }
 
 .caty-metric-card.warning {
-  border-color: rgba(180,83,9,0.3) !important;
+  border-color: var(--ds-border-warning, #974F0C) !important;
   background: var(--ds-background-warning, #FFF7D6) !important;
 }
 

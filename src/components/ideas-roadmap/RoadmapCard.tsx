@@ -195,6 +195,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           borderRadius: 4,
           background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))',
           color: isDark ? 'var(--ds-background-success, #DFFCF0)' : 'var(--bg-app)',
+// TODO: ads-unmapped — #B7EBD1 context unclear
           border: `1px solid ${isDark ? 'var(--ds-background-success-bold, rgba(22,163,74,0.25))' : '#B7EBD1'}`,
           fontSize: 10, fontWeight: 700,
           fontFamily: 'var(--cp-font-body)',

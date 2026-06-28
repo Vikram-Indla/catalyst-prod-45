@@ -563,7 +563,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* Row hover. Apr 28, 2026 (jira-compare cycle 4): tokenized — was
          hardcoded var(--ds-surface-sunken, #F7F8F9). --ds-background-neutral-subtle-hovered is the
          exact Atlaskit hover bg (var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06)) in light theme). */
-      /* Jira DOM probe 2026-05-16: row hover bg = rgba(9,30,66,0.06) ≈ #F1F2F4 */
+      /* Jira DOM probe 2026-05-16: row hover bg = rgba(9,30,66,0.06) ≈ var(--ds-background-neutral, #F1F2F4) */
       .jira-table-grid table tbody > tr:hover > td {
         background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
       }
@@ -845,7 +845,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         border-right: 1px solid var(--ds-border, #EBECF0);
       }
       .jira-table-grid thead th.jira-th-sortable { cursor: pointer; }
-      /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded #EBECF0 */
+      /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded var(--ds-background-neutral, #EBECF0) */
       .jira-table-grid thead th.jira-th-sortable:hover { background: var(--ds-background-neutral-hovered, #EBECF0); }
       /* 2026-05-10 Jira-parity: row body is the click target for opening
          the detail panel. cursor: pointer signals clickability. Inline
@@ -1233,6 +1233,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         ) : (
           <span
             // Header label — Jira parity (2026-04-26 re-probe from
+// TODO: ads-unmapped — #505258 context unclear
             // BAU list view "Summary"): 12px / 700 / #505258 /
             // textTransform none / letterSpacing normal. NO uppercase.
             // 2026-06-23: flex:1 + min-width:0 + overflow ellipsis lets the
@@ -1590,7 +1591,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     width: 24,
                     height: 24,
                     // 2026-05-08 DOM probe: Jira group header chevron color = rgb(80,82,88)
-                    // = --ds-text-subtle. Was #6B6E76 (--ds-text-subtlest) — too faint.
+                    // = --ds-text-subtle. Was var(--ds-text-subtlest, #6B6E76) (--ds-text-subtlest) — too faint.
                     color: 'var(--ds-text-subtle, #505258)',
                     transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
                     transition: 'transform 200ms ease',
@@ -1953,7 +1954,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                           `left:-10000px`,
                           `width:${ghostW}px`,
                           `height:${ghostH}px`,
-                          `background:rgba(76,154,255,0.10)`,
+                          `background:var(--ds-background-selected, #E9F2FF)`,
                           `border:2px solid var(--ds-border-selected, #4C9AFF)`,
                           `border-radius:3px`,
                           `pointer-events:none`,
@@ -2648,6 +2649,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     border: 'none',
                     background: 'transparent',
                     // Apr 28, 2026 (jira-compare cycle 3 typography sweep):
+// TODO: ads-unmapped — #292A2E context unclear
                     // legacy var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))) → --ds-text fallback #292A2E to match
                     // the rest of the table's body-text token swap.
                     color: a.danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #292A2E)',

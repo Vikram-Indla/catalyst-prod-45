@@ -67,10 +67,10 @@ export function getContractStatus(endDate: string | null | undefined): ContractS
     return {
       status: 'critical',
       daysRemaining,
-      color: '#be123c', // Rose - matches Catalyst danger
-      ringColor: 'ring-[#be123c]',
+      color: 'var(--ds-text-danger, #be123c)', // Rose - matches Catalyst danger
+      ringColor: 'ring-[var(--ds-text-danger, #be123c)]',
       bgColor: 'bg-red-50',
-      textColor: 'text-[#be123c]',
+      textColor: 'text-[var(--ds-text-danger, #be123c)]',
       label: `${daysRemaining}d`
     };
   }

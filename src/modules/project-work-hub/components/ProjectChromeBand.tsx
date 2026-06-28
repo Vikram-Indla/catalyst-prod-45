@@ -6,7 +6,7 @@
  *
  * Why this exists
  * ───────────────
- * Iter-3 of /jira-compare landed the page-chrome bg (#E9F2FE) and the
+ * Iter-3 of /jira-compare landed the page-chrome bg (var(--ds-background-selected, #E9F2FE)) and the
  * inner white card with its own padding/border. /regression then surfaced
  * three additional defects sharing one root cause:
  *

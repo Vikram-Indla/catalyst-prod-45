@@ -176,10 +176,11 @@ export function TicketBreadcrumbs({
           follows AdsThemeProvider automatically. */}
       <style>{`
         .tk-breadcrumbs {
-          /* Scoped token override — Jira-canonical breadcrumb color (CLAUDE.md 2026-05-12: 14px/400/#42526E).
-             ADS deploys --ds-text-subtle as #505258 (neutral grey); Jira uses #42526E (blue-grey, more visual
+          /* Scoped token override — Jira-canonical breadcrumb color (CLAUDE.md 2026-05-12: 14px/400/var(--ds-text-subtle, #42526E)).
+// TODO: ads-unmapped — #505258 context unclear
+             ADS deploys --ds-text-subtle as #505258 (neutral grey); Jira uses var(--ds-text-subtle, #42526E) (blue-grey, more visual
              weight). Overriding the token here means all var(--ds-text-subtle) children resolve correctly. */
-          --ds-text-subtle: #42526E;
+          --ds-text-subtle: var(--ds-text-subtle, #42526E);
         }
         .tk-breadcrumbs nav > ol,
         .tk-breadcrumbs ol[role="list"],

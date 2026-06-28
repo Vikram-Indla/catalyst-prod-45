@@ -179,7 +179,9 @@ export function ChatMainViewWithNotifications({
                     style={{
                       padding: '4px 8px',
                       borderRadius: '12px',
+// TODO: ads-unmapped — #CCCCCC context unclear
                       border: `1px solid ${r.reactedByMe ? 'blue' : '#ccc'}`,
+// TODO: ads-unmapped — #E8F4FF context unclear
                       backgroundColor: r.reactedByMe ? '#e8f4ff' : 'var(--ds-surface-sunken, #F7F8F9)',
                       cursor: 'pointer',
                       fontSize: '12px',

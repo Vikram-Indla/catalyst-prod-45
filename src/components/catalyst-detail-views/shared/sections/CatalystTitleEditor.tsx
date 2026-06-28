@@ -189,6 +189,7 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
           readView={() => (
             // size="large" → 24px/28px natively — matches BAU-5538 Jira
             // measurement (2026-04-20). Scoped CSS above locks weight/
+// TODO: ads-unmapped — #292A2E context unclear
             // color/family to the Jira-measured values (653/#292A2E/
             // Atlassian Sans).
             <TitleTranslateWrapper value={summary} issueKey={issueKey} field="summary" onValueChange={onTitleChange}>

@@ -312,7 +312,7 @@ export default function AllProjectsPage() {
             >
               <FolderOpen size={32} style={{ color: token('color.icon.subtle', 'var(--ds-text-subtlest, #6B778C)') }} />
             </div>
-            <h3 style={{ fontSize: 16, fontWeight: '600', fontFamily: 'var(--cp-font-heading)', color: token('color.text', '#172B4D'), marginBlockEnd: token('space.050', '4px') }}>No projects yet</h3>
+            <h3 style={{ fontSize: 16, fontWeight: '600', fontFamily: 'var(--cp-font-heading)', color: token('color.text', 'var(--ds-text, #172B4D)'), marginBlockEnd: token('space.050', '4px') }}>No projects yet</h3>
             <p style={{ fontSize: 14, color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'), marginBlockEnd: token('space.300', '24px'), maxWidth: 448 }}>
               Projects appear here after the Jira sync has run, or create one manually to get started.
             </p>

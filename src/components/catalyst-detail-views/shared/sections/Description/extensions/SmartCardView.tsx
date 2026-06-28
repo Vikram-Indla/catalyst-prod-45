@@ -30,9 +30,9 @@ export function InlineCardView({ node }: NodeViewProps) {
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            color: token('color.link', '#0052CC'),
+            color: token('color.link', 'var(--ds-link, #0052CC)'),
             textDecoration: 'none',
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            background: token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
             padding: '1px 6px',
             borderRadius: 3,
             fontSize: 13,
@@ -76,7 +76,7 @@ export function BlockCardView({ node }: NodeViewProps) {
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            color: token('color.link', '#0052CC'),
+            color: token('color.link', 'var(--ds-link, #0052CC)'),
             textDecoration: 'none',
           }}
         >

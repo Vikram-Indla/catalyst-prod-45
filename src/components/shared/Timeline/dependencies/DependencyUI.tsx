@@ -163,6 +163,7 @@ interface DependencyColumnsBodyProps {
   showCreateEpicRow: boolean;
   onOpenAggregate: (issueKey: string, dir: 'blockedBy' | 'blocks', anchor: DOMRect) => void;
   onOpenGroupAggregate: (dir: 'blockedBy' | 'blocks', anchor: DOMRect) => void;
+// TODO: ads-unmapped — #F0F1F2 context unclear
   /** Keys whose row gets the stripe colour (#F0F1F2) — even top-level units + subtrees. */
   tintKeys: Set<string>;
   /** Shared row hover (synced with the sidebar panel). */

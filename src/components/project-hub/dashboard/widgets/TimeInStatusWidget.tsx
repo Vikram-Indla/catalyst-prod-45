@@ -216,8 +216,11 @@ function fmtDuration(ms: number | undefined): string {
 // JiraTable cells.tsx, alpha-mixed to ~20% so the cell bg reads as a
 // soft hint, NOT as a vivid pill). Mirrors the same hue family the pills
 // use so the column reads as "lighter version of the status pill".
+// TODO: ads-unmapped — #8FB8F6 context unclear
 //   in_progress  pill #8FB8F6 → cell bg rgba(143,184,246,0.22)
+// TODO: ads-unmapped — #B3DF72 context unclear
 //   done         pill #B3DF72 → cell bg rgba(179,223,114,0.30)
+// TODO: ads-unmapped — #DDDEE1 context unclear
 //   todo         pill #DDDEE1 → cell bg rgba(221,222,225,0.55)
 function categoryBg(category: 'todo' | 'in_progress' | 'done' | undefined, ms: number): string {
   if (!ms || ms <= 0) return 'transparent';
@@ -342,8 +345,8 @@ export default function TimeInStatusWidget({
           justifyContent: 'space-between',
           gap: token('space.200', '16px'),
           padding: '12px 16px',
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          background: token('elevation.surface', '#FFFFFF'),
+          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+          background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
         }}
       >
         {/* Issue-type tabs */}
@@ -444,20 +447,21 @@ export default function TimeInStatusWidget({
             }}
           >
             <thead>
-              <tr style={{ background: token('elevation.surface', '#FFFFFF'), position: 'sticky', top: 0, zIndex: 2 }}>
+              <tr style={{ background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'), position: 'sticky', top: 0, zIndex: 2 }}>
                 <th
                   style={{
                     position: 'sticky', left: 0, zIndex: 3,
-                    background: token('elevation.surface', '#FFFFFF'),
+                    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                     width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     textAlign: 'left',
                     padding: '4px',
                     borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
-                    borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                     ...SMALL_STRONG,
                     fontWeight: 500,
                     textTransform: 'none',
                     letterSpacing: '0.04em',
+// TODO: ads-unmapped — #292A2E context unclear
                     color: token('color.text', '#292A2E'),
                   }}
                 >
@@ -471,7 +475,7 @@ export default function TimeInStatusWidget({
                       textAlign: 'left',
                       padding: '4px',
                       borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
-                      borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                     }}
                   >
                     {/* 2026-06-10 — Jira-canonical pill via shared StatusPill
@@ -491,7 +495,7 @@ export default function TimeInStatusWidget({
                     borderBottom: '0.5px solid var(--ds-text, rgba(11,18,14,0.14))',
                     ...STRONG,
                     fontWeight: 500,
-                    background: token('elevation.surface', '#FFFFFF'),
+                    background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
                     position: 'sticky', right: 0, zIndex: 2,
                   }}
                 >
@@ -513,18 +517,18 @@ export default function TimeInStatusWidget({
                     })
                   }
                   style={{ height: ROW_HEIGHT, cursor: 'pointer' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', '#F4F5F7'))}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', 'var(--ds-background-neutral-subtle, #F4F5F7)'))}
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
                   {/* Frozen left cell */}
                   <td
                     style={{
                       position: 'sticky', left: 0,
-                      background: token('elevation.surface', '#FFFFFF'),
-                    boxShadow: '1px 0 0 0 ' + token('color.border', '#DFE1E6'),
+                      background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                    boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--ds-border, #DFE1E6)'),
                       padding: '4px',
-                      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                      borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                      borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                       width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     }}
                   >
@@ -538,7 +542,7 @@ export default function TimeInStatusWidget({
                       <span
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: 8,
-                          color: token('color.link', '#0C66E4'),
+                          color: token('color.link', 'var(--ds-link, #0C66E4)'),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           ...BODY, whiteSpace: 'nowrap',
                           flexShrink: 0,
@@ -554,7 +558,7 @@ export default function TimeInStatusWidget({
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           ...BODY,
-                          color: token('color.link', '#0C66E4'),
+                          color: token('color.link', 'var(--ds-link, #0C66E4)'),
                         }}
                       >
                         {r.title}
@@ -575,11 +579,12 @@ export default function TimeInStatusWidget({
                         style={{
                           minWidth: STATUS_COL_MIN,
                           padding: '4px',
-                          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                          borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+                          borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+                          borderRight: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                           background: categoryBg(s.category, ms),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           ...LABEL,
+// TODO: ads-unmapped — #292A2E context unclear
                           color: token('color.text', '#292A2E'),
                         }}
                       >
@@ -646,6 +651,7 @@ export default function TimeInStatusWidget({
                             );
                           })()
                         ) : (
+// TODO: ads-unmapped — #B3B9C4 context unclear
                           <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
                         )}
                       </td>
@@ -657,9 +663,10 @@ export default function TimeInStatusWidget({
                     style={{
                       padding: '4px',
                       textAlign: 'right',
-                      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderBottom: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                       ...SMALL_STRONG,
+// TODO: ads-unmapped — #292A2E context unclear
                       color: token('color.text', '#292A2E'),
                       background: totalBg(r.totalMs, totalMax),
                       position: 'sticky', right: 0,
@@ -682,9 +689,10 @@ export default function TimeInStatusWidget({
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '8px 16px',
-              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-              background: token('elevation.surface', '#FFFFFF'),
+              borderTop: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
+              background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
               ...LABEL,
+// TODO: ads-unmapped — #505258 context unclear
               color: token('color.text.subtle', '#505258'),
             }}
           >

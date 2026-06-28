@@ -656,6 +656,7 @@ const PrismCodeBlock: React.FC<PrismCodeBlockProps> = ({ text, language }) => {
         aria-hidden="true"
         className="catalyst-code-block-gutter"
         style={{
+// TODO: ads-unmapped — #E4E6EA context unclear
           background: token('color.background.neutral', '#E4E6EA'),
           color: token('color.text.subtle', 'var(--ds-text-subtlest, #6B778C)'),
           padding: '8px 10px',

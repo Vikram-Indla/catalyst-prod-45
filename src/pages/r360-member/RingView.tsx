@@ -41,6 +41,7 @@ const T = {
   surfaceRaised:     () => token('elevation.surface.raised', 'var(--ds-surface, #FFFFFF)'),
   bgNeutral:         () => token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
   bgNeutralSubtle:   () => token('color.background.neutral.subtle', 'var(--ds-surface-sunken, #F7F8F9)'),
+// TODO: ads-unmapped — #E9EAEB context unclear
   bgNeutralHovered:  () => token('color.background.neutral.hovered', '#E9EAEB'),
   bgSuccessBold:     () => token('color.background.success.bold', 'var(--ds-background-success-bold, #1F845A)'),
   bgInfoBold:        () => token('color.background.information.bold', 'var(--cp-primary-60, #0052CC)'),

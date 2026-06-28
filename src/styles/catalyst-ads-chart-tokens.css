@@ -16,29 +16,29 @@ html[data-color-mode="light"] {
   --ds-chart-blue-bold:    #1D7AFC;
   --ds-chart-teal-bold:    #2898BD;
   --ds-chart-green-bold:   #22A06B;
-  --ds-chart-yellow-bold:  #E2B203;
+  --ds-chart-yellow-bold:  var(--ds-background-warning-bold, #E2B203);
   --ds-chart-orange-bold:  #D97008;
-  --ds-chart-red-bold:     #C9372C;
+  --ds-chart-red-bold:     var(--ds-background-danger-bold, #C9372C);
   --ds-chart-magenta-bold: #CD519D;
   --ds-chart-purple-bold:  #6E5DC6;
-  --ds-chart-lime-bold:    #6A9A23;
+  --ds-chart-lime-bold:    var(--ds-background-success-bold, #6A9A23);
   --ds-chart-gray-bold:    #758195;
   /* subtle (fills/areas) */
-  --ds-chart-blue-subtle:    #E9F2FF;
+  --ds-chart-blue-subtle:    var(--ds-background-information, #E9F2FF);
   --ds-chart-green-subtle:   #DCFFF1;
-  --ds-chart-yellow-subtle:  #FFF7D6;
-  --ds-chart-red-subtle:     #FFECEB;
+  --ds-chart-yellow-subtle:  var(--ds-background-warning, #FFF7D6);
+  --ds-chart-red-subtle:     var(--ds-background-danger, #FFECEB);
   --ds-chart-purple-subtle:  #F3F0FF;
   /* categorical 1–10 (stable series slots) */
   --ds-chart-categorical-1:  #1D7AFC;
   --ds-chart-categorical-2:  #22A06B;
-  --ds-chart-categorical-3:  #E2B203;
+  --ds-chart-categorical-3:  var(--ds-background-warning-bold, #E2B203);
   --ds-chart-categorical-4:  #6E5DC6;
   --ds-chart-categorical-5:  #2898BD;
   --ds-chart-categorical-6:  #D97008;
   --ds-chart-categorical-7:  #CD519D;
-  --ds-chart-categorical-8:  #6A9A23;
-  --ds-chart-categorical-9:  #C9372C;
+  --ds-chart-categorical-8:  var(--ds-background-success-bold, #6A9A23);
+  --ds-chart-categorical-9:  var(--ds-background-danger-bold, #C9372C);
   --ds-chart-categorical-10: #758195;
 }
 
@@ -46,10 +46,10 @@ html.dark,
 html[data-color-mode="dark"],
 [data-theme="dark"] {
   /* named — brightened for dark surfaces */
-  --ds-chart-blue-bold:    #388BFF;
+  --ds-chart-blue-bold:    var(--ds-border-focused, #388BFF);
   --ds-chart-teal-bold:    #42B2D7;
   --ds-chart-green-bold:   #2ABB7F;
-  --ds-chart-yellow-bold:  #E2B203;
+  --ds-chart-yellow-bold:  var(--ds-background-warning-bold, #E2B203);
   --ds-chart-orange-bold:  #F38A3F;
   --ds-chart-red-bold:     #E34935;
   --ds-chart-magenta-bold: #E774BB;
@@ -63,9 +63,9 @@ html[data-color-mode="dark"],
   --ds-chart-red-subtle:     #42221F;
   --ds-chart-purple-subtle:  #1E1A33;
   /* categorical 1–10 — brightened, same hue order as light */
-  --ds-chart-categorical-1:  #388BFF;
+  --ds-chart-categorical-1:  var(--ds-border-focused, #388BFF);
   --ds-chart-categorical-2:  #2ABB7F;
-  --ds-chart-categorical-3:  #E2B203;
+  --ds-chart-categorical-3:  var(--ds-background-warning-bold, #E2B203);
   --ds-chart-categorical-4:  #8270DB;
   --ds-chart-categorical-5:  #42B2D7;
   --ds-chart-categorical-6:  #F38A3F;

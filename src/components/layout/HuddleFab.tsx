@@ -316,7 +316,7 @@ export function HuddleFab() {
               data-huddle-btn
               onClick={leave}
               title="Leave huddle"
-              style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', '#FFFFFF')}
+              style={iconBtnStyle('var(--ds-background-danger-bold, #C9372C)', 'var(--ds-surface, #FFFFFF)')}
             >
               <PhoneDownIcon />
             </button>

@@ -56,7 +56,8 @@ export const WIT_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 // BANNED COLORS — Golden Hour palette. If any of these appear in code, it is a bug.
-// #C69C6D, #5C7C5C, #8B7355, #D4B896 — NEVER USE
+// TODO: ads-unmapped — #5C7C5C context unclear
+// #C69C6D, #5C7C5C, #8B7355, var(--ds-background-neutral-subtle, #D4B896) — NEVER USE
 
 // ═══════════════════════════════════════════════════════════
 // RESOURCE 360° — Member Detail Design System Constants

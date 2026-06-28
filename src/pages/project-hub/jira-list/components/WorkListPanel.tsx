@@ -11,12 +11,12 @@
  * 2026-05-21: Left Panel Navigator spec alignment (14 gaps closed):
  *  - GroupBySelector: @atlaskit/dropdown-menu (Group by: None/Status/Assignee/Priority)
  *  - SortConfigButton + RefreshButton: @atlaskit/button/new IconButton appearance="subtle"
- *  - IssueCardList: background #F7F8F9, gap 1px hairline separator (flex column)
- *  - Active card: 3px solid #0C66E4 left accent bar (position:absolute), #E9F2FF bg
- *  - Active summary color: #0C66E4
+ *  - IssueCardList: background var(--ds-surface-sunken, #F7F8F9), gap 1px hairline separator (flex column)
+ *  - Active card: 3px solid var(--ds-link, #0C66E4) left accent bar (position:absolute), var(--ds-background-information, #E9F2FF) bg
+ *  - Active summary color: var(--ds-link, #0C66E4)
  *  - IssueTypeIcon: 20px
- *  - IssueKey typography: 13px/500/#44546F
- *  - Footer: 40px sticky, mixed-weight "N of 1000+" (gray + bold blue #0C66E4)
+ *  - IssueKey typography: 13px/500/var(--ds-text-subtle, #44546F)
+ *  - Footer: 40px sticky, mixed-weight "N of 1000+" (gray + bold blue var(--ds-link, #0C66E4))
  *  - Infinite scroll: IntersectionObserver + @atlaskit/spinner (replaces Load-more button)
  *  - Keyboard: Up/Down arrows, J/K vim-style, Home/End, Enter/Space, Escape propagates to parent
  */
@@ -556,7 +556,7 @@ export function WorkListPanel({
           flex: 1,
           overflowY: 'auto',
           minHeight: 0,
-          // IssueCardList container: #F7F8F9 bg with 1px gap (hairline sep between cards)
+          // IssueCardList container: var(--ds-surface-sunken, #F7F8F9) bg with 1px gap (hairline sep between cards)
           background: 'var(--ds-background-neutral, #F7F8F9)',
           display: 'flex',
           flexDirection: 'column',

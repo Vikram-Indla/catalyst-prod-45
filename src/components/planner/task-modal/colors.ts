@@ -49,6 +49,7 @@ export const STATUS_COLORS: Record<string, string> = {
   'Done': 'var(--ds-text-success, #16a34a)'
 };
 
+// TODO: ads-unmapped — #EAB308 context unclear
 // Priority Colors — MEDIUM IS YELLOW #eab308
 export const PRIORITY_COLORS: Record<string, string> = {
   'Critical': 'var(--ds-text-danger, #dc2626)',

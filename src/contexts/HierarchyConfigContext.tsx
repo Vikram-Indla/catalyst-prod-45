@@ -34,6 +34,7 @@ export const DEFAULT_HIERARCHY_LEVELS: HierarchyLevel[] = [
     level: 3,
     name: 'Feature',
     jiraTypes: ['Feature'],
+// TODO: ads-unmapped — #00B8D9 context unclear
     color: '#00B8D9',
     parentLevels: [2],
   },

@@ -59,6 +59,7 @@ const LABEL_COLORS = [
   { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
   { name: 'Indigo', value: 'var(--ds-background-discovery-bold, #6366f1)' },
   { name: 'Violet', value: 'var(--ds-background-discovery-bold, #8b5cf6)' },
+// TODO: ads-unmapped — #A855F7 context unclear
   { name: 'Purple', value: '#a855f7' },
   { name: 'Pink', value: 'var(--ds-background-accent-magenta-bolder, #ec4899)' },
   { name: 'Gray', value: 'var(--ds-text-subtlest, #626F86)' },

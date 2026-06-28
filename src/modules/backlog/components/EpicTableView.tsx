@@ -461,7 +461,7 @@ export function EpicTableView({
                           "text-[11px] uppercase font-semibold tracking-[0.5px]",
                           "border-[var(--industry-border-default)] dark:border-[var(--ds-text-subtle, #44546F)]",
                           isActive 
-                            ? "text-[var(--brand-gold)] dark:text-[#d4a855]" 
+                            ? "text-[var(--brand-gold)] dark:text-[var(--ds-background-warning-bold, #d4a855)]" 
                             : "text-[var(--industry-text-muted)] dark:text-gray-400",
                           column.sortable && "cursor-pointer hover:text-[var(--industry-text-secondary)] dark:hover:text-gray-300"
                         )}
@@ -479,7 +479,7 @@ export function EpicTableView({
                           />
                         ) : (
                           <div className="flex items-center">
-                            <span className={cn(isActive && "border-b-2 border-[var(--brand-gold)] dark:border-[#d4a855] pb-0.5")}>
+                            <span className={cn(isActive && "border-b-2 border-[var(--brand-gold)] dark:border-[var(--ds-background-warning-bold, #d4a855)] pb-0.5")}>
                               {column.label}
                             </span>
                             {renderSortIcon(column)}

@@ -174,7 +174,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
-      <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-[var(--ds-surface, #080E1D)]/38 backdrop-blur-[1px]" />
       <div className="relative w-[700px] h-full bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
         onClick={e => e.stopPropagation()}>
         {/* Header */}
@@ -708,7 +708,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             {hasPending && stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => (
               <div key={so.id} className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => catalystToast.success('Approved') })}
-                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
+                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, var(--ds-background-success-bold, #1F845A))] text-white text-[11px] font-bold hover:bg-[var(--ds-background-success-bold, #004D33)]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => catalystToast.success('Rejected') })}
                   className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]">Reject</button>
               </div>

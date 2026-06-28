@@ -55,12 +55,14 @@ export const APPROVAL_STATUS_CONFIG = {
     // token('color.text.success.bolder') / bg: token('color.background.success.hovered')
     label: 'Approved',
     color: 'var(--ds-text-success, #006644)',
+// TODO: ads-unmapped — #ABF5D1 context unclear
     bgColor: '#ABF5D1',
   },
   rejected: {
     // token('color.text.danger.bolder') / bg: token('color.background.danger.subtler')
     label: 'Rejected',
     color: 'var(--ds-text-danger, #AE2A19)',
+// TODO: ads-unmapped — #FFBDAD context unclear
     bgColor: '#FFBDAD',
   },
   waiting: {
@@ -80,12 +82,14 @@ export const APPROVAL_STATUS_CONFIG = {
 /**
  * WORKFLOW_STATUSES — 10-stage Catalyst workflow. Each color is an Atlaskit
  * semantic-token fallback hex. Eliminates the four Golden Hour palette
+// TODO: ads-unmapped — #896F58 context unclear
  * collisions previously baked into the HSL form (design=#896F58,
+// TODO: ads-unmapped — #D4B996 context unclear
  * in_dev=#C79C6B, uat=#D4B996, beta=#5B7B5B — all banned per §7).
  */
 export const WORKFLOW_STATUSES = [
   { id: 'backlog', name: 'Backlog', color: 'var(--ds-text-subtle, #42526E)' },           // neutral.bold
-  { id: 'design', name: 'Design', color: '#5243AA' },              // purple.bolder
+  { id: 'design', name: 'Design', color: 'var(--ds-background-discovery-bold, #5243AA)' },              // purple.bolder
   { id: 'ready_dev', name: 'Ready for Development', color: 'var(--cp-primary-60, #0052CC)' }, // brand.bold (info)
   { id: 'in_dev', name: 'In Development', color: 'var(--ds-background-warning-bold, #E2B203)' },      // warning.bold (yellow)
   { id: 'qa', name: 'QA Testing', color: 'var(--ds-background-warning-bold, #E2B203)' },              // warning.bold.hovered

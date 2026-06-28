@@ -21,12 +21,15 @@ export function CatySleepingFace({ size = 24 }: CatySleepingFaceProps) {
         {/* ads-scanner:ignore-next-line — Caty brand gradient, no ADS token equivalent */}
         <linearGradient id="caty-sleep-gradient" x1="16" y1="2" x2="16" y2="30" gradientUnits="userSpaceOnUse">
           {/* ads-scanner:ignore-next-line */}
+// TODO: ads-unmapped — #F79357 context unclear
           <stop stopColor="#F79357" />
           {/* ads-scanner:ignore-next-line */}
           <stop offset=".5" stopColor="var(--ds-background-danger-bold, #C9372C)" />
           {/* ads-scanner:ignore-next-line */}
+// TODO: ads-unmapped — #B41572 context unclear
           <stop offset=".78" stopColor="#B41572" />
           {/* ads-scanner:ignore-next-line */}
+// TODO: ads-unmapped — #CC1E9A context unclear
           <stop offset="1" stopColor="#CC1E9A" />
         </linearGradient>
       </defs>

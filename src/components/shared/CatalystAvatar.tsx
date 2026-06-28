@@ -53,6 +53,7 @@ const PALETTE = [
   'var(--ds-background-success-bold, #1F845A)', // green
   'var(--ds-background-discovery-bold, #6E5DC6)', // purple
   'var(--ds-link, #0C66E4)', // blue
+// TODO: ads-unmapped — #206A83 context unclear
   '#206A83', // teal.bold
 ];
 

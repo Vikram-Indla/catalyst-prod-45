@@ -19,6 +19,7 @@ const T = {
   ink1: 'var(--fg-1)', ink2: 'var(--fg-2)', ink3: 'var(--fg-3)', ink4: 'var(--fg-4)',
   border: 'var(--divider)', borderLt: 'var(--bg-3)',
   accent: 'var(--cp-blue)',
+// TODO: ads-unmapped — #0E8A5F context unclear
   todo: 'var(--ds-text, #172B4D)', progress: 'var(--cp-blue)', done: '#0E8A5F',
   danger: 'var(--sem-danger)', warning: 'var(--sem-warning)', success: 'var(--sem-success)',
   mono: "var(--ds-font-family-code)",
@@ -50,6 +51,7 @@ function getJiraIconForType(typeStr: string) {
 function getTypeBadgeStyle(typeStr: string): { bg: string; color: string } {
   const lower = (typeStr || '').toLowerCase();
   if (lower.includes('bug')) return { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #AE2A19)' };
+// TODO: ads-unmapped — #4C1D95 context unclear
   if (lower.includes('epic')) return { bg: 'var(--ds-background-discovery, #F3F0FF)', color: '#4C1D95' };
   if (lower.includes('story')) return { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #216E4E)' };
   if (lower.includes('sub')) return { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--ds-text-success, #216E4E)' };

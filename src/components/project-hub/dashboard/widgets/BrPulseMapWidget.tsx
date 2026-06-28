@@ -97,7 +97,7 @@ export default function BrPulseMapWidget({
                 flex: 1,
                 height: 96,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -117,7 +117,7 @@ export default function BrPulseMapWidget({
               borderRadius: 6,
               overflow: 'hidden',
               display: 'flex',
-              background: token('color.background.neutral', '#F1F2F4'),
+              background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
             }}
           >
             {STATUS_ORDER.filter((s) => distribution[s] > 0).map((s) => (
@@ -174,7 +174,7 @@ export default function BrPulseMapWidget({
           <div
             style={{
               ...SMALL,
-              color: token('color.text.subtlest', '#8590A2'),
+              color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
               textAlign: 'right',
             }}
           >

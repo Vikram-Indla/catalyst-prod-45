@@ -2,7 +2,7 @@
 
 /* CatyFabIcon colour vars — Catalyst is a light-theme app, cat stays dark */
 :root {
-  --caty-fg: #2A2832;
+  --caty-fg: var(--ds-surface, #2A2832);
   --caty-bg: #F6F4EF;
 }
 

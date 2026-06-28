@@ -65,6 +65,7 @@ const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }
   incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'IncidentHub' },
   release: { bg: 'var(--ds-background-success, #DFFCF0)', color: 'var(--quality-high, var(--ds-background-success-bold, #059669))', label: 'ReleaseHub' },
   requirement: { bg: 'var(--ds-background-warning, #FFF7D6)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Requirements' },
+// TODO: ads-unmapped — #F0F9FF context unclear
   wiki: { bg: '#F0F9FF', color: 'var(--ds-link, #0284c7)', label: 'WikiHub' },
 };
 
@@ -360,6 +361,7 @@ export default function WikiArticlePage() {
   const refs = page.references || [];
   const title = page.title || pageSlug?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Article';
   const conf = Math.round((page.ai_confidence ?? 0) * 100);
+// TODO: ads-unmapped — #9A5402 context unclear
   const confColor = conf >= 90 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : conf >= 70 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--ds-surface, #FFFFFF))))' : '#9A5402';
   const verStatus = (page as any).verification_status || 'unverified';
   const verBadge = verStatus === 'verified'
@@ -529,6 +531,7 @@ export default function WikiArticlePage() {
             {/* ── TL;DR ── */}
             <div style={{
               borderLeft: '3px solid var(--cp-purple-60, var(--ds-background-discovery-bold, #7C3AED))', padding: '12px 16px', marginBottom: 24,
+// TODO: ads-unmapped — #FAFAFE context unclear
               background: isDark ? 'var(--ds-background-discovery-bold, rgba(124,58,237,0.06))' : '#FAFAFE', borderRadius: '0 6px 6px 0',
             }}>
               <span style={{

@@ -76,7 +76,7 @@ function MetadataLine({
   timestamp: string;
   isDark: boolean;
 }) {
-  const color = isDark ? 'var(--ds-text-subtlest, #8C9CB5)' : token('color.text.subtlest', '#6B778C');
+  const color = isDark ? 'var(--ds-text-subtlest, #8C9CB5)' : token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)');
   const items = [projectName, issueKey, formatRelativeTime(timestamp)].filter(Boolean) as string[];
 
   return (
@@ -123,7 +123,7 @@ function mapStatusAppearance(statusAppearance: string): LozengeAppearance {
 // ─── Comment body with @mention parsing ──────────────────────────────────────
 
 function CommentBody({ text, isDark }: { text: string; isDark: boolean }) {
-  const color = isDark ? 'var(--ds-text, #E6EDFA)' : token('color.text', '#172B4D');
+  const color = isDark ? 'var(--ds-text, #E6EDFA)' : token('color.text', 'var(--ds-text, #172B4D)');
 
   // Roster-aware @mention parsing — supports names of any word count.
   // Longest-matches `@maria garcia lopez` as one mention even though it's
@@ -218,11 +218,11 @@ export default function MentionActivityCard({
   const actorAvatarUrl = actor?.avatarUrl ?? undefined;
 
   // Token-based colors
-  const cardBg        = isDark ? 'var(--ds-surface-raised, #22272B)' : token('color.background.card', '#FFFFFF');
-  const cardBorder    = isDark ? 'var(--ds-border, #2C3E50)'          : token('color.border', '#DFE1E6');
-  const primaryText   = isDark ? 'var(--ds-text, #E6EDFA)'            : token('color.text', '#172B4D');
-  const subtleText    = isDark ? 'var(--ds-text-subtle, #8C9CB5)'     : token('color.text.subtle', '#42526E');
-  const linkColor     = isDark ? 'var(--ds-link, #4C9AFF)'            : token('color.link', '#0052CC');
+  const cardBg        = isDark ? 'var(--ds-surface-raised, #22272B)' : token('color.background.card', 'var(--ds-surface, #FFFFFF)');
+  const cardBorder    = isDark ? 'var(--ds-border, #2C3E50)'          : token('color.border', 'var(--ds-border, #DFE1E6)');
+  const primaryText   = isDark ? 'var(--ds-text, #E6EDFA)'            : token('color.text', 'var(--ds-text, #172B4D)');
+  const subtleText    = isDark ? 'var(--ds-text-subtle, #8C9CB5)'     : token('color.text.subtle', 'var(--ds-text-subtle, #42526E)');
+  const linkColor     = isDark ? 'var(--ds-link, #4C9AFF)'            : token('color.link', 'var(--ds-link, #0052CC)');
   const threadBorder  = isDark ? 'var(--ds-border, #2C3E50)'          : 'var(--ds-border, #DFE1E6)';
 
   const handleReply = useCallback(() => {

@@ -404,6 +404,7 @@ export function CreateEpicDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
         "sm:max-w-[600px] max-h-[90vh] p-0 flex flex-col overflow-hidden",
+// TODO: ads-unmapped — #141414 context unclear
         "bg-white dark:bg-[#141414]",
         "rounded-lg",
         "shadow-xl",
@@ -414,6 +415,7 @@ export function CreateEpicDialog({
         <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[var(--ds-background-discovery-bold, #6E5DC6)] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         {/* Header */}
+// TODO: ads-unmapped — #141414 context unclear
         <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-[var(--ds-text, #172B4D)] flex-shrink-0 bg-white dark:bg-[#141414]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

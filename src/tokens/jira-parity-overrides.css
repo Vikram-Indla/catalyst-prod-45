@@ -22,7 +22,7 @@
    * All foreground text: rgb(41, 42, 46) — same across all appearances.
    * ─────────────────────────────────────────────────────────────────────── */
 
-  /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS success.bold=#1F845A, actual=rgb(179,223,114) */
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS success.bold=var(--ds-background-success-bold, #1F845A), actual=rgb(179,223,114) */
   --cp-jira-status-success-bg: var(--ds-background-success-bold, rgb(179, 223, 114));
 
   /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS inprogress.bold=#0055CC, actual=rgb(143,184,246) */
@@ -63,8 +63,8 @@
   /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — done category dot, actual=#94C748 */
   --cp-jira-dot-done: var(--ds-background-success-bold, #6A9A23);
 
-  /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — in-progress category dot, actual=#669DF1 */
-  --cp-jira-dot-inprogress: #669DF1;
+  /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — in-progress category dot, actual=var(--ds-chart-blue-bold, #669DF1) */
+  --cp-jira-dot-inprogress: var(--ds-chart-blue-bold, #669DF1);
 
   /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — to-do category dot, actual=#5E6C84 */
   --cp-jira-dot-todo: var(--ds-text-subtle, #44546F);

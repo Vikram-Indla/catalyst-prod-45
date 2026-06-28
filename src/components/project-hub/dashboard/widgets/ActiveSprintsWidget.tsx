@@ -86,13 +86,17 @@ function fmtShort(s: string | null): string {
 // ─── Gantt bar ────────────────────────────────────────────────────────────────
 
 const BAR_BG: Record<SprintStatus, string> = {
+// TODO: ads-unmapped — #CCE0FF context unclear
   Active:    token('color.background.accent.blue.subtle', '#CCE0FF'),
+// TODO: ads-unmapped — #FFE2BD context unclear
   'At Risk': token('color.background.accent.orange.subtle', '#FFE2BD'),
   Upcoming:  token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
+// TODO: ads-unmapped — #BAF3DB context unclear
   Completed: token('color.background.accent.green.subtle', '#BAF3DB'),
 };
 const BAR_BORDER: Record<SprintStatus, string> = {
   Active:    token('color.border.accent.blue', 'var(--ds-link, #0C66E4)'),
+// TODO: ads-unmapped — #D97008 context unclear
   'At Risk': token('color.border.accent.orange', '#D97008'),
   Upcoming:  token('color.border', 'var(--ds-border, #DFE1E6)'),
   Completed: token('color.border.accent.green', 'var(--ds-background-success-bold, #1F845A)'),

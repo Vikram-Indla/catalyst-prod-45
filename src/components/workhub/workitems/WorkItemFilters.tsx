@@ -168,6 +168,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
                     onClick={() => toggle(opt.value)}
                     className="flex items-center w-full px-3 py-2 text-xs transition-colors group"
                     style={{
+// TODO: ads-unmapped — #F0F7FF context unclear
                       backgroundColor: isSelected ? '#f0f7ff' : 'transparent',
                       color: 'var(--wh-text-primary, #0f172a)',
                     }}
@@ -175,6 +176,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
                       if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)');
                     }}
                     onMouseLeave={e => {
+// TODO: ads-unmapped — #F0F7FF context unclear
                       e.currentTarget.style.backgroundColor = isSelected ? '#f0f7ff' : 'transparent';
                     }}
                   >
@@ -361,10 +363,11 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
             <FilterChip key={`t-${t}`} label={t} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" bgColor="var(--ds-background-selected, #EFF6FF)" borderColor="var(--ds-background-information, #E9F2FF)" onRemove={() => removeChip('types', t)} />
           ))}
           {selectedStatuses.map(s => (
+// TODO: ads-unmapped — #ECFEFF context unclear
             <FilterChip key={`s-${s}`} label={s} color="var(--ds-link, #0C66E4)" bgColor="#ecfeff" borderColor="#a5f3fc" onRemove={() => removeChip('statuses', s)} />
           ))}
           {selectedReleases.map(r => (
-            <FilterChip key={`r-${r}`} label={r} color="var(--quality-high, #059669)" bgColor="var(--ds-background-success, #DFFCF0)" borderColor="#a7f3d0" onRemove={() => removeChip('fix_version_names', r)} />
+            <FilterChip key={`r-${r}`} label={r} color="var(--quality-high, #059669)" bgColor="var(--ds-background-success, #DFFCF0)" borderColor="var(--ds-background-success, #a7f3d0)" onRemove={() => removeChip('fix_version_names', r)} />
           ))}
         </div>
       )}

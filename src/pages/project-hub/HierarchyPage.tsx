@@ -101,7 +101,7 @@ const FILTER_AVATAR_COLORS = [
   'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   token('color.background.accent.blue.subtlest', 'var(--ds-link, #0284c7)'),
   'var(--quality-high, var(--ds-background-success-bold, #059669))',
-  token('color.background.accent.red.subtlest', '#BE123C'),
+  token('color.background.accent.red.subtlest', 'var(--ds-text-danger, #BE123C)'),
   'var(--ds-background-brand-bold-hovered, #1D4ED8)',
   'var(--ds-background-accent-teal-subtlest, #0F766E)'
 ];

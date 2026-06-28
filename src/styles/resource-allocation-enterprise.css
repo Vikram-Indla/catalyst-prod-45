@@ -359,7 +359,7 @@
 .ra-enterprise-clean [class*="bg-emerald"] .rounded-md {
   background: var(--ds-background-success, #DFFCF0) !important;
   color: var(--quality-high, var(--ds-background-success-bold, #059669)) !important;
-  border-color: #a7f3d0 !important;
+  border-color: var(--ds-background-success, #a7f3d0) !important;
 }
 
 .ra-enterprise-clean [class*="bg-emerald"] .rounded-md::after {

@@ -8,6 +8,7 @@ import type { LozengeAppearance } from './statusToLozenge';
 // alias for `LozengeAppearance` so callers that previously passed
 // `cfg.color` straight into an Atlaskit <Lozenge appearance={...}> get
 // type-correct values, and "In UAT" maps to `inprogress` rather than
+// TODO: ads-unmapped — #00B8D9 context unclear
 // inventing a cyan (#00B8D9) that isn't in Atlassian's palette.
 //
 // NOTE: `getLozengeStyle()` is retained as a back-compat inline-style
@@ -36,6 +37,7 @@ const LOZENGE_STYLES_DARK: Record<LozengeColor, { bg: string; text: string }> = 
   inprogress: { bg: 'var(--ds-background-information-bold, rgba(59,130,246,0.10))',  text: 'var(--ds-background-information-bold, #0C66E4)' },
   success:    { bg: 'var(--ds-background-success-bold, rgba(74,222,128,0.10))',  text: 'var(--ds-background-success, #DFFCF0)' },
   removed:    { bg: 'rgba(248,113,113,0.10)', text: 'var(--ds-background-danger, #FFECEB)' },
+// TODO: ads-unmapped — #FACC15 context unclear
   moved:      { bg: 'rgba(234,179,8,0.10)',   text: '#FACC15' },
   new:        { bg: 'var(--ds-background-discovery-bold, rgba(167,139,250,0.10))', text: 'var(--ds-background-discovery, #F3F0FF)' },
 };
@@ -272,6 +274,7 @@ export function getPriorityColor(priority: string | null): string {
     case 'critical':
     case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     case 'high':    return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+// TODO: ads-unmapped — #CF7B00 context unclear
     case 'medium':  return '#CF7B00';
     case 'low':
     case 'lowest':  return 'var(--ds-text-subtlest, #626F86)';
@@ -318,12 +321,17 @@ export function groupByStatus<T extends { status: string | null }>(
 
 // ─── PARENT EPIC CHIP COLOR (deterministic) ──────
 const EPIC_CHIP_PALETTE = [
+// TODO: ads-unmapped — #7A4F00 context unclear
   { bg: 'var(--ds-background-warning, #FFF7D6)', text: '#7A4F00', border: 'var(--ds-background-warning-bold, #E2B203)' },
-  { bg: '#FFBDAD', text: 'var(--ds-text-danger, #AE2A19)', border: '#FF7452' },
+// TODO: ads-unmapped — #FFBDAD context unclear
+  { bg: '#FFBDAD', text: 'var(--ds-text-danger, #AE2A19)', border: 'var(--ds-background-danger-bold, #FF7452)' },
+// TODO: ads-unmapped — #FFE2FE context unclear
   { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' },
   { bg: 'var(--ds-link, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'var(--ds-background-information-bold, #0C66E4)' },
-  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '#57D9A3' },
+  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'var(--ds-background-success-bold, #57D9A3)' },
+// TODO: ads-unmapped — #006884 context unclear
   { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
+// TODO: ads-unmapped — #8777D9 context unclear
   { bg: 'var(--ds-background-discovery, #F3F0FF)', text: 'var(--ds-background-discovery-bold, #6E5DC6)', border: '#8777D9' },
   { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'var(--ds-text-disabled, #CBD5E1)' },
 ];

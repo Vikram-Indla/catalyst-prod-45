@@ -35,7 +35,7 @@ const HEALTH_BAR_BG: Record<HealthLevel, string> = {
 const VERSION_BADGE_COLORS: Record<HealthLevel, { bg: string; text: string }> = {
   critical: { bg: 'var(--ds-background-danger, #fef2f2)', text: 'var(--ds-text-danger, #ef4444)' },
   at_risk: { bg: 'var(--ds-background-warning, #FFF7D6)', text: 'var(--ds-background-warning-bold, #f97316)' },
-  attention: { bg: '#fefce8', text: 'var(--ds-text-warning, #974F0C)' },
+  attention: { bg: 'var(--ds-background-neutral-subtle, #F7F8F9)', text: 'var(--ds-text-warning, #974F0C)' },
   healthy: { bg: 'var(--ds-background-success, #DFFCF0)', text: 'var(--ds-text-success, #16a34a)' },
 };
 

@@ -82,7 +82,7 @@ export default function StakeholderLensWidget({
               style={{
                 height: 44,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -106,8 +106,8 @@ export default function StakeholderLensWidget({
                   gap: 10,
                   padding: '8px 10px',
                   borderRadius: token('border.radius', '4px'),
-                  background: token('elevation.surface', '#FFFFFF'),
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  background: token('elevation.surface', 'var(--ds-surface, #FFFFFF)'),
+                  border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
                 }}
               >
                 {/* Avatar */}
@@ -132,7 +132,7 @@ export default function StakeholderLensWidget({
                       fontWeight: 700,
                       color: atRiskTotal > 0
                         ? 'var(--ds-text-accent-orange-bolder, #974F0C)'
-                        : token('color.text.subtle', '#626F86'),
+                        : token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)'),
                     }}
                   >
                     {initials(owner.name)}
@@ -201,7 +201,7 @@ export default function StakeholderLensWidget({
                 <span
                   style={{
                     ...SMALL,
-                    color: token('color.text.subtlest', '#8590A2'),
+                    color: token('color.text.subtlest', 'var(--ds-text-disabled, #8590A2)'),
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
                   }}

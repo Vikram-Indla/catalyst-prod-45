@@ -83,8 +83,8 @@ export default function TeamMemberHoverCard({
         left: pos.left,
         width: 360,
         zIndex: 99999,
-        background: token('elevation.surface.overlay', '#FFFFFF'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
+        border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderRadius: 8,
         boxShadow: token('elevation.shadow.overlay', '0 4px 12px rgba(9,30,66,0.15)'),
         padding: 12,
@@ -95,8 +95,8 @@ export default function TeamMemberHoverCard({
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
         <UserAvatar size="medium" name={name} />
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-          <span style={{ ...STRONG, color: token('color.text', '#172B4D') }}>{name}</span>
-          <span style={{ ...SMALL, color: token('color.text.subtle', '#44546F') }}>
+          <span style={{ ...STRONG, color: token('color.text', 'var(--ds-text, #172B4D)') }}>{name}</span>
+          <span style={{ ...SMALL, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)') }}>
             {role || 'Role not set'}
           </span>
         </div>
@@ -108,7 +108,7 @@ export default function TeamMemberHoverCard({
           ...LABEL,
           textTransform: 'none',
           letterSpacing: '0.04em',
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
           marginBottom: 6,
         }}
       >
@@ -117,11 +117,11 @@ export default function TeamMemberHoverCard({
 
       {/* Items list */}
       {isLoading ? (
-        <div style={{ ...SMALL, color: token('color.text.subtle', '#44546F'), padding: '8px 0' }}>
+        <div style={{ ...SMALL, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), padding: '8px 0' }}>
           Loading…
         </div>
       ) : !items || items.length === 0 ? (
-        <div style={{ ...SMALL, color: token('color.text.subtle', '#44546F'), padding: '8px 0' }}>
+        <div style={{ ...SMALL, color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'), padding: '8px 0' }}>
           No recent items.
         </div>
       ) : (
@@ -135,7 +135,7 @@ export default function TeamMemberHoverCard({
                 type="button"
                 onClick={() => key && onItemClick(key)}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+                  e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral, #F1F2F4)');
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -155,7 +155,7 @@ export default function TeamMemberHoverCard({
                 <JiraIssueTypeIcon type={(it.issue_type as any) || 'Task'} size={14} />
                 <span
                   style={{
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--ds-text-subtle, #44546F)'),
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >
@@ -163,7 +163,7 @@ export default function TeamMemberHoverCard({
                 </span>
                 <span
                   style={{
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', 'var(--ds-text, #172B4D)'),
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',

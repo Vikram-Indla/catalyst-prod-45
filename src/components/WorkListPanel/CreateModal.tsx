@@ -109,7 +109,7 @@ export const CreateModal = memo(function CreateModal({
                   transition: 'background-color 150ms',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#DCDFE6';
+                  e.currentTarget.style.backgroundColor = 'var(--ds-border, #DCDFE6)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral, #F1F2F4)';

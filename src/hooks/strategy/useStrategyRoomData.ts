@@ -221,7 +221,9 @@ function useContracts() {
       }).length - expiringSoon.length;
 
       const buckets: ContractBucket[] = [
+// TODO: ads-unmapped — #11853D context unclear
         { count: active, label: 'Active', color: 'var(--cp-success, #16A34A)', textColor: '#11853D' },
+// TODO: ads-unmapped — #D92525 context unclear
         { count: exp30, label: '< 30 Days', color: 'var(--cp-danger, #DC2626)', textColor: '#D92525' },
         { count: exp90, label: '< 90 Days', color: 'var(--cp-amber, #F59E0B)', textColor: 'var(--ds-background-warning-bold, #b45309)' },
         { count: expired, label: 'Expired', color: 'var(--ds-text-subtlest, #626F86)', textColor: 'var(--ds-text-subtle, #44546F)' },
@@ -461,6 +463,7 @@ function useAlignment() {
         const progs = goalsByTheme.get(t.id) || [];
         const avgProg = progs.length > 0 ? Math.round(progs.reduce((a, b) => a + b, 0) / progs.length) : 0;
         const color = avgProg >= 70 ? 'var(--cp-success, #16A34A)' : avgProg >= 40 ? 'var(--cp-amber, #F59E0B)' : 'var(--cp-danger, #DC2626)';
+// TODO: ads-unmapped — #11853D context unclear
         const textColor = avgProg >= 70 ? '#11853D' : avgProg >= 40 ? 'var(--ds-background-warning-bold, #b45309)' : '#D92525';
         return { name: t.title, pct: avgProg, color, textColor };
       });

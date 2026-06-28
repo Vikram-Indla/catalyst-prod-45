@@ -5,7 +5,7 @@
  * Shares state with ProfileMenu's Theme submenu via useThemeMode() — both
  * call setTheme on the same context, so they stay in sync.
  *
- * Colours come from the bridge tokens (token('color.text.subtle', '#626F86') etc.) —
+ * Colours come from the bridge tokens (token('color.text.subtle', 'var(--ds-text-subtlest, #626F86)') etc.) —
  * no hex literals (CLAUDE.md ADS wrapper contract rule 5).
  *
  * Apr 28, 2026 — moved here from src/components/ui/ThemeToggle.tsx to

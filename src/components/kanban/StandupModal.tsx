@@ -1160,6 +1160,7 @@ function PillToggle({ value, onChange }: { value: boolean; onChange: (next: bool
       style={{
         width: 44, height: 24, borderRadius: 12,
         border: 'none', padding: 2,
+// TODO: ads-unmapped — #4F7B26 context unclear
         background: value ? '#4F7B26' : 'var(--ds-text, #172B4D)',
         display: 'inline-flex', alignItems: 'center',
         justifyContent: 'space-between',

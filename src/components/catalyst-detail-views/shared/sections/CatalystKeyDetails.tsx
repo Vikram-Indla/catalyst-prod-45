@@ -10,6 +10,7 @@
  *     - Parent (with type icon + issue key + summary, clickable)
  *     - Priority (with icon + label, editable)
  *   Typography and spacing match the right-sidebar Details section
+// TODO: ads-unmapped — #505258 context unclear
  *   (14/500/#505258 labels with space.250 / 20px gap).
  *
  *   The section is rendered by each CatalystView* left-content slot,

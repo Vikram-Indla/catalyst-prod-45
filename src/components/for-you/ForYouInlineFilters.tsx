@@ -17,7 +17,8 @@ const HUB_DOT_COLORS: Record<string, string> = {
   Plan: 'var(--ds-background-discovery-bold, #6366f1)',
 };
 
-const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
+// TODO: ads-unmapped — #8B6B7A context unclear
+const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "var(--ds-background-discovery, #6b8b7a)"];
 function getAvatarColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);

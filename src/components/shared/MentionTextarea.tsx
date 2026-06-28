@@ -25,14 +25,17 @@ function getAvatarColor(name: string): string {
   // CLAUDE.md §L38 — hex literals only (no HSL).
   // Atlaskit avatar palette (bold, visually distinct).
   const colors = [
-    '#2A6DF4',  // Blue
-    '#7C3BED',  // Purple
+    'var(--ds-link, #2A6DF4)',  // Blue
+    'var(--ds-background-discovery-bold, #7C3BED)',  // Purple
+// TODO: ads-unmapped — #EC4699 context unclear
     '#EC4699',  // Pink
+// TODO: ads-unmapped — #E54D2E context unclear
     '#E54D2E',  // Red-Orange
+// TODO: ads-unmapped — #F2960D context unclear
     '#F2960D',  // Orange
-    '#25A777',  // Teal
-    '#0DA2E7',  // Sky Blue
-    '#21C45D',  // Green
+    'var(--ds-background-success-bold, #25A777)',  // Teal
+    'var(--ds-chart-blue-bold, #0DA2E7)',  // Sky Blue
+    'var(--ds-chart-green-bold, #21C45D)',  // Green
   ];
   
   let hash = 0;
@@ -260,7 +263,7 @@ export function MentionTextarea({
                     isSelected && "bg-primary text-primary-foreground"
                   )}
                   style={{
-                    backgroundColor: isSelected ? '#2A6DF4' : undefined,
+                    backgroundColor: isSelected ? 'var(--ds-link, #2A6DF4)' : undefined,
                     color: isSelected ? 'white' : undefined,
                   }}
                 >

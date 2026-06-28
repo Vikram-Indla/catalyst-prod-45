@@ -96,7 +96,7 @@ export default function ReleaseConfidenceWidget({
               style={{
                 height: 72,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F2F4'),
+                background: token('color.background.neutral.subtle', 'var(--ds-background-neutral, #F1F2F4)'),
               }}
             />
           ))}
@@ -143,7 +143,7 @@ export default function ReleaseConfidenceWidget({
                 flex: 1,
                 height: 12,
                 borderRadius: 6,
-                background: token('color.background.neutral', '#F1F2F4'),
+                background: token('color.background.neutral', 'var(--ds-background-neutral, #F1F2F4)'),
                 overflow: 'hidden',
               }}
             >
@@ -163,9 +163,9 @@ export default function ReleaseConfidenceWidget({
           <div
             style={{
               display: 'flex',
-              background: token('elevation.surface.sunken', '#F7F8F9'),
+              background: token('elevation.surface.sunken', 'var(--ds-surface-sunken, #F7F8F9)'),
               borderRadius: token('border.radius', '4px'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
               overflow: 'hidden',
             }}
           >
@@ -199,7 +199,7 @@ export default function ReleaseConfidenceWidget({
                   flexDirection: 'column',
                   gap: 2,
                   padding: '10px 10px',
-                  borderRight: i < arr.length - 1 ? `1px solid ${token('color.border', '#DFE1E6')}` : 'none',
+                  borderRight: i < arr.length - 1 ? `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}` : 'none',
                   minWidth: 0,
                 }}
               >
@@ -217,6 +217,7 @@ export default function ReleaseConfidenceWidget({
                   style={{
                     ...H_NUM,
                     lineHeight: 1.1,
+// TODO: ads-unmapped — #292A2E context unclear
                     color: cell.accent ?? token('color.text', '#292A2E'),
                     fontVariantNumeric: 'tabular-nums',
                   }}

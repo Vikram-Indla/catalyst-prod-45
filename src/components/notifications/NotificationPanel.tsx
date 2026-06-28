@@ -125,13 +125,13 @@ export default function NotificationPanel({
   // Theme tokens — direct RGBA values for visible borders (2026-06-25 visibility fix)
   // CSS vars like --cp-border-subtle resolve to 6% opacity which is too subtle.
   const T = {
-    panelBg: isDark ? "#1D2125" : "#FFFFFF",
-    surfaceBg: isDark ? "#1D2125" : "#FFFFFF",
-    text1: isDark ? "#EDEDED" : "#0F172A",
-    text2: isDark ? "#A1A1A1" : "#42526E",
-    text3: isDark ? "#878787" : "#6B778C",
-    border: isDark ? "#2E2E2E" : "rgba(15,23,42,0.15)", // Direct values, not CSS vars
-    borderStrong: isDark ? "#454545" : "rgba(15,23,42,0.20)",
+    panelBg: isDark ? "var(--ds-surface-sunken, #1D2125)" : "var(--ds-surface, #FFFFFF)",
+    surfaceBg: isDark ? "var(--ds-surface-sunken, #1D2125)" : "var(--ds-surface, #FFFFFF)",
+    text1: isDark ? "var(--ds-background-neutral, #EDEDED)" : "var(--ds-text, #0F172A)",
+    text2: isDark ? "var(--ds-text-subtlest, #A1A1A1)" : "var(--ds-text-subtle, #42526E)",
+    text3: isDark ? "var(--ds-text-subtlest, #878787)" : "var(--ds-text-subtlest, #6B778C)",
+    border: isDark ? "var(--ds-background-neutral, #2E2E2E)" : "rgba(15,23,42,0.15)", // Direct values, not CSS vars
+    borderStrong: isDark ? "var(--ds-text-subtle, #454545)" : "rgba(15,23,42,0.20)",
     hover: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.04)",
     press: isDark ? "rgba(255,255,255,0.10)" : "rgba(15,23,42,0.08)",
     shadow: isDark
@@ -140,7 +140,7 @@ export default function NotificationPanel({
     menuBg:
       "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
     divider: "var(--cp-border-subtle, rgba(15,23,42,0.08))",
-    checkStroke: isDark ? "#3B82F6" : "#0052CC",
+    checkStroke: isDark ? "var(--ds-background-information-bold, #3B82F6)" : "var(--ds-link, #0052CC)",
   };
 
   const [activeTab, setActiveTab] = useState<NotificationTab>("direct");

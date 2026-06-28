@@ -78,7 +78,7 @@ export function PriorityPopover({ priority, onChange, children, showActive = tru
               top: anchor.top,
               left: anchor.left,
               width: 180,
-              background: token('elevation.surface.overlay', '#FFFFFF'),
+              background: token('elevation.surface.overlay', 'var(--ds-surface, #FFFFFF)'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px var(--ds-shadow-raised, rgba(9, 30, 66, 0.16))',
@@ -97,10 +97,10 @@ export function PriorityPopover({ priority, onChange, children, showActive = tru
                   style={{
                     display: 'flex', alignItems: 'center', width: '100%',
                     height: 36, padding: '0 10px', gap: 8,
-                    background: active ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                    background: active ? token('color.background.selected', 'var(--ds-background-information, #E9F2FF)') : 'transparent',
                     border: 'none', cursor: 'pointer', fontFamily: 'inherit',
                   }}
-                  onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+                  onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'var(--ds-background-neutral-subtle, #F4F5F7)'); }}
                   onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
                   onClick={() => { onChange(value); setIsOpen(false); }}
                 >

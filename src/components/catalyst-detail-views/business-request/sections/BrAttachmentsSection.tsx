@@ -372,6 +372,7 @@ export function BrAttachmentsSection({ request }: Props) {
                 usedPct > 95
                   ? token('color.background.danger.bold', 'var(--ds-background-danger-bold, #C9372C)')
                   : usedPct > 80
+// TODO: ads-unmapped — #946F00 context unclear
                     ? token('color.background.warning.bold', '#946F00')
                     : token('color.background.brand.bold', 'var(--ds-link, #0C66E4)'),
               transition: 'width 200ms',

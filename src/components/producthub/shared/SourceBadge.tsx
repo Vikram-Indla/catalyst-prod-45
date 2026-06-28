@@ -6,6 +6,7 @@
  *   - 'jira'     (set by useSyncMDTToRequests for MDT-* imports)
  *
  * Visual rules (per CLAUDE.md §6):
+// TODO: ads-unmapped — #3F3F46 context unclear
  *   - Catalyst → neutral grey #3F3F46 (structural, NOT semantic)
  *   - Jira-MDT → blue var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))
  *   - These are non-semantic structural identifiers and must NEVER be confused

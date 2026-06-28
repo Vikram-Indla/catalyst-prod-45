@@ -78,7 +78,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
           transition: 'border-color 150ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = '#B6C2CF';
+          e.currentTarget.style.borderColor = 'var(--ds-border, #B6C2CF)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))';

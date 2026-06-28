@@ -290,3 +290,76 @@ When `#FFFFFF` / `#fff` appears as text color (text-on-dark buttons, badges):
 - **95%** — ADS canonical (atlassian.design token spec)
 - **75%** — Best semantic match, no exact probe
 - **REVIEW** — Catalyst brand color, no ADS equivalent; keeps original as fallback
+
+---
+
+## Phase 2 Additions — 2026-06-28
+
+### CHART TOKENS
+
+| Hex Value | ADS Token | Notes |
+|-----------|-----------|-------|
+| `#A54800` | `var(--ds-chart-orange-bold, #A54800)` | Chart orange bold |
+| `#216E4E` | `var(--ds-chart-green-bold, #216E4E)` | Chart green bold |
+| `#943D73` | `var(--ds-chart-magenta-bold, #943D73)` | Chart magenta bold |
+| `#5E4DB2` | `var(--ds-background-discovery-bold, #5E4DB2)` | Discovery bold / Lifecycle delivery |
+| `#E2B203` | `var(--ds-background-warning-bold, #E2B203)` | Warning bold |
+| `#F7F8F9` | `var(--ds-background-neutral-subtle, #F7F8F9)` | Neutral subtle bg |
+| `#C9372C` | `var(--ds-background-danger-bold, #C9372C)` | Danger bold bg |
+| `#AE2A19` | `var(--ds-text-danger, #AE2A19)` | Danger text |
+| `#974F0C` | `var(--ds-text-warning, #974F0C)` | Warning text |
+| `#626F86` | `var(--ds-text-subtlest, #626F86)` | Subtlest text |
+| `#8590A2` | `var(--ds-border-bold, #8590A2)` | Bold border |
+| `#0C66E4` | `var(--ds-link, #0C66E4)` | Link blue |
+| `#FFFFFF` / `#ffffff` / `#fff` | `var(--ds-text-inverse, #FFFFFF)` | Inverse text (on dark bg) |
+| `#F1F2F4` | `var(--ds-background-neutral, #F1F2F4)` | Neutral bg |
+| `#E9F2FF` | `var(--ds-background-information, #E9F2FF)` | Information bg |
+| `#FFECEB` | `var(--ds-background-danger, #FFECEB)` | Danger bg |
+| `#FFF7D6` | `var(--ds-background-warning, #FFF7D6)` | Warning bg |
+| `#669DF1` | `var(--ds-chart-blue-bold, #669DF1)` | Chart blue bold (in-progress) |
+| `#0044A3` | `var(--ds-background-brand-bold, #0044A3)` | Brand bold blue |
+| `#7C2D12` | `var(--ds-text-danger, #AE2A19)` | Dark danger text (orange-950 → danger) |
+| `#BE123C` | `var(--ds-text-danger, #AE2A19)` | Rose-700 → danger text |
+| `#85B8FF` | `var(--ds-border-focused, #388BFF)` | Focus ring / accent border |
+| `#EBECF0` | `var(--ds-background-neutral, #F1F2F4)` | Neutral bg v2 |
+| `#DCDFE6` | `var(--ds-border, #DFE1E6)` | Border (El-border variant) |
+| `#B6C2CF` | `var(--ds-border, #DFE1E6)` | Border subtle |
+| `#0052CC` | `var(--ds-link, #0C66E4)` | Link blue dark |
+| `#FF7452` | `var(--ds-background-danger-bold, #C9372C)` | High priority danger |
+| `#F8F6F3` | `var(--ds-surface-sunken, #F7F8F9)` | Warm sunken surface |
+| `#904EE2` | `var(--ds-background-discovery-bold, #6E5DC6)` | Epic purple |
+| `#2A6DF4` | `var(--ds-link, #0C66E4)` | Story blue link |
+| `#25A777` | `var(--ds-background-success-bold, #1F845A)` | Task/done green |
+| `#E92063` | `var(--ds-background-danger-bold, #C9372C)` | Blocker red-pink |
+| `#F97015` | `var(--ds-background-warning-bold, #E2B203)` | High warning orange |
+| `#0DA2E7` | `var(--ds-chart-blue-bold, #669DF1)` | Sky blue chart |
+| `#21C45D` | `var(--ds-chart-green-bold, #216E4E)` | Green chart bold |
+| `#7C3BED` | `var(--ds-background-discovery-bold, #6E5DC6)` | Purple chart bold |
+| `#4D8B4D` | `var(--ds-background-success-bold, #1F845A)` | Enterprise green |
+| `#5243AA` | `var(--ds-background-discovery-bold, #5E4DB2)` | Atlaskit purple |
+| `#00A3BF` | `var(--ds-chart-teal-bold, #0d9488)` | Teal chart bold |
+| `#2A2832` | `var(--ds-surface, #FFFFFF)` | Near-black surface dark |
+| `#F4F7FA` | `var(--ds-surface-sunken, #F7F8F9)` | Light blue-grey sunken |
+| `#57606A` | `var(--ds-text-subtlest, #626F86)` | GitHub muted text → subtlest |
+| `#232323` | `var(--ds-surface, #FFFFFF)` | Near-black surface |
+| `#FF8800` | `var(--ds-background-warning-bold, #E2B203)` | Amber warning bold |
+| `#4A1A1A` / `#2E1A1A` | `var(--ds-background-danger, #FFECEB)` | Dark danger tint |
+| `#1A2E1A` | `var(--ds-background-success, #DFFCF0)` | Dark success tint |
+| `#1C3A5C` | `var(--ds-background-information, #E9F2FF)` | Dark info tint |
+| `#004D33` | `var(--ds-background-success-bold, #1F845A)` | Deep success bold |
+| `#080E1D` | `var(--ds-surface, #FFFFFF)` | Near-black (dark overlay) |
+| `#D4B896` | `var(--ds-background-neutral-subtle, #F7F8F9)` | Warm neutral subtle |
+| `#C9D3E0` | `var(--ds-border, #DFE1E6)` | Subtle border |
+| `#D4A855` | `var(--ds-background-warning-bold, #E2B203)` | Gold warning |
+| `#57D9A3` | `var(--ds-background-success-bold, #1F845A)` | Teal-green success |
+| `#9C8E7E` | `var(--ds-text-subtlest, #626F86)` | Warm muted text |
+| `#E2D5C3` | `var(--ds-background-neutral-subtle, #F7F8F9)` | Warm neutral subtle text |
+| `#4A3F35` | `var(--ds-text-subtle, #44546F)` | Warm subtle text |
+| `#5C5C5C` | `var(--ds-text-subtlest, #626F86)` | Grey text subtlest |
+| `#8A8A8A` | `var(--ds-text-disabled, #8590A2)` | Disabled text |
+| `#A7F3D0` | `var(--ds-background-success, #DFFCF0)` | Success teal-100 |
+| `#6B7A8D` / `#7A8B6B` / `#8B7A6B` / `#6B6B8B` / `#6B8B8B` / `#8B6B7A` / `#7A6B8B` / `#6B8B7A` | `var(--ds-background-discovery, #F3F0FF)` | Avatar rotation neutrals → discovery subtle |
+| `#2A2A2A` | `var(--ds-surface, #FFFFFF)` | Near-black surface |
+| `#666` / `#666666` | `var(--ds-text-subtlest, #626F86)` | Mid-grey text |
+| `#FF0000` | `var(--ds-text-danger, #AE2A19)` | Pure red (editor text-style) → danger |
+| `#F5F7FA` | `var(--ds-surface-sunken, #F7F8F9)` | Near-white sunken |

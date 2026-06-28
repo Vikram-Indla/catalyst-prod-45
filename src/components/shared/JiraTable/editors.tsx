@@ -896,7 +896,9 @@ export function makeAssigneeEditCell<T>({
 // Jira-parity priority display: icon + text label.
 // Measured from digital-transformation.atlassian.net BAU list 2026-05-04:
 //   Priority cell shows icon (16px) + label text at 14px, inline-flex, gap 4px.
+// TODO: ads-unmapped — #E5484D context unclear
 //   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=var(--cp-warning, #D97706),
+// TODO: ads-unmapped — #0065FF context unclear
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
   critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: 'var(--ds-text-danger, #E5484D)', label: 'Critical'  },
@@ -1014,6 +1016,7 @@ export interface ParentChoice {
 // Chip style used for the selected parent AND for options in the dropdown.
 // Measured directly from Jira's production list view on
 // digital-transformation.atlassian.net on 2026-04-18:
+// TODO: ads-unmapped — #227D9B context unclear
 //   background: rgb(34, 125, 155)  // #227D9B — Jira's "epic parent" teal
 //   color:      var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))
 //   padding:    2px 4px

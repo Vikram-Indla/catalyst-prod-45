@@ -92,7 +92,7 @@ export const CreateForm = memo(function CreateForm({
           transition: 'background-color 150ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#0044A3';
+          e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold, #0044A3)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = 'var(--ds-link, #0C66E4)';

@@ -256,6 +256,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
         <Spinner size="small" />
       ) : (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+// TODO: ads-unmapped — #CD519D context unclear
           <path d="M1 8h3l2-5 3 10 2-5h4" stroke={token('color.icon.accent.magenta', '#CD519D')} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )}
@@ -273,7 +274,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
   ) : (
     <CatyInsightCard title="Board health" onRefresh={() => generateInsight({ force: true })} onDismiss={() => setInsight(null)}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>
+            <p style={{ margin: 0, font: `400 13px/18px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
               {insight.summary}
             </p>
 
@@ -285,7 +286,7 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
                 {/* Column header row */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: col.topBlocker ? 4 : 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ font: `600 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D') }}>
+                    <span style={{ font: `600 13px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)') }}>
                       {col.column}
                     </span>
                     <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text.subtlest', 'var(--ds-text-subtlest, #6B778C)') }}>
@@ -313,10 +314,10 @@ export function CatyBoardInsight({ resourceId, projectKey, panelPortalTarget }: 
                       onClick={() => useGlobalSearchStore.getState().openDetail({ id: col.topBlocker!.issueKey })}
                     >
                       <JiraIssueTypeIcon type={col.topBlocker.issueType} size={14} />
-                      <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', '#0052CC'), flexShrink: 0 }}>
+                      <span style={{ font: `500 12px/16px var(--ds-font-family-code, monospace)`, color: token('color.link', 'var(--ds-link, #0052CC)'), flexShrink: 0 }}>
                         {col.topBlocker.issueKey}
                       </span>
-                      <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ font: `400 12px/16px var(--ds-font-family-body, "Atlassian Sans")`, color: token('color.text', 'var(--ds-text, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {col.topBlocker.summary}
                       </span>
                     </div>

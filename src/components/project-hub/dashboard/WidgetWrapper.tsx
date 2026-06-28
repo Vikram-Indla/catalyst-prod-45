@@ -45,7 +45,8 @@ import { Heading, SectionMessage } from '@/components/ads';
 import { useWidgetEditState } from './widget-edit-context';
 
 /** Jira-parity highlight colors for the gadget top border bar. */
-// 2026-06-09 Spec parity — ADS B400 #0052CC for the blue accent (was
+// 2026-06-09 Spec parity — ADS B400 var(--ds-link, #0052CC) for the blue accent (was
+// TODO: ads-unmapped — #2684FF context unclear
 // #2684FF B200). Other category colors aligned to ADS canonical palette.
 const HIGHLIGHT_COLORS: Record<string, string> = {
   blue: 'var(--ds-link, #0052CC)',
@@ -246,7 +247,7 @@ export default function WidgetWrapper({
           ? token('elevation.shadow.overlay', '0 4px 8px -2px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))')
           : token('elevation.shadow.raised', '0 1px 1px var(--ds-shadow-raised, rgba(9,30,66,0.25)), 0 0 1px var(--ds-shadow-raised, rgba(9,30,66,0.31))'),
         // 2026-06-09 Spec parity (Filter Results gadget v1) — radius 8px,
-        // top accent 3px #0052CC, 1px ds-border on remaining sides + shadow.
+        // top accent 3px var(--ds-link, #0052CC), 1px ds-border on remaining sides + shadow.
         border: `1px solid ${token('color.border', 'var(--ds-border, #DFE1E6)')}`,
         borderTop: `3px solid ${HIGHLIGHT_COLORS[highlightColor] ?? HIGHLIGHT_COLORS.blue}`,
         borderRadius: token('border.radius.200', '8px'),

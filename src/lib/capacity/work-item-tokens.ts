@@ -4,18 +4,18 @@
  */
 
 export const CategoryColors = {
-  enterprise: { border: '#4d8b4d', bg: 'rgba(77, 139, 77, 0.08)', text: '#4d8b4d' },
-  program: { border: 'var(--ds-link, #2563eb)', bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.08))', text: '#2563eb' },
-  project: { border: 'var(--ds-chart-teal-bold, #0d9488)', bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.08))', text: '#0d9488' },
+  enterprise: { border: 'var(--ds-background-success-bold, #4d8b4d)', bg: 'rgba(77, 139, 77, 0.08)', text: 'var(--ds-background-success-bold, #4d8b4d)' },
+  program: { border: 'var(--ds-link, #2563eb)', bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.08))', text: 'var(--ds-link, #2563eb)' },
+  project: { border: 'var(--ds-chart-teal-bold, #0d9488)', bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.08))', text: 'var(--ds-chart-teal-bold, #0d9488)' },
   product: { border: 'var(--ds-background-success-bold, #1F845A)', bg: 'var(--ds-background-success-bold, rgba(34, 197, 94, 0.08))', text: 'var(--ds-background-success-bold, #1F845A)' },
 } as const;
 
 export const WorkItemColors: Record<string, { bg: string; text: string; ring: string }> = {
-  theme: { bg: 'rgba(77, 139, 77, 0.12)', text: '#4d8b4d', ring: '#4d8b4d' },
+  theme: { bg: 'rgba(77, 139, 77, 0.12)', text: 'var(--ds-background-success-bold, #4d8b4d)', ring: 'var(--ds-background-success-bold, #4d8b4d)' },
   objective: { bg: 'rgba(107, 114, 128, 0.12)', text: 'var(--ds-text-subtlest, #626F86)', ring: 'var(--ds-text-subtlest, #626F86)' },
-  key_result: { bg: 'rgba(212, 184, 150, 0.12)', text: '#d4b896', ring: '#d4b896' },
-  epic: { bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.12))', text: '#2563eb', ring: 'var(--ds-link, #2563eb)' },
-  feature: { bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.12))', text: '#0d9488', ring: 'var(--ds-chart-teal-bold, #0d9488)' },
+  key_result: { bg: 'rgba(212, 184, 150, 0.12)', text: 'var(--ds-background-neutral-subtle, #d4b896)', ring: 'var(--ds-background-neutral-subtle, #d4b896)' },
+  epic: { bg: 'var(--ds-background-information, rgba(37, 99, 235, 0.12))', text: 'var(--ds-link, #2563eb)', ring: 'var(--ds-link, #2563eb)' },
+  feature: { bg: 'var(--ds-background-success, rgba(13, 148, 136, 0.12))', text: 'var(--ds-chart-teal-bold, #0d9488)', ring: 'var(--ds-chart-teal-bold, #0d9488)' },
   story: { bg: 'rgba(139, 115, 85, 0.12)', text: 'var(--ds-text-subtle, #8B7355)', ring: 'var(--ds-text-subtle, #8B7355)' },
   defect: { bg: 'var(--ds-background-danger-bold, rgba(220, 38, 38, 0.12))', text: 'var(--ds-background-danger-bold, #dc2626)', ring: 'var(--ds-background-danger-bold, #dc2626)' },
   incident: { bg: 'var(--ds-background-danger-bold, rgba(220, 38, 38, 0.12))', text: 'var(--ds-background-danger-bold, #dc2626)', ring: 'var(--ds-background-danger-bold, #dc2626)' },

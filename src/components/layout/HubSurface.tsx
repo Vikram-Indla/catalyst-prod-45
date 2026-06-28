@@ -10,7 +10,7 @@
  * Visuals (light mode — match BAU backlog exactly):
  *   Values taken verbatim from BacklogPage.atlaskit.tsx:1083–1112, which the
  *   team measured from Jira's live DOM on 2026-04-18:
- *     - Canvas bg:      #E9F2FE  (the light blue Jira uses — not #F7F8F9)
+ *     - Canvas bg:      var(--ds-background-selected, #E9F2FE)  (the light blue Jira uses — not var(--ds-surface-sunken, #F7F8F9))
  *     - Panel bg:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))
  *     - Frame padding:  24px
  *     - Panel radius:   8px

@@ -3,10 +3,10 @@
  * 
  * COLOR RULES:
  * - Primary actions: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) (primary-600)
- * - Success/Available: #0d9488 (teal-600)
+ * - Success/Available: var(--ds-chart-teal-bold, #0d9488) (teal-600)
  * - Warning: var(--ds-text-warning, #d97706) (warning)
  * - Danger: var(--ds-text-danger, #ef4444) (danger)
- * - Permanent/Neutral: #9ca3af (gray-400)
+ * - Permanent/Neutral: var(--ds-text-disabled, #9ca3af) (gray-400)
  * 
  * ⚠️ DO NOT ADD NON-CATALYST COLORS
  */

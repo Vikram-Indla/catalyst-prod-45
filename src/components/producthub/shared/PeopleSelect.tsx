@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, Search, X, Check, User } from '@/lib/atlaskit-icons';
 
+// TODO: ads-unmapped — #0369A1 context unclear
 const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', 'var(--ds-icon-information, #1D7AFC)', '#0369a1', 'var(--ds-text-warning, #d97706)', 'var(--ds-link, #0C66E4)', 'var(--ds-link-pressed, #0747A6)', 'var(--ds-background-warning-bold, #b45309)', 'var(--ds-chart-teal-bolder, #0f766e)', 'var(--ds-text-subtle, #475569)', 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'];
 
 function hashColor(name: string): string {

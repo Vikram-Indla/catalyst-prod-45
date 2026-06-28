@@ -107,6 +107,7 @@ export function MonthlyChronicleView() {
         <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden m-6">
           
           {/* Chronicle Hero - Dark Gradient */}
+// TODO: ads-unmapped — #1A2744 context unclear
           <div className="relative px-14 py-12 bg-gradient-to-br from-slate-900 to-[#1a2744] text-white overflow-hidden">
             {/* Radial overlays */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,var(--ds-background-information, rgba(37,99,235,0.15)),transparent_50%),radial-gradient(circle_at_80%_50%,var(--ds-background-success, rgba(13,148,136,0.1)),transparent_50%)]" />

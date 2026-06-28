@@ -3,6 +3,7 @@
  *
  * Split into two atomic parts so the cell function can swap the summary slot
  * for an inline editor while keeping the prefix (icon + key) visible —
+// TODO: ads-unmapped — #113344 context unclear
  * matches Jira's inline summary edit pattern (2026-06-23, image #134).
  */
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

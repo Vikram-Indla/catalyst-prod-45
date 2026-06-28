@@ -148,7 +148,7 @@ function roundBtn(bg: string): React.CSSProperties {
   return {
     width: 44, height: 44, borderRadius: '50%', border: 'none', cursor: 'pointer',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    background: bg, color: '#FFFFFF', flex: '0 0 auto',
+    background: bg, color: 'var(--ds-surface, #FFFFFF)', flex: '0 0 auto',
   };
 }
 

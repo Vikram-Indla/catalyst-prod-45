@@ -132,7 +132,7 @@ export default function IdeasBacklogPage() {
             <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into requests — powered by IMPACT scoring & AI Intelligence</p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '1px solid var(--ds-link, #2563EB)', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Sparkles size={14} /> Intelligence
             </button>
             <button onClick={() => setCreateOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -259,6 +259,7 @@ export default function IdeasBacklogPage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <StatusBadge status={idea.status} />
                           {isConverted && idea.linked_initiative_key && (
+// TODO: ads-unmapped — #11853D context unclear
                             <span style={{ fontSize: '11px', fontWeight: 600, color: '#11853D', fontFamily: 'var(--cp-font-mono)' }}>
                               → {idea.linked_initiative_key}
                             </span>

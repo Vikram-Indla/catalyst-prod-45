@@ -22,11 +22,11 @@ interface Props {
  * PresenceRing — CatalystAvatar with a coloured ring overlay.
  *
  * Ring spec (from prototypes/presence-availability.html, 2026-06-02):
- *   available  → solid 2px BLUE ring  (#1868DB, --ds-link)
+ *   available  → solid 2px BLUE ring  (var(--ds-link, #1868DB), --ds-link)
  *   away       → hollow/dashed 2px BLUE ring (same colour, different treatment)
- *   busy       → solid 2px GREY ring  (#6B6E76, --ds-text-subtlest)
- *   offline    → solid 2px AMBER ring (#E2B203, --ds-icon-warning)
- *   on_leave   → solid 2px RED ring   (#C9372C, --ds-icon-danger)
+ *   busy       → solid 2px GREY ring  (var(--ds-text-subtlest, #6B6E76), --ds-text-subtlest)
+ *   offline    → solid 2px AMBER ring (var(--ds-background-warning-bold, #E2B203), --ds-icon-warning)
+ *   on_leave   → solid 2px RED ring   (var(--ds-background-danger-bold, #C9372C), --ds-icon-danger)
  *
  * Ring rendering:
  *   Solid states → wrapper span has box-shadow:

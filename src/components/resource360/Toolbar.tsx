@@ -107,6 +107,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const tabStyle = (active: boolean): React.CSSProperties => ({
     padding: '6px 14px', fontSize: 12, fontWeight: active ? 700 : 600,
     color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--r360-text-3, #3D3D56)',
+// TODO: ads-unmapped — #1A1A2E context unclear
     background: active ? '#1A1A2E' : 'transparent',
     border: 'none', borderRadius: 6, cursor: 'pointer',
     boxShadow: active ? '0 1px 3px var(--ds-shadow-raised, rgba(0,0,0,.15))' : 'none',

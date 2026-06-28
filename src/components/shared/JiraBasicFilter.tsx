@@ -291,6 +291,7 @@ function OptionAvatar({ option }: { option: FilterOption }) {
   }
   if (option.avatarInitials) {
     return (
+// TODO: ads-unmapped — #DDE1E6 context unclear
       <span className="jf-avatar jf-avatar--initials" style={{ backgroundColor: option.avatarColor ?? '#DDE1E6' }}>
         <span className="jf-avatar-initials-text">{option.avatarInitials}</span>
       </span>

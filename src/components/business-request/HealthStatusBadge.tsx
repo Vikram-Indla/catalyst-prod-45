@@ -13,6 +13,7 @@ const DOT_COLORS: Record<string, string> = {
   Uncommitted:    token('color.icon.disabled',     'var(--ds-text-disabled, #8590A2)'),
   Committed:      token('color.icon.information',  'var(--ds-link, #0C66E4)'),
   'On Track':     token('color.icon.success',      'var(--ds-background-success-bold, #1F845A)'),
+// TODO: ads-unmapped — #CF9F02 context unclear
   Delayed:        token('color.icon.warning',      '#CF9F02'),
   'At Risk':      token('color.icon.danger',       'var(--ds-background-danger-bold, #C9372C)'),
   Blocked:        token('color.icon.danger',       'var(--ds-background-danger-bold, #C9372C)'),

@@ -160,6 +160,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '6px 12px', cursor: 'pointer', fontSize: 12,
+// TODO: ads-unmapped — #F0F9FF context unclear
                 background: selected.has(item.item_key) ? '#f0f9ff' : 'transparent',
               }}
             >

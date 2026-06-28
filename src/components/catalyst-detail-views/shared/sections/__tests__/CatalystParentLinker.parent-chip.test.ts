@@ -2,6 +2,7 @@
  * Stage 2 Group 1 — Parent chip canonical parity
  *
  * Jira DOM probe 2026-05-10:
+// TODO: ads-unmapped — #505258 context unclear
  *   background: rgba(0,0,0,0)  color: rgb(80,82,88) = #505258
  *   padding: 2px 0px  no border  no border-radius tint
  *

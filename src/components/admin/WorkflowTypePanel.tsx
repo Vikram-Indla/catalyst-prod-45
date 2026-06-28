@@ -23,8 +23,11 @@ import { STATUS_CATEGORY_COLORS, STATUS_CATEGORY_LABELS, type StatusCategory } f
 const STATUS_BG: Record<string, string> = {
   success:    'var(--ds-background-success-bold, #6A9A23)',
   inprogress: 'var(--ds-background-information, #E9F2FF)',
+// TODO: ads-unmapped — #F3D664 context unclear
   moved:      '#F3D664',
+// TODO: ads-unmapped — #B8ACF6 context unclear
   new:        '#B8ACF6',
+// TODO: ads-unmapped — #FD9891 context unclear
   removed:    '#FD9891',
   default:    'var(--ds-border, #DFE1E6)',
 };

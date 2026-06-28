@@ -586,8 +586,8 @@
   color: var(--ct-warning) !important;
 }
 
-.capacity-module [style*="#D4B896"],
-.capacity-module [style*="#d4b896"] {
+.capacity-module [style*="var(--ds-background-neutral-subtle, #D4B896)"],
+.capacity-module [style*="var(--ds-background-neutral-subtle, #d4b896)"] {
   color: var(--ct-text-secondary) !important;
 }
 
