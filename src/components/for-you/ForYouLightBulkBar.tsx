@@ -22,7 +22,7 @@ export function ForYouLightBulkBar({
     display: 'flex', alignItems: 'center', gap: 4,
     height: 32, padding: '0 14px',
     backgroundColor: 'transparent', border: 'none', borderRadius: 8,
-    cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--cp-t2)',
+    cursor: 'pointer', fontSize: 'var(--ds-font-size-300)', fontWeight: 500, color: 'var(--ds-text-subtle)',
     transition: 'background 0.1s', fontFamily: 'var(--ds-font-family)',
   };
 
@@ -70,9 +70,9 @@ export function ForYouLightBulkBar({
 
       {onDelete && (
         <button
-          style={{ ...actionBtn, color: 'var(--cp-err-text)' }}
+          style={{ ...actionBtn, color: 'var(--ds-text-danger)' }}
           onClick={onDelete}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-err-bg)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-danger-subtle)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
         >
           <Trash2 size={14} /> Delete

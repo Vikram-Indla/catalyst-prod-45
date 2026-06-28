@@ -218,7 +218,7 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
         <button
           onClick={() => onFiltersChange({ project: null, hub: null, reportedBy: null })}
           style={{
-            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--cp-err-text)',
+            fontSize: 'var(--ds-font-size-200)', fontWeight: 600, color: 'var(--ds-text-danger)',
             background: 'none', border: 'none', cursor: 'pointer',
             marginLeft: 4, transition: 'opacity 0.15s',
           }}

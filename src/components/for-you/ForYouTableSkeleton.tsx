@@ -43,9 +43,9 @@ export function ForYouTableSkeleton({ rowCount = 5 }: ForYouTableSkeletonProps) 
         className="px-4 py-2 border-l-[3px]"
         style={{
           background: 'var(--ds-surface)',
-          borderLeftColor: 'var(--cp-bd-zone)',
-          borderTop: '1px solid var(--cp-bd-zone)',
-          borderBottom: '1px solid var(--cp-bd-zone)',
+          borderLeftColor: 'var(--ds-border)',
+          borderTop: '1px solid var(--ds-border)',
+          borderBottom: '1px solid var(--ds-border)',
         }}
       >
         <div className="h-3 w-20 rounded animate-pulse" style={skeletonBlockStyle} />
@@ -60,7 +60,7 @@ export function ForYouTableSkeleton({ rowCount = 5 }: ForYouTableSkeletonProps) 
             index === rowCount - 1 && "border-b-0"
           )}
           style={{
-            borderBottom: index === rowCount - 1 ? 'none' : '1px solid var(--cp-bd-table)',
+            borderBottom: index === rowCount - 1 ? 'none' : '1px solid var(--ds-border)',
             background: 'var(--ds-surface)',
           }}
         >

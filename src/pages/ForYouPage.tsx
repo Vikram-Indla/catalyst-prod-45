@@ -146,10 +146,10 @@ export default function ForYouPage() {
     const HUB_ICONS: Record<string, React.ReactNode> = {
       Incident: <AlertTriangleIcon size={14} color="var(--ds-background-danger-bold)" strokeWidth={2} />,
       Product: <LayoutGrid size={14} color="var(--ds-background-discovery-bold)" strokeWidth={2} />,
-      Project: <Folder size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary))" strokeWidth={2} />,
+      Project: <Folder size={14} color="var(--ds-text-brand, var(--ds-text-brand))" strokeWidth={2} />,
       Task: <CheckSquare size={14} color="var(--ds-background-information-bold)" strokeWidth={2} />,
-      Plan: <BookOpen size={14} color="var(--cp-teal-60)" strokeWidth={2} />,
-      Strategy: <Zap size={14} color="var(--ds-text-warning, var(--cp-warning))" strokeWidth={2} />,
+      Plan: <BookOpen size={14} color="var(--ds-text-success)" strokeWidth={2} />,
+      Strategy: <Zap size={14} color="var(--ds-text-warning, var(--ds-text-warning))" strokeWidth={2} />,
     };
     const PRIORITY_ICONS: Record<string, React.ReactNode> = {
       Critical: <PriorityBars priority="critical" />,
