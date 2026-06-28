@@ -1,6 +1,8 @@
 // src/components/layout/HuddleWindow.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useHuddleStore } from '@/store/huddleStore';
+import { useHuddleStore, getHuddleRemoteScreen, getHuddleLocalScreen, sendHuddleMarker, onHuddleMarker } from '@/store/huddleStore';
+import { Avatar } from '@/components/ads';
+import { useActiveHuddle } from '@/hooks/chat/useHuddleData';
 
 /**
  * HuddleWindow — large draggable + resizable Slack-style huddle surface.
@@ -28,6 +30,21 @@ export function HuddleWindow() {
   const [size] = useState<Size>(() => load(SIZE_KEY, { w: 900, h: 560 }));
   const wrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
+
+  // stage state
+  const markerPen = useHuddleStore((s) => s.markerPen);
+  const { huddle } = useActiveHuddle(active?.conversationId ?? null);
+  const participants = huddle?.participants ?? [];
+  const remoteSharing = !!active?.remoteSharing;
+  const localSharing = !!active?.screenSharing;
+  const showRemote = remoteSharing;
+  const screenVisible = remoteSharing || localSharing;
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const strokesRef = useRef<{ id: string; color: string; points: { x: number; y: number }[]; t: number }[]>([]);
+  const drawingRef = useRef<{ id: string; color: string; points: { x: number; y: number }[]; t: number } | null>(null);
+  const lastSendRef = useRef(0);
 
   // persist size on resize (normal mode only)
   useEffect(() => {
@@ -66,6 +83,96 @@ export function HuddleWindow() {
     const next = { top: Math.max(8, r.top), left: Math.max(8, r.left) };
     setPos(next);
     try { localStorage.setItem(POS_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+  }, []);
+
+  // receive remote markers → upsert by id
+  useEffect(() => onHuddleMarker((m) => {
+    const s = m as { id: string; color: string; points: { x: number; y: number }[] };
+    if (!s || !s.id || !Array.isArray(s.points)) return;
+    const arr = strokesRef.current;
+    const i = arr.findIndex((x) => x.id === s.id);
+    const next = { id: s.id, color: s.color || '#C9372C', points: s.points, t: Date.now() };
+    if (i >= 0) arr[i] = next; else arr.push(next);
+  }), []);
+
+  // redraw loop with fade-out
+  useEffect(() => {
+    const FADE_HOLD = 2500, FADE_OUT = 700;
+    const contentRect = (W: number, H: number) => {
+      const v = videoRef.current;
+      const vw = v?.videoWidth || 0, vh = v?.videoHeight || 0;
+      if (!vw || !vh) return { x: 0, y: 0, w: W, h: H };
+      const s = Math.min(W / vw, H / vh);
+      const cw = vw * s, ch = vh * s;
+      return { x: (W - cw) / 2, y: (H - ch) / 2, w: cw, h: ch };
+    };
+    let raf = 0;
+    const loop = () => {
+      const cv = canvasRef.current;
+      if (cv) {
+        const w = cv.clientWidth, h = cv.clientHeight;
+        if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+        const ctx = cv.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, w, h);
+          const now = Date.now();
+          strokesRef.current = strokesRef.current.filter((s) => now - s.t < FADE_HOLD + FADE_OUT);
+          const cr = contentRect(w, h);
+          for (const s of strokesRef.current) {
+            const age = now - s.t;
+            ctx.globalAlpha = age < FADE_HOLD ? 1 : Math.max(0, 1 - (age - FADE_HOLD) / FADE_OUT);
+            ctx.strokeStyle = s.color; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.beginPath();
+            s.points.forEach((p, idx) => {
+              const x = cr.x + p.x * cr.w, y = cr.y + p.y * cr.h;
+              if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1;
+        }
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // bind the right screen stream to the <video>
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const stream = showRemote ? getHuddleRemoteScreen() : localSharing ? getHuddleLocalScreen() : null;
+    v.srcObject = stream ?? null;
+    if (stream) void v.play().catch(() => { /* autoplay guard */ });
+  }, [showRemote, localSharing, remoteSharing, windowState]);
+
+  const normPt = useCallback((e: React.PointerEvent) => {
+    const cv = canvasRef.current!; const r = cv.getBoundingClientRect();
+    const v = videoRef.current; const vw = v?.videoWidth || 0, vh = v?.videoHeight || 0;
+    const s = vw && vh ? Math.min(r.width / vw, r.height / vh) : 1;
+    const cw = vw ? vw * s : r.width, ch = vh ? vh * s : r.height;
+    const cx = (r.width - cw) / 2, cy = (r.height - ch) / 2;
+    return { x: (e.clientX - r.left - cx) / cw, y: (e.clientY - r.top - cy) / ch };
+  }, []);
+  const onCanvasDown = useCallback((e: React.PointerEvent) => {
+    if (!markerPen) return;
+    e.stopPropagation();
+    const id = `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+    const stroke = { id, color: '#22A06B', points: [normPt(e)], t: Date.now() };
+    drawingRef.current = stroke; strokesRef.current.push(stroke);
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* ignore */ }
+  }, [markerPen, normPt]);
+  const onCanvasMove = useCallback((e: React.PointerEvent) => {
+    const d = drawingRef.current;
+    if (!markerPen || !d || e.buttons === 0) return;
+    d.points.push(normPt(e)); d.t = Date.now();
+    const now = Date.now();
+    if (now - lastSendRef.current > 50) { lastSendRef.current = now; sendHuddleMarker({ id: d.id, color: d.color, points: d.points }); }
+  }, [markerPen, normPt]);
+  const onCanvasUp = useCallback(() => {
+    const d = drawingRef.current;
+    if (d) { sendHuddleMarker({ id: d.id, color: d.color, points: d.points }); drawingRef.current = null; }
   }, []);
 
   if (!active || windowState === 'minimized') return null;
@@ -118,7 +225,35 @@ export function HuddleWindow() {
       {/* body: stage (Task 7) | thread (Task 8) */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
         <div data-huddle-stage style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: 'var(--ds-surface-sunken, #F7F8F9)' }}>
-          {/* stage content added in Task 7 */}
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', gap: 12, padding: 12 }}>
+            {/* screen-share tile (only when someone shares) */}
+            {screenVisible && (
+              <div style={{ flex: 2, minWidth: 0, position: 'relative', background: '#000', borderRadius: 12, overflow: 'hidden', display: 'flex' }}>
+                <video ref={videoRef} autoPlay playsInline muted
+                  style={{ flex: 1, width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block', minHeight: 0 }} />
+                <canvas ref={canvasRef}
+                  onPointerDown={onCanvasDown} onPointerMove={onCanvasMove} onPointerUp={onCanvasUp} onPointerCancel={onCanvasUp}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
+                    pointerEvents: markerPen ? 'auto' : 'none', cursor: markerPen ? 'crosshair' : 'default', touchAction: 'none' }} />
+                <span style={{ position: 'absolute', left: 12, bottom: 12, padding: '4px 10px', borderRadius: 8,
+                  background: 'rgba(9,30,66,.55)', color: '#FFFFFF', fontSize: 12, fontWeight: 600 }}>
+                  {showRemote ? `${active.conversationName} — screen` : 'You are sharing'}
+                </span>
+              </div>
+            )}
+            {/* participant tile(s) */}
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--ds-surface, #FFFFFF)', borderRadius: 12, border: '1px solid var(--ds-border, #DFE1E6)' }}>
+              <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                {participants.length > 0
+                  ? <Avatar size="xxlarge" name={participants[participants.length - 1].name || active.conversationName} src={participants[participants.length - 1].avatarUrl || undefined} />
+                  : <Avatar size="xxlarge" name={active.conversationName} />}
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+                  {participants[participants.length - 1]?.name || active.conversationName}
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
         {/* thread panel added in Task 8 */}
       </div>
