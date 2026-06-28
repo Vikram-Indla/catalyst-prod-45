@@ -246,7 +246,6 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 // Plan Hub module — DEPRECATED 2026-06-25
 // All planhub routes removed; modules-dormant/planhub remains in codebase for historical reference.
 
-const Defects = lazy(() => import("../pages/Defects"));
 const Tasks = lazy(() => import("../pages/Tasks"));
 const Impediments = lazy(() => import("../pages/Impediments"));
 const ReleaseVehicles = lazy(() => import("../pages/ReleaseVehicles"));
@@ -827,7 +826,6 @@ export default function FullAppRoutes() {
         <Route path="/items/epics/:epicId/responsibility-matrix" element={<S><EpicResponsibilityMatrix /></S>} />
         <Route path="/items/epics/:epicId/planning" element={<S><EpicPlanningPage /></S>} />
         <Route path="/items/epics/estimation" element={<S><EpicEstimationPage /></S>} />
-        <Route path="/items/defects" element={<S><Defects /></S>} />
         <Route path="/items/tasks" element={<S><Tasks /></S>} />
         <Route path="/items/impediments" element={<S><Impediments /></S>} />
         <Route path="/items/release-vehicles" element={<S><ReleaseVehicles /></S>} />

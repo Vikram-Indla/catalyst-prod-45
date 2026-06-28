@@ -19,7 +19,7 @@ import {
 } from '@/hooks/test-management/useTestCases';
 import { supabase } from '@/integrations/supabase/client';
 import { CatyIconCTA } from '@/components/ui/CatyIconCTA';
-import { AIGenerateTestCasesDialog } from '@/components/releases/test-cases/AIGenerateTestCasesDialog';
+import { AIGenerateTestCasesDialog } from '@/components/testhub/AIGenerateTestCasesDialog';
 import type { GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
 import { catalystToast } from '@/lib/catalystToast';
 import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
