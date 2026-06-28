@@ -172,6 +172,7 @@ const TestHubReportsPage = lazy(() => import("../pages/testhub/reports/ReportsPa
 const TestHubReportDetailPage = lazy(() => import("../pages/testhub/reports/ReportDetailPage"));
 const TestHubReportsCommandCenterPage = lazy(() => import("../pages/testhub/reports/lab/ReportsCommandCenterPage"));
 const TestHubProjectTestingStatusPage = lazy(() => import("../pages/testhub/reports/ProjectTestingStatusPage"));
+const TestHubSprintTestingStatusPage = lazy(() => import("../pages/testhub/reports/SprintTestingStatusPage"));
 const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
 const TestHubTimelinePage = lazy(() => import("../pages/testhub/timeline/TestHubTimelinePage"));
 const TestHubDependenciesPage = lazy(() => import("../pages/testhub/TestHubDependenciesPage"));
@@ -687,6 +688,7 @@ export default function FullAppRoutes() {
         <Route path="/testhub/reports-lab" element={<S><TestHubReportsCommandCenterPage /></S>} />
         <Route path="/testhub/reports" element={<S><TestHubReportsPage /></S>} />
         <Route path="/testhub/reports/project-status" element={<S><TestHubProjectTestingStatusPage /></S>} />
+        <Route path="/testhub/reports/sprint-status" element={<S><TestHubSprintTestingStatusPage /></S>} />
         <Route path="/testhub/reports/:type" element={<S><TestHubReportDetailPage /></S>} />
         {/* Filters — canonical FiltersListPage / Preview / Detail with hubType='test'.
             Static segments BEFORE :id-style routes. */}

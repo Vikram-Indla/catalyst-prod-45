@@ -44,6 +44,7 @@ const sections: SidebarSection[] = [
       { id: 'traceability', title: 'Traceability', path: '/testhub/traceability',  icon: GitMerge,         exact: false },
       { id: 'reports',      title: 'Reports',      path: '/testhub/reports',       icon: FileText,         exact: true  },
       { id: 'project-status', title: 'Project Status ✦', path: '/testhub/reports/project-status', icon: FileText, exact: false },
+      { id: 'sprint-status', title: 'Sprint Status ✦', path: '/testhub/reports/sprint-status', icon: FileText, exact: false },
       { id: 'reports-lab',  title: 'Reports Lab ✦', path: '/testhub/reports-lab',  icon: FileText,         exact: false },
     ],
   },
