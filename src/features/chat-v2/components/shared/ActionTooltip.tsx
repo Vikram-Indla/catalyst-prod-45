@@ -52,7 +52,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
       <div
         style={{
           padding: '6px 10px',
-          background: '#1D1D1F', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+          background: '#1D1D1F', // ads-scanner:ignore-line — approved exception phase-6: Slack-style dark tooltip; --ds-surface-overlay resolves to #FFFFFF in light mode (wrong for always-dark overlay); text is ds-text-inverse
           color: 'var(--ds-text-inverse, #FFFFFF)',
           borderRadius: 6,
           fontFamily: 'var(--cv2-font)',
@@ -68,7 +68,7 @@ export function ActionTooltip({ anchorEl, label, shortcut, visible }: ActionTool
         <div
           style={{
             padding: '2px 8px',
-            background: '#1D1D1F', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
+            background: '#1D1D1F', // ads-scanner:ignore-line — approved exception phase-6: same dark pill as tooltip container; kbd chip matches parent intentionally
             color: 'var(--ds-text-inverse, #FFFFFF)',
             borderRadius: 4,
             fontFamily: 'var(--cv2-font)',

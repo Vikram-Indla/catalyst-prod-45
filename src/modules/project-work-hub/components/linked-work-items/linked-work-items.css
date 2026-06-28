@@ -559,7 +559,7 @@
 
 .dark .lwi-empty__heading { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .lwi-empty__sub { color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .lwi-error { background: #3B1F1C; color: #FFB9B0; } /* ads-scanner:ignore-line — intentional design color, no ADS token equivalent */
+.dark .lwi-error { background: var(--ds-background-danger); color: var(--ds-text-danger); }
 
 .dark .lwi-skeleton__row { background: var(--cp-bg-surface, var(--cp-ink-1, var(--ds-surface, #FFFFFF))); border-color: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .lwi-skeleton__pulse { background: var(--ds-border, var(--cp-ink-1, #292929)); }

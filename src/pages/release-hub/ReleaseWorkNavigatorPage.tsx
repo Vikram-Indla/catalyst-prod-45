@@ -636,8 +636,8 @@ function MultiChip({
         {active && (
           <span style={{
             minWidth: 20, height: 20, padding: '0 6px', borderRadius: 3,
-            background: '#8FB8F6', // ads-scanner:ignore-line — intentional design color, no ADS token equivalent
-            color: 'var(--ds-text, #172B4D)',
+            background: 'var(--ds-background-brand-bold, #0C66E4)',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             fontSize: 11, fontWeight: 700, lineHeight: '20px',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             textAlign: 'center', boxSizing: 'border-box',

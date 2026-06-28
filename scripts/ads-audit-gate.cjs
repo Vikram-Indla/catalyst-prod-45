@@ -28,7 +28,8 @@
  *   1 - a category exceeds baseline (regression) OR audit output unparseable
  */
 
-const { spawnSync } = require('child_process');
+const { spawnSync, execSync } = require('child_process');
+const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
@@ -50,23 +51,28 @@ function parseCounts(out) {
 }
 
 function runAudit() {
-  // The audit emits ~8MB across thousands of file reads; an occasional run
-  // returns incomplete output. Retry once on a parse miss before failing —
-  // and fail-safe (block) if even the retry can't be parsed.
+  // Write audit output to a temp file to avoid stdout-buffer truncation
+  // in pre-commit hook contexts where spawnSync maxBuffer can be hit before
+  // the audit summary lines are emitted.
+  const tmpFile = path.join(os.tmpdir(), `ads-audit-${process.pid}.txt`);
   let lastOut = '';
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const res = spawnSync('node', [AUDIT, 'src'], {
-      cwd: REPO_ROOT,
-      encoding: 'utf-8',
-      maxBuffer: 256 * 1024 * 1024, // audit prints every violation
-    });
-    lastOut = `${res.stdout || ''}${res.stderr || ''}`;
+    try {
+      execSync(`node "${AUDIT}" src > "${tmpFile}" 2>&1`, {
+        cwd: REPO_ROOT,
+        stdio: 'pipe',
+      });
+    } catch (_) {
+      // audit exits 1 in STRICT mode — ignore exit code, read the file
+    }
+    try { lastOut = fs.readFileSync(tmpFile, 'utf-8'); } catch (_) { lastOut = ''; }
     const counts = parseCounts(lastOut);
-    if (counts) return counts;
+    if (counts) { try { fs.unlinkSync(tmpFile); } catch (_) {} return counts; }
     if (attempt === 1) {
       console.error('⚠️  ads-audit-gate: audit output incomplete, retrying once…');
     }
   }
+  try { fs.unlinkSync(tmpFile); } catch (_) {}
   console.error('❌ ads-audit-gate: could not parse audit category totals after retry. Tail:\n');
   console.error(lastOut.slice(-2000));
   process.exit(1);
