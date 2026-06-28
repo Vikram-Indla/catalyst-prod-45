@@ -11,6 +11,7 @@ import {
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { TestCoveragePanel } from '../story/TestCoveragePanel';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
@@ -100,6 +101,10 @@ export default function CatalystViewIncident({
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />
+      {/* Regression coverage / Trace-From (CAT-TESTHUB-REPORT-REVAMP, G-002) */}
+      {issue?.issue_key && (
+        <TestCoveragePanel issueKey={issue.issue_key} statusCategory={issue.status_category} mode="incident" />
+      )}
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   // eslint-disable-next-line react-hooks/exhaustive-deps
